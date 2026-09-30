@@ -879,6 +879,21 @@ settings. Shared blocks and conflicting potentiometers require explicit
 options. See [sensors.md](docs/sensors.md) for the supported dependencies and
 the remaining sensor functions.
 
+For the ST7 SENLL light-level sensor, the separate dialog workflow includes
+the light-level/on-off/broadcast groups, target and margin, indicator, broadcast
+interval, Power Fail maintenance state and Global status-report interval:
+
+```sh
+cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/21 \
+  --dry-run sensor-light-level --broadcast-group 42 \
+  --broadcast-interval-seconds 300 --power-up enabled --status-report-interval 13
+```
+
+Its plan reports the selected and reloaded power-up states separately because
+the original save resets the maintenance polarity after encoding the state.
+Native database readback does not establish physical timing or power-failure
+behavior. See [the SENLL workflow](docs/sensors.md#st7-senll-light-level-dialog).
+
 ## DIN relay and dimmer settings
 
 RELDN4/8/8B/12 and DIMDN4/4F/8/8F at firmware 2.7.00 support the Toolkit

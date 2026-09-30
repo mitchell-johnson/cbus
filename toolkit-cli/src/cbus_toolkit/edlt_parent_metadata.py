@@ -135,16 +135,36 @@ def _default_language(network):
         raise ValueError('Native network contains duplicate Languages collections')
     if not languages:
         return 1
+    rows = _children(languages[0], 'Language')
+    if not rows:
+        return 1
     defaults = []
-    for language in _children(languages[0], 'Language'):
-        if _byte(_field(language, 'Address'), 'Language address') == 0:
+    definitions = set()
+    for language in rows:
+        # LanguageTypeDescriptor uses ID, unlike addressed C-Bus objects.
+        # ID 0 stores the selected language ID in its TagValue.
+        identifier = _byte(_field(language, 'ID'), 'Language ID')
+        if identifier == 0:
             text = _field(language, 'TagValue')
             if re.fullmatch(r'0|[1-9][0-9]{0,2}', text) is None or int(text) > 255:
                 raise ValueError('Native default language must be a canonical decimal byte')
             defaults.append(int(text))
+        else:
+            if identifier in definitions:
+                raise ValueError('Native network contains duplicate language IDs')
+            definitions.add(identifier)
     if len(defaults) > 1:
         raise ValueError('Native network contains duplicate default-language records')
-    return defaults[0] if defaults else 1
+    # A nonempty collection without an explicit default depends on the
+    # original model's prior process state. A metadata-only default can also
+    # be normalized during the original load. Neither is established by this
+    # snapshot, so do not infer the language used for image/label facts.
+    if not defaults:
+        raise ValueError('A nonempty native Languages collection requires one default-language record')
+    selected = defaults[0]
+    if selected == 0 or selected not in definitions:
+        raise ValueError('Native default language requires a matching nonzero language definition')
+    return selected
 
 
 @dataclass(frozen=True)

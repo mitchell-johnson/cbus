@@ -73,9 +73,13 @@ LAYOUTS = MappingProxyType({
     'Application': (33, 2, 8, 0, 0), 'SecondApplicationBlocks': (69, 1, 8, 0, 0),
     'PECTargetLux': (27, 1, 8, 0, 0), 'PECMarginLux': (28, 1, 8, 0, 0),
     'IndicatorBlockAssignment': (96, 8, 3, 0, 0),
+    'TimerHighByte': (136, 8, 8, 0, 0), 'TimerLowByte': (144, 8, 8, 0, 0),
+    'PECLevelStore': (99, 1, 1, 3, 0),
+    'StatusReportInterval': (66, 1, 8, 0, 0),
 })
 BITS = frozenset(('DisableIR', 'CorridorLinkActive', 'PECFunctionActive', 'PECFunctionIRActive',
-                  'PIRFunctionIRActive', 'PIRLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic'))
+                  'PIRFunctionIRActive', 'PIRLevelStore', 'PECLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic'))
+POWER_UP = ('disabled', 'enabled', 'resume')
 
 
 def profile_refusal(unit_type, firmware, catalog_number):
@@ -161,7 +165,8 @@ class LightLevelSensor:
 
     def plan(self, current, *, level_group=None, on_off_group=None, on_off_application=None,
              broadcast_group=None, enable_group=None, indicator=None, target_lux=None,
-             margin_percent=None, identity=None):
+             margin_percent=None, broadcast_interval_seconds=None, power_up=None,
+             status_report_interval=None, identity=None):
         """Plan SENLL dialog edits followed by the complete Toolkit save.
 
         Groups are 0..254, or 255 for none. ``on_off_application`` is
@@ -175,6 +180,17 @@ class LightLevelSensor:
             identity = check_profile(*identity)
         original = self.snapshot(current)
         updates = {name: list(values) for name, values in original.items()}
+        # The SENLL Global frame's native integer selector lists 3..255.
+        # Its formatter labels these values in seconds; there is no time-byte
+        # conversion. Values below 3 display as 3, but the initialization
+        # callback's writeback has not been executed in the original GUI.
+        status_interval = original['StatusReportInterval'][0]
+        if status_report_interval is not None:
+            status_interval = _integer(status_report_interval, 'Status report interval', 3, 255)
+        elif status_interval < 3:
+            raise SensorError('Stored StatusReportInterval below 3 has an unverified Global initialization writeback; '
+                              'supply status_report_interval in 3..255 explicitly')
+        updates['StatusReportInterval'][0] = status_interval
         # Dialog state loaded by the Toolkit before any edit.
         applications = original['Application']
         secondary_available = applications[1] != 255
@@ -184,6 +200,29 @@ class LightLevelSensor:
         percent = loaded_margin_percent(original['PECTargetLux'][0], original['PECMarginLux'][0])
         target = min(original['PECTargetLux'][0], MAX_TARGET)
         state = indicator_state(original['IndicatorBlockAssignment'][0])
+        from .pir_sensors import power_up_state
+        loaded_power_up = power_up_state(original['LightLevel'][9], original['PECEnablerGroupLogic'][0],
+                                        original['PECLevelStore'][0])
+        requested_power_up = loaded_power_up
+        if power_up is not None:
+            if power_up not in POWER_UP:
+                raise SensorError('power_up must be disabled, enabled or resume')
+            requested_power_up = POWER_UP.index(power_up)
+        # The inherited multisensor SavePowerFail runs before the SENLL forced
+        # save clears PECEnablerGroupLogic. Preserve that original order, even
+        # when it changes the state subsequently displayed by the dialog.
+        if requested_power_up == 2:
+            updates['PECLevelStore'][0] = 1
+        else:
+            updates['PECLevelStore'][0] = 0
+            updates['LightLevel'][9] = 255 if bool(requested_power_up) != bool(original['PECEnablerGroupLogic'][0]) else 0
+        # InternalCreate sets block 5's TimerMin=10. Both timer/minimum change
+        # handlers clamp the loaded timer, so an unchanged OK also writes 10
+        # for a stored interval below the minimum.
+        interval = max(10, original['TimerHighByte'][BROADCAST_BLOCK] * 256 + original['TimerLowByte'][BROADCAST_BLOCK])
+        if broadcast_interval_seconds is not None:
+            interval = _integer(broadcast_interval_seconds, 'Broadcast interval seconds', 10, 65535)
+        updates['TimerHighByte'][BROADCAST_BLOCK], updates['TimerLowByte'][BROADCAST_BLOCK] = divmod(interval, 256)
         edits = {}
         for label, value in (('level_group', level_group), ('on_off_group', on_off_group),
                              ('broadcast_group', broadcast_group)):
@@ -219,7 +258,13 @@ class LightLevelSensor:
         self.codec.encode_many(changes)
         dialog = {'indicator': state, 'target_lux': target * 10, 'target_clamped': original['PECTargetLux'][0] > MAX_TARGET,
                   'margin_percent': percent, 'on_off_application': 'secondary' if secondary else 'primary',
-                  'secondary_application_available': secondary_available}
+                  'secondary_application_available': secondary_available,
+                  'status_report_interval': status_interval,
+                  'status_report_interval_unit': 'seconds',
+                  'broadcast_interval_seconds': updates['TimerHighByte'][BROADCAST_BLOCK] * 256 + updates['TimerLowByte'][BROADCAST_BLOCK],
+                  'power_up_loaded': POWER_UP[loaded_power_up], 'power_up': POWER_UP[requested_power_up],
+                  'power_up_after_reload': POWER_UP[power_up_state(updates['LightLevel'][9], updates['PECEnablerGroupLogic'][0],
+                                                                updates['PECLevelStore'][0])]}
         return LightLevelPlan(original, changes, dialog, identity)
 
     @staticmethod
@@ -236,6 +281,16 @@ class LightLevelSensor:
             return {i: (applications[1 if second & (1 << i) else 0], state['GroupAddress'][i]) for i in range(8)}
         before, after = keys(original), keys(updates)
         enable = (applications[0], updates['PECEnablerGroup'][0])
+        # TInputBlock.RefreshBlockApplicationFromBlockSecondary detects a
+        # destination block collision, migrates shared key allocations to that
+        # block and clears this block's group. This dialog plan does not yet
+        # model those key-allocation callbacks. Refuse both an implicit retained
+        # group and an explicit same-group selection before changing PP state.
+        index = ON_OFF_BLOCK
+        if (after[index][0] != before[index][0] and after[index][1] != 255
+                and any(i != index and key == after[index] for i, key in after.items())):
+            raise SensorError('The on/off application change reaches a group already used by another block; '
+                              'Toolkit key-block reassignment is not modelled')
         for label, value in edits.items():
             index = BLOCKS[label]
             if value == 255 or after[index] == before[index]:

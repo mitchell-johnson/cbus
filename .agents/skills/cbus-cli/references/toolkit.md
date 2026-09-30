@@ -36,6 +36,19 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
+For ST7 SENLL 2.0.01..2.4.99, `sensors light-level-plan` and
+`cgate unit sensor-light-level` support the dialog groups/indicator/target/margin,
+`--broadcast-interval-seconds 10..65535`, `--power-up disabled|enabled|resume`,
+and `--status-report-interval 3..255` seconds. They apply the complete recovered
+forced save, including a loaded broadcast minimum of 10 and power-up encoding
+before the maintenance polarity reset. Report the selected and reloaded power-up
+states separately. A stored Global interval below 3 requires an explicit valid
+selection; an application toggle colliding with another block is refused because
+native shared-key reassignment is not modelled. Native PP database save/reload
+evidence does not establish physical timing or power-failure behavior. Read
+`toolkit-cli/docs/sensors.md` for identities, source evidence and exclusions.
+
+
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
 `--output NEW.xml` writes a new file exclusively. Captured XML 1.0/1.1,
 ISO-8859-1/15, US-ASCII and Windows-1252 cases have literal original C-Gate
@@ -50,10 +63,13 @@ for images. Report `diagnostics`, orphans and circular joins as project facts,
 not live topology; layout, print and pixel parity are unassessed. See
 `toolkit-cli/docs/topology.md`.
 
-`project document FILE [--output NEW] [--network N]` writes the Toolkit Document
+`project document FILE [--native-xml] [--output NEW] [--network N]` writes the Toolkit Document
 Project HTML (UTF-8 BOM, CRLF) and never overwrites. Treat every `not documented
 (unrecovered)` marker as missing evidence rather than a project fact; byte/visual
-parity and printing are unassessed. See `toolkit-cli/docs/project-documentation.md`.
+parity and printing are unassessed. `--native-xml` explicitly admits a saved
+DBGETXML Installation snapshot; it does not open a live project. Recovered
+DIN/classic output, bridge, DMX, classic-key usage and status projections have
+per-profile bounds in the feature documentation. See `toolkit-cli/docs/project-documentation.md`.
 
 Scanner text is keyboard-wedge input: Toolkit 1.18 recognizes a 28-plus-character
 software configuration code (catalogue in characters 1–16, serial from 17) and
@@ -495,3 +511,35 @@ ambiguous. The admitted unit profiles and read-only missing-Area restriction
 remain; the per-network sort is source-backed but full interactive original
 Toolkit manager enumeration is not yet verified. Use
 `--units`/`--native-xml-units` for an explicitly selected supported subset.
+
+
+Classic DLT project text uses `dlt text show --project-xml FILE --target PATH`,
+`dlt text plan --project-xml FILE --target PATH --edit 'LANGUAGE:VARIANT=TEXT'`,
+and `dlt text apply --project-xml FILE --plan PLAN --output NEW`.
+Unit `dlt labels` variants and `--block-dynamic-updates yes|no` are separate
+PP settings. Database blocking uses the inverse of EnableDynamicLabels;
+the original two-phase physical save sequence is not implemented. Network
+Language records use ID, and ID0's TagValue selects the default language.
+Automatic eDLT parent/scene metadata requires a nonempty explicit Languages
+collection to have unique canonical IDs, exactly one default marker and its
+selected nonzero definition. Ambiguous collections are refused before label
+facts or commands; do not infer native normalization or prior session state.
+Absent/empty collections retain the existing English1 fallback, independently
+of original degenerate-language acceptance. See `toolkit-cli/docs/edlt-parent-metadata.md`.
+Read `toolkit-cli/docs/classic-dlt-label-controls.md` before composing these flows.
+Classic `dlt display show|plan` and database `dlt-labels` also admit indicator
+mode, inversion and clock visibility. Plans bind identity and all named fields
+sharing byte 0x35, preserve unselected bits while staged and refuse stale values.
+The original C-Gate drops unnamed bit7 during database save/reload; staged raw
+verification is not unnamed-bit persistence. Display edits and label edits
+require separate invocations. Read `toolkit-cli/docs/classic-dlt-display.md` for
+source/native evidence and the remaining physical delivery/rendering limits.
+
+Thermostat settings apply one recovered form save, including dependent scalar,
+fan, slave-plant and relay-drive normalization. The result can differ on a later
+explicit save; do not add hidden saves to reach a fixed point. Raw PP values
+and network addressing are preserved where no admitted form rule applies.
+Quick-zone and dialog helpers remain bounded pure-model functions, separate
+from complete GUI lifecycle, preference-dependent conversions and physical
+acceptance. Read `toolkit-cli/docs/thermostat-settings.md` and
+`toolkit-cli/docs/thermostat-templates.md`.

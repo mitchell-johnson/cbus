@@ -1,0 +1,835 @@
+{
+  "format": "cbus-dali-senll-merged-focused-acceptance-v1",
+  "generated_utc": "2026-09-30T08:06:52.586233+00:00",
+  "status": "passed_with_scoped_carry_forward",
+  "source_revision_basis": "abef8e824e580361f715f636f8b6040bde6c13c9",
+  "source_revision_note": "Executed against this merged HEAD plus the exact source bytes below; subsequent documentation commits do not replace these source bindings.",
+  "scope": "Typed DALI CLI/native CDG proxy service, SENLL/PIR, classic DLT display, two staged original documentation readbacks, and final fail-closed eDLT language metadata safety.",
+  "claims": {
+    "full_suite_run": false,
+    "offline_wheel_build_and_install": true,
+    "installed_extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "isolated_python_version": "3.13.14",
+    "source_import_allowed_in_wheel_acceptance": false,
+    "original_cgate_methods_executed": true,
+    "owned_loopback_original_cgate_database_tests": true,
+    "synthetic_pci_real_cmqttd_interop": true,
+    "toolkit_gui_executed": false,
+    "physical_hardware_verified": false,
+    "physical_effect_verified": false,
+    "physical_persistence_verified": false,
+    "real_site_endpoint_used": false,
+    "full_toolkit_feature_parity_verified": false,
+    "degenerate_original_language_gui_normalization_verified": false
+  },
+  "original_dali_proxy_evidence": {
+    "fixture": "research/fixtures/dali-ext-proxy-original-vectors.json",
+    "fixture_sha256": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
+    "original_version": "C-Gate 3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "class_sha256": {
+      "com/clipsal/cgate/cbus/dali/model/DaliGatewayExtParamMap.class": "f94b23ade9dc8d0ab6219ce3096914c62efaa7292b7f3b1d09a612017cecf07d",
+      "com/clipsal/cgate/cbus/dali/model/ext/ExtProxy.class": "006759b6ad57635a0ac09cbd5b4b13b0db5517b63e7d52741d593bf98b505dbe",
+      "gJ.class": "73d7648c7a79fcc1d4743bc0302f0d0c7a0cd07bc63d07c47899d0c430705f22",
+      "gK.class": "c6eb760375c5172ba33782c62ba6ec242d8b20eb46b6d232940838681bb29e8a",
+      "gR.class": "ec7143d080260cd6bc0e4201a18e7355a5a5c29595fa83c18d1ee94f74812264",
+      "gS.class": "9e4b9c08fb8e655211cef0452f29b2ec17ff2f6839115e8a0ec012be3710b843",
+      "gT.class": "78388e81ec780d762285a9579c1413e9c7425c9960ea414523648ba421b23750",
+      "ha.class": "7401f7d9479debe3a2ab36c2e92a7ad4fdda093cb71768da0617ad1daf0edf34",
+      "hc.class": "1059e0f5bbbae74b893322a277fb6e5b6ab14bda4655421728ce1ffa7dd4408a",
+      "hd.class": "b27047b63209bb60b8559aa85b28fa3d854848f0dd2f76916d173b6494fcc509",
+      "he.class": "ae336de0aaba6cdc76fed26fd53e5c35f33d984f15f79345bf7c5afcf194beaf",
+      "hf.class": "ec7d0b516ba635a9cf727549efb0c97c9a16404129c5b5c23bccc3782c79dc80",
+      "hg.class": "ae40c712b62b3fbdf58ba4872327e07ba191e413a4a83e4551b8f518bf436263",
+      "hh.class": "7e336ec825df14381e2ceba67ea8cd9768603d75cb5e579f0672817605bfcc1a",
+      "hi.class": "c1331e2048944a7ec98ef64a30a3b81c43194161cba5aac05f877fa701a05f99",
+      "hj.class": "c3eb3a6fbc1f3209c6765a697b5281de2e7eec95100add9d61b1d2156e082af2",
+      "hk.class": "e73ba6f51d23c52e1d48287299908c7cc2db53533180cce4a032dd42a85c16d9",
+      "hl.class": "01aacc075f7e0896a73c1a365009f3dc031a87167f4366c138eaad6acd8c7e1f",
+      "hm.class": "412ccca3bf8774c9eea1edb9338fdd1ce24b43d151e96ad4f4ec4cba190a574f",
+      "hn.class": "16d8e3f8a2a33beb256bcf2aa3349489372dedd1e35b41677caddbebe59694f9",
+      "ho.class": "62ed98a36506b4872a627527c9270ec8399d56567b552df17fd5cb49d4c1d35c"
+    },
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "javac_sha256": "98359a0227aa21aa777b5e12214a8224df9f193fd46540b6413613e7213883f5",
+    "probe_sha256": "c4ba3b02b9e4956bdd1cffd230d607ab9f6a0bf13c051b33047c080e330d49e5",
+    "research_runner_sha256": "4debbff6aad233bdca00405bc95a04cd2df104b8f809f4028242621fe8fcc732",
+    "cases": [
+      "all_globals_high",
+      "all_globals_low",
+      "all_globals_physical",
+      "all_line_families",
+      "four_family_reserved_bits"
+    ],
+    "typed_global_families": 21,
+    "typed_global_leaf_edit_cases_per_boundary": 133,
+    "service_line_families": 15,
+    "original_line_leaf_edits": 94,
+    "direct_typed_cli_line_proxy_leaf_edit_admission": false,
+    "dirty_chunk_address_basis": "array index; add 256 for gateway extended address",
+    "acceptance_boundaries": {
+      "cmqttd_policy": "serialize whole complete recalled proxy; preserve unmapped/excluded current bytes",
+      "compared_scope": "21 global families, both DALI line mappings, all 15 line families; complete source image only",
+      "gateway_io": false,
+      "original_classes_executed": true,
+      "original_full_proxy_serializer_executed": true,
+      "persistence_verified": false,
+      "physical_effect_verified": false,
+      "toolkit_gui_executed": false
+    }
+  },
+  "history": [
+    {
+      "id": "initial_source",
+      "result": "failed",
+      "reason": "Three public EXT_ONLY typed-proxy cases found a stale CLI guard.",
+      "report": {
+        "retained_path": "/private/tmp/cbus-dali-senll-acceptance-60t0n_j2/source-dali.json",
+        "sha256": "194741090a4de60ba49726307fe3fbf9566c1212f379ada75728e6eaa35911ad"
+      },
+      "junit": {
+        "retained_path": "/private/tmp/cbus-dali-senll-acceptance-60t0n_j2/source-dali.xml",
+        "sha256": "452bb534bb8d3c8cb7d9811244ad2fa49e32f4bf60a9fceca44b3a1902c0559b"
+      },
+      "pytest_exit_code": 1,
+      "collected_tests": 86,
+      "normal_tests": {
+        "passed": 83,
+        "failed": 3,
+        "skipped": 0
+      },
+      "subtests": {
+        "passed": 659,
+        "failed": 0,
+        "skipped": 0
+      },
+      "deselected_tests": [],
+      "git_head": "43ca4b5f7344b18507c30a4791aa80c4d9485e9e",
+      "scope": "Focused DALI/SENLL slice; scripted PCI and closed owned native C-Gate PP only; no full suite, Toolkit GUI or physical network acceptance",
+      "module_path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/dali_commissioning.py",
+      "wheel_sha256": null,
+      "package_imports_under_expected_root": true,
+      "source_import_allowed": true,
+      "cmqttd_sha256": "6a453e9d4d5fd2558f0a35f5dd44b7493cd29d89bfb853b156139c869e062e27",
+      "cmqttd_unchanged_during_run": true,
+      "selected_modules": [
+        "tests/test_dali_commissioning.py",
+        "tests/test_cmqtt_dali_commissioning_interop.py",
+        "tests/test_light_level_sensors.py",
+        "tests/test_cli_sensors.py",
+        "tests/test_pir_sensors.py"
+      ]
+    },
+    {
+      "id": "initial_installed_wheel",
+      "result": "failed",
+      "reason": "Same three stale CLI guard failures plus two missing staged committed Rust documentation fixtures; no source import was substituted.",
+      "report": {
+        "retained_path": "/private/tmp/cbus-dali-senll-acceptance-60t0n_j2/wheel-dali.json",
+        "sha256": "389547b091ae6be037b18f15c20062488a3df1bfcccae14220ef47bd51a75c10"
+      },
+      "junit": {
+        "retained_path": "/private/tmp/cbus-dali-senll-acceptance-60t0n_j2/wheel-dali.xml",
+        "sha256": "982a2907c12754411117f202a5e5e2ec5a342bcac2d48144452e9dabac601fc0"
+      },
+      "pytest_exit_code": 1,
+      "collected_tests": 401,
+      "normal_tests": {
+        "passed": 396,
+        "failed": 5,
+        "skipped": 0
+      },
+      "subtests": {
+        "passed": 754,
+        "failed": 0,
+        "skipped": 0
+      },
+      "deselected_tests": [
+        "snapshot/toolkit-cli/tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction"
+      ],
+      "git_head": "43ca4b5f7344b18507c30a4791aa80c4d9485e9e",
+      "scope": "Focused DALI/SENLL slice; scripted PCI and closed owned native C-Gate PP only; no full suite, Toolkit GUI or physical network acceptance",
+      "module_path": "/private/tmp/cbus-dali-senll-acceptance-60t0n_j2/venv/lib/python3.13/site-packages/cbus_toolkit/dali_commissioning.py",
+      "wheel_sha256": "64c560fcbf47ef215898802df24b078cc906a7b95b639416cfde821bf9693fc0",
+      "package_imports_under_expected_root": true,
+      "source_import_allowed": false,
+      "cmqttd_sha256": "6a453e9d4d5fd2558f0a35f5dd44b7493cd29d89bfb853b156139c869e062e27",
+      "cmqttd_unchanged_during_run": true,
+      "selected_modules": [
+        "tests/test_dali_commissioning.py",
+        "tests/test_cmqtt_dali_commissioning_interop.py",
+        "tests/test_light_level_sensors.py",
+        "tests/test_cli_sensors.py",
+        "tests/test_pir_sensors.py",
+        "tests/test_project_documentation.py",
+        "tests/test_project_documentation_bridge.py",
+        "tests/test_project_documentation_devices.py",
+        "tests/test_project_documentation_native.py",
+        "tests/test_project_documentation_status.py",
+        "tests/test_project_documentation_usage.py",
+        "tests/test_classic_dlt_original.py",
+        "tests/test_cli_dlt_controls.py",
+        "tests/test_dlt_controls.py",
+        "tests/test_dlt_project_cli.py",
+        "tests/test_dlt_project_labels.py",
+        "tests/test_dlt_project_text_native.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_settings_dialog_rules.py",
+        "tests/test_thermostat_settings_native.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_post_load_native.py",
+        "tests/test_edlt_parent_metadata.py"
+      ]
+    },
+    {
+      "id": "merged_source",
+      "result": "failed",
+      "reason": "Production CLI guard fixed; remaining harness errors were reading stdout instead of structured stderr evidence and a 30-second budget expiring after197 of287 healthy proxy chunks.",
+      "report": {
+        "retained_path": "/private/tmp/cbus-dali-final-merged-acceptance-5wqzwh94/source-dali.json",
+        "sha256": "489af1e41cb325d7ab091d4d92b01452699f49f3935693aefc83b60eeae423ee"
+      },
+      "junit": {
+        "retained_path": "/private/tmp/cbus-dali-final-merged-acceptance-5wqzwh94/source-dali.xml",
+        "sha256": "243575e5b6ac025c90a536f0c8ce50971fe9a7a08c7a825b28b9e1cbfd265a78"
+      },
+      "pytest_exit_code": 1,
+      "collected_tests": 88,
+      "normal_tests": {
+        "passed": 86,
+        "failed": 2,
+        "skipped": 0
+      },
+      "subtests": {
+        "passed": 798,
+        "failed": 0,
+        "skipped": 0
+      },
+      "deselected_tests": [],
+      "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+      "scope": "Merged production acceptance: DALI units and all25 real-daemon interactions, SENLL/PIR; installed wheel additionally classic DLT display and two original Doc fixture readbacks. Unchanged broader external acceptance carried over separately",
+      "module_path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/dali_commissioning.py",
+      "wheel_sha256": null,
+      "package_imports_under_expected_root": true,
+      "source_import_allowed": true,
+      "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+      "cmqttd_unchanged_during_run": true,
+      "selected_modules": [
+        "tests/test_dali_commissioning.py",
+        "tests/test_cmqtt_dali_commissioning_interop.py",
+        "tests/test_light_level_sensors.py",
+        "tests/test_cli_sensors.py",
+        "tests/test_pir_sensors.py"
+      ]
+    },
+    {
+      "id": "two_harness_corrections",
+      "result": "passed",
+      "reason": "Structured503 error evidence read from stderr; only all-family command budget raised to90seconds with180second subprocess bound. No production changes or replay.",
+      "report": {
+        "retained_path": "/private/tmp/cbus-dali-final-harness-correction-ayh5ubfb/source-dali.json",
+        "sha256": "3a11a093bc0818085b8e482a3ccc4db51ba822186aabcf4fe3bbe8c81afdcab4"
+      },
+      "junit": {
+        "retained_path": "/private/tmp/cbus-dali-final-harness-correction-ayh5ubfb/source-dali.xml",
+        "sha256": "65b66fce4f74ef6c5beed81f35c20df719ea759f9cf5c6a5b54c2452f1542d30"
+      },
+      "pytest_exit_code": 0,
+      "collected_tests": 2,
+      "normal_tests": {
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0
+      },
+      "subtests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "deselected_tests": [],
+      "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+      "scope": "Two test-harness corrections: structured mutation errors on stderr and bounded90s completion for hundreds of native proxy STORE/readback operations",
+      "module_path": "/Users/mitchell/source/cbus/toolkit-cli/src/cbus_toolkit/dali_commissioning.py",
+      "wheel_sha256": null,
+      "package_imports_under_expected_root": true,
+      "source_import_allowed": true,
+      "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+      "cmqttd_unchanged_during_run": true,
+      "selected_modules": [
+        "tests/test_cmqtt_dali_commissioning_interop.py::test_lost_proxy_store_receipt_recovery_reads_bytes_without_replay",
+        "tests/test_cmqtt_dali_commissioning_interop.py::test_typed_cli_all_global_proxy_families_match_executed_original_final_memory"
+      ]
+    }
+  ],
+  "source_accounting": "The merged source run was86passed/2failed plus798subtests; its two failing harness cases then passed individually. This is not labelled a single88-test green run.",
+  "green_installed_wheel_acceptance": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/wheel-dali.json",
+      "sha256": "c0078c988b0a0dde5ff6e39815dccd0b7c1f47f06a5f9b926442a05d0a9d2b20"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/wheel-dali.xml",
+      "sha256": "6a0a20306ae9c69ca34c2407dcb496c67d27f16ff259346e478940ac0e73d05b"
+    },
+    "pytest_exit_code": 0,
+    "collected_tests": 150,
+    "normal_tests": {
+      "passed": 150,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 861,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deselected_tests": [],
+    "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+    "scope": "Merged production acceptance: DALI units and all25 real-daemon interactions, SENLL/PIR; installed wheel additionally classic DLT display and two original Doc fixture readbacks. Unchanged broader external acceptance carried over separately",
+    "module_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/venv/lib/python3.13/site-packages/cbus_toolkit/dali_commissioning.py",
+    "wheel_sha256": "110fa9883652d0679eb8ec99bd8e5baa0c5c28e65e27c3632410fbbdeb4204f6",
+    "package_imports_under_expected_root": true,
+    "source_import_allowed": false,
+    "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+    "cmqttd_unchanged_during_run": true,
+    "selected_modules": [
+      "tests/test_dali_commissioning.py",
+      "tests/test_cmqtt_dali_commissioning_interop.py",
+      "tests/test_light_level_sensors.py",
+      "tests/test_cli_sensors.py",
+      "tests/test_pir_sensors.py",
+      "tests/test_dlt_display.py",
+      "tests/test_cli_dlt_display.py",
+      "tests/test_dlt_display_native.py",
+      "tests/test_classic_dlt_display_original.py",
+      "tests/test_classic_dlt_delivery_original.py",
+      "tests/test_cli_dlt_controls.py",
+      "tests/test_dlt_project_cli.py",
+      "tests/test_project_documentation_native.py::test_original_native_network_readback_fixture_projects_nested_interface",
+      "tests/test_project_documentation_native.py::test_original_native_roundtrip_preserves_distinct_level_addresses_and_values"
+    ]
+  },
+  "green_installed_wheel_context_guards": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/wheel-guards.json",
+      "sha256": "9c7267f757d3ac4eaf5530629affa86b6d4a9a59a0441fa40e523804812a8bb9"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/wheel-guards.xml",
+      "sha256": "a084aa13d1ae8dd93eaa731882084de2cba0d6d5370770c88fb602c0da79dbf9"
+    },
+    "pytest_exit_code": 0,
+    "collected_tests": 3,
+    "normal_tests": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deselected_tests": [],
+    "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+    "scope": "Three installed-wheel context guards for current packaged parity evidence, artifact verification and honest refusal to claim full parity or recompute source fingerprints",
+    "module_path": "/private/tmp/cbus-dali-final-wheel-acceptance-g6edf657/venv/lib/python3.13/site-packages/cbus_toolkit/dali_commissioning.py",
+    "wheel_sha256": "110fa9883652d0679eb8ec99bd8e5baa0c5c28e65e27c3632410fbbdeb4204f6",
+    "package_imports_under_expected_root": true,
+    "source_import_allowed": false,
+    "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+    "cmqttd_unchanged_during_run": true,
+    "selected_modules": [
+      "tests/test_parity_register.py::ParityRegisterTests::test_installed_wheel_refuses_to_recompute_fingerprints",
+      "tests/test_parity_register.py::ParityRegisterTests::test_packaged_closure_receipt_closes_only_verified_items",
+      "tests/test_coverage_require_complete.py::CoverageRequireCompleteTests::test_evidence_root_verifies_artifacts_without_claiming_full_parity"
+    ]
+  },
+  "final_metadata_source_acceptance": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-edlt-language-source-20260930-84tdy22k/source.json",
+      "sha256": "cb1eba3eae4a341d922d6d5a9e2684555ba08eea1802c56cc2d7572f5ed1d9d9"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-edlt-language-source-20260930-84tdy22k/source.xml",
+      "sha256": "537e6994955ae61c48fb7022b70475cf27889bae4af629b040a197b43e4ac8ed"
+    },
+    "pytest_exit_code": 0,
+    "collected_tests": 133,
+    "normal_tests": {
+      "passed": 132,
+      "failed": 0,
+      "skipped": 1
+    },
+    "subtests": {
+      "passed": 137,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deselected_tests": [
+      "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+      "tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+      "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+      "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction"
+    ],
+    "selected_modules": [
+      "test_edlt_parent_metadata.py",
+      "test_cli_edlt_parent_metadata.py",
+      "test_edlt_parent_auto_cache.py",
+      "test_edlt_parent_scene_metadata.py",
+      "test_edlt_scene_metadata.py",
+      "test_cli_edlt_scene_metadata.py",
+      "test_edlt_parent_panels.py",
+      "test_edlt_parent_mra.py",
+      "test_edlt_parent_scene_manager.py",
+      "test_edlt_add_dialog.py",
+      "test_edlt_add_dialog_native.py",
+      "test_edlt_dltp_index.py",
+      "test_edlt_display_model.py"
+    ],
+    "skip_records": [
+      {
+        "classname": "tests.test_edlt_dltp_index.DltpIndexTests",
+        "name": "test_ambiguous_case_variants_fail_closed_on_case_sensitive_storage",
+        "reason": "Temporary storage is case-insensitive"
+      }
+    ],
+    "owned_native_tests": [
+      {
+        "classname": "tests.test_edlt_add_dialog_native.NativeAddDialogTests",
+        "name": "test_add_bind_save_reload_preserves_existing_metadata_and_pp",
+        "passed": true
+      },
+      {
+        "classname": "tests.test_edlt_parent_mra.NativeMRAParentTransactionTests",
+        "name": "test_native_database_one_save_close_load_preserves_mra_parent_edit",
+        "passed": true
+      }
+    ],
+    "language_policy": "Absent/empty Languages fallback1 is preserved existing behavior, not new original acceptance. Nonempty collection requires exactly oneID0 marker, unique canonical definitions and selected matching nonzeroID. Degenerate shapes refuse before deriving label/image facts; no original normalization guessed.",
+    "original_gui_executed": false
+  },
+  "final_metadata_installed_wheel_acceptance": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/wheel-metadata.json",
+      "sha256": "f176dc2e77d39df928a91caece56518901b36d80ca91b08b76d55c6cdce07781"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/wheel-metadata.xml",
+      "sha256": "abb05a35d156d1ee40a0af7cfc1d054e8faa70e176c4fc3c428814aed97f33a6"
+    },
+    "pytest_exit_code": 0,
+    "collected_tests": 72,
+    "normal_tests": {
+      "passed": 72,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deselected_tests": [
+      "snapshot/toolkit-cli/tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+      "snapshot/toolkit-cli/tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+      "snapshot/toolkit-cli/tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+      "snapshot/toolkit-cli/tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction"
+    ],
+    "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+    "scope": "Six installed-wheel eDLT metadata and scene consumers after fail-closed language-definition validation; previous150-case DALI/sensor/DLT wheel acceptance carried forward only by exact unchanged package bytes",
+    "module_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/venv/lib/python3.13/site-packages/cbus_toolkit/edlt_parent_metadata.py",
+    "wheel_sha256": "d6510a39c3f9af050b6384982eb7d2b9a4093f34e59f5f15fdd4c14f8cce89ec",
+    "package_imports_under_expected_root": true,
+    "source_import_allowed": false,
+    "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+    "cmqttd_unchanged_during_run": true,
+    "selected_modules": [
+      "tests/test_edlt_parent_metadata.py",
+      "tests/test_cli_edlt_parent_metadata.py",
+      "tests/test_edlt_parent_auto_cache.py",
+      "tests/test_edlt_parent_scene_metadata.py",
+      "tests/test_edlt_scene_metadata.py",
+      "tests/test_cli_edlt_scene_metadata.py"
+    ]
+  },
+  "final_installed_wheel_context_guards": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/wheel-guards.json",
+      "sha256": "7579217a56f496c9cb63d199b24fb7d195cc483294865238d572d28d5014b38a"
+    },
+    "junit": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/wheel-guards.xml",
+      "sha256": "1d1c93f7c87985fdd09a897a6efcefd7338fc82ebcbb09ddc4da36ca06146c5c"
+    },
+    "pytest_exit_code": 0,
+    "collected_tests": 3,
+    "normal_tests": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "subtests": {
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deselected_tests": [],
+    "git_head": "abef8e824e580361f715f636f8b6040bde6c13c9",
+    "scope": "Three installed-wheel context guards for current packaged parity evidence, artifact verification and honest refusal to claim full parity or recompute source fingerprints",
+    "module_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/venv/lib/python3.13/site-packages/cbus_toolkit/dali_commissioning.py",
+    "wheel_sha256": "d6510a39c3f9af050b6384982eb7d2b9a4093f34e59f5f15fdd4c14f8cce89ec",
+    "package_imports_under_expected_root": true,
+    "source_import_allowed": false,
+    "cmqttd_sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb",
+    "cmqttd_unchanged_during_run": true,
+    "selected_modules": [
+      "tests/test_parity_register.py::ParityRegisterTests::test_installed_wheel_refuses_to_recompute_fingerprints",
+      "tests/test_parity_register.py::ParityRegisterTests::test_packaged_closure_receipt_closes_only_verified_items",
+      "tests/test_coverage_require_complete.py::CoverageRequireCompleteTests::test_evidence_root_verifies_artifacts_without_claiming_full_parity"
+    ]
+  },
+  "final_artifact": {
+    "wheel": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "d6510a39c3f9af050b6384982eb7d2b9a4093f34e59f5f15fdd4c14f8cce89ec"
+    },
+    "cmqttd": {
+      "retained_path": "/private/tmp/cbus-rust-focused-20260930/debug/cmqttd",
+      "sha256": "26074e48a65a4a4e3ea487c290bc60e34d9d21142a44593653cf6baf568b66fb"
+    },
+    "module_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/venv/lib/python3.13/site-packages/cbus_toolkit/edlt_parent_metadata.py",
+    "snapshot_inputs": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/snapshot-inputs.json",
+      "sha256": "aba8dcba65eb780fc40d1ddb719e1f26e149ec558f01f8e5cf7f1c4b340849dd"
+    },
+    "wheel_reference_guard_staging": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/guard-staging.json",
+      "sha256": "5a15878c1100014206487a603341a103bb37f01471e4cf8a0447665f6bdbf55a"
+    }
+  },
+  "carry_forward": {
+    "report": {
+      "retained_path": "/private/tmp/cbus-final-metadata-wheel-acceptance-7ay5xhke/carry-forward-code-comparison.json",
+      "sha256": "02be18148f6e2c1f781c581c938b54a32b95349c9befba3b537d8b7aefccb03a"
+    },
+    "previous_green_wheel_sha256": "110fa9883652d0679eb8ec99bd8e5baa0c5c28e65e27c3632410fbbdeb4204f6",
+    "final_wheel_sha256": "d6510a39c3f9af050b6384982eb7d2b9a4093f34e59f5f15fdd4c14f8cce89ec",
+    "changed_package_files": [
+      "edlt_parent_metadata.py"
+    ],
+    "changed_file_hashes": {
+      "edlt_parent_metadata.py": {
+        "previous_sha256": "1a6a4737f38f508769a45af1ada42c7113aa824e848103fa6be98f2075733695",
+        "final_sha256": "254880daaa34fa00e51a0eb8c60e951722da6514d0223fcb0ac3f4b141dbfbd7"
+      }
+    },
+    "unchanged_package_files": 266,
+    "all_other_python_and_json_package_bytes_identical": true,
+    "rust_dali_sources_identical": true,
+    "cmqttd_binary_identical": true,
+    "previous150_case_scope_repeated_after_metadata_only_change": false,
+    "metadata_helper_acceptance_replaced_by_new_source_and_installed_wheel_runs": true,
+    "packaged_context_guards_repeated_on_final_wheel": true,
+    "interpretation": "Carry forward the green150-case DALI/sensor/display acceptance for identical package bytes; final metadata safety has its own fresh acceptance. Prior red runs remain red history."
+  },
+  "verified_final_package_sha256": {
+    "__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "_toolkit_update_registry_conditions.py": "50d35a214de2bb0a3660acb05fb2d032b13356179c72bab29e14a811ef1b28ff",
+    "_windows_condition_registry_worker.py": "4df70deaa78d746306a406ec018733041fd12e7a3141d143f16420e359942fe2",
+    "_windows_process_token.py": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae",
+    "addressing.py": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926",
+    "applications.py": "3471b6ecad4b31ead84e5370a709a68962f930340383eb9aff8333bc61c9bd13",
+    "barcode_cli.py": "c9a62b804d350f8fea503f8c3f8e549e466aa29a5b11c9785891bb72c771bf82",
+    "barcode_scanner.py": "f0a80fd0f2deb68f38af31a22807eeb652ac9b6ad4398ddd44eca4511c70d250",
+    "calculator.py": "41507b751d0e6f341d2116b2c8e787e88abc24456837553060071f72ddfa2ec5",
+    "capabilities.json": "ebf91e8c931d77576ffea21e86ae35dc465e9244ccab1576563252ef1c384c71",
+    "cgate-contract-inventory.json": "34876e6a2a20998444f28db0a9314829e64280053bfefdce44c8a26e59bdce20",
+    "cgate.py": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+    "cgl.py": "52e2f1fc09303c148221ff255eee673d7d3bf3b163e238af7076f2c1f79035fd",
+    "cgl_differential.py": "4c3e2905d8483b5a37128855c0f74539b0fdd367ad3e1743f2d900b20f4c4067",
+    "classic_replacement.py": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62",
+    "cli.py": "4557eeba0294b373d13d3ecab27470192084ed664e2fddfcd4cdb295ed495f67",
+    "clocks.py": "26f4418494e603684f57ca0fd136191ad614bce81638ad7bfa1f7cc881eaf151",
+    "cmqtt.py": "5a5ea0efae8e027e063b70d9dc613d1bbba355944220bcf7e01bfb73d7b589bb",
+    "cni_discovery.py": "eca9df92c0c01d53f9a639344dcb9d02d57aa9d57f62226c7ab3e0fc225cbc88",
+    "commissioning_lease.py": "9cee9a5f401914bcdc1c8c8aa7978f8ded917fc3342a03743149535e3476c95b",
+    "commissioning_route.py": "2a632b78b2a3c16d924e5aaef4c6dc0de5131d751ed41142af245b851dfb8f3b",
+    "conversion.py": "824ef5e6d9c3c076ead6efed7dbbf715ed131c3eb8ef9fe65f24fea612113d2c",
+    "conversion_guard.py": "cda6eb34b301165f9d43b4881a56b90d47994562dd80dbb5cc95c42bb8c1c71b",
+    "conversion_mapping.py": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09",
+    "dali_commissioning.py": "d67be9c3d7471d48d0c8ea8ebf29cbcd682cce553804ba1ba0b23a2afd589e95",
+    "dali_commissioning_cli.py": "e567b41f7d87f55a0d7672daeaef83b9f8276cf91a06aecb1411d5de0fd9f89c",
+    "dali_extended_proxy.py": "f0798690855f0acffaccf1d6cede59e80302ce72d8b1d9cdec5e0404a4bc4678",
+    "device_dialogs.py": "e8080bf0f9ff2852d66724e8703ed5131d69085dc2a9e93d7c9e9f54eaf48c4e",
+    "device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+    "dfu.py": "09f425f84f818ee3b1d89cc524cacd9d77265d1aebdb314adc64f3ff712462c8",
+    "dfu_simulator.py": "3c2c0c0a695f0a8052032ffefe0819c2d0d412f54437fd429b93e56bbd9d35c6",
+    "dfu_transport.py": "3fabc25cb866ee44a78b3e0e6eaee814c1c13bcca78b7cde24ba8245990ca081",
+    "differential.py": "3f4c529e99195e58ffcb90ad46e1c2e8654514a09d11f6183c2d2e35d35cb39b",
+    "din_output_settings.py": "55025c2b874a855cf552a915e7c78ef2b6d7fe82a9c0b9af4bd361453d20fc4c",
+    "dlt_cli.py": "5486d432da596d1dec71729b174429c32a5d8409d96cbd4c41803bfb920c7dba",
+    "dlt_controls.py": "7c099a5593cd2049276703d757b5563eab843489f1858c6291eaa1b5d4a51c2d",
+    "dlt_display.py": "b96157e25b1d0503f2358bfd761f7ba7523d513467efabca710d83ad946d4c74",
+    "dlt_labels.py": "3cd9b13b62f955984511bb2f94195a210242bfee56abe5f49e292b7038adb004",
+    "dlt_profiles.py": "fa91d46f25b6fda3fb536aa9c2cce220beb053f03ad1cfb079a5adb51102312d",
+    "dlt_project_cli.py": "3ccd372c3b2ab24f49eb1d09a38233134f87be6a2812ee2cfd13db332dbce9e8",
+    "dlt_project_labels.py": "28b6d2fb8f818bb4bb5b05eebf3140251e2505794d7e5e2816fa2bce582da919",
+    "duplicate_resolution.py": "00e40abbee576b35ce517fdd19b10955749b8ba7f320061470a71e016392f814",
+    "edlt.py": "29ba3d3dfc713143e6c469ba52bbd38de2921d9d4b3a71868f741e53a6c5b3e4",
+    "edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+    "edlt_add_dialog.py": "31ab2a152bf9510eb066f980902f51fb19ecad166d7ae456c9266725b9e8922c",
+    "edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+    "edlt_applications.py": "5c06e2a0ec30ef42c17cd4d13924db5eeb1634830b5ab5bd7556f34ba64ce881",
+    "edlt_blank.py": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f",
+    "edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+    "edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+    "edlt_corridor.py": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9",
+    "edlt_display.py": "4903078af7c5dfb59baafa68177cb49e3d4a7bdea60a41db4de082f70d1e1087",
+    "edlt_display_model.py": "4a56bb503c5c82391021a8a14dcf516825243c05a5ea0b4ab9027596f91641d2",
+    "edlt_dltp_index.py": "b569af2fb13a01c61d5bf60772a592b36b7e452d66c0c7d2514d3aa724109036",
+    "edlt_enable.py": "95e1360da4f43b051c4f23d66cb956d37e28c3e2457e373eef2e533902de25c0",
+    "edlt_factory_default.py": "d75faf780589599fe91b61592f614d69eae168d0baede7c8252075c2435a0073",
+    "edlt_fan.py": "bf0f1b6cbf89527af2fb378e81d937dafcfe68f68ee1f7fc8a8fac8b32924aec",
+    "edlt_first_open.py": "02709d77c7b3a851288a9ddd753e0da8645c024657a515e903a8761539f63119",
+    "edlt_general.py": "6ce6abeaa55dfe36401645a8c432eb40490d350adcf1e46e5ce005b0430e0420",
+    "edlt_global_cli.py": "117404572f9537b48ef2a6793a0d1db17b0edc58c0da37266641d87612174eb6",
+    "edlt_global_preparation.py": "efcdc8957e06c6f6bdfac5c3480d68731ddfa8e4f5b51e3d3499f08fe23344e4",
+    "edlt_global_programming.py": "efb8a685360722b140d519356ea5aeadfddc3947047b1f664919efd1ba980043",
+    "edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+    "edlt_label_audit.py": "9c449c57768a14e9ff6cab272da2c7063ded68f28b6e84b2d1dfdf2cbf06d252",
+    "edlt_label_clear.py": "875fa93eb6add9ea65e679ecca62d1f6a59e70cf1eac2d0231393e79e759ad36",
+    "edlt_lifecycle.py": "ab5f8d1c3b1c12d1223ebc3e53b263aa0ebd5f3a626bb16f09c095f3ffeda0fc",
+    "edlt_measurement.py": "f2bf45c3328deb883f79f4047e462b9aef2a4f2fa624c31f16b2b6310d020f53",
+    "edlt_mra.py": "700371d34cb362773df8829cbf73097ec939038022ff9236048be8e68fa6ea04",
+    "edlt_multilevel.py": "1481fdf1546347e51b76c3d08ab54eab429bdffa3e368698744a71a45309fa82",
+    "edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+    "edlt_page_control.py": "0321a5cc12a0894bdae1668d38f2bd932b2fc5e810b2ea58c3d05dd7f3e026ee",
+    "edlt_parent_form.py": "0428d405ae903204f90ba4d50874b39d1200dce566855a5876e9b249de22f20c",
+    "edlt_parent_metadata.py": "254880daaa34fa00e51a0eb8c60e951722da6514d0223fcb0ac3f4b141dbfbd7",
+    "edlt_parent_transaction.py": "38c3b9f8c39a158df74bf6ba963c5745b0a4ee24ab6cab5c662cfee3d313deff",
+    "edlt_parent_transaction_cli.py": "c35f107a769b8a71819ec3f16b32f47018de9b82671c6edb0efac47bbef59253",
+    "edlt_percentage.py": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9",
+    "edlt_project_labels.py": "da9f1b3d962323cf859167541256fac47e0a0c64548feab08030aa1d54d2ab13",
+    "edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+    "edlt_reset.py": "9867423a87ae4e4d5390287b1d086df48ad59e1eada8370c78d9311ab9a49605",
+    "edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+    "edlt_restore_levels.py": "2ae1cba7de13161959ee4c1cf76db29a9dbd2897a1f425c300d595739b18aa9b",
+    "edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+    "edlt_scene.py": "abf70fce4416aed9fba9d0d734b0d9ba9c563382d38e1a2b1ba3d520bf52b7b3",
+    "edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+    "edlt_scene_live_cli.py": "9e231455c8c00d470a7e5e769866374ceb0395afbf65ed259feae4b34e5abcca",
+    "edlt_scene_manager.py": "7a9bb813130f8cfd1ecb55de8439eedebb3c1155dd46b9d50b0ef8efa8a557cb",
+    "edlt_scene_manager_cli.py": "122e2c78a93177f43de497b7c3f3d5bc6f57b35e656d77d0627a7c0228e9d293",
+    "edlt_scene_metadata.py": "4d60b491229110dd2c6be868986ddf4cba2e766e214c2b7866a15dea33e5f43b",
+    "edlt_scene_trigger.py": "59cdac1d8ea97f9daf6726ecadc3afd91570594759395e5424b9cbbe62c51fd2",
+    "edlt_scenes.py": "c1255531d8417e1ad85050a1d19578b6bbeeac963ce7145d2d7b96a12edaca68",
+    "edlt_shutter.py": "3e26601332080d17a6d4638f7337405906138be54788ee81ab06f63ea64e92c9",
+    "edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+    "edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+    "edlt_timer.py": "33172d6acea2456fa499020bfbe160ebdba05d6088361fc5535adab65a64ee89",
+    "edlt_widget_groups.py": "4dd7c0b581d6d9590b47ff4d7fc6a735604ee801722438fc9119f561636d97c1",
+    "enable.py": "0d6fcca3354179a72e26e777dea35b70e34896057cf7bfcbe88441e0e9aa4b99",
+    "event_stream.py": "6ca9bbe8557180042d196b34d0f33a96ba4ccd6e5d8d988834358f42b5a5916e",
+    "events.py": "45d28ebac2215475e6fe4dc70a2be744b5992a67a9f27a3388f083874172626e",
+    "evidence_audit.py": "4c64c91b6622696b1dc4276947d5181852e51e5d1da9f4001c8c5461f4b05bfe",
+    "extended_macros.py": "1b95067d373321de9889c431144056b074fc2707cda7233947e506ef2f92bd7b",
+    "firmware_diagnostics.py": "565148944ce1908596716767c51225a798841a39f9ab1ade8dd792d802f2406d",
+    "firmware_update_plan.py": "c9e9a9713e7c080152de3365549b6350f8e4bd46d74a14eed7dc93f915f2cc08",
+    "firmware_update_run.py": "b752306bc8968ce17ca7ebabca5189d18e76a030d1d747de10af4abbafb0355b",
+    "firmware_usb.py": "1c82e6847b425aaf5b7854a71be91e894e43ed04764307c0e3b0c29e7d675a5a",
+    "form_save_order.py": "797c40d5ed446fdb93fa81eaad44daa05068f95b8ee413fbb3f4f24b30fe88fe",
+    "input_power_up.py": "795b27c9d9a59bf04024049c38348fc76b14de7ee641803a2fbc2969ddf59791",
+    "inventory.py": "5bdc91682cd5cd66d9ccff0bd7e93b80cec556f52190f1f7693bc5d122cea1f6",
+    "iope_cli.py": "e5b900f7920c5b2821b5c4f917aa12ff6d4f9a5a429311fc93bd6a783786983d",
+    "iope_settings.py": "c9b03046c3a19ade6b1d31f2e146fcf62526ad7d2bf4957d9cd2bf2d2e15230b",
+    "key_options_cli.py": "cdddcb13945c8a5e0f55b23af0c25b52b3c261ba04fac51fcaa1963d6bd8671c",
+    "label_transfer_plan.py": "4fbc90f02aa7ee5de26444ec029d1693d95bd0c7644ddea1a94edef5d6643ec2",
+    "labels.py": "b24f212d60652ca258347d06128c4744718db01099bb0a5bb3496f47ca7e14ec",
+    "light_level_sensors.py": "d6d33ebd0d91161022e162ceed2acc956afdc67bc359d402cb880981a3d07319",
+    "lighting_state.py": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff",
+    "macros.py": "9db99b787d510d3c3d6902e69a1a4eb03ff320564bf605970c2e0844cd57cc53",
+    "memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+    "native.py": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+    "native_global_programming.py": "c8ef81bcf7f33567196ce5036be33414051f5526c271f5a333c7e18f491af9e2",
+    "native_thermostat_schedule.py": "c1cefaa53d0012dae24967e6288305fc33fed7ee12bb74ff5a22e5b8d0b86186",
+    "native_thermostat_scheduling.py": "a0eebf9a06f7eb95264bddc78ebce9e3c92f84c11771202cbc8a46a16b7409d2",
+    "neo_indicators.py": "b214db9f2b83a9834136136e03e9a9ddc6802da2b56f2312ca99a9569b726ca0",
+    "networks.py": "4c80c54931ea7f233a2fb8451580e9afbe0d68066fb63c1e542daaf8d20f7cc8",
+    "offline_conversion.py": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd",
+    "parity-evidence.json": "a28cd2706752ab6eecaab8213d04aab30aa26bd99aa43f0d0624d3b287ad8fa6",
+    "parity-obligations.json": "e18df2b5b6bb9fb534e9cb64aa3d0accfef1e3330d83e09c98078d9ae48f1ea4",
+    "parity.py": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2",
+    "pci.py": "fc7e0176c23e99125ca5bd611089cfe7e4152dd6c10f378dd263e27849c7a0a4",
+    "pci_full_inventory.py": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615",
+    "pci_inventory.py": "bf0a9f17a55b5c7bf4110abc7a030d899595375741a47dc78028182634f0c504",
+    "pci_local_options.py": "a0d8dcc948cc9b5bd8392e899ce369203b1d2e58aa018649c6e745303b15423d",
+    "pci_routed_identify.py": "bd4e45f7a8f6a6e6774be8355d504c22c321c4e59cc83e64786896367891c706",
+    "pci_routed_identify_cli.py": "e55639c4fe1a01470d256baeba0ca9c9e9ae5d8e97e071e722efa345c433838f",
+    "pci_routed_read_topology.py": "acc7e54d4cd76efa3999fc742c5a8b590e1b83183d0b9cdcbaf32eef4d33d448",
+    "pci_routed_recall.py": "e3e90d732dfe586399a4f5837639918c6bcd92e03dbf3961848b1b81b6776c67",
+    "pci_routed_recall_cli.py": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556",
+    "pci_routed_write.py": "a0806121f943b63ccf8797717dacdf522ebaa1d68825873e7e24c60a05769ecc",
+    "pci_routed_write_cli.py": "d82cf122ef2f59fce00fa51be1c3b9ca50bfaa5577ef114e1d60522aba02430f",
+    "pci_routing.py": "1eda04dd3201db4db8937f3d81e4dfc51b94a04ab3b66c5bd8e8302cdceee639",
+    "pci_routing_cli.py": "c1805f5c99ade56614b1ab406dc103c7f34037c574ca4613ebd77fd780952762",
+    "pci_selected_serial.py": "bddad8eba6144df48908e36cd94199a3a9b5a1263efd86808379ba173ff1ac17",
+    "pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+    "pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+    "pci_serial_probe.py": "bf91e199f155f0f955ebe5e59293130c00081014d0cf52e9069aa64514b0ec84",
+    "pci_serials.py": "1ded73cb747c9a85ca0340dc05f92a6506cfd9f5272ccba8b16dafad449fd066",
+    "physical_addressing.py": "2ee599d69602b45c1cce94b473ce3230d186c1ed67fa0291bf60346bc472d867",
+    "physical_pp_journal.py": "b3440866747a0bc9b3f7b7ccd1ec3fe1cf1186f7de172bfa3e5ba2c5fbc2b0d8",
+    "physical_programming.py": "872a76e70e797acbd80cef582414351acc98cb60cf7b6c9e539c83e598752889",
+    "physical_programming_cli.py": "20bb34a03316201a09dc1e01490d9e80c81857b830e79ec44df3f19c976bc909",
+    "pir_sensors.py": "f4c7723f055daedd4a9363a4c95eba88f4b24286307af18d7103463003ea7adf",
+    "pp_editor.py": "dcf5993d9096f58d17f9ba06d73debc82fdf249975284bb572e3b6739f93b785",
+    "programming.py": "d55effc91e0e8c0530a6886b717ba3ebf81827dbf814d608855100cce7c4a7bc",
+    "project.py": "631140325f242dfb3b61a7cd2c6489af5025d4d891b6f774142ed22f0227fbe5",
+    "project_documentation.py": "fb460bc8cca1f3e723422073c0a61ec4db7a6be8ba338b9bc8eb225f7b181636",
+    "project_documentation_devices.py": "03b7918bd67a17316cb252ac80ef5df032c369218cc44bc951bfd72ba0f24e11",
+    "project_documentation_native.py": "c872b42f4641d4f0038138ba5c9c6f0991333174dea43c61958d98bbdd159827",
+    "project_documentation_status.py": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
+    "project_documentation_usage.py": "a01ca64efc90ea8585e5d8174d7c9bae8c463377f24174ebd01fe4dac8f1ae51",
+    "project_legacy_transform.py": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
+    "project_legacy_transform_cli.py": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e",
+    "project_repair.py": "6ad258ba051f3e9fdeee6909168153e2b01f6293fe19f5bb794ce08e40fd0d66",
+    "project_repair_cli.py": "3e7a323c0eb9c0b0b5264665ab13f4a79245f056466f887f78da328ccd2ab31c",
+    "project_topology.py": "7d4de0c3ee8817e39984fdada3ef4a1e43acef23ba7b4df94f14450258b106af",
+    "recovery_journal.py": "53f4697752dfd6cc833ee1f88bf4629a5da60a73bd435d9f38097f16746b77ef",
+    "repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2",
+    "repositories_cli.py": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16",
+    "scan_topology.py": "90fba7664b4c7c4eb1a065c06828e0e5d4971516da9fc975032e141c03ed763f",
+    "scene_binding_plan.py": "56f62256c5129f01f0d002a70d57b0411969965e1af8dcf1b3437ec578f2a3f7",
+    "scene_sequence.py": "67d05a7cc000ccd607043ed309f94869c86916413c408222f962ba09cec41d38",
+    "scenes.py": "a36f757c1da8d6c769a0b53068c96de062f1e3978e64006df0b947c354268a18",
+    "sensor_dialog_cli.py": "9878126b8672cd223a4ddbff7a9be7b96bd7e39a098e05a9371d23b157292c29",
+    "sensor_threshold_guard.py": "f62ded16f1c29b8cc4e8ab2818cb9b450e468bf3cabc7d5ec7f4a9f086d9bfec",
+    "sensors.py": "ba724a261ac491a01a5d4be50b2a2bed98137900faea72ca0957f5e45020d977",
+    "serial_commissioning.py": "733b44d4d8d3e6171b57b17dc12747e213b342d0f24e876731d0657d40b2c29b",
+    "serial_population.py": "634f115d785455447b2f7e9d85bdea7ae0b1025eab30daae3c686ef6a4e57da7",
+    "serial_reconcile.py": "b61280c050707465b3266b4908247847644a88d6c6cf15f8ed4b848e1eda21cc",
+    "serials.py": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc",
+    "simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
+    "simulator_addressing.py": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a",
+    "simulator_applications.py": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b",
+    "simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+    "simulator_duplicates.py": "d7ecaa6c24cffa0ea4027c15ce7702678c16240a532000f58e80b727d15b8856",
+    "simulator_edlt_labels.py": "d500c59ace847b787d6c6203b381336ae724ee4c52ebec0033ffff57d2a9bf7e",
+    "simulator_enable.py": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da",
+    "simulator_labels.py": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c",
+    "simulator_serial_addressing.py": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f",
+    "template_exchange.py": "bad0ad76c22577118bdbab9a5511412c65f141448af065146537d4983fe5fac1",
+    "template_transaction.py": "7c8f41500660a9d4c815dc5e880ac05936c8ecff35e1bc5afe50509b59f628fe",
+    "thermostat_post_load.py": "40935d1a09a01992d40c3d21165691588954bac552ea603309c221acdd3ea302",
+    "thermostat_schedule_cli.py": "3523a5bd4c4a90bc5d6a62e08251dbfbb42a9213fecca33bdf68ca18e5e03332",
+    "thermostat_schedule_levels.py": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8",
+    "thermostat_scheduling.py": "68ada0ab5d8f279b3c1d83db3e5e1bcebfd6634cda006062d515801af0c5413e",
+    "thermostat_scheduling_cli.py": "39754993520a2df13d58165cb475c7fa32095bd017a518300657b77efd83d4aa",
+    "thermostat_settings.py": "d79cd7ed1c4bfa37973d42d841db483be2078b1d7a08faf1159e90e473b8ca40",
+    "thermostat_settings_guard.py": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829",
+    "thermostat_temperature.py": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae",
+    "thermostat_temperature_cli.py": "6b9142fa8e22fd3bfab7ea2ef7f9d6ce3d8e51c2412ff51c6e5ddae7c6528a0b",
+    "thermostat_templates.py": "fb87bb5d7eb46bc0ab5dbc7ff5bfbc724917105aa98e87ac3cbe1f70be792ab9",
+    "thermostat_templates_cli.py": "b11c522375bef6194e3f0e0639402ad220daa6926ed27c45cf8468af9084ab70",
+    "thermostat_unit_load.py": "a8ded5ac86b72f366abd302aaa72504eea7cc1cc0d2522b5409c0fa887a7e677",
+    "timer_duration_guard.py": "01101ae9a1b053b287113b42c68cd326da11e21fa1efc2b1ce9b46dfd117e2d0",
+    "toolkit_about.py": "6fe91432a5f58dcbb9a534f9684d0f2cda50d97d2b97db82098c8dd4e367b4d0",
+    "toolkit_about_cli.py": "e95d8c76471f5fcd82d75ebc0beb9e3760ba6a58533314aac48ceaabad1fde6d",
+    "toolkit_conversion_tweakers.py": "fa1d7b820edbc324115e748e17aab4ad9029a29a1ffb42d8f7807ed83d12663a",
+    "toolkit_database_csv.py": "c3bd9e57f6312f6972e146afb8f228968856775cd57458a007815b4456cd45f2",
+    "toolkit_database_csv_area.py": "80badc60a373d2e488cf4b969ce5a7e63c8e6f73f7056534794b5a20a95b5107",
+    "toolkit_database_csv_cli.py": "333f1921e28720b57802c5aff9697ef5e4eacfbe447a0d422d1e4e87caefb6d6",
+    "toolkit_database_csv_native.py": "5cb78f7a0b2a4ed6719b2e6b3387ea59547aaf04098c8702ec0ba9c915155214",
+    "toolkit_database_csv_projection.py": "472155f00b7981374c875a8456dc0913226c35db965183fc22f69e121cac564d",
+    "toolkit_database_csv_registry.py": "e43cabcbb85d3ba960d940fd591bc2422797dce552b90facfc4d6d187c3203b6",
+    "toolkit_database_csv_selection.py": "95453cbe39e059c687b383919c5297228bd6fb7f889ca2a34ee56452955560fc",
+    "toolkit_live_update_conditions.py": "171f1318be694629ca9734008574a635df5d006167d2ec238cb7c20bbc62f5b1",
+    "toolkit_live_update_conditions_cli.py": "5673c8635b8ad5f3b445529f4cadcf0aab25019e6bcfc1d69e834346262135f6",
+    "toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+    "toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
+    "toolkit_preferences_controls.py": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff",
+    "toolkit_preferences_effects.py": "ca1af0d8086b8fa5ec07e0d6a390a7444b0fc13e20b18120c6eff536ce9f20ec",
+    "toolkit_preferences_initial_state.py": "1669dcc774795f3d5820292a1142ed020cb7d51471f0f284020614335b36f3c5",
+    "toolkit_preferences_preview.py": "79170191c188062a47464c7f00f1653b1a6a52596052302533dcd4a26c7bacf3",
+    "toolkit_preferences_reset.py": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0",
+    "toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+    "toolkit_update_applicability.py": "d07d814a604c6fd1a98a635ddc05f0a71d6c57b862b47f6917824198bb6be5b7",
+    "toolkit_update_applicability_cli.py": "6c6721b019690db2b88e9b93351fbd3bfc4f2c941a5c15470eccb60414b388f4",
+    "toolkit_update_applicability_cohort_cli.py": "91c591476164cc28384cda20cca7e1dc7c933bc619d7c2d855529fda460cd029",
+    "toolkit_update_bundle.py": "df82c64c0fbe46416243549a592593c7f4377448bf0e556c40ede99842e3f172",
+    "toolkit_update_bundle_cli.py": "ddc73494a66ace2a54fd07ad8d2eb60afa440783d7dde3375e06bb800a110910",
+    "toolkit_update_composite.py": "33d47f86869c75b1db78bbe384acdae6e05d6fd5868dc11cbc79c988c023f2a8",
+    "toolkit_update_composite_cli.py": "035d5cb6ca36cc5a230f240935354d699476dc339e6297cc690aef3e79c0bb1b",
+    "toolkit_update_conditions.py": "07fb9317345f239b339d87ec71de370ee1b869cc1277afc60c2919173cda0dfc",
+    "toolkit_update_conditions_cli.py": "23219d1f687c207ce2010095b6ae7eda856d5630d16a4855d50d48733fb80d2a",
+    "toolkit_update_download.py": "8b87acaf8d995a81c035156670d8b69030cc8f3801b769c1941b02fc5da78473",
+    "toolkit_update_download_cli.py": "7f92fe421e5f074ac10ad209fe7646c19809b6700395f2c773d160bcf23b3529",
+    "toolkit_update_metadata.py": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f",
+    "toolkit_update_metadata_cli.py": "fa497b357818ee678f52cc13e9f7e48ceaa81665c69a2ebbf00456fa5356b1f9",
+    "toolkit_update_package_bundle.py": "4b48f5942dc33608a09a7573b19cf730273d085ee6a01c0b9404d01fe46c57a8",
+    "toolkit_update_package_bundle_cli.py": "f86607373ae76b02c8f4c18ffb030996ebcaffdfb6ecde803394cfd9c3b19e14",
+    "toolkit_update_package_file.py": "5773ffba56c66946c290438777f5c52dc050ab51a4bfd86d2e73e5d70b050cdc",
+    "toolkit_update_package_file_cli.py": "20acdbd0213ab6bd090caafa313469c130bb88aee07d8025fc249368da800c24",
+    "toolkit_update_revocation.py": "575bf1fccb3788ed891028dbf6ec10f1d94f1519d7a6d20341d131d17fc8d389",
+    "toolkit_update_revocation_cli.py": "c724f333d8b8e83a6dfc11347507c50384fd4f456181547dcc85adc875930073",
+    "toolkit_update_rollout.py": "da1e918cf361cfe378f6b27a151a05fce6733529d46d3b622f3379d8f7cbf8a8",
+    "toolkit_update_rollout_cli.py": "a302c76c816651a3261d97b4b79bb500add13975881c1b4a2f3631acaafdc589",
+    "toolkit_update_rollout_current_user_cli.py": "cea693a6f4fa9f9758dc26e4461d57ff43a2d7a0e7c3387504ba0b1465f3cb7e",
+    "toolkit_update_rollout_registry.py": "8e1ef4a70f0b91e6c5560b4a7d6dee2723a1524732a7036e7c76d33ec7c6568c",
+    "toolkit_update_rollout_registry_cli.py": "9dd01858a8c11ba92e8cb2000382d73875f7ecde1cf87e442b43616f1590743c",
+    "toolkit_update_trust.py": "9091994e590970de1544779671073c64948bc84283edfc3cb8ba48d07b5df9d8",
+    "toolkit_update_trust_cli.py": "9f0900ce1ab2477f82f09533ce135bf47eda76b4f708340ac66067112f7272a1",
+    "toolkit_update_version.py": "b7adee52675f2b415253942b16127a9d892520c66945deda07039c380a16cd13",
+    "toolkit_updates.py": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244",
+    "toolkit_updates_cli.py": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d",
+    "trigger_binding_guard.py": "c188684cd823d7a23695e0db9cbbb68cc2c33301932909de04de334d0a2ae319",
+    "unit_diagnostics.py": "8710ef7d1b79481c34ac31be2efd2a4be0b7efe99b993fc850ff4a64be358c39",
+    "unit_templates.py": "f87bb5e348aaba56d58f90a5b1a113834d5b01bdae5cda5ed7ec397080f8498a",
+    "unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+    "usb_dfu.py": "859a3b377ec680b1c3eb695ce840d3e7b4750bb01a4997f67541f2afc149ebe5",
+    "usb_inspection.py": "dadba114d023bdb0dc755d71e9b804f75f037d4ca73afac6a8a4fa1afefcf7a6",
+    "windows_condition_registry.py": "539a96657fc2152dbc996bb497f67b4bc9ca2b45b8acf5a1b86fb09360dfe379",
+    "windows_csv_encoding.py": "d0d7d171424fb91e974c283bd6a2f34ac6ac901f12f5957c6de180dcfb14ca84",
+    "windows_csv_selection.py": "56a04211e41502ebf589e10b4d53f99a8573056ff8d964c45b9e6e092b8b69d4",
+    "windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+    "windows_preferences_reset.py": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea",
+    "windows_sesu_cohort_registry.py": "f0142c2d0288c1951af39ebe7d578951aa0a127906065b1cfa2bbbf696344ab0",
+    "windows_sesu_current_user_cohort.py": "ddca9907371eb93a2f949ee57a65d57ac5b63d75fd5f56a3d38364283cb8b048",
+    "wireless_cli.py": "28e10b43c067b3bffa419c9a0d9f4b09eea3b9a8ffd5aea6b3f9c1bd2483360d",
+    "wireless_commissioning.py": "39930e952c4ed0c4751c09842da4ed21743627c19b72c678d2deaedf1c541d43",
+    "wireless_gateway.py": "baf507ece740858680d6d35a05dadba0c9c4233b50d9f20b27324f9992fd574b",
+    "wireless_unit_globals.py": "b6bea286395486c9c5bfe8af7c8597f1cef75cf9106005498832d508019224c3"
+  },
+  "verified_rust_dali_source_sha256": {
+    "rust/cbus-cgate/src/service.rs": "00878bbed7eb3e2a073d4fdd4e16e64dd1f20a1cfa06c7c892d90dfc833b7592",
+    "rust/cbus-cgate/src/service/dali_specialized.rs": "837d8cde5029710d5ca4e38b9835b16aa43073c2a5757d60c914c1133508077d",
+    "rust/cbus-cgate/src/service/dali_proxy.rs": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7",
+    "rust/cbus-cgate/src/service/dali_proxy_lines.rs": "59981214582ee2ce0eb1d346d782132171b4a6f5b939a3188526b156f17ca331",
+    "rust/cbus-cgate/src/service/dali_journal.rs": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6"
+  },
+  "supporting_harness_sha256": {
+    "toolkit-cli/research/NativeDaliExtProxyProbe.java": "c4ba3b02b9e4956bdd1cffd230d607ab9f6a0bf13c051b33047c080e330d49e5",
+    "toolkit-cli/research/dali_ext_proxy_original.py": "4debbff6aad233bdca00405bc95a04cd2df104b8f809f4028242621fe8fcc732",
+    "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
+    "toolkit-cli/tests/test_cmqtt_dali_commissioning_interop.py": "7fbb5bafcd4612dabe9a713b55d00517c6ca71638678642e2645f790a01ba371",
+    "toolkit-cli/tests/test_dali_commissioning.py": "2bdf916408a0489c44be8ca829c6be81a8923e349e2d0560cebd46a24c884939",
+    "toolkit-cli/tests/test_light_level_sensors.py": "c6b83f9d5ffff4f98f232ed56a9e2ab830201b7955eb584366fd455a7cc7cfff",
+    "toolkit-cli/tests/test_cli_sensors.py": "546092f87d283e094fe99128d4cb98a671eca4d9e2be843abee59ce72cc75282",
+    "toolkit-cli/tests/test_pir_sensors.py": "a937ef0ce7d708adca64cacb4d74f1401eb7929e465d6143df66f165dcf6b041"
+  },
+  "remaining_acceptance": [
+    "Actual SYS_DAL2 hardware writes, device behavior and persistence across power cycles.",
+    "Actual original Toolkit full-form GUI workflows and broader Toolkit workflow parity.",
+    "The four explicitly deselected original project/unit opt-in metadata transactions.",
+    "The single metadata source storage ambiguity case skipped on case-insensitive temporary storage.",
+    "Native handling of degenerate language collections; current implementation refuses rather than guessing normalization."
+  ]
+}

@@ -189,7 +189,8 @@ def owned_server(product: str, binary: Path):
         with socket.socket() as broker, InitializedPCI(profile="captured", command_checksum=True).running() as pci:
             broker.bind(("127.0.0.1", 0))
             broker.listen(1)
-            with (scratch / "cmqttd.log").open("w+") as log:
+            log_path = scratch / "cmqttd.log"
+            with log_path.open("w") as log:
                 process = subprocess.Popen([
                     str(binary), "--tcp", f"{pci[0]}:{pci[1]}",
                     "--broker-address", "127.0.0.1", "--broker-port", str(broker.getsockname()[1]),
@@ -200,8 +201,7 @@ def owned_server(product: str, binary: Path):
                 try:
                     deadline = time.monotonic() + 15
                     while time.monotonic() < deadline:
-                        log.seek(0)
-                        match = re.search(r"C-Gate service listening on 127\.0\.0\.1:([0-9]+)", log.read())
+                        match = re.search(r"C-Gate service listening on 127\.0\.0\.1:([0-9]+)", log_path.read_text(encoding="utf-8"))
                         if match:
                             yield int(match[1])
                             break

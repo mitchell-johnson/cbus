@@ -19,11 +19,20 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+The [30 September feature batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
+details the latest DALI, SENLL, classic DLT, thermostat and project-documentation
+changes, their validation and remaining work.
+
 ## Which program do I need?
 
 | I want to… | Use |
 | --- | --- |
 | Create, inspect, edit, validate, or export Toolkit XML/CBZ projects | `cbus-toolkit project` |
+| Generate project HTML from saved XML/CBZ or a native XML snapshot | `cbus-toolkit project document` ([scope](toolkit-cli/docs/project-documentation.md)) |
+| Edit classic DLT labels, database dynamic-update blocking, indicator/display/clock controls, or saved project label text | `cbus-toolkit dlt labels`, `dlt display`, `dlt text`, and `cgate unit ... dlt-labels` ([labels](toolkit-cli/docs/classic-dlt-label-controls.md), [display](toolkit-cli/docs/classic-dlt-display.md)) |
+| Plan or save SENLL groups, broadcast interval, power-up state and Global status interval | `cbus-toolkit sensors light-level-plan` and `cgate unit ... sensor-light-level` ([profiles and limits](toolkit-cli/docs/sensors.md)) |
+| Extract or deploy supported DALI device and gateway settings | `cbus-toolkit cgate dali` through cmqttd, including its 133 advertised global gateway fields ([workflow](toolkit-cli/docs/dali-commissioning.md)) |
+| Preview or save supported database thermostat settings and templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [templates](toolkit-cli/docs/thermostat-templates.md)) |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
@@ -67,6 +76,25 @@ cbus-toolkit project export demo.cbz demo.xml --format xml
 ```
 
 Project editing preserves unknown XML and opaque programming fields. Use `--output` on an edit to write a separate copy. Native C-Gate 3 SQLite projects are managed through `cbus-toolkit cgate project` instead of the offline XML/CBZ editor. The C-Gate `DBSETXML` mapper has its own compatibility boundary: the [original direct/combined Unit evidence](toolkit-cli/docs/native-cgate-dbsetxml-unit-mapper-vm.md) shows that the two captured unknown namespaced Unit additions are accepted but omitted on readback.
+
+Generate a project page or edit existing classic DLT text from an explicitly
+saved native XML snapshot:
+
+```sh
+cbus-toolkit project document saved-dbgetxml.xml --native-xml --output project.html
+cbus-toolkit dlt text plan --project-xml saved-dbgetxml.xml --target //PROJECT/254/56/20 \
+  --edit '1:1=Kitchen' > text-plan.json
+cbus-toolkit dlt text apply --project-xml saved-dbgetxml.xml --plan text-plan.json --output labelled.xml
+```
+
+These write new local files. Project HTML marks unrecovered device bodies and
+usage; original-page byte/visual parity is unassessed. Classic DLT text edits
+use explicit numeric language and variant IDs, preserve unrelated metadata,
+and do not transfer or render labels on a device. Supported thermostat
+settings instead use a closed database unit, explicit exclusive project
+ownership and separately supplied specifications; preview shows requested
+and dependent form-save changes before one verified save/reload. See the
+linked workflow contracts for admission and remaining GUI/physical limits.
 
 ### Connect to C-Gate
 

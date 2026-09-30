@@ -16,6 +16,9 @@ const EXT_START: u32 = 256;
 const EXT_END: u32 = 11_376;
 const EXT_LEN: usize = (EXT_END - EXT_START) as usize;
 
+#[path = "dali_proxy.rs"]
+mod proxy;
+
 #[derive(Clone)]
 struct ExtendedMap {
     values: Vec<Option<u8>>,
@@ -63,6 +66,9 @@ impl ExtendedMap {
                 .and_then(|value| *value)
                 == Some(value);
             if unchanged {
+                continue;
+            }
+            if proxy::excluded(self, address) {
                 continue;
             }
             let contiguous = current_address.is_some()
@@ -157,6 +163,10 @@ impl ExtendedMap {
     }
 }
 
+pub(super) fn proxy_capabilities() -> Value {
+    proxy::capabilities()
+}
+
 #[derive(Clone)]
 struct DaliSession {
     instance_id: String,
@@ -171,10 +181,10 @@ struct DaliSession {
     ext_revision: u64,
     ext_epoch: u64,
     model_dirty: bool,
-    /// Catalogue edits change native's typed extended proxy, which FULL
-    /// re-serializes before its extended write. cmqttd has no such
-    /// serializer, so FULL refuses before I/O while this is set.
+    /// Catalogue is independent of the CDG proxy; its metadata remains dirty
+    /// after a physical CDG deployment.
     catalog_dirty: bool,
+    proxy_dirty: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -460,7 +470,8 @@ impl DaliSession {
             model: json!({
                 "OID": oid,
                 "catalog": {"catalogueLines": [{"lineId": 0, "devices": []}, {"lineId": 1, "devices": []}]},
-                "cdg": {"daliLines": [{"lineId": 0, "daliEcgs": []}, {"lineId": 1, "daliEcgs": []}]},
+                "cdg": {"daliLines": [{"lineId": 0, "daliEcgs": []}, {"lineId": 1, "daliEcgs": []}],
+                    "extParams": {"proxy": proxy::decode(&ExtendedMap::default())}},
                 "oids": []
             }),
             ext: ExtendedMap::default(),
@@ -468,6 +479,7 @@ impl DaliSession {
             ext_epoch: 0,
             model_dirty: false,
             catalog_dirty: false,
+            proxy_dirty: false,
         }
     }
 
@@ -479,12 +491,16 @@ impl DaliSession {
 
     fn replace_ext(&mut self, bytes: Vec<u8>) {
         self.ext.replace(bytes);
+        self.model["cdg"]["extParams"]["proxy"] = proxy::decode(&self.ext);
+        self.proxy_dirty = false;
         self.ext_revision = self.ext_revision.wrapping_add(1);
         self.ext_epoch = self.ext_epoch.wrapping_add(1);
     }
 
     fn replace_ext_map(&mut self, ext: ExtendedMap) {
         self.ext = ext;
+        self.model["cdg"]["extParams"]["proxy"] = proxy::decode(&self.ext);
+        self.proxy_dirty = false;
         self.ext_revision = self.ext_revision.wrapping_add(1);
         self.ext_epoch = self.ext_epoch.wrapping_add(1);
     }
@@ -497,8 +513,22 @@ impl DaliSession {
     fn invalidate_ext(&mut self) {
         self.ext.values.fill(None);
         self.ext.targets.clear();
+        self.model["cdg"]["extParams"]["proxy"] = proxy::decode(&self.ext);
+        self.proxy_dirty = false;
         self.ext_revision = self.ext_revision.wrapping_add(1);
         self.ext_epoch = self.ext_epoch.wrapping_add(1);
+    }
+
+    fn compiled_ext(&self) -> Result<ExtendedMap, String> {
+        let mut compiled = self.ext.clone();
+        let Some(model) = self.model.pointer("/cdg/extParams/proxy") else {
+            return Ok(compiled);
+        };
+        let bytes = proxy::compile(&self.ext, model)?;
+        for (address, value) in bytes {
+            compiled.targets.insert(address, value);
+        }
+        Ok(compiled)
     }
 
     fn summary(&self) -> Value {
@@ -527,6 +557,7 @@ impl DaliSession {
             "targetUnit": self.target_unit,
             "modelDirty": self.model_dirty,
             "catalogDirty": self.catalog_dirty,
+            "proxyDirty": self.proxy_dirty,
         })
     }
 
@@ -538,6 +569,9 @@ impl DaliSession {
                 .map(ExtendedMap::from_json)
                 .unwrap_or_default();
             self.replace_ext_map(ext);
+            if let Some(proxy) = model.pointer("/cdg/extParams/proxy") {
+                self.model["cdg"]["extParams"]["proxy"] = proxy.clone();
+            }
         }
         self.source_cdg = saved
             .get("sourceCdg")
@@ -564,6 +598,10 @@ impl DaliSession {
             .get("catalogDirty")
             .and_then(Value::as_bool)
             .unwrap_or(self.model_dirty);
+        self.proxy_dirty = saved
+            .get("proxyDirty")
+            .and_then(Value::as_bool)
+            .unwrap_or(false);
     }
 }
 
@@ -1599,7 +1637,8 @@ impl Service {
                 &format!("501 session name does not exist: {}", args[0]),
             );
         };
-        let path = match set_json(&mut session.model, &args[1], value) {
+        let mut updated = session.model.clone();
+        let path = match set_json(&mut updated, &args[1], value) {
             Ok(path) => path,
             Err(error) => {
                 return err(
@@ -1609,7 +1648,20 @@ impl Service {
                 )
             }
         };
-        session.model_dirty = true;
+        if path.starts_with("/cdg/extParams/proxy") {
+            if let Err(error) = proxy::validate_edit(&updated["cdg"]["extParams"]["proxy"], &path) {
+                return err(tag, 501, &format!("501 gateway model mismatch: {error}"));
+            }
+            if let Err(error) = proxy::compile(&session.ext, &updated["cdg"]["extParams"]["proxy"])
+            {
+                return err(tag, 501, &format!("501 gateway model mismatch: {error}"));
+            }
+            session.proxy_dirty = true;
+            session.ext_revision = session.ext_revision.wrapping_add(1);
+        } else {
+            session.model_dirty = true;
+        }
+        session.model = updated;
         if path.starts_with("/catalog") || path.is_empty() {
             session.catalog_dirty = true;
         }
@@ -1801,8 +1853,8 @@ impl Service {
             Err(response) => return response,
         };
         let saved = {
-            let state = self.dali_state.lock().await;
-            let Some(session) = state.sessions.get(&args[0]) else {
+            let mut state = self.dali_state.lock().await;
+            let Some(session) = state.sessions.get_mut(&args[0]) else {
                 return err(
                     tag,
                     501,
@@ -2046,7 +2098,7 @@ impl Service {
                 )
                 .await;
         }
-        let (session_instance, ext_epoch, chunks, model_dirty) = {
+        let (session_instance, ext_epoch, chunks, model_dirty, model, project) = {
             let state = self.dali_state.lock().await;
             let Some(session) = state.sessions.get(&args[0]) else {
                 return err(
@@ -2055,11 +2107,29 @@ impl Service {
                     &format!("501 session name does not exist: {}", args[0]),
                 );
             };
+            let ext = if session.proxy_dirty {
+                match session.compiled_ext() {
+                    Ok(compiled) => compiled,
+                    Err(error) => {
+                        return err(
+                            tag,
+                            501,
+                            &format!(
+                                "501 gateway model mismatch: {error}; no bus command was sent"
+                            ),
+                        )
+                    }
+                }
+            } else {
+                session.ext.clone()
+            };
             (
                 session.instance_id.clone(),
                 session.ext_epoch,
-                session.ext.dirty_chunks(),
+                ext.dirty_chunks(),
                 session.model_dirty,
+                session.model.clone(),
+                session.project.clone(),
             )
         };
         if model_dirty {
@@ -2074,32 +2144,105 @@ impl Service {
             Err(response) => return response,
         };
         let (generation, pci) = self.current_pci_epoch().await;
+        let mut journal = if chunks.is_empty() {
+            None
+        } else {
+            let planned = chunks
+                .iter()
+                .map(|(address, bytes)| DaliJournalWrite {
+                    step: "WRITE_GATEWAY_EXT_FULL".to_string(),
+                    operation: None,
+                    line: None,
+                    address: Some(*address),
+                    payload_hex: hex::encode_upper(bytes),
+                })
+                .collect();
+            match ActiveDaliJournal::create(
+                &dali_journal::journal_directory(&self.state_path),
+                DaliJournalPlan {
+                    command: "DALI SESSION DEPLOY EXT_ONLY".to_string(),
+                    session: &args[0],
+                    project: &project,
+                    gateway_unit: unit,
+                    pci_generation: generation,
+                    planned,
+                },
+            ) {
+                Ok(created) => Some(created),
+                Err(error) => return dali_journal::journal_refused(tag, &error),
+            }
+        };
+        let stop = |journal: &mut Option<ActiveDaliJournal>, mut failure: Response, uncertain| {
+            if let Some(journal) = journal {
+                journal.stopped(uncertain, &failure.final_text);
+                failure.final_text = format!("{} ({})", failure.final_text, journal.summary());
+            }
+            failure
+        };
         for (index, (address, bytes)) in chunks.iter().enumerate() {
             if let Err(error) = pci
                 .store_paged_parameter_verified(unit, *address, bytes, false)
                 .await
             {
-                return err(
-                    tag,
-                    503,
-                    &format!("503 network error after {index} confirmed chunk(s): {error}"),
+                return stop(
+                    &mut journal,
+                    err(
+                        tag,
+                        503,
+                        &format!("503 network error after {index} confirmed chunk(s): {error}"),
+                    ),
+                    true,
                 );
             }
+            if let Some(active) = journal.as_mut() {
+                if let Err(error) =
+                    active.confirm("paged STORE acknowledgement and source-correlated readback")
+                {
+                    return stop(
+                        &mut journal,
+                        err(
+                            tag,
+                            503,
+                            &format!("503 journal update failed after a confirmed chunk: {error}"),
+                        ),
+                        false,
+                    );
+                }
+            }
             let Some(_guard) = self.pci_commit_guard(generation, &pci).await else {
-                return err(
+                return stop(&mut journal, err(
                     tag,
                     503,
                     "503 network error: PCI connection changed during deploy; outcome is uncertain",
-                );
+                ), true);
             };
             let mut state = self.dali_state.lock().await;
             let Some(session) = state.sessions.get_mut(&args[0]) else {
-                return err(tag, 501, "501 session ended during deploy");
+                return stop(
+                    &mut journal,
+                    err(tag, 501, "501 session ended during deploy"),
+                    false,
+                );
             };
             if session.instance_id != session_instance || session.ext_epoch != ext_epoch {
-                return err(tag, 501, "501 session changed during deploy");
+                return stop(
+                    &mut journal,
+                    err(tag, 501, "501 session changed during deploy"),
+                    false,
+                );
             }
             session.commit_ext_chunk(*address, bytes);
+            if session.model != model {
+                return stop(
+                    &mut journal,
+                    err(
+                        tag,
+                        501,
+                        "501 proxy model changed during deploy; confirmed chunk retained",
+                    ),
+                    false,
+                );
+            }
         }
         let mut state = self.dali_state.lock().await;
         let Some(session) = state.sessions.get_mut(&args[0]) else {
@@ -2109,6 +2252,20 @@ impl Service {
             return err(tag, 501, "501 session changed during deploy");
         }
         session.target_cdg = Some(args[1].clone());
+        if session.model == model {
+            session.model["cdg"]["extParams"]["proxy"] = proxy::decode(&session.ext);
+            session.proxy_dirty = false;
+        }
+        if let Some(journal) = journal.as_mut() {
+            if let Err(error) = journal.complete() {
+                return err(
+                    tag,
+                    503,
+                    &format!("503 journal completion failed after confirmed chunks: {error}"),
+                );
+            }
+            dali_journal::prune_finished(&dali_journal::journal_directory(&self.state_path));
+        }
         ok(tag, vec!["120-start deploy".to_string()], "200 OK.")
     }
 
@@ -2123,7 +2280,7 @@ impl Service {
         deploy_type: &str,
     ) -> Response {
         let full = deploy_type == "FULL";
-        let (instance, model, catalog_dirty, ext_epoch, chunks, project) = {
+        let (instance, model, ext_epoch, mut ext, project) = {
             let state = self.dali_state.lock().await;
             let Some(session) = state.sessions.get(session_name) else {
                 return err(
@@ -2138,9 +2295,8 @@ impl Service {
             (
                 session.instance_id.clone(),
                 session.model.clone(),
-                session.catalog_dirty,
                 session.ext_epoch,
-                session.ext.dirty_chunks(),
+                session.ext.clone(),
                 session.project.clone(),
             )
         };
@@ -2148,13 +2304,6 @@ impl Service {
             Ok(value) => value,
             Err(response) => return response,
         };
-        if full && catalog_dirty {
-            return err(
-                tag,
-                501,
-                "501 gateway model mismatch: catalogue edits require native typed extended-proxy serialization before WRITE_GATEWAY_EXT_FULL, which cmqttd does not implement; no bus command was sent",
-            );
-        }
         // Every payload is derived from one model snapshot before I/O, so a
         // missing or invalid field refuses the whole plan instead of stopping
         // after earlier ECGs were written (a deliberate native deviation).
@@ -2180,6 +2329,27 @@ impl Service {
                 };
             }
         };
+        if full {
+            if let Some(model) = model.pointer("/cdg/extParams/proxy") {
+                match proxy::compile(&ext, model) {
+                    Ok(bytes) => {
+                        for (address, value) in bytes {
+                            ext.targets.insert(address, value);
+                        }
+                    }
+                    Err(error) => {
+                        return err(
+                            tag,
+                            501,
+                            &format!(
+                                "501 gateway model mismatch: {error}; no bus command was sent"
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        let chunks = ext.dirty_chunks();
         let mut planned = steps
             .iter()
             .flat_map(|step| step.phases.iter().flatten())
@@ -2367,6 +2537,10 @@ impl Service {
             if session.instance_id == instance && session.model == model && !session.catalog_dirty {
                 session.model_dirty = false;
             }
+            if full && session.instance_id == instance && session.model == model {
+                session.model["cdg"]["extParams"]["proxy"] = proxy::decode(&session.ext);
+                session.proxy_dirty = false;
+            }
         }
         ok(tag, response_lines, "200 OK.")
     }
@@ -2540,6 +2714,8 @@ impl Service {
             }
             session.ext_revision = session.ext_revision.wrapping_add(1);
             session.ext_epoch = session.ext_epoch.wrapping_add(1);
+            session.model["cdg"]["extParams"]["proxy"] = proxy::decode(&session.ext);
+            session.proxy_dirty = false;
         }
         session.source_cdg = Some(target.to_string());
         Ok(())
@@ -5583,6 +5759,34 @@ mod tests {
             .all(|(_, bytes)| bytes.len() <= 12));
     }
 
+    #[test]
+    fn pure_proxy_plans_do_not_own_raw_targets_and_allow_later_typed_edits() {
+        let mut session = DaliSession::new("work", "HARNESS", "session-work");
+        session.replace_ext(vec![0; EXT_LEN]);
+        session.model["cdg"]["extParams"]["proxy"]["deviceID"]["id"] = json!(42);
+        session.proxy_dirty = true;
+        let plan = session.compiled_ext().unwrap();
+        assert!(
+            session.ext.targets.is_empty(),
+            "planning must not stage synthetic raw targets"
+        );
+        for (address, bytes) in plan.dirty_chunks() {
+            session.commit_ext_chunk(address, &bytes);
+        }
+        session.model["cdg"]["extParams"]["proxy"] = proxy::decode(&session.ext);
+        session.proxy_dirty = false;
+        session.model["cdg"]["extParams"]["proxy"]["lightingApplications"]["app1"] = json!(57);
+        assert_eq!(session.compiled_ext().unwrap().targets[&512], 57);
+        assert!(session.ext.targets.is_empty());
+        let saved = session.saved();
+        let mut restored = DaliSession::new("other", "HARNESS", "session-other");
+        restored.load_saved(&saved);
+        assert_eq!(
+            restored.model["cdg"]["extParams"]["proxy"]["lightingApplications"]["app1"],
+            57
+        );
+    }
+
     #[tokio::test(start_paused = true)]
     async fn error_reporting_recall_uses_exact_native_address_and_envelope() {
         let (service, mut remote, path) = setup().await;
@@ -5817,7 +6021,12 @@ mod tests {
 
         let response = request.await.unwrap();
         assert_eq!(response.status, 501, "{response:?}");
-        assert_eq!(response.final_text, "501 session changed during deploy");
+        assert!(response
+            .final_text
+            .starts_with("501 session changed during deploy (DALI journal "));
+        assert!(response
+            .final_text
+            .contains("1 of 1 planned device writes confirmed"));
         let state = service.dali_state.lock().await;
         let session = state.sessions.get("work").unwrap();
         assert_eq!(
@@ -5877,6 +6086,62 @@ mod tests {
         assert_eq!(ext["values"], json!({}));
         assert_eq!(ext["targetValues"]["256"], json!(0xbb));
         assert!(session.source_cdg.is_none());
+        drop(state);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn ext_only_extract_rejects_a_concurrent_typed_proxy_edit() {
+        let (service, mut remote, path) = setup().await;
+        assert_eq!(
+            service
+                .handle(&mut ClientState::default(), "[n] DALI SESSION NEW work")
+                .await
+                .status,
+            200
+        );
+        {
+            let mut state = service.dali_state.lock().await;
+            state
+                .sessions
+                .get_mut("work")
+                .unwrap()
+                .replace_ext(vec![0; EXT_LEN]);
+        }
+        let request = tokio::spawn({
+            let service = service.clone();
+            async move {
+                service
+                    .handle(
+                        &mut ClientState::default(),
+                        "[x] DALI SESSION EXTRACT work !dali-gateway-20 A EXT_ONLY",
+                    )
+                    .await
+            }
+        });
+        let first = expect_ext_recall_request(&mut remote, 0).await;
+        let edited = service
+            .handle(
+                &mut ClientState::default(),
+                "[s] DALI SESSION SET work /cdg/extParams/proxy/deviceID/id 42",
+            )
+            .await;
+        assert_eq!(edited.status, 200, "{edited:?}");
+        reply_ext_recall_block(&mut remote, 0, first, 0x5a).await;
+        drive_ext_recall(&mut remote, first, 0x5a).await;
+
+        let response = request.await.unwrap();
+        assert_eq!(response.status, 501, "{response:?}");
+        assert_eq!(response.final_text, "501 session changed during extraction");
+        let state = service.dali_state.lock().await;
+        let session = state.sessions.get("work").unwrap();
+        assert_eq!(
+            session.model["cdg"]["extParams"]["proxy"]["deviceID"]["id"],
+            json!(42)
+        );
+        assert!(session.proxy_dirty);
+        assert_eq!(session.ext.values[556 - EXT_START as usize], Some(0));
+        assert!(session.ext.targets.is_empty());
         drop(state);
         std::fs::remove_file(path).unwrap();
     }
@@ -7373,25 +7638,6 @@ mod tests {
         assert_eq!(duplicate.status, 501);
         assert!(duplicate.final_text.contains("duplicate ECG addresses"));
 
-        install_deploy_model(&service).await;
-        service
-            .dali_state
-            .lock()
-            .await
-            .sessions
-            .get_mut("work")
-            .unwrap()
-            .catalog_dirty = true;
-        let catalogue = service
-            .handle(
-                &mut ClientState::default(),
-                "[d] DALI SESSION DEPLOY work !dali-gateway-20 A FULL",
-            )
-            .await;
-        assert_eq!(catalogue.status, 501, "{catalogue:?}");
-        assert!(catalogue
-            .final_text
-            .contains("extended-proxy serialization"));
         assert!(journals(&path).is_empty());
         no_more_frames(&mut remote, "a refused typed deploy emitted PCI bytes").await;
         cleanup(path);
@@ -7404,6 +7650,8 @@ mod tests {
         {
             let mut state = service.dali_state.lock().await;
             let session = state.sessions.get_mut("work").unwrap();
+            // Catalogue is a separate map; metadata does not block CDG FULL.
+            session.catalog_dirty = true;
             *session
                 .model
                 .pointer_mut("/cdg/daliLines/0/daliEcgs")

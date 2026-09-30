@@ -1,52 +1,56 @@
 {
-  "format": "cbus-light-level-sensor-acceptance-v1",
+  "format": "cbus-light-level-sensor-acceptance-v2",
   "scope": "Toolkit source-recovered ST7 SENLL dialog and forced save through native PP and a closed database; no physical light-level behavior",
   "backend": "owned loopback C-Gate (research/local_cgate.py)",
   "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "passed": true,
+  "physical_hardware_verified": false,
+  "original_dialog_executed": false,
+  "cli_acceptance": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
   "profiles": [
     {
       "unit_type": "SENLL",
       "firmware": "2.0.01",
       "catalog_number": "5031PE",
-      "raw_byte_assertions": 27,
-      "dialog_cases": 8,
-      "unrelated_parameters_preserved": 43,
+      "raw_byte_assertions": 57,
+      "dialog_cases": 27,
+      "unrelated_parameters_preserved": 39,
       "save_reload_passed": true
     },
     {
       "unit_type": "SENLL",
       "firmware": "2.1.00",
       "catalog_number": "SLC5031PE",
-      "raw_byte_assertions": 27,
-      "dialog_cases": 8,
-      "unrelated_parameters_preserved": 43,
+      "raw_byte_assertions": 57,
+      "dialog_cases": 27,
+      "unrelated_parameters_preserved": 39,
       "save_reload_passed": true
     },
     {
       "unit_type": "SENLL",
       "firmware": "2.2.99",
       "catalog_number": "5031PEWP",
-      "raw_byte_assertions": 27,
-      "dialog_cases": 8,
-      "unrelated_parameters_preserved": 43,
+      "raw_byte_assertions": 57,
+      "dialog_cases": 27,
+      "unrelated_parameters_preserved": 39,
       "save_reload_passed": true
     },
     {
       "unit_type": "SENLL",
       "firmware": "2.3.00",
       "catalog_number": "SLC5031PEWP,GY",
-      "raw_byte_assertions": 27,
-      "dialog_cases": 8,
-      "unrelated_parameters_preserved": 43,
+      "raw_byte_assertions": 57,
+      "dialog_cases": 27,
+      "unrelated_parameters_preserved": 39,
       "save_reload_passed": true
     },
     {
       "unit_type": "SENLL",
       "firmware": "2.4.99",
       "catalog_number": "5031PE",
-      "raw_byte_assertions": 27,
-      "dialog_cases": 8,
-      "unrelated_parameters_preserved": 43,
+      "raw_byte_assertions": 57,
+      "dialog_cases": 27,
+      "unrelated_parameters_preserved": 39,
       "save_reload_passed": true
     }
   ],
@@ -88,25 +92,35 @@
       "values_unchanged": true
     }
   ],
-  "passed": true,
-  "physical_hardware_verified": false,
-  "original_dialog_executed": false,
-  "cli_acceptance": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
-  "full_report_sha256": "f86ca421ebea99e5ca42f7670d0ca14c838d2bd88b30e10a9fb270bd6c316301",
   "service": {
     "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
     "listener_ownership_verified": true
   },
+  "full_report_sha256": "4e702d0fb92200b22a647c686eac4e0232c1262130814c6e0c7af06d5c4c26d1",
+  "focused_validation": {
+    "modules": [
+      "tests/test_light_level_sensors.py",
+      "tests/test_cli_sensors.py",
+      "tests/test_pir_sensors.py"
+    ],
+    "tests": 28,
+    "subtests": 490,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "junit_sha256": "e4a4d363df89079c77c7d844f79afb88286fe78910e3eeab674ed563cfdce9c9",
+    "command": "PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_light_level_sensors.py tests/test_cli_sensors.py tests/test_pir_sensors.py -q (native environment as documented in docs/sensors.md)"
+  },
   "sources": {
-    "src/cbus_toolkit/light_level_sensors.py": "23e43149c5090751ebad2ce0ed10b7e6f61900d82f7699be4525d1a6983f4dec",
+    "src/cbus_toolkit/light_level_sensors.py": "d6d33ebd0d91161022e162ceed2acc956afdc67bc359d402cb880981a3d07319",
     "src/cbus_toolkit/sensors.py": "ba724a261ac491a01a5d4be50b2a2bed98137900faea72ca0957f5e45020d977",
-    "src/cbus_toolkit/sensor_dialog_cli.py": "56ddd39c1d661307bb335a1662137c653fae0566d45263dda088c6331a5e7624",
-    "tests/test_light_level_sensors.py": "9fac673d425f0dea542aaaa95e66fb0fc803ac82b1942b8a5e1bf09800491713",
-    "tests/test_cli_sensors.py": "68768d3604958072b95151646ee307adcbd4a10b5097a8b528f1ae03996cc2bd",
-    "research/light_level_sensor_review.py": "035fddf30ff7411aa01e26ae38c58645a272d1c7d7c5bada3e6016c54c14dedf",
+    "src/cbus_toolkit/sensor_dialog_cli.py": "9878126b8672cd223a4ddbff7a9be7b96bd7e39a098e05a9371d23b157292c29",
+    "tests/test_light_level_sensors.py": "c6b83f9d5ffff4f98f232ed56a9e2ab830201b7955eb584366fd455a7cc7cfff",
+    "tests/test_cli_sensors.py": "546092f87d283e094fe99128d4cb98a671eca4d9e2be843abee59ce72cc75282",
+    "research/light_level_sensor_review.py": "22c769737d4d6ae99e183202c2438c8738c653112df6b84121f90cf9ac4c5343",
     "research/sensor_margin_original.py": "1dc17df50f0e2bf5008f12c3f08fdef4e7ac107b2e24f54270f3ce155802fd06",
     "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
-    "docs/light-level-sensor-review.json": "b8a7383ae7540b955a612d457145aec02e50aea75954e73c063d51df28c0de1c",
+    "docs/light-level-sensor-review.json": "80176685fcc0526b56ebba71bbe888a26f6e40fe2a4746ff954de3bfcdd714dc",
     "research/fixtures/sensor-margin-original-vectors.json": "6db4e048a4a4735a405a1ee77cc76f47b4494a2859bffed916b4e96c11c0febb",
     "vendor/toolkit/app/CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "vendor/toolkit/app/CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
@@ -118,9 +132,9 @@
   },
   "unverified": [
     "Original Toolkit SENLL dialog execution and GUI before/after parity",
-    "Base Neo/NeoPro block, timer, bank and scale serialization round-trips",
-    "Broadcast interval (block 5 timer), Global and Power Fail tabs, ambient light reading",
+    "Base Neo/NeoPro block, bank and scale serialization round-trips; application-collision shared-key reassignment",
+    "Global initialization callback writeback for stored StatusReportInterval 0..2 (requires explicit selection); ambient light reading",
     "SENLL 1.x (TSENLL), SENLLA and C-Gate-unloadable SENLL 2.0.00/2.5.x identities natively",
-    "Physical light-level, broadcast and indicator behavior"
+    "Physical light-level, broadcast, status interval, power-failure and indicator behavior"
   ]
 }

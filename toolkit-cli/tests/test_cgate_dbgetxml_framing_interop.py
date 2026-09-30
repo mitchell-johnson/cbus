@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 import socket
@@ -15,6 +16,7 @@ from research.cgate_dbsetxml_unit_differential import owned_server
 
 
 ROOT = Path(__file__).resolve().parents[2]
+NATIVE_WIRE_VECTOR = ROOT / "rust/testdata/vectors/cgate_dbgetxml_wire.json"
 
 
 @pytest.mark.parametrize("product,variable,binary_name", (
@@ -25,6 +27,10 @@ def test_python_client_and_pipelined_xml_roundtrip(product, variable, binary_nam
     binary = Path(os.environ.get(variable, ROOT / "rust/target/debug" / binary_name))
     if not binary.is_file() or not os.access(binary, os.X_OK):
         pytest.skip(f"{binary_name} binary is not built")
+    native_noop, = [case for case in json.loads(NATIVE_WIRE_VECTOR.read_bytes())["cases"]
+                    if case["command"] == "NOOP"]
+    native_noop_row, = native_noop["response_lines"]
+    native_noop_reply = native_noop_row.removeprefix(f"[{native_noop['tag']}] ").removesuffix("\r\n")
     with owned_server(product, binary) as port:
         with CGateClient("127.0.0.1", port, timeout=5) as client:
             assert client.command("PROJECT NEW XWIRE").code == 200
@@ -48,7 +54,9 @@ def test_python_client_and_pipelined_xml_roundtrip(product, variable, binary_nam
             assert readback.code == 344
             assert len(readback.lines) == 4
             assert ET.fromstring(xml_text(readback)).findtext("UnitName") == "Room"
-            assert client.command("NOOP").code == 200
+            noop = client.command("NOOP")
+            assert noop.code == 200
+            assert noop.lines == (native_noop_reply,)
 
         with socket.create_connection(("127.0.0.1", port), timeout=5) as sock:
             sock.settimeout(5)
@@ -68,6 +76,8 @@ def test_python_client_and_pipelined_xml_roundtrip(product, variable, binary_nam
                 assert document_row.startswith(b"[900] 347-<Unit>")
                 assert document_row.endswith(b"</Unit>\r\n")
                 assert stream.readline() == b"[900] 344 End XML snippet\r\n"
-                assert stream.readline() == b"[901] 200 OK.\r\n"
+                assert stream.readline() == native_noop_row.replace(
+                    f"[{native_noop['tag']}] ", "[901] ", 1
+                ).encode()
             finally:
                 stream.close()

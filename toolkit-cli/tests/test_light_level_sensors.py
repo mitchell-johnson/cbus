@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REVIEW = ROOT / 'docs/light-level-sensor-review.json'
 PROFILE_REVIEW = ROOT / 'docs/sensor-profile-review.json'
 BITS = ('DisableIR', 'CorridorLinkActive', 'PECFunctionActive', 'PECFunctionIRActive', 'PIRFunctionIRActive',
-        'PIRLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic', 'SceneKeySelector')
+        'PIRLevelStore', 'PECLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic', 'SceneKeySelector')
 # Independent literal layout from the SENLL_ST7 PP table (address, count, bits,
 # bit, skip) and a non-default "dirty" starting state for every forced field.
 ROWS = {
@@ -48,6 +48,7 @@ ROWS = {
     'PotentiometerATimerBlock': (102, 1, 3, 3, 0, [3]), 'PotentiometerBTimerBlock': (103, 1, 3, 3, 0, [3]),
     'PotentiometerBBankSwitchEnable': (103, 1, 1, 6, 0, [1]),
     'TimerHighByte': (136, 8, 8, 0, 0, [1] * 8), 'TimerLowByte': (144, 8, 8, 0, 0, [44] * 8),
+    'StatusReportInterval': (66, 1, 8, 0, 0, [31]),
 }
 
 
@@ -103,9 +104,80 @@ class LightLevelSaveModelTest(unittest.TestCase):
                 self.assertEqual(values[name], ROWS[name][-1], name)
         self.assertEqual(result['dialog'], {'indicator': 'light_level', 'target_lux': 2000, 'target_clamped': True,
                                             'margin_percent': 24, 'on_off_application': 'primary',
-                                            'secondary_application_available': False})
+                                            'secondary_application_available': False, 'broadcast_interval_seconds': 300,
+                                            'status_report_interval': 31, 'status_report_interval_unit': 'seconds',
+                                            'power_up_loaded': 'resume', 'power_up': 'resume', 'power_up_after_reload': 'resume'})
         self.assertFalse(result['saved'])
         self.assertEqual(self.sensor.plan(session.values()).changes, {})
+
+    def test_global_interval_native_integer_bounds_and_unverified_loaded_values(self):
+        for interval in (3, 4, 31, 127, 255):
+            with self.subTest(interval=interval):
+                session = self.session()
+                result = self.sensor.configure(session, status_report_interval=interval)
+                self.assertEqual(ints(session.current['StatusReportInterval']), [interval])
+                self.assertEqual(result['dialog']['status_report_interval'], interval)
+                self.assertEqual(result['dialog']['status_report_interval_unit'], 'seconds')
+                patch = self.sensor.codec.encode_many({'StatusReportInterval': [interval]})
+                self.assertEqual([(p.address, p.value, p.mask) for p in patch.edits], [(66, interval, 255)])
+                self.assertEqual(ints(session.current['TimerHighByte']), [1] * 8)
+                self.assertEqual(ints(session.current['TimerLowByte']), [44] * 8)
+                self.assertEqual(self.sensor.plan(session.values()).changes, {})
+        for invalid in (-1, 0, 1, 2, 256, True, 3.0, '3'):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(SensorError, '3..255'):
+                self.sensor.plan(self.session().values(), status_report_interval=invalid)
+        for loaded in (0, 1, 2):
+            with self.subTest(loaded=loaded):
+                session = self.session(StatusReportInterval=[loaded])
+                with self.assertRaisesRegex(SensorError, 'unverified Global initialization'):
+                    self.sensor.configure(session)
+                self.assertEqual(session.calls, [])
+                self.sensor.configure(session, status_report_interval=3)
+                self.assertEqual(ints(session.current['StatusReportInterval']), [3])
+
+    def test_broadcast_interval_boundaries_and_other_timers_preserved(self):
+        for seconds, high, low in ((10, 0, 10), (255, 0, 255), (256, 1, 0), (513, 2, 1), (65535, 255, 255)):
+            with self.subTest(seconds=seconds):
+                session = self.session()
+                self.sensor.configure(session, broadcast_interval_seconds=seconds)
+                self.assertEqual(ints(session.current['TimerHighByte']), [1, 1, 1, 1, high, 1, 1, 1])
+                self.assertEqual(ints(session.current['TimerLowByte']), [44, 44, 44, 44, low, 44, 44, 44])
+                self.assertEqual(ints(session.current['JPCommand']), ROWS['JPCommand'][-1])
+        for bad in (-1, 0, 9, 65536, True, 10.0, '10'):
+            with self.subTest(bad=bad), self.assertRaises(SensorError):
+                self.sensor.plan(self.session().values(), broadcast_interval_seconds=bad)
+        for stored in (0, 1, 9, 10):
+            with self.subTest(stored=stored):
+                session = self.session(TimerHighByte=[0] * 8, TimerLowByte=[stored] * 8)
+                self.sensor.configure(session)
+                self.assertEqual(ints(session.current['TimerLowByte']), [stored] * 4 + [10] + [stored] * 3)
+
+    def test_power_fail_save_uses_loaded_polarity_before_senll_forced_save(self):
+        # Original SavePowerFail writes index 9 and store, then the SENLL agent
+        # clears the polarity. Expected reload states are literal, not derived.
+        vectors = ((0, 'disabled', 0, 0, 'disabled'), (0, 'enabled', 255, 0, 'enabled'),
+                   (0, 'resume', 10, 1, 'resume'), (1, 'disabled', 255, 0, 'enabled'),
+                   (1, 'enabled', 0, 0, 'disabled'), (1, 'resume', 10, 1, 'resume'))
+        for logic, choice, level, store, reloaded in vectors:
+            with self.subTest(logic=logic, choice=choice):
+                session = self.session(PECEnablerGroupLogic=[logic])
+                result = self.sensor.configure(session, power_up=choice)
+                self.assertEqual(ints(session.current['LightLevel']), [1, 2, 3, 4, 5, 6, 7, 8, 0, level])
+                self.assertEqual(ints(session.current['PECLevelStore']), [store])
+                self.assertEqual(ints(session.current['PECEnablerGroupLogic']), [0])
+                self.assertEqual(result['dialog']['power_up'], choice)
+                self.assertEqual(result['dialog']['power_up_after_reload'], reloaded)
+                self.assertEqual(self.sensor.plan(session.values()).changes, {})
+        for level, logic, displayed, expected in ((17, 0, 'disabled', 0), (255, 0, 'enabled', 255),
+                                                  (17, 1, 'enabled', 0), (255, 1, 'disabled', 255)):
+            with self.subTest(level=level, logic=logic):
+                session = self.session(LightLevel=[1, 2, 3, 4, 5, 6, 7, 8, 9, level],
+                                       PECEnablerGroupLogic=[logic], PECLevelStore=[0])
+                result = self.sensor.configure(session)
+                self.assertEqual(result['dialog']['power_up_loaded'], displayed)
+                self.assertEqual(ints(session.current['LightLevel'])[9], expected)
+        with self.assertRaises(SensorError):
+            self.sensor.plan(self.session().values(), power_up='sometimes')
 
     def test_indicator_broadcast_and_target_controls(self):
         self.assertEqual([indicator_state(v) for v in range(8)],
@@ -161,6 +233,23 @@ class LightLevelSaveModelTest(unittest.TestCase):
         self.assertEqual(plan.changes['SecondApplicationBlocks'], (0,))
         with self.assertRaisesRegex(SensorError, 'already used'):
             self.sensor.plan(session.values(), on_off_application='primary', on_off_group=20)
+
+    def test_application_collision_refuses_implicit_and_explicit_preserved_group(self):
+        session = self.session(Application=[56, 57], GroupAddress=[255, 20, 20, 255, 255, 25, 255, 255],
+                               SecondApplicationBlocks=[4])
+        current = session.values()
+        for options in ({'on_off_application': 'primary'},
+                        {'on_off_application': 'primary', 'on_off_group': 20}):
+            with self.subTest(options=options), self.assertRaisesRegex(SensorError, 'key-block reassignment'):
+                self.sensor.plan(current, **options)
+            self.assertEqual(session.values(), current)
+        # A distinct destination group does not trigger the native collision
+        # callback, and an already loaded duplicate needs no application change.
+        self.assertEqual(self.sensor.plan(current, on_off_application='primary', on_off_group=22)
+                         .changes['GroupAddress'][2], 22)
+        primary = self.session(Application=[56, 57], GroupAddress=[255, 20, 20, 255, 255, 25, 255, 255],
+                               SecondApplicationBlocks=[0]).values()
+        self.assertNotIn('GroupAddress', self.sensor.plan(primary, on_off_group=20).changes)
 
     def test_refusals_and_bounds(self):
         current = self.session().values()
@@ -261,6 +350,22 @@ class LightLevelReviewTest(unittest.TestCase):
         self.assertEqual((unit['MaximumKeyCount'], unit['IsJoinModeSupported'], unit['HasApplication2']), (0, False, True))
         self.assertTrue(set(FORCED) <= set(LAYOUTS))
         self.assertFalse(set(NOT_SENT) & set(LAYOUTS))
+        extra = self.review['broadcast_and_power_fail']
+        self.assertEqual(extra['broadcast'], {'block_index': 4, 'minimum_seconds': 10, 'maximum_seconds': 65535,
+                                            'expiry_and_key_functions_editable': False,
+                                            'parameters': ['TimerHighByte[4]', 'TimerLowByte[4]'],
+                                            'loaded_timer_rule': 'max(10, TimerHighByte[4]*256 + TimerLowByte[4])',
+                                            'maximum_time': [18, 12, 15]})
+        self.assertEqual(extra['power_fail']['light_level_index'], 9)
+        self.assertEqual(extra['power_fail']['store_parameter'], 'PECLevelStore')
+        interval = self.review['global_status_interval']
+        self.assertEqual(interval['frame'], 'TfrmLearnUnitGlobal')
+        self.assertEqual(interval['status_report_interval']['parameter'], 'StatusReportInterval')
+        self.assertEqual((interval['status_report_interval']['minimum'], interval['status_report_interval']['maximum'],
+                          interval['status_report_interval']['unit']), (3, 255, 'seconds'))
+        self.assertFalse(interval['status_report_interval']['loaded_below_minimum_writeback_verified'])
+        self.assertEqual(interval['hidden_controls'], ['frmUnitGlobalLearnModeNEW1', 'grpLearnMode'])
+        self.assertFalse(interval['status_interval_control_hidden_by_learn_mode'])
 
     @unittest.skipUnless(os.environ.get('CBUS_TOOLKIT_EXE'), 'Set the Toolkit EXE to regenerate the SENLL receipt')
     def test_receipt_regenerates_from_private_inputs(self):
@@ -382,6 +487,48 @@ class LightLevelSensorNativeTest(unittest.TestCase):
             self.assertEqual(raw_bytes(session, 69, 1)[0], 0)
             case['raw_byte_assertions'] += 2
             case['dialog_cases'] += 2
+            timer_high_before, timer_low_before = raw_bytes(session, 136, 8), raw_bytes(session, 144, 8)
+            for seconds, high, low in ((10, 0, 10), (256, 1, 0), (513, 2, 1), (65535, 255, 255)):
+                sensor.configure(session, broadcast_interval_seconds=seconds)
+                self.assertEqual(raw_bytes(session, 136, 8), timer_high_before[:4] + bytes((high,)) + timer_high_before[5:])
+                self.assertEqual(raw_bytes(session, 144, 8), timer_low_before[:4] + bytes((low,)) + timer_low_before[5:])
+                case['raw_byte_assertions'] += 2
+                case['dialog_cases'] += 1
+            for interval in (3, 4, 13, 64, 255):
+                result = sensor.configure(session, status_report_interval=interval)
+                self.assertEqual(raw_bytes(session, 66, 1), bytes((interval,)))
+                self.assertEqual(result['dialog']['status_report_interval'], interval)
+                case['raw_byte_assertions'] += 1
+                case['dialog_cases'] += 1
+            for stored in (0, 1, 2):
+                session.set('StatusReportInterval', str(stored))
+                before_invalid = session.values()
+                with self.assertRaisesRegex(SensorError, 'unverified Global initialization'):
+                    sensor.configure(session)
+                self.assertEqual(session.values(), before_invalid)
+                sensor.configure(session, status_report_interval=3)
+                self.assertEqual(raw_bytes(session, 66, 1), bytes((3,)))
+                case['raw_byte_assertions'] += 1
+                case['dialog_cases'] += 1
+            session.set('TimerHighByte', '0 1 2 3 0 5 6 7')
+            session.set('TimerLowByte', '0 1 2 3 9 5 6 7')
+            sensor.configure(session)
+            self.assertEqual(raw_bytes(session, 136, 8), bytes((0, 1, 2, 3, 0, 5, 6, 7)))
+            self.assertEqual(raw_bytes(session, 144, 8), bytes((0, 1, 2, 3, 10, 5, 6, 7)))
+            case['raw_byte_assertions'] += 2
+            case['dialog_cases'] += 1
+            for logic, choice, level, store, reloaded in ((0, 'disabled', 0, 0, 'disabled'), (0, 'enabled', 255, 0, 'enabled'),
+                                                         (0, 'resume', 10, 1, 'resume'), (1, 'disabled', 255, 0, 'enabled'),
+                                                         (1, 'enabled', 0, 0, 'disabled'), (1, 'resume', 10, 1, 'resume')):
+                session.set('PECEnablerGroupLogic', str(logic))
+                session.set('PECLevelStore', '0')
+                session.set('LightLevel', '1 2 3 4 5 6 7 8 0 10')
+                result = sensor.configure(session, power_up=choice)
+                self.assertEqual(raw_bytes(session, 1, 10), bytes((1, 2, 3, 4, 5, 6, 7, 8, 0, level)))
+                self.assertEqual(raw_bytes(session, 99, 1)[0] & 0x28, store << 3)
+                self.assertEqual(result['dialog']['power_up_after_reload'], reloaded)
+                case['raw_byte_assertions'] += 2
+                case['dialog_cases'] += 1
             after = session.values()
             unrelated = sorted(n for n in after if n not in LAYOUTS and n != 'Application')
             self.assertEqual({n: after[n] for n in unrelated}, {n: baseline[n] for n in unrelated})
@@ -413,7 +560,7 @@ class LightLevelSensorNativeTest(unittest.TestCase):
         from cbus_toolkit.cgate import CGateClient
         project = 'LL' + uuid4().hex[:6].upper()
         network = f'//{project}/254'
-        report = {'format': 'cbus-light-level-sensor-acceptance-v1', 'backend': native_backend(),
+        report = {'format': 'cbus-light-level-sensor-acceptance-v2', 'backend': native_backend(),
                   'scope': 'Toolkit source-recovered ST7 SENLL dialog and forced save through native PP and a closed '
                            'database; no physical light-level behavior', 'profiles': [], 'refused': [], 'passed': False,
                   'physical_hardware_verified': False}

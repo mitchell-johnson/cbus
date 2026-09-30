@@ -57,7 +57,8 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
     # Hold a local broker socket without accepting/publishing anything.
     with socket.socket() as broker, sim.running() as pci:
         broker.bind(('127.0.0.1', 0)); broker.listen(1)
-        with (tmp_path / 'daemon.log').open('w+') as log:
+        log_path = tmp_path / 'daemon.log'
+        with log_path.open('w') as log:
             process = subprocess.Popen([str(BIN), '--tcp', f'{pci[0]}:{pci[1]}',
                 '--broker-address', '127.0.0.1', '--broker-port', str(broker.getsockname()[1]),
                 '--broker-disable-tls', '--timesync', '0', '--status-resync', '0',
@@ -67,7 +68,7 @@ def test_real_cli_reads_all_edlt_labels_through_cmqttd(tmp_path):
                 deadline = time.monotonic() + 10
                 port = None
                 while time.monotonic() < deadline:
-                    log.seek(0); output = log.read()
+                    output = log_path.read_text(encoding='utf-8')
                     match = re.search(r'C-Gate service listening on 127\.0\.0\.1:(\d+)', output)
                     if match:
                         port = match[1]; break
@@ -135,7 +136,8 @@ def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_
     )
     with socket.socket() as broker, sim.running() as pci:
         broker.bind(('127.0.0.1', 0)); broker.listen(1)
-        with (tmp_path / 'physical-pp-daemon.log').open('w+') as log:
+        log_path = tmp_path / 'physical-pp-daemon.log'
+        with log_path.open('w') as log:
             process = subprocess.Popen([
                 str(BIN), '--tcp', f'{pci[0]}:{pci[1]}',
                 '--broker-address', '127.0.0.1', '--broker-port', str(broker.getsockname()[1]),
@@ -148,7 +150,7 @@ def test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it(tmp_
                 deadline = time.monotonic() + 10
                 port = None
                 while time.monotonic() < deadline:
-                    log.seek(0); output = log.read()
+                    output = log_path.read_text(encoding='utf-8')
                     match = re.search(r'C-Gate service listening on 127\.0\.0\.1:(\d+)', output)
                     if match:
                         port = match[1]; break
@@ -227,7 +229,8 @@ def test_real_cli_network_diagnose_through_cmqttd(tmp_path):
         '</Network></Project></Installation>')
     with socket.socket() as broker, sim.running() as pci:
         broker.bind(('127.0.0.1', 0)); broker.listen(1)
-        with (tmp_path / 'diagnose-daemon.log').open('w+') as log:
+        log_path = tmp_path / 'diagnose-daemon.log'
+        with log_path.open('w') as log:
             process = subprocess.Popen([
                 str(BIN), '--tcp', f'{pci[0]}:{pci[1]}',
                 '--broker-address', '127.0.0.1', '--broker-port', str(broker.getsockname()[1]),
@@ -239,7 +242,7 @@ def test_real_cli_network_diagnose_through_cmqttd(tmp_path):
                 deadline = time.monotonic() + 10
                 port = None
                 while time.monotonic() < deadline:
-                    log.seek(0); output = log.read()
+                    output = log_path.read_text(encoding='utf-8')
                     match = re.search(r'C-Gate service listening on 127\.0\.0\.1:(\d+)', output)
                     if match:
                         port = match[1]; break

@@ -76,9 +76,38 @@ The workflow validates the input edits, reads a fresh baseline, stages the
 ordered changes in its owned session, and returns the staged model.
 `--dry-run` performs the physical baseline read and temporary staging but
 does not issue `DEPLOY`. Deployment admits `EXT_ONLY`, `DALI_ONLY`, and
-`FULL`. `FULL` includes the daemon's extended-memory writer and retains its
-pre-I/O refusal after catalogue edits until native proxy serialization is
-implemented.
+`FULL`. `FULL` compiles the complete recalled native extended proxy before
+its extended-memory writes. Catalogue edits remain independent session
+metadata: they do not project into the physical CDG proxy. The CLI refuses a
+catalogue edit as a physical deployment request while allowing explicit
+session-only staging in a dry run.
+
+Global gateway settings use leaf paths below `/cdg/extParams/proxy/`. The
+service advertises the exact 133-field schema across 21 families, which the
+CLI verifies before admitting an edit. For example:
+
+```json
+[
+  {"path": "/cdg/extParams/proxy/deviceID/id", "value": 42},
+  {"path": "/cdg/extParams/proxy/frontPanelUiControl/localToggleDisabledA", "value": true}
+]
+```
+
+Use `--deploy-type EXT_ONLY --extract-type EXT_ONLY` for gateway-only settings,
+or `FULL` for a combined gateway/device plan. An extended-memory baseline is
+required before staging these controls. Whole recalled families are compiled
+in native order, including unchanged values and reserved-bit normalization;
+the physical writes may therefore extend beyond the explicitly edited leaves.
+The native dirty-byte exclusions still apply. A requested excluded field,
+an unknown source family, or overlapping raw and typed ownership is refused
+before deployment. Restore levels and error-reporting mode have conditional
+exclusions depending on their staged enable settings.
+
+The service also decodes and serializes all 15 native line families. Physical
+CLI admission currently covers the global leaves; line edits, whole proxy
+replacement and computed utility edits remain outside that admission. A
+literal raw-only `EXT_ONLY` operation retains its direct-byte behavior without
+implicitly serializing the proxy.
 
 Physical typed edits use leaf paths under
 `/cdg/daliLines/L/daliEcgs/E/`, where `L` is 0 for A or 1 for B and `E` is
@@ -87,11 +116,15 @@ the selected short address. Supported fields are:
 | Structure | Writable fields |
 | --- | --- |
 | `commonParams102` | `groupMembershipBitmask16`, `sceneMembershipBitmask16`, `minimumLevel`, `maximumLevel`, `recoveryLevel`, `failureLevel` |
-| `scene/0` through `scene/15` | `level`, when the scene membership bit is enabled |
+| `scene/0` through `scene/15` | `level` in 0..254, when the scene membership bit is enabled; a nullable slot can be created as `{"level": N}` |
 | `ledParams207` | `dimmCurve`: `LINEAR` or `LOGARITHMIC`, for LED devices |
 | `emergencyParams202` | `emergencyLevel`, `prolongTime`, `timeout`, for emergency devices |
 
-Bitmasks accept integers 0..65535; other numeric fields accept 0..255.
+Bitmasks accept integers 0..65535; other numeric fields accept 0..255 except
+scene levels, which require 0..254. Native scene byte 255 removes that scene.
+Enabling a membership bit requires a representable level in the staged scene;
+a mask-only activation with a null slot or level 255 is refused. Create the
+scene object and set the membership bit in the same ordered edits file.
 Edits outside the selected line or ECG set are rejected before commands are
 sent. The staged model must identify an eligible known ECG at that short
 address, with the required device type and scene membership. Whole objects
@@ -133,6 +166,14 @@ readback can describe the observed fields; it does not prove downstream
 ballast state, rendering, atomic multi-device state, or power-cycle
 persistence. Address-assignment and unrepresentable fields retain their
 explicit uncertainty rather than being resolved by inference.
+For proxy edits, recovery reads a fresh extended-memory baseline. Its result
+compares the explicit operator edits; matching those fields does not prove
+that every implicit proxy normalization or every chunk of an interrupted
+plan completed. The original incomplete attempt journal is retained.
+
+Edits and recovery journals must be bounded regular files. Nonblocking inode
+checks reject FIFOs, symlinks and files substituted during reading before any
+C-Gate connection.
 
 ## Evidence and limits
 
@@ -145,10 +186,16 @@ uncertain replies. The real-daemon interop module independently scripts
 gateway replies and checks native wire order through the production Python
 transport. These checks use synthetic projects and ephemeral loopback ports.
 
-On 2026-09-30 the combined focused run of `test_dali_commissioning.py` and
-`test_cmqtt_dali_commissioning_interop.py` passed 44 tests and 36 subtests,
-with no skips. It covers all eight extraction modes and all three deployment
-modes. The extended-memory peer independently checks page selection, tagged
+On 2026-09-30 installed-wheel acceptance included all 35 tests in
+`test_dali_commissioning.py` and all 25 tests in
+`test_cmqtt_dali_commissioning_interop.py`, with 308 unit subtests and no
+skips. The combined DALI/sensor/display/fixture selection passed 150 tests and
+861 subtests. The [acceptance receipt](dali-senll-merged-acceptance-summary.json)
+retains the initial failures, their corrections and exact source/wheel hashes;
+later metadata-only wheel acceptance is identified separately. It covers all
+eight extraction modes and all three deployment modes, all 133 global proxy
+leaves, null-scene creation and pre-I/O refusals. The extended-memory peer
+independently checks page selection, tagged
 STORE bytes and mutable readback; the typed peer checks the captured native
 setter order, partial failures and lost-reply uncertainty. Recovery runs after
 a daemon restart and proves that no mutation is replayed. Unit regressions

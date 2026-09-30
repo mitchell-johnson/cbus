@@ -8,13 +8,14 @@ from types import SimpleNamespace
 import unittest
 from uuid import UUID
 from xml.sax.saxutils import escape, quoteattr
+from xml.dom import minidom
 
 from cbus_toolkit.addressing import _RUNTIME_FIELDS
 from cbus_toolkit.cgate import CGateResponse
 from cbus_toolkit.edlt import EdltError
 from cbus_toolkit.edlt_parent_metadata import (
     NativeEdltParentError, NativeEdltParentTransaction,
-    plan_native_parent_metadata,
+    plan_native_parent_metadata, _default_language, _snapshot,
 )
 from cbus_toolkit.edlt_parent_transaction import EdltParentTransaction
 from tests.test_edlt import Session
@@ -316,6 +317,82 @@ class ParentMetadataTests(unittest.TestCase):
         self.assertFalse(document['batch_atomic'])
         self.assertFalse(document['physical_device_programmed'])
         self.assertEqual(plan.cache.find(202, 255).levels, ())
+
+    def test_network_language_ids_resolve_original_default_schema(self):
+        def network(rows):
+            return minidom.parseString('<Network><Languages>' + rows + '</Languages></Network>').documentElement
+        rows = ('<Language><ID>0</ID><TagValue>2</TagValue></Language>'
+                '<Language><ID>1</ID><TagValue>English</TagValue></Language>'
+                '<Language><ID>2</ID><TagValue>French</TagValue></Language>')
+        self.assertEqual(_default_language(network(rows)), 2)
+        self.assertEqual(_default_language(network(rows.replace('<TagValue>2</TagValue>', '<TagValue>1</TagValue>', 1))), 1)
+        self.assertEqual(_default_language(network('')), 1)
+        self.assertEqual(_default_language(minidom.parseString('<Network/>').documentElement), 1)
+        # English is not required when another explicitly selected definition
+        # is present. The default record is an identifier, not a list index.
+        self.assertEqual(_default_language(network(rows.replace(
+            '<Language><ID>1</ID><TagValue>English</TagValue></Language>', ''))), 2)
+        with self.assertRaisesRegex(ValueError, 'duplicate default-language'):
+            _default_language(network(rows + '<Language><ID>0</ID><TagValue>1</TagValue></Language>'))
+        for identity in ('<Address>0</Address>', '<ID>00</ID>', '<ID>256</ID>'):
+            with self.subTest(identity=identity), self.assertRaises(ValueError):
+                _default_language(network('<Language>' + identity + '<TagValue>2</TagValue></Language>'))
+        native = json.loads((ROOT / 'research/fixtures/classic-dlt-project-text-native.json').read_text())
+        self.assertEqual(native['original']['network_language_identity_field'], 'ID')
+        self.assertEqual(native['original']['network_language_schema_sha256'],
+                         'bea4976cd355f660884d16bbbfe4627831c9f756557ae6fb1189a43f9aa5f956')
+        self.assertTrue(all(case['language_definitions_preserved'] and case['save_close_load_verified']
+                            for case in native['cases']))
+
+    def test_nonempty_language_collections_require_unambiguous_explicit_default(self):
+        marker = '<Language><ID>0</ID><TagValue>2</TagValue></Language>'
+        french = '<Language><ID>2</ID><TagValue>French</TagValue></Language>'
+        cases = (
+            ('metadata-only', marker, 'matching nonzero'),
+            ('undefined-default', marker + '<Language><ID>1</ID><TagValue>English</TagValue></Language>', 'matching nonzero'),
+            ('missing-default', french, 'requires one default'),
+            ('duplicate-definition', marker + french + french, 'duplicate language IDs'),
+            ('zero-default', marker.replace('<TagValue>2</TagValue>', '<TagValue>0</TagValue>') + french, 'matching nonzero'),
+        )
+        for label, rows, message in cases:
+            with self.subTest(label=label), self.assertRaisesRegex(ValueError, message):
+                _default_language(minidom.parseString(
+                    '<Network><Languages>' + rows + '</Languages></Network>').documentElement)
+
+    def test_snapshot_and_parent_plan_refuse_ambiguous_language_label_dependencies(self):
+        self.client.applications[56]['groups'][12] = {
+            'oid': oid(120), 'tag': 'Lighting',
+            'tags': ({'variant': 0, 'type': 'FONT', 'language': 1, 'value': 'English font dependency'},
+                     {'variant': 0, 'type': 'TEXT', 'language': 2, 'value': 'French text'}),
+        }
+        for rows in ('<Language><ID>0</ID><TagValue>2</TagValue></Language>',
+                     '<Language><ID>2</ID><TagValue>French</TagValue></Language>'):
+            text = self.client.xml().replace('<Network>',
+                '<Network><Languages>' + rows + '</Languages>', 1)
+            with self.subTest(rows=rows):
+                with self.assertRaisesRegex(ValueError, 'language|Languages'):
+                    _snapshot(text, '//TEST/254/p/20', self.editor)
+                with self.assertRaisesRegex(ValueError, 'language|Languages'):
+                    plan_native_parent_metadata(text, '//TEST/254/p/20', self.values,
+                                                self.editor, self.operations)
+        self.assertEqual(self.client.commands, [])
+
+    def test_project_snapshot_selects_labels_for_native_default_language(self):
+        self.client.applications[56]['groups'][12] = {
+            'oid': oid(120), 'tag': 'Lighting',
+            'tags': ({'variant': 0, 'type': 'TEXT', 'language': 1, 'value': 'English'},
+                     {'variant': 0, 'type': 'FONT', 'language': 2, 'value': 'French font dependency'}),
+        }
+        text = self.client.xml().replace('<Network>', '<Network><Languages>'
+            '<Language><ID>0</ID><TagValue>2</TagValue></Language>'
+            '<Language><ID>1</ID><TagValue>English</TagValue></Language>'
+            '<Language><ID>2</ID><TagValue>French</TagValue></Language></Languages>', 1)
+        snapshot = _snapshot(text, '//TEST/254/p/20', self.editor)
+        group = next(app for app in snapshot.applications if app.address == 56).groups[0]
+        # The selected French FONT label has an unresolved image dependency;
+        # the English TEXT variant would instead produce four known false flags.
+        self.assertIsNone(group.dynamic_images)
+        self.assertFalse(group.dynamic_images_known)
 
     def test_existing_group_levels_and_safe_text_labels_are_derived(self):
         self.client.applications[202]['groups'][42] = {

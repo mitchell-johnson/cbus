@@ -159,6 +159,16 @@ add no application/group objects; the resolver still supplies all metadata
 consumed by the retained lifecycle and rejects a stale project snapshot in the
 same way as every other parent transaction.
 
+Native network Language records use `ID`, with ID0's `TagValue` selecting a
+nonzero language definition. A nonempty explicit Languages collection must
+contain unique canonical IDs, exactly one default marker and the selected
+definition. Metadata-only defaults, missing markers, duplicate IDs and
+undefined selections fail before planning label dependencies or issuing
+commands. This refusal avoids inferring the original model's load normalization
+or prior session state. Absent/empty collections retain the existing English1
+fallback; that fallback is separate from acceptance of degenerate original
+language-loading behavior.
+
 `CBusGroup.PopulateDynamicAll` always constructs four default-language
 variants. Empty and `TEXT` variants have no image, so their four false image
 facts are derivable from project XML. `DYNAMIC` and `FONT` variants depend on

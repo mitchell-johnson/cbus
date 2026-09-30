@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 474,
-    "modules_without_skip_sites": 252,
-    "modules_with_skip_sites": 222,
+    "test_modules": 491,
+    "modules_without_skip_sites": 258,
+    "modules_with_skip_sites": 233,
     "modules_by_category": {
-      "cgate_test_host": 124,
+      "cgate_test_host": 128,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 7,
-      "native_cgate_local": 56,
+      "native_cgate_local": 60,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 66,
+      "original_toolkit": 72,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 9,
-      "unclassified": 5,
-      "unit_specs": 117,
+      "unclassified": 8,
+      "unit_specs": 123,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 118,
+      "all": 122,
       "partial": 20,
-      "none": 84
+      "none": 91
     },
-    "native_runnable_tests": 227,
-    "native_selected_required_tests": 227,
+    "native_runnable_tests": 234,
+    "native_selected_required_tests": 234,
     "native_excluded": 0,
-    "native_selection_selectors": 141
+    "native_selection_selectors": 144
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -341,6 +341,121 @@
         }
       ]
     },
+    "tests/test_classic_dlt_delivery_original.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_classic_dlt_delivery_original.py::DeliveryReplayTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "requires exact original Toolkit EXE/MAP",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "DeliveryReplayTests::test_fresh_original_branches_match_retained_evidence"
+          ]
+        }
+      ]
+    },
+    "tests/test_classic_dlt_display_original.py": {
+      "categories": [
+        "original_toolkit",
+        "unclassified",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_classic_dlt_display_original.py::test_fresh_original_instructions_match_retained_evidence",
+          "kind": "decorator.skipif",
+          "condition": "not (EXECUTABLE and SPECIFICATIONS)",
+          "reason": "requires pinned original Toolkit EXE/MAP and decoded I_DLT.xml",
+          "environment": [
+            "CBUS_DLT_VENDOR_ROOT",
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unclassified",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit",
+            "unclassified"
+          ],
+          "tests": [
+            "test_fresh_original_instructions_match_retained_evidence"
+          ]
+        }
+      ]
+    },
+    "tests/test_classic_dlt_original.py": {
+      "categories": [
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_classic_dlt_original.py::ClassicDltOriginalReplayTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "requires pinned original Toolkit EXE/MAP and decoded specs",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "ClassicDltOriginalReplayTests::test_fresh_original_instructions_match_retained_evidence"
+          ]
+        }
+      ]
+    },
     "tests/test_classic_replacement.py": {
       "categories": [
         "cgate_test_host",
@@ -541,7 +656,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 2,
       "sites": [
         {
           "scope": "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
@@ -574,10 +689,74 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 3,
       "sites": [
         {
           "scope": "tests/test_cli_dlt.py::DltCliTests::test_native_show_preview_apply_saved_plan_and_refusals",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cli_dlt_controls.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 3,
+      "sites": [
+        {
+          "scope": "tests/test_cli_dlt_controls.py::CliControlTests::test_native_show_dryrun_saved_plan_and_project_reload",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cli_dlt_display.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_cli_dlt_display.py::DisplayCliTests::test_native_show_preview_plan_stale_mixing_destination_guards_and_reload",
           "kind": "decorator.skipUnless",
           "condition": "NATIVE",
           "reason": null,
@@ -1547,7 +1726,7 @@
       "native": "all",
       "gated_tests": 2,
       "native_runnable_tests": 2,
-      "native_selected_tests": 4,
+      "native_selected_tests": 5,
       "sites": [
         {
           "scope": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
@@ -1731,7 +1910,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 3,
       "sites": [
         {
           "scope": "tests/test_cli_wireless.py::WirelessCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
@@ -1785,7 +1964,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 9,
+      "gated_tests": 16,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -1812,13 +1991,20 @@
           ],
           "tests": [
             "test_conditional_extract_requires_address_assignment_consent_before_gateway_io",
+            "test_lost_proxy_store_receipt_recovery_reads_bytes_without_replay",
             "test_lost_reply_recovery_freshly_reads_confirmed_common_edit_without_replaying",
+            "test_original_capture_rejects_an_unpinned_jar_before_java_execution",
+            "test_original_proxy_receipt_binds_literal_bytes_to_the_executed_probe",
             "test_typed_api_conditional_extract_assigns_addresses_once_and_journals_it",
             "test_typed_api_deploy_matches_native_setter_order_and_retains_both_journals",
             "test_typed_api_ext_only_deploy_stores_changed_bytes_once_and_verifies_readback",
+            "test_typed_cli_all_global_proxy_families_match_executed_original_final_memory",
             "test_typed_cli_dry_run_reads_and_stages_but_never_deploys",
+            "test_typed_cli_ext_only_extraction_decodes_current_native_proxy_fields",
             "test_typed_cli_ext_only_extraction_reads_complete_gateway_memory_without_writes",
             "test_typed_cli_extracts_native_model_without_dali_configuration_writes",
+            "test_typed_cli_proxy_deploy_matches_original_bytes_and_fresh_recovery",
+            "test_typed_cli_scene_activation_requires_and_deploys_an_actual_scene_level",
             "test_typed_deploy_stops_after_first_fault_without_replay_or_later_writes"
           ]
         }
@@ -1899,7 +2085,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 15,
       "sites": [
         {
           "scope": "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation",
@@ -2291,6 +2477,70 @@
         }
       ]
     },
+    "tests/test_dlt_controls.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 6,
+      "sites": [
+        {
+          "scope": "tests/test_dlt_controls.py::NativeControlTests",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_dlt_display_native.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_dlt_display_native.py::NativeDisplayTests",
+          "kind": "decorator.skipUnless",
+          "condition": "NATIVE",
+          "reason": null,
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_dlt_labels.py": {
       "categories": [
         "cgate_test_host",
@@ -2393,6 +2643,41 @@
           ],
           "tests": [
             "VendorDerivationTests::test_receipts_match_a_fresh_derivation"
+          ]
+        }
+      ]
+    },
+    "tests/test_dlt_project_text_native.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_dlt_project_text_native.py::test_fresh_native_text_save_reload",
+          "kind": "decorator.skipif",
+          "condition": "os.environ.get('CBUS_DLT_TEXT_NATIVE') != '1'",
+          "reason": "Set CBUS_DLT_TEXT_NATIVE=1 and explicit vendor/Java paths for owned loopback replay",
+          "environment": [
+            "CBUS_DLT_TEXT_NATIVE"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_fresh_native_text_save_reload"
           ]
         }
       ]
@@ -3654,7 +3939,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 5,
       "sites": [
         {
           "scope": "tests/test_edlt_open_unit_get.py::NativeOpenUnitGetTests",
@@ -5044,7 +5329,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 10,
       "sites": [
         {
           "scope": "tests/test_iope_settings.py::IopeNativeTest",
@@ -5744,7 +6029,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 8,
       "sites": [
         {
           "scope": "tests/test_native_unravel_cases.py::NativeRecaptureTests",
@@ -6349,6 +6634,140 @@
         }
       ]
     },
+    "tests/test_project_documentation_bridge.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_bridge.py::test_bridge_private_source_reproduces_receipt",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE to verify pinned original bridge methods",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_bridge_private_source_reproduces_receipt"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_devices.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_devices.py::test_device_static_receipt_reproduces_from_vendor_inputs",
+          "kind": "decorator.skipif",
+          "condition": "not os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Requires pinned Toolkit EXE and MAP",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_device_static_receipt_reproduces_from_vendor_inputs"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_usage.py": {
+      "categories": [
+        "original_toolkit",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 2,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_usage.py::test_original_vectors_reproduce_in_opt_in_subprocess",
+          "kind": "body.call",
+          "condition": "not source or os.environ.get('CBUS_RUN_DOCUMENTOR_ORIGINAL') != '1'",
+          "reason": "Set CBUS_TOOLKIT_EXE and CBUS_RUN_DOCUMENTOR_ORIGINAL=1; requires executable memory",
+          "environment": [
+            "CBUS_RUN_DOCUMENTOR_ORIGINAL",
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit",
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
+        {
+          "scope": "tests/test_project_documentation_usage.py::test_usage_static_receipt_reproduces_when_configured",
+          "kind": "body.call",
+          "condition": "not source",
+          "reason": "Set CBUS_TOOLKIT_EXE to verify original documentor usage evidence",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_usage_static_receipt_reproduces_when_configured"
+          ]
+        },
+        {
+          "requires": [
+            "original_toolkit",
+            "unclassified"
+          ],
+          "tests": [
+            "test_original_vectors_reproduce_in_opt_in_subprocess"
+          ]
+        }
+      ]
+    },
     "tests/test_project_input_safety.py": {
       "categories": [
         "host_tool",
@@ -6404,7 +6823,7 @@
       "native": "all",
       "gated_tests": 2,
       "native_runnable_tests": 2,
-      "native_selected_tests": 2,
+      "native_selected_tests": 6,
       "sites": [
         {
           "scope": "tests/test_project_legacy_transform_census.py::VendorTemplateCensusTests",
@@ -7018,7 +7437,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 13,
       "sites": [
         {
           "scope": "tests/test_serial_reconcile.py::NativeReconcileTests",
@@ -7182,9 +7601,9 @@
         "unit_specs"
       ],
       "native": "all",
-      "gated_tests": 2,
-      "native_runnable_tests": 2,
-      "native_selected_tests": 2,
+      "gated_tests": 3,
+      "native_runnable_tests": 3,
+      "native_selected_tests": 3,
       "sites": [
         {
           "scope": "tests/test_thermostat_post_load_native.py::NativeThermostatPostLoadTests",
@@ -7211,9 +7630,9 @@
         "unit_specs"
       ],
       "native": "all",
-      "gated_tests": 2,
-      "native_runnable_tests": 2,
-      "native_selected_tests": 2,
+      "gated_tests": 4,
+      "native_runnable_tests": 4,
+      "native_selected_tests": 4,
       "sites": [
         {
           "scope": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests",
@@ -7352,7 +7771,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 7,
       "sites": [
         {
           "scope": "tests/test_toolkit_conversion_tweakers.py::NativeToolkitTweakerTests",
@@ -7441,7 +7860,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 3,
       "sites": [
         {
           "scope": "tests/test_toolkit_database_csv_native_batch.py::NativeBatchColdLoadTests",
@@ -8359,7 +8778,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 13,
       "sites": [
         {
           "scope": "tests/test_wireless_gateway.py::WirelessGatewayNativeTest",
@@ -8392,7 +8811,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 1,
+      "native_selected_tests": 9,
       "sites": [
         {
           "scope": "tests/test_wireless_unit_globals.py::WirelessGlobalsNativeTest",

@@ -78,6 +78,12 @@ def _light_level_options(parser):
     parser.add_argument("--indicator", dest="ll_indicator", choices=("light-level", "on-off", "enable"))
     parser.add_argument("--target-lux", dest="ll_target_lux", type=_number, help="0..2000 lux; stored as Ceil(lux/10)")
     parser.add_argument("--margin-percent", dest="ll_margin_percent", type=_number, help="0..100")
+    parser.add_argument("--broadcast-interval-seconds", dest="ll_broadcast_interval_seconds", type=_number,
+                        help="Block 5 broadcast interval, 10..65535 seconds; preserves other timers")
+    parser.add_argument("--power-up", dest="ll_power_up", choices=("disabled", "enabled", "resume"),
+                        help="Light-level maintenance state after power failure, with the Toolkit save order")
+    parser.add_argument("--status-report-interval", dest="ll_status_report_interval", type=_number,
+                        help="Global status-report interval, native integer 3..255 seconds")
 
 
 def offline_options(sensor_ops):
@@ -125,7 +131,9 @@ def light_level_settings(args):
                 "broadcast_group": args.ll_broadcast_group, "enable_group": args.ll_enable_group,
                 "on_off_application": args.ll_on_off_application,
                 "indicator": args.ll_indicator.replace("-", "_") if args.ll_indicator else None,
-                "target_lux": args.ll_target_lux, "margin_percent": args.ll_margin_percent}
+                "target_lux": args.ll_target_lux, "margin_percent": args.ll_margin_percent,
+                "broadcast_interval_seconds": args.ll_broadcast_interval_seconds, "power_up": args.ll_power_up,
+                "status_report_interval": args.ll_status_report_interval}
     return {k: v for k, v in settings.items() if v is not None}
 
 

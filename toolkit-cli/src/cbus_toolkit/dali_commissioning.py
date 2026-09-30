@@ -9,14 +9,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 from typing import Any, Iterable
 from uuid import uuid4
 
 from .cgate import CGateError
 from .pci_selected_serial import _Journal
 from .programming import quote_value
+from . import dali_extended_proxy as extended_proxy
 
 
 EXTRACT_TYPES = (
@@ -118,11 +121,32 @@ def validated_edits(edits: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return result
 
 
+def _read_regular(path, limit, context):
+    """Bound the opened inode and refuse substituted paths without FIFO waits."""
+    path = Path(path)
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"{context} must be a regular file")
+        if before.st_size > limit:
+            raise ValueError(f"{context} exceeds its size bound")
+        with os.fdopen(descriptor, "rb", closefd=False) as source:
+            raw = source.read(limit + 1)
+        after = os.fstat(descriptor)
+        current = path.lstat()
+        identity = lambda value: (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns)
+        if not stat.S_ISREG(current.st_mode) or identity(before) != identity(after) or identity(after) != identity(current):
+            raise ValueError(f"{context} changed while it was read")
+        if len(raw) > limit:
+            raise ValueError(f"{context} exceeds its size bound")
+        return raw
+    finally:
+        os.close(descriptor)
+
+
 def load_edits(path: Path) -> list[dict[str, Any]]:
-    with Path(path).open("rb") as source:
-        raw = source.read(MAX_EDITS_BYTES + 1)
-    if len(raw) > MAX_EDITS_BYTES:
-        raise ValueError("DALI edits file exceeds 1 MiB")
+    raw = _read_regular(path, MAX_EDITS_BYTES, "DALI edits file")
     try:
         value = _parse_json(raw.decode("utf-8"))
     except (UnicodeError, json.JSONDecodeError) as error:
@@ -142,9 +166,13 @@ def deployment_edit_dispositions(edits, line, addresses, *, dry_run):
     for edit in edits:
         if "address" in edit:
             result.append({"kind": "extended", "address": edit["address"],
+                           "byte_count": len(edit["bytes"]),
                            "disposition": "planned-extended-device-bytes"})
             continue
         path = edit["path"]
+        if path.startswith(extended_proxy.PREFIX):
+            result.append(extended_proxy.edit_disposition(edit))
+            continue
         match = _ECG_PROPERTY.fullmatch(path)
         if match is None:
             if dry_run:
@@ -159,7 +187,7 @@ def deployment_edit_dispositions(edits, line, addresses, *, dry_run):
             raise ValueError("DALI edit is outside the selected ECG addresses")
         suffix = match[3]
         structure, _, field = suffix.partition("/")
-        scene = re.fullmatch(r"scene/([0-9]+)/level", suffix)
+        scene = re.fullmatch(r"scene/([0-9]+)(/level)?", suffix)
         limit, device_type, step = 255, None, None
         if structure == "commonParams102" and field in _COMMON_FIELDS:
             limit = 65535 if field.endswith("Bitmask16") else 255
@@ -177,6 +205,10 @@ def deployment_edit_dispositions(edits, line, addresses, *, dry_run):
         else:
             raise ValueError("DALI property is not consumed by the native typed deployment plan")
         value = edit["value"]
+        if scene is not None and scene[2] is None:
+            if not isinstance(value, dict) or set(value) != {"level"}:
+                raise ValueError("DALI scene creation requires exactly a level field")
+            value = value["level"]
         if device_type == "LED":
             if value not in ("LINEAR", "LOGARITHMIC"):
                 raise ValueError("LED dimmCurve must be LINEAR or LOGARITHMIC")
@@ -204,6 +236,30 @@ def _selection(target, line, extract_type, addresses):
             raise ValueError("DALI ECG selection must contain 1..64 distinct addresses in 0..63")
         addresses = list(addresses)
     return target, addresses
+
+
+def deployment_preflight(edits, line, addresses, *, extract_type, deploy_type, dry_run):
+    """Share the complete offline deployment admission with CLI preconnect."""
+    if type(dry_run) is not bool or deploy_type not in DEPLOY_TYPES:
+        raise ValueError("DALI deployment needs a supported deploy type and Boolean dry_run")
+    if extract_type not in READ_ONLY_EXTRACT_TYPES:
+        raise ValueError("Deployment's initial extraction must be read-only")
+    if deploy_type == "EXT_ONLY" and any("path" in edit and not edit["path"].startswith(extended_proxy.PREFIX) for edit in edits):
+        raise ValueError("EXT_ONLY deployment cannot contain typed model edits")
+    if deploy_type == "DALI_ONLY" and any("address" in edit for edit in edits):
+        raise ValueError("DALI_ONLY deployment cannot contain extended-byte edits")
+    dispositions = deployment_edit_dispositions(edits, line, addresses, dry_run=dry_run)
+    if not dry_run and any("address" in edit and any(extended_proxy.static_excluded(address)
+                for address in range(edit["address"], edit["address"] + len(edit["bytes"]))) for edit in edits):
+        raise ValueError("Requested gateway byte is statically excluded by the native dirty-write mask")
+    proxy_edits = [row for row in dispositions if row["kind"] == "proxy"]
+    if proxy_edits:
+        if deploy_type == "DALI_ONLY" or extract_type not in ("EXT_ONLY", "FULL"):
+            raise ValueError("Typed gateway proxy edits require EXT_ONLY/FULL deployment and an EXT_ONLY/FULL initial extraction")
+        owned = {address for row in proxy_edits for address in row["family_addresses"]}
+        if any("address" in edit and owned.intersection(range(edit["address"], edit["address"] + len(edit["bytes"]))) for edit in edits):
+            raise ValueError("DALI raw bytes and typed proxy edits overlap the same native family")
+    return dispositions
 
 
 def _reply(response) -> dict[str, Any]:
@@ -265,6 +321,19 @@ def _same_json(left, right):
 
 def _admit_model_dispositions(model, dispositions):
     for disposition in dispositions:
+        if disposition["kind"] == "extended":
+            memory = model.get("extParams", {})
+            for address in range(disposition["address"], disposition["address"] + disposition["byte_count"]):
+                if (extended_proxy.byte_excluded(model, address)
+                        and memory.get("targetValues", {}).get(str(address)) != memory.get("values", {}).get(str(address))):
+                    raise DaliCommissioningError(f"Requested gateway byte {address} is excluded by the native dirty-write mask")
+            continue
+        if disposition["kind"] == "proxy":
+            try:
+                extended_proxy.check_effective_field(model, disposition)
+            except ValueError as error:
+                raise DaliCommissioningError(str(error)) from error
+            continue
         if disposition["disposition"] != "planned-native-device-field":
             continue
         prefix = f"/cdg/daliLines/{disposition['line_index']}/daliEcgs/{disposition['ecg_slot']}"
@@ -286,6 +355,15 @@ def _admit_model_dispositions(model, dispositions):
             membership = params.get("sceneMembershipBitmask16") if isinstance(params, dict) else None
             if type(membership) is not int or membership & (1 << disposition["scene_index"]) == 0:
                 raise DaliCommissioningError("Requested scene level is excluded by its staged scene membership")
+        if disposition["path"].endswith("/commonParams102/sceneMembershipBitmask16"):
+            membership = ecg["commonParams102"]["sceneMembershipBitmask16"]
+            scenes = ecg.get("scene", [])
+            for index in range(16):
+                if membership & (1 << index):
+                    scene = scenes[index] if isinstance(scenes, list) and len(scenes) > index else None
+                    level = scene.get("level") if isinstance(scene, dict) else None
+                    if type(level) is not int or not 0 <= level <= 254:
+                        raise DaliCommissioningError("Scene membership needs a representable level in every enabled scene; create its scene object before deployment")
 
 
 class DaliCommissioning:
@@ -376,6 +454,7 @@ class DaliCommissioning:
             "dali_session_typed_extract_plans", "dali_session_typed_deploy_plans",
             "dali_session_conditional_extract_commit", "dali_session_typed_deploy_failure",
             "dali_session_typed_deploy_readback", "dali_commissioning_journal",
+            "dali_session_extended_proxy",
         )
         evidence["capabilities"] = {name: capabilities.get(name) for name in names}
         requirements = [
@@ -409,6 +488,24 @@ class DaliCommissioning:
                 (capabilities.get("dali_session_typed_deploy_readback") == "none-native",
                  "unknown DALI deployment readback contract"),
             ])
+        proxy_edits = [row for row in evidence.get("edit_dispositions", []) if row["kind"] == "proxy"]
+        if proxy_edits:
+            contract = capabilities.get("dali_session_extended_proxy")
+            families = contract.get("families") if isinstance(contract, dict) else None
+            requirements.append((isinstance(families, list) and all(row["family"] in families for row in proxy_edits)
+                                 and contract.get("native_reserved_bits") is True
+                                 and contract.get("excluded_bytes") is True,
+                                 "DALI native extended-proxy serializer is unavailable"))
+            schema = contract.get("writable_global_fields") if isinstance(contract, dict) else None
+            indexed = {row.get("path"): row for row in schema if isinstance(row, dict)} if isinstance(schema, list) else {}
+            for edit in evidence["edits"]:
+                if edit.get("path", "").startswith(extended_proxy.PREFIX):
+                    address, maximum, boolean = extended_proxy.FIELDS[edit["path"][len(extended_proxy.PREFIX):]]
+                    advertised = indexed.get(edit["path"], {})
+                    requirements.append((advertised.get("address") == address
+                        and advertised.get("type") == ("boolean" if boolean else "integer")
+                        and advertised.get("minimum") == 0 and advertised.get("maximum") == maximum,
+                        "DALI server proxy field ownership does not match this reviewed CLI plan"))
         if conditional or deploy_type is not None:
             requirements.append((capabilities.get("dali_commissioning_journal") ==
                                  "cmqttd-dali-commissioning-journal-v1",
@@ -543,17 +640,8 @@ class DaliCommissioning:
                extract_type="DALI_ONLY", addresses=None, dry_run=False, journal=None):
         target, addresses = _selection(target, line, extract_type, addresses)
         edits = validated_edits(edits)
-        if type(dry_run) is not bool or deploy_type not in DEPLOY_TYPES:
-            raise ValueError("DALI deployment needs a supported deploy type and Boolean dry_run")
-        if extract_type not in READ_ONLY_EXTRACT_TYPES:
-            raise ValueError("Deployment's initial extraction must be read-only")
-        if deploy_type == "EXT_ONLY" and any("path" in edit for edit in edits):
-            raise ValueError("EXT_ONLY deployment cannot contain typed model edits")
-        if deploy_type == "DALI_ONLY" and any("address" in edit for edit in edits):
-            raise ValueError("DALI_ONLY deployment cannot contain extended-byte edits")
-        if deploy_type == "FULL" and any(edit.get("path", "").startswith("/catalog/") for edit in edits):
-            raise ValueError("FULL deployment after catalogue edits is unsupported by cmqttd")
-        dispositions = deployment_edit_dispositions(edits, line, addresses, dry_run=dry_run)
+        dispositions = deployment_preflight(edits, line, addresses, extract_type=extract_type,
+                                           deploy_type=deploy_type, dry_run=dry_run)
         if not dry_run and journal is None:
             raise ValueError("DALI deployment requires an exclusive --journal before device writes")
         if journal is not None and Path(journal).exists():
@@ -615,10 +703,7 @@ class DaliCommissioning:
         them, device atomicity, unedited native deploy fields or persistence.
         """
         path = Path(journal)
-        with path.open("rb") as source:
-            raw = source.read(16 * 1024 * 1024 + 1)
-        if len(raw) > 16 * 1024 * 1024:
-            raise ValueError("DALI attempt journal exceeds 16 MiB")
+        raw = _read_regular(path, 16 * 1024 * 1024, "DALI attempt journal")
         try:
             saved = _parse_json(raw.decode("utf-8"))
         except (UnicodeError, json.JSONDecodeError) as error:
@@ -656,8 +741,8 @@ class DaliCommissioning:
                     or observation.get("path" if "path" in edit else "address") != edit.get("path", edit.get("address"))):
                 raise ValueError("DALI journal pre-edit observations do not match its edits")
         if extract_type is None:
-            has_extended = any("address" in edit for edit in edits)
-            has_typed = any("path" in edit for edit in edits)
+            has_extended = any("address" in edit or edit.get("path", "").startswith(extended_proxy.PREFIX) for edit in edits)
+            has_typed = any("path" in edit and not edit["path"].startswith(extended_proxy.PREFIX) for edit in edits)
             extract_type = "FULL" if has_extended and has_typed else "EXT_ONLY" if has_extended else "DALI_ONLY"
         if extract_type not in READ_ONLY_EXTRACT_TYPES:
             raise ValueError("Recovery must use a read-only extraction type")
@@ -684,7 +769,7 @@ class DaliCommissioning:
             row["path" if "path" in edit else "address"] = edit.get("path", edit.get("address"))
             try:
                 actual = _edit_observations(model, [edit])[0]["value"]
-                readable = not ("address" in edit and any(value is None for value in actual))
+                readable = actual is not None and not ("address" in edit and any(value is None for value in actual))
             except ValueError:
                 actual, readable = None, False
             row["observed"] = actual

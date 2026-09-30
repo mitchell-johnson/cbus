@@ -314,7 +314,8 @@ def probe_daemon(binary: Path, native: dict):
         with socket.socket() as broker, sim.running() as pci:
             broker.bind(("127.0.0.1", 0))
             broker.listen(1)
-            with (scratch / "cmqttd.log").open("w+") as log:
+            log_path = scratch / "cmqttd.log"
+            with log_path.open("w") as log:
                 process = subprocess.Popen([
                     str(binary), "--tcp", f"{pci[0]}:{pci[1]}",
                     "--broker-address", "127.0.0.1", "--broker-port", str(broker.getsockname()[1]),
@@ -326,8 +327,7 @@ def probe_daemon(binary: Path, native: dict):
                     deadline = time.monotonic() + 15
                     port = None
                     while time.monotonic() < deadline:
-                        log.seek(0)
-                        output = log.read()
+                        output = log_path.read_text(encoding="utf-8")
                         match = DAEMON_LISTEN_RE.search(output)
                         if match:
                             port = int(match[1])

@@ -11,11 +11,14 @@ research/sensor_margin_original.py.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
 import struct
 import sys
+
+import pefile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pir_sensor_review import Review  # noqa: E402
@@ -181,6 +184,14 @@ class LightLevelReview(Review):
             body, body_span = self.code(DIALOG + handler)
             exclusions[handler] = {'sha256': body_span, 'compares': sorted({self.call_name(i).rsplit('.', 1)[1]
                                    for i in body if i.mnemonic == 'call' and self.call_name(i)})}
+        block_prefix = 'CIS_TInputKey.TInputBlock.'
+        collision, collision_span = self.code(block_prefix + 'RefreshBlockApplicationFromBlockSecondary')
+        collision_calls = [self.call_name(i) for i in collision if i.mnemonic == 'call' and self.call_name(i)]
+        if (not all(name in collision_calls for name in ('CIS_TInputKey.TInputKey.AddBlock',
+                                                         'CIS_TInputKey.TInputKey.RemoveBlock',
+                                                         block_prefix + 'SetGroup'))
+                or not any(i.mnemonic == 'mov' and i.op_str == 'edx, 0xff' for i in collision)):
+            raise ValueError('Unexpected native application-collision key/group reassignment')
         if (hidden != ['tsBankSwitch', 'tsBlocks', 'tsEnvironment', 'tsIndicators', 'tsKeyFunctions',
                        'tsLightLevel', 'tsOccupancy', 'tsScenes'] or clamp != [200] or lux_clamp != [2000]
                 or divisor != [10.0] or rounding != ['Math.Ceil'] or toggled != [2, 2]):
@@ -197,16 +208,184 @@ class LightLevelReview(Review):
                            'entered_lux_clamp': lux_clamp[0], 'entered_lux_sha256': byte_span,
                            'lux_to_byte': 'Math.Ceil(lux / 10.0) for 0..2550', 'lux_to_byte_sha256': convert_span},
                 'group_combo_exclusions': exclusions,
+                'application_collision': {'sha256': collision_span, 'calls': collision_calls,
+                    'native_behavior': 'a matching destination block receives shared key allocations; '
+                                       'the switched block group is cleared to 255',
+                    'portable_behavior': 'refuse before PP mutation; key-block reassignment is not modelled'},
                 'exclusion_rule': ('A group combo omits groups other than 255 that another block or the maintenance '
                                    'enable group already uses, except its own current value; the enable combo '
                                    'omits groups used by any block.')}
+
+    def broadcast_and_power_fail(self):
+        """Pin the selected broadcast block, timer writer and inherited save order."""
+        names = {
+            'broadcast_dialog': DIALOG + 'HandleBroadcastBlockExtensionClick',
+            'timer_dialog_save': 'CIS_TfrmBlockTimer.TfrmBlockTimer.GetValues',
+            'timer_bytes_save': 'CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.SaveTimerHighAndLowBytes',
+            'power_fail_load': 'CIS_TCBusST7SensorCGateAgent.LoadPowerFail',
+            'power_fail_save': 'CIS_TCBusST7SensorCGateAgent.SavePowerFail',
+            'multisensor_save': 'CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation',
+            'light_level_save': AGENT + 'BeforeSaveProgrammingInformation',
+            'timer_change': 'CIS_TInputKey.TInputBlock.HandleTimerAfterChange',
+            'timer_minimum_change': 'CIS_TInputKey.TInputBlock.HandleTimerMinAfterChange',
+            'timer_read': 'CIS_TInputKey.TInputBlock.GetTimer',
+            'timer_minimum_read': 'CIS_TInputKey.TInputBlock.GetTimerMin',
+            'timer_write': 'CIS_TInputKey.TInputBlock.SetTimer',
+            'timer_dialog_limits': 'CIS_TfrmBlockTimer.TfrmBlockTimer.SetValue_ExpiryTime',
+            'timer_dialog_encode': 'CIS_TfrmBlockTimer.TfrmBlockTimer.EncodeExpiryTime',
+            'timer_seconds_encode': 'CIS_Dates.EncodeCBusTime',
+        }
+        methods = {}
+        for key, name in names.items():
+            code, span = self.code(name)
+            methods[key] = {'sha256': span, 'calls': [self.call_name(i) for i in code
+                                                   if i.mnemonic == 'call' and self.call_name(i)]}
+        broadcast, _ = self.code(names['broadcast_dialog'])
+        blocks = [broadcast[p - 1].op_str for p, i in enumerate(broadcast)
+                  if self.call_name(i).endswith('TInputBlockCollection.GetItem')]
+        required = ('TfrmBlockTimer.SetBlock', 'TfrmBlockTimer.DisableTimerSubFunctions',
+                    'TfrmBlockTimer.DisableTimerFunctions', 'TfrmBlockTimer.Execute')
+        calls = methods['broadcast_dialog']['calls']
+        if blocks != ['edx, 4'] or not all(any(c.endswith(suffix) for c in calls) for suffix in required):
+            raise ValueError('Unexpected broadcast interval dialog contract')
+        if self.agent[0x204] != 'PECLevelStore' or self.agent[0x1f0] != 'PECEnablerGroupLogic':
+            raise ValueError('Unexpected power-fail agent members')
+        light_calls = methods['light_level_save']['calls']
+        if light_calls.index(names['multisensor_save']) >= light_calls.index(AGENT + 'PrepareForcedParameters'):
+            raise ValueError('Unexpected inherited/forced save order')
+        if not any(c.endswith('SavePowerFail') for c in methods['multisensor_save']['calls']):
+            raise ValueError('Missing inherited power-fail save')
+        for key in ('timer_change', 'timer_minimum_change'):
+            body, _ = self.code(names[key])
+            calls = methods[key]['calls']
+            if (calls != [names['timer_read'], names['timer_minimum_read'], names['timer_minimum_read'],
+                          names['timer_write']] or not any(i.mnemonic == 'cmp' and i.op_str == 'bx, ax' for i in body)
+                    or not any(i.mnemonic == 'jae' for i in body)):
+                raise ValueError('Unexpected loaded broadcast timer minimum clamp')
+        limits, _ = self.code(names['timer_dialog_limits'])
+        maximum = next(p for p, i in enumerate(limits)
+                       if i.mnemonic == 'call' and self.call_name(i).endswith('SetMaxTime'))
+        if ([i.op_str for i in limits[:maximum] if i.mnemonic == 'mov' and i.op_str in
+             ('cx, 0xf', 'dx, 0xc', 'ax, 0x12')] != ['cx, 0xf', 'dx, 0xc', 'ax, 0x12']
+                or not any(c.endswith('SetMinTime') for c in methods['timer_dialog_limits']['calls'])):
+            raise ValueError('Unexpected timer dialog maximum 18:12:15')
+        encode, _ = self.code(names['timer_seconds_encode'])
+        if (sum(i.mnemonic == 'imul' and i.op_str.endswith(', 0x3c') for i in encode) != 3
+                or not any(i.mnemonic == 'cmp' and i.op_str == 'dword ptr [ebp - 0xc], 0xffff' for i in encode)
+                or not any(i.mnemonic == 'ja' for i in encode)
+                or names['timer_seconds_encode'] not in methods['timer_dialog_encode']['calls']):
+            raise ValueError('Unexpected unsigned 16-bit seconds encoding')
+        return {'methods': methods,
+                'broadcast': {'block_index': 4, 'minimum_seconds': 10, 'maximum_seconds': 65535,
+                              'expiry_and_key_functions_editable': False,
+                              'parameters': ['TimerHighByte[4]', 'TimerLowByte[4]'],
+                              'loaded_timer_rule': 'max(10, TimerHighByte[4]*256 + TimerLowByte[4])',
+                              'maximum_time': [18, 12, 15]},
+                'power_fail': {'states': ['disabled', 'enabled', 'resume'], 'light_level_index': 9,
+                               'store_parameter': 'PECLevelStore', 'polarity_parameter': 'PECEnablerGroupLogic',
+                               'load': 'resume if store; otherwise disabled when (level == 255) equals polarity',
+                               'save': 'resume sets store; other states clear store and save 0/255 using loaded polarity',
+                               'forced_save_afterwards': 'PECEnablerGroupLogic=0; LightLevel[8]=0; PIRLevelStore=0',
+                               'reloaded_state_can_differ': True}}
+
+    def global_status_interval(self):
+        """Pin the SENLL Global selector, its enabling rules and native PP property."""
+        global_ = 'CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.'
+        input_ = 'CIS_TCBusInputUnit.TCBusInputUnit.'
+        agent = 'CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.'
+        names = {
+            'senll_global_construct': DIALOG + 'InitialiseSubFormGlobals',
+            'global_initialise': global_ + 'Initialise',
+            'global_setup': global_ + 'SetupNonFlashComponents',
+            'global_populate': global_ + 'PopulateNonFlashComponents',
+            'global_change': global_ + 'HandleStatusReportComboChange',
+            'integer_to_text': 'CIS_ICBusInputUnit.StatusReportIntegerToString',
+            'text_to_integer': 'CIS_ICBusInputUnit.StatusReportStringToInteger',
+            'unit_get': input_ + 'GetStatusReportInterval',
+            'unit_set': input_ + 'SetStatusReportInterval',
+            'agent_create': agent + 'CreateAttributeStatusReportInterval',
+            'agent_load': agent + 'LoadStatusReportInterval',
+            'agent_save': agent + 'SaveStatusReportInterval',
+            'input_save': agent + 'BeforeSaveProgrammingInformation',
+            'learn_mode_enabled': KEYS + 'LearnModePropertiesEnabled',
+        }
+        bodies, methods = {}, {}
+        for key, name in names.items():
+            code, span = self.code(name)
+            bodies[key] = code
+            methods[key] = {'sha256': span, 'calls': [self.call_name(i) for i in code
+                                                   if i.mnemonic == 'call' and self.call_name(i)]}
+        # The Global constructor uses TfrmLearnUnitGlobal, not the distinct
+        # general input-unit Global form or embedded learn-mode child frame.
+        frame = self.u32(0xfb1774)
+        frame_symbol = self.symbols[frame - 0x58]
+        controls = self.fields(frame_symbol)
+        if (self.class_name(frame - 0x58) != 'TfrmLearnUnitGlobal'
+                or controls[0x29c] != 'cmbStatusReportInterval'
+                or methods['senll_global_construct']['calls'][-1] != names['global_initialise']
+                or self.symbols[self.u32(self.names['CIS_TSENLL..TST7SENLL'] + 0x58 + 0x160)]
+                   != names['learn_mode_enabled']
+                or self.constant(names['learn_mode_enabled'], byte=True) is not False):
+            raise ValueError('Unexpected SENLL Global constructor/learn-mode capability')
+        setup = bodies['global_setup']
+        required = [('mov', 'byte ptr [ebp - 5], 3'), ('inc', 'byte ptr [ebp - 5]'),
+                    ('cmp', 'byte ptr [ebp - 5], 0'), ('call', 'dword ptr [edx + 0x160]')]
+        hidden = [controls[int(MEMBER.fullmatch(setup[p - 2].op_str)[1], 16)] for p, i in enumerate(setup)
+                  if i.mnemonic == 'call' and self.call_name(i).endswith('SetVisible')]
+        if (not all(any((i.mnemonic, i.op_str) == pair for i in setup) for pair in required)
+                or hidden != ['frmUnitGlobalLearnModeNEW1', 'grpLearnMode']
+                or methods['global_change']['calls'][:3] != ['Controls.TControl.GetText', names['text_to_integer'],
+                                                           names['unit_set']]
+                or names['integer_to_text'] not in methods['global_setup']['calls']
+                or names['unit_get'] not in methods['global_populate']['calls']):
+            raise ValueError('Unexpected Global integer selector/change contract')
+        if (self.agent[0xf4] != 'StatusReportInterval' or self.literal(0xcc650c) != 'StatusReportInterval'
+                or names['unit_set'] not in methods['agent_load']['calls']
+                or names['unit_get'] not in methods['agent_save']['calls']
+                or names['agent_save'] not in methods['input_save']['calls']):
+            raise ValueError('Unexpected StatusReportInterval PP property mapping')
+        formatted = bodies['integer_to_text']
+        if not any(i.mnemonic == 'cmp' and i.op_str == 'dword ptr [ebp - 4], 3' for i in formatted):
+            raise ValueError('Unexpected Global interval display minimum')
+        # Resolve the exact original ResourceString used as the number suffix.
+        # Keep only its identity/hash and derived unit in the sanitized receipt.
+        resource = self.u32(self.u32(0x13c1b3c) + 4)
+        self.image.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_RESOURCE']])
+        suffixes = []
+        for group in self.image.DIRECTORY_ENTRY_RESOURCE.entries:
+            if group.id != 6:
+                continue
+            for block in group.directory.entries:
+                if block.id != resource // 16 + 1:
+                    continue
+                for language in block.directory.entries:
+                    raw = self.image.get_data(language.data.struct.OffsetToData, language.data.struct.Size)
+                    offset = 0
+                    for index in range(16):
+                        length = struct.unpack_from('<H', raw, offset)[0]
+                        offset += 2
+                        value = raw[offset:offset + 2 * length]
+                        offset += 2 * length
+                        if index == resource % 16:
+                            suffixes.append(value)
+        if len(suffixes) != 1 or suffixes[0].decode('utf-16le') != ' secs':
+            raise ValueError('Unexpected source-pinned status interval display unit')
+        return {'methods': methods, 'frame': self.class_name(frame - 0x58),
+                'status_report_interval': {'control': controls[0x29c], 'parameter': 'StatusReportInterval',
+                                           'minimum': 3, 'maximum': 255, 'unit': 'seconds', 'conversion': 'native integer',
+                                           'resource_string_id': resource,
+                                           'resource_string_utf16le_sha256': hashlib.sha256(suffixes[0]).hexdigest(),
+                                           'loaded_display_minimum': 3,
+                                           'loaded_below_minimum_writeback_verified': False},
+                'learn_mode_controls_visible': False, 'status_interval_control_hidden_by_learn_mode': False,
+                'hidden_controls': hidden, 'original_gui_execution': False}
 
 
 def review(exe_path, map_path):
     toolkit = LightLevelReview(Path(exe_path), Path(map_path))
     forced, forced_span = toolkit.forced()
     return {
-        'format': 'cbus-light-level-sensor-review-v1',
+        'format': 'cbus-light-level-sensor-review-v3',
         'original_execution': False,
         'inputs': {'CBusToolkit.exe': EXE_SHA256, 'CBusToolkit.map': MAP_SHA256},
         'save': {'prepare_forced_parameters': {'sha256': forced_span, 'writes': forced},
@@ -215,12 +394,17 @@ def review(exe_path, map_path):
                            'sensor-margin-original-vectors.json'},
         'unit': toolkit.unit(),
         'dialog': toolkit.dialog(),
+        'broadcast_and_power_fail': toolkit.broadcast_and_power_fail(),
+        'global_status_interval': toolkit.global_status_interval(),
         'limits': [
             'Static EXE/MAP analysis only; no Toolkit dialog or save was executed.',
             'Base Neo/NeoPro block, timer and bank serialization is assumed to round-trip loaded values; '
             'only the save steps named here are source-recovered.',
-            'The broadcast interval (block 5 timer), Global and Power Fail tabs and ambient light '
-            'reading are not modelled.',
+            'Ambient light reading is not modelled. Global status-report interval edits are source-pinned; '
+            'stored interval values below 3 require an explicit admitted selection because original '
+            'Global initialization callback writeback is unverified. The broadcast timer and '
+            'light-level Power Fail state have source-pinned parameter behavior; GUI execution '
+            'and physical timing/power-failure behavior are not established.',
         ],
     }
 

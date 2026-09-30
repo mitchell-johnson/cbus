@@ -275,15 +275,26 @@ Each setter uses the default AUTO budget: EXECUTE, then at most 10 polls
   replayed. The final line names how many planned writes were confirmed,
   the last confirmed write and the write where the plan stopped.
 
-`FULL` then runs the verified `EXT_ONLY` writer on the dirty extended bytes.
-With none, it prints native's `126-no dirty bytes detected`. Native
-re-serializes its typed extended proxy first. cmqttd has no such serializer,
-so `FULL` refuses before I/O while the session has unsaved catalogue edits
-(`DALI SESSION CATALOG ADD/REMOVE` or a `SET` below `/catalog`). As in native,
+`FULL` then runs the extended writer on dirty, non-excluded bytes after
+compiling the complete recalled native extended proxy. With none, it prints
+native's `126-no dirty bytes detected`. The compiler covers 21 global families
+and 15 line families, including unchanged-family normalization, reserved bits,
+native inverse-map precedence and conditional byte exclusions. Executed
+original-runtime vectors compare decoding, every proxy-owned target byte and
+the final dirty-write effects. Catalogue changes remain separate session
+metadata and do not themselves serialize into the CDG proxy. As in native,
 the command's gateway becomes the session target once the plan starts. A
 completed plan clears `modelDirty` when the session was not edited during the
 deploy; a failed plan leaves it set. Neither native nor cmqttd reads the
-written fields back.
+written typed ECG fields back. Extended writes do confirm each chunk by
+gateway RECALL; that confirmation does not establish downstream persistence.
+
+`CMQTT CAPABILITIES` includes `dali_session_extended_proxy`, with the exact
+133 writable global leaf paths, bounds and native ownership. Unknown recalled
+families are preserved; edits needing missing source bytes, whole proxy
+replacement and raw/proxy ownership conflicts are refused. Literal raw-only
+`EXT_ONLY` does not implicitly compile the proxy. These declared admission
+and safety boundaries keep the full compatibility flag false.
 
 ## DALI commissioning journal
 
@@ -490,8 +501,9 @@ the state of a device after a partial plan.
 - Physical acceptance needs a real gateway with an unaddressed ballast for
   `ADDRESS_UNKNOWN`, and live ECGs for typed deployment. No downstream DALI
   device state, persistence, or behavior after a partial deploy is evidenced.
-- `FULL` refuses after catalogue edits until cmqttd can re-serialize the
-  native typed extended proxy.
+- Complete native `SET` shapes, line-field physical CLI admission and original
+  Toolkit commissioning workflows remain open. The exact declared global-leaf
+  admission does not establish full editor parity.
 - The recovered colour steps (operations 99 and 100) are in no native plan
   and are not implemented.
 - cmqttd does not emit native's per-exchange debug rows during session plans.
@@ -533,6 +545,12 @@ the state of a device after a partial plan.
   and CLI contracts. `test_cmqtt_dali_commissioning_interop.py` drives the
   production client through the real daemon against independent scripted
   gateway replies, including deployment failure and read-only recovery.
+- The [merged acceptance receipt](../toolkit-cli/docs/dali-senll-merged-acceptance-summary.json)
+  binds the final daemon binary, source and installed-wheel checks, including
+  all 133 admitted global proxy fields, partial STORE failure and read-only
+  recovery. Its retained initial failures distinguish corrected client
+  admission from fixture staging, stderr parsing and bounded timeout changes.
+  Later metadata-only wheel checks retain their separate provenance.
 
 Research and tests use loopback fixtures only. They do not contact a real
 C-Bus network.

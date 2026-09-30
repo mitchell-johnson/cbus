@@ -4,7 +4,7 @@ from pathlib import Path
 from .dali_commissioning import (
     CONDITIONAL_EXTRACT_TYPES, DEPLOY_TYPES, EXTRACT_TYPES, LINES,
     READ_ONLY_EXTRACT_TYPES, DaliCommissioning, dali_target, load_edits,
-    deployment_edit_dispositions,
+    deployment_preflight,
 )
 
 
@@ -53,14 +53,8 @@ def preconnect(args):
     edits = load_edits(args.edits)
     if not args.dry_run and args.journal is None:
         raise ValueError("DALI deployment requires --journal unless --dry-run")
-    # The API repeats complete validation before service or physical requests.
-    if args.deploy_type == "EXT_ONLY" and any("path" in edit for edit in edits):
-        raise ValueError("EXT_ONLY deployment cannot contain typed model edits")
-    if args.deploy_type == "DALI_ONLY" and any("address" in edit for edit in edits):
-        raise ValueError("DALI_ONLY deployment cannot contain extended-byte edits")
-    if args.deploy_type == "FULL" and any(edit.get("path", "").startswith("/catalog/") for edit in edits):
-        raise ValueError("FULL deployment after catalogue edits is unsupported by cmqttd")
-    deployment_edit_dispositions(edits, args.line, args.ecg, dry_run=args.dry_run)
+    deployment_preflight(edits, args.line, args.ecg, extract_type=args.extract_type,
+                         deploy_type=args.deploy_type, dry_run=args.dry_run)
     return edits
 
 

@@ -1,6 +1,7 @@
 from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -11,7 +12,10 @@ from cbus_toolkit.cli import _cgate_timeout, build_parser, main
 from cbus_toolkit.dali_commissioning import (
     CONDITIONAL_EXTRACT_TYPES, EXTRACT_TYPES, READ_ONLY_EXTRACT_TYPES,
     DaliCommissioning, DaliCommissioningError, load_edits, validated_edits,
+    deployment_edit_dispositions,
 )
+from cbus_toolkit import dali_extended_proxy
+from cbus_toolkit.dali_commissioning_cli import preconnect
 
 
 TARGET = "//TEST/254/p/20"
@@ -123,7 +127,7 @@ class ScriptedService:
                 path = tokens[4].strip("/").split("/")
                 for component in path[:-1]:
                     selected = selected[int(component)] if isinstance(selected, list) else selected[component]
-                selected[path[-1]] = value
+                selected[int(path[-1]) if isinstance(selected, list) else path[-1]] = value
             if self.advance_generation_on_set:
                 self.caps["pci_generation"] += 1
             return response("200 OK.")
@@ -425,6 +429,64 @@ class DaliCommissioningTests(unittest.TestCase):
             self.workflow.recover(path)
         self.assertEqual(self.service.commands, [])
 
+    def test_proxy_plan_requires_runtime_owned_schema_and_fresh_extended_seed(self):
+        path = "/cdg/extParams/proxy/deviceID/id"
+        edits = [{"path": path, "value": 42}]
+        with self.assertRaisesRegex(ValueError, "initial extraction"):
+            self.workflow.deploy(TARGET, edits, deploy_type="EXT_ONLY", journal=self.journal())
+        self.assertEqual(self.service.commands, [])
+        with self.assertRaisesRegex(DaliCommissioningError, "serializer is unavailable"):
+            self.workflow.deploy(TARGET, edits, extract_type="EXT_ONLY", deploy_type="EXT_ONLY", journal=self.journal())
+        self.assertFalse(any(" SESSION NEW " in command for command in self.service.commands))
+        self.service.commands.clear()
+        self.service.caps["dali_session_extended_proxy"] = {
+            "families": ["deviceID"], "native_reserved_bits": True, "excluded_bytes": True,
+            "writable_global_fields": [{"path": path, "address": 556,
+                                        "type": "integer", "minimum": 0, "maximum": 255}]}
+        self.service.model_transform = lambda model: model["cdg"].update({"extParams": {"proxy": {"deviceID": {"id": 17}}}})
+        result = self.workflow.deploy(TARGET, edits, extract_type="EXT_ONLY", deploy_type="EXT_ONLY", journal=self.journal())
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["edit_dispositions"][0]["disposition"], "planned-native-gateway-proxy-field")
+        self.service.commands.clear()
+        recovered = self.workflow.recover(self.journal())
+        self.assertEqual(recovered["fresh_extraction"]["extract_type"], "EXT_ONLY")
+        self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+
+    def test_scene_membership_creation_needs_a_scene_object_with_representable_level(self):
+        mask = PROPERTY.rsplit("/", 1)[0] + "/sceneMembershipBitmask16"
+        scene = PROPERTY.split("/commonParams102")[0] + "/scene/0"
+        def empty(model):
+            ecg = model["cdg"]["daliLines"][0]["daliEcgs"][3]
+            ecg["scene"] = [None] * 16
+            ecg["commonParams102"]["sceneMembershipBitmask16"] = 0
+        self.service.model_transform = empty
+        with self.assertRaisesRegex(DaliCommissioningError, "representable level"):
+            self.workflow.deploy(TARGET, [{"path": mask, "value": 1}], journal=self.journal())
+        self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+        # The original DaliEcgScene model owns only level; replace its null slot.
+        # This mock uses the same SESSION SET list indexing as the live service.
+        self.service.commands.clear()
+        plan = deployment_edit_dispositions([{"path": scene, "value": {"level": 37}}, {"path": mask, "value": 1}], "A", [3], dry_run=False)
+        self.assertEqual(plan[0]["scene_index"], 0)
+        self.assertEqual(plan[0]["step"], "SET_SCENE_VALUES_ECG")
+        result = self.workflow.deploy(TARGET, [{"path": scene, "value": {"level": 37}},
+                                              {"path": mask, "value": 1}],
+                                      addresses=[3], journal=self.journal("scene.json"))
+        self.assertTrue(result["complete"])
+        self.assertIsNone(result["before_edits"][0]["value"])
+        self.assertEqual(result["staged_edits"][0]["value"], {"level": 37})
+
+    def test_excluded_raw_gateway_edits_refuse_before_session_and_dynamic_writes(self):
+        with self.assertRaisesRegex(ValueError, "statically excluded"):
+            self.workflow.deploy(TARGET, [{"address": 557, "bytes": [9]}],
+                                 extract_type="EXT_ONLY", deploy_type="EXT_ONLY", journal=self.journal())
+        self.assertEqual(self.service.commands, [])
+        self.service.device_ext.update({"7424": 1})
+        with self.assertRaisesRegex(DaliCommissioningError, "native dirty-write mask"):
+            self.workflow.deploy(TARGET, [{"address": 7424, "bytes": [2]}],
+                                 extract_type="EXT_ONLY", deploy_type="EXT_ONLY", journal=self.journal())
+        self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+
     def test_native_fixture_owns_supported_mutating_command_selectors(self):
         fixture = Path(__file__).resolve().parents[2] / "rust/testdata/fixtures/native_cgate_dali_commissioning.json"
         native = json.loads(fixture.read_text())
@@ -437,6 +499,46 @@ class DaliCommissioningTests(unittest.TestCase):
 
 
 class DaliInputAndCLITests(unittest.TestCase):
+    def test_all_global_proxy_leaf_ranges_and_raw_overlaps_refuse_before_io(self):
+        for suffix, (_, maximum, boolean) in dali_extended_proxy.FIELDS.items():
+            with self.subTest(path=suffix):
+                edit = {"path": dali_extended_proxy.PREFIX + suffix, "value": 1 if boolean else maximum + 1}
+                with self.assertRaises(ValueError):
+                    deployment_edit_dispositions([edit], "A", None, dry_run=False)
+        workflow = DaliCommissioning(ScriptedService())
+        with self.assertRaisesRegex(ValueError, "same native family"):
+            workflow.deploy(TARGET, [
+                {"path": "/cdg/extParams/proxy/lightingApplications/app1", "value": 57},
+                {"address": 515, "bytes": [255]}], deploy_type="EXT_ONLY", extract_type="EXT_ONLY", journal="unused")
+        self.assertEqual(workflow.client.commands, [])
+
+    def test_fifo_symlink_and_replaced_inputs_are_rejected_without_network_io(self):
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            fifo = folder / "fifo"
+            os.mkfifo(fifo)
+            with self.assertRaisesRegex(ValueError, "regular file"):
+                load_edits(fifo)
+            service = ScriptedService()
+            with self.assertRaisesRegex(ValueError, "regular file"):
+                DaliCommissioning(service).recover(fifo)
+            self.assertEqual(service.commands, [])
+            original = folder / "input.json"
+            original.write_text('[{"path":"' + PROPERTY + '","value":7}]')
+            link = folder / "link"
+            link.symlink_to(original)
+            with self.assertRaises(OSError):
+                load_edits(link)
+            real_open = os.open
+            replacement = folder / "replacement"
+            replacement.write_text(original.read_text())
+            def replace_after_open(path, flags):
+                descriptor = real_open(path, flags)
+                replacement.replace(original)
+                return descriptor
+            with patch("cbus_toolkit.dali_commissioning.os.open", side_effect=replace_after_open):
+                with self.assertRaisesRegex(ValueError, "changed while"):
+                    load_edits(original)
     def test_invalid_edits_are_rejected_as_a_whole(self):
         cases = [[], [{"path": PROPERTY, "value": float("nan")}],
                  [{"path": "/cdg/x[*]", "value": 1}],
@@ -478,6 +580,63 @@ class DaliInputAndCLITests(unittest.TestCase):
         result = json.loads(stream.getvalue())
         self.assertTrue(result["complete"])
         self.assertEqual(result["ecg_addresses"], [3])
+
+    def test_cli_ext_only_preconnect_admits_all_native_global_proxy_leaves(self):
+        parser = build_parser()
+        with tempfile.TemporaryDirectory() as folder:
+            edits = Path(folder) / "edits.json"
+            journal = Path(folder) / "attempt.json"
+            for suffix, (_, maximum, boolean) in dali_extended_proxy.FIELDS.items():
+                value = [{"path": dali_extended_proxy.PREFIX + suffix,
+                          "value": True if boolean else maximum}]
+                edits.write_text(json.dumps(value))
+                with self.subTest(suffix=suffix):
+                    args = parser.parse_args(["cgate", "dali", "deploy", TARGET,
+                                              "--extract-type", "EXT_ONLY", "--deploy-type", "EXT_ONLY",
+                                              "--edits", str(edits), "--journal", str(journal)])
+                    self.assertEqual(preconnect(args), value)
+                    self.assertFalse(journal.exists())
+
+    def test_cli_ext_only_proxy_deploy_and_preconnection_refusals(self):
+        path = dali_extended_proxy.PREFIX + "deviceID/id"
+        with tempfile.TemporaryDirectory() as folder:
+            edits = Path(folder) / "edits.json"
+            journal = Path(folder) / "attempt.json"
+            service = ScriptedService()
+            service.caps["dali_session_extended_proxy"] = {
+                "families": ["deviceID"], "native_reserved_bits": True, "excluded_bytes": True,
+                "writable_global_fields": [{"path": path, "address": 556,
+                                            "type": "integer", "minimum": 0, "maximum": 255}]}
+            service.model_transform = lambda model: model["cdg"].update(
+                {"extParams": {"proxy": {"deviceID": {"id": 17}}}})
+            edits.write_text(json.dumps([{"path": path, "value": 42}]))
+            stream = io.StringIO()
+            arguments = ["cgate", "dali", "deploy", TARGET,
+                         "--extract-type", "EXT_ONLY", "--deploy-type", "EXT_ONLY",
+                         "--edits", str(edits), "--journal", str(journal)]
+            with patch("cbus_toolkit.cgate.CGateClient", return_value=service), redirect_stdout(stream):
+                self.assertEqual(main(arguments), 0)
+            self.assertTrue(json.loads(stream.getvalue())["complete"])
+            self.assertTrue(any(command.startswith("DALI SESSION DEPLOY ") and command.endswith(" A EXT_ONLY")
+                                for command in service.commands))
+            journal.unlink()
+            cases = [
+                ([{"path": PROPERTY, "value": 7}], "EXT_ONLY"),
+                ([{"path": dali_extended_proxy.PREFIX + "deviceID/unknown", "value": 7}], "EXT_ONLY"),
+                ([{"path": path, "value": 256}], "EXT_ONLY"),
+                ([{"path": path, "value": True}], "EXT_ONLY"),
+                ([{"path": path, "value": 42}], "DALI_ONLY"),
+                ([{"path": path, "value": 42}, {"address": 556, "bytes": [42]}], "EXT_ONLY"),
+            ]
+            for value, initial_extract in cases:
+                edits.write_text(json.dumps(value))
+                arguments[arguments.index("--extract-type") + 1] = initial_extract
+                stream = io.StringIO()
+                with self.subTest(value=value, initial_extract=initial_extract):
+                    with patch("cbus_toolkit.cgate.CGateClient") as factory, redirect_stderr(stream):
+                        self.assertEqual(main(arguments), 1)
+                    factory.assert_not_called()
+                    self.assertFalse(journal.exists())
 
     def test_cli_interrupt_exports_attempt_receipt(self):
         with tempfile.TemporaryDirectory() as folder:

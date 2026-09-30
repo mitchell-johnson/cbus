@@ -1,5 +1,5 @@
 {
-  "format": "cbus-light-level-sensor-review-v1",
+  "format": "cbus-light-level-sensor-review-v3",
   "original_execution": false,
   "inputs": {
     "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
@@ -398,11 +398,512 @@
         ]
       }
     },
+    "application_collision": {
+      "sha256": "e58499ede4893d79806595e701cde9465c1f6f5802d419137f56e67c6a64e184",
+      "calls": [
+        "CIS_TInputKey.TInputBlockCollection.IndexOf",
+        "CIS_TInputKey.TInputBlock.GetSecondaryApplication",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.GetGroup",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.GetGroup",
+        "CIS_TCommonCBus.TCBusGroup.IsUnused",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.GetGroup",
+        "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+        "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.GetGroup",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputKeyCollection.GetItem",
+        "CIS_TInputKey.TInputKey.HasBlock",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputKeyCollection.GetItem",
+        "CIS_TInputKey.TInputKey.AddBlock",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputKeyCollection.GetItem",
+        "CIS_TInputKey.TInputKey.RemoveBlock",
+        "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.SetGroup"
+      ],
+      "native_behavior": "a matching destination block receives shared key allocations; the switched block group is cleared to 255",
+      "portable_behavior": "refuse before PP mutation; key-block reassignment is not modelled"
+    },
     "exclusion_rule": "A group combo omits groups other than 255 that another block or the maintenance enable group already uses, except its own current value; the enable combo omits groups used by any block."
+  },
+  "broadcast_and_power_fail": {
+    "methods": {
+      "broadcast_dialog": {
+        "sha256": "69b701180bcc1af39e65906ae3a18e0e40451205cd73ecc66943154755ad7a27",
+        "calls": [
+          "Forms.TCustomForm.Create",
+          "Controls.TControl.SetText",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.SetWhiteboxCaption",
+          "CIS_TddST7Sensors.TddST7LightLevelSensor.GetLightLevelSensorUnit",
+          "CIS_TInputKey.TInputBlockCollection.GetItem",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.SetBlock",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.DisableTimerSubFunctions",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.DisableTimerFunctions",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.Execute",
+          "System.TObject.Free"
+        ]
+      },
+      "timer_dialog_save": {
+        "sha256": "3b705a211a2b7c82d762cf1546d8cfbeaa1655f02f790695c25b6bfc3eae78e6",
+        "calls": [
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetValue_ExpiryTime",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetBlock",
+          "CIS_TInputKey.TInputBlock.SetTimer",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetValue_ExpiryFunction",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetBlock",
+          "CIS_TInputKey.TInputBlock.SetTimerExpiryCommand",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetKey",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetValue_TimerFunction",
+          "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.GetKeyMicroFunctionGroup",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetKey",
+          "CIS_TInputKey.TInputKey.SetMicroFunctionGroup"
+        ]
+      },
+      "timer_bytes_save": {
+        "sha256": "bbcfaada45d5d66b4d4159c184930f8e2e3ca10332280e8d9f8e0ff99f296abf",
+        "calls": [
+          "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CBusUnit",
+          "CIS_TInputKey.TInputBlockCollection.GetAllTimerHighByteAsString",
+          "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CBusUnit",
+          "CIS_TInputKey.TInputBlockCollection.GetAllTimerLowByteAsString",
+          "System.@UStrArrayClr"
+        ]
+      },
+      "power_fail_load": {
+        "sha256": "4dc8b2868bb23faaade864131f0c8f1ac42ad6bf35ad76ed83f0d7c866d143be",
+        "calls": [
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.AsArrayInteger",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.AsArrayInteger",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState"
+        ]
+      },
+      "power_fail_save": {
+        "sha256": "7187571b7da10c70d19b5fa0c519cb011addebaba6c848902198cab93d8816e0",
+        "calls": [
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPowerUpLightLevelState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroupOff",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroupOff",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "Variants.@VarFromBool",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPowerUpOccupancyState",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroupOff",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroupOff",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+          "Variants.@VarFromBool",
+          "Variants.@VarFromBool",
+          "System.@FinalizeArray"
+        ]
+      },
+      "multisensor_save": {
+        "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a",
+        "calls": [
+          "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeSaveProgrammingInformation",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredKeyOffset",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputKeyCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelActive",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelKey",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputKeyCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyActive",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyKey",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputKeyCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetIndicatorControl",
+          "CIS_TCBusMultisensorUnit.MultisensorIndicatorControlToInteger",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetLux",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMarginPerc",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetLux",
+          "System.@ROUND",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.SaveLightLevelBanks",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelScale",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintActive",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintBlock",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputBlockCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroup",
+          "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroupOff",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelBroadcastBlock",
+          "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.CBusUnit",
+          "CIS_TInputKey.TInputBlockCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelBroadcastActive",
+          "Variants.@VarFromInt",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.SaveOccupancyKeys",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroup",
+          "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroupOff",
+          "Variants.@VarFromBool",
+          "CIS_TCBusST7SensorCGateAgent.SavePowerFail",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerAFunction",
+          "CIS_TCBusMultisensorUnit.PotentiometerFunctionToInteger",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBFunction",
+          "CIS_TCBusMultisensorUnit.PotentiometerFunctionToInteger",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerABlock",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputBlockCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBBlock",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.MultisensorUnit",
+          "CIS_TInputKey.TInputBlockCollection.IndexOf",
+          "Variants.@VarFromInt",
+          "Variants.@VarFromBool",
+          "System.@FinalizeArray",
+          "System.@FinalizeArray"
+        ]
+      },
+      "light_level_save": {
+        "sha256": "1154fcd38a9410e08f4eed7c4be195cd981ad69025bf9780081586ac85d20471",
+        "calls": [
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.PrepareForcedParameters",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+          "CIS_TInputKey.TInputBlockCollection.GetItem",
+          "CIS_TInputKey.TInputBlock.GetGroup",
+          "CIS_TCommonCBus.TCBusGroup.IsUnused",
+          "Variants.@VarFromInt",
+          "Variants.@VarFromInt",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+          "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+          "System.@FinalizeArray"
+        ]
+      },
+      "timer_change": {
+        "sha256": "cdf45b8b5146c47b0932b36722dc317125f44dee2e940b486857b164081ce6b6",
+        "calls": [
+          "CIS_TInputKey.TInputBlock.GetTimer",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TInputKey.TInputBlock.SetTimer"
+        ]
+      },
+      "timer_minimum_change": {
+        "sha256": "63658d27f54424d18f34fa732beae3d8a947f68243faa26a064dfcc7f7800b71",
+        "calls": [
+          "CIS_TInputKey.TInputBlock.GetTimer",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TInputKey.TInputBlock.SetTimer"
+        ]
+      },
+      "timer_read": {
+        "sha256": "2b7ad02acaa6ca43f8116d58335cb7d1a603aed43dce8fb446581a734ffa30e6",
+        "calls": []
+      },
+      "timer_minimum_read": {
+        "sha256": "a04c43f0310229780e79ffd4067d0d19d5336b9fb2aaf8bf28a4a80492e88719",
+        "calls": []
+      },
+      "timer_write": {
+        "sha256": "3d4d77fb13a4d9ecbb2f828ee8bc4807bcabef34871259d2bdfc4e5b18fe20d1",
+        "calls": [
+          "Variants.@VarFromInt",
+          "Variants.@VarClr"
+        ]
+      },
+      "timer_dialog_limits": {
+        "sha256": "270a17a4898b912d16d3dd77aa050f245d578f72df1bdcbdb184a9f81de3b1c6",
+        "calls": [
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetBlock",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetBlock",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "CIS_TfrmBlockTimer.TfrmBlockTimer.GetBlock",
+          "CIS_TInputKey.TInputBlock.GetTimerMin",
+          "SysUtils.EncodeTime",
+          "CIS_TTimeEdit.TTimeEdit.SetMinTime",
+          "SysUtils.EncodeTime",
+          "CIS_TTimeEdit.TTimeEdit.SetMinTime",
+          "SysUtils.EncodeTime",
+          "CIS_TTimeEdit.TTimeEdit.SetMaxTime",
+          "CIS_Dates.DecodeCBusTime",
+          "SysUtils.EncodeTime",
+          "CIS_TTimeEdit.TTimeEdit.SetTime"
+        ]
+      },
+      "timer_dialog_encode": {
+        "sha256": "2e2a38e8532e255a640060e54627d0cd4df2adf33a38b8fe1a6b7466c243e437",
+        "calls": [
+          "CIS_TTimeEdit.TTimeEdit.GetTime",
+          "SysUtils.DecodeTime",
+          "CIS_Dates.EncodeCBusTime"
+        ]
+      },
+      "timer_seconds_encode": {
+        "sha256": "f4f93b2dce2499f5388f6a14d5c5d5f764a8b34123bcf1287d5c6421bd054de4",
+        "calls": [
+          "SysUtils.Format",
+          "SysUtils.Exception.Create",
+          "System.@RaiseExcept",
+          "System.@UStrClr"
+        ]
+      }
+    },
+    "broadcast": {
+      "block_index": 4,
+      "minimum_seconds": 10,
+      "maximum_seconds": 65535,
+      "expiry_and_key_functions_editable": false,
+      "parameters": [
+        "TimerHighByte[4]",
+        "TimerLowByte[4]"
+      ],
+      "loaded_timer_rule": "max(10, TimerHighByte[4]*256 + TimerLowByte[4])",
+      "maximum_time": [
+        18,
+        12,
+        15
+      ]
+    },
+    "power_fail": {
+      "states": [
+        "disabled",
+        "enabled",
+        "resume"
+      ],
+      "light_level_index": 9,
+      "store_parameter": "PECLevelStore",
+      "polarity_parameter": "PECEnablerGroupLogic",
+      "load": "resume if store; otherwise disabled when (level == 255) equals polarity",
+      "save": "resume sets store; other states clear store and save 0/255 using loaded polarity",
+      "forced_save_afterwards": "PECEnablerGroupLogic=0; LightLevel[8]=0; PIRLevelStore=0",
+      "reloaded_state_can_differ": true
+    }
+  },
+  "global_status_interval": {
+    "methods": {
+      "senll_global_construct": {
+        "sha256": "5e582b56194e92959665575a7b02a8ebdc053962f3f32a97f666bfc599d5b925",
+        "calls": [
+          "CIS_TddST7Sensors.TddST7Multisensor.GetMultisensorForm",
+          "Forms.TCustomFrame.Create",
+          "CIS_TddST7Sensors.TddST7Multisensor.GetMultisensorForm",
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.Create",
+          "CIS_TddST7Sensors.TddST7Multisensor.GetMultisensorUnit",
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.Initialise"
+        ]
+      },
+      "global_initialise": {
+        "sha256": "5f06de2006e1c7796bd332d4fdc883886f05fcc9e1edc6645dbda73d018cd574",
+        "calls": [
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.SetupFormAsTab",
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.SetupFlashComponents",
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.SetupNonFlashComponents",
+          "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.PopulateNonFlashComponents",
+          "CIS_TfrmUnitGlobalLearnModeNEW.TfrmUnitGlobalLearnModeNEW.SetCBusUnit"
+        ]
+      },
+      "global_setup": {
+        "sha256": "0ef822077edcc17da2e1e9dce11118101ddcb19c96043a0c6986c865368c3aa7",
+        "calls": [
+          "cxDropDownEdit.TcxComboBox.GetProperties",
+          "cxDropDownEdit.TcxCustomComboBoxProperties.GetItems",
+          "CIS_ICBusInputUnit.StatusReportIntegerToString",
+          "cxDropDownEdit.TcxComboBox.GetProperties",
+          "cxDropDownEdit.TcxCustomComboBoxProperties.GetItems",
+          "cxDropDownEdit.TcxComboBox.GetProperties",
+          "Controls.TControl.SetVisible",
+          "Controls.TControl.SetVisible",
+          "System.@UStrClr"
+        ]
+      },
+      "global_populate": {
+        "sha256": "7503ca0bf6d5ffc5663cfc4586c032ce7571c2ca2275870ac04d8e239a866c5b",
+        "calls": [
+          "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+          "CIS_ICBusInputUnit.StatusReportIntegerToString",
+          "cxDropDownEdit.TcxComboBox.GetProperties",
+          "cxDropDownEdit.TcxCustomComboBoxProperties.GetItems",
+          "cxDropDownEdit.TcxComboBox.GetProperties",
+          "cxDropDownEdit.TcxCustomComboBoxProperties.GetItems",
+          "System.@UStrEqual",
+          "System.@UStrClr",
+          "System.@UStrClr"
+        ]
+      },
+      "global_change": {
+        "sha256": "514b1122f2ad34f949e47586ada6dc4db4228e06a1c677246b517756c95e57ab",
+        "calls": [
+          "Controls.TControl.GetText",
+          "CIS_ICBusInputUnit.StatusReportStringToInteger",
+          "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval",
+          "System.@UStrClr"
+        ]
+      },
+      "integer_to_text": {
+        "sha256": "f4e5d7ec0d6884fdfd2aec9cc26f02101340a56d3ddfcc54a87a971b23b539ba",
+        "calls": [
+          "System.LoadResString",
+          "SysUtils.IntToStr",
+          "System.@UStrCat3",
+          "System.@UStrArrayClr"
+        ]
+      },
+      "text_to_integer": {
+        "sha256": "2051f1708024a6f12bdc7e6bceeaffce194225e26d1f22826df6674c90dffa53",
+        "calls": [
+          "System.@UStrAddRef",
+          "System.LoadResString",
+          "System.@UStrEqual",
+          "CIS_Strings.StringToken",
+          "SysUtils.StrToIntDef",
+          "System.@UStrArrayClr",
+          "System.@UStrClr"
+        ]
+      },
+      "unit_get": {
+        "sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c",
+        "calls": []
+      },
+      "unit_set": {
+        "sha256": "60bd2443b95a1ad5197272ee18e17d72cd4b7e8909108ae1be5fee04c6a04fa3",
+        "calls": [
+          "Variants.@VarFromInt",
+          "Variants.@VarClr"
+        ]
+      },
+      "agent_create": {
+        "sha256": "c51c28f9f1b654cad66f255008ec40781d34fcd77510090fa631186d8212c892",
+        "calls": [
+          "CIS_TCustomFlashObject.TFlashAttribute.Create"
+        ]
+      },
+      "agent_load": {
+        "sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43",
+        "calls": [
+          "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CBusUnit",
+          "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval"
+        ]
+      },
+      "agent_save": {
+        "sha256": "57c41e61920e30a4633a1b8cb3936b7e561ac9cc579fb04a03dcef07e287d662",
+        "calls": [
+          "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CBusUnit",
+          "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+          "Variants.@VarFromInt",
+          "Variants.@VarClr"
+        ]
+      },
+      "input_save": {
+        "sha256": "0eba1bc768f21b3c94a74fa80aa1bfdf9695c0067129c740a4260fddd73ff775",
+        "calls": [
+          "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.BeforeSaveProgrammingInformation",
+          "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.SaveAreaGroupAddress",
+          "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.SaveStatusReportInterval"
+        ]
+      },
+      "learn_mode_enabled": {
+        "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+        "calls": []
+      }
+    },
+    "frame": "TfrmLearnUnitGlobal",
+    "status_report_interval": {
+      "control": "cmbStatusReportInterval",
+      "parameter": "StatusReportInterval",
+      "minimum": 3,
+      "maximum": 255,
+      "unit": "seconds",
+      "conversion": "native integer",
+      "resource_string_id": 64643,
+      "resource_string_utf16le_sha256": "422cfb53edfc4ef2b6624aafd49eac8730a7675a4fda5a88e94b08c564e6c032",
+      "loaded_display_minimum": 3,
+      "loaded_below_minimum_writeback_verified": false
+    },
+    "learn_mode_controls_visible": false,
+    "status_interval_control_hidden_by_learn_mode": false,
+    "hidden_controls": [
+      "frmUnitGlobalLearnModeNEW1",
+      "grpLearnMode"
+    ],
+    "original_gui_execution": false
   },
   "limits": [
     "Static EXE/MAP analysis only; no Toolkit dialog or save was executed.",
     "Base Neo/NeoPro block, timer and bank serialization is assumed to round-trip loaded values; only the save steps named here are source-recovered.",
-    "The broadcast interval (block 5 timer), Global and Power Fail tabs and ambient light reading are not modelled."
+    "Ambient light reading is not modelled. Global status-report interval edits are source-pinned; stored interval values below 3 require an explicit admitted selection because original Global initialization callback writeback is unverified. The broadcast timer and light-level Power Fail state have source-pinned parameter behavior; GUI execution and physical timing/power-failure behavior are not established."
   ]
 }

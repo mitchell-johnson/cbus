@@ -740,6 +740,26 @@ and a service regression rejects a confirmation from a retired PCI generation.
 
 ### DALI commands
 
+The gateway proxy is `/cdg/extParams/proxy/`. Read
+`dali_session_extended_proxy` in `CMQTT CAPABILITIES` for the exact 133 global
+leaf paths, bounds and ownership. A typed gateway edit requires a fresh
+`EXT_ONLY`/`FULL` baseline and an `EXT_ONLY` or `FULL` deployment. The service
+serializes complete recalled families, including unchanged reserved-bit
+normalization and native exclusions; its 21 global and 15 line families
+have executed original-runtime byte comparisons. Physical CLI admission
+currently covers globals. Whole proxy replacement, unknown recalled-family
+edits, excluded requested intent and overlapping raw/typed ownership are
+refused. Raw-only `EXT_ONLY` retains direct-byte behavior. Catalogue staging
+does not itself configure the gateway. Scene activation requires a concrete
+0..254 level; create a nullable scene slot as `{"level": N}` alongside its
+membership bit. Level 255 is native removal, not activation.
+
+Both typed and extended attempts retain durable server journals. After a
+partial proxy write, recovery compares fresh values for the explicit operator
+edits; matching them does not prove every implicit normalization completed.
+Preserve the original incomplete attempt and never replay it.
+
+
 Prefer the typed Python `cgate dali extract`, `deploy`, and `recover`
 workflows for commissioning. They own a unique session, validate the selected
 server capabilities and input edits, and emit `cbus-dali-commissioning-v1`

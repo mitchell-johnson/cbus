@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from uuid import uuid4
 
 from tests.test_sensors import native_backend
@@ -137,6 +138,47 @@ class SensorCLITests(unittest.TestCase):
             file.write_text("{}")
             self.assertIn("--spec", self.cli("sensors", "pir-plan", file, "--key", "1:group=3", status=1, env=env)["error"])
 
+    def test_senll_global_status_interval_routes_offline_and_native_with_exact_bounds(self):
+        from cbus_toolkit.cli import build_parser
+        from cbus_toolkit.sensor_dialog_cli import native, offline
+        from cbus_toolkit.sensors import SensorError
+        from tests.test_light_level_sensors import fixture
+        from tests.test_macros import Session
+        parser = build_parser()
+        def session():
+            current = Session(fixture())
+            current.unit_type, current.firmware, current.catalog_number = 'SENLL', '2.3.00', '5031PE'
+            return current
+        current = session()
+        with tempfile.TemporaryDirectory() as folder, patch('cbus_toolkit.sensor_dialog_cli._store') as store:
+            store.return_value.load.return_value = fixture()
+            file = Path(folder) / 'sensor.json'
+            file.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'SENLL',
+                                        'firmware': '2.3.00', 'catalog_number': '5031PE',
+                                        'parameters': current.values()}))
+            original = file.read_bytes()
+            for text, integer in (('3', 3), ('0xff', 255)):
+                with self.subTest(text=text):
+                    args = parser.parse_args(['sensors', 'light-level-plan', str(file),
+                                              '--status-report-interval', text])
+                    result, status = offline(args)
+                    self.assertEqual(status, 0)
+                    self.assertEqual(result['changes']['StatusReportInterval'], [integer])
+                    native_args = parser.parse_args(['cgate', 'unit', '--lock-address', '//TEST/254',
+                                                     '--source', '/db//TEST/254/p/210',
+                                                     'sensor-light-level', '--status-report-interval', text])
+                    applied = native(native_args, session())
+                    self.assertEqual(applied['changes'], result['changes'])
+                    self.assertTrue(applied['verified'])
+                    self.assertFalse(applied['saved'])
+                    self.assertEqual(file.read_bytes(), original)
+            for bad in ('0', '1', '2', '256'):
+                with self.subTest(bad=bad):
+                    args = parser.parse_args(['sensors', 'light-level-plan', str(file),
+                                              '--status-report-interval', bad])
+                    with self.assertRaisesRegex(SensorError, '3..255'):
+                        offline(args)
+
     @unittest.skipUnless(native_backend() and os.environ.get("CBUS_UNITSPEC_DIR"),
                          "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance")
     def test_native_pir_and_light_level_preview_matches_offline_plan_and_persists(self):
@@ -148,7 +190,8 @@ class SensorCLITests(unittest.TestCase):
         cases = {
             210: ("SENLL", "2.3.00", "SLC5031PE", "sensor-light-level", "light-level-plan",
                   ("--level-group", "40", "--on-off-group", "41", "--broadcast-group", "42", "--enable-group", "43",
-                   "--indicator", "on-off", "--target-lux", "500", "--margin-percent", "59")),
+                   "--indicator", "on-off", "--target-lux", "500", "--margin-percent", "59",
+                   "--broadcast-interval-seconds", "513", "--power-up", "enabled", "--status-report-interval", "13")),
             211: ("SENPIRIA", "2.4.00", "5751L", "sensor-pir", "pir-plan",
                   ("--key", "1:block=1,group=41,timer_seconds=300,expiry=ramp_off", "--key", "4:group=44",
                    "--restore-functions", "--separate-darkness", "--enable-group", "23", "--enabled-when", "off",
@@ -187,6 +230,10 @@ class SensorCLITests(unittest.TestCase):
                                 self.assertEqual(applied[address]["parameters"][name], original[name])
                 self.assertEqual(int(applied[210]["parameters"]["PECMarginLux"], 0), 29)
                 self.assertEqual(applied[210]["dialog"]["indicator"], "on_off")
+                self.assertEqual(applied[210]["dialog"]["broadcast_interval_seconds"], 513)
+                self.assertEqual(applied[210]["dialog"]["power_up_after_reload"], "enabled")
+                self.assertEqual(int(applied[210]["parameters"]["PECLevelStore"], 0), 0)
+                self.assertEqual(int(applied[210]["parameters"]["StatusReportInterval"], 0), 13)
                 projects.operation("save", project)
                 projects.operation("close", project)
                 projects.operation("load", project)

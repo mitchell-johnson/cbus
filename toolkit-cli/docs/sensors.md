@@ -330,7 +330,9 @@ from cbus_toolkit.light_level_sensors import LightLevelSensor
 sensor = LightLevelSensor(UnitSpecStore(spec_directory).load("SENLL_ST7.xml"))
 plan = sensor.plan(session.values(), level_group=40, on_off_group=41,
                    broadcast_group=42, enable_group=43, indicator="on_off",
-                   target_lux=500, margin_percent=59)
+                   target_lux=500, margin_percent=59,
+                   broadcast_interval_seconds=300, power_up="enabled",
+                   status_report_interval=13)
 sensor.apply(session, plan)   # profile, schema, stale and readback checks
 session.save_to_source()      # separate, explicit persistence operation
 ```
@@ -349,6 +351,10 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
 * `on_off_application` switches block 3 between the primary and secondary
   application. When the unit has no application 2 (address 255), the dialog
   clears block 3's secondary application on load and the switch is disabled.
+  A change that collides with another block's destination group is refused,
+  whether the preserved group is implicit or explicitly supplied. The native
+  callback can migrate shared key allocations and clear the selected group
+  to 255; those additional effects are not modelled by this workflow.
 * `indicator` is the LED radio: `light_level`, `on_off` or `enable`.
   `IndicatorBlockAssignment[0]` loads 5 as `enable`, 2 as `on_off` and any
   other value as `light_level`.
@@ -356,6 +362,22 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
   (`CIS_CBus.Lux2550ToByte`). On load a stored target above 200 (2000 lux) is
   clamped to 200. `margin_percent` is 0..100; without it the loaded
   percentage is kept, and a plan whose margin would exceed 255 is refused.
+* `broadcast_interval_seconds` is the block 5 broadcast timer, 10..65535
+  seconds. It writes only element 4 of `TimerHighByte` and `TimerLowByte`;
+  the other timers and expiry functions are preserved. The original timer
+  model clamps a loaded interval below 10 seconds even when the dialog is
+  saved without edits. This minimum does not apply to other blocks.
+* `power_up` selects the Power Fail light-level maintenance state:
+  `disabled`, `enabled`, or `resume`. The receipt shows `power_up_loaded`,
+  the selected `power_up`, and `power_up_after_reload` separately because
+  the original SENLL save resets the maintenance polarity after encoding
+  this setting. This describes configured bytes rather than an observed
+  physical power-failure outcome.
+* `status_report_interval` is the Global selector's native integer, 3..255
+  seconds, written to `StatusReportInterval` at byte 66. The learn-mode
+  controls are hidden for SENLL, while this selector remains available.
+  Stored values 0..2 have an unverified initialization callback writeback;
+  supply an explicit valid interval to edit such a snapshot.
 
 ### SENLL Toolkit save model
 
@@ -364,6 +386,13 @@ The save runs the multisensor save, then the light-level
 
 * The margin round trip of [Margin arithmetic](#margin-arithmetic), using the
   dialog's target and percentage. `PotentiometerBBankSwitchEnable`=0.
+* The inherited Power Fail save uses the loaded `PECEnablerGroupLogic`.
+  `resume` sets `PECLevelStore` and preserves `LightLevel[9]`. The other
+  states clear `PECLevelStore`: `disabled` stores 255 for polarity 1 or 0
+  for polarity 0; `enabled` stores the inverse. The later forced save clears
+  the polarity. A loaded polarity of 1 therefore reverses the state shown
+  on reload after an explicit disabled/enabled selection, matching the
+  original ordering. No-edit saves normalize non-resume levels to 0/255.
 * Forced: `PIRLightMovement`, `PIRDarkMovement` and `PIRDark`=0, `DisableIR`=1,
   `IRBankKeyOffset`=0, corridor office/link blocks 0, `CorridorLinkActive`=0,
   `CorridorLinkEnablerGroup`=255, `BroadcastBlock`=4, `PIREnablerGroup`=255,
@@ -381,13 +410,14 @@ The save runs the multisensor save, then the light-level
   the level, on/off and enable LEDs.
 
 Other fields, including `IRBank`, `IndicatorControl`, `PECScaleFactor`,
-`ControlAppGroupAddress`, `PECLevelStore`, block timers and bank switching,
-are preserved. The plan is idempotent.
+`ControlAppGroupAddress`, other block timers and bank switching,
+are preserved. The plan is idempotent after the loaded values have passed
+through the original save normalization.
 
-Unmodelled: the base block, timer, bank and scale serialization is assumed to
-round-trip loaded values. The broadcast interval (a block 5 timer dialog with
-a 10-second minimum), the Global and Power Fail tabs and the live ambient
-light reading are not dialog edits here.
+Unmodelled: the remaining base block, bank and scale serialization is assumed
+to round-trip loaded values. The live ambient light reading and physical
+broadcast timing and power-failure behavior remain unverified. The source
+review and native database checks do not establish the original GUI lifecycle.
 
 ### SENLL evidence
 
@@ -405,9 +435,11 @@ Native acceptance on owned loopback C-Gate 3.4.0 build 2001 covers one
 profile per catalogue band and all four catalogue numbers: 2.0.01/5031PE,
 2.1.00/SLC5031PE, 2.2.99/5031PEWP, 2.3.00/SLC5031PEWP,GY and 2.4.99/5031PE.
 Each starts from a non-default value in every forced field and a stored
-target above 200. It checks 27 raw-byte assertions, eight dialog cases
-(unchanged save, all three indicators, groups with target/margin, the x87
-500 lux/59% margin, and both on/off applications), idempotence, 43 unrelated
+target above 200. It checks 57 raw-byte assertions and 27 dialog cases
+(unchanged save, indicators, groups, target/margin, both applications,
+broadcast interval boundaries and loaded minimum, all power-up/polarity
+combinations, and Global interval selections/invalid loaded values),
+idempotence, 39 unrelated
 parameters and the non-programmable fields unchanged, and an explicit database
 save/reload. Six identities are refused with values unchanged: SENLL 1.2.68 and
 1.9.99, SENLL with catalogue 5754PE, SENLLA, SENPILL and SENPIRIA. C-Gate
@@ -436,7 +468,8 @@ cbus-toolkit sensors pir-plan snapshot.json \
   --key 1:block=1,group=41,timer_seconds=300,expiry=ramp_off --key 4:group=44 \
   --restore-functions --separate-darkness --enable-group 23 --enabled-when off --power-up enabled
 cbus-toolkit sensors light-level-plan snapshot.json --level-group 40 --on-off-group 41 \
-  --broadcast-group 42 --enable-group 43 --indicator on-off --target-lux 500 --margin-percent 59
+  --broadcast-group 42 --enable-group 43 --indicator on-off --target-lux 500 --margin-percent 59 \
+  --broadcast-interval-seconds 300 --power-up enabled --status-report-interval 13
 ```
 
 A bare mapping for `pir-plan` needs `--spec` (for example

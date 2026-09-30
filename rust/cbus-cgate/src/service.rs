@@ -3854,6 +3854,7 @@ impl Service {
             capabilities["dali_auto_poll_limit"] = serde_json::Value::from(10);
             capabilities["dali_native_help_paths"] = serde_json::Value::from(128);
             capabilities["dali_session_ext_only"] = serde_json::Value::Bool(true);
+            capabilities["dali_session_extended_proxy"] = dali_specialized::proxy_capabilities();
             capabilities["dali_session_typed_device_plans"] =
                 serde_json::Value::String("complete-extract-and-typed-deploy".to_string());
             capabilities["dali_session_typed_extract_plans"] = serde_json::json!([

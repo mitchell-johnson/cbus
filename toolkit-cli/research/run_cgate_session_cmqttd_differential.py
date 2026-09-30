@@ -49,7 +49,7 @@ def main() -> int:
             broker.bind(("127.0.0.1", 0))
             broker.listen(1)
             log_path = scratch / "cmqttd.log"
-            with log_path.open("w+") as log:
+            with log_path.open("w") as log:
                 process = subprocess.Popen([
                     str(binary), "--tcp", f"{pci[0]}:{pci[1]}",
                     "--broker-address", "127.0.0.1",
@@ -62,8 +62,7 @@ def main() -> int:
                     deadline = time.monotonic() + 15
                     port = None
                     while time.monotonic() < deadline:
-                        log.seek(0)
-                        output = log.read()
+                        output = log_path.read_text(encoding="utf-8")
                         match = re.search(r"C-Gate service listening on 127\.0\.0\.1:(\d+)", output)
                         if match:
                             port = int(match.group(1))
