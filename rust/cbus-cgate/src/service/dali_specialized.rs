@@ -2160,11 +2160,19 @@ impl Service {
         // after earlier ECGs were written (a deliberate native deviation).
         let steps = match typed_deploy_plan(&model, lines, range) {
             Ok(steps) => steps,
-            Err(warning) => {
+            Err((failed_step, warning)) => {
+                // Native reports progress up to the faulting step; cmqttd
+                // reaches the same point without having sent anything.
+                let total = TYPED_DEPLOY_STEPS.len() + usize::from(full);
+                let mut lines = vec!["120-start deploy".to_string()];
+                lines.extend(TYPED_DEPLOY_STEPS[..=failed_step].iter().enumerate().map(
+                    |(index, step)| format!("120-progress: {}/{total}, plan: {step}", index + 1),
+                ));
+                // The formatter adds the native `501-` envelope.
+                lines.push(warning.clone());
                 return Response {
                     tag: tag.to_string(),
-                    // The formatter adds the native `501-` envelope.
-                    lines: vec![warning.clone()],
+                    lines,
                     final_text: format!(
                         "501 gateway model mismatch: {warning}; no bus command was sent"
                     ),
@@ -2302,6 +2310,9 @@ impl Service {
             response_lines.push(format!(
                 "120-progress: {total}/{total}, plan: WRITE_GATEWAY_EXT_FULL"
             ));
+            if chunks.is_empty() {
+                response_lines.push("126-no dirty bytes detected".to_string());
+            }
             for (address, bytes) in &chunks {
                 if let Err(error) = pci
                     .store_paged_parameter_verified(unit, *address, bytes, false)
@@ -4038,7 +4049,17 @@ fn typed_deploy_plan(
     model: &Value,
     lines: (bool, bool),
     range: Option<&[u8]>,
-) -> Result<Vec<TypedDeployStep>, String> {
+) -> Result<Vec<TypedDeployStep>, (usize, String)> {
+    typed_deploy_plan_steps(model, lines, range)
+}
+
+/// [`typed_deploy_plan`] body; an `Err` carries the index of the native step
+/// that would report the model fault.
+fn typed_deploy_plan_steps(
+    model: &Value,
+    lines: (bool, bool),
+    range: Option<&[u8]>,
+) -> Result<Vec<TypedDeployStep>, (usize, String)> {
     let selected = range.map(|range| range.iter().copied().collect::<HashSet<_>>());
     let mut eligible = Vec::new();
     for (line_index, line) in selected_dali_lines(lines) {
@@ -4061,7 +4082,7 @@ fn typed_deploy_plan(
                 .and_then(Value::as_u64)
                 .unwrap_or(index as u64);
             let Some(address) = u8::try_from(address).ok().filter(|address| *address < 64) else {
-                return Err(format!("invalid short address for ecg: {address}"));
+                return Err((0, format!("invalid short address for ecg: {address}")));
             };
             if selected
                 .as_ref()
@@ -4085,7 +4106,7 @@ fn typed_deploy_plan(
     let mut common = Vec::new();
     for (line, address, ecg) in &eligible {
         let Some(params) = present(ecg, "commonParams102") else {
-            return Err(format!("common parameters not set for ecg: {address}"));
+            return Err((0, format!("common parameters not set for ecg: {address}")));
         };
         let groups = params
             .get("groupMembershipBitmask16")
@@ -4101,7 +4122,7 @@ fn typed_deploy_plan(
         let (Some(groups), [Some(min), Some(max), Some(recovery), Some(failure)]) =
             (groups, levels)
         else {
-            return Err(format!("common parameters invalid for ecg: {address}"));
+            return Err((0, format!("common parameters invalid for ecg: {address}")));
         };
         let [low, high] = groups.to_le_bytes();
         common.push(write(
@@ -4134,7 +4155,9 @@ fn typed_deploy_plan(
                         .get("level")
                         .and_then(Value::as_u64)
                         .and_then(|level| u8::try_from(level).ok())
-                        .ok_or_else(|| format!("scene parameters invalid for ecg: {address}"))?,
+                        .ok_or_else(|| {
+                            (1, format!("scene parameters invalid for ecg: {address}"))
+                        })?,
                     _ => 0xff,
                 };
                 payload.push(byte);
@@ -4157,11 +4180,11 @@ fn typed_deploy_plan(
         let curve = present(ecg, "ledParams207")
             .and_then(|params| params.get("dimmCurve").cloned())
             .filter(|curve| !curve.is_null())
-            .ok_or_else(|| format!("led parameters not set for ecg: {address}"))?;
+            .ok_or_else(|| (2, format!("led parameters not set for ecg: {address}")))?;
         let curve = match curve.as_str() {
             Some("LOGARITHMIC") => 0,
             Some("LINEAR") => 1,
-            _ => return Err(format!("led parameters invalid for ecg: {address}")),
+            _ => return Err((2, format!("led parameters invalid for ecg: {address}"))),
         };
         led.push(write(
             "SET_LED_PARAMS_ECG",
@@ -4182,14 +4205,20 @@ fn typed_deploy_plan(
             present(ecg, "emergencyParams202"),
             present(ecg, "commonReadOnlyParams102"),
         ) else {
-            return Err(format!("emergency parameters not set for ecg: {address}"));
+            return Err((
+                3,
+                format!("emergency parameters not set for ecg: {address}"),
+            ));
         };
         let (Some(level), Some(prolong), Some(timeout)) = (
             json_u8(&params, "emergencyLevel"),
             json_u8(&params, "prolongTime"),
             json_u8(&params, "timeout"),
         ) else {
-            return Err(format!("emergency parameters invalid for ecg: {address}"));
+            return Err((
+                3,
+                format!("emergency parameters invalid for ecg: {address}"),
+            ));
         };
         emergency.push(write(
             "SET_EMERGENCY_PARAMS_ECG",
@@ -4925,10 +4954,12 @@ fn dali_status_name(status: u8) -> &'static str {
         0 => "SUCCESS",
         1 => "IN_PROGRESS",
         2 => "FAIL_BUSY",
-        3 => "FAIL_INVALID_COMMAND",
-        4 => "FAIL_INVALID_PARAMETER",
-        5 => "FAIL_INCORRECT_LENGTH",
-        6 => "FAIL_INVALID_DEVICE_TYPE",
+        // Build-2001 `CbusDaliStatus` constructor values, confirmed by the
+        // owned native DALI deploy transcript (status 4 is INVALID_COMMAND).
+        3 => "FAIL_INVALID_DEVICE_TYPE",
+        4 => "FAIL_INVALID_COMMAND",
+        5 => "FAIL_INVALID_PARAMETER",
+        6 => "FAIL_INCORRECT_LENGTH",
         _ => "FAIL_CATASTROPHE",
     }
 }
@@ -7133,7 +7164,9 @@ mod tests {
             let mut broken = model.clone();
             *broken.pointer_mut(pointer).unwrap() = value;
             assert_eq!(
-                typed_deploy_plan(&broken, (true, true), None).unwrap_err(),
+                typed_deploy_plan(&broken, (true, true), None)
+                    .unwrap_err()
+                    .1,
                 warning
             );
         }
@@ -7312,7 +7345,14 @@ mod tests {
             )
             .await;
         assert_eq!(response.status, 501, "{response:?}");
-        assert_eq!(response.lines, ["common parameters not set for ecg: 5"]);
+        assert_eq!(
+            response.lines,
+            [
+                "120-start deploy",
+                "120-progress: 1/4, plan: SET_COMMON_PARAMS_ECG",
+                "common parameters not set for ecg: 5"
+            ]
+        );
         assert!(response.final_text.contains("no bus command was sent"));
 
         {
@@ -7406,5 +7446,194 @@ mod tests {
         assert_eq!(journal["planned"][4]["step"], "WRITE_GATEWAY_EXT_FULL");
         no_more_frames(&mut remote, "FULL deploy replayed a write").await;
         cleanup(path);
+    }
+
+    /// Serve the synthetic gateway recorded in the native commissioning
+    /// fixture until `request` completes, recording every exchange.
+    async fn serve_native_script(
+        remote: &mut BufReader<tokio::io::DuplexStream>,
+        script: &Value,
+        options: &Value,
+        mut request: tokio::task::JoinHandle<Response>,
+    ) -> (Response, Vec<Value>) {
+        let mut exchanges = Vec::new();
+        loop {
+            let bytes = tokio::select! {
+                biased;
+                response = &mut request => return (response.unwrap(), exchanges),
+                bytes = line(remote) => bytes,
+            };
+            let text = std::str::from_utf8(&bytes).unwrap().trim_end();
+            let packet = hex::decode(text.trim_start_matches('\\')).unwrap();
+            if packet[..4] == [0x46, 20, 0, 0x1b] {
+                let address = (u32::from(packet[4]) << 8) | u32::from(packet[5]);
+                let count = usize::from(packet[6]);
+                exchanges
+                    .push(json!({"kind": "paged_recall", "packet": hex::encode_upper(&packet)}));
+                reply_ext_recall_block(remote, (address - EXT_START) as usize, count, 0).await;
+                continue;
+            }
+            assert_eq!(packet[..3], [0x06, 20, 0], "{text}");
+            let (mode, operation, payload) = (packet[4], packet[6], &packet[7..]);
+            let base = operation & 0x7f;
+            let hex_field = |value: &Value| hex::decode(value.as_str().unwrap()).unwrap();
+            let (status, data) = if let Some(status) = options["fail"][base.to_string()].as_u64() {
+                (status as u8, Vec::new())
+            } else if base == 13 {
+                (0, hex_field(&script["check_for_unknown_data_hex"]))
+            } else if base == 2 {
+                let mask = options["address_mask"].as_u64().map_or_else(
+                    || hex_field(&script["address_unknown_default_mask_hex"]),
+                    |mask| [vec![mask as u8], vec![0; 7]].concat(),
+                );
+                (0, mask)
+            } else if matches!(base, 4 | 7) {
+                (0, hex_field(&script["known_mask_hex"]))
+            } else if matches!(base, 9..=11) {
+                (0, vec![0; 8])
+            } else if mode == 0x81 && !payload.is_empty() {
+                let reply = &script["ecg_replies"][payload[0].to_string()][base.to_string()];
+                (
+                    0,
+                    reply.as_str().map(|_| hex_field(reply)).unwrap_or_default(),
+                )
+            } else {
+                (0, Vec::new())
+            };
+            exchanges.push(json!({
+                "kind": "dali",
+                "packet": hex::encode_upper(&packet),
+                "status": status,
+                "data": hex::encode_upper(&data),
+            }));
+            let mut cal = vec![0xe4 + data.len() as u8, 0x83, 0xda, operation, status];
+            cal.extend_from_slice(&data);
+            reply(remote, 20, &cal).await;
+        }
+    }
+
+    /// The native plan-visible reply lines: progress, warnings, conditional
+    /// decisions, model warnings and the no-dirty-bytes notice.
+    fn plan_lines(lines: impl IntoIterator<Item = String>) -> Vec<String> {
+        lines
+            .into_iter()
+            .filter(|line| {
+                line.starts_with("120-progress")
+                    || line.starts_with("300-[WARN]")
+                    || line.starts_with("125-[COND]")
+                    || line.starts_with("501-")
+                    || line == "126-no dirty bytes detected"
+            })
+            .collect()
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn commissioning_plans_match_the_owned_native_transcripts() {
+        let fixture: Value = serde_json::from_str(include_str!(
+            "../../../testdata/fixtures/native_cgate_dali_commissioning.json"
+        ))
+        .unwrap();
+        assert_eq!(fixture["oracle"]["physical_endpoint"], false);
+        assert_eq!(
+            fixture["oracle"]["vendor_jar_sha256"],
+            "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+        );
+        for key in [
+            "listener_ownership_verified",
+            "cleanup_complete",
+            "work_removed",
+        ] {
+            assert_eq!(fixture["oracle"][key], true, "{key}");
+        }
+        // The transcript binds the exact capture script that produced it.
+        assert_eq!(
+            fixture["capture_script_sha256"],
+            hex::encode(crate::auth::sha256(include_bytes!(
+                "../../../../toolkit-cli/research/native_dali_commissioning.py"
+            )))
+        );
+        let script = &fixture["gateway_script"];
+        let cases = fixture["cases"].as_object().unwrap();
+        assert_eq!(cases.len(), 8);
+        for (name, case) in cases {
+            let (service, mut remote, path) = setup().await;
+            new_session(&service).await;
+            let session = |command: &str| {
+                let native_session = command.split_whitespace().nth(3).unwrap().to_string();
+                command
+                    .replace(&native_session, "work")
+                    .replace("//DALI/254/p/20", "!dali-gateway-20")
+            };
+            for command in case["setup"].as_array().unwrap() {
+                let request = spawn_command(
+                    &service,
+                    &format!("[s] {}", session(command.as_str().unwrap())),
+                );
+                let (response, _) =
+                    serve_native_script(&mut remote, script, &json!({}), request).await;
+                assert_eq!(response.status, 200, "{name} setup: {response:?}");
+            }
+            let request = spawn_command(
+                &service,
+                &format!("[c] {}", session(case["command"].as_str().unwrap())),
+            );
+            let (response, exchanges) =
+                serve_native_script(&mut remote, script, &case["fixture_options"], request).await;
+
+            // Identical gateway exchanges, in order, with identical replies.
+            let native = case["exchanges"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|exchange| {
+                    let mut exchange = exchange.clone();
+                    let object = exchange.as_object_mut().unwrap();
+                    object.retain(|key, _| {
+                        matches!(key.as_str(), "kind" | "packet" | "status" | "data")
+                    });
+                    exchange
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(exchanges, native, "{name}: gateway exchanges differ");
+
+            // Identical status and plan-visible lines. cmqttd omits native's
+            // per-exchange debug rows (120-DaliCommand, 320-Response...).
+            assert_eq!(
+                u64::from(response.status),
+                case["status"],
+                "{name}: {response:?}"
+            );
+            let native_lines = case["reply"].as_array().unwrap();
+            let native_final = native_lines.last().unwrap().as_str().unwrap();
+            let native_plan = plan_lines(
+                native_lines[..native_lines.len() - 1]
+                    .iter()
+                    .map(|line| line.as_str().unwrap().to_string()),
+            );
+            let ours = plan_lines(response.lines.iter().map(|line| {
+                if line.as_bytes().get(3) == Some(&b'-') {
+                    line.clone()
+                } else {
+                    format!("{}-{line}", response.status)
+                }
+            }));
+            assert_eq!(ours, native_plan, "{name}: plan lines differ");
+            if response.status == 501 {
+                // Deliberate deviation: cmqttd names the field instead of
+                // native's `null` exception text, and states no I/O occurred.
+                assert_eq!(native_final, "501 gateway model mismatch: null");
+                assert!(response
+                    .final_text
+                    .starts_with("501 gateway model mismatch: "));
+                assert!(response.final_text.ends_with("no bus command was sent"));
+            } else {
+                assert!(
+                    response.final_text.starts_with(native_final),
+                    "{name}: {} vs native {native_final}",
+                    response.final_text
+                );
+            }
+            cleanup(path);
+        }
     }
 }

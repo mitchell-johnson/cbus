@@ -523,7 +523,7 @@ async fn specialized_dali_memory_sessions_and_mqtt_share_the_real_daemon() {
     let (faulted, ()) = tokio::join!(request, peer);
     let last = faulted.last().unwrap();
     assert!(
-        last.starts_with("502 reply status error: error response: FAIL_INVALID_PARAMETER"),
+        last.starts_with("502 reply status error: error response: FAIL_INVALID_COMMAND"),
         "{faulted:?}"
     );
     assert!(

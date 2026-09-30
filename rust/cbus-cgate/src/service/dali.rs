@@ -705,10 +705,12 @@ fn status_name(status: u8) -> &'static str {
         0 => "SUCCESS",
         1 => "IN_PROGRESS",
         2 => "FAIL_BUSY",
-        3 => "FAIL_INVALID_COMMAND",
-        4 => "FAIL_INVALID_PARAMETER",
-        5 => "FAIL_INCORRECT_LENGTH",
-        6 => "FAIL_INVALID_DEVICE_TYPE",
+        // Build-2001 `CbusDaliStatus` constructor values, confirmed by the
+        // owned native DALI deploy transcript (status 4 is INVALID_COMMAND).
+        3 => "FAIL_INVALID_DEVICE_TYPE",
+        4 => "FAIL_INVALID_COMMAND",
+        5 => "FAIL_INVALID_PARAMETER",
+        6 => "FAIL_INCORRECT_LENGTH",
         _ => "FAIL_CATASTROPHE",
     }
 }
