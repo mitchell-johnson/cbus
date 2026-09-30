@@ -1,0 +1,1332 @@
+{
+  "format": "cbus-classic-dlt-delivery-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": {
+    "after_save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterSaveProgrammingInformation",
+      "start": "0x121c268",
+      "stop": "0x121d0b0",
+      "sha256": "8dedcd10d9eafee76e275664aaf076df3d5a29405969c4b7fd1f37b8a177b660"
+    },
+    "agent_save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AgentSave",
+      "start": "0x121d664",
+      "stop": "0x121d8d0",
+      "sha256": "ec70d7eca5861cf8bed1d312e6e150f8ce4fc527a373f28483740ab7341b803d"
+    },
+    "find_flavour": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.FindFlavour",
+      "start": "0x121c1dc",
+      "stop": "0x121c268",
+      "sha256": "13ccffa25e9b0cdd8bff9ccd14b78cb1e4788fe254f861b1af21c6597a8dca8e"
+    },
+    "save_flavours_only": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SaveLabelFlavoursOnly",
+      "start": "0x121d9dc",
+      "stop": "0x121db88",
+      "sha256": "d69f79c66b397eb8c09d3359d401c3fe96353d37ec73b68695c170fa15ca3f62"
+    },
+    "key_function_indicators": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SetKeyFunctionIndicators",
+      "start": "0x121db88",
+      "stop": "0x121dc94",
+      "sha256": "5a41ac7e778aaf9ef8af46076491275ce5df470db5ad404e4befd226f356a160"
+    },
+    "base_agent_save": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentSave",
+      "start": "0xcb72bc",
+      "stop": "0xcb8010",
+      "sha256": "ed80928aac4ac6caca38a15d0005eb2d547bb83b70b12ae6e171975518aa056b"
+    },
+    "save_dialog": {
+      "symbol": "CIS_TddCBusUnit.TddCBusUnit.SaveProgramming",
+      "start": "0xec7978",
+      "stop": "0xec8364",
+      "sha256": "f71ec4318642f0c3272837b90576eab72846829ce780467d199b0e041cb1a20c"
+    },
+    "keyl5_network_save": {
+      "symbol": "CIS_TddKEYL5.TddKEYL5.SaveProgramming_Network",
+      "start": "0x1000f78",
+      "stop": "0x10011a8",
+      "sha256": "3c045a200fd86d8b3d5ed065edf5ac12b30731dfccc474bbd96ba77e4e2c2ef3"
+    }
+  },
+  "fragments": {
+    "save_gate": {
+      "start": "0x121c371",
+      "stop": "0x121c3b9",
+      "sha256": "20c64775974a22a14fa86d585e68c9937d891d8d10b1a0bea66e19c093bf2d41"
+    },
+    "key_decision": {
+      "start": "0x121c7aa",
+      "stop": "0x121c9f2",
+      "sha256": "b4492756c657c49de780ac17b5c478461783ead3c9374d26b1036f4efb689175"
+    }
+  },
+  "rules": {
+    "ordinary_physical_order": [
+      "Initial PP save sets EnableDynamicLabels=1",
+      "AfterSave: SetKeyFunctionIndicators if unit+0xdd",
+      "AfterSave: clear collected label errors and initialize network language if missing",
+      "AfterSave: labels in key collection order when SaveDLTLabels or transfer flag",
+      "AgentSave: reblock through SaveEnableDynamicLabelsOnly when BlockDynamicUpdates"
+    ],
+    "save_labels_flag": "unit+0x16e; initialized from inverse BlockDynamicUpdates and writable by Save DLT Labels dialog checkbox",
+    "transfer_flag": "agent+0xda; true for TransferNetworkToDatabase/TransferDatabaseToNetwork, otherwise false",
+    "key_resolution": [
+      "Scene-modify key: ControlAppGroup; absent/unused group skips key",
+      "Scene key: SceneTriggerLevel; absent level skips key",
+      "Other key: PrimaryDLTGroup; absent/unused group clears key label",
+      "Resolve network default language and selected LabelFlavour; first matching flavour wins"
+    ],
+    "dynamic_loading": "For ordinary primary-group labels, DYNAMIC/FONT without cached dynamic data attempts LoadDLTBitmap before decision",
+    "key_decision": "Missing flavour, blank tag, <Default>, or DYNAMIC/FONT with no dynamic data => DLTClearLabel KeyNumber=zero_based_index+1; otherwise SaveDLTLabel",
+    "errors": "Retained-flavour dispatch exceptions are recorded and processing continues; fallback missing-flavour clear is outside that local handler; KEYL5 form limits displayed error list to ten",
+    "save_flavours_only": "Reuse existing session and stage two arrays without SAVE; otherwise Lock, Start, Load, Set LSB, Set MSB, Save, End, Unlock",
+    "scope_limit": "No complete physical executor: KFI state, image loading, original form lifecycle, failure cleanup and physical persistence remain separate evidence requirements"
+  },
+  "observations": {
+    "gates": [
+      {
+        "save_labels": false,
+        "transfer": false,
+        "key_count": 0,
+        "result": {
+          "eligible": false,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": false,
+        "transfer": false,
+        "key_count": 8,
+        "result": {
+          "eligible": false,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": false,
+        "transfer": true,
+        "key_count": 0,
+        "result": {
+          "eligible": false,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": false,
+        "transfer": true,
+        "key_count": 8,
+        "result": {
+          "eligible": true,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": true,
+        "transfer": false,
+        "key_count": 0,
+        "result": {
+          "eligible": false,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": true,
+        "transfer": false,
+        "key_count": 8,
+        "result": {
+          "eligible": true,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": true,
+        "transfer": true,
+        "key_count": 0,
+        "result": {
+          "eligible": false,
+          "actions": [],
+          "flavour_marked": false
+        }
+      },
+      {
+        "save_labels": true,
+        "transfer": true,
+        "key_count": 8,
+        "result": {
+          "eligible": true,
+          "actions": [],
+          "flavour_marked": false
+        }
+      }
+    ],
+    "decisions": [
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 1,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 2,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 0,
+        "tag_type": 3,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 0,
+        "flavour_present": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=1"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 1,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 2,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "<Default>",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "<Default>",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "Kitchen",
+        "dynamic_data": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": true
+        }
+      },
+      {
+        "key_index": 7,
+        "tag_type": 3,
+        "tag_value": "Kitchen",
+        "dynamic_data": true,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "flavour",
+              "verbs": [
+                "SaveDLTLabel"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      },
+      {
+        "key_index": 7,
+        "flavour_present": false,
+        "result": {
+          "eligible": true,
+          "actions": [
+            {
+              "target": "unit",
+              "verbs": [
+                "DLTClearLabel",
+                "KeyNumber=8"
+              ]
+            }
+          ],
+          "flavour_marked": false
+        }
+      }
+    ]
+  },
+  "command_builders": {
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": [
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.AgentSave",
+        "start": "0x1211a50",
+        "end": "0x1211aac",
+        "sha256": "d18d9f47b48ea47b6df649a3a72fe1fed57e1b331f62d23fb101d48cd3d99b70"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.CommandApplicationLabel",
+        "start": "0x1211bdc",
+        "end": "0x1211db0",
+        "sha256": "c6e0e4c275a705253668fbb56b7fa0fd4ef84cd3eecfcfb9e55ca8d605eca179"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetApplicationTypeString",
+        "start": "0x1211db0",
+        "end": "0x1211ea8",
+        "sha256": "0d47de87350de1fb5560037140396df2abafdddb0ecfaad9b7bc161a0e08bb73"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetLevelString",
+        "start": "0x1211ea8",
+        "end": "0x1211f04",
+        "sha256": "8be3540b50bc08b66d800e37cb8a73f013e568d1070d637fd7b2f545300fc37e"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetDynamicDataString",
+        "start": "0x1211f04",
+        "end": "0x1211fe0",
+        "sha256": "9f5f3f4892e9664e4896f253c5a8995e2651dd8ae3313daa916546c0b64c8f4c"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetFontDynamicDataString",
+        "start": "0x1211fe0",
+        "end": "0x12120c8",
+        "sha256": "deeef5f139232d23f5a81122bfc540b9e8851186e05f29266a8b8a1e3e9c4522"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetTextDataString",
+        "start": "0x12120c8",
+        "end": "0x12120f0",
+        "sha256": "7b0ff86e6bd98a6d1b43b912bc4ff121c2eac19f50f99e89fd11a0065756d1fd"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.ContainUnicode",
+        "start": "0x12120f0",
+        "end": "0x121214c",
+        "sha256": "9cda73b5a431b443c4103cbf4134eabf137edaa40a73403ed8ad8f67888bda52"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.BroadcastDLTLabel",
+        "start": "0x121214c",
+        "end": "0x1212864",
+        "sha256": "b0022ae77ad0c338c3e5a5f9ede65c90a5740e571d4105bf3f201d3cb9edace9"
+      },
+      {
+        "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetProjectPrefix",
+        "start": "0x1212864",
+        "end": "0x1212984",
+        "sha256": "61c2195681db323f7f6a58e8a3fef7e9b99c89b297acd78e4a194aa47d637aff"
+      },
+      {
+        "symbol": "CIS_TCGateDLTAgent.TCGateDLTAgent.CommandApplicationLabel",
+        "start": "0x120dff8",
+        "end": "0x120e194",
+        "sha256": "b8a474af512ff833d05e53bbfa78e39a91867c7b6406b53bb6f6d848c61098ee"
+      },
+      {
+        "symbol": "CIS_TcgcApplicationLabel.TcgcApplicationLabel.GenerateCommandText",
+        "start": "0x120d868",
+        "end": "0x120d9e0",
+        "sha256": "e3fc56f009fc812e96fc47e3ef7c623bc50e5479f37f3694325a46599af54f6f"
+      },
+      {
+        "symbol": "CIS_TcgcApplicationLabel.TcgcApplicationLabel.OnProcessResults",
+        "start": "0x120d9e0",
+        "end": "0x120dda4",
+        "sha256": "aeb3580f9ed18436ed6b57b52d67cb4ef1be6e67cf65d4cfdefef561c75e83a9"
+      },
+      {
+        "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.CommandClearLabel",
+        "start": "0x121e274",
+        "end": "0x121e338",
+        "sha256": "9de3c5f5aceff00463726cd2c8eb5b729cc5579f7fbbb235522d2010661b9834"
+      },
+      {
+        "symbol": "CIS_TcgcLabelClear.TcgcLabelClear.GenerateCommandText",
+        "start": "0x121b12c",
+        "end": "0x121b2c4",
+        "sha256": "72338a3a4ff24fdebd12b1792be0bbf72d7932ff7df9e3ff9bbe8d6930b34145"
+      },
+      {
+        "symbol": "CIS_TcgcLabelClear.TcgcLabelClear.OnProcessResults",
+        "start": "0x121b2c4",
+        "end": "0x121b4e4",
+        "sha256": "2e58c62c2c916b58ee2f9d4ab1d7f56da4f31bba75f5ae568f50b495ad7af36c"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavour.InternalCreate",
+        "start": "0xf3657c",
+        "end": "0xf366a0",
+        "sha256": "d9c9cb60d383eab2013f28ccacc60826c4d3dc91ecb88a3803649d4e5a279854"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavour.GetDLTDynamicData",
+        "start": "0xf367e8",
+        "end": "0xf3680c",
+        "sha256": "1c20f68c624f727ac5883f0f4b46e67dd182c643e8e010bc4290f4afc95dc9bd"
+      },
+      {
+        "symbol": "CIS_TDLTGraphic.IsDLTFontTagValue",
+        "start": "0x856fbc",
+        "end": "0x856fe0",
+        "sha256": "02258e3a90b0f6a9251891223362eaf02fe218e9415a84330a6ee9cb50c25457"
+      },
+      {
+        "symbol": "CIS_TDLTGraphic.GetImageIDFromFontTagValue",
+        "start": "0x856fe0",
+        "end": "0x857024",
+        "sha256": "7a0d6a79800f093874a20f8a77a8e4180bdd1d0d0fbc7cc7b1b8ff7b8823bd07"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.GetOIDAsCGateID",
+        "start": "0xf47a58",
+        "end": "0xf47a74",
+        "sha256": "70cea152e3601d690aef8ea42df22e262a4c8f2dc82966cbda5cecd96b0cf815"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.GetAddressAsCGateID",
+        "start": "0xf47bf0",
+        "end": "0xf47c7c",
+        "sha256": "4b35f6d17bc66c35324bc8f5a7dcc7f6fbc2e62e6511751d9eb2255d871e308d"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "start": "0xf2ebc0",
+        "end": "0xf2ebf0",
+        "sha256": "6a6bb9724a27eecef89d082873a9f4b393c5d184bf5621cba22ed752517949e4"
+      }
+    ],
+    "findings": {
+      "call_chain": [
+        "AgentSave(SaveDLTLabel)",
+        "BroadcastDLTLabel",
+        "TGroupLanguageFlavourCGateAgent.CommandApplicationLabel",
+        "TcgcApplicationLabel.GenerateCommandText",
+        "CommandExecute"
+      ],
+      "early_return": [
+        "GroupLanguageFlavour+0xC4 already true",
+        "group absent"
+      ],
+      "flavour": {
+        "asserted_range": [
+          1,
+          4
+        ],
+        "command_token": "F<flavour minus 1>"
+      },
+      "application_type": "ENABLE for network enable-control application; TRIGGER for trigger-control application; LIGHTING otherwise",
+      "level": "decimal level address when parent is a level and level exists; otherwise -",
+      "target": "optional //project/ prefix plus application.GetOIDAsCGateID(): !OID when nonblank; otherwise virtual address",
+      "command": "<application-type> LABEL <target> <language-id> <group-address> <level-or--> F<flavour-1> <type> <data>",
+      "generic_dlt_agent": "same command object but no flavour token and no extra project-prefix concatenation in that method",
+      "tag_type_dispatch": {
+        "0": "00/text",
+        "1": "ICON/TagValue",
+        "2": "DYNAMIC/GetDynamicDataString",
+        "3": "DYNAMIC/GetFontDynamicDataString",
+        "other": "00/TagValue"
+      },
+      "text": {
+        "source": "DLTTag.TagValue, no text transformation in GetTextDataString",
+        "empty_or_exact_default": {
+          "matches": [
+            "",
+            "<Default>"
+          ],
+          "type": "0",
+          "data": "10"
+        },
+        "maximum_code_units": 14,
+        "encoding": "uppercase IntToHex(UTF16 code unit, minimum digits=2), concatenated",
+        "unicode_guard": "if any code unit in original untruncated value exceeds255, suppress LABEL command",
+        "suppressed_still_marked_broadcast": true,
+        "literal_text_mode": "TcgcApplicationLabel also supports TEXT through TagStringToCgateString; BroadcastDLTLabel uses 00 instead"
+      },
+      "dynamic": {
+        "payload": "<image-id> <GroupLanguageFlavour+0xC0 decimal> 16 10 <DLTDynamicData>",
+        "field_c0_constructor_default": 64,
+        "image_id": "TagValue for dynamic type2; substring before first comma for font type3",
+        "data_dependency": "existing DLTDynamicData string attribute at object+0xBC; this builder does not render graphics",
+        "followup": "after DYNAMIC succeeds, mark broadcast then send same address/flavour with ICON and image-id",
+        "followup_image_id": "substring before first comma when TagValue contains exactly9 commas, otherwise complete TagValue",
+        "command_timeout_ms": 30000
+      },
+      "completion": "mark+0xC4 after initial command, or after suppressing Unicode text; dynamic ICON follows the mark; one command attempt, no effective retry loop",
+      "clear": {
+        "call_chain": [
+          "TCBusDynamicLabelInputCGateAgent.CommandClearLabel",
+          "TcgcLabelClear.GenerateCommandText",
+          "CommandExecute"
+        ],
+        "line_zero": "skip command",
+        "line_1_to_8": "label clear <network-address>/<unit-application-address> <unit-address> <line>",
+        "other_nonzero_line": "label clear <network-address>/<unit-application-address> <unit-address>",
+        "addresses": "network from unit.GetNetwork; application from unit.GetApplicationObject; unit.GetAddressAsInteger; decimal integers"
+      },
+      "responses": {
+        "application_label": "200 OK completes; bad object (case insensitive substring) also marks complete;400 Syntax Error,408 Operation failed with System Exception or Send failed,402 Operation not supported raise mapped exceptions",
+        "label_clear": "200 OK completes;400 Syntax Error and402 Operation not supported raise mapped exceptions"
+      },
+      "limit": "Static original-code evidence only; no actual C-Gate command delivery, no hardware action, no device readback, no graphic generation and no full original GUI execution."
+    }
+  },
+  "boundary": "Original x86 branch fragments with synthetic object/string fixtures. No physical executor, transport, GUI or persistence acceptance."
+}

@@ -1,0 +1,336 @@
+{
+  "format": "cbus-classic-dlt-display-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "I_DLT.xml_sha256": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133"
+  },
+  "methods": {
+    "integer_to_mode": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.IntegerToCBusDynamicIndicatorMode",
+      "start": "0xce45f0",
+      "stop": "0xce4630",
+      "sha256": "60fbf85445cd23c5587af380ecbf9116d84c59e584cacfe79bc168789bc8737a"
+    },
+    "mode_to_integer": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.CBusDynamicIndicatorModeToInteger",
+      "start": "0xce4630",
+      "stop": "0xce4670",
+      "sha256": "df187528caafc126815a43acd84d71aae86af42ebc70d32b52b7553f73e4ff22"
+    },
+    "indicator_get": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetIndicatorMode",
+      "start": "0xce4b84",
+      "stop": "0xce4be0",
+      "sha256": "9db8436e65339d4d206c4fe30d8731b8d154775767304a0902248dd371a8215f"
+    },
+    "indicator_set": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetIndicatorMode",
+      "start": "0xce5098",
+      "stop": "0xce50fc",
+      "sha256": "3355e18afc0752fadfc6eaac5cb4ad270cee17c5d48c2798b0f042f9240a7ef9"
+    },
+    "invert_get": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetInvertDisplay",
+      "start": "0xce4be0",
+      "stop": "0xce4c04",
+      "sha256": "3bb12d911937117d3f1a858312250844b4b4ba2111209c15803de81dd091bae6"
+    },
+    "invert_set": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetInvertDisplay",
+      "start": "0xce4ecc",
+      "stop": "0xce4f28",
+      "sha256": "db530aa42c4100cab5b8c7d26d6776bb217012ae135b2a50989fad856733ad56"
+    },
+    "clock_get": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetShowClock",
+      "start": "0xce4c2c",
+      "stop": "0xce4c50",
+      "sha256": "c59e7767cb0181ac6352f460c7a5e3b144652979265e690b99ae931f080ccde9"
+    },
+    "clock_set": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetShowClock",
+      "start": "0xce4f28",
+      "stop": "0xce4f84",
+      "sha256": "520161bbc397dd2646d52fcbeff157cf2eef89e11218b8a61b672d8d7a3f1d30"
+    },
+    "checkbox_bindings": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.SetupFlashComponents",
+      "start": "0xffad64",
+      "stop": "0xffb214",
+      "sha256": "23a8bd8d8c183a5281a18ae215106476c6ac463f115755b4970cc35a2df0204e"
+    },
+    "indicator_radio": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleIndicatorOverrideRadioChange",
+      "start": "0xffb81c",
+      "stop": "0xffb888",
+      "sha256": "0cb3b3857fc604d55db341a34a40e68ebcc87c8b59c46ec8baf4b504b16009b9"
+    }
+  },
+  "constructor_methods": {
+    "agent_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.InternalCreate",
+      "start": "0x121b6ec",
+      "stop": "0x121bd3c",
+      "sha256": "6ddd6f4fec1ab6a78939f92fc2673bc1371db8ca71af23278aeb035f1d62da91"
+    },
+    "unit_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.InternalCreate",
+      "start": "0xce4670",
+      "stop": "0xce4b18",
+      "sha256": "07f5297b24563205181efe9994b34992da1f9646f193f989d2683a89998e1d67"
+    }
+  },
+  "fragments": {
+    "indicator_load": {
+      "start": "0x121c05d",
+      "stop": "0x121c082",
+      "sha256": "7d5be761debf2d1b88dbb9cff82674dbc9087a4f1e11a4604d7254005f70e7d5"
+    },
+    "invert_load": {
+      "start": "0x121c0a4",
+      "stop": "0x121c0c4",
+      "sha256": "4ffe259e45933bc675f16d6ec99c5b721672dddc7e3f8afe16f0b010f0871aaa"
+    },
+    "clock_load": {
+      "start": "0x121c0c4",
+      "stop": "0x121c0e6",
+      "sha256": "b2d8e1e4e2d3fc50f6cbf95b0e4b7ab104834fe8f2607e0fd86d174a92292532"
+    },
+    "indicator_save": {
+      "start": "0x121d292",
+      "stop": "0x121d2c1",
+      "sha256": "bbac797b5d159d1b082d0bd2dd4ba19ff4203068260138cf0e22d7b55cbafe10"
+    },
+    "invert_save": {
+      "start": "0x121d2f2",
+      "stop": "0x121d320",
+      "sha256": "6e87d379479154e530d2280adc156b9d11ed3d3c5dff5304fe7bbd56f0db7d3b"
+    },
+    "clock_save": {
+      "start": "0x121d320",
+      "stop": "0x121d351",
+      "sha256": "ae282caf4e48712966ad4eec8d27c72086370d853846d16b6fee98bd6272e5a8"
+    }
+  },
+  "parameters": {
+    "IndicatorMode": {
+      "address": 53,
+      "bit": 0,
+      "width": 2,
+      "default": 1
+    },
+    "InvertDisplay": {
+      "address": 53,
+      "bit": 4,
+      "width": 1,
+      "default": 0
+    },
+    "HideClock": {
+      "address": 53,
+      "bit": 5,
+      "width": 1,
+      "default": 0
+    }
+  },
+  "attribute_fields": {
+    "IndicatorMode": {
+      "agent_offset": "0x1e8",
+      "unit_property": "IndicatorMode",
+      "unit_offset": "0x2c8"
+    },
+    "InvertDisplay": {
+      "agent_offset": "0x1f0",
+      "unit_property": "InvertDisplay",
+      "unit_offset": "0x2d0"
+    },
+    "HideClock": {
+      "agent_offset": "0x1f4",
+      "unit_property": "ShowClock",
+      "unit_offset": "0x2d4"
+    }
+  },
+  "checkbox_bindings": [
+    {
+      "property": "InvertDisplay",
+      "form_control_offset": "0x2b8",
+      "binding_address": "0xffaef7",
+      "binding_call": "CIS_FlashGUI.PrepareFlashCheckbox"
+    },
+    {
+      "property": "ShowClock",
+      "form_control_offset": "0x2bc",
+      "binding_address": "0xffaf1c",
+      "binding_call": "CIS_FlashGUI.PrepareFlashCheckbox"
+    }
+  ],
+  "rules": {
+    "indicator_load": {
+      "0": "off",
+      "1": "normal",
+      "2": "on",
+      "3": "on"
+    },
+    "indicator_save": {
+      "off": 0,
+      "normal": 1,
+      "on": 2
+    },
+    "invert_display": "InvertDisplay loads and saves without inversion",
+    "show_clock": "ShowClock = not HideClock on load; HideClock = not ShowClock on save",
+    "indicator_radio": "First checked radio selects on (enum 2); second selects off (enum 0); otherwise normal (enum 1)"
+  },
+  "observations": [
+    {
+      "control": "indicator",
+      "operation": "load",
+      "input": 0,
+      "output": 0,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 62
+    },
+    {
+      "control": "indicator",
+      "operation": "load",
+      "input": 1,
+      "output": 1,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 63
+    },
+    {
+      "control": "indicator",
+      "operation": "load",
+      "input": 2,
+      "output": 2,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 65
+    },
+    {
+      "control": "indicator",
+      "operation": "load",
+      "input": 3,
+      "output": 2,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 67
+    },
+    {
+      "control": "indicator",
+      "operation": "save",
+      "input": 0,
+      "output": 0,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 64
+    },
+    {
+      "control": "indicator",
+      "operation": "save",
+      "input": 1,
+      "output": 1,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 64
+    },
+    {
+      "control": "indicator",
+      "operation": "save",
+      "input": 2,
+      "output": 2,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 66
+    },
+    {
+      "control": "invert",
+      "operation": "load",
+      "input": false,
+      "output": false,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 45
+    },
+    {
+      "control": "invert",
+      "operation": "load",
+      "input": true,
+      "output": true,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 45
+    },
+    {
+      "control": "invert",
+      "operation": "save",
+      "input": false,
+      "output": false,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 25
+    },
+    {
+      "control": "invert",
+      "operation": "save",
+      "input": true,
+      "output": true,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 25
+    },
+    {
+      "control": "clock",
+      "operation": "load",
+      "input": false,
+      "output": true,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 46
+    },
+    {
+      "control": "clock",
+      "operation": "load",
+      "input": true,
+      "output": false,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 46
+    },
+    {
+      "control": "clock",
+      "operation": "save",
+      "input": false,
+      "output": true,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 26
+    },
+    {
+      "control": "clock",
+      "operation": "save",
+      "input": true,
+      "output": false,
+      "other_attributes_preserved": true,
+      "original_instruction_count": 26
+    }
+  ],
+  "conversion_checks": [
+    {
+      "method": "integer_to_mode",
+      "case_count": 10,
+      "cases_sha256": "e712a759ff7c1158a68238c0096a443917055f897dbf71df6424b55d919bedd2",
+      "inputs": [
+        -2147483648,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        255,
+        256,
+        2147483647
+      ],
+      "rule": "0 -> 0; 1 -> 1; 2,3 -> 2; other -> 1"
+    },
+    {
+      "method": "mode_to_integer",
+      "case_count": 256,
+      "cases_sha256": "2d5dda629cb5d372928c39abd31d6b5ead12edfd70f4b6c95e462e6d393ecb78",
+      "inputs": "all enum bytes 0..255",
+      "rule": "0 -> 0; 1 -> 1; 2 -> 2; other -> 1"
+    }
+  ],
+  "passed": true,
+  "original_full_form_executed": false,
+  "physical_hardware_verified": false,
+  "boundary": "Original x86 load/save fragments, conversion methods and property accessors with synthetic attribute storage and Delphi Variant hooks; no full GUI, native C-Gate, database persistence, display rendering or physical acceptance."
+}

@@ -1,4 +1,4 @@
-"""CLI adapters for DLT profiles, classic label controls and project TEXT labels."""
+"""CLI adapters for classic DLT display/label controls and project TEXT labels."""
 from __future__ import annotations
 
 import json
@@ -29,6 +29,26 @@ def variants(args):
     return selected
 
 
+def display_options(parser):
+    parser.add_argument('--indicator-mode', choices=('off', 'normal', 'on'),
+                        help='Original classic DLT indicator mode')
+    parser.add_argument('--invert-display', choices=('yes', 'no'),
+                        help='Invert the classic DLT display')
+    parser.add_argument('--show-clock', choices=('yes', 'no'),
+                        help='Show or hide the classic DLT clock')
+
+
+def display_settings(args):
+    result = {}
+    if args.indicator_mode is not None:
+        result['indicator_mode'] = args.indicator_mode
+    for name in ('invert_display', 'show_clock'):
+        value = getattr(args, name)
+        if value is not None:
+            result[name] = value == 'yes'
+    return result
+
+
 def options(commands):
     """Register the offline ``dlt`` command group."""
     dlt = commands.add_parser('dlt', help='Inspect DLT/eDLT profiles and edit classic DLT label controls and text')
@@ -40,28 +60,35 @@ def options(commands):
     p.add_argument('--catalog-number')
     from .dlt_project_cli import options as text_options
     text_options(ops)
-    labels = ops.add_parser('labels', help='Show or plan classic DLT variants and dynamic-update controls offline')
-    lops = labels.add_subparsers(dest='labels_action', required=True)
-    for action in ('show', 'plan'):
-        p = lops.add_parser(action)
-        source = p.add_mutually_exclusive_group(required=True)
-        source.add_argument('--file', type=Path, help='PP export (cbus-cli-parameters-v1) or bare parameter mapping')
-        source.add_argument('--project-xml', type=Path, help='Native DBGETXML Installation document')
-        p.add_argument('--unit', help='//PROJECT/network/p/unit inside --project-xml')
-        p.add_argument('--unit-type', help='Required for a bare parameter mapping')
-        p.add_argument('--firmware', help='Required with --unit-type for a bare mapping')
-        p.add_argument('--catalog-number')
-        if action == 'plan':
-            variant_options(p)
+    for group, help_text in (
+            ('labels', 'Show or plan classic DLT variants and dynamic-update controls offline'),
+            ('display', 'Show or plan classic DLT indicator mode, display inversion and clock visibility')):
+        parser = ops.add_parser(group, help=help_text)
+        actions = parser.add_subparsers(dest='labels_action', required=True)
+        for action in ('show', 'plan'):
+            p = actions.add_parser(action)
+            source = p.add_mutually_exclusive_group(required=True)
+            source.add_argument('--file', type=Path, help='PP export (cbus-cli-parameters-v1) or bare parameter mapping')
+            source.add_argument('--project-xml', type=Path, help='Native DBGETXML Installation document')
+            p.add_argument('--unit', help='//PROJECT/network/p/unit inside --project-xml')
+            p.add_argument('--unit-type', help='Required for a bare parameter mapping')
+            p.add_argument('--firmware', help='Required with --unit-type for a bare mapping')
+            p.add_argument('--catalog-number')
+            if action == 'plan':
+                (display_options if group == 'display' else variant_options)(p)
 
 
-def _editor(spec_dir, unit_type):
+def _editor(spec_dir, unit_type, *, display=False):
     from .dlt_controls import ClassicDltControls
     from .dlt_profiles import profile_for
     from .unitspec import UnitSpecStore
     if spec_dir is None:
         raise ValueError('Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications')
-    return ClassicDltControls(UnitSpecStore(spec_dir).load(profile_for(unit_type).spec_filename), unit_type)
+    cls = ClassicDltControls
+    if display:
+        from .dlt_display import ClassicDltDisplay
+        cls = ClassicDltDisplay
+    return cls(UnitSpecStore(spec_dir).load(profile_for(unit_type).spec_filename), unit_type)
 
 
 def _source(args):
@@ -121,10 +148,12 @@ def offline(args):
     from .dlt_profiles import require
     identity, values = _source(args)
     require(WORKFLOW, *identity, message='Unit identity is not an admitted classic DLT label-variant profile')
-    editor = _editor(args.spec_dir, identity[0])
+    editor = _editor(args.spec_dir, identity[0], display=args.action == 'display')
     identity = editor.check_identity(*identity)
     if args.labels_action == 'show':
         return editor.show(values, identity), 0
+    if args.action == 'display':
+        return editor.plan(values, settings=display_settings(args), identity=identity).as_dict(), 0
     if args.block_dynamic_updates is not None:
         return editor.plan_controls(values, variants=variants(args), identity=identity,
                                     block_dynamic_updates=args.block_dynamic_updates == 'yes').as_dict(), 0
@@ -132,22 +161,45 @@ def offline(args):
 
 
 def native_options(unops):
-    p = unops.add_parser('dlt-labels', help='Show or set classic DLT variants and dynamic-update controls')
+    p = unops.add_parser('dlt-labels', help='Show or set classic DLT display and label controls')
     p.add_argument('--spec-dir', type=Path, default=os.environ.get('CBUS_UNITSPEC_DIR'))
     p.add_argument('--show', action='store_true', help='Report the per-slot variants without editing')
-    p.add_argument('--plan', dest='dlt_plan', type=Path, help='Apply a saved classic DLT variant or control plan')
+    p.add_argument('--show-display', action='store_true', help='Report classic DLT display controls without editing')
+    p.add_argument('--plan', dest='dlt_plan', type=Path, help='Apply a saved classic DLT variant, control or display plan')
     variant_options(p)
+    display_options(p)
 
 
 def native(args, session):
     """Return (result, edited) for the ``cgate unit ... dlt-labels`` action."""
     from .dlt_labels import DltLabelPlan
     from .dlt_controls import DltControlPlan, FORMAT as CONTROL_FORMAT
+    from .dlt_display import DltDisplayPlan, FORMAT as DISPLAY_FORMAT
+    settings = display_settings(args)
+    selected = variants(args)
+    control = args.block_dynamic_updates
+    if (settings or args.show_display) and (selected or control is not None or args.show):
+        raise ValueError('Display controls cannot be combined with --variant, --block-dynamic-updates or --show')
+    if args.show_display:
+        if settings or args.dlt_plan is not None:
+            raise ValueError('--show-display cannot be combined with display changes or --plan')
+        editor = _editor(args.spec_dir, session.unit_type, display=True)
+        identity = editor._verify_profile(session)
+        editor._verify_session(session)
+        return editor.show(session.values(), identity), False
+    if settings:
+        if args.dlt_plan is not None:
+            raise ValueError('--plan cannot be combined with display changes')
+        editor = _editor(args.spec_dir, session.unit_type, display=True)
+        return editor.configure(session, settings=settings), True
+    if args.dlt_plan is not None and not (selected or control is not None or args.show):
+        data = _read_json(args.dlt_plan)
+        if isinstance(data, dict) and data.get('format') == DISPLAY_FORMAT:
+            editor = _editor(args.spec_dir, session.unit_type, display=True)
+            return editor.apply(session, DltDisplayPlan.from_dict(data)), True
     editor = _editor(args.spec_dir, session.unit_type)
     identity = editor._verify_profile(session)
     editor._verify_session(session)
-    selected = variants(args)
-    control = args.block_dynamic_updates
     if args.show:
         if selected or control is not None or args.dlt_plan is not None:
             raise ValueError('--show cannot be combined with --variant, --block-dynamic-updates or --plan')

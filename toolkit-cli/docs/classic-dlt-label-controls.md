@@ -5,6 +5,11 @@ for each of eight PP slots and an `EnableDynamicLabels` bit. It does not store
 the project label strings. The bounded workflows here edit database PP and
 saved native project XML; they do not send labels to a unit.
 
+The separate [classic display controls](classic-dlt-display.md) workflow
+edits indicator mode, display inversion and clock visibility. The
+[original delivery sequence](classic-dlt-delivery-original.md) retains the
+physical staging evidence and remaining execution gaps.
+
 ## Block Dynamic Updates
 
 `dlt labels show` reports `block_dynamic_updates` alongside the raw enable

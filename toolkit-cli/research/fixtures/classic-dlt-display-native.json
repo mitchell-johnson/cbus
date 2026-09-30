@@ -1,0 +1,343 @@
+{
+  "format": "cbus-classic-dlt-display-native-v1",
+  "passed": true,
+  "scope": "Owned original C-Gate synthetic database units only",
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "physical_hardware_verified": false,
+  "original_full_form_save_executed": false,
+  "specs": {
+    "KEYL4.xml": "8d045edada38377378d01c76d5c48c7a84126aea7e3e1a1973dac312f26fd995",
+    "KEYL5.xml": "c3f29166c59b03a76c4545ca3dd79de89b277fe5f0a3188b5bd686a3795a8095",
+    "I_DLT.xml": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133",
+    "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7"
+  },
+  "cases": [
+    {
+      "unit_type": "KEYBL5",
+      "firmware": "2.1.00",
+      "catalog_number": "5085DL",
+      "steps": [
+        {
+          "settings": {
+            "invert_display": false
+          },
+          "raw_before": 255,
+          "raw_after": 239,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "on"
+          },
+          "raw_before": 239,
+          "raw_after": 238,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "show_clock": true
+          },
+          "raw_before": 238,
+          "raw_after": 206,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "off",
+            "invert_display": true,
+            "show_clock": false
+          },
+          "raw_before": 206,
+          "raw_after": 252,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 252,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 205,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        }
+      ],
+      "staged_raw_byte": 205,
+      "reloaded_raw_byte": 77,
+      "unmodeled_bit7_persisted": false
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "2.0.00",
+      "catalog_number": "5055DL",
+      "steps": [
+        {
+          "settings": {
+            "invert_display": false
+          },
+          "raw_before": 255,
+          "raw_after": 239,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "on"
+          },
+          "raw_before": 239,
+          "raw_after": 238,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "show_clock": true
+          },
+          "raw_before": 238,
+          "raw_after": 206,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "off",
+            "invert_display": true,
+            "show_clock": false
+          },
+          "raw_before": 206,
+          "raw_after": 252,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 252,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 205,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        }
+      ],
+      "staged_raw_byte": 205,
+      "reloaded_raw_byte": 77,
+      "unmodeled_bit7_persisted": false
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "3.0.99",
+      "catalog_number": "5055DL",
+      "steps": [
+        {
+          "settings": {
+            "invert_display": false
+          },
+          "raw_before": 255,
+          "raw_after": 239,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "on"
+          },
+          "raw_before": 239,
+          "raw_after": 238,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "show_clock": true
+          },
+          "raw_before": 238,
+          "raw_after": 206,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "off",
+            "invert_display": true,
+            "show_clock": false
+          },
+          "raw_before": 206,
+          "raw_after": 252,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 252,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 205,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        }
+      ],
+      "staged_raw_byte": 205,
+      "reloaded_raw_byte": 77,
+      "unmodeled_bit7_persisted": false
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "3.0.00",
+      "catalog_number": "E5084DL",
+      "steps": [
+        {
+          "settings": {
+            "invert_display": false
+          },
+          "raw_before": 255,
+          "raw_after": 239,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "on"
+          },
+          "raw_before": 239,
+          "raw_after": 238,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "show_clock": true
+          },
+          "raw_before": 238,
+          "raw_after": 206,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "off",
+            "invert_display": true,
+            "show_clock": false
+          },
+          "raw_before": 206,
+          "raw_after": 252,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 252,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 205,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        }
+      ],
+      "staged_raw_byte": 205,
+      "reloaded_raw_byte": 77,
+      "unmodeled_bit7_persisted": false
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "2.1.00",
+      "catalog_number": "E5054DL",
+      "steps": [
+        {
+          "settings": {
+            "invert_display": false
+          },
+          "raw_before": 255,
+          "raw_after": 239,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "on"
+          },
+          "raw_before": 239,
+          "raw_after": 238,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "show_clock": true
+          },
+          "raw_before": 238,
+          "raw_after": 206,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "off",
+            "invert_display": true,
+            "show_clock": false
+          },
+          "raw_before": 206,
+          "raw_after": 252,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 252,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        },
+        {
+          "settings": {
+            "indicator_mode": "normal",
+            "invert_display": false,
+            "show_clock": true
+          },
+          "raw_before": 205,
+          "raw_after": 205,
+          "all_other_pp_preserved": true
+        }
+      ],
+      "staged_raw_byte": 205,
+      "reloaded_raw_byte": 77,
+      "unmodeled_bit7_persisted": false
+    }
+  ],
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "all_named_pp_save_close_reload_passed": true,
+  "native_no_editor_control": {
+    "staged_raw_byte": 255,
+    "reloaded_raw_byte": 127,
+    "unmodeled_bit7_persisted": false
+  }
+}
