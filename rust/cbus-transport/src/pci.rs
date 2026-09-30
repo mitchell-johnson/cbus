@@ -40,7 +40,7 @@ mod mmi;
 mod programming;
 
 pub use programming::{
-    DaliCommandResult, DaliExchange, PatchApplyDisposition, PatchApplyReceipt,
+    DaliCommandResult, DaliExchange, DaliPollBudget, PatchApplyDisposition, PatchApplyReceipt,
     PatchProgrammingBlock,
 };
 

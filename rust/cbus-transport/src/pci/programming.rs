@@ -112,6 +112,27 @@ pub struct DaliExchange {
     pub nak: bool,
 }
 
+/// Native C-Gate 3.4 AUTO budget for one DALI extended-CAL step.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DaliPollBudget {
+    /// First mode: EXECUTE, or POLL for a step that resumes a running
+    /// gateway operation.
+    pub first: DaliCalMode,
+    /// Maximum POLL requests after the first exchange.
+    pub max_polls: usize,
+    /// Delay before each POLL.
+    pub interval: Duration,
+}
+
+impl DaliPollBudget {
+    /// The `oL` default: EXECUTE, then at most ten polls 1.5 seconds apart.
+    pub const NATIVE_DEFAULT: Self = Self {
+        first: DaliCalMode::Execute,
+        max_polls: 10,
+        interval: Duration::from_millis(1500),
+    };
+}
+
 /// Result of one explicit DALI mode or an AUTO execute/poll sequence.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DaliCommandResult {
@@ -2228,6 +2249,62 @@ impl PciClient {
         operation: u8,
         payload: &[u8],
     ) -> Result<DaliCommandResult> {
+        if mode == DaliCalMode::Auto {
+            return self
+                .dali_auto_command(
+                    unit,
+                    DaliPollBudget::NATIVE_DEFAULT,
+                    device_type,
+                    operation,
+                    payload,
+                )
+                .await;
+        }
+        self.dali_sequence(unit, mode, None, device_type, operation, payload)
+            .await
+    }
+
+    /// Run one native AUTO sequence with a step-specific budget: send
+    /// `budget.first` once, then POLL while the gateway reports
+    /// `IN_PROGRESS` or `FAIL_BUSY`, at most `budget.max_polls` times and
+    /// `budget.interval` apart. C-Gate 3.4 overrides the default budget for
+    /// long-running discovery, rescan and address assignment steps, and
+    /// starts `POLL_FINISH_DISCOVER_KNOWN_FULL_INFO` with a POLL. Every
+    /// exchange is sent once; nothing is replayed.
+    pub async fn dali_auto_command(
+        &self,
+        unit: u8,
+        budget: DaliPollBudget,
+        device_type: u8,
+        operation: u8,
+        payload: &[u8],
+    ) -> Result<DaliCommandResult> {
+        if !matches!(budget.first, DaliCalMode::Execute | DaliCalMode::Poll) {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "DALI AUTO must start with EXECUTE or POLL",
+            ));
+        }
+        self.dali_sequence(
+            unit,
+            budget.first,
+            Some((budget.max_polls, budget.interval)),
+            device_type,
+            operation,
+            payload,
+        )
+        .await
+    }
+
+    async fn dali_sequence(
+        &self,
+        unit: u8,
+        first_mode: DaliCalMode,
+        polling: Option<(usize, Duration)>,
+        device_type: u8,
+        operation: u8,
+        payload: &[u8],
+    ) -> Result<DaliCommandResult> {
         if unit == 0 || unit == 255 {
             return Err(Error::new(
                 ErrorKind::InvalidInput,
@@ -2236,11 +2313,6 @@ impl PciClient {
         }
         // Build every possible first request before taking the lane. This
         // makes malformed input a definite pre-I/O refusal.
-        let first_mode = if mode == DaliCalMode::Auto {
-            DaliCalMode::Execute
-        } else {
-            mode
-        };
         let first_request = first_mode
             .request(device_type, operation, payload)
             .map_err(|error| Error::new(ErrorKind::InvalidInput, error.0))?;
@@ -2285,9 +2357,12 @@ impl PciClient {
                 data,
                 nak,
             });
-            if mode == DaliCalMode::Auto && !nak && matches!(status, 1 | 2) && polls < 10 {
+            let Some((max_polls, interval)) = polling else {
+                continue;
+            };
+            if !nak && matches!(status, 1 | 2) && polls < max_polls {
                 polls += 1;
-                tokio::time::sleep(Duration::from_millis(1500)).await;
+                tokio::time::sleep(interval).await;
                 let poll = DaliCalMode::Poll
                     .request(device_type, operation, &[])
                     .expect("payload-free DALI poll is always encodable");
@@ -8065,6 +8140,76 @@ mod tests {
             })
         ));
         assert!(!pci.programming_fault.load(Ordering::Acquire));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn dali_auto_budget_can_start_with_poll_and_stops_at_its_poll_limit() {
+        let (pci, mut remote, _events) = setup().await;
+        let worker = pci.clone();
+        let budget = DaliPollBudget {
+            first: DaliCalMode::Poll,
+            max_polls: 2,
+            interval: Duration::from_millis(3000),
+        };
+        let running = tokio::spawn(async move {
+            worker
+                .dali_auto_command(20, budget, 0xda, 0x84, &[])
+                .await
+        });
+        // POLL-first resumes a running operation; no EXECUTE is sent.
+        assert_eq!(line(&mut remote).await, b"\\061400E382DA84\r");
+        direct_reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 0x84, 1]).await;
+        tokio::time::advance(Duration::from_millis(2999)).await;
+        tokio::task::yield_now().await;
+        assert!(
+            tokio::time::timeout(Duration::ZERO, line(&mut remote))
+                .await
+                .is_err(),
+            "poll sent before its native interval"
+        );
+        tokio::time::advance(Duration::from_millis(1)).await;
+        assert_eq!(line(&mut remote).await, b"\\061400E382DA84\r");
+        direct_reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 0x84, 2]).await;
+        tokio::time::advance(Duration::from_millis(3000)).await;
+        assert_eq!(line(&mut remote).await, b"\\061400E382DA84\r");
+        direct_reply(&mut remote, 20, &[0xe4, 0x83, 0xda, 0x84, 1]).await;
+
+        // The budget is exhausted: the still-running status is returned to
+        // the caller rather than polled again or replayed.
+        let result = running.await.unwrap().unwrap();
+        assert_eq!(
+            result
+                .exchanges
+                .iter()
+                .map(|exchange| (exchange.mode, exchange.status))
+                .collect::<Vec<_>>(),
+            [
+                (DaliCalMode::Poll, 1),
+                (DaliCalMode::Poll, 2),
+                (DaliCalMode::Poll, 1)
+            ]
+        );
+        tokio::time::advance(Duration::from_secs(60)).await;
+        assert!(tokio::time::timeout(Duration::ZERO, line(&mut remote))
+            .await
+            .is_err());
+        assert!(!pci.programming_fault.load(Ordering::Acquire));
+
+        // STATUS/CANCEL are not native AUTO starts and are refused pre-I/O.
+        let refused = pci
+            .dali_auto_command(
+                20,
+                DaliPollBudget {
+                    first: DaliCalMode::Status,
+                    ..DaliPollBudget::NATIVE_DEFAULT
+                },
+                0xda,
+                7,
+                &[],
+            )
+            .await
+            .unwrap_err();
+        assert_eq!(refused.kind(), ErrorKind::InvalidInput);
     }
 
     #[tokio::test(start_paused = true)]
