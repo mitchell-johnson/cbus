@@ -1,0 +1,412 @@
+{
+  "format": "cbus-project-documentor-action-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "method": "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.ActionSelectorUse",
+  "method_sha256": "d42d5a833c1255f27719d95b6a7798a9a5959f3a3c50e10d6bd30a2c8ab80e83",
+  "boundary": "original method instructions with synthetic getters/string/collection stubs; no original page",
+  "cases": [
+    {
+      "name": "recall1",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1<br/>Key 1"
+    },
+    {
+      "name": "recall2",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            6
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1<br/>Key 1"
+    },
+    {
+      "name": "both-duplicate",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1<br/>Key 1<br/>Key 1<br/>Key 1<br/>Key 1"
+    },
+    {
+      "name": "stored1-gates-recall2",
+      "group": 8,
+      "address": 99,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            6
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": ""
+    },
+    {
+      "name": "distinct-address-value",
+      "group": 8,
+      "address": 11,
+      "value": 99,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1<br/>Key 1"
+    },
+    {
+      "name": "timer-expiry",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            7
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1"
+    },
+    {
+      "name": "start-not-retrigger",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            8
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": ""
+    },
+    {
+      "name": "unused",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "html": ""
+    },
+    {
+      "name": "key-major-order",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0,
+            1
+          ]
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ]
+        }
+      ],
+      "html": "Key 1<br/>Key 1<br/>Key 1<br/>Key 1<br/>Key 2"
+    },
+    {
+      "name": "different-application",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        },
+        {
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "same_application": false,
+      "html": ""
+    }
+  ]
+}

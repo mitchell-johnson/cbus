@@ -1,6 +1,7 @@
 # Toolkit 1.18 Document Project: static review
 
-Scope: issue #57 (P8.03), project documentation. This is a static review only.
+Scope: issue #57 (P8.03), project documentation. This records the initial static review;
+the bounded recovery below supersedes its original unrecovered-item inventory.
 No vendor code was executed, no project was opened, and no C-Gate, CNI or PCI
 endpoint was used.
 
@@ -127,3 +128,33 @@ The following were not captured or compared:
 - the progress dialog and printing
 
 Every one of these parity dimensions remains `unassessed` or `not implemented`.
+
+
+## Bounded recovery update
+
+The renderer now integrates the separately pinned bridge, classic-output, DMX,
+group-usage, action-use and status-report evidence. See
+[`project-documentation.md`](../../../docs/project-documentation.md) for current
+supported families and gaps. The core static receipt now binds all four
+supporting runtime modules as well as the main renderer.
+
+- `project-documentor-bridge-static.json`: forwarding PP bindings, route-prefix
+  destination, private application names and base secondary-255 handling.
+- `project-documentor-devices-static.json`: classic-output and DMX body branches,
+  channel counts, loader mappings and the original output quirks.
+- `research/fixtures/project-documentor-usage-static.json`: per-unit dependency descriptions and
+  classic key ActionSelectorUse mappings. The separate
+  `research/fixtures/project-documentor-action-original.json` executes ten
+  synthetic cases of the pinned original action routine in bounded emulation
+  with stubbed object/string dependencies. It is not an application/page run.
+- `project-documentor-status-static.json`: input-interface membership and
+  stored-PP minimum projection. Saved XML cannot establish scan-load success.
+- `project-documentor-ordering-static.json`: original registry-dependent
+  name/address sort and Windows-locale comparison. The CLI chooses a
+  deterministic address profile and admits no original sort-parity claim.
+
+The explicit saved-native-XML adapter has independent fixture-inventory and
+original C-Gate readback comparisons, but it does not read SQL repositories or
+initialize missing programming. NetVar and unsupported typed collections are
+refused. No original generated HTML page has been captured; byte/visual parity,
+printing, progress/cancellation and the remaining per-device bodies stay open.

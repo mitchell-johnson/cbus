@@ -1,0 +1,228 @@
+{
+  "boundary": [
+    "Complete explicit consumed PP arrays only; missing/truncated/invalid fields remain partial.",
+    "Displayed groups must resolve in the supplied snapshot; original auto-create side effects are not modeled.",
+    "Classic GA5 tests group 5 but appends group 0; duplicated groups remain duplicated.",
+    "DMX rows repeat for shared channel groups and prepend the closing cells before row text.",
+    "Key/Neo macro templates, enumerations and scenes remain unrecovered by these bodies.",
+    "Static instruction/data mapping is not original generated HTML, visual or print acceptance."
+  ],
+  "checks": {
+    "classic_association_0_loader_field": true,
+    "classic_association_1_loader_field": true,
+    "classic_association_2_loader_field": true,
+    "classic_association_3_loader_field": true,
+    "classic_association_4_loader_field": true,
+    "classic_association_5_loader_field": true,
+    "classic_counts": true,
+    "classic_function_low_bit": true,
+    "classic_function_pp_offset": true,
+    "classic_ga5_appends_slot0": true,
+    "classic_ga5_tests_slot5": true,
+    "classic_group_pp_offset": true,
+    "classic_loader_group_offset": true,
+    "classic_logic_column_always": true,
+    "classic_logic_requires_two_members": true,
+    "classic_nonzero_association": true,
+    "classic_pp_names": true,
+    "classic_six_logic_groups": true,
+    "dmx_count": true,
+    "dmx_group_identity_comparison": true,
+    "dmx_group_pp_offset": true,
+    "dmx_loader_group_offset": true,
+    "dmx_mapping_banks": true,
+    "dmx_mapping_loader_dimensions": true,
+    "dmx_mapping_one_based_channel": true,
+    "dmx_mapping_one_based_slot": true,
+    "dmx_pp_names": true,
+    "dmx_row_original_prefix": true
+  },
+  "classic_channel_counts": {
+    "AN_OUT4": 4,
+    "DIMMER4": 4,
+    "RELAY1": 1,
+    "RELAY2": 2,
+    "RELAY4": 4
+  },
+  "dmx_channel_count": 12,
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "format": "cbus-project-documentor-devices-static-v1",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": {
+    "CIS_Maths.IntToBool": {
+      "end": "0x7f17e8",
+      "literals": [],
+      "sha256": "9e04121d853825de87f86909bf3f3930ecd296a049e45148f0806193bbc3f833",
+      "start": "0x7f17bc"
+    },
+    "CIS_TAN_OUT4.TAN_OUT4.GetMaxChannels": {
+      "end": "0x10188ec",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0x10188d4"
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1249d6c",
+      "literals": [
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "sha256": "31b7f07393ac2688c66cc36db70e9f834aa70872c026df70ca1aa70dc98b01c6",
+      "start": "0x1249ab4"
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.InternalCreate": {
+      "end": "0x1249ab4",
+      "literals": [
+        "EEPROMCheckSumActive",
+        "RestoreToPreviousLevel",
+        "InputUnitsReissueLevel",
+        "AreaGroupAddress",
+        "LightLevel",
+        "LogicGA0Associations",
+        "LogicGA1Associations",
+        "LogicGA2Associations",
+        "LogicGA3Associations",
+        "LogicGA4Associations",
+        "LogicGA5Associations",
+        "LogicFunctionAndPowerUpDelay",
+        "GroupAddress",
+        "MinLevelTurnOn"
+      ],
+      "sha256": "90e257974706de881b5ff9ed70a53336d9fc4631f0bcea98e1d4fe382d2f19f9",
+      "start": "0x124959c"
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.LoadLogicAssociationsAndGroups": {
+      "end": "0x124a610",
+      "literals": [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "sha256": "dd5496478deb1c82d3669f402d656bfd7943501e22d038f056690d4b9c17a75d",
+      "start": "0x124a1c4"
+    },
+    "CIS_TCBus1RelayUnit.TCBus1RelayUnit.Init": {
+      "end": "0xd23904",
+      "literals": [],
+      "sha256": "34397c3696f44dfe1f8f2cfd060276f75dc3816577cce07b054f85ef2a57fc12",
+      "start": "0xd23808"
+    },
+    "CIS_TCBusDMXGatewayCGateAgent.LoadChannels": {
+      "end": "0x1240f04",
+      "literals": [],
+      "sha256": "f6c6c12d35a499854e8a474db920c1a87144eddf4844e54987551bc1e75e55e9",
+      "start": "0x1240dc0"
+    },
+    "CIS_TCBusDMXGatewayCGateAgent.LoadSlotMappings": {
+      "end": "0x1240fd0",
+      "literals": [],
+      "sha256": "0a8a31924c5c1423821d3d76c11af23e7524a3226a66c982fa6e2d7ff4e02d5b",
+      "start": "0x1240f04"
+    },
+    "CIS_TCBusDMXGatewayCGateAgent.TCBusDMXGatewayCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1241000",
+      "literals": [],
+      "sha256": "fbe0f331ff4144778d1409aa078c46be744f4d943de1181e0d91df0949945ab0",
+      "start": "0x1240fd0"
+    },
+    "CIS_TCBusDMXGatewayCGateAgent.TCBusDMXGatewayCGateAgent.InternalCreate": {
+      "end": "0x12403a4",
+      "literals": [
+        "Burden",
+        "ClockGenEnable",
+        "LearnMode",
+        "LearnAnyApplication",
+        "LearnedFlag",
+        "GroupAddress",
+        "ChannelOutputGroups",
+        "DMXChannelMapping",
+        "DMXStartCode",
+        "LightLevel",
+        "LevelStoreEnable",
+        "PowerUpRecoveryDelays",
+        "PowerUpRecoveryLevels",
+        "%d",
+        "DMXSlotMapping",
+        "LogTotalRunTime",
+        "LogCurrentRunTime",
+        "LogLastRunTime",
+        "LogResetCount",
+        "LogStackOverflowCount"
+      ],
+      "sha256": "ddb1bc8453336958c786665ff875e4dc236f281e7a2ccc432333edd07613aff4",
+      "start": "0x123fc6c"
+    },
+    "CIS_TClassicOutputDocumentor.TClassicOutputDocumentor.DocumentHTML": {
+      "end": "0x10184a8",
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th></tr>",
+        "<tr><td>",
+        "</td><td>",
+        ", ",
+        "&nbsp;",
+        "</td><td>",
+        "Max",
+        "Min",
+        "&nbsp;",
+        "</td></tr>",
+        "</table>",
+        "<br />"
+      ],
+      "sha256": "05f04a52ccffaa1264becc78aec3e23b1a667ab8ac0bb0b27ee210051669cd4d",
+      "start": "0x1017e60"
+    },
+    "CIS_TDIMMER4.TDIMMER4.GetMaxChannels": {
+      "end": "0x10186b8",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0x10186a0"
+    },
+    "CIS_TDMXDO12.TDMXDO12.GetMaxChannels": {
+      "end": "0x123fa88",
+      "literals": [],
+      "sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697",
+      "start": "0x123fa70"
+    },
+    "CIS_TDMXGatewayDocumentor.TDMXGatewayDocumentor.DocumentHTML": {
+      "end": "0x123f848",
+      "literals": [
+        "<table border=\"1\"><tr><th>Group</th><th>DMX Slots</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        ", ",
+        "</td></tr>",
+        "</table>"
+      ],
+      "sha256": "984984c56ad61696ba8e28919f569ba9ccc1185a638bab9fd153ad5636f3500d",
+      "start": "0x123f4c0"
+    },
+    "CIS_TRELAY1.TRELAY1.GetMaxChannels": {
+      "end": "0x1249008",
+      "literals": [],
+      "sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4",
+      "start": "0x1248ff0"
+    },
+    "CIS_TRELAY2.TRELAY2.GetMaxChannels": {
+      "end": "0x124921c",
+      "literals": [],
+      "sha256": "86ea199a1a5b554f27b6a04561d3ddea6a45402cb702e341398b6d2dbf8aab5e",
+      "start": "0x1249204"
+    },
+    "CIS_TRELAY4.TRELAY4.GetMaxChannels": {
+      "end": "0x101ac68",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0x101ac50"
+    }
+  },
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained"
+}

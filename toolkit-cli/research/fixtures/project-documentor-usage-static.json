@@ -1,0 +1,505 @@
+{
+  "format": "cbus-project-documentor-usage-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "TCBusDimmerUnit.DescribeOutputGroupDependencyAdvanced:resources": true,
+    "TCBus1RelayUnit.DescribeOutputGroupDependencyAdvanced:resources": true,
+    "TCBus1RelayUnit.DescribeOtherGroupDependencyAdvanced:resources": true,
+    "TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced:resources": true,
+    "TCoreKeyInputUnit.DescribeOtherGroupDependencyAdvanced:resources": true,
+    "TCBusInputUnit.DescribeOtherGroupDependencyAdvanced:resources": true,
+    "production_labels": true,
+    "Input:wrapper_literals": true,
+    "Input:virtual_slot": true,
+    "Output:wrapper_literals": true,
+    "Output:virtual_slot": true,
+    "Other:wrapper_literals": true,
+    "Other:virtual_slot": true,
+    "unused_macro_enum": true,
+    "four_classic_blocks": true,
+    "KEY1:group_vmt": true,
+    "KEY1:key_count": true,
+    "KEY1:virtual_count_uses_physical": true,
+    "KEY1:indicator_brightness_enabled": true,
+    "KEY2:group_vmt": true,
+    "KEY2:key_count": true,
+    "KEY2:virtual_count_uses_physical": true,
+    "KEY2:indicator_brightness_enabled": true,
+    "KEY4:group_vmt": true,
+    "KEY4:key_count": true,
+    "KEY4:virtual_count_uses_physical": true,
+    "KEY4:indicator_brightness_enabled": true,
+    "KEYIR1:group_vmt": true,
+    "KEYIR1:key_count": true,
+    "KEYIR1:virtual_count_uses_physical": true,
+    "KEYIR1:indicator_brightness_enabled": true,
+    "KEYIR4:group_vmt": true,
+    "KEYIR4:key_count": true,
+    "KEYIR4:virtual_count_uses_physical": true,
+    "KEYIR4:indicator_brightness_enabled": true,
+    "KEYBC2:group_vmt": true,
+    "KEYBC2:key_count": true,
+    "KEYBC2:virtual_count_uses_physical": true,
+    "KEYBC2:indicator_brightness_enabled": true,
+    "KEYBC4:group_vmt": true,
+    "KEYBC4:key_count": true,
+    "KEYBC4:virtual_count_uses_physical": true,
+    "KEYBC4:indicator_brightness_enabled": true,
+    "KEYAUX4:group_vmt": true,
+    "KEYAUX4:key_count": true,
+    "KEYAUX4:virtual_count_uses_physical": true,
+    "KEYAUX4:indicator_brightness_enabled": true,
+    "DINAUX4:group_vmt": true,
+    "DINAUX4:key_count": true,
+    "DINAUX4:virtual_count_uses_physical": true,
+    "DINAUX4:indicator_brightness_enabled": true,
+    "DIMMER4:group_vmt": true,
+    "AN_OUT4:group_vmt": true,
+    "RELAY4:group_vmt": true,
+    "DIMDN4:group_vmt": true,
+    "DIMDN4F:group_vmt": true,
+    "DIMDN8:group_vmt": true,
+    "DIMDN8F:group_vmt": true,
+    "RELDN12:group_vmt": true,
+    "RELDN4:group_vmt": true,
+    "RELDN8:group_vmt": true,
+    "RELDN8B:group_vmt": true,
+    "RELAY1:group_vmt": true,
+    "RELAY2:group_vmt": true,
+    "registered_types": true
+  },
+  "registrations": [
+    {
+      "unit_type": "KEY1",
+      "class": "CIS_TKey1..TKey1",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEY2",
+      "class": "CIS_TKey2..TKey2",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEY4",
+      "class": "CIS_TKey4..TKey4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEYIR1",
+      "class": "CIS_TKEYIR1..TKEYIR1",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEYIR4",
+      "class": "CIS_TKEYIR4..TKEYIR4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEYBC2",
+      "class": "CIS_TKEYBC2..TKEYBC2",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEYBC4",
+      "class": "CIS_TKEYBC4..TKEYBC4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "KEYAUX4",
+      "class": "CIS_TKEYAUX4..TKEYAUX4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "DINAUX4",
+      "class": "CIS_TDINAUX4..TDINAUX4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCoreKeyInputUnit",
+        "TCBUSUnit",
+        "TCoreKeyInputUnit"
+      ]
+    },
+    {
+      "unit_type": "DIMMER4",
+      "class": "CIS_TDIMMER4..TDIMMER4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBus1RelayUnit",
+        "TCBus1RelayUnit"
+      ]
+    },
+    {
+      "unit_type": "AN_OUT4",
+      "class": "CIS_TAN_OUT4..TAN_OUT4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBus1RelayUnit",
+        "TCBus1RelayUnit"
+      ]
+    },
+    {
+      "unit_type": "RELAY4",
+      "class": "CIS_TRELAY4..TRELAY4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBus1RelayUnit",
+        "TCBus1RelayUnit"
+      ]
+    },
+    {
+      "unit_type": "DIMDN4",
+      "class": "CIS_TDIMDN4..TDIMDN4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "DIMDN4F",
+      "class": "CIS_TDIMDN4..TDIMDN4F",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "DIMDN8",
+      "class": "CIS_TDIMDN8..TDIMDN8",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "DIMDN8F",
+      "class": "CIS_TDIMDN8..TDIMDN8F",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "RELDN12",
+      "class": "CIS_TRELDN12..TRELDN12",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "RELDN4",
+      "class": "CIS_TRELDN4..TRELDN4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "RELDN8",
+      "class": "CIS_TRELDN8..TRELDN8",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "RELDN8B",
+      "class": "CIS_TRELDN8..TRELDN8B",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "RELAY1",
+      "class": "CIS_TRELAY1..TRELAY1",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBus1RelayUnit",
+        "TCBus1RelayUnit"
+      ]
+    },
+    {
+      "unit_type": "RELAY2",
+      "class": "CIS_TRELAY2..TRELAY2",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBus1RelayUnit",
+        "TCBus1RelayUnit"
+      ]
+    }
+  ],
+  "methods": {
+    "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLGroupInput": {
+      "start": "0xf083b4",
+      "end": "0xf085d4",
+      "sha256": "c1192b93dd1037aa4152bcef1e004bde3e8dd8360bb923eb93e1f9a3ae0ce941",
+      "resources": []
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLGroupOutput": {
+      "start": "0xf085d4",
+      "end": "0xf087f8",
+      "sha256": "5a1379c3637d283878a69574c114bd35810dbbf627bad8e619d02d5855d1983f",
+      "resources": []
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLGroupOther": {
+      "start": "0xf087f8",
+      "end": "0xf08a18",
+      "sha256": "17d78fb32193644a47c1305b3b62fbea344882a2161314eb7a56c3e784bee326",
+      "resources": []
+    },
+    "CIS_TCBusDimmerUnit.TCBusDimmerUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd2b010",
+      "end": "0xd2b200",
+      "sha256": "64cf7d3973001c7804b22ee5b0416e19d110692af08f13f852fa13826d09034d",
+      "resources": [
+        "Channel %d",
+        "Logic Group",
+        "Logic Group (Unused)"
+      ]
+    },
+    "CIS_TCBusDimmerUnit.TCBusDimmerUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd2afec",
+      "end": "0xd2b010",
+      "sha256": "322133eaf258985141c155c0191dede5a4f72ffc1852167a966745760584dfad",
+      "resources": []
+    },
+    "CIS_TCBus1RelayUnit.TCBus1RelayUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd2399c",
+      "end": "0xd23af8",
+      "sha256": "4b6c06bcc54ad9109a8c33cb0599d5062c23d5ac3cbef324b39f4b4ca38937bb",
+      "resources": [
+        "Logic Group",
+        "Logic Group (Unused)"
+      ]
+    },
+    "CIS_TCBus1RelayUnit.TCBus1RelayUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd23904",
+      "end": "0xd2399c",
+      "sha256": "c204a967379ba1a8e20801932450edaac9c5e6eb84b06a3604f4afb706c19d19",
+      "resources": [
+        "Area Group"
+      ]
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xc9ec2c",
+      "end": "0xc9ede0",
+      "sha256": "7a7517bc8b2af070eac17f043046ee371d4e6bff8e3e5b75b031a025f66a9e68",
+      "resources": [
+        "Key %d",
+        "Block (Unused)"
+      ]
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xc9ede0",
+      "end": "0xc9ee78",
+      "sha256": "7e7de9ef18bc028101824ac788bb03112818f2d0335c4ea719e05619e68d95cb",
+      "resources": [
+        "Indicator Brightness Group"
+      ]
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xc9d25c",
+      "end": "0xc9d2f4",
+      "sha256": "d2c1cb2fef77e968e3939a0e552f181a18dfb03f52d80490eb47a3f8bb27cf43",
+      "resources": [
+        "Area Group"
+      ]
+    },
+    "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.ActionSelectorUse": {
+      "start": "0xca628c",
+      "end": "0xca6610",
+      "sha256": "d42d5a833c1255f27719d95b6a7798a9a5959f3a3c50e10d6bd30a2c8ab80e83",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks": {
+      "start": "0xcc76f8",
+      "end": "0xcc79f8",
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+      "start": "0xcc75e4",
+      "end": "0xcc76f8",
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetIndicatorBrightness": {
+      "start": "0xcc7f18",
+      "end": "0xcc8080",
+      "sha256": "0adbce6f75aae2526fa8b7fa34c090335a5acd6d8594ab0905bfd35f45936ce2",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetBlockValues": {
+      "start": "0xcc80c8",
+      "end": "0xcc85dc",
+      "sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate": {
+      "start": "0xcc6d18",
+      "end": "0xcc717c",
+      "sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes": {
+      "start": "0xcc7290",
+      "end": "0xcc7430",
+      "sha256": "1eeb568a802f8c8127f1aadf2af706ac9dc6d268fe27ea7b93c4ae0eedd977ba",
+      "resources": []
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeAreaGroupAddress": {
+      "start": "0xcc6470",
+      "end": "0xcc64d0",
+      "sha256": "152255d9b2c4bcf4e20d614707712af633a3b89c413edef67293ed37dfa92427",
+      "resources": []
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadAreaGroupAddress": {
+      "start": "0xcc66f0",
+      "end": "0xcc6738",
+      "sha256": "6254819d7660c094dc8182a97fa5a24bec6ba453c0f7936219c07fef9264cff0",
+      "resources": []
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.InternalCreate": {
+      "start": "0x124959c",
+      "end": "0x1249ab4",
+      "sha256": "90e257974706de881b5ff9ed70a53336d9fc4631f0bcea98e1d4fe382d2f19f9",
+      "resources": []
+    },
+    "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MaximumBlockCount": {
+      "start": "0xca008c",
+      "end": "0xca00a4",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "resources": []
+    }
+  },
+  "original_generated_page": "unassessed"
+}

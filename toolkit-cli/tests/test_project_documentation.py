@@ -123,7 +123,7 @@ def test_network_application_and_group_blocks():
                    '<h3><a name="254_56">Application - Lighting</a> [ <a href="#contents">top</a> ]</h3>')[1:] == [
         "Network Number: 254</br>", "Interface Type: CNI</br>", "Interface Address: 10.0.0.1:10001</br>",
         "Current Consumption: not calculated mA</br>", "Current Supplied: not calculated mA</br>",
-        "Impedance: not calculated ohms</br>", "Status Report Interval: not documented (unrecovered)<br/>",
+        "Impedance: not calculated ohms</br>", "Status Report Interval: None<br/>",
         "<ul>"]
     block = section(lines, '<h3><a name="254_56">Application - Lighting</a> [ <a href="#contents">top</a> ]</h3>',
                     '<h3><a name="254_Units">Units</a> [ <a href="#contents">top</a> ]</h3>')
@@ -131,9 +131,9 @@ def test_network_application_and_group_blocks():
         "Address: 56 ($38)</br>", "Description: Main & lights</br>", "<ul>",
         '<h3><a name="254_56_1">Group - Kitchen</a> [ <a href="#contents">top</a> ]</h3>',
         "Address: 1 ($01) <br />", "Description: A&#60;B&#62;<br />",
-        "Inputs:", "<ul>", "<li />Unit usage: not documented (unrecovered)", "</ul>",
-        "Outputs:", "<ul>", "<li />Unit usage: not documented (unrecovered)", "</ul>",
-        "Other:", "<ul>", "<li />Unit usage: not documented (unrecovered)", "</ul>",
+        "Inputs:", "<ul>", "</ul>",
+        "Outputs:", "<ul>", "</ul>",
+        "Other:", "<ul>", "</ul>",
         "Levels: ", "<ul>", '<li /><a name="254_56_1_0">Off</a>', '<li /><a name="254_56_1_255">Full</a>', "</ul>",
         "</ul>", "</ul>"]
 
@@ -178,7 +178,8 @@ def test_base_documentor_fields_flags_applications_and_escaping():
         "Unit clock is enabled<br />", "<br />"]
     six = section(lines, '<h3><a name="254_unit_6">U6 - CLK2</a> [ <a href="#contents">top</a> ]</h3>',
                   '<h3><a name="254_unit_7">U7 - KEYSCEN4</a> [ <a href="#contents">top</a> ]</h3>')
-    assert "Application: Unused<br />" in six and "Unit burden is enabled<br />" in six
+    assert "Application: <Unused><br />" in six and "Unit burden is enabled<br />" in six
+    assert "Secondary Application: <Unused><br />" in six
     assert "Serial Number: No serial #<br />" in six
     assert 'Application: <a href="#254_228">Measurement</a><br />' in lines
     assert [row["status"] for row in summary["units"]] == ["recovered"] * 3
@@ -227,10 +228,10 @@ def test_registration_ranges_never_overlap_for_one_type():
 
 def din(unit_type, groups, *, assoc=None, functions=None, app="0x38 0xff"):
     pps = [("Application", app), ("GroupAddress", " ".join(map(str, groups)))]
-    for k, values in (assoc or {}).items():
+    for k in range(4):
+        values = (assoc or {}).get(k, [0] * 12)
         pps.append((f"LogicGA{13 + k}Associations", " ".join(map(str, values))))
-    if functions is not None:
-        pps.append(("LogicFunction", " ".join(map(str, functions))))
+    pps.append(("LogicFunction", " ".join(map(str, functions if functions is not None else [0] * 12))))
     return unit(12, unit_type, firmware="2.7.00", pps=pps)
 
 
@@ -240,7 +241,8 @@ def table(lines):
 
 def test_din_output_channels_without_logic_groups():
     groups = [1, 255, 2, 255] + [255] * 12
-    lines, summary = page([network(254, "Local", apps=(LIGHTING,), units=(din("RELDN4", groups),))])
+    lighting = application(56, "Lighting", (group(1, "Kitchen"), group(2, "2")))
+    lines, summary = page([network(254, "Local", apps=(lighting,), units=(din("RELDN4", groups),))])
     assert table(lines) == [
         "<tr><th>Channel</th><th>Groups</th></tr>",
         '<tr><td>1</td><td><a href="#254_56_1">Kitchen</a></td></tr>', "<tr><td>2</td><td>&nbsp;</td></tr>",
@@ -255,7 +257,8 @@ def test_din_output_logic_groups_function_column_and_relay_marshalling():
     assoc = {0: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 2: [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
              1: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}
     functions = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    lines, _ = page([network(254, "Local", apps=(LIGHTING,),
+    lighting = application(56, "Lighting", (group(1, "Kitchen"), group(2, "2"), group(40, "40"), group(41, "41")))
+    lines, _ = page([network(254, "Local", apps=(lighting,),
                              units=(din("RELDN8", groups, assoc=assoc, functions=functions),))])
     rows = table(lines)
     assert rows[0] == "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th></tr>"
@@ -291,7 +294,7 @@ def test_unrecovered_documentors_are_marked_and_listed_last():
     assert "TNeoInputDocumentor.DocumentHTML: not documented (unrecovered)<br />" in lines
     tail = section(lines, '<h2><a name="unrecovered">Not documented (unrecovered)</a></h2>', "</ul>")
     assert tail[1:] == [
-        "<ul>", "<li />Group Inputs/Outputs/Other unit usage: not documented (unrecovered)",
+        "<ul>",
         '<li /><a href="#254">Local</a>: Network calculator (no --catalog supplied)',
         '<li /><a href="#254">Local</a>: Status Report Interval (status-report interface)',
         '<li /><a href="#254_unit_3">Stat - PC_TSB5</a>: TThermostatDocumentor.DocumentHTML',
@@ -394,6 +397,10 @@ def test_committed_static_receipt_matches_the_model():
     assert set(receipt["method_spans"]) == set(doc.ORIGINAL_LITERALS)
     assert all(receipt["checks"].values())
     assert receipt["model_module_sha256"] == hashlib.sha256(Path(doc.__file__).read_bytes()).hexdigest()
+    assert receipt["supporting_module_sha256"] == {
+        name: hashlib.sha256(Path(doc.__file__).with_name(name + ".py").read_bytes()).hexdigest()
+        for name in ("project_documentation_devices", "project_documentation_native",
+                     "project_documentation_status", "project_documentation_usage")}
     statuses = {row["body_status"] for row in receipt["documentor_classes"].values()}
     assert statuses == {"recovered", "partial", "unrecovered"}
 
@@ -407,3 +414,103 @@ def test_vendor_inputs_reproduce_the_committed_receipt():
     exe = Path(os.environ["CBUS_TOOLKIT_EXE"])
     map_file = Path(os.environ.get("CBUS_TOOLKIT_MAP", exe.with_suffix(".map")))
     assert render(inspect(exe, map_file)) == RECEIPT.read_text(encoding="utf-8")
+
+
+def test_group_usage_renderer_preserves_native_line_boundaries_and_known_absence():
+    from test_project_documentation_usage import unit as usage_unit
+    device = usage_unit(Application=[56], GroupAddress=[1, 1, 9, 10, 1, 255, 255, 255],
+                        AreaGroupAddress=[1], JPCommand=[12, 13, 0, 0])
+    lighting = doc.Application(56, 'Lighting', '', [doc.Group(1, 'Kitchen', '', [])])
+    net = doc.Network(254, 'Local', '', '', [lighting], [device])
+    text, summary = doc.render(doc.ProjectModel('TEST', [net]), generated=WHEN)
+    lines = text.split('\r\n')
+    first = lines.index('Inputs:')
+    assert lines[first:first + 16] == [
+        'Inputs:', '<ul>', '<li /><a href="#254_unit_1">Unit - KEY4</a>',
+        '<ul>Key 1<br/>Key 2<br/>Key 1</ul>', '</ul>',
+        'Outputs:', '<ul>', '</ul>',
+        'Other:', '<ul>', '<li /><a href="#254_unit_1">Unit - KEY4</a>',
+        '<ul>Area Group<br/>Indicator Brightness Group</ul>', '</ul>',
+        '</ul>', '</ul>', '<h3><a name="254_Units">Units</a> [ <a href="#contents">top</a> ]</h3>',
+    ]
+    assert not any(item['item'].startswith('Group ') for item in summary['unrecovered'])
+
+
+def test_trigger_renderer_uses_distinct_action_value_and_never_reports_unknown_as_unused():
+    from test_project_documentation_usage import unit as usage_unit
+    device = usage_unit()
+    group = doc.Group(8, 'Scenes', '', [doc.Level(11, 'Action', value=22), doc.Level(99, 'Unused', value=22)])
+    net = doc.Network(254, 'Local', '', '', [doc.Application(202, 'Trigger', '', [group])], [device])
+    text, summary = doc.render(doc.ProjectModel('TEST', [net]), generated=WHEN)
+    lines = text.split('\r\n')
+    first = lines.index('<li /><a name="254_202_8_11">Action</a>')
+    assert lines[first:first + 7] == [
+        '<li /><a name="254_202_8_11">Action</a>', '<ul>', '<a href="#254_unit_1">Unit - KEY4</a>',
+        '<ul>', 'Key 1<br/>Key 1<br/>Key 1<br/>Key 1', '</ul>', '</ul>',
+    ]
+    assert lines.count('<li />Action Selector is not used') == 1
+    device.parameters.pop('LightLevelStore2')
+    text, summary = doc.render(doc.ProjectModel('TEST', [net]), generated=WHEN)
+    assert '<li />Action Selector is not used' not in text
+    assert sum(item['item'] == 'TClassicKeyInputDocumentor.ActionSelectorUse'
+               for item in summary['unrecovered']) == 2
+
+
+def test_din_missing_logic_programming_does_not_become_disabled_logic():
+    device = unit(2, 'DIMDN4', firmware='2.7.00',
+                  pps=(('Application', '56 255'), ('GroupAddress', '1 ' + '255 ' * 15)))
+    lines, summary = page([network(254, 'Local', apps=(LIGHTING,), units=(device,))])
+    assert 'Output channel programming (incomplete or invalid PP arrays): not documented (unrecovered)<br />' in lines
+    assert summary['units'][0]['status'] == 'partial'
+    assert '<table border="1">' not in lines
+
+
+def test_original_address_profile_keeps_network255_first_but_not_level_or_unit255():
+    nets = [network(2, 'Two'), network(255, 'Unused'), network(1, 'One',
+            units=(unit(255, 'PCI'), unit(1, 'PCI')),
+            apps=(application(255, 'Unused'), application(56, 'Lights',
+                  (group(255, 'Unused'), group(1, 'One', ((255, 'Full'), (0, 'Off'))))),))]
+    model = build(nets)
+    assert [n.address for n in model.networks] == [255, 1, 2]
+    net = model.by_address[1]
+    assert [u.address for u in net.units] == [1, 255]
+    assert [a.address for a in net.applications] == [255, 56]
+    assert [g.address for g in net.application(56).groups] == [255, 1]
+    assert [level.address for level in net.application(56).group(1).levels] == [0, 255]
+    assert 'registry and Windows locale' in doc.PARITY['collection_order_basis']
+
+
+def test_legacy_level_value_is_retained_separately_from_anchor_address():
+    raw = xml([network(1, 'One', apps=(application(202, 'Trigger',
+               (group(1, 'Scenes', ((11, 'Action'),)),)),))])
+    raw = raw.replace(b'<Level>', b'<Level Value="22">')
+    model = doc.build_model(ProjectDocument.from_bytes(raw))
+    level = model.networks[0].applications[0].groups[0].levels[0]
+    assert (level.address, level.action_value) == (11, 22)
+
+
+def test_status_renderer_minimum_first_tie_and_unknown_projection_metadata():
+    nets = [network(254, 'Local', units=(
+        unit(3, 'KEY4', firmware='1.2.67', pps=(('StatusReportInterval', '12'),)),
+        unit(2, 'KEY4', firmware='1.2.67', pps=(('StatusReportInterval', '12'),)),
+        unit(1, 'DIMDN4', firmware='2.7.00', pps=(('StatusReportInterval', '1'),)),
+    ))]
+    lines, summary = page(nets)
+    assert 'Status Report Interval: 12secs on Unit <a href="#254_unit_2">U2 - KEY4</a><br/>' in lines
+    status = summary['status_reports'][0]
+    assert (status['known'], status['seconds'], status['unit']) == (True, 12, 2)
+    assert 'programming-load success/failure not observed' in status['basis']
+    model = build(nets)
+    model.networks[0].units[1].parameters.pop('StatusReportInterval')
+    text, summary = doc.render(model, generated=WHEN)
+    assert 'Status Report Interval: not documented (unrecovered)<br/>' in text
+    assert not summary['status_reports'][0]['known']
+    assert summary['status_reports'][0]['issues']
+
+
+def test_din_missing_displayed_group_is_partial_not_a_fabricated_address_label():
+    groups = [72, 255, 255, 255] + [255] * 12
+    lines, summary = page([network(254, 'Local', apps=(LIGHTING,), units=(din('DIMDN4', groups),))])
+    assert 'Output channel group labels (missing project groups): not documented (unrecovered)<br />' in lines
+    assert summary['units'][0]['status'] == 'partial'
+    assert '<a href="#254_56_72">72</a>' not in lines

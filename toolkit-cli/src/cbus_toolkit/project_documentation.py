@@ -55,7 +55,7 @@ LEVELS_NAMES = {202: "Action Selectors", 203: "Values"}
 # application that the project does not contain.
 STANDARD_APPLICATION_TITLES = {
     0x38: "Lighting", 0x88: "Heating (Legacy)", 0xCA: "Trigger Control", 0xCB: "Enable Control",
-    0xCD: "Multi-room Audio", 0xE0: "Telephony", 0xFF: "Unused", 0xD0: "Security",
+    0xCD: "Multi-room Audio", 0xE0: "Telephony", 0xFF: "<Unused>", 0xD0: "Security",
     0xDF: "Clock and Timekeeping", 0xAC: "Air Conditioning", 0xE4: "Measurement",
     0xCE: "Error Reporting",
 }
@@ -282,7 +282,9 @@ RECOVERED_BODIES = {
     "UnitType": "recovered",
     "CustomSceneKeyUnit": "recovered",
     "Output": "partial",    # DIN profiles only; other output classes lack a data mapping.
-    "Bridge": "partial",    # Adjacent Network/warning only; connection settings lack a data mapping.
+    "Bridge": "recovered",  # Requires the stored application/forwarding PP fields.
+    "ClassicOutput": "recovered",
+    "DMXGateway": "recovered",
 }
 PARITY = {
     "model_basis": "static_disassembly_of_original_toolkit",
@@ -291,7 +293,8 @@ PARITY = {
     "visual_parity": UNASSESSED,
     "print": "not_implemented",
     "progress_dialog": "not_implemented",
-    "collection_order_basis": "ascending_address_assumed_for_LoadAndSort",
+    "collection_order_basis": "explicit_offline_address_order; original application/group/level order depends on registry and Windows locale",
+    "status_report_basis": "stored_pp_snapshot; original programming-load success/failure not observed",
     "encoding": "utf-8-bom-crlf-per-TStringList.SaveToFile(TEncoding.UTF8)",
 }
 
@@ -395,6 +398,11 @@ def _flag(value: str) -> bool:
 class Level:
     address: int
     name: str
+    value: int | None = None
+
+    @property
+    def action_value(self) -> int:
+        return self.address if self.value is None else self.value
 
 
 @dataclass
@@ -470,7 +478,20 @@ def _unique(items, label: str):
         if item.address in seen:
             raise ProjectError(f"Ambiguous project: duplicate {label} address {item.address}")
         seen.add(item.address)
+    # Original custom comparators place the unused object first for these
+    # three classes; Unit and Level have ordinary numeric address order.
+    if label in ("network", "application", "group"):
+        return sorted(items, key=lambda item: (item.address != UNASSIGNED, item.address))
     return sorted(items, key=lambda item: item.address)
+
+
+def _level_value(level: minidom.Element) -> int | None:
+    if not level.hasAttribute("Value"):
+        return None
+    values = _numbers(level.getAttribute("Value"))
+    if len(values) != 1 or not 0 <= values[0] <= 255:
+        raise ProjectError("Level Value must be a byte")
+    return values[0]
 
 
 def build_model(project: ProjectDocument) -> ProjectModel:
@@ -484,7 +505,8 @@ def build_model(project: ProjectDocument) -> ProjectModel:
         for app_node in _children(net_node, "Application"):
             groups = []
             for group_node in _children(app_node, "Group"):
-                levels = [Level(_address(level, "Level"), _scalar(level, "TagName"))
+                levels = [Level(_address(level, "Level"), _scalar(level, "TagName"),
+                                _level_value(level))
                           for level in _children(group_node, "Level")]
                 groups.append(Group(_address(group_node, "Group"), _scalar(group_node, "TagName"),
                                     _scalar(group_node, "Description"), _unique(levels, "level")))
@@ -515,8 +537,11 @@ def build_model(project: ProjectDocument) -> ProjectModel:
     return ProjectModel(_scalar(project.project, "TagName"), _unique(networks, "network"))
 
 
-def load_model(path: Path) -> ProjectModel:
+def load_model(path: Path, *, native_xml: bool = False) -> ProjectModel:
     snapshot = read_project_snapshot(Path(path))
+    if native_xml:
+        from .project_documentation_native import build_native_model
+        return build_native_model(snapshot)
     project = ProjectDocument.from_snapshot(snapshot, source=Path(path))
     model = build_model(project)
     model.digest, model.size, model.format = project_sha256(snapshot), len(snapshot), project.format
@@ -552,6 +577,7 @@ class _Writer:
         self.lines: list[str] = []
         self.unrecovered: list[dict[str, Any]] = []
         self.unit_status: dict[str, int] = {"recovered": 0, "partial": 0, "unrecovered": 0, "heading_only": 0}
+        self.status_reports: list[dict[str, Any]] = []
 
     def add(self, line: str) -> None:
         self.lines.append(line)
@@ -569,7 +595,7 @@ def _application_numbers(unit: Unit) -> tuple[int | None, int | None]:
         return None, None
     primary = values[0]
     secondary = values[1] if len(values) > 1 else None
-    return primary, (secondary if secondary != UNASSIGNED else None)
+    return primary, secondary
 
 
 def document_base(out: _Writer, network: Network, unit: Unit) -> None:
@@ -614,8 +640,16 @@ def document_output(out: _Writer, network: Network, unit: Unit) -> str:
         out.mark(network, unit, "Output channels")
         return "partial"
     application, _ = _application_numbers(unit)
-    associations = [unit.array(f"LogicGA{13 + k}Associations") or [] for k in range(4)]
-    functions = unit.array("LogicFunction") or []
+    associations = [unit.array(f"LogicGA{13 + k}Associations") for k in range(4)]
+    functions = unit.array("LogicFunction")
+    last = max(profile.indices)
+    if (application is None or not 0 <= application <= 255 or len(groups) < 16
+            or any(not 0 <= value <= 255 for value in groups)
+            or any(values is None or len(values) <= last or any(value not in (0, 1) for value in values)
+                   for values in associations)
+            or functions is None or len(functions) <= last or any(value not in (0, 1) for value in functions)):
+        out.mark(network, unit, "Output channel programming (incomplete or invalid PP arrays)")
+        return "partial"
 
     def at(values: list[int], index: int, default: int = 0) -> int:
         return values[index] if index < len(values) else default
@@ -630,6 +664,10 @@ def document_output(out: _Writer, network: Network, unit: Unit) -> str:
         rows.append((members, at(functions, index)))
     uses_logic = any(at(associations[k], index) and logic[k] != UNASSIGNED
                      for index in profile.indices for k in range(4))
+    app = network.application(application)
+    if any(app is None or app.group(member) is None for members, _ in rows for member in members):
+        out.mark(network, unit, "Output channel group labels (missing project groups)")
+        return "partial"
     out.add('<table border="1">')
     out.add("<tr><th>Channel</th><th>Groups</th>" + ("<th>Logic Function</th>" if uses_logic else "") + "</tr>")
     for channel, (members, function) in enumerate(rows, start=1):
@@ -645,19 +683,57 @@ def document_output(out: _Writer, network: Network, unit: Unit) -> str:
 
 
 def document_bridge(out: _Writer, network: Network, unit: Unit, model: ProjectModel) -> str:
-    """TBridgeDocumentor.DocumentHTML (connection settings unrecovered)."""
+    """TBridgeDocumentor and TCBusBridgeCGateAgent.AfterLoadProgrammingInformation.
+
+    The destination is the last known network in the first contiguous prefix
+    of seven BridgeAddress entries, independently of BridgeCount. The latter
+    only enables the remote-forwarding line. Missing programming is unknown.
+    """
     document_base(out, network, unit)
     adjacent = model.by_address.get(unit.address)
     if adjacent is None:
         out.add(f"WARNING: {unit.unit_type} has no far side Network.")
         return "recovered"
     out.add(f"Adjacent Network: {html_network(adjacent)}<br/>")
-    out.mark(network, unit, "Bridge connection settings")
-    return "partial"
+    applications = unit.array("Application")
+    adjacent_enabled = unit.array("ApplicationConnectEnabled")
+    bridge_count = unit.array("BridgeCount")
+    if (applications is None or len(applications) != 2
+            or any(not 0 <= value <= 255 for value in applications)
+            or adjacent_enabled is None or len(adjacent_enabled) != 1
+            or adjacent_enabled[0] not in (0, 1)
+            or bridge_count is None or len(bridge_count) != 1
+            or not 0 <= bridge_count[0] <= 7):
+        out.mark(network, unit, "Bridge connection settings")
+        return "partial"
+    # HasApplication1 is true for every original TBridge registration. The
+    # bridge's private application lists rename address 255 independently.
+    for index, address in enumerate(applications, start=1):
+        title = ("All Applications" if index == 1 else "<Unused>") if address == UNASSIGNED \
+            else html_application(network, address)
+        out.add(f"Connect Application {index}: {title}<br/>")
+    out.add("Send Messages to Adjacent Network: " + ("Yes" if adjacent_enabled[0] else "No") + "<br/>")
+    if bridge_count[0] == 0:
+        out.add("Send Messages to a Remote Network: No<br/>")
+        return "recovered"
+    route = unit.array("BridgeAddress")
+    if route is None or any(not 0 <= value <= 255 for value in route):
+        out.mark(network, unit, "Bridge destination network")
+        return "partial"
+    destination = UNASSIGNED
+    for address in route[:7]:
+        if address == UNASSIGNED or address not in model.by_address:
+            break
+        destination = address
+    remote = model.by_address.get(destination)
+    out.add("Send Messages to Remote Network: "
+            + (html_network(remote) if remote is not None else "Unknown Network") + "<br/>")
+    return "recovered"
 
 
 def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectModel) -> dict[str, Any]:
     """TProjectDocumentor.InsertHTMLUnit."""
+    from .project_documentation_devices import DOCUMENTORS
     out.add(f'<h3><a name="{network.address}_unit_{unit.address}">{unit.name} - {unit.unit_type}</a>'
             ' [ <a href="#contents">top</a> ]</h3>')
     record = {"network": network.address, "unit": unit.address, "unit_type": unit.unit_type}
@@ -673,6 +749,8 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
         status = document_output(out, network, unit)
     elif body == "Bridge":
         status = document_bridge(out, network, unit, model)
+    elif body in DOCUMENTORS:
+        status = DOCUMENTORS[body](out, network, unit)
     else:
         document_base(out, network, unit)
         out.mark(network, unit, f"{documentor_class(body)}.DocumentHTML")
@@ -708,6 +786,7 @@ def _contents(out: _Writer, networks: list[Network]) -> None:
 
 def _levels(out: _Writer, network: Network, application: Application, group: Group, trigger: bool,
             model: ProjectModel) -> None:
+    from .project_documentation_usage import action_selector_usage
     title = LEVELS_NAMES.get(application.address, LEVELS_NAME)
     for index, level in enumerate(group.levels):
         if index == 0:
@@ -717,32 +796,49 @@ def _levels(out: _Writer, network: Network, application: Application, group: Gro
                 f"{level.name}</a>")
         if trigger:
             out.add("<ul>")
-            unknown = []
+            reported = False
             for unit in network.units:
                 short = select_documentor(unit.unit_type, unit.firmware)
-                if DOCUMENTOR_METHODS[short][1] != "UnitType":
-                    unknown.append(unit)
-            for unit in unknown:
+                action = DOCUMENTOR_METHODS[short][1]
+                usage = action_selector_usage(unit, action, application.address, group.address,
+                                              level.address, level.action_value)
+                if not usage.html and usage.status == "recovered":
+                    continue
+                reported = True
                 out.add(html_unit(network, unit))
                 out.add("<ul>")
-                short = DOCUMENTOR_METHODS[select_documentor(unit.unit_type, unit.firmware)][1]
-                out.add(f"<li />{documentor_class(short)}.ActionSelectorUse: {UNRECOVERED}")
+                if usage.html:
+                    out.add(usage.html)
+                if usage.status != "recovered":
+                    out.add(f"<li />{documentor_class(action)}.ActionSelectorUse: {UNRECOVERED}")
+                    out.unrecovered.append({"network": network.address, "unit": unit.address,
+                                            "item": f"{documentor_class(action)}.ActionSelectorUse",
+                                            "level": [application.address, group.address, level.address]})
                 out.add("</ul>")
-                out.unrecovered.append({"network": network.address, "unit": unit.address,
-                                        "item": f"{documentor_class(short)}.ActionSelectorUse",
-                                        "level": [application.address, group.address, level.address]})
-            if not unknown:
+            if not reported:
                 out.add("<li />Action Selector is not used")
             out.add("</ul>")
         if index == len(group.levels) - 1:
             out.add("</ul>")
 
 
-def _group_usage(out: _Writer, network: Network, heading: str) -> None:
-    # Per-unit usage strings come from TCBUSUnit virtual methods that were not recovered.
+def _group_usage(out: _Writer, network: Network, application: Application, group: Group,
+                 heading: str, kind: str) -> None:
+    from .project_documentation_usage import group_usage
     out.add(heading)
     out.add("<ul>")
-    out.add(f"<li />Unit usage: {UNRECOVERED}")
+    for unit in network.units:
+        usage = group_usage(unit, application.address, group.address, kind)
+        if not usage.html and usage.status == "recovered":
+            continue
+        out.add("<li />" + html_unit(network, unit))
+        if usage.html:
+            out.add("<ul>" + usage.html + "</ul>")
+        if usage.status != "recovered":
+            out.add(f"<ul>Unit usage: {UNRECOVERED}</ul>")
+            out.unrecovered.append({"network": network.address, "unit": unit.address,
+                                    "item": f"Group {kind} usage ({application.address}/{group.address})",
+                                    "missing": list(usage.missing)})
     out.add("</ul>")
 
 
@@ -757,8 +853,8 @@ def _group(out: _Writer, network: Network, application: Application, group: Grou
         out.add("Events:<br />")
     else:
         out.add(f"Description: {format_html_string(group.description)}<br />")
-        for heading in ("Inputs:", "Outputs:", "Other:"):
-            _group_usage(out, network, heading)
+        for heading, kind in (("Inputs:", "input"), ("Outputs:", "output"), ("Other:", "other")):
+            _group_usage(out, network, application, group, heading, kind)
     _levels(out, network, application, group, trigger, model)
 
 
@@ -798,6 +894,7 @@ def _calculator_lines(network: Network, catalog) -> tuple[str, str, str, str | N
 
 
 def _network(out: _Writer, network: Network, model: ProjectModel, catalog, units: list) -> None:
+    from .project_documentation_status import minimum_status_report
     out.add(f'<h3><a name="{network.address}">Network - {network.name}</a> [ <a href="#contents">top</a> ]</h3>')
     out.add(f"Network Number: {network.address}</br>")
     out.add(f"Interface Type: {network.interface_type}</br>")
@@ -808,9 +905,18 @@ def _network(out: _Writer, network: Network, model: ProjectModel, catalog, units
     out.add(f"Impedance: {impedance} ohms</br>")
     if gap:
         out.unrecovered.append({"network": network.address, "unit": None, "item": gap})
-    out.add(f"Status Report Interval: {UNRECOVERED}<br/>")
-    out.unrecovered.append({"network": network.address, "unit": None,
-                            "item": "Status Report Interval (status-report interface)"})
+    status = minimum_status_report(network.units)
+    if status.known:
+        interval = "None" if status.seconds is None else f"{status.seconds}secs on Unit {html_unit(network, status.unit)}"
+    else:
+        interval = UNRECOVERED
+        out.unrecovered.append({"network": network.address, "unit": None,
+                                "item": "Status Report Interval (status-report interface)",
+                                "missing": list(status.issues)})
+    out.add(f"Status Report Interval: {interval}<br/>")
+    out.status_reports.append({"network": network.address, "known": status.known, "seconds": status.seconds,
+                               "unit": status.unit.address if status.unit else None,
+                               "basis": status.basis, "issues": list(status.issues)})
     for application in network.applications:
         if application.address == UNASSIGNED:
             continue
@@ -827,7 +933,6 @@ def _unrecovered_section(out: _Writer, networks: list[Network]) -> None:
     out.add("<hr />")
     out.add('<h2><a name="unrecovered">Not documented (unrecovered)</a></h2>')
     out.add("<ul>")
-    out.add(f"<li />Group Inputs/Outputs/Other unit usage: {UNRECOVERED}")
     for item in out.unrecovered:
         network = by_address[item["network"]]
         unit = next((u for u in network.units if u.address == item["unit"]), None)
@@ -870,7 +975,8 @@ def render(model: ProjectModel, *, generated: datetime, networks: list[int] | No
     out.add("</html>")
     text = LINE_BREAK.join(out.lines) + LINE_BREAK
     summary = {"networks": [network.address for network in selected], "units": units,
-               "unit_status": dict(out.unit_status), "unrecovered": out.unrecovered}
+               "unit_status": dict(out.unit_status), "unrecovered": out.unrecovered,
+               "status_reports": out.status_reports}
     return text, summary
 
 
@@ -916,7 +1022,7 @@ def _generated_at(value: str | None, source: Path) -> datetime:
 
 
 def run(args) -> tuple[dict[str, Any], int]:
-    model = load_model(args.file)
+    model = load_model(args.file, native_xml=getattr(args, "native_xml", False))
     networks = None
     if args.network is not None:
         if args.network not in model.by_address:
@@ -947,6 +1053,8 @@ def options(commands) -> None:
         help="Write the Toolkit Document Project HTML for a saved XML/CBZ project; never overwrites",
     )
     parser.add_argument("file", type=Path)
+    parser.add_argument("--native-xml", action="store_true",
+                        help="Read an explicit saved native DBGETXML Installation snapshot (no server access)")
     parser.add_argument("--output", type=Path,
                         help="New HTML file (default: <project name>.html, as the Toolkit names it)")
     parser.add_argument("--network", type=_byte, metavar="N", help="Document only this network")

@@ -1,12 +1,14 @@
 # Project documentation ("Document Project")
 
-`cbus-toolkit project document` writes the HTML page that the Toolkit's
-**Document Project** command produces, for a saved legacy XML or CBZ project.
+`cbus-toolkit project document` reconstructs the recovered parts of the Toolkit's
+**Document Project** HTML from a saved legacy XML/CBZ project or an explicitly
+selected native XML snapshot. It does not yet reproduce every device body.
 It reads one bounded regular-file snapshot, binds it by SHA-256, and never
 writes the project or opens an endpoint.
 
 ```sh
 cbus-toolkit project document house.cbz
+cbus-toolkit project document saved-dbgetxml.xml --native-xml --output native.html
 cbus-toolkit project document house.cbz --output results.html --network 254
 cbus-toolkit project document house.cbz --output house.html \
     --generated-at 2026-09-30T07:05 --catalog /path/to/cbusunits.xml
@@ -18,7 +20,8 @@ The command never overwrites. If the output file exists, it fails with
 name, `TProjectNodeHelper.DocumentProject` saving `<AppPath>\<TagName>.html`.
 A name containing a path or reserved character requires `--output`. The JSON
 result reports the file, its SHA-256 and size, the per-unit documentor and
-recovery status, every unrecovered item, and the parity status.
+recovery status, every unrecovered item, status-report projection details, and
+the parity status.
 
 The output is deterministic. The same snapshot and options give the same bytes.
 `Generated on:` uses `--generated-at` or, by default, the project file's
@@ -71,6 +74,8 @@ and its verified receipt.
   `Application` and `Secondary Application` from the `Application` PP array,
   `Serial Number` (`GetDisplayableSerialNumber`), `Firmware Version`, escaped
   `Notes`, `Unit clock is enabled` and `Unit burden is enabled`, then `<br />`.
+  Stored secondary application 255 remains present; its default application
+  name is the original raw `<Unused>` string.
 - **Escaping.** `FormatHTMLString` replaces only `<` and `>` with `&#60;` and
   `&#62;`. It is applied to descriptions, notes and the text of group 255.
   Names in headings and links are written unescaped, as in the original.
@@ -83,8 +88,10 @@ and its verified receipt.
 | `TClockDocumentor`, `TGeneralInputDocumentor`, `TCustomSceneKeyUnitDocumentor` | `CLK2`, `PC_GIM`, `KEYSCEN4` | Recovered (base body) |
 | `TOutputDocumentor` | `RELDN4`, `RELDN8`, `RELDN8B`, `RELDN12`, `DIMDN4`, `DIMDN4F`, `DIMDN8`, `DIMDN8F` | Recovered: channel/groups/logic-function table |
 | `TOutputDocumentor`, `TErrorReportOutputDocumentor` | the other 24 output types | Partial: base block, channel table marked |
-| `TBridgeDocumentor` | `BRIDGE1N/1F/2N/2F`, `GATEWLS/N/F` | Partial: `Adjacent Network` and the missing-far-side `WARNING`; connection settings marked |
-| every other documentor | classic and Neo key inputs, PIR, light-level and ST7 sensors, multisensor, thermostat, SENTEMP, WHAA, DALI, DMX, fan, architectural and Bytecraft dimmers, classic outputs, remote controls, wireless inputs and gateways, DLT | Unrecovered: base block and a marker |
+| `TBridgeDocumentor` | `BRIDGE1N/1F/2N/2F`, `GATEWLS/N/F` | Recovered: adjacent network, application connections, adjacent/remote forwarding and destination |
+| `TClassicOutputDocumentor` | `RELAY1`, `RELAY2`, `RELAY4`, `DIMMER4`, `AN_OUT4` | Recovered: associated groups and logic function per channel |
+| `TDMXGatewayDocumentor` | `DMXDO12` | Recovered: groups and 512 DMX slots |
+| every other documentor | classic and Neo key inputs, PIR, light-level and ST7 sensors, multisensor, thermostat, SENTEMP, WHAA, DALI, fan, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways, DLT | Unrecovered: base block and a marker |
 
 The output table follows the original row format: `<tr><td>channel</td><td>groups</td>[<td>Max|Min|&nbsp;</td>]</tr>`.
 Channel groups come from `GroupAddress`. Logic groups 1–4 sit at
@@ -95,6 +102,72 @@ marshalling indexes that `din-output-settings` uses. The `Logic Function`
 column appears only when a channel is associated with a used logic group. It
 reads `Max` when `LogicFunction` is set and `Min` otherwise, but only for rows
 with more than one group. The original writes `Max`/`Min` for relays as well.
+All consumed PP arrays and displayed group records must be present. Missing
+logic programming cannot silently become disabled logic.
+
+Classic outputs consume six group slots and `LogicGA0..5Associations`; the low
+bit of `LogicFunctionAndPowerUpDelay` selects Min/Max. The original GA5 branch
+tests slot 5 but displays slot 0. Repeated groups remain repeated. The DMX
+body maps sixteen 32-slot `DMXSlotMapping` banks to twelve channel groups;
+shared groups produce duplicate rows. It preserves the original malformed
+`</td></tr>` prefix rather than silently correcting the source output.
+
+Bridge bodies use `Application[0..1]`, `ApplicationConnectEnabled`,
+`BridgeCount` and `BridgeAddress`. Their private application-255 names are
+`All Applications` and `<Unused>`. A positive `BridgeCount` enables remote
+forwarding, while the destination is the last existing network in the first
+contiguous prefix of at most seven route entries. The first 255 or unknown
+network terminates that prefix. Missing programming stays marked; a known
+empty prefix displays the original `Unknown Network` text.
+
+## Group usage and action selectors
+
+Input/Output/Other lists now reproduce the original unit-link/description
+layout for eight admitted DIN output types, five classic output types, and
+nine classic key types (`KEY1/2/4`, `KEYIR1/4`, `KEYBC2/4`, `KEYAUX4`,
+`DINAUX4`). Input descriptions retain block-major key ordering, duplicate key
+uses and `Block (Unused)`. DIN output descriptions list channels then used or
+unused logic groups; classic output descriptions list logic groups. Other
+usage includes the recovered area and indicator-brightness group rules.
+Known empty uses produce empty lists. Unsupported units and missing fields
+produce individual markers in the list and summary.
+
+Classic-key `ActionSelectorUse` retains key-major ordering, duplicates,
+recall commands and timer-retrigger conditions. The original second stored
+level comparison is nested under the first stored level's Address match.
+Native Level Address and Value are retained separately. An action is reported
+unused only when every participating documentor has a known empty result.
+The bounded original instruction comparison uses synthetic object callbacks;
+it is not an original generated-page capture.
+
+## Status interval and ordering
+
+`Status Report Interval` now projects the original strict minimum over units
+with a recovered input-interface and PP mapping. Equal values keep the first
+unit. There is no formatting clamp or multiplier; the original sentinel is
+99999 and no qualifying value prints `None`. Missing PP, unknown factory
+identity, and unrecovered mappings keep the entire network result unknown.
+The report explicitly states its stored-PP basis: original programming-load
+success/failure flags cannot be observed from saved XML.
+
+The CLI uses a deterministic address-order profile. Networks, applications
+and groups place address 255 first; units and levels use ordinary ascending
+address order. Fresh Toolkit preferences actually default applications,
+groups and levels to name order, and registry settings can select address
+order. Original name comparison uses the Windows user locale. This CLI does
+not claim to reproduce an unobserved registry/locale ordering.
+
+## Saved native XML
+
+`--native-xml` reads an explicit saved `DBGETXML` Installation snapshot, not a
+SQL/SQLite repository or a live server. It preserves the stored interface
+fields, unit PP strings and distinct Level Address/Value. Both direct network
+interface fields and the nested Interface form have fixture support; mixed
+forms are refused. The adapter checks unique addresses, scalar fields and PP
+names, refuses DTDs and namespace shadows, and rejects unsupported NetVar or
+typed group/level collections rather than omitting them. Eight native fixture
+inventories and two committed original C-Gate readbacks provide independent
+projection comparisons. No missing PP is initialized from an assumed default.
 
 ## Marked, never guessed
 
@@ -103,10 +176,10 @@ When a value's original data source or body was not recovered, the page writes
 section, after the networks, lists each such item. The original page has no
 such section. The following are marked:
 
-- the `Inputs:`, `Outputs:` and `Other:` unit-usage lists, which come from
-  `TCBUSUnit` virtual methods;
-- `Status Report Interval`, which comes from the status-report unit interface;
-- `ActionSelectorUse` for every documentor that overrides it;
+- `Inputs:`, `Outputs:` and `Other:` usage outside the admitted families;
+- `Status Report Interval` when any potential participant lacks a known mapping
+  or consumed PP;
+- `ActionSelectorUse` outside the base and admitted classic-key implementations;
 - unrecovered per-type `DocumentHTML` bodies and the partial data listed above.
 
 Without `--catalog`, the three calculator lines read `not calculated`. With a
@@ -122,13 +195,11 @@ with each unit's `CatalogNumber`, `Burden` and
   implemented**.
 - The `TfrmProjectDocumentor` progress dialog (`Network %d of %d`,
   `Generating Documentation`) and cancellation. These are **not implemented**.
-- `LoadAndSort` order. The sort key is not recovered, so the CLI assumes
-  ascending address.
+- The original process's registry/locale-dependent application/group/level order.
 - `DateTimeToString` month names, which depend on the locale. The CLI uses
   English names.
 - The scan-error branch (`An Error occurred while scanning this unit…`), which
   needs a failed live programming load.
-- Secondary application 255, which the CLI treats as absent.
-- Links to groups or applications that are missing from the project. The CLI
-  uses the address, or the standard application title, as the link text.
-- Native C-Gate 3 projects.
+- Base links to applications missing from the snapshot use the existing
+  standard-title/address fallback; no complete native auto-creation is modeled.
+- Native SQL repositories and unsupported XML collection variants.

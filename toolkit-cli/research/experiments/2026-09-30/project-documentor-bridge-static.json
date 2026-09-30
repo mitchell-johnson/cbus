@@ -1,0 +1,150 @@
+{
+  "bridge_registrations": [
+    [
+      "BRIDGE1N",
+      "CIS_TBridge..TBridge1",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE1F",
+      "CIS_TBridge..TBridge1",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE2N",
+      "CIS_TBridge..TBridge2",
+      "0",
+      "9"
+    ],
+    [
+      "BRIDGE2F",
+      "CIS_TBridge..TBridge2",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLSN",
+      "CIS_TBridge..TWGWiresSide",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLSF",
+      "CIS_TBridge..TWGWiresSide",
+      "0",
+      "9"
+    ],
+    [
+      "GATEWLS",
+      "CIS_TBridge..TWGWiresSide",
+      "0",
+      "9"
+    ]
+  ],
+  "checks": {
+    "all_seven_bridge_types_have_application1": true,
+    "base_application255_default_name": true,
+    "base_documentor_displays_nonnull_secondary": true,
+    "bridge_agent_inherits_base_application_loaders": true,
+    "bridge_base_applications_use_network_objects": true,
+    "bridge_count_positive_enables_remote": true,
+    "destination_initially_unused": true,
+    "destination_is_last_resolved_prefix_entry": true,
+    "display_application255_raw_name": true,
+    "forwarding_pp_names": true,
+    "has_application1_true": true,
+    "primary_application_first": true,
+    "private_application_255_names": true,
+    "route_default_unused": true,
+    "secondary_application255_is_not_omitted": true,
+    "secondary_application_second": true,
+    "secondary_loaded_unconditionally": true,
+    "seven_route_slots": true,
+    "stop_at_first_unknown_network": true,
+    "stop_at_first_unused": true
+  },
+  "format": "cbus-project-documentor-bridge-static-v1",
+  "limit": "Static PP-to-report branch recovery; no original generated-page or visual comparison.",
+  "method_spans": {
+    "CIS_TBridge.TBridge.HasApplication1": {
+      "bytes": 20,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "start": "0xd40db0"
+    },
+    "CIS_TBridge.TBridge.LoadApplicationLists": {
+      "bytes": 660,
+      "sha256": "51776e7f3428a14a644e38d194f244f24c46e09bacebee9225d2f6308dae9eb6",
+      "start": "0xd404dc"
+    },
+    "CIS_TBridgeDocumentor.TBridgeDocumentor.DocumentHTML": {
+      "bytes": 1648,
+      "sha256": "7a061cc6277445633e37b35ba55e28b602612a8275f74bae96d6d69178c2101d",
+      "start": "0xd3ec98"
+    },
+    "CIS_TCBusBridgeCGateAgent.TCBusBridgeCGateAgent.AfterLoadProgrammingInformation": {
+      "bytes": 524,
+      "sha256": "952c1254c5bdaf7e7dc8f6d28515271cd51f4124d7ecccc5f15dd258879abdf8",
+      "start": "0x1256b48"
+    },
+    "CIS_TCBusBridgeCGateAgent.TCBusBridgeCGateAgent.GetApplication1": {
+      "bytes": 496,
+      "sha256": "d9ec9cc272bdbe17a727809e3f0115fcccf6cdac4a324e6ff8a710d337ed94e5",
+      "start": "0x1257188"
+    },
+    "CIS_TCBusBridgeCGateAgent.TCBusBridgeCGateAgent.GetApplication2": {
+      "bytes": 496,
+      "sha256": "2528423fd3db6f05dc9cbc56708d2472a15d09c42eed83db1527891aa1e4cb01",
+      "start": "0x1257378"
+    },
+    "CIS_TCBusBridgeCGateAgent.TCBusBridgeCGateAgent.InternalCreate": {
+      "bytes": 436,
+      "sha256": "4207aa9f733035367ccff9fe8546f000fa8679a59c8447bb0506eaf68177f6ba",
+      "start": "0x1256658"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AfterLoadProgrammingInformation": {
+      "bytes": 348,
+      "sha256": "e8dfdd2e282a580cdde0a63a4e3ee0e5f2469bf0d6da9b1ed5090048ea713a16",
+      "start": "0xcbe650"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object": {
+      "bytes": 528,
+      "sha256": "7d0c8b38f42081349c96e981905e6033de2079d09bf64548024e34a9608273af",
+      "start": "0xcb82b4"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject": {
+      "bytes": 588,
+      "sha256": "c781eabff439fdd02b07ea57a61e7f8960f3e7b8e47003586579f832cc208a17",
+      "start": "0xcb8068"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object": {
+      "bytes": 48,
+      "sha256": "585977982818789244bf6a034df13b44148eec0ed51ba70d9997cf754d6ded49",
+      "start": "0xf2ebf0"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject": {
+      "bytes": 48,
+      "sha256": "6a6bb9724a27eecef89d082873a9f4b393c5d184bf5621cba22ed752517949e4",
+      "start": "0xf2ebc0"
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLApplication": {
+      "bytes": 284,
+      "sha256": "453d2e9acc632dc47c857a14968b380569d828c272962af7e258017cb651210e",
+      "start": "0xca5808"
+    },
+    "CIS_TProjectDocumentor.TUnitTypeDocumentor.DocumentHTML": {
+      "bytes": 1100,
+      "sha256": "c21b1ee0e4388aa31689253c2bd6078970556e3678cfa2ad8bc05318fb806538",
+      "start": "0xf05fcc"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetApplicationName": {
+      "bytes": 176,
+      "sha256": "078c110ccb2e15efbdbf43b63ddbaf997656c4204b41ee33081491af4ee86309",
+      "start": "0x85adc4"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+}

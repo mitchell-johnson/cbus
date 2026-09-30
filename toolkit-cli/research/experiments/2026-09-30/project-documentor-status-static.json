@@ -1,0 +1,863 @@
+{
+  "admitted_pp_agent_mappings": {
+    "TBCNC4CGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TKeyInputCGateAgent.TCBusKeyInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusCouplerProInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCoreBusCouplerInputCGateAgent.TCoreBusCouplerInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusCouplerVieoInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCoreBusCouplerInputCGateAgent.TCoreBusCouplerInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusDynamicLabelInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusKEYExCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusKeyInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TKeyInputCGateAgent.TCBusKeyInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusMultisensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusNeoInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusNeoProInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusNeoProInputCGateAgent.TCBusNeoProInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusPirSensorInputCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusST7LightLevelSensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusST7MultisensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusST7PIRSensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusSurfaceMountLightLevelSensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusSurfaceMountMultisensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCBusSurfaceMountPIRSensorCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCustomSceneControllerCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCustomSceneControllerCGateAgent.TCustomSceneControllerCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TCustomSceneKeyCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TCustomSceneKeyCGateAgent.TCustomSceneKeyCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TIOPECGateAgent": {
+      "pp_mapping": "dedicated IOPE StatusReportInterval scalar"
+    },
+    "TSENLLCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TSENLLCGateAgent.TSENLLCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TSENTEMPCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TSENTEMPCGateAgent.TSENTEMPCGateAgent.AfterLoadProgrammingInformation"
+    },
+    "TSENTEMPProCGateAgent": {
+      "common_status_pp_loader_reached": true,
+      "effective_after_load": "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.AfterLoadProgrammingInformation"
+    }
+  },
+  "checks": {
+    "agent_pp_loader:TBCNC4CGateAgent": true,
+    "agent_pp_loader:TCBusCouplerProInputCGateAgent": true,
+    "agent_pp_loader:TCBusCouplerVieoInputCGateAgent": true,
+    "agent_pp_loader:TCBusDynamicLabelInputCGateAgent": true,
+    "agent_pp_loader:TCBusKEYExCGateAgent": true,
+    "agent_pp_loader:TCBusKeyInputCGateAgent": true,
+    "agent_pp_loader:TCBusMultisensorCGateAgent": true,
+    "agent_pp_loader:TCBusNeoInputCGateAgent": true,
+    "agent_pp_loader:TCBusNeoProInputCGateAgent": true,
+    "agent_pp_loader:TCBusPirSensorInputCGateAgent": true,
+    "agent_pp_loader:TCBusST7LightLevelSensorCGateAgent": true,
+    "agent_pp_loader:TCBusST7MultisensorCGateAgent": true,
+    "agent_pp_loader:TCBusST7PIRSensorCGateAgent": true,
+    "agent_pp_loader:TCBusSurfaceMountLightLevelSensorCGateAgent": true,
+    "agent_pp_loader:TCBusSurfaceMountMultisensorCGateAgent": true,
+    "agent_pp_loader:TCBusSurfaceMountPIRSensorCGateAgent": true,
+    "agent_pp_loader:TCustomSceneControllerCGateAgent": true,
+    "agent_pp_loader:TCustomSceneKeyCGateAgent": true,
+    "agent_pp_loader:TSENLLCGateAgent": true,
+    "agent_pp_loader:TSENTEMPCGateAgent": true,
+    "agent_pp_loader:TSENTEMPProCGateAgent": true,
+    "common_pp_loader": true,
+    "common_pp_name": true,
+    "factory_registration_rows": true,
+    "failed_load_handlers_clear_flag": true,
+    "input_classes": true,
+    "input_interface_guid": true,
+    "iope_pp_loader": true,
+    "iope_pp_name": true,
+    "loaded_before_attempt": true,
+    "native_guid_at_supports_call": true,
+    "native_interface_getter_slot": true,
+    "native_loaded_gate": true,
+    "native_output_literals": true,
+    "native_sentinel_99999": true,
+    "native_strict_minimum": true,
+    "noninput_classes": true,
+    "plain_integer_getters": true
+  },
+  "classes": {
+    "TANODN4": null,
+    "TANOMB8": null,
+    "TAN_OUT4": null,
+    "TBCI4A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TBCN2B": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TBCN4B": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TBCNC4A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TBCNC4B": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TBridge1": null,
+    "TBridge2": null,
+    "TCBusBurden": null,
+    "TCBusCable": null,
+    "TCBusEDLTUnit": null,
+    "TCBusWGUnitNoRepeatSALTransmission": null,
+    "TCBusWGUnitNoSynchroniseToWired": null,
+    "TCBusWirelessGatewayAdvancedUnit": null,
+    "TCBusWirelessGatewayUnit": null,
+    "TCBusWirelessPCIUnit": null,
+    "TCLK2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TDIMAR12": null,
+    "TDIMAR3": null,
+    "TDIMAR6": null,
+    "TDIMDD4": null,
+    "TDIMDD4F": null,
+    "TDIMDD8": null,
+    "TDIMDD8F": null,
+    "TDIMDN4": null,
+    "TDIMDN4F": null,
+    "TDIMDN8": null,
+    "TDIMDN8F": null,
+    "TDIMDS8": null,
+    "TDIMDU4": null,
+    "TDIMMER4": null,
+    "TDIMPR1": null,
+    "TDIMPR12": null,
+    "TDIMPR12A": null,
+    "TDIMPR12L1": null,
+    "TDIMPR2": null,
+    "TDIMPR3A": null,
+    "TDIMPR4": null,
+    "TDIMPR6A": null,
+    "TDINAUX4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TDMXDO12": null,
+    "TDSIMB8": null,
+    "TIOPE1R1": {
+      "getter": "CIS_TIOPEUnit.TIOPEUnit.GetStatusReportInterval",
+      "owner": "TIOPEUnit"
+    },
+    "TIOPE2C4": {
+      "getter": "CIS_TIOPEUnit.TIOPEUnit.GetStatusReportInterval",
+      "owner": "TIOPEUnit"
+    },
+    "TIOPE2R2": {
+      "getter": "CIS_TIOPEUnit.TIOPEUnit.GetStatusReportInterval",
+      "owner": "TIOPEUnit"
+    },
+    "TKEYA1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA1_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA3": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA3_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA6": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA6_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA8": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYA8_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYAUX4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYAV2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYAV2_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYAV4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYAV4_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB2_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB4_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB6": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYB6_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBC2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBC4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBIR2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBIR4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBIR6": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYBL5": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYC1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYC2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYC4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYCIR1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYCIR4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYDL4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYDV1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYDV2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYDV3": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYDV4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYEx": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYGL5": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH1_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH2_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH3": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH3_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYH4_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYIR1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYIR4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM2_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM4_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM8": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYM8_A": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYML5": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYP2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYP4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYP6": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYSCEN4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV1SP": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV2SP": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV3": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKEYV3SP": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKey1": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKey2": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TKey4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TNCCInputUnit": null,
+    "TNCCOutputUnit": null,
+    "TPCI2": null,
+    "TPCI3": null,
+    "TPCI4": null,
+    "TPCI4DALI": null,
+    "TPCI4NoBurden": null,
+    "TPCI4PC_CTA": null,
+    "TPCI4_PC_CTB": null,
+    "TPCI4_PC_CTBL": null,
+    "TPCIMIND2": null,
+    "TPCSHAC": null,
+    "TPC_DAL2B": null,
+    "TPC_DAL2C": null,
+    "TPC_GIM": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TPC_PACA": null,
+    "TPC_RDTS": null,
+    "TPC_TSA": null,
+    "TPC_TSA5": null,
+    "TPC_TSB": null,
+    "TPC_TSB5": null,
+    "TPC_WHAD": null,
+    "TPC_WHAM": null,
+    "TPC_WHAR": null,
+    "TPC_WHARB": null,
+    "TPowerSupply": null,
+    "TRELAY1": null,
+    "TRELAY2": null,
+    "TRELAY4": null,
+    "TRELDB1": null,
+    "TRELDC4": null,
+    "TRELDF1": null,
+    "TRELDN12": null,
+    "TRELDN4": null,
+    "TRELDN8": null,
+    "TRELDN8B": null,
+    "TRELDN8SP": null,
+    "TRELMB8": null,
+    "TRELSM8": null,
+    "TSCNCTL5": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENCT4": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENLL": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENLLA": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPILL": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPILLA": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPIR": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPIRIC": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPIROA": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENPIRSS": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENTEMP": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSENTEMPPro": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TST7SENLL": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TST7SENPILL": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TST7SENPIROA": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TST7SENPIRSS": {
+      "getter": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "owner": "TCBusInputUnit"
+    },
+    "TSYSDAL2": null,
+    "TWGWiresSide": null,
+    "TWPA2D1": null,
+    "TWPA2D1NoKeySets": null,
+    "TWPA2D1NoSceneToggle": null,
+    "TWPA2D1_2Remotes": null,
+    "TWPA2D1_2Remotes_CycleContinuous": null,
+    "TWPA2R1": null,
+    "TWPA2R1NoKeySets": null,
+    "TWPA2R1NoSceneToggle": null,
+    "TWPA2R1_2Remotes": null,
+    "TWPA2R1_2Remotes_CycleContinuous": null,
+    "TWPAD1D1": null,
+    "TWPAD1R1": null,
+    "TWPAP2D1": null,
+    "TWPAP2D1_2Remotes": null,
+    "TWPAP2R1": null,
+    "TWPAP2R1_2Remotes": null,
+    "TWRB2D1": null,
+    "TWRB2D1NoKeySets": null,
+    "TWRB2D1NoSceneToggle": null,
+    "TWRB2D1_2Remotes": null,
+    "TWRB2D1_2Remotes_CycleContinuous": null,
+    "TWRB2R1": null,
+    "TWRB2R1NoKeySets": null,
+    "TWRB2R1NoSceneToggle": null,
+    "TWRB2R1_2Remotes": null,
+    "TWRB2R1_2Remotes_CycleContinuous": null,
+    "TWRB4D1": null,
+    "TWRB4D1NoKeySets": null,
+    "TWRB4D1NoSceneToggle": null,
+    "TWRB4D1_2Remotes": null,
+    "TWRB4D1_2Remotes_CycleContinuous": null,
+    "TWRB4D2": null,
+    "TWRB4D2NoKeySets": null,
+    "TWRB4D2NoSceneToggle": null,
+    "TWRB4D2_2Remotes": null,
+    "TWRB4D2_2Remotes_CycleContinuous": null,
+    "TWRB4R1": null,
+    "TWRB4R1NoKeySets": null,
+    "TWRB4R1NoSceneToggle": null,
+    "TWRB4R1_2Remotes": null,
+    "TWRB4R1_2Remotes_CycleContinuous": null,
+    "TWRB4R2": null,
+    "TWRB4R2NoKeySets": null,
+    "TWRB4R2NoSceneToggle": null,
+    "TWRB4R2_2Remotes": null,
+    "TWRB4R2_2Remotes_CycleContinuous": null,
+    "TWRB6D1": null,
+    "TWRB6D1NoKeySets": null,
+    "TWRB6D1NoSceneToggle": null,
+    "TWRB6D1_2Remotes": null,
+    "TWRB6D1_2Remotes_CycleContinuous": null,
+    "TWRB6D2": null,
+    "TWRB6D2NoKeySets": null,
+    "TWRB6D2NoSceneToggle": null,
+    "TWRB6D2_2Remotes": null,
+    "TWRB6D2_2Remotes_CycleContinuous": null,
+    "TWRB6R1": null,
+    "TWRB6R1NoKeySets": null,
+    "TWRB6R1NoSceneToggle": null,
+    "TWRB6R1_2Remotes": null,
+    "TWRB6R1_2Remotes_CycleContinuous": null,
+    "TWRB6R2": null,
+    "TWRB6R2NoKeySets": null,
+    "TWRB6R2NoSceneToggle": null,
+    "TWRB6R2_2Remotes": null,
+    "TWRB6R2_2Remotes_CycleContinuous": null,
+    "TWRD0D1": null,
+    "TWRD0R1": null,
+    "TWRD1D1": null,
+    "TWRD1R1": null,
+    "TWRD2D1": null,
+    "TWRD2R1": null,
+    "TWRD3D1": null,
+    "TWRD3R1": null,
+    "TWRD4D1": null,
+    "TWRD4F1": null,
+    "TWRD4R1": null,
+    "TWRM1R1EZ": null,
+    "TWRM2D1": null,
+    "TWRM2D1EZ": null,
+    "TWRM2D1NoKeySets": null,
+    "TWRM2D1NoSceneToggle": null,
+    "TWRM2D1_2Remotes": null,
+    "TWRM2D1_2Remotes_CycleContinuous": null,
+    "TWRM2R1": null,
+    "TWRM2R1NoKeySets": null,
+    "TWRM2R1NoSceneToggle": null,
+    "TWRM2R1_2Remotes": null,
+    "TWRM2R1_2Remotes_CycleContinuous": null,
+    "TWRM2R2EZ": null,
+    "TWRM4D1": null,
+    "TWRM4D1NoKeySets": null,
+    "TWRM4D1NoSceneToggle": null,
+    "TWRM4D1_2Remotes": null,
+    "TWRM4D1_2Remotes_CycleContinuous": null,
+    "TWRM4D2": null,
+    "TWRM4D2EZ": null,
+    "TWRM4D2NoKeySets": null,
+    "TWRM4D2NoSceneToggle": null,
+    "TWRM4D2_2Remotes": null,
+    "TWRM4D2_2Remotes_CycleContinuous": null,
+    "TWRM4R1": null,
+    "TWRM4R1NoKeySets": null,
+    "TWRM4R1NoSceneToggle": null,
+    "TWRM4R1_2Remotes": null,
+    "TWRM4R1_2Remotes_CycleContinuous": null,
+    "TWRM4R2": null,
+    "TWRM4R2NoKeySets": null,
+    "TWRM4R2NoSceneToggle": null,
+    "TWRM4R2_2Remotes": null,
+    "TWRM4R2_2Remotes_CycleContinuous": null,
+    "TWRM8D1": null,
+    "TWRM8D1NoKeySets": null,
+    "TWRM8D1NoSceneToggle": null,
+    "TWRM8D1_2Remotes": null,
+    "TWRM8D1_2Remotes_CycleContinuous": null,
+    "TWRM8D2": null,
+    "TWRM8D2NoKeySets": null,
+    "TWRM8D2NoSceneToggle": null,
+    "TWRM8D2_2Remotes": null,
+    "TWRM8D2_2Remotes_CycleContinuous": null,
+    "TWRM8R1": null,
+    "TWRM8R1NoKeySets": null,
+    "TWRM8R1NoSceneToggle": null,
+    "TWRM8R1_2Remotes": null,
+    "TWRM8R1_2Remotes_CycleContinuous": null,
+    "TWRM8R2": null,
+    "TWRM8R2NoKeySets": null,
+    "TWRM8R2NoSceneToggle": null,
+    "TWRM8R2_2Remotes": null,
+    "TWRM8R2_2Remotes_CycleContinuous": null,
+    "TWRP2D1": null,
+    "TWRP2D1_2Remotes": null,
+    "TWRP2D1_2Remotes_CycleContinuous": null,
+    "TWRP2R1": null,
+    "TWRP2R1_2Remotes": null,
+    "TWRP2R1_2Remotes_CycleContinuous": null,
+    "TWRP4D1": null,
+    "TWRP4D1_2Remotes": null,
+    "TWRP4D1_2Remotes_CycleContinuous": null,
+    "TWRP4D2": null,
+    "TWRP4D2_2Remotes": null,
+    "TWRP4D2_2Remotes_CycleContinuous": null,
+    "TWRP4R1": null,
+    "TWRP4R1_2Remotes": null,
+    "TWRP4R1_2Remotes_CycleContinuous": null,
+    "TWRP4R2": null,
+    "TWRP4R2_2Remotes": null,
+    "TWRP4R2_2Remotes_CycleContinuous": null,
+    "TWRP6D1": null,
+    "TWRP6D1_2Remotes": null,
+    "TWRP6D1_2Remotes_CycleContinuous": null,
+    "TWRP6D2": null,
+    "TWRP6D2_2Remotes": null,
+    "TWRP6D2_2Remotes_CycleContinuous": null,
+    "TWRP6R1": null,
+    "TWRP6R1_2Remotes": null,
+    "TWRP6R1_2Remotes_CycleContinuous": null,
+    "TWRP6R2": null,
+    "TWRP6R2_2Remotes": null,
+    "TWRP6R2_2Remotes_CycleContinuous": null,
+    "TWTXU": null,
+    "TWTXUP": null
+  },
+  "failed_load_handler_entries": [
+    "0xf05669",
+    "0xf05690",
+    "0xf056b7",
+    "0xf056de",
+    "0xf05705",
+    "0xf0572c",
+    "0xf05753",
+    "0xf0577a",
+    "0xf057a1",
+    "0xf057c8",
+    "0xf057ef",
+    "0xf05813",
+    "0xf05837",
+    "0xf0585b"
+  ],
+  "format": "cbus-toolkit-project-documentor-status-static-v1",
+  "input_registration_count": 108,
+  "interface_guid": "b9f6b2d7-40ec-4399-883d-f40f76931f58",
+  "limit": "Stored PP projection cannot observe original programming-load failures or cancellation. Unknown class/firmware or unrecovered/missing scalar stays unknown, not None. Unit-manager order controls first-tie selection. No native page or hardware acceptance.",
+  "method_spans": {
+    "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval": {
+      "end": "0xc9d4e0",
+      "sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c",
+      "start": "0xc9d4bc"
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.InternalCreate": {
+      "end": "0xc9d25c",
+      "sha256": "2ba74cf9888a4e1502382fee7d0a4cabf53eed188a8411e01924aaf3abb33f14",
+      "start": "0xc9d1a4"
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval": {
+      "end": "0xc9d600",
+      "sha256": "60bd2443b95a1ad5197272ee18e17d72cd4b7e8909108ae1be5fee04c6a04fa3",
+      "start": "0xc9d5a0"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0xcc66f0",
+      "sha256": "5f8ec869a6b79608d1e2db5913e7f27201c14df1292fa3f964c02b4f0381de65",
+      "start": "0xcc66cc"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeStatusReportInterval": {
+      "end": "0xcc6538",
+      "sha256": "c51c28f9f1b654cad66f255008ec40781d34fcd77510090fa631186d8212c892",
+      "start": "0xcc64d0"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.InternalCreate": {
+      "end": "0xcc6470",
+      "sha256": "bfcf84f9085c80687985a2ab002ee80982d28f8eabbe9e092f9a116a3d5375d8",
+      "start": "0xcc643c"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadStatusReportInterval": {
+      "end": "0xcc6764",
+      "sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43",
+      "start": "0xcc6738"
+    },
+    "CIS_TCISUnitFactory.TUnitTypeFactory.GetUnit": {
+      "end": "0xc1a9ec",
+      "sha256": "c1880a392aa24f74c6d71b3bf261c0b3319485000598a41fadbdae3eb9ab0095",
+      "start": "0xc1a7b0"
+    },
+    "CIS_TCISUnitFactory.TUnitTypeFactory.UnitTypeRegIdxByTypeDescAndFirmware": {
+      "end": "0xc1ab5c",
+      "sha256": "5280e3e978d151a8baf43202130d1d2666c882f646562414a69947b0a87d5a6a",
+      "start": "0xc1aaa8"
+    },
+    "CIS_TCISUnitFactory.TUnitTypeRegistration.FirmwareWithinLimits": {
+      "end": "0xc1a75c",
+      "sha256": "84b2a16b54e63d0f5bce995b0ce146f391cb34f3ab5bc10b50902813772b2e72",
+      "start": "0xc1a6e8"
+    },
+    "CIS_TIOPECGateAgent.TIOPECGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x12d8f80",
+      "sha256": "1f8334f8f308518657ebdb27c6803538f30a19cf455cdb81a3ebb3857a09f508",
+      "start": "0x12d8900"
+    },
+    "CIS_TIOPECGateAgent.TIOPECGateAgent.InternalCreate": {
+      "end": "0x12d5aa4",
+      "sha256": "a7862488d6e221eccdc7ff94d74596aac31b3a789ed8a5b608e988082680e019",
+      "start": "0x12d3690"
+    },
+    "CIS_TIOPEUnit.TIOPEUnit.GetStatusReportInterval": {
+      "end": "0xd57300",
+      "sha256": "66777c118f813053c99b5dca672ecc117e5bae077fd124fa319b04f6c6b924d8",
+      "start": "0xd572dc"
+    },
+    "CIS_TIOPEUnit.TIOPEUnit.SetStatusReportInterval": {
+      "end": "0xd58d4c",
+      "sha256": "0cf4f22732838508f0f321bf95644b0ac6629ee1bea79252144f5f024ff0d2cb",
+      "start": "0xd58cec"
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.GetAllUnitProgramming": {
+      "end": "0xf05920",
+      "sha256": "80ec6f35b53e9d6680f1a9d6fac83f92712cd4490e4251edf629b775cb58cda3",
+      "start": "0xf05508"
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.GetNetworkMinimumStatusReportInterval": {
+      "end": "0xf05280",
+      "sha256": "6628a6add1ff313c0369ba83886c9bc2e7f9d274c4840b683efd4cc4de152dfb",
+      "start": "0xf050f0"
+    }
+  },
+  "model_module_sha256": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_generated_page_compared": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "registration_count": 425,
+  "status_report_basis": "stored_pp_snapshot; original programming-load success/failure not observed",
+  "unmapped_input_classes": [
+    "TKEYGL5",
+    "TPC_GIM",
+    "TSENCT4"
+  ]
+}

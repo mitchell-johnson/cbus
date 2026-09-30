@@ -1,0 +1,391 @@
+{
+  "format": "cbus-toolkit-project-documentor-ordering-static-v1",
+  "toolkit_version": "1.18.0.2754",
+  "acceptance": {
+    "source_static_verified": true,
+    "original_gui_executed": false,
+    "original_generated_page_compared": false,
+    "host_registry_read": false,
+    "windows_locale_captured": false
+  },
+  "source": {
+    "executable": {
+      "name": "CBusToolkit.exe",
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+    },
+    "map": {
+      "name": "CBusToolkit.map",
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "method_span_definition": "Start-inclusive and next-MAP-symbol-exclusive; may include aligned literals after the return. No instruction bytes retained."
+  },
+  "manager_ordering": [
+    {
+      "collection": "project networks",
+      "owner_field": "TProject+0xb4",
+      "mode": "numeric address ascending, eligible address255 first",
+      "choice_call": "0xf2d252",
+      "configurable_by_three_global_sort_preferences": false
+    },
+    {
+      "collection": "network database units",
+      "owner_field": "TCBusNetwork+0xd8",
+      "mode": "numeric address ascending",
+      "choice_call": "0xf29a82",
+      "configurable_by_three_global_sort_preferences": false
+    },
+    {
+      "collection": "network physical units",
+      "owner_field": "TCBusNetwork+0xdc",
+      "mode": "numeric address ascending",
+      "choice_call": "0xf29abf",
+      "configurable_by_three_global_sort_preferences": false
+    },
+    {
+      "collection": "network applications",
+      "owner_field": "TCBusNetwork+0xb0",
+      "preference": "SortModeApplications",
+      "fresh_default": "tag name ascending, eligible address255 first",
+      "preference_test": "0xf29af3",
+      "address_choice_call": "0xf29b05",
+      "tag_name_choice_call": "0xf29b15"
+    },
+    {
+      "collection": "application groups",
+      "owner_field": "TCBUSApplication+0xb4",
+      "preference": "SortModeGroups",
+      "fresh_default": "tag name ascending, eligible address255 first",
+      "preference_test": "0xf257ad",
+      "address_choice_call": "0xf257bf",
+      "tag_name_choice_call": "0xf257d0"
+    },
+    {
+      "collection": "group levels",
+      "owner_field": "TCBusGroup+0xd0",
+      "preference": "SortModeLevels",
+      "fresh_default": "tag name ascending",
+      "preference_test": "0xf27ad3",
+      "address_choice_call": "0xf27ae5",
+      "tag_name_choice_call": "0xf27af5"
+    }
+  ],
+  "preferences": {
+    "registry_hive": "HKCU",
+    "registry_path": "Software\\Clipsal Integrated Systems\\Global\\Preferences\\",
+    "names": [
+      "SortModeApplications",
+      "SortModeGroups",
+      "SortModeLevels"
+    ],
+    "absent_value_default": false,
+    "false_mode": "tag name ascending",
+    "true_mode": "numeric address ascending",
+    "default_writes": [
+      "0x85b68e",
+      "0x85b695",
+      "0x85b69c"
+    ],
+    "conditional_read_writes": [
+      "0x85b743",
+      "0x85b766",
+      "0x85b789"
+    ],
+    "sort_all": "TCBusInstallation.SortAll reapplies these three choices to applications/groups/levels; it does not alter network/unit modes."
+  },
+  "comparators": {
+    "address": {
+      "entry": "0xf4825c",
+      "initial_result": "left.GetAddressAsInteger() - right.GetAddressAsInteger()",
+      "initial_subtract": "0xf482b6"
+    },
+    "tag_name": {
+      "entry": "0xf48488",
+      "attribute": "TCGateObject.TagName at +0x9c",
+      "initial_result": "SysUtils.AnsiCompareText(left.TagName, right.TagName)",
+      "compare_call": "0xf48510",
+      "windows_api": {
+        "call": "0x618d47",
+        "name": "Windows.CompareString",
+        "locale": 1024,
+        "flags": 1,
+        "return_adjustment": "result - 2",
+        "meaning": "LOCALE_USER_DEFAULT, NORM_IGNORECASE; Windows user-locale collation, not Python casefold or codepoint ordering"
+      }
+    },
+    "address255_override": {
+      "applies_to": [
+        "TCBusGroup",
+        "TCBUSApplication",
+        "TCBusNetwork"
+      ],
+      "class_check": "System.@IsClass (includes descendants)",
+      "only_if": "left object identity differs from right object identity",
+      "steps": [
+        "Start with numeric-address or tag-name comparison result.",
+        "If left is any eligible class and left address is 255, set result=-1.",
+        "Then if right is any eligible class and right address is 255, set result=+1."
+      ],
+      "distinct_eligible_objects_both_address255_result": 1,
+      "excluded_classes": [
+        "TCBUSUnit",
+        "TLevel"
+      ],
+      "address_override_instructions": [
+        "0xf4830e",
+        "0xf4835c"
+      ],
+      "tag_override_instructions": [
+        "0xf4856b",
+        "0xf485b9"
+      ]
+    },
+    "algorithm": {
+      "name": "TFlashObjectReferenceCollection.QuickSort",
+      "entry": "0x7e97c4",
+      "stable": false,
+      "tie_breaker": null,
+      "same_tag_order": "Native equal-comparison order is not promised stable; original manager load/change history is not recovered by reading XML child order.",
+      "generic_modes": {
+        "0": "comparison returns zero",
+        "1": "default representation ascending",
+        "2": "default representation descending",
+        "3": "custom callback"
+      },
+      "these_manager_choices_use_mode": 3
+    }
+  },
+  "documentor_order": {
+    "GetAllProjectInfo_LoadAndSort_calls": [
+      {
+        "collection": "networks",
+        "call": "0xf05956"
+      },
+      {
+        "collection": "applications",
+        "call": "0xf05a60"
+      },
+      {
+        "collection": "groups",
+        "call": "0xf05ad6"
+      },
+      {
+        "collection": "levels",
+        "call": "0xf05b64"
+      }
+    ],
+    "LoadAndSort": "Calls GetFlashObject for each indexed item, then DoFullSort. Does not override manager comparator.",
+    "unit_order": "Unit manager comparator is numeric ascending; Append uses GetSortedInsertLocation for a nonzero sort style (0x7e859e-0x7e85be). No explicit unit LoadAndSort call was found in GetAllProjectInfo.",
+    "html_network_enumeration": "InsertHTMLNetworksNEW iterates every project network GetItem and calls InsertHTMLNetworkNEW unconditionally; no address255 network skip. InsertHTMLContents likewise enumerates every network.",
+    "html_application_filter": "InsertHTMLNetworkNEW and InsertHTMLContents skip GetUnassignedApplication object by identity.",
+    "html_group_filter": "InsertHTMLApplication and InsertHTMLContents skip TCBusGroup.IsUnused.",
+    "html_levels": "InsertHTMLGroup and InsertHTMLTriggerGroup enumerate their already-sorted TLevelManager order.",
+    "html_units": "InsertHTMLUnits and trigger/group usage iterate the network database-unit manager order."
+  },
+  "implementation_boundary": {
+    "offline_numeric_profile": "Can be explicitly documented as numeric address preferences; not the fresh native tag-name default.",
+    "unknowns": [
+      "The user Windows locale and persisted sort preferences are not captured.",
+      "Actual original generated-page output remains unobserved.",
+      "Equal tag-name ordering depends on the native unstable sorter and preceding manager operations."
+    ],
+    "do_not_claim": "Source recovery does not establish native GUI output acceptance or exact cross-platform name collation."
+  },
+  "methods": [
+    {
+      "symbol": "CIS_GlobalSoftwareParameters.LoadParametersFromRegistry",
+      "start": "0x85b67c",
+      "end": "0x85b924",
+      "span_bytes": 680,
+      "sha256": "b795c0830c979300b3b19b0ee41c2e4d62bdd9564bfb1105398c2da0dbe347b9"
+    },
+    {
+      "symbol": "CIS_GlobalSoftwareParameters.SortModeApplicationsUseAddress",
+      "start": "0x85b400",
+      "end": "0x85b414",
+      "span_bytes": 20,
+      "sha256": "72c22f2ac7a2b75e69638af4705d42b6516def4b6f364362d21e3e6ff8f4210d"
+    },
+    {
+      "symbol": "CIS_GlobalSoftwareParameters.SortModeGroupsUseAddress",
+      "start": "0x85b428",
+      "end": "0x85b43c",
+      "span_bytes": 20,
+      "sha256": "29c9ec42994f8ce7dcf3c3f863c01fc292d7f4514b05ef912f42da2e178fd236"
+    },
+    {
+      "symbol": "CIS_GlobalSoftwareParameters.SortModeLevelsUseAddress",
+      "start": "0x85b450",
+      "end": "0x85b464",
+      "span_bytes": 20,
+      "sha256": "93ad2ebbbd7c7661950395cf650341b5626f3a96b67e38b382bf29473b8e31b8"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TProject.InternalCreate",
+      "start": "0xf2d200",
+      "end": "0xf2d300",
+      "span_bytes": 256,
+      "sha256": "0c775d895ca3e93d36c08e2e07ee04550c93fbce0db7c3dc83b8117296ba143a"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.InternalCreate",
+      "start": "0xf299b0",
+      "end": "0xf2a070",
+      "span_bytes": 1728,
+      "sha256": "a36bfe4c44ea8cf2e3b6fbbdc60ba816885eea6547f19e6de22b8ba66a4f0912"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBUSApplication.InternalCreate",
+      "start": "0xf25704",
+      "end": "0xf25858",
+      "span_bytes": 340,
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusGroup.InternalCreate",
+      "start": "0xf27984",
+      "end": "0xf27c44",
+      "span_bytes": 704,
+      "sha256": "856404baa4ac67bbd744210d3a98f471faf7f9d25c35f22aed8aa627046a42fe"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusInstallation.SortAll",
+      "start": "0xf33190",
+      "end": "0xf33430",
+      "span_bytes": 672,
+      "sha256": "efa408665292c36e15f7f35d378c5b2f78827e905b6563cf58de1053a37d7195"
+    },
+    {
+      "symbol": "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomAddressAsc",
+      "start": "0xf48850",
+      "end": "0xf48874",
+      "span_bytes": 36,
+      "sha256": "3330851a47529c9fc524358e61092edb4ad19601c69bfc38f4c7dc810b7d406b"
+    },
+    {
+      "symbol": "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomTagNameAsc",
+      "start": "0xf48874",
+      "end": "0xf48898",
+      "span_bytes": 36,
+      "sha256": "01ee4000697615582739b0f2728059b078837628a14a59defd18822492bd2896"
+    },
+    {
+      "symbol": "CIS_TCBusObject.TCGateObjectManager.CustomSortAddressAsc",
+      "start": "0xf4825c",
+      "end": "0xf48488",
+      "span_bytes": 556,
+      "sha256": "b5bd0358ec5d6c19a91107df4a3969458b4a7ad4f03bf43c61e1bf1508aec565"
+    },
+    {
+      "symbol": "CIS_TCBusObject.TCGateObjectManager.CustomSortTagNameAsc",
+      "start": "0xf48488",
+      "end": "0xf48708",
+      "span_bytes": 640,
+      "sha256": "d6005d0f610c5d92df7c4846c76a355e0823fee802d849e43020e395458e1bda"
+    },
+    {
+      "symbol": "CIS_TCBusObject.TCGateObjectManager.LoadAndSort",
+      "start": "0xf48798",
+      "end": "0xf487e0",
+      "span_bytes": 72,
+      "sha256": "07225b4cb7f3f8f3f8905956c308890e60e23db28645329d5498521dba60d536"
+    },
+    {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.DoFullSort",
+      "start": "0x7e99b0",
+      "end": "0x7e9a0c",
+      "span_bytes": 92,
+      "sha256": "6c2cc44d19cfe400712a90e2803485da54462d225ea13e23f73393acd50164f6"
+    },
+    {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.QuickSort",
+      "start": "0x7e97c4",
+      "end": "0x7e98f8",
+      "span_bytes": 308,
+      "sha256": "3a35266c9903303e60f220b580c5c7fc7d60da84f057fd39d86169ba35955615"
+    },
+    {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Compare",
+      "start": "0x7e98f8",
+      "end": "0x7e9978",
+      "span_bytes": 128,
+      "sha256": "4010c8b23fb9138f5051c5f4ae0948b9369c812f32f92e1226988b7015e539ef"
+    },
+    {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append",
+      "start": "0x7e84ac",
+      "end": "0x7e8730",
+      "span_bytes": 644,
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3"
+    },
+    {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetSortedInsertLocation",
+      "start": "0x7e9b30",
+      "end": "0x7e9b70",
+      "span_bytes": 64,
+      "sha256": "7603adf73bc8371cedfabafb1463fa7963bf1bc923ba242978d4b76b2fd41ed7"
+    },
+    {
+      "symbol": "SysUtils.AnsiCompareText",
+      "start": "0x618cb0",
+      "end": "0x618d7c",
+      "span_bytes": 204,
+      "sha256": "9cc63b66ab4bc741bb7bd430cb0d1bfb97b808927701b8cbba2fbdf882213948"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.GetAllProjectInfo",
+      "start": "0xf05920",
+      "end": "0xf05bec",
+      "span_bytes": 716,
+      "sha256": "d8da3d725f2eece852d7a46684ab3072b73fdc6e63e0010ff50893fcd454967e"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLContents",
+      "start": "0xf06b1c",
+      "end": "0xf06f78",
+      "span_bytes": 1116,
+      "sha256": "a9e09549bb0cc2324968184a37cdd3af93ef162fc4a756fc5fa4baf01d83d1ac"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLNetworksNEW",
+      "start": "0xf06f78",
+      "end": "0xf06fd4",
+      "span_bytes": 92,
+      "sha256": "2387247db90fda09af9138251ecc47387fae33af3a7483b7a4c4f72e4d5597be"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLNetworkNEW",
+      "start": "0xf06fd4",
+      "end": "0xf0755c",
+      "span_bytes": 1416,
+      "sha256": "230eba4aa832dcd1334f1308865669bfd793d4527d14181c5af173d7c67a5d3e"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLApplication",
+      "start": "0xf0755c",
+      "end": "0xf078c8",
+      "span_bytes": 876,
+      "sha256": "3b267aa8a400e1e75c4dc87ddf617f7441c0eb6917fa3fd9a8b4a96310a5669b"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLGroup",
+      "start": "0xf078c8",
+      "end": "0xf07d60",
+      "span_bytes": 1176,
+      "sha256": "f770399f648094e6aecd66bee730c0bdb81217cea49686b739a9fab2f2c728ad"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLTriggerGroup",
+      "start": "0xf07d60",
+      "end": "0xf083b4",
+      "span_bytes": 1620,
+      "sha256": "809b055f49b8c13d976f1360bf639b1cd63a020ab33a41893a3080937f9e573a"
+    },
+    {
+      "symbol": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLUnits",
+      "start": "0xf08a18",
+      "end": "0xf08b80",
+      "span_bytes": 360,
+      "sha256": "c6cba229d60e1f5da735f4b4fab085d5d5c0953553cc888f0ec0ce3421525be7"
+    }
+  ]
+}

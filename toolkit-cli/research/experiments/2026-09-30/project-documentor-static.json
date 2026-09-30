@@ -126,7 +126,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "partial",
+      "body_status": "recovered",
       "document_html": "Bridge"
     },
     "BytecraftDimmer": {
@@ -190,7 +190,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "recovered",
       "document_html": "ClassicOutput"
     },
     "Clock": {
@@ -289,7 +289,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "recovered",
       "document_html": "DMXGateway"
     },
     "DigitalTemperatureSensor": {
@@ -627,7 +627,7 @@
     "202": "Action Selectors",
     "203": "Values"
   },
-  "limit": "This verifies pinned original routines, factory registrations, VMT slots and the strings the CLI reproduces. It does not execute the Toolkit, load a project, compare a generated page, recover per-unit group-usage or unrecovered documentor bodies, print, or show the progress dialog.",
+  "limit": "This verifies pinned original routines, factory registrations, VMT slots and the strings the CLI reproduces. It does not execute the Toolkit, load a project, compare a generated page, print, or show the progress dialog. Separate bridge/device/status/usage receipts pin the additional bounded recovery; unsupported bodies remain open.",
   "method_spans": {
     "DisplayHTMLApplication": {
       "bytes": 284,
@@ -768,7 +768,7 @@
       "start": "0xf05fcc"
     }
   },
-  "model_module_sha256": "85c5cb19cf4631b09785bb6f006337baafa2035e13335f846de662b356711540",
+  "model_module_sha256": "fb460bc8cca1f3e723422073c0a61ec4db7a6be8ba338b9bc8eb225f7b181636",
   "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
   "original_executed": false,
   "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
@@ -4196,5 +4196,11 @@
     "62346": "Network %d of %d",
     "62347": "Generating Documentation",
     "63389": "An Error occurred during the Project Document procedure.\r\nParts of the document may not be correct"
+  },
+  "supporting_module_sha256": {
+    "project_documentation_devices": "03b7918bd67a17316cb252ac80ef5df032c369218cc44bc951bfd72ba0f24e11",
+    "project_documentation_native": "c872b42f4641d4f0038138ba5c9c6f0991333174dea43c61958d98bbdd159827",
+    "project_documentation_status": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
+    "project_documentation_usage": "a01ca64efc90ea8585e5d8174d7c9bae8c463377f24174ebd01fe4dac8f1ae51"
   }
 }

@@ -241,6 +241,11 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
         "original_map_sha256": MAP_SHA256,
         "original_executed": False,
         "model_module_sha256": _sha(Path(model.__file__).read_bytes()),
+        "supporting_module_sha256": {
+            name: _sha(Path(model.__file__).with_name(name + ".py").read_bytes())
+            for name in ("project_documentation_devices", "project_documentation_native",
+                         "project_documentation_status", "project_documentation_usage")
+        },
         "method_spans": {short: {"start": hex(m["start"]), "end": hex(m["end"]), "bytes": m["end"] - m["start"],
                                  "sha256": m["sha256"]} for short, m in methods.items()},
         "registration_initializers": registration_spans,
@@ -255,8 +260,8 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
         "checks": {name: True for name in sorted(checks)},
         "limit": ("This verifies pinned original routines, factory registrations, VMT slots and the "
                   "strings the CLI reproduces. It does not execute the Toolkit, load a project, compare a "
-                  "generated page, recover per-unit group-usage or unrecovered documentor bodies, print, "
-                  "or show the progress dialog."),
+                  "generated page, print, or show the progress dialog. Separate bridge/device/status/usage "
+                  "receipts pin the additional bounded recovery; unsupported bodies remain open."),
     }
 
 
