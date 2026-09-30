@@ -18,6 +18,14 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### Toolkit preference effects
+
+`cbus-toolkit cgate --preferences STATE.json` uses 127.0.0.1 for an empty or
+`LOCAL` Default Site when `--host` is omitted. A named site is rejected, so
+pass `--host` for it. `thermostat-temperature convert --preferences STATE.json`
+selects units from the low byte of `TemperatureUnit`. The Toolkit preferences
+feature document lists what each of the other 38 preferences does.
+
 ### Native database XML file workflow
 
 For a saved Group/eDLT project label or another supported database object, use

@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 457,
+    "test_modules": 458,
     "modules_without_skip_sites": 246,
-    "modules_with_skip_sites": 211,
+    "modules_with_skip_sites": 212,
     "modules_by_category": {
       "cgate_test_host": 120,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 5,
       "rust_binaries": 7,
-      "unclassified": 2,
+      "unclassified": 3,
       "unit_specs": 110,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 113,
       "partial": 18,
-      "none": 80
+      "none": 81
     },
     "native_runnable_tests": 216,
     "native_selected_required_tests": 216,
@@ -7215,6 +7215,40 @@
           "tests": [
             "OriginalToolkitNumericTests::test_original_direct_conversion_matrix_and_power_constants",
             "OriginalToolkitNumericTests::test_original_validator_retains_all_66_historical_results"
+          ]
+        }
+      ]
+    },
+    "tests/test_toolkit_preference_effects.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 2,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_preference_effects.py::DefaultSiteCGateMockTests",
+          "kind": "decorator.skipUnless",
+          "condition": "MOCK_BIN",
+          "reason": "cgate-mock binary is not built",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "DefaultSiteCGateMockTests::test_explicit_host_overrides_named_site",
+            "DefaultSiteCGateMockTests::test_local_default_site_reaches_loopback_cgate"
           ]
         }
       ]

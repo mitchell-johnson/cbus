@@ -29,6 +29,67 @@ Original FormShow assignments, the SpinEdit setter/clamp, and OK-handler assignm
 
 The `controls` output, including the nested controls in `plan`, also contains `address_preview`. The original fixed examples are `Level 10`, `010 - Level 10`, and `010 (0Ah) - Level 10`. All four initial flag combinations and twelve original tag-click paths were executed, including the original integer formatter and concatenation. String allocation/copy/release and the label setter were explicit fixtures; actual VCL rendering remains unverified.
 
+## Runtime effects
+
+The [runtime-consumer receipt](../research/experiments/2026-09-30/preference-runtime-consumers.json) defines what "all runtime effects" means. It was produced by `research/preference_runtime_consumers_static.py` from the pinned Toolkit 1.18 EXE and MAP; no vendor code ran. Outside their unit initializers, the original code reaches each preference object through a `.data` pointer slot. The scan lists every code reference to those slots and the MAP routine that contains it. Reads from the Preferences dialog (`FormShow`/`btnOKClick`) are listed separately from runtime consumers. The decompiled eDLT/.NET assemblies read only the five display values, via `GlobalSoftwareParameters` (see [eDLT display preferences](edlt-display-preferences.md)). None of the 40 registered values is read there. The one `eDLT.dll` string match is the HVAC widget's `TemperatureUnits` list.
+
+Two preferences affect features the CLI implements. Both are read only from an explicit state file:
+
+```sh
+cbus-toolkit thermostat-temperature convert CGateTempToUnitTemp 0 --preferences current-preferences.json
+cbus-toolkit cgate --preferences current-preferences.json exec NOOP
+```
+
+- **TemperatureUnit**: every original thermostat conversion tests only the **low byte** of the stored integer. The byte is at offset +0x20 in the preference object. A non-zero byte selects Fahrenheit, so 1 and 257 select Fahrenheit, while 0 and 256 select Celsius. `--preferences` replaces `--units`, and you cannot pass both. The output's `units_source` records the value and the rule applied.
+- **Default Site**: at startup the original treats an empty site as `LOCAL` and compares the upper-cased site name with `LOCAL`. `SysUtils.UpperCase` changes ASCII letters only. When `--host` is omitted, `cgate --preferences` connects to `127.0.0.1` for `LOCAL`. Any other name is resolved through the Toolkit C-Gate site list, which the CLI does not model, so the command stops before connecting and asks for `--host`. An explicit `--host` always takes precedence, although the state file is still validated. The original also writes the opened site back into this preference. The CLI does not do that.
+
+`DoNotPauseEventsWhileLoadingProject` does affect C-Gate interaction, but the CLI does not emulate it. The original copies the value into PROJECT LOAD, DBGETXML and unit-catalogue commands. The hooks that test it before and after each command contain no dependent action, because the pause code is compiled out. The only remaining effect: when the value is false, a completed DBGETXML re-enables event monitoring (`event e5s1c1`). CLI sessions never change their event level around DBGETXML, so reproducing that command would change the event level for every database read.
+
+| Preference | Status | Original consumer | CLI |
+|---|---|---|---|
+| LoadChangePortDisable | gui-only | Scene Manager capture/live actions | The CLI has no Scene Manager action list; C-Gate load-change port configuration is not managed. |
+| ApplicationLogDisable | gui-only | Application Log view and load-change event processing | The CLI streams C-Gate events verbatim (cgate events); it has no Application Log view. |
+| TemperatureUnit | cli-honored | Thermostat/SENTEMP conversions, dialogs, documentor HTML and network-log text | thermostat-temperature convert --preferences FILE applies the same low-byte rule to the 14 scalar conversions. Unit dialogs are GUI-only; the CLI documentor does not emit temperatures. |
+| DoNotPauseEventsWhileLoadingProject | not-implemented | C-Gate PROJECT LOAD, DBGETXML and unit-catalogue commands | CLI C-Gate sessions never pause or enable event monitoring around DBGETXML; adding the re-enable would change session event levels for every database read, so it is recorded, not emulated. |
+| ShowProjectManager | gui-only | Main form create/close | Window layout only. |
+| RememberProjectManagerVisibleState | gui-only | Main form create/close | Window layout only. |
+| Default Site | cli-honored | Startup site selection and site-open write-back | cgate --preferences FILE selects 127.0.0.1 for empty/LOCAL when --host is omitted and rejects a named site (the site list is not modelled). The write-back is not performed. |
+| Default COM Port | not-implemented | Discover Project default interface, Setup Default Interface, installation HTML, units-node scan | CLI interface/network commands take explicit ports; the default-interface project workflow is absent. |
+| Default Interface Type | not-implemented | Discover Project default interface and Setup Default Interface | The default-interface project workflow is absent; CLI commands take an explicit interface. |
+| Default CNI Address | not-implemented | Discover Project default interface and Setup Default Interface | The default-interface project workflow is absent; CLI commands take an explicit address. |
+| AutoInvokeMacroFunctionDialog | gui-only | Key/IO unit dialog extension clicks | Dialog navigation only. |
+| AutoInvokeDatabaseUnitDialog | gui-only | Add Unit actions | Dialog navigation only; CLI unit creation returns JSON. |
+| SynchroniseFilters | gui-only | Units node display-all actions | Grid filter state only. |
+| CGateShutdownOnExit | not-implemented | Application exit | The CLI has no application-exit lifecycle; project close and shutdown are explicit commands. |
+| CGateShutdownOnExitAsk | not-implemented | Application exit and close query | No application-exit lifecycle or prompt in the CLI. |
+| CloseProjectsOnExit | not-implemented | Application exit | No application-exit lifecycle in the CLI. |
+| CGateShutdownDecision | not-implemented | Application exit and close query | No application-exit lifecycle in the CLI. |
+| UnitDialogOverride | gui-only | Unit dialog selection | Dialog selection only. |
+| UnitDialogModeAdvanced | gui-only | Unit dialog selection | Dialog selection only. |
+| UnitDialogAlwaysClassic | gui-only | Unit grid double-click | Dialog selection only. |
+| FeedbackLog | not-implemented | Application feedback log (TZippedLog) at start-up | The CLI has no Toolkit feedback log. |
+| FeedbackLogFile | not-implemented | Application feedback log at start-up | The CLI has no Toolkit feedback log. |
+| FeedbackLogSize | not-implemented | Application feedback log at start-up | The CLI has no Toolkit feedback log. |
+| JavaHeapMin | not-implemented | Preferences action follow-up | The CLI does not manage C-Gate service JVM configuration or restarts. |
+| JavaHeapMax | not-implemented | Preferences action follow-up | The CLI does not manage C-Gate service JVM configuration or restarts. |
+| IlluminanceMeasurementUnit | no-runtime-consumer | — | No consumer to honor. |
+| ClipsalWebsiteURL | gui-only | Help menu web-site action | Browser launch only. |
+| CISDownloadsURL | gui-only | Check New Version action | Browser launch only; CLI update commands use explicit metadata inputs. |
+| AllowLegacyApplicationCreation | not-implemented | Application dialog allowlist and main-form control visibility | CLI project/database application creation does not apply the dialog allowlist; the dialog flag (TfrmApplication+0x3F1, copied from its owner) is not resolved. |
+| AllowUserDefinedApplicationCreation | not-implemented | Application dialog allowlist | Same as AllowLegacyApplicationCreation. |
+| LegacyDuplicateUnitsDetection | no-runtime-consumer | — | No consumer to honor. |
+| ShowDatabaseLabelsOption | no-runtime-consumer | — | No consumer to honor. |
+| Default Language 1 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 2 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 3 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 4 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 5 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 6 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 7 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+| Default Language 8 | not-implemented | New network language list (TCBusNetwork.InitialiseLanguages) | CLI project/network creation does not synthesize Toolkit network language lists. |
+
+`gui-only` covers window layout, dialog navigation, grid filters, action enablement and browser launches. `not-implemented` means the consumer belongs to a workflow the CLI does not have. These are the default-interface project, application exit (C-Gate shutdown and closing all projects), the feedback log, JVM heap restart notices, the Application dialog allowlist and network language lists. Two preferences in that group have extra limits. `LoadChangePortDisable` also affects C-Gate configuration, which the CLI does not manage. The allowlist depends on a dialog flag whose source has not been traced. The receipt's checks pin the original facts these CLI effects depend on. Effects were read from disassembly. The CLI tests cover `127.0.0.1` against `cgate-mock`, and named sites fail closed. Original execution of these effects, the Toolkit site list and GUI rendering were not exercised.
+
 ## Windows storage
 
 On Windows:
@@ -118,7 +179,7 @@ Stored preference decoding accepts terminated Unicode strings, ASCII boolean spe
 
 The optional converter accepts at most 64 ASCII characters without NUL; signed 64-bit truncation overflow remains unsupported. A successful registry fallback copies the exact original string bytes. For a known original numeric conversion error, the user-hive copy happens before conversion fails, and the outcome records that completed prefix. Unsupported data stops before copying that value. Earlier default writes may already have occurred. See [numeric conversion](toolkit-numeric.md) for the exact filtering and rounding behavior.
 
-Operations are sequential. A failed or interrupted write can leave a completed prefix, including a write whose reply was lost. Results retain the attempted operations and original interruption evidence; no transaction, automatic rollback, or replay is implied. Logging controller changes, C-Gate restart effects, actual GUI rendering, and the update workflow are not implemented by these commands.
+Operations are sequential. A failed or interrupted write can leave a completed prefix, including a write whose reply was lost. Results retain the attempted operations and original interruption evidence; no transaction, automatic rollback, or replay is implied. Logging controller changes, C-Gate restart effects, actual GUI rendering, and the update workflow are not implemented by these commands; see [runtime effects](#runtime-effects).
 
 CLI error reporting treats attached exception evidence as optional. If reading it raises another exception, reset and storage commands retain the original error and fall back to the current coordinator's evidence only when it belongs to that exact error object. Evidence from a prior operation is not reused. The [focused getter-guard acceptance](../research/fixtures/toolkit-preferences-evidence-getter-acceptance.json) records this later correction separately from the historical expanded suite.
 

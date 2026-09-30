@@ -1481,8 +1481,11 @@ def build_parser():
             p.add_argument("--output", type=Path, help="Write to a copy instead of updating the input file")
 
     cgate = commands.add_parser("cgate", help="Issue C-Gate commands using a persistent, correlated connection")
-    cgate.add_argument("--host", default="127.0.0.1")
+    cgate.add_argument("--host", default=None,
+                       help="C-Gate host (default: 127.0.0.1, or the LOCAL Default Site from --preferences)")
     cgate.add_argument("--port", type=int)
+    cgate.add_argument("--preferences", type=Path, metavar="STATE.json",
+                       help="Retained Toolkit preference state; its Default Site selects the host when --host is omitted")
     cgate.set_defaults(cgate_timeout_explicit=False)
     cgate.add_argument("--timeout", type=_positive, default=10.0,
                        action=_ExplicitCGateTimeout,
@@ -3742,6 +3745,9 @@ def _memory(args):
 
 
 def run(args):
+    if args.area == "cgate":
+        from .toolkit_preferences_effects import apply_cgate_preferences
+        apply_cgate_preferences(args)
     if args.area == "interface":
         from .cni_discovery import (discover_cni, plan_host_cni_probes, scan_cni,
                                     scan_host_cni, validate_scan_cni)

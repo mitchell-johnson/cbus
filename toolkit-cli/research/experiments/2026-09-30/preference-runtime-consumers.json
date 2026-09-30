@@ -1,0 +1,3073 @@
+{
+  "checks": {
+    "dbgetxml_resumes_event_monitoring": true,
+    "default_site_empty_becomes_local": true,
+    "default_site_uppercase_local_else_site_list": true,
+    "event_command_literals": true,
+    "local_host_literals": true,
+    "pause_hooks_have_no_dependent_branch": true,
+    "temperature_unit_low_byte_nonzero": true,
+    "temperature_unit_thermostat_methods_match_cli": true
+  },
+  "dotnet": {
+    "assemblies": {
+      "eDLT.dll": {
+        "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+        "utf16_substring_hits": [
+          "TemperatureUnit"
+        ]
+      }
+    },
+    "decompiled_sources": {
+      "exact_string_literal_hits": {},
+      "files_scanned": 188,
+      "registry_reader": "CBusLogicModel.GlobalSoftwareParameters",
+      "registry_values_read": [
+        "DisplayHexAddress",
+        "DisplayAddressValue",
+        "SortModeApplications",
+        "SortModeGroups",
+        "SortModeLevels"
+      ]
+    }
+  },
+  "format": "cbus-toolkit-preference-runtime-consumers-v1",
+  "limit": "Static cross-reference of the pinned Delphi EXE. Preference objects reached only through TPreferenceManager load/save are counted as persistence, not runtime effects. Effects are read from disassembly, not executed; GUI rendering, dialog event dispatch and the Toolkit site list are not exercised. .NET results are UTF-16 substring and decompiled literal scans: the eDLT hit is the HVAC widget \"TemperatureUnits\" list, not this preference.",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "preferences": [
+    {
+      "cli": "The CLI has no Scene Manager action list; C-Gate load-change port configuration is not managed.",
+      "direct_reference_owners": [
+        "CIS_CBusPreferences.CIS_CBusPreferences"
+      ],
+      "effect": "OnUpdate handlers disable the Capture Scene and Live Scene actions when set.",
+      "feature": "Scene Manager capture/live actions",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_CBusPreferences.PrefCGateLoadChangePortDisable",
+      "name": "LoadChangePortDisable",
+      "pointer_slots": [
+        "0x13c1f84"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmSceneManager.TfrmSceneManager.actCaptureSceneUpdate",
+        "CIS_TfrmSceneManager.TfrmSceneManager.actLiveSceneUpdate"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddebe4",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddef88",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xf8bd28",
+          "function": "CIS_TfrmSceneManager.TfrmSceneManager.actCaptureSceneUpdate"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xf8be79",
+          "function": "CIS_TfrmSceneManager.TfrmSceneManager.actLiveSceneUpdate"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x1452270"
+    },
+    {
+      "cli": "The CLI streams C-Gate events verbatim (cgate events); it has no Application Log view.",
+      "direct_reference_owners": [
+        "CIS_CBusPreferences.CIS_CBusPreferences"
+      ],
+      "effect": "Suppresses Application Log load-change entries and changes the log heading/pause action state.",
+      "feature": "Application Log view and load-change event processing",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_CBusPreferences.PrefCGateApplicationLogDisable",
+      "name": "ApplicationLogDisable",
+      "pointer_slots": [
+        "0x13c311c"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TLoadChangeEventProcessor.TLoadChangeEventProcessor.ProcessLoadChangeResponse",
+        "CIS_TfrmApplicationLogNode.TfrmApplicationLogNode.UpdateHeading",
+        "CIS_TfrmApplicationLogNode.TfrmApplicationLogNode.actPauseResumeLogUpdate"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddec23",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddefa6",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xf20c91",
+          "function": "CIS_TLoadChangeEventProcessor.TLoadChangeEventProcessor.ProcessLoadChangeResponse"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0x11489bc",
+          "function": "CIS_TfrmApplicationLogNode.TfrmApplicationLogNode.actPauseResumeLogUpdate"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0x11491ea",
+          "function": "CIS_TfrmApplicationLogNode.TfrmApplicationLogNode.UpdateHeading"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x1452274"
+    },
+    {
+      "cli": "thermostat-temperature convert --preferences FILE applies the same low-byte rule to the 14 scalar conversions. Unit dialogs are GUI-only; the CLI documentor does not emit temperatures.",
+      "direct_reference_owners": [
+        "CIS_CBusPreferences.CIS_CBusPreferences"
+      ],
+      "effect": "All reads test the low byte of the integer (+0x20); non-zero selects Fahrenheit conversions.",
+      "feature": "Thermostat/SENTEMP conversions, dialogs, documentor HTML and network-log text",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_CBusPreferences.PrefTemperatureUnit",
+      "name": "TemperatureUnit",
+      "pointer_slots": [
+        "0x13c3ac8"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGate16thDegreeToQuarterDegreeTempOffset",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToHalfDegreesTempOffset",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffset",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffsetWithShift",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToUnitTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToWholeDegreesTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.HalfDegreesTempOffsetToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.QuarterDegreesTempOffsetToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleCGateTempToUnitTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleUnitTempToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetWithShiftToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.UnitTempToCGateTemp",
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.WholeDegreesTempToCGateTemp",
+        "CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.DocumentHTML",
+        "CIS_TLoadChangeEventProcessor.AddNetworkLogEntry",
+        "CIS_TLoadChangeEventProcessor.ExtractGuardTemperature",
+        "CIS_TLoadChangeEventProcessor.ExtractHVACFlags",
+        "CIS_TLoadChangeEventProcessor.ExtractHVACFlagsForGuard",
+        "CIS_TLoadChangeEventProcessor.ExtractHVACFlagsForSchedule",
+        "CIS_TLoadChangeEventProcessor.ExtractHVACSetLevelForSchedule",
+        "CIS_TLoadChangeEventProcessor.ExtractTemperatureForZoneHVACMode",
+        "CIS_TSENTEMPDocumentor.TSENTEMPDocumentor.DocumentHTML",
+        "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.DocumentHTML",
+        "CIS_TThermostatDocumentor.TThermostatDocumentor.DocumentHTML",
+        "CIS_TcdSENTEMPGlobal.TcdSENTEMPGlobal.SetupFlashComponents",
+        "CIS_TcdThermostatCBus.TcdThermostatCBus.SetupFlashComponents",
+        "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetupFlashComponents",
+        "CIS_TcdThermostatTempControl.TcdThermostatTempControl.UpdateSliderTemperatureUnit",
+        "CIS_TddSENTEMP.TddSENTEMP.HandleAmbientTempChange",
+        "CIS_TddSENTEMP.TddSENTEMP.InitialiseFlashComponents",
+        "CIS_TddSENTEMPPro.TddSENTEMPPro.HandleAmbientTempChange",
+        "CIS_TddSENTEMPPro.TddSENTEMPPro.Initialise",
+        "CIS_TddSENTEMPPro.TddSENTEMPPro.RefreshTemperatureHints",
+        "CIS_TfrmDigitalTemperatureSensorChannelBroadcast.TfrmDigitalTemperatureSensorChannelBroadcast.SetupComponents",
+        "CIS_TfrmDigitalTemperatureSensorChannelBroadcast.TfrmDigitalTemperatureSensorChannelBroadcast.spnBroadcastThresholdPropertiesEditValueChanged",
+        "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.SetupComponents",
+        "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.UpdateTemperatureDisplay",
+        "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.spnTemperatureOffsetPropertiesEditValueChanged",
+        "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.SetupFlashComponents",
+        "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.UpdateEvapComfortStepSizeSlider",
+        "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.UpdateSliderTemperatureUnit",
+        "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.trkTestPropertiesChange",
+        "CIS_TfrmThermostatTempOffset.TfrmThermostatTempOffset.SetupFlashComponents"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov edx, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xddeda9",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf0d1",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf12e2f",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractHVACFlags"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf13430",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractTemperatureForZoneHVACMode"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf1512b",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractGuardTemperature"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf153f0",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractHVACFlagsForGuard"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf1631d",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractHVACFlagsForSchedule"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf16a10",
+          "function": "CIS_TLoadChangeEventProcessor.ExtractHVACSetLevelForSchedule"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf1b42c",
+          "function": "CIS_TLoadChangeEventProcessor.AddNetworkLogEntry"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf1c817",
+          "function": "CIS_TLoadChangeEventProcessor.AddNetworkLogEntry"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xf1cad6",
+          "function": "CIS_TLoadChangeEventProcessor.AddNetworkLogEntry"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xfcf2e4",
+          "function": "CIS_TSENTEMPDocumentor.TSENTEMPDocumentor.DocumentHTML"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xfd147e",
+          "function": "CIS_TddSENTEMP.TddSENTEMP.InitialiseFlashComponents"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xfd14c0",
+          "function": "CIS_TddSENTEMP.TddSENTEMP.InitialiseFlashComponents"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xfd1502",
+          "function": "CIS_TddSENTEMP.TddSENTEMP.InitialiseFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xfd1c82",
+          "function": "CIS_TddSENTEMP.TddSENTEMP.HandleAmbientTempChange"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xfd2bdd",
+          "function": "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.DocumentHTML"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xfd3026",
+          "function": "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.DocumentHTML"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xfd5c5d",
+          "function": "CIS_TThermostatDocumentor.TThermostatDocumentor.DocumentHTML"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xff2295",
+          "function": "CIS_TcdSENTEMPGlobal.TcdSENTEMPGlobal.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xff3f6b",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.Initialise"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xff3f89",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.Initialise"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xff3fa7",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.Initialise"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_TFlashCxTemperatureTrackBar.TFlashCxTemperatureTrackBar.SetTempUnit",
+            "write": false
+          },
+          "address": "0xff3fc5",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.Initialise"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xff524f",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.HandleAmbientTempChange"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xff5344",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.HandleAmbientTempChange"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xff5911",
+          "function": "CIS_TddSENTEMPPro.TddSENTEMPPro.RefreshTemperatureHints"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x111fa51",
+          "function": "CIS_TcdThermostatCBus.TcdThermostatCBus.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x112a327",
+          "function": "CIS_TfrmThermostatTempOffset.TfrmThermostatTempOffset.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112a33f",
+          "function": "CIS_TfrmThermostatTempOffset.TfrmThermostatTempOffset.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112bd2f",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x112bd40",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112be2e",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x112be3f",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x112c10c",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.UpdateSliderTemperatureUnit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112c1ef",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.UpdateEvapComfortStepSizeSlider"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x112c6f2",
+          "function": "CIS_TfrmThermostatEvapComfort.TfrmThermostatEvapConfortControl.trkTestPropertiesChange"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112deb3",
+          "function": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112e0db",
+          "function": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetupFlashComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 1",
+            "write": false
+          },
+          "address": "0x112e800",
+          "function": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.UpdateSliderTemperatureUnit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x112e871",
+          "function": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.UpdateSliderTemperatureUnit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x1202309",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.SetupComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x1202567",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.spnTemperatureOffsetPropertiesEditValueChanged"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x1202955",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.UpdateTemperatureDisplay"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x12029cc",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelCalibration.TfrmDigitalTemperatureSensorChannelCalibration.UpdateTemperatureDisplay"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x12036ad",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelBroadcast.TfrmDigitalTemperatureSensorChannelBroadcast.SetupComponents"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x1203c9b",
+          "function": "CIS_TfrmDigitalTemperatureSensorChannelBroadcast.TfrmDigitalTemperatureSensorChannelBroadcast.spnBroadcastThresholdPropertiesEditValueChanged"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fa88",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleCGateTempToUnitTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fac8",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleUnitTempToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fb08",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToUnitTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fb70",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.UnitTempToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fbd0",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffsetWithShift"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fc40",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetWithShiftToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fc9c",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffset"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fcf8",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fd4c",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToWholeDegreesTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fda0",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.WholeDegreesTempToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fdec",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToHalfDegreesTempOffset"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fe48",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.HalfDegreesTempOffsetToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128fe9c",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGate16thDegreeToQuarterDegreeTempOffset"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp byte ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x128ff10",
+          "function": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.QuarterDegreesTempOffsetToCGateTemp"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0x12ea7bd",
+          "function": "CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.DocumentHTML"
+        }
+      ],
+      "status": "cli-honored",
+      "variable": "0x1452278"
+    },
+    {
+      "cli": "CLI C-Gate sessions never pause or enable event monitoring around DBGETXML; adding the re-enable would change session event levels for every database read, so it is recorded, not emulated.",
+      "direct_reference_owners": [
+        "CIS_CBusPreferences.CIS_CBusPreferences"
+      ],
+      "effect": "Copied into TcgcProjectLoad/TcgcDBGetXML/TcgcPPGetUnitSpecCatalog. Their begin/end hooks test it with no dependent action (the pause is compiled out). Only TcgcDBGetXML.OnProcessResults acts: when false, a completed DBGETXML re-enables event monitoring (TcgcEvent level 6 = \"event e5s1c1\").",
+      "feature": "C-Gate PROJECT LOAD, DBGETXML and unit-catalogue commands",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_CBusPreferences.PrefDoNotPauseEventsWhileLoadingProject",
+      "name": "DoNotPauseEventsWhileLoadingProject",
+      "pointer_slots": [
+        "0x13c20a8"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TCBusInstallationCGateAgent.TCBusInstallationCGateAgent.LoadHostAttributes",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.XMLReload",
+        "CIS_TProjectCGateAgent.TProjectCGateAgent.CommandProjectLoad",
+        "CIS_TProjectCGateAgent.TProjectCGateAgent.LoadXMLStream",
+        "CIS_TUnitType.TCGateUnitCatalog.LoadFromCGate",
+        "CIS_TfrmProjectTreeView.TfrmProjectTreeView.GetDBXML"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xd8535b",
+          "function": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.XMLReload"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xdd28a4",
+          "function": "CIS_TfrmProjectTreeView.TfrmProjectTreeView.GetDBXML"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xf41e9a",
+          "function": "CIS_TUnitType.TCGateUnitCatalog.LoadFromCGate"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0x120a5cf",
+          "function": "CIS_TProjectCGateAgent.TProjectCGateAgent.CommandProjectLoad"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0x120ab46",
+          "function": "CIS_TProjectCGateAgent.TProjectCGateAgent.LoadXMLStream"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0x120d0aa",
+          "function": "CIS_TCBusInstallationCGateAgent.TCBusInstallationCGateAgent.LoadHostAttributes"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x145227c"
+    },
+    {
+      "cli": "Window layout only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Shows the project manager pane and stores its visibility on close.",
+      "feature": "Main form create/close",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefShowProjectManager",
+      "name": "ShowProjectManager",
+      "pointer_slots": [
+        "0x13c3220"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormClose",
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormCreate"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xea0428",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCreate"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xea05a3",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormClose"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144df00"
+    },
+    {
+      "cli": "Window layout only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Selects whether pane visibility is remembered.",
+      "feature": "Main form create/close",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefRememberProjectManagerVisibleState",
+      "name": "RememberProjectManagerVisibleState",
+      "pointer_slots": [
+        "0x13c22d0"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormClose",
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormCreate"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddec41",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf198",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xea041b",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCreate"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xea0576",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormClose"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144df04"
+    },
+    {
+      "cli": "cgate --preferences FILE selects 127.0.0.1 for empty/LOCAL when --host is omitted and rejects a named site (the site list is not modelled). The write-back is not performed.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Startup reads the string; empty becomes LOCAL. UpperCase(site)=LOCAL opens the local C-Gate; other names resolve through the Toolkit C-Gate site list. Opening a site writes LOCAL for a localhost/127.0.0.1 site, otherwise the site name.",
+      "feature": "Startup site selection and site-open write-back",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefDefaultSite",
+      "name": "Default Site",
+      "pointer_slots": [
+        "0x13c34cc"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TddKipper.TddKipper.ProcessCommandLineParams",
+        "CIS_TfrmKipperMain.TfrmKipperMain.OpenSite"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrLAsg",
+            "write": false
+          },
+          "address": "0xe8eedc",
+          "function": "CIS_TddKipper.TddKipper.ProcessCommandLineParams"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe9ff19",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.OpenSite"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe9ff70",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.OpenSite"
+        }
+      ],
+      "status": "cli-honored",
+      "variable": "0x144de9c"
+    },
+    {
+      "cli": "CLI interface/network commands take explicit ports; the default-interface project workflow is absent.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Supplies the serial port for the default-interface project and TCBusNetwork.ScanPhysicalNetwork.",
+      "feature": "Discover Project default interface, Setup Default Interface, installation HTML, units-node scan",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefDefaultCOMPort",
+      "name": "Default COM Port",
+      "pointer_slots": [
+        "0x13c28e0"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TUnitsNodeHelper.TUnitsNodeHelper.ScanPhysicalNetworkInner",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseSerialAsDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvSerialCustomDrawCell",
+        "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrEqual",
+            "write": false
+          },
+          "address": "0xde5414",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xde564a",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrEqual",
+            "write": false
+          },
+          "address": "0xe92d94",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvSerialCustomDrawCell"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrAsg",
+            "write": false
+          },
+          "address": "0xe93aef",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov ecx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe94528",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe94b7a",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseSerialAsDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrLAsg",
+            "write": false
+          },
+          "address": "0xe954f5",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov ecx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe97792",
+          "function": "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xed5a65",
+          "function": "CIS_TUnitsNodeHelper.TUnitsNodeHelper.ScanPhysicalNetworkInner"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dea0"
+    },
+    {
+      "cli": "The default-interface project workflow is absent; CLI commands take an explicit interface.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Selects serial versus CNI for the default-interface project.",
+      "feature": "Discover Project default interface and Setup Default Interface",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefDefaultInterfaceType",
+      "name": "Default Interface Type",
+      "pointer_slots": [
+        "0x13c317c"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseCNIAsDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseSerialAsDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvCNICustomDrawCell",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvSerialCustomDrawCell",
+        "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde5351",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde5369",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde5443",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xde561f",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe92c5d",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvCNICustomDrawCell"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe92db5",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvSerialCustomDrawCell"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe93ab6",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe93ace",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe93b36",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe944f2",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe949d3",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseCNIAsDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe94b5d",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseSerialAsDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe9549f",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe954b7",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe9556e",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe97772",
+          "function": "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dea4"
+    },
+    {
+      "cli": "The default-interface project workflow is absent; CLI commands take an explicit address.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Supplies the CNI address for the default-interface project and CNI tree highlighting.",
+      "feature": "Discover Project default interface and Setup Default Interface",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefDefaultCNIAddress",
+      "name": "Default CNI Address",
+      "pointer_slots": [
+        "0x13c3908"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseCNIAsDefaultInterfaceExecute",
+        "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvCNICustomDrawCell",
+        "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow",
+        "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde5479",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde5490",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "cmp dword ptr [eax + 0x18], 0",
+            "write": false
+          },
+          "address": "0xde54d2",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xde54e2",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xde5693",
+          "function": "CIS_TfrmSetupDefaultInterface.TfrmSetupDefaultInterface.btnOKClick"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrEqual",
+            "write": false
+          },
+          "address": "0xe92c3c",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.tvCNICustomDrawCell"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call System.@UStrAsg",
+            "write": false
+          },
+          "address": "0xe93bce",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actOpenDefaultInterfaceProjectExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov ecx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe9450a",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actRescanDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": "call CIS_Preferences.TStringPreference.SetValue",
+            "write": true
+          },
+          "address": "0xe94a16",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.actUseCNIAsDefaultInterfaceExecute"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "cmp dword ptr [eax + 0x18], 0",
+            "write": false
+          },
+          "address": "0xe955a8",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe955bd",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe955d4",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov edx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe95612",
+          "function": "CIS_TfrmDiscoverProject.TfrmDiscoverProject.UpdateDefaultInterfacePageUI"
+        },
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov ecx, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe977ab",
+          "function": "CIS_TfrmInstallationNode.TfrmInstallationNode.LoadHTML"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dea8"
+    },
+    {
+      "cli": "Dialog navigation only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Opens the macro-function dialog automatically.",
+      "feature": "Key/IO unit dialog extension clicks",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefAutoInvokeMacroFunctionDialog",
+      "name": "AutoInvokeMacroFunctionDialog",
+      "pointer_slots": [
+        "0x13c238c"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TcdLightLevelSensor.TcdLightLevelSensor.HandleFormBroadcastBlockChanged",
+        "CIS_TcdWirelessInputUnitGroups.TcdWirelessInputUnitGroups.AttemptExtensionClick",
+        "CIS_TddKey4.TddKey4.AttemptExtensionClick",
+        "CIS_TddNeoBASE.TddNeoBASE.AttemptExtensionClick",
+        "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.AttemptExtensionClick",
+        "CIS_TfrmIOPESensorInputs.TfrmIOPESensorInputs.AttemptExtensionClick"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddec92",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddefc2",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xf7638c",
+          "function": "CIS_TddKey4.TddKey4.AttemptExtensionClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xf927d8",
+          "function": "CIS_TddNeoBASE.TddNeoBASE.AttemptExtensionClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xfa48f7",
+          "function": "CIS_TcdLightLevelSensor.TcdLightLevelSensor.HandleFormBroadcastBlockChanged"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0x10ebf80",
+          "function": "CIS_TcdWirelessInputUnitGroups.TcdWirelessInputUnitGroups.AttemptExtensionClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0x118b334",
+          "function": "CIS_TfrmIOPEAuxInputs.TfrmIOPEAuxInputs.AttemptExtensionClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0x118e448",
+          "function": "CIS_TfrmIOPESensorInputs.TfrmIOPESensorInputs.AttemptExtensionClick"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144deac"
+    },
+    {
+      "cli": "Dialog navigation only; CLI unit creation returns JSON.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Opens the new database unit dialog after adding a unit.",
+      "feature": "Add Unit actions",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefAutoInvokeDatabaseUnitDialog",
+      "name": "AutoInvokeDatabaseUnitDialog",
+      "pointer_slots": [
+        "0x13c2e58"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit",
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.actAddUnitExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddec77",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddefde",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xea1cd6",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.AddUnit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xeb351b",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.actAddUnitExecute"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144deb0"
+    },
+    {
+      "cli": "Grid filter state only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Keeps database/network unit grid filters synchronised.",
+      "feature": "Units node display-all actions",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefSynchroniseFilters",
+      "name": "SynchroniseFilters",
+      "pointer_slots": [
+        "0x13c20e8"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.actDisplayAllDatabaseUnitsExecute",
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.actDisplayAllNetworkUnitsExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddec5c",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddeffa",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xebb227",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.actDisplayAllNetworkUnitsExecute"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xebb317",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.actDisplayAllDatabaseUnitsExecute"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144deb4"
+    },
+    {
+      "cli": "The CLI has no application-exit lifecycle; project close and shutdown are explicit commands.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "With the Ask/Decision values, selects C-Gate server shutdown on Toolkit exit (refused when other clients are connected, then projects are closed).",
+      "feature": "Application exit",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefCGateShutdownOnExit",
+      "name": "CGateShutdownOnExit",
+      "pointer_slots": [
+        "0x13c3bec"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xddecef",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xdded0f",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf099",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed791b",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed79bd",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a13",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a6f",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144deb8"
+    },
+    {
+      "cli": "No application-exit lifecycle or prompt in the CLI.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Asks at exit and routes the remembered decision.",
+      "feature": "Application exit and close query",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefCGateShutdownOnExitAsk",
+      "name": "CGateShutdownOnExitAsk",
+      "pointer_slots": [
+        "0x13c22a0"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.ProcessApplicationExit",
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xddecad",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf0b5",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xea0945",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed78f4",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed790e",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7985",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed799f",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed79ec",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a06",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a3b",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a55",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144debc"
+    },
+    {
+      "cli": "No application-exit lifecycle in the CLI.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Closes all C-Gate projects (PROJECT LIST then normal close) on exit.",
+      "feature": "Application exit",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefCloseAllProjectsOnExit",
+      "name": "CloseProjectsOnExit",
+      "pointer_slots": [
+        "0x13c3038"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xddece2",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf07d",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed79b0",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xed7a62",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dec0"
+    },
+    {
+      "cli": "No application-exit lifecycle in the CLI.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Stores the answer used when Ask is set.",
+      "feature": "Application exit and close query",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_TKipperPreferences.PrefCGateShutdownDecision",
+      "name": "CGateShutdownDecision",
+      "pointer_slots": [
+        "0x13c3b9c"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.ProcessApplicationExit",
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dl, byte ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xea09b9",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dword ptr [eax + 0x20], edx",
+            "write": true
+          },
+          "address": "0xea09f9",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dword ptr [eax + 0x20], 1",
+            "write": true
+          },
+          "address": "0xea0a07",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dword ptr [eax + 0x20], 2",
+            "write": true
+          },
+          "address": "0xea0a17",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormCloseQuery"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 2",
+            "write": false
+          },
+          "address": "0xed7901",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xed7992",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 2",
+            "write": false
+          },
+          "address": "0xed79f9",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "cmp dword ptr [eax + 0x20], 0",
+            "write": false
+          },
+          "address": "0xed7a48",
+          "function": "CIS_TamgKipper.TamgKipper.ProcessApplicationExit"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dec4"
+    },
+    {
+      "cli": "Dialog selection only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Forces the configured simple/advanced unit dialog mode.",
+      "feature": "Unit dialog selection",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefUnitDialogModeOverride",
+      "name": "UnitDialogOverride",
+      "pointer_slots": [
+        "0x13c2db4"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.SetCBusUnit",
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.tvDBUnitsCellDblClick",
+        "fGUIBaseForm.TfKipperBaseGUI.SetData"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xd8fa55",
+          "function": "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.SetCBusUnit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xdc4afb",
+          "function": "fGUIBaseForm.TfKipperBaseGUI.SetData"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xdded52",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf10c",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xeb1ad6",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.tvDBUnitsCellDblClick"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144dec8"
+    },
+    {
+      "cli": "Dialog selection only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Chooses advanced unit dialog mode.",
+      "feature": "Unit dialog selection",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefUnitDialogModeAdvanced",
+      "name": "UnitDialogModeAdvanced",
+      "pointer_slots": [
+        "0x13c1dd4"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.SetCBusUnit",
+        "fGUIBaseForm.TfKipperBaseGUI.SetData"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xd8fa62",
+          "function": "CIS_TfrmCBusUnitBase.TfrmCBusUnitBase.SetCBusUnit"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xdc4b08",
+          "function": "fGUIBaseForm.TfKipperBaseGUI.SetData"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xdded5f",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf128",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144decc"
+    },
+    {
+      "cli": "Dialog selection only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Opens the classic unit dialog.",
+      "feature": "Unit grid double-click",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefUnitDialogModeAlwaysClassic",
+      "name": "UnitDialogAlwaysClassic",
+      "pointer_slots": [
+        "0x13c3724"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.tvDBUnitsCellDblClick",
+        "CIS_TfrmUnitsNode.TfrmUnitsNode.tvNetworkAllUnitsCellDblClick"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddedc4",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf144",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "cmp byte ptr [eax + 0x1a], 0",
+            "write": false
+          },
+          "address": "0xeb1ac9",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.tvDBUnitsCellDblClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xeb1b07",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.tvDBUnitsCellDblClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xeb2ab2",
+          "function": "CIS_TfrmUnitsNode.TfrmUnitsNode.tvNetworkAllUnitsCellDblClick"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144ded0"
+    },
+    {
+      "cli": "The CLI has no Toolkit feedback log.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Enables the zipped feedback log.",
+      "feature": "Application feedback log (TZippedLog) at start-up",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefFeedbackLogEnable",
+      "name": "FeedbackLog",
+      "pointer_slots": [
+        "0x13c3a0c"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.Create"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddeddf",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf016",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddf1cb",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xed6fc1",
+          "function": "CIS_TamgKipper.TamgKipper.Create"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ded4"
+    },
+    {
+      "cli": "The CLI has no Toolkit feedback log.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Supplies the log file name (combined with the program path).",
+      "feature": "Application feedback log at start-up",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefFeedbackLogFile",
+      "name": "FeedbackLogFile",
+      "pointer_slots": [
+        "0x13c2680"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.Create"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xed6f66",
+          "function": "CIS_TamgKipper.TamgKipper.Create"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ded8"
+    },
+    {
+      "cli": "The CLI has no Toolkit feedback log.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Sets the zip size limit.",
+      "feature": "Application feedback log at start-up",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_TKipperPreferences.PrefFeedbackLogSize",
+      "name": "FeedbackLogSize",
+      "pointer_slots": [
+        "0x13c38d4"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TamgKipper.TamgKipper.Create"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov edx, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xddedfa",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf02f",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "imul edx, dword ptr [eax + 0x20], 0x3e8",
+            "write": false
+          },
+          "address": "0xddf1ae",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "imul edx, dword ptr [eax + 0x20], 0x3e8",
+            "write": false
+          },
+          "address": "0xed6fa4",
+          "function": "CIS_TamgKipper.TamgKipper.Create"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dedc"
+    },
+    {
+      "cli": "The CLI does not manage C-Gate service JVM configuration or restarts.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "A heap change while a site is open raises a restart notice.",
+      "feature": "Preferences action follow-up",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_TKipperPreferences.PrefJavaHeapMin",
+      "name": "JavaHeapMin",
+      "pointer_slots": [
+        "0x13c40f8"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov dword ptr [eax + 0x20], 0x20",
+            "write": true
+          },
+          "address": "0xddf039",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xe9f3cf",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xe9f43a",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dee0"
+    },
+    {
+      "cli": "The CLI does not manage C-Gate service JVM configuration or restarts.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "A heap change while a site is open raises a restart notice.",
+      "feature": "Preferences action follow-up",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_TKipperPreferences.PrefJavaHeapMax",
+      "name": "JavaHeapMax",
+      "pointer_slots": [
+        "0x13c3fb0"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xddee15",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf061",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xe9f3dc",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+        },
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0xe9f449",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dee4"
+    },
+    {
+      "cli": "No consumer to honor.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Registered and persisted only.",
+      "feature": null,
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_TKipperPreferences.PrefIlluminanceMeasurementUnit",
+      "name": "IlluminanceMeasurementUnit",
+      "pointer_slots": [],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [],
+      "sites": [],
+      "status": "no-runtime-consumer",
+      "variable": "0x144df08"
+    },
+    {
+      "cli": "Browser launch only.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "ShellExecute opens the URL.",
+      "feature": "Help menu web-site action",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefClipsalWebsite",
+      "name": "ClipsalWebsiteURL",
+      "pointer_slots": [
+        "0x13c2c28"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.actClipsalWebSiteExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe9ea4a",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actClipsalWebSiteExecute"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144dee8"
+    },
+    {
+      "cli": "Browser launch only; CLI update commands use explicit metadata inputs.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "ShellExecute opens the downloads URL; no version metadata is read.",
+      "feature": "Check New Version action",
+      "initializer_class": "CIS_Preferences..TStringPreference",
+      "kind": "string",
+      "map_variable": "CIS_TKipperPreferences.PrefCISDownloads",
+      "name": "CISDownloadsURL",
+      "pointer_slots": [
+        "0x13c226c"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TfrmKipperMain.TfrmKipperMain.actCheckNewVersionExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "string",
+            "instruction": "mov eax, dword ptr [eax + 0x18]",
+            "write": false
+          },
+          "address": "0xe9ea02",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actCheckNewVersionExecute"
+        }
+      ],
+      "status": "gui-only",
+      "variable": "0x144deec"
+    },
+    {
+      "cli": "CLI project/database application creation does not apply the dialog allowlist; the dialog flag (TfrmApplication+0x3F1, copied from its owner) is not resolved.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "TCBUSApplicationManager.IsAllowedApplication: legacy allows 0x30-0x7F/0x88 with the dialog flag, otherwise any address below 0xFF.",
+      "feature": "Application dialog allowlist and main-form control visibility",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefAllowLegacyApplicationCreation",
+      "name": "AllowLegacyApplicationCreation",
+      "pointer_slots": [
+        "0x13c2060"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmApplication.TfrmApplication.IsAllowedApplication",
+        "CIS_TfrmKipperMain.TfrmKipperMain.FormShow",
+        "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddee50",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf160",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xe9f402",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.actPreferencesExecute"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xea028b",
+          "function": "CIS_TfrmKipperMain.TfrmKipperMain.FormShow"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov cl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xefb311",
+          "function": "CIS_TfrmApplication.TfrmApplication.IsAllowedApplication"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144def0"
+    },
+    {
+      "cli": "Same as AllowLegacyApplicationCreation.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Without legacy: user-defined allows 0x30-0x7F/0x88 with the dialog flag, otherwise 1-15; 0x30-0x5F, 0x70-0x72 and 0x88 are always allowed.",
+      "feature": "Application dialog allowlist",
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefAllowUserDefinedApplicationCreation",
+      "name": "AllowUserDefinedApplicationCreation",
+      "pointer_slots": [
+        "0x13c2ddc"
+      ],
+      "preferences_dialog_consumers": [
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow",
+        "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+      ],
+      "runtime_consumers": [
+        "CIS_TfrmApplication.TfrmApplication.IsAllowedApplication"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov dl, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xddee35",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.FormShow"
+        },
+        {
+          "access": {
+            "field": null,
+            "instruction": null,
+            "write": null
+          },
+          "address": "0xddf17c",
+          "function": "CIS_TfrmKipperPreferences.TfrmKipperPreferences.btnOKClick"
+        },
+        {
+          "access": {
+            "field": "boolean",
+            "instruction": "mov al, byte ptr [eax + 0x1a]",
+            "write": false
+          },
+          "address": "0xefb2fc",
+          "function": "CIS_TfrmApplication.TfrmApplication.IsAllowedApplication"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144def4"
+    },
+    {
+      "cli": "No consumer to honor.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Registered and persisted only.",
+      "feature": null,
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefLegacyDuplicateUnitsDetection",
+      "name": "LegacyDuplicateUnitsDetection",
+      "pointer_slots": [],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [],
+      "sites": [],
+      "status": "no-runtime-consumer",
+      "variable": "0x144def8"
+    },
+    {
+      "cli": "No consumer to honor.",
+      "direct_reference_owners": [
+        "CIS_TKipperPreferences.CIS_TKipperPreferences"
+      ],
+      "effect": "Registered and persisted only.",
+      "feature": null,
+      "initializer_class": "CIS_Preferences..TBooleanPreference",
+      "kind": "boolean",
+      "map_variable": "CIS_TKipperPreferences.PrefShowDatabaseLabelsOption",
+      "name": "ShowDatabaseLabelsOption",
+      "pointer_slots": [],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [],
+      "sites": [],
+      "status": "no-runtime-consumer",
+      "variable": "0x144defc"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage1",
+      "name": "Default Language 1",
+      "pointer_slots": [
+        "0x13c3430"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x85426d",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144dde8"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage2",
+      "name": "Default Language 2",
+      "pointer_slots": [
+        "0x13c35e0"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x854283",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ddec"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage3",
+      "name": "Default Language 3",
+      "pointer_slots": [
+        "0x13c281c"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x854297",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ddf0"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage4",
+      "name": "Default Language 4",
+      "pointer_slots": [
+        "0x13c1d54"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x8542ab",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ddf4"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage5",
+      "name": "Default Language 5",
+      "pointer_slots": [
+        "0x13c2fb8"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x8542bf",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ddf8"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage6",
+      "name": "Default Language 6",
+      "pointer_slots": [
+        "0x13c2bc0"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x8542d3",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144ddfc"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage7",
+      "name": "Default Language 7",
+      "pointer_slots": [
+        "0x13c4088"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x8542e7",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144de00"
+    },
+    {
+      "cli": "CLI project/network creation does not synthesize Toolkit network language lists.",
+      "direct_reference_owners": [
+        "CIS_DLTPreferences.CIS_DLTPreferences"
+      ],
+      "effect": "PopulateNetworkDefaults adds the eight languages in order; language 1 is added as primary.",
+      "feature": "New network language list (TCBusNetwork.InitialiseLanguages)",
+      "initializer_class": "CIS_Preferences..TIntegerPreference",
+      "kind": "integer",
+      "map_variable": "CIS_DLTPreferences.PrefDefaultNetworkLanguage8",
+      "name": "Default Language 8",
+      "pointer_slots": [
+        "0x13c1a10"
+      ],
+      "preferences_dialog_consumers": [],
+      "runtime_consumers": [
+        "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+      ],
+      "sites": [
+        {
+          "access": {
+            "field": "integer",
+            "instruction": "mov eax, dword ptr [eax + 0x20]",
+            "write": false
+          },
+          "address": "0x8542fb",
+          "function": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults"
+        }
+      ],
+      "status": "not-implemented",
+      "variable": "0x144de04"
+    }
+  ],
+  "script_sha256": "ce0ec76e4a0081d6aa12ffcdb63057985be67b23a4166848e08b2c30c4d4238d",
+  "status_counts": {
+    "cli-honored": 2,
+    "gui-only": 12,
+    "no-runtime-consumer": 3,
+    "not-implemented": 23
+  }
+}

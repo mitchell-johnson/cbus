@@ -20,8 +20,11 @@ cbus-toolkit thermostat-temperature convert QuarterDegreesTempOffsetToCGateTemp 
 
 The CLI returns JSON. `methods` lists the fourteen case-sensitive original
 names. Input values are decimal integers; the Python API rejects booleans,
-floats and subclasses. Units must be `celsius` or `fahrenheit`. No preference
-file, locale, clock, C-Gate connection or device is consulted.
+floats and subclasses. Units must be `celsius` or `fahrenheit`. Alternatively,
+`--preferences STATE.json` takes the units from a retained Toolkit preference
+state file. It uses the original rule: a non-zero low byte of `TemperatureUnit`
+selects Fahrenheit (see [preference runtime effects](toolkit-preferences.md#runtime-effects)).
+The CLI does not read the registry, locale, clock, C-Gate or any device.
 
 | Original method family | Original behavior preserved |
 | --- | --- |
