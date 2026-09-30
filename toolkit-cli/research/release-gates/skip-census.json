@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 467,
+    "test_modules": 468,
     "modules_without_skip_sites": 249,
-    "modules_with_skip_sites": 218,
+    "modules_with_skip_sites": 219,
     "modules_by_category": {
-      "cgate_test_host": 123,
+      "cgate_test_host": 124,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 54,
+      "native_cgate_local": 55,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 65,
+      "original_toolkit": 66,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 5,
-      "unit_specs": 115,
+      "unit_specs": 116,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
       "all": 117,
-      "partial": 19,
+      "partial": 20,
       "none": 82
     },
-    "native_runnable_tests": 223,
-    "native_selected_required_tests": 223,
+    "native_runnable_tests": 225,
+    "native_selected_required_tests": 225,
     "native_excluded": 0,
-    "native_selection_selectors": 139
+    "native_selection_selectors": 140
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -1545,10 +1545,30 @@
         "unit_specs"
       ],
       "native": "all",
-      "gated_tests": 1,
-      "native_runnable_tests": 1,
-      "native_selected_tests": 2,
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 4,
       "sites": [
+        {
+          "scope": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
         {
           "scope": "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
           "kind": "decorator.skipUnless",
@@ -5067,6 +5087,64 @@
         }
       ]
     },
+    "tests/test_light_level_sensors.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "original_toolkit",
+        "unit_specs"
+      ],
+      "native": "partial",
+      "gated_tests": 2,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Set the Toolkit EXE to regenerate the SENLL receipt",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
+        {
+          "scope": "tests/test_light_level_sensors.py::LightLevelSensorNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for SENLL acceptance",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "LightLevelReviewTest::test_receipt_regenerates_from_private_inputs"
+          ]
+        }
+      ]
+    },
     "tests/test_lighting_native.py": {
       "categories": [
         "cgate_test_host"
@@ -6621,10 +6699,24 @@
         "unit_specs"
       ],
       "native": "partial",
-      "gated_tests": 3,
+      "gated_tests": 4,
       "native_runnable_tests": 1,
       "native_selected_tests": 1,
       "sites": [
+        {
+          "scope": "tests/test_sensors.py::MarginOriginalVectorTest::test_original_instructions_regenerate_the_vectors",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "requires the exact original Toolkit executable",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
         {
           "scope": "tests/test_sensors.py::SensorNativeTest",
           "kind": "decorator.skipUnless",
@@ -6685,6 +6777,7 @@
             "original_toolkit"
           ],
           "tests": [
+            "MarginOriginalVectorTest::test_original_instructions_regenerate_the_vectors",
             "SensorProfileReviewTest::test_receipt_regenerates_from_private_inputs",
             "SensorSourceTest::test_original_help_event_tables_and_binary_parameter_bindings"
           ]
