@@ -25,6 +25,7 @@ from .addressing import NetworkAddressing, _container
 from .dlt_profiles import require
 from .edlt import EdltError, _field as _pp_field
 from .edlt_activation import WAKE_MODES
+from .edlt_add_dialog import resolve as resolve_add_dialogs
 from .edlt_application_cache import (
     ApplicationCache,
     CachedDisplay,
@@ -556,6 +557,8 @@ class NativeEdltParentPlan:
     static_labels: str
     scene_metadata: object | None = None
     display_preferences: EdltDisplayPreferences | None = None
+    add_dialogs: tuple = ()
+    resolved_operations: tuple | None = None
 
     @property
     def mutation_required(self):
@@ -564,6 +567,7 @@ class NativeEdltParentPlan:
     def semantic_source(self):
         return (self.snapshot, self.operations, self.cache,
                 self.creations, self.scene_metadata, self.display_preferences,
+                self.add_dialogs,
                 tuple(sorted(self.parent_plan.expected.items())),
                 tuple(sorted(self.parent_plan.changes.items())))
 
@@ -624,6 +628,17 @@ class NativeEdltParentPlan:
                 None if self.scene_metadata is None
                 else self.scene_metadata.as_dict()),
             'automatic_ordered_application_cache': ordered_cache,
+            'add_dialogs': [row.as_dict() for row in self.add_dialogs],
+            'resolved_operations': (
+                None if self.resolved_operations is None
+                else json.loads(_json(list(self.resolved_operations)))),
+            'add_dialog_boundary': {
+                'blank_address_group_dialog_modeled': bool(self.add_dialogs),
+                'application_add_dialog_supported': False,
+                'level_add_dialog_supported': False,
+                'original_dialog_executed': False,
+                'created_before_pp_staging': True,
+            } if self.add_dialogs else None,
             'mutation_required': self.mutation_required,
             'parent_transaction': self.parent_plan.as_dict(),
             'closed_networks': list(self.networks),
@@ -1299,13 +1314,18 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     if (display_preferences is not None
             and type(display_preferences) is not EdltDisplayPreferences):
         raise ValueError('Display preferences must be EdltDisplayPreferences')
-    operations = normalize_operations(operations)
+    operations = normalize_operations(operations, allow_add_dialog=True)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index)
     supplied = editor.snapshot(values)
     if supplied != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
+    if any(row['op'] == 'add-dialog' for row in operations):
+        return _plan_add_dialogs(
+            text, unit_path, supplied, editor, operations, snapshot,
+            requirements, networks=networks,
+            display_preferences=display_preferences)
     if any(row['op'] == 'scene-manager' for row in operations):
         return _plan_parent_scene_metadata(
             text, unit_path, supplied, editor, operations, snapshot,
@@ -1377,7 +1397,53 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
             (), parent, _json(requirements), _static_labels(supplied),
             display_preferences=display_preferences)
 
+    return _plan_unordered(text, unit_path, supplied, editor, operations,
+                           snapshot, requirements, networks=networks,
+                           display_preferences=display_preferences)
+
+
+def _plan_add_dialogs(text, unit_path, supplied, editor, operations, snapshot,
+                      requirements, *, networks, display_preferences):
+    """Resolve blank-address Add dialogs, then plan the bound operations."""
+    refused = sorted({row['op'] for row in operations
+                      if row['op'] in ('applications', 'corridor', 'reset',
+                                       'scene-manager')})
+    if refused:
+        raise ValueError(
+            'add-dialog cannot share a plan with ' + ', '.join(refused) +
+            ': their ordered-list or scene-graph contracts do not position a '
+            'dialog-created object')
+    existing = {row.address: {group.address: group.tag for group in row.groups}
+                for row in snapshot.applications}
+    load_groups = tuple(
+        (row['application'], row['group']) for row in requirements['groups'])
+
+    def preceding(index):
+        # The parent load and earlier ordinary operations auto-create their
+        # exact groups as ``Group N`` before the operator presses Add.
+        prior = [row for row in operations[:index] if row['op'] != 'add-dialog']
+        keys = list(load_groups) + [
+            (application, group) for application, group, _reason, _images
+            in _operation_groups(supplied, prior)]
+        return tuple((application, group, 'Group ' + str(group))
+                     for application, group in keys
+                     if application != 255 and group != 255)
+
+    resolved, dialogs = resolve_add_dialogs(
+        operations, supplied, snapshot.project, existing, preceding)
+    resolved = normalize_operations(resolved)
+    return _plan_unordered(text, unit_path, supplied, editor, resolved,
+                           snapshot, requirements, networks=networks,
+                           display_preferences=display_preferences,
+                           source_operations=operations, dialogs=dialogs)
+
+
+def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
+                    requirements, *, networks, display_preferences,
+                    source_operations=None, dialogs=()):
+    dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
+    required_apps.update(row.application for row in dialogs)
     group_reasons = {}
     requirement_rows = {}
     for row in requirements['groups']:
@@ -1401,6 +1467,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
             creations.append(MetadataCreation(
                 'Application', address, address,
                 APPLICATION_NAMES.get(address, 'Application ' + str(address))))
+    for key, row in dialog_rows.items():
+        group_reasons.setdefault(key, []).append('add-dialog ' + row.field)
     cache_groups = []
     for (application, group), _reasons in sorted(group_reasons.items()):
         if application == 255:
@@ -1412,6 +1480,15 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         app = applications.get(application)
         record = None if app is None else next(
             (row for row in app.groups if row.address == group), None)
+        if record is None and (application, group) in dialog_rows:
+            dialog = dialog_rows[(application, group)]
+            creations.append(MetadataCreation(
+                'NetVar' if application == 203 else 'Group', application,
+                group, dialog.name,
+                reasons=('add-dialog ' + dialog.field,)))
+            cache_groups.append(LifecycleGroup(
+                application, group, True, (False,) * 4, True, ()))
+            continue
         if record is None:
             requirement = requirement_rows.get((application, group), {})
             if requirement.get('facts', {}).get('complete_levels_if_present'):
@@ -1445,9 +1522,12 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     cache = LifecycleCache(tuple(sorted(required_apps)), tuple(cache_groups))
     parent = editor.plan(supplied, metadata=cache, operations=operations)
     return NativeEdltParentPlan(
-        unit_path, text, snapshot, tuple(networks), operations, cache,
-        creations, parent, _json(requirements), _static_labels(supplied),
-        display_preferences=display_preferences)
+        unit_path, text, snapshot, tuple(networks),
+        operations if source_operations is None else source_operations,
+        cache, creations, parent, _json(requirements),
+        _static_labels(supplied), display_preferences=display_preferences,
+        add_dialogs=tuple(dialogs),
+        resolved_operations=None if source_operations is None else operations)
 
 
 @dataclass(frozen=True)

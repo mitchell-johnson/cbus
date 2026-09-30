@@ -168,9 +168,10 @@ def metadata(path, *, limit=16 * 1024 * 1024):
 
 
 def operations(args):
-    """Read the one strict operation document shared by all surfaces."""
+    """Read the automatic-metadata operation document, admitting add-dialog."""
     from .edlt_parent_transaction import normalize_operations
-    return normalize_operations(_read_operations(args.operations))
+    return normalize_operations(_read_operations(args.operations),
+                                allow_add_dialog=True)
 
 
 def read_project_xml(path, *, limit=16 * 1024 * 1024):

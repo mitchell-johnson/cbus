@@ -104,6 +104,7 @@
     "tests/test_din_output_settings.py::DinOutputNativeTest",
     "tests/test_dlt_labels.py::NativeLabelVariantTests::test_native_pp_raw_bytes_preservation_xml_and_close_reload",
     "tests/test_dlt_labels.py::VendorSpecTests::test_keyl5_and_keyl4_layouts_digests_and_includes",
+    "tests/test_edlt_add_dialog_native.py",
     "tests/test_edlt_applications.py",
     "tests/test_edlt_blank_vectors.py",
     "tests/test_edlt_corridor_native.py",

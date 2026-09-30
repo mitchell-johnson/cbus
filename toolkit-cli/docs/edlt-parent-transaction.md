@@ -263,6 +263,104 @@ Level 1 use default `OnValidation` bindings. Their three editability/visibility
 bindings use `Never`. These are per-selection component facts; source does not
 prove a particular operator's multi-selection order or pending-focus state.
 
+## Blank-address Add dialogs
+
+The automatic metadata path (`--project-xml` or `--auto-metadata`) also
+admits `add-dialog` operations. Each one replays the **Add** button of an
+original `ComboBoxAddEdit` group combo: C-Gate creates one group, and the
+owning panel then selects its address.
+
+```json
+[
+  {"op": "add-dialog", "field": "QuickStatusGroup"},
+  {"op": "add-dialog", "field": "KeySetsEnableGroup", "name": "Pages"},
+  {"op": "quick-status", "mode": "page-key"},
+  {"op": "measurement", "page": 1, "position": 1, "device_id": 42, "channel": 3}
+]
+```
+
+| `field` | Panel that receives the address | Group list application |
+| --- | --- | --- |
+| `ProximityGroup` | `activation` `group` | 202 when ProximityMode is trigger-event, otherwise primary |
+| `BacklightActiveBrightnessControlGroup`, `BacklightIdleBrightnessControlGroup`, `IndicatorActiveBrightnessControlGroup`, `IndicatorIdleBrightnessControlGroup`, `IndicatorOnColourControlGroup`, `IndicatorOffColourControlGroup` | `colours` group option | Primary |
+| `QuickStatusGroup` | `quick-status` `group` | Primary |
+| `KeySetsEnableGroup` | `page-control` `group` | 203 (created as `NetVar`) |
+
+The optional `address` and `name` fields represent operator edits in the
+dialog. The source-pinned rules are:
+
+- The dialog lists free addresses 0 through 254 and selects the first one.
+  Group 255 is reserved. A full list reports message 2271.
+- The new object is seeded with `GetDefaultGroupName` followed by the address:
+  `Communication Group N` (172), `Trigger Group N` (202),
+  `Enable Network Variable N` (203), or `Group N`. The dialog uses a separate
+  group noun (additionally `Media Link Group` for 192). When the operator
+  changes the address, the name follows it only when the name is empty or
+  begins with that noun, using an ASCII case-insensitive match.
+- On acceptance, the name is Delphi-trimmed. A blank name gives message 2202,
+  a name equal to the project name gives 2204, and an ASCII case-insensitive
+  duplicate TagName in that application gives 2203. An explicit address must
+  be one of the listed free addresses.
+- Existing groups, groups auto-created by the parent load, groups created by
+  earlier ordinary operations and groups created by earlier Add dialogs are
+  all occupied when an Add runs. Adds therefore allocate in array order.
+
+Replaying `SelectedValue.WriteValue()` is equivalent to setting the owning
+panel's option, so that panel's validation and side effects still apply. An
+explicit panel operation receives the address. It must follow every Add that
+targets it and must not set the same option itself. Without one, a
+single-option panel operation is synthesized at the position of the last Add
+for that panel. A field may be added only once. For `ProximityGroup`, a
+receiving activation `wake_mode` must not change the list application. The
+plan reports `add_dialogs`, the `resolved_operations` passed to the parent
+transaction and each creation reason `add-dialog FIELD`. Creation happens
+before the one PP stage, under the same backup, rollback and non-atomic save
+boundary as other automatic metadata.
+
+A cancelled dialog creates and binds nothing, so omit the operation to model
+it. The following combos fail closed:
+
+- `PrimaryApplication` and `SecondaryApplication`: Toolkit's blank
+  application branch passes the low byte of the hosting form's pointer as the
+  dialog's maximum address, so the offered address range is not deterministic.
+- The three Corridor groups: Corridor consumes the complete ordered group
+  list, and DBGETXML cannot position a new group in it.
+- The same `add-dialog` operation with Applications, Corridor, Reset or
+  SceneManager in the plan.
+- The caller-cache path, because it cannot create objects.
+- A primary-list Add while PrimaryApplication is 255.
+
+The activation action-level Add (`btnAddGroup_Click`, `Level N` at the first
+free level address) is not implemented because its level dialog form was not
+traced. Static-text Add opens a different editor.
+
+[`edlt-add-dialog-evidence.json`](../research/fixtures/edlt-add-dialog-evidence.json)
+hash-binds `ComboBoxAddEdit.cs`, `FrmBaseUnit.cs`, `EDLTUnit.cs`,
+`CBusNetwork.cs` and the Toolkit EXE/MAP. It also records the traced methods,
+messages and independently written expected cases. `tests.test_edlt_add_dialog`
+checks those cases, the planner, refusals and a simulated native apply.
+`tests.test_edlt_add_dialog_native` creates a disposable project on owned
+native C-Gate 3.4.0.2001 with three Adds, then applies, saves, closes and
+reloads it. It compares the exact group inventory and complete PP state. The
+original WinForms dialog, list-refresh timing and focus were not executed.
+
+### Reset and Blank interleaving
+
+`FrmBaseUnit.ResetUnit` does not fully determine a Reset later in a sequence
+or a Blank after an intervening panel. The method runs `ShowWidget(0)`,
+`BeforeChangePpAttributes`, `EDLTUnit.ResetToDefaults`, clears byte 1 of every
+widget, runs `AfterChangePpAttributes`, and then selects Widget10 as
+single-slice Time/Date with byte 1 `0x2`. The captured Reset result depends on
+exact raw `PP Value` spellings, dirty flags, the active tab and the prior
+EnableLevelStore branch. Earlier bound panels would change those facts through
+`PPAttribute` setters and WinForms bindings that no captured vector covers. A
+Blank receipt after an intervening panel would similarly need the
+post-panel graph identity. The existing rules stay in force: Reset must be
+operation 1, and Blank may follow it only as a contiguous prefix. Whether a
+later Reset should discard earlier panels, and how the dialog objects that
+earlier Adds already saved survive it, remains unresolved until an original
+multi-panel capture exists.
+
 ## Ownership and preservation
 
 Each widget operation, including Blank, owns its selected 32-byte record and, for functional
@@ -441,6 +539,7 @@ PYTHONPATH=src:tests:. python3.13 -m unittest \
   tests.test_edlt_parent_cache_panels \
   tests.test_edlt_parent_blank_reset \
   tests.test_edlt_parent_scene_manager \
+  tests.test_edlt_add_dialog \
   tests.test_edlt_parent_transaction \
   tests.test_cli_edlt_parent_transaction -v
 ```

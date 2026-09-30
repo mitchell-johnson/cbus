@@ -129,8 +129,11 @@ retained scene loading. When `scene-manager` is present, its retained getter
 sequence projects missing application 202 as `Trigger Control`, exact trigger
 groups as `Group N`, and exact actions as `Action Selector N`. Each level uses
 Address=Value=N and four empty image-free variants, matching the separately
-accepted SceneManager resolver. The interactive blank-address Add dialogs,
-their first-free allocation and their `Level N` seed remain outside this path.
+accepted SceneManager resolver. Blank-address group Add dialogs are modeled
+separately by the `add-dialog` operation (see
+[blank-address Add dialogs](edlt-parent-transaction.md#blank-address-add-dialogs)).
+The application and level Add dialogs, including the `Level N` seed, remain
+outside this path.
 A parent transaction without SceneManager retains the narrower behavior and
 does not invent a missing consumed scene level.
 The 64 static labels are PP arrays in the selected unit, not application/group

@@ -1,0 +1,63 @@
+{
+  "format": "cbus-edlt-add-dialog-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754",
+    "cgate": "3.4.0.2001"
+  },
+  "scope": "Blank-address ComboBoxAddEdit group Add dialog composed into the automatic eDLT parent transaction",
+  "original_sources": [
+    {"path": "edlt-decompiled/eDLT/eDLT.Controls.PPControls/ComboBoxAddEdit.cs", "sha256": "77a6f18293f1213797a48193e153387b2caa30103a1061c40a3f1a82e5996027"},
+    {"path": "edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs", "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"},
+    {"path": "edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs", "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2"},
+    {"path": "edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusNetwork.cs", "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c"},
+    {"path": "toolkit/app/CBusToolkit.exe", "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"},
+    {"path": "toolkit/app/CBusToolkit.map", "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"}
+  ],
+  "original_methods": [
+    {"method": "ComboBoxAddEdit.AddObject / ComboBoxAddEditLoad", "establishes": "Add requires an ancestor FrmBaseUnit. DataType Application sends AddApplicationRequest(\"\"); DataType Group or null sends AddGroupRequest(ListBaseObject.AddressAsInt, \"\"); StaticText opens the static text editor instead. A null reply changes nothing. Otherwise the first combo item whose DataStore.Value equals the reply is selected, the BindingSource position follows, and the SelectedValue binding is written."},
+    {"method": "FrmBaseUnit.InitializeComponent", "establishes": "ComboBoxAddEdit binds PrimaryApplication and SecondaryApplication (Application), and ProximityGroup, six colour/brightness control groups, QuickStatusGroup, KeySetsEnableGroup and three Corridor groups (Group)."},
+    {"method": "EDLTUnit.AfterLoadPPData data sources", "establishes": "Corridor, colour and Quick Status lists use the PrimaryApplication groups; KeySetsEnableGroup uses GetApplicationByAddress(203); ProximityGroup uses application 202 when ProximityMode is 3 and otherwise the primary application."},
+    {"method": "TfrmKEYGL5.AddSharpGroup", "map_range": "0x011c6080..0x011c61d0", "establishes": "A blank group string reaches ExecuteDialogWithParentHandle_AddGroup for the ApplicationByAddress(create=true) application; accepted groups return GetAddressAsString."},
+    {"method": "TfrmKEYGL5.AddSharpApplication / ExecuteDialogWithParentHandle_AddApplication / AddApplication_MinMax / TddApplication.SetValues", "map_ranges": ["0x011c5b44..0x011c5c60", "0x00d8e344..0x00d8e404", "0x00d8dfe4..0x00d8e140", "0x00cd4250..0x00cd42e4"], "establishes": "The blank application branch passes minimum 1 and, as the byte maximum, the low byte of the pushed TfrmKEYGL5 Self pointer. TfrmApplication.IsAllowedApplication intersects its allowed set with that range whenever minimum and maximum differ, so the offered addresses are not deterministic."},
+    {"method": "TCBusApplicationGUIAgent.AddGroup", "map_range": "0x00cd7520..0x00cd79ac", "establishes": "GetNextAvailableAddress; -1 reports message 2271 with the standard group noun. Otherwise a new group gets that address and TagName Format(GetDefaultGroupName + ' %d'), the TddGroup dialog opens with the TStandardCBusApplications group noun, and only an accepted dialog adds the group, saves it with GroupSave and returns it. Cancel frees it."},
+    {"method": "TCBusGroupManager.GetNextAvailableAddress / GetMaximumPossibleAddress / TCBUSApplication.GetHasReservedGroupAddress255", "map_range": "0x00f289fc..0x00f28a8c", "establishes": "A group manager with 256 or more groups returns -1; otherwise the first absent address scanning upward from 0 through 254 is returned, because group 255 is reserved."},
+    {"method": "TCBUSApplication.GetDefaultGroupName", "map_range": "0x00f254a4..0x00f25508", "establishes": "Application 172 seeds Communication Group, 202 Trigger Group, 203 Enable Network Variable and every other application Group."},
+    {"method": "TStandardCBusApplications initialization / TStandardCBusApplication.Create / GetGroupName", "establishes": "The dialog group noun is Communication Group for 172, Media Link Group for 192, Trigger Group for 202, Enable Network Variable for 203 and Group otherwise."},
+    {"method": "TfrmGroupAssign.SetValues / cmbGroupAddressChange / SelectedAddress", "map_range": "0x00bc31fc..0x00bc3bd8", "establishes": "Add mode lists free addresses 0..254 (maximum 0 defaults to 0xFE), selects the first, then rewrites the name to noun + ' ' + address whenever the name is empty or begins case-insensitively (ASCII UpperCase) with the noun."},
+    {"method": "TfrmGroupAssign.actOKExecute", "map_range": "0x00bc2dc4..0x00bc3140", "establishes": "On OK: Trim(name) empty -> 2202; Trim(name) equal to the project name -> 2204; address used by another group -> 2201; ASCII UpperCase TagName equal to another group's -> 2203 (message shows the untrimmed text). Accepted state sets the address and TagName Trim(name)."},
+    {"method": "FrmBaseUnit.btnAddGroup_Click / TCBusApplicationGUIAgent.AddLevel", "map_range": "0x00cd79ac..0x00cd7e40", "establishes": "The activation action Add sends AddLevelRequest(202, ProximityGroup, \"\") and seeds Level N at the first free level address. Its level dialog form was not traced, so this path is not implemented."}
+  ],
+  "messages": {
+    "2201": "%1 with the address '%2' already exists.",
+    "2202": "%1 name cannot be blank.",
+    "2203": "%1 with the name '%2' already exists.",
+    "2204": "%1 Name can not be the same as the Project Name.",
+    "2271": "Cannot create a new %1.  All available addresses are in use."
+  },
+  "cases": [
+    {"name": "lighting-first-free", "application": 56, "groups": {"0": "Hall", "1": "Porch"}, "project": "TEST", "expected": {"address": 2, "name": "Group 2", "seeded_name": "Group 2"}},
+    {"name": "hvac-noun", "application": 172, "groups": {}, "project": "TEST", "expected": {"address": 0, "name": "Communication Group 0", "seeded_name": "Communication Group 0"}},
+    {"name": "trigger-noun", "application": 202, "groups": {"0": "A", "2": "B"}, "project": "TEST", "expected": {"address": 1, "name": "Trigger Group 1", "seeded_name": "Trigger Group 1"}},
+    {"name": "enable-noun", "application": 203, "groups": {}, "project": "TEST", "expected": {"address": 0, "name": "Enable Network Variable 0", "seeded_name": "Enable Network Variable 0"}},
+    {"name": "media-link-seed-kept", "application": 192, "groups": {}, "project": "TEST", "address": 9, "expected": {"address": 9, "name": "Group 0", "seeded_name": "Group 0"}},
+    {"name": "operator-address-rewrites-default", "application": 56, "groups": {"0": "Hall"}, "project": "TEST", "address": 40, "expected": {"address": 40, "name": "Group 40", "seeded_name": "Group 1"}},
+    {"name": "operator-name-trimmed", "application": 56, "groups": {}, "project": "TEST", "dialog_name": "  Kitchen  ", "expected": {"address": 0, "name": "Kitchen", "seeded_name": "Group 0"}},
+    {"name": "blank-name", "application": 56, "groups": {}, "project": "TEST", "dialog_name": "   ", "error": 2202},
+    {"name": "project-name", "application": 56, "groups": {}, "project": "TEST", "dialog_name": "TEST", "error": 2204},
+    {"name": "tag-conflict-ascii-case", "application": 56, "groups": {"0": "hall"}, "project": "TEST", "dialog_name": "HALL", "error": 2203},
+    {"name": "default-name-conflict", "application": 56, "groups": {"0": "A", "1": "group 2"}, "project": "TEST", "error": 2203},
+    {"name": "full-0-254", "application": 56, "groups": "0..254", "project": "TEST", "error": 2271}
+  ],
+  "implemented_boundary": {
+    "group_add_targets": ["ProximityGroup", "BacklightActiveBrightnessControlGroup", "BacklightIdleBrightnessControlGroup", "IndicatorActiveBrightnessControlGroup", "IndicatorIdleBrightnessControlGroup", "IndicatorOnColourControlGroup", "IndicatorOffColourControlGroup", "QuickStatusGroup", "KeySetsEnableGroup"],
+    "refused_targets": ["PrimaryApplication", "SecondaryApplication", "CorridorLinkingLinkGroup", "CorridorLinkingOfficeGroup", "CorridorLinkingCorridorGroup"],
+    "level_add_dialog": false,
+    "static_text_add": false,
+    "original_dialog_executed": false,
+    "cancel_modeled": "omit the operation; a cancelled dialog creates nothing and binds nothing",
+    "binding_equivalent": "SelectedValue.WriteValue is replayed as the owning panel option, so that panel's validation and side effects apply"
+  }
+}

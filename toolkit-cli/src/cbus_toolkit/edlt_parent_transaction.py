@@ -243,10 +243,17 @@ LIGHTING_BINDING_FACTS = (
 )
 
 
-def _operation(value):
+def _operation(value, *, allow_add_dialog=False):
     if not isinstance(value, Mapping):
         raise EdltError('Parent transaction operation must be a mapping')
     operation = value.get('op')
+    if operation == 'add-dialog':
+        if not allow_add_dialog:
+            raise EdltError(
+                'add-dialog creates project metadata and requires the '
+                'automatic --project-xml/--auto-metadata workflow')
+        from .edlt_add_dialog import normalize
+        return normalize(value)
     if operation not in _OPERATION_SHAPES:
         raise EdltError(
             'Parent transaction op must be one of: ' +
@@ -278,13 +285,14 @@ def _operation(value):
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
 
-def normalize_operations(operations):
+def normalize_operations(operations, *, allow_add_dialog=False):
     if not isinstance(operations, (tuple, list)):
         raise EdltError('Parent transaction operations must be an array')
     if not MIN_OPERATIONS <= len(operations) <= MAX_OPERATIONS:
         raise EdltError(
             f'Parent transaction requires {MIN_OPERATIONS}..{MAX_OPERATIONS} operations')
-    result = tuple(_operation(value) for value in operations)
+    result = tuple(_operation(value, allow_add_dialog=allow_add_dialog)
+                   for value in operations)
     resets = tuple(index for index, value in enumerate(result)
                    if value['op'] == 'reset')
     if len(resets) > 1:
