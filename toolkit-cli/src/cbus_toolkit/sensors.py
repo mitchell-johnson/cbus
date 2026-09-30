@@ -42,7 +42,8 @@ _PIR = ('Toolkit selects its ST7 PIR sensor class, whose save forces the occupan
         'potentiometer A, join and corridor fields; use cbus_toolkit.pir_sensors')
 REFUSED = MappingProxyType({
     'SENPIROA': _PIR, 'SENPIRIA': _PIR, 'SENPIRIB': _PIR,
-    'SENLL': 'Toolkit selects its ST7 light-level sensor class, which has no occupancy workflow',
+    'SENLL': ('Toolkit selects its ST7 light-level sensor class, which has no occupancy workflow; '
+              'use cbus_toolkit.light_level_sensors'),
     'SENPILLA': 'The SENPILLA layout adds light-level group parameters and Toolkit selects TSENPILLA',
     'SENPIRIC': 'The SENPIRIC layout adds light-level group parameters and Toolkit selects TSENPIRIC',
 })
@@ -87,6 +88,31 @@ def profile_refusal(unit_type, firmware, catalog_number):
     return None
 
 
+def _extended(value):
+    """Round a rational to the x87 80-bit significand (64 bits, ties to even)."""
+    if value == 0:
+        return Fraction(0)
+    exponent = value.numerator.bit_length() - value.denominator.bit_length()
+    if Fraction(2) ** exponent > value:
+        exponent -= 1
+    scaled = value / Fraction(2) ** (exponent - 63)
+    return Fraction(round(scaled)) * Fraction(2) ** (exponent - 63)
+
+
+# The ST7 multisensor agent's margin arithmetic, shared by the SENPILL, PIR
+# and SENLL classes. research/sensor_margin_original.py executes the original
+# x87 instructions over the whole byte domain; the frozen vectors are in
+# research/fixtures/sensor-margin-original-vectors.json.
+def margin_percent(target, margin):
+    """AfterLoadProgrammingInformation: ROUND(ext(margin/target) * 100); 0 for target 0."""
+    return 0 if target == 0 else round(_extended(_extended(Fraction(margin, target)) * 100))
+
+
+def saved_margin(target, percent):
+    """BeforeSaveProgrammingInformation: ROUND(target * ext(percent / 100.0))."""
+    return round(_extended(target * _extended(Fraction(percent, 100))))
+
+
 def check_profile(unit_type, firmware, catalog_number, *, subject='Unit identity'):
     reason = profile_refusal(unit_type, firmware, catalog_number)
     if reason is not None:
@@ -98,6 +124,32 @@ def _integer(value, label, minimum, maximum):
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise SensorError(f'{label} must be an integer in {minimum}..{maximum}')
     return value
+
+
+def verify_native_schema(session, spec, layouts, bits):
+    """Check that the native PP schema has the local layout for every field."""
+    document = xml_text(session.info('*'))
+    if '<!DOCTYPE' in document.upper() or '<!ENTITY' in document.upper():
+        raise SensorError('Unsupported native schema declarations')
+    try:
+        root = ET.fromstring(document)
+    except ET.ParseError as error:
+        raise SensorError('Invalid native parameter schema') from error
+    fields = {}
+    for param in root.iter():
+        if param.tag.rsplit('}', 1)[-1] == 'Param':
+            row = {child.tag.rsplit('}', 1)[-1]: child.text or '' for child in param}
+            if row.get('Name') in fields:
+                raise SensorError('Duplicate native parameter schema')
+            fields[row.get('Name')] = row
+    for name in layouts:
+        native, local = fields.get(name, {}), spec.get(name).fields
+        if native.get('Type', '').lower() != local.get('Type', '').lower():
+            raise SensorError('Native parameter type mismatch: ' + name)
+        for field, default in (('Address', None), ('ArraySize', '1'), ('BitSize', '1' if name in bits else '8'),
+                               ('BitAddress', '0'), ('ArraySkip', '0')):
+            if _numbers(native.get(field, default)) != _numbers(local.get(field, default)):
+                raise SensorError(f'Native parameter layout mismatch: {name}/{field}')
 
 
 @dataclass(frozen=True)
@@ -159,7 +211,7 @@ class Multisensor:
 
         Day/night share a timer only when their key block masks select the same
         block. Target lux uses exact 10-lux steps; percentage is converted to a
-        native margin byte using Toolkit's round-to-even arithmetic.
+        native margin byte with the Toolkit's x87 arithmetic (``saved_margin``).
         """
         if identity is not None:
             if not isinstance(identity, tuple) or len(identity) != 3:
@@ -237,7 +289,7 @@ class Multisensor:
             updates['PECTargetLux'][0] = target_lux // 10
         if margin_percent is not None:
             margin_percent = _integer(margin_percent, 'Margin percent', 0, 100)
-            updates['PECMarginLux'][0] = round(Fraction(updates['PECTargetLux'][0] * margin_percent, 100))
+            updates['PECMarginLux'][0] = saved_margin(updates['PECTargetLux'][0], margin_percent)
         if target_lux is not None or margin_percent is not None:
             for pot in ('A', 'B'):
                 if original[f'Potentiometer{pot}Function'][0] == 1:

@@ -10,14 +10,14 @@ transfers or simulates PIR behaviour. See docs/sensors.md and
 docs/pir-sensor-review.json.
 """
 from dataclasses import dataclass, replace
-from fractions import Fraction
 from types import MappingProxyType
 import xml.etree.ElementTree as ET
 
 from .macros import MICRO_FUNCTIONS, STAGES, _numbers
 from .memory import MemoryCodec
 from .programming import xml_text
-from .sensors import EVENTS, EXPIRY, SensorError, SensorApplyError, _integer, _version
+from .sensors import (EVENTS, EXPIRY, SensorError, SensorApplyError, _integer, _version, margin_percent,
+                      saved_margin)
 
 # Toolkit registers TST7SENPIROA for SENPIROA and TST7SENPIRSS for SENPIRIA
 # from 2.0.01 and for SENPIRIB 2.0.01..2.3.9 (numeric '.'-token order). C-Gate's
@@ -114,27 +114,6 @@ def check_profile(unit_type, firmware, catalog_number, *, subject='Unit identity
     if reason is not None:
         raise SensorError(f'{subject} must be an admitted ST7 PIR sensor: {reason}')
     return (unit_type, firmware, catalog_number), spec
-
-
-def _extended(value):
-    """Round a rational to the x87 80-bit significand (64 bits, ties to even)."""
-    if value == 0:
-        return Fraction(0)
-    exponent = value.numerator.bit_length() - value.denominator.bit_length()
-    if Fraction(2) ** exponent > value:
-        exponent -= 1
-    scaled = value / Fraction(2) ** (exponent - 63)
-    return Fraction(round(scaled)) * Fraction(2) ** (exponent - 63)
-
-
-def margin_percent(target, margin):
-    """TCBusST7MultisensorCGateAgent.AfterLoad: ROUND(ext(margin/target) * 100)."""
-    return 0 if target == 0 else round(_extended(_extended(Fraction(margin, target)) * 100))
-
-
-def saved_margin(target, percent):
-    """Multisensor BeforeSave: ROUND(target * ext(percent / 100.0))."""
-    return round(_extended(target * _extended(Fraction(percent, 100))))
 
 
 def power_up_state(level, logic, store):
@@ -293,6 +272,9 @@ class PIRSensor:
                 raise SensorError('power_up must be disabled, enabled or resume')
             state = POWER_UP.index(power_up)
         self._toolkit_save(original, updates, state, percent)
+        if updates['PECMarginLux'][0] > 255:
+            raise SensorError(f'The Toolkit save turns the stored margin into {updates["PECMarginLux"][0]}, '
+                              'outside the native margin byte')
         changes = {name: tuple(values) for name, values in updates.items() if tuple(values) != original[name]}
         self.codec.encode_many(changes)
         dialog = {'darkness_same_as_light': linked, 'power_up': POWER_UP[state], 'margin_percent': percent,

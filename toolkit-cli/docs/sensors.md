@@ -70,7 +70,8 @@ explicit native setting, not evidence of a useful physical timer action.
 Thresholds use exact 10-lux steps in the native byte range 0..2550. Setting
 `target_lux` requires `margin_percent` (0..100). Toolkit stores the target in
 units of ten lux and stores the margin as
-`round_to_even(target_byte * margin_percent / 100)`. For example 550 lux and
+`ROUND(target_byte * ext(margin_percent / 100))`, the original x87 save
+arithmetic ([Margin arithmetic](#margin-arithmetic)). For example 550 lux and
 10% produce target byte 55 and margin byte 6. The stored margin is quantized;
 the percentage displayed on a subsequent Toolkit load can differ. This range
 describes supported native encoding, not a claim about every GUI slider limit.
@@ -93,6 +94,33 @@ A failed write or readback raises `SensorApplyError` carrying the original
 cause and attempted field names. No write is retried, no recovery I/O occurs,
 and no automatic save follows a partial change. Inspect or reload the unsaved
 PP session before continuing.
+
+## Margin arithmetic
+
+The SENPILL, PIR and SENLL agents inherit one multisensor load and save.
+AfterLoad converts the stored margin to the dialog percentage as
+`ROUND(ext(margin / target) * 100)` (0 for target 0), and BeforeSave converts
+it back as `ROUND(target * ext(percent / 100))`. `ext` is the x87 80-bit value
+(64-bit significand, ties to even) and `ROUND` is Delphi's round half to even.
+`cbus_toolkit.sensors.margin_percent` and `saved_margin` implement both.
+
+`research/sensor_margin_original.py` runs the original instructions
+(0xcf49ee..0xcf4a1f and 0xcf5704..0xcf5743 with `System.@ROUND`) under Unicorn
+with the Delphi control word 0x1332 and fixture getters. It covers every
+target byte with every dialog percentage 0..100, every stored target/margin
+pair, and each pair's load/save round trip. The frozen tables are in
+`research/fixtures/sensor-margin-original-vectors.json`. `tests/test_sensors.py`
+compares the model with all 157,184 values and regenerates them when
+`CBUS_TOOLKIT_EXE` names the pinned executable.
+
+**Behaviour change.** The SENPILL workflow previously rounded the exact
+rational `target * percent / 100` half to even. The original differs for nine
+target/percent pairs, where `ext(percent / 100)` lies just below or above an
+exact .5 tie: (50, 59) → 29, (75, 42) → 31, (95, 30) → 29, (150, 21) → 31,
+(150, 53) → 79, (175, 30) → 53, (190, 15) → 29, (190, 65) → 123 and
+(195, 30) → 59. `sensors.py` now writes the original values. A stored margin of
+255 with a target byte of 136 or more round-trips to 256, which the native
+byte cannot hold; the PIR and SENLL workflows refuse such a plan.
 
 ## Profile admission
 

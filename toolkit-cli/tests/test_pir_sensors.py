@@ -127,6 +127,9 @@ class PIRSaveModelTest(unittest.TestCase):
             self.assertEqual(saved_margin(target, percent), margin)
         for target, margin, percent in ((50, 7, 14), (255, 1, 0), (8, 1, 12), (0, 9, 0), (1, 255, 25500)):
             self.assertEqual(margin_percent(target, margin), percent)
+        session = self.session(PECTargetLux=[136], PECMarginLux=[255])
+        with self.assertRaisesRegex(SensorError, '256'):
+            self.sensor.plan(session.values())
 
     def test_key_group_block_timer_link_and_function_prompt(self):
         session = self.session()

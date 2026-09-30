@@ -10,7 +10,7 @@ import unittest
 from uuid import uuid4
 
 from cbus_toolkit.sensors import (LAYOUTS, PROFILE, Multisensor, SensorError, SensorApplyError,
-                                  profile_refusal)
+                                  margin_percent, profile_refusal, saved_margin)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 from test_macros import Session
@@ -18,6 +18,7 @@ from test_macros import Session
 
 ROOT = Path(__file__).resolve().parents[1]
 REVIEW = ROOT / 'docs/sensor-profile-review.json'
+MARGIN_VECTORS = ROOT / 'research/fixtures/sensor-margin-original-vectors.json'
 # Newly admitted firmware/catalogue boundaries plus the retained 2.3.00 case.
 NATIVE_PROFILES = (('2.0.01','5753PEIRL'),('2.1.00','SLC5753PEIRL'),('2.2.00','5753PEIRL'),
                    ('2.3.00','5753PEIRL'),('2.3.9','SLC5753PEIRL'))
@@ -99,10 +100,12 @@ class SensorTest(unittest.TestCase):
         self.assertEqual(plan.changes['TimerLowByte'][1],45)
         self.assertNotIn('BlockAllocation',plan.changes)
 
-    def test_threshold_exact_steps_margin_round_even_and_pot_dependency(self):
+    def test_threshold_exact_steps_x87_margin_and_pot_dependency(self):
         with self.assertRaisesRegex(SensorError,'potentiometer'):
             self.sensor.plan(self.spec.defaults(),target_lux=450,margin_percent=10)
-        for lux,percent,target,margin in ((450,10,45,4),(550,10,55,6),(2550,100,255,255),(0,0,0,0)):
+        # 500 lux at 59% and 1900 lux at 15%: the original x87 save gives 29; exact half-even gives 30 and 28.
+        for lux,percent,target,margin in ((450,10,45,4),(550,10,55,6),(500,59,50,29),(1900,15,190,29),
+                                          (2550,100,255,255),(0,0,0,0)):
             plan=self.sensor.plan(self.spec.defaults(),target_lux=lux,margin_percent=percent,disable_potentiometer_override=True)
             result=dict(plan.expected);result.update(plan.changes)
             self.assertEqual(result['PECTargetLux'],(target,));self.assertEqual(result['PECMarginLux'],(margin,))
@@ -219,6 +222,46 @@ class SensorTest(unittest.TestCase):
         self.assertEqual(error.exception.attempted[-1],'GroupAddress')
         self.assertEqual(tuple(n for n,v in session.calls),error.exception.attempted)
         self.assertEqual(sum(n=='GroupAddress' for n,v in session.calls),1)
+
+
+class MarginOriginalVectorTest(unittest.TestCase):
+    def setUp(self):
+        self.vectors = json.loads(MARGIN_VECTORS.read_text())
+
+    def test_model_matches_every_frozen_original_vector(self):
+        self.assertEqual(self.vectors['executable_sha256'],
+                         '9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab')
+        self.assertEqual(self.vectors['control_word'], '0x1332')
+        saved, loaded, trip = (self.vectors[k] for k in ('saved_margin', 'loaded_percent', 'round_trip_margin'))
+        self.assertEqual((len(saved), {len(r) for r in saved}), (256, {101}))
+        self.assertEqual((len(loaded), {len(r) for r in loaded}, len(trip), {len(r) for r in trip}), (256, {256}, 256, {256}))
+        for target in range(256):
+            self.assertEqual([saved_margin(target, p) for p in range(101)], saved[target], target)
+            self.assertEqual([margin_percent(target, m) for m in range(256)], loaded[target], target)
+            self.assertEqual([saved_margin(target, loaded[target][m]) for m in range(256)], trip[target], target)
+
+    def test_x87_differs_from_exact_rounding_in_exactly_nine_dialog_pairs(self):
+        from fractions import Fraction
+        saved = self.vectors['saved_margin']
+        differing = [(t, p, saved[t][p]) for t in range(256) for p in range(101) if saved[t][p] != round(Fraction(t * p, 100))]
+        # Independent literal list: each exact product is a .5 tie, and ext(percent/100) is
+        # just below or above it, so ROUND goes the other way from round-half-even.
+        self.assertEqual(differing, [(50, 59, 29), (75, 42, 31), (95, 30, 29), (150, 21, 31), (150, 53, 79),
+                                     (175, 30, 53), (190, 15, 29), (190, 65, 123), (195, 30, 59)])
+        # A stored 255 margin round-trips to 256 for 28 targets, outside the native byte.
+        overflow = [t for t in range(256) if self.vectors['round_trip_margin'][t][255] > 255]
+        self.assertEqual((len(overflow), overflow[0], overflow[-1]), (28, 136, 253))
+
+    @unittest.skipUnless(os.environ.get('CBUS_TOOLKIT_EXE'), 'requires the exact original Toolkit executable')
+    def test_original_instructions_regenerate_the_vectors(self):
+        import importlib.util
+        path = ROOT / 'research/sensor_margin_original.py'
+        spec = importlib.util.spec_from_file_location('sensor_margin_original', path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        probe = module.MarginOriginalProbe(os.environ['CBUS_TOOLKIT_EXE'])
+        self.assertEqual(probe.fragment_sha256, self.vectors['fragment_sha256'])
+        self.assertEqual(probe.vectors(), {k: self.vectors[k] for k in ('saved_margin', 'loaded_percent', 'round_trip_margin')})
 
 
 class SensorProfileReviewTest(unittest.TestCase):
