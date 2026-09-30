@@ -1366,6 +1366,10 @@ def build_parser():
     rollout_registry_options(commands)
     from .toolkit_update_rollout_current_user_cli import options as rollout_current_user_options
     rollout_current_user_options(commands)
+    from .toolkit_update_trust_cli import options as trust_options
+    trust_options(commands)
+    from .toolkit_update_composite_cli import options as composite_options
+    composite_options(commands)
     from .pci_routing_cli import options as routing_options
     routing_options(commands)
     from .toolkit_about_cli import options as about_options
@@ -3826,6 +3830,12 @@ def run(args):
     if args.area == "update-rollout-current-user":
         from .toolkit_update_rollout_current_user_cli import run as rollout_current_user_run
         return rollout_current_user_run(args)
+    if args.area == "update-trust":
+        from .toolkit_update_trust_cli import run as trust_run
+        return trust_run(args)
+    if args.area == "update-composite-report":
+        from .toolkit_update_composite_cli import run as composite_run
+        return composite_run(args)
     if args.area == "pci-route":
         from .pci_routing_cli import run as routing_run
         return routing_run(args)

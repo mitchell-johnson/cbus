@@ -283,6 +283,13 @@ verified TLS. It checks size and SHA-1 before publishing to a new name and keeps
 failed bytes with a JSON record. It never installs or runs the file. See the
 [download contract](docs/toolkit-update-download.md).
 
+`update-trust` checks a supplied SESU signing chain and signed revocation
+lists against the recovered original pins and chain policy, or against anchors
+derived at runtime. `update-composite-report` evaluates catalogue through
+download eligibility from one input set and refuses cross-source mismatches.
+Neither fetches or downloads; see the [trust policy](docs/toolkit-update-trust.md)
+and [composite report](docs/toolkit-update-composite.md).
+
 `toolkit-about path/to/CBusToolkit.exe` reads an explicit executable and emits
 the original About text, using the current local year. `--year 2026` supplies
 a reproducible year; `--context captured-context.json` adds explicitly supplied

@@ -146,6 +146,17 @@ retained with a JSON failure record. See the
 [static review of the original `DownloadChannel`](../research/fixtures/toolkit-update-download-source-review.json).
 The downloaded file stays untrusted and is never executed.
 
+`update-trust` evaluates a supplied metadata-signing chain, signed `rv1`
+revocation lists and revocation signers. It uses the recovered original
+policy: embedded root and signer pins, an ordered revocation traversal, and
+`X509Chain` NoCheck with AllowUnknownCertificateAuthority. The instant is
+explicit, and anchors are embedded or supplied at runtime.
+`update-composite-report` chains catalogue, metadata, revocation, conditions,
+applicability, trust and download eligibility from one input set, and refuses
+any cross-source mismatch. Neither command fetches, downloads or establishes
+current publisher trust. See the [trust policy](toolkit-update-trust.md) and
+[composite report](toolkit-update-composite.md).
+
 **Installation and restart are not implemented.** No command opens, runs or
 elevates an installer, closes Toolkit, or restarts or resumes after an update.
 Static review shows that the original SESU client performs its own integrity

@@ -217,6 +217,12 @@ report and its exact raw response. It uses verified TLS and same-origin
 redirects, and checks size and SHA-1 before a no-overwrite publish. Failed bytes
 are kept as `*.failed.partial` with a `*.failed.json` record. It never
 installs; see `toolkit-cli/docs/toolkit-update-download.md`.
+`update-trust` evaluates a supplied signing chain, `rv1` lists and signers under
+embedded original pins or runtime-supplied anchors at an explicit instant.
+`update-composite-report` joins catalogue, metadata, revocation, conditions,
+applicability, trust and download eligibility for one input set; a mismatch
+is `refused`. Neither establishes current publisher trust or downloads; see
+`toolkit-cli/docs/toolkit-update-trust.md` and `toolkit-update-composite.md`.
 Windows uses a checked Win32 disk-file handle; POSIX uses
 no-follow/nonblocking/close-on-exec flags. An isolated SESU 3.0.7 oracle
 accepted a wrong digest when its security-dictionary folder key did not match

@@ -47,6 +47,7 @@ class UpdateApplicabilityPreflight:
     supplied_stored_cohort: int | None = None
     rollout_gate_reached: bool | None = None
     rollout_gate_under_supplied_cohort: bool | None = None
+    supplied_condition_result: bool | None = None
 
     @property
     def applicable_under_supplied_context(self) -> bool | None:
@@ -91,6 +92,9 @@ class UpdateApplicabilityPreflight:
             "registry_accessed": False,
             "certificate_store_accessed": False,
         }
+        if self.supplied_condition_result is not None:
+            # Only a same-source composite supplies this nonempty-condition result.
+            result["checks"]["nonempty_conditions_under_supplied_facts"] = self.supplied_condition_result
         if supplied_cohort_profile:
             result["checks"].pop("rollout_bypassed_visibility_100")
             result["checks"]["rollout_gate_reached_under_supplied_context"] = self.rollout_gate_reached
@@ -145,13 +149,17 @@ def _https_uri_in_profile(value: str) -> bool:
 
 def inspect_update_applicability(
     catalogue_response: bytes, *, node_id: str, platform: str, at_utc: str,
-    stored_cohort: str | None = None,
+    stored_cohort: str | None = None, condition_result: bool | None = None,
 ) -> UpdateApplicabilityPreflight:
     """Evaluate one original date/file/media path without host or trust reads.
 
     A result of ``passed`` is a fact under caller-supplied UTC/platform inputs,
     not proof that the original Windows client would offer this update now.
+    ``condition_result`` admits a nonempty condition dictionary only with a
+    result already computed for this same node by the condition evaluator.
     """
+    if condition_result is not None and type(condition_result) is not bool:
+        raise ValueError("condition_result must be a Boolean or None")
     validate_node_id(node_id)
     if type(platform) is not str or platform not in PLATFORMS:
         raise ValueError("platform must be windows_x86_32 or windows_x86_64")
@@ -179,21 +187,25 @@ def inspect_update_applicability(
             normalized_at, status, reason, chosen, date_pass, media_pass,
             uri_pass, empty_conditions, rollout_bypassed, cohort,
             rollout_reached, rollout_gate,
+            condition_result if empty_conditions is False else None,
         )
 
     try:
         canonical_sha = hashlib.sha256(_canonical(node)).hexdigest()
     except ValueError:
-        return report("unsupported", "selected node is outside the bounded typed metadata profile")
+        # A composite-supplied condition result is for a nonempty condition map,
+        # whose signed canonical form is not recovered; keep its digest null.
+        if condition_result is None:
+            return report("unsupported", "selected node is outside the bounded typed metadata profile")
 
     data, files, urls = node.get("data"), node.get("files"), node.get("urls")
     if type(data) is not dict or type(files) is not list or type(urls) is not dict:
         return report("unsupported", "node lacks complete package data, files or URL map")
     condition = data.get("clientConditionData")
     if (type(condition) is not dict or type(condition.get("conditions")) is not dict
-            or condition["conditions"]):
+            or (condition["conditions"] and condition_result is None)):
         return report("unsupported", "only an empty original condition dictionary is admitted")
-    empty_conditions = True
+    empty_conditions = not condition["conditions"]
     visibility = data.get("visibilityInPercent")
     if cohort is None:
         if type(visibility) is not int or visibility != 100:
@@ -246,7 +258,8 @@ def inspect_update_applicability(
     if chosen is None:
         media_pass = False
         uri_pass = False
-    predecessor_passed = date_pass and media_pass and uri_pass
+    # The original evaluates nonempty conditions after these gates and before rollout.
+    predecessor_passed = date_pass and media_pass and uri_pass and (empty_conditions or condition_result)
     if cohort is not None:
         rollout_reached = bool(predecessor_passed)
         if rollout_reached:
@@ -260,6 +273,8 @@ def inspect_update_applicability(
         reason = ("one or more date, selected-file, media or URI gates did not pass; rollout was not reached"
                   if cohort is not None else
                   "one or more date, selected-file, media or URI gates did not pass")
+        if date_pass and media_pass and uri_pass:
+            reason = "the supplied nonempty condition result was false"
     else:
         reason = "visibilityInPercent did not exceed the supplied stored cohort"
     return report("passed" if accepted else "failed", reason)

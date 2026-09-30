@@ -54,6 +54,11 @@ times. It is not a live-machine applicability decision.
 Only the caller-supplied x86 or x64 platform is considered; host architecture
 is never inferred.
 
+The Python API's optional `condition_result` is reserved for the same-source
+[composite report](toolkit-update-composite.md). It admits a nonempty
+condition map only with that node's supplied-fact result, gated after the
+date, file, media and URI checks. The CLI never sets it.
+
 For the separately evidenced 0–99% path with a **caller-supplied** stored
 cohort, use [applicability-cohort-preflight](toolkit-update-applicability-cohort-preflight.md).
 It composes these earlier gates and the strict rollout comparison on one
