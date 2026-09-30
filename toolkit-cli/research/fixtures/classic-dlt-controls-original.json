@@ -1,0 +1,723 @@
+{
+  "format": "cbus-classic-dlt-controls-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "I_DLT.xml_sha256": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133"
+  },
+  "methods": {
+    "agent_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.InternalCreate",
+      "start": "0x121b6ec",
+      "stop": "0x121bd3c",
+      "sha256": "6ddd6f4fec1ab6a78939f92fc2673bc1371db8ca71af23278aeb035f1d62da91"
+    },
+    "unit_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.InternalCreate",
+      "start": "0xce4670",
+      "stop": "0xce4b18",
+      "sha256": "07f5297b24563205181efe9994b34992da1f9646f193f989d2683a89998e1d67"
+    },
+    "getter": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetBlockDynamicUpdates",
+      "start": "0xce4ccc",
+      "stop": "0xce4cf0",
+      "sha256": "b48709d66a5526ba0a23aa4cb00228eb6e9e606ca7c492f15ef775920df9e10a"
+    },
+    "setter": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetBlockDynamicUpdates",
+      "start": "0xce4e14",
+      "stop": "0xce4e70",
+      "sha256": "6bad8f64fd5602d4d7494b62798487cddeb2f7b44d51c90e3cee2037cd6a0068"
+    },
+    "load": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0x121bf40",
+      "stop": "0x121c1dc",
+      "sha256": "0675ebd5984c0f3097bc63025c7fe0102c1727b0ccbf649e6aa5003408a4d1cd"
+    },
+    "save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0x121d16c",
+      "stop": "0x121d4f4",
+      "sha256": "1ffc2d2eea2fb8e5bec8b783efd4fee1773b74d1e382a0c55d720047a6192b62"
+    },
+    "dedicated_save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SaveEnableDynamicLabelsOnly",
+      "start": "0x121d8d0",
+      "stop": "0x121d9dc",
+      "sha256": "0a5cd2cf25b408520b6f3b6d6a2d07367034060587295bc3c7ec7eef1b8821ff"
+    },
+    "agent_save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AgentSave",
+      "start": "0x121d664",
+      "stop": "0x121d8d0",
+      "sha256": "ec70d7eca5861cf8bed1d312e6e150f8ce4fc527a373f28483740ab7341b803d"
+    },
+    "base_save": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation",
+      "start": "0xcbdc30",
+      "stop": "0xcbe080",
+      "sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33"
+    },
+    "checkbox_change": {
+      "symbol": "CIS_TddKEYL5.TddKEYL5.HandleBlockDynamicUpdatesChange",
+      "start": "0x10016c0",
+      "stop": "0x1001744",
+      "sha256": "e4e638f466c4fff3053665767ab1777386bac52386008ea18a3c5ef2af43fe29"
+    },
+    "wizard_save": {
+      "symbol": "CIS_TfrmDLTBlockDynamicUpdates.TfrmDLTBlockDynamicUpdates.SetUnitProgramming",
+      "start": "0xcd3860",
+      "stop": "0xcd3a38",
+      "sha256": "3e8f4783cc2a643f5ed03d19ec57653ddea7526ab338c99e5e1d9272a1ff04d8"
+    }
+  },
+  "fragments": {
+    "load": {
+      "start": "0x121c106",
+      "stop": "0x121c128",
+      "sha256": "721e5f985417a4ed523124bb00685b96feeb0645239a65c299354372f006711d"
+    },
+    "save": {
+      "start": "0x121d3a0",
+      "stop": "0x121d400",
+      "sha256": "90cc2ce0fa21bad27bf55404517940748726476893f7a91ca1f360dcb3baf07e"
+    }
+  },
+  "database_flag_binding": {
+    "start": "0xcbdc9f",
+    "stop": "0xcbdcbc",
+    "sha256": "1a008997793c785549b854d7afeae90a7abcbcd57f34e99c225bb3c8fa34a357"
+  },
+  "parameter": {
+    "name": "EnableDynamicLabels",
+    "address": 62,
+    "bit": 6,
+    "default": 1
+  },
+  "attribute_fields": {
+    "EnableDynamicLabels": "agent+0x200",
+    "BlockDynamicUpdates": "unit+0x2dc"
+  },
+  "rules": {
+    "load": "BlockDynamicUpdates = not EnableDynamicLabels",
+    "database_save": "EnableDynamicLabels = not BlockDynamicUpdates",
+    "network_initial_save": "EnableDynamicLabels = true before label programming",
+    "database_flag": "agent+0xc0 = IsInVerbs(\"Database\") in base SaveProgrammingInformation",
+    "dedicated_save": "If BlockDynamicUpdates is true, set EnableDynamicLabels to 0 and save; otherwise no operation",
+    "dedicated_session": "Reuse an active session; otherwise Lock, Start, Load, SetOne, Save, End, Unlock",
+    "agent_save_exclusions": [
+      "Database",
+      "AlignUnit",
+      "DBReaddress"
+    ],
+    "checkbox_change": "Unit+0x16e is assigned not BlockDynamicUpdates; form label colours are refreshed"
+  },
+  "observations": [
+    {
+      "operation": "load",
+      "input_enabled": false,
+      "result": {
+        "enabled": false,
+        "blocked": true,
+        "calls": []
+      }
+    },
+    {
+      "operation": "load",
+      "input_enabled": true,
+      "result": {
+        "enabled": true,
+        "blocked": false,
+        "calls": []
+      }
+    },
+    {
+      "operation": "save",
+      "database": false,
+      "input_blocked": false,
+      "result": {
+        "enabled": true,
+        "blocked": false,
+        "calls": []
+      }
+    },
+    {
+      "operation": "save",
+      "database": false,
+      "input_blocked": true,
+      "result": {
+        "enabled": true,
+        "blocked": true,
+        "calls": []
+      }
+    },
+    {
+      "operation": "save",
+      "database": true,
+      "input_blocked": false,
+      "result": {
+        "enabled": true,
+        "blocked": false,
+        "calls": []
+      }
+    },
+    {
+      "operation": "save",
+      "database": true,
+      "input_blocked": true,
+      "result": {
+        "enabled": false,
+        "blocked": true,
+        "calls": []
+      }
+    },
+    {
+      "operation": "dedicated_save",
+      "in_session": false,
+      "input_blocked": false,
+      "result": {
+        "enabled": false,
+        "blocked": false,
+        "calls": []
+      }
+    },
+    {
+      "operation": "dedicated_save",
+      "in_session": false,
+      "input_blocked": true,
+      "result": {
+        "enabled": false,
+        "blocked": true,
+        "calls": [
+          {
+            "operation": "Lock"
+          },
+          {
+            "operation": "Start"
+          },
+          {
+            "operation": "Load"
+          },
+          {
+            "operation": "SetOne",
+            "parameter": "EnableDynamicLabels",
+            "value": "0",
+            "database": false
+          },
+          {
+            "operation": "Save",
+            "timeout_ms": 30000,
+            "database": false,
+            "flag": true
+          },
+          {
+            "operation": "End"
+          },
+          {
+            "operation": "Unlock"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "dedicated_save",
+      "in_session": true,
+      "input_blocked": false,
+      "result": {
+        "enabled": false,
+        "blocked": false,
+        "calls": []
+      }
+    },
+    {
+      "operation": "dedicated_save",
+      "in_session": true,
+      "input_blocked": true,
+      "result": {
+        "enabled": false,
+        "blocked": true,
+        "calls": [
+          {
+            "operation": "SetOne",
+            "parameter": "EnableDynamicLabels",
+            "value": "0",
+            "database": false
+          },
+          {
+            "operation": "Save",
+            "timeout_ms": 30000,
+            "database": false,
+            "flag": true
+          }
+        ]
+      }
+    }
+  ],
+  "language_and_global_controls": {
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": [
+      {
+        "symbol": "CIS_TddKEYL5.TddKEYL5.HandleLanguageChange",
+        "start": "0x10018c8",
+        "end": "0x1001918",
+        "sha256": "f62a526b72cdee405d6613eb11ddb3c42ffec2860446927b8d9ca715034cc9dc"
+      },
+      {
+        "symbol": "CIS_TddKEYL5.TddKEYL5.UpdateDLTLabelCombo",
+        "start": "0x10000e8",
+        "end": "0x1000388",
+        "sha256": "bd73bae9f5fba4e2727957f9063982baf43b71da435e1851834eed434d5da330"
+      },
+      {
+        "symbol": "CIS_TddKEYL5.TddKEYL5.InitialiseDLTLabelCombo",
+        "start": "0xffff90",
+        "end": "0x10000e8",
+        "sha256": "1517cbfdd4b3b025f0a5f80a844098685433791d6033b85459a137369cabbc95"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.Initialise",
+        "start": "0xf5e580",
+        "end": "0xf5e708",
+        "sha256": "e1bed2cdbfe6ad99135cea2cbdf7321fbb2dd13495587a03919c05f1506ea107"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.SetupFlashComponents",
+        "start": "0xf5e74c",
+        "end": "0xf5f39c",
+        "sha256": "c9ba186c8e340a681e45d04621cfcf17b444fdaf570a030327bcfd9582fab664"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.InitialiseLanguageCombo",
+        "start": "0xf5e708",
+        "end": "0xf5e734",
+        "sha256": "fe5f22e7dc9382c854f5dffa63d468127c8c863efc6d7b1e6fff22c1ba538e47"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.InitLanguageCombo",
+        "start": "0xf5f39c",
+        "end": "0xf5f47c",
+        "sha256": "112cbf72fb4bc2756173432470e0003d764d5b8899566b867e680c88b3b9ec70"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleLanguageComboEnter",
+        "start": "0xf602d0",
+        "end": "0xf60300",
+        "sha256": "e58a8c6fbbada158c4decedf8622c50a999f46dce71726c194c9eabb8b989b82"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleLanguageComboChange",
+        "start": "0xf60190",
+        "end": "0xf602d0",
+        "sha256": "1f87cd7a9436ef89b02450dc9461bbb144b1a97728cb2202610b57ee8cfc7fee"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleLanguageChange",
+        "start": "0xf60078",
+        "end": "0xf60190",
+        "sha256": "b52d10132b7ba412f98e39fbba8e0fd8d70a89c7e4a7ebd12d8a54758a58431c"
+      },
+      {
+        "symbol": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleAfterButtonLanguageEditClick",
+        "start": "0xf5fe1c",
+        "end": "0xf5ffbc",
+        "sha256": "9b662d3b7a4a06c9af54d38c355cd3f166e53436c79076960db20cf61aff44f5"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.InitialiseLanguages",
+        "start": "0xf2b864",
+        "end": "0xf2b9cc",
+        "sha256": "5830d42675b9561e8c93a52f523afcaa03ae6ebd328527359f568119803ea3e3"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.FinaliseLanguages",
+        "start": "0xf2b9cc",
+        "end": "0xf2bc60",
+        "sha256": "629eb334017a5bac4ed327cd5ec6fbd92824914f3c3ec089e66727eea7d4d764"
+      },
+      {
+        "symbol": "CIS_TLanguageType.TLanguageTypeFactory.GetDefaultLanguageType",
+        "start": "0x854314",
+        "end": "0x854334",
+        "sha256": "42bc8914959f99bcddcfc419566d4b89d862aae55c64510ea509571c93c6901d"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.AgentSave",
+        "start": "0xd83068",
+        "end": "0xd832c4",
+        "sha256": "03fe5ada3c37c0217c67a4a7a17a781f58d8aa8f7c27b868d95c6f110aa8d4f6"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.SetNetworkWideLanguageLibremente",
+        "start": "0xd86e50",
+        "end": "0xd86ff0",
+        "sha256": "a0d1980ff20bc8a8b1e348efa99124714c66341f635e5cba7d466f549c7e3217"
+      },
+      {
+        "symbol": "CIS_TCBusApplicationCGateAgent.TCBusApplicationCGateAgent.AgentSave",
+        "start": "0x120e3a4",
+        "end": "0x120e5d0",
+        "sha256": "3b6cf883d4ed054cadfb18a4d0c1d6b5e06f85e2a891b069eec8b8b26e8a8eda"
+      },
+      {
+        "symbol": "CIS_TCBusApplicationCGateAgent.TCBusApplicationCGateAgent.BroadcastDLTLanguageForApplication",
+        "start": "0x120e63c",
+        "end": "0x120e75c",
+        "sha256": "553b42c71603836a5ee44836c2e8cb42d159ec9e4c33e5929aaa63c5cf6d325f"
+      },
+      {
+        "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.AgentSave",
+        "start": "0x120fbc4",
+        "end": "0x120fd48",
+        "sha256": "69bb75b59719f0716045dab674511906bc96f5ccbe6c22fa9a31d31850182c9b"
+      },
+      {
+        "symbol": "CIS_TCGateDLTAgent.TCGateDLTAgent.CommandApplicationLabel",
+        "start": "0x120dff8",
+        "end": "0x120e194",
+        "sha256": "b8a474af512ff833d05e53bbfa78e39a91867c7b6406b53bb6f6d848c61098ee"
+      },
+      {
+        "symbol": "CIS_TcgcApplicationLabel.TcgcApplicationLabel.GenerateCommandText",
+        "start": "0x120d868",
+        "end": "0x120d9e0",
+        "sha256": "e3fc56f009fc812e96fc47e3ef7c623bc50e5479f37f3694325a46599af54f6f"
+      },
+      {
+        "symbol": "CIS_TLanguageType.InitialiseLanguageTypeFactory",
+        "start": "0x852ba0",
+        "end": "0x853d24",
+        "sha256": "e615bcd62cdd3e6172dceddaa840bded0a5e19286b7a5d97d3bdc79464036c78"
+      }
+    ],
+    "language_factory": [
+      {
+        "identifier": 0,
+        "description": "<None>"
+      },
+      {
+        "identifier": 1,
+        "description": "English"
+      },
+      {
+        "identifier": 2,
+        "description": "English (Australia)"
+      },
+      {
+        "identifier": 3,
+        "description": "English (Belize)"
+      },
+      {
+        "identifier": 4,
+        "description": "English (Canada)"
+      },
+      {
+        "identifier": 5,
+        "description": "English (Carribean)"
+      },
+      {
+        "identifier": 6,
+        "description": "English (Ireland)"
+      },
+      {
+        "identifier": 7,
+        "description": "English (Jamaica)"
+      },
+      {
+        "identifier": 8,
+        "description": "English (New Zealand)"
+      },
+      {
+        "identifier": 9,
+        "description": "English (Philippines)"
+      },
+      {
+        "identifier": 10,
+        "description": "English (South Africa)"
+      },
+      {
+        "identifier": 11,
+        "description": "English (Trinidad)"
+      },
+      {
+        "identifier": 12,
+        "description": "English (UK)"
+      },
+      {
+        "identifier": 13,
+        "description": "English (USA)"
+      },
+      {
+        "identifier": 14,
+        "description": "English (Zimbabwe)"
+      },
+      {
+        "identifier": 64,
+        "description": "Afrikaans"
+      },
+      {
+        "identifier": 65,
+        "description": "Basque"
+      },
+      {
+        "identifier": 66,
+        "description": "Catalan"
+      },
+      {
+        "identifier": 67,
+        "description": "Danish"
+      },
+      {
+        "identifier": 68,
+        "description": "Dutch (Belgium)"
+      },
+      {
+        "identifier": 69,
+        "description": "Dutch (Netherlands)"
+      },
+      {
+        "identifier": 70,
+        "description": "Faeroese"
+      },
+      {
+        "identifier": 71,
+        "description": "Finnish"
+      },
+      {
+        "identifier": 72,
+        "description": "French (Belgium)"
+      },
+      {
+        "identifier": 73,
+        "description": "French (Canada)"
+      },
+      {
+        "identifier": 74,
+        "description": "French"
+      },
+      {
+        "identifier": 75,
+        "description": "French (Luxembourg)"
+      },
+      {
+        "identifier": 76,
+        "description": "French (Monaco)"
+      },
+      {
+        "identifier": 77,
+        "description": "French (Switzerland)"
+      },
+      {
+        "identifier": 78,
+        "description": "Galician"
+      },
+      {
+        "identifier": 79,
+        "description": "German (Austria)"
+      },
+      {
+        "identifier": 80,
+        "description": "German"
+      },
+      {
+        "identifier": 81,
+        "description": "German (Liechtenstein)"
+      },
+      {
+        "identifier": 82,
+        "description": "German (Luxembourg)"
+      },
+      {
+        "identifier": 83,
+        "description": "German (Switzerland)"
+      },
+      {
+        "identifier": 84,
+        "description": "Icelandic"
+      },
+      {
+        "identifier": 85,
+        "description": "Indonesian"
+      },
+      {
+        "identifier": 86,
+        "description": "Italian"
+      },
+      {
+        "identifier": 87,
+        "description": "Italian (Switzerland)"
+      },
+      {
+        "identifier": 88,
+        "description": "Malay (Brunei)"
+      },
+      {
+        "identifier": 89,
+        "description": "Malay"
+      },
+      {
+        "identifier": 90,
+        "description": "Norwegian"
+      },
+      {
+        "identifier": 91,
+        "description": "Norwegian (Nynorsk)"
+      },
+      {
+        "identifier": 92,
+        "description": "Portuguese (Brazil)"
+      },
+      {
+        "identifier": 93,
+        "description": "Portuguese"
+      },
+      {
+        "identifier": 94,
+        "description": "Spanish (Argentina)"
+      },
+      {
+        "identifier": 95,
+        "description": "Spanish (Bolivia)"
+      },
+      {
+        "identifier": 96,
+        "description": "Spanish (Chile)"
+      },
+      {
+        "identifier": 97,
+        "description": "Spanish (Columbia)"
+      },
+      {
+        "identifier": 98,
+        "description": "Spanish (Costa Rica)"
+      },
+      {
+        "identifier": 99,
+        "description": "Spanish (Dominican Republic)"
+      },
+      {
+        "identifier": 100,
+        "description": "Spanish (Ecuador)"
+      },
+      {
+        "identifier": 101,
+        "description": "Spanish (El Salvador)"
+      },
+      {
+        "identifier": 102,
+        "description": "Spanish (Guatemala)"
+      },
+      {
+        "identifier": 103,
+        "description": "Spanish (Honduras)"
+      },
+      {
+        "identifier": 104,
+        "description": "Spanish"
+      },
+      {
+        "identifier": 105,
+        "description": "Spanish (Mexico)"
+      },
+      {
+        "identifier": 106,
+        "description": "Spanish (Nicaragua)"
+      },
+      {
+        "identifier": 107,
+        "description": "Spanish (Panama)"
+      },
+      {
+        "identifier": 108,
+        "description": "Spanish (Paraguay)"
+      },
+      {
+        "identifier": 109,
+        "description": "Spanish (Peru)"
+      },
+      {
+        "identifier": 110,
+        "description": "Spanish (Puerto Rico)"
+      },
+      {
+        "identifier": 111,
+        "description": "Spanish (Traditional)"
+      },
+      {
+        "identifier": 112,
+        "description": "Spanish (Uruguay)"
+      },
+      {
+        "identifier": 113,
+        "description": "Spanish (Venezuela)"
+      },
+      {
+        "identifier": 114,
+        "description": "Swahili"
+      },
+      {
+        "identifier": 115,
+        "description": "Swedish"
+      },
+      {
+        "identifier": 116,
+        "description": "Swedish (Finland)"
+      },
+      {
+        "identifier": 202,
+        "description": "Chinese"
+      }
+    ],
+    "findings": {
+      "block_dynamic_updates_binding": {
+        "class": "TCBusDynamicLabelInputUnit",
+        "class_pointer_va": "0xce42ac",
+        "vmt": "0xce4304",
+        "method": "CIS_TcdUnitGlobal.TcdUnitGlobal.SetupFlashComponents",
+        "binding_va": "0xf5eaab",
+        "form_control_offset": "0x2e8",
+        "expression": "BlockDynamicUpdates",
+        "binding_call_va": "0xf5eab0",
+        "binding_call": "CIS_FlashGUI.PrepareFlashCheckbox"
+      },
+      "global_language_combo": {
+        "form_control_offset": "0x328",
+        "owner": "unit.GetNetwork()",
+        "choices": "LanguageTypes",
+        "selection": "LanguageTypeDefault",
+        "event_enter": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleLanguageComboEnter",
+        "event_change": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleLanguageComboChange",
+        "event_edit": "CIS_TcdUnitGlobal.TcdUnitGlobal.HandleAfterButtonLanguageEditClick"
+      },
+      "network_language_storage": {
+        "default_marker_id": 0,
+        "default_marker_tagvalue": "decimal language identifier, not collection index",
+        "regular_marker_id": "language identifier",
+        "regular_marker_tagvalue": "language description",
+        "fallback_identifier": 1,
+        "fallback_description": "English",
+        "save": "TNetworkLanguageTypeCGateAgent.AgentSave updates ID and TagValue then ProjectSave"
+      },
+      "language_change_actions": [
+        "remember old language object on unit+0x164",
+        "update controller saved language pointer to network default",
+        "dispatch SetNetworkLanguage",
+        "call FinaliseLanguages",
+        "invoke language changed callback"
+      ],
+      "network_broadcast_selection": [
+        "every non255 standard-lighting-like application in manager order",
+        "application203",
+        "application202"
+      ],
+      "network_broadcast_command": "<application type> LABEL <application OID> <language identifier> 0 - SET_LANGUAGE ",
+      "keyl5_language_callback": "Loop key numbers1..count; InitialiseDLTLabelCombo updates selection source from network default language; scene-modify uses control application group, scene uses SceneTriggerLevel, other uses PrimaryDLTGroup; GroupLanguageFlavours becomes available list; ExtensionNeo.LabelFlavour remains key selection.",
+      "limit": "Static original-code evidence only. No original GUI execution, native server mutation or physical bus actions. No classic DLT PP language byte mapping established."
+    }
+  },
+  "boundary": "Original x86 instructions with synthetic boolean storage and hooked external calls; no full form, native C-Gate, database persistence or physical acceptance."
+}

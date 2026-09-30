@@ -211,7 +211,11 @@ for staleness checks and a raw-byte preview whose changed mask may only contain
 arrays, verifies PP readback and, on a native session, `GET_RAW_DATA` for
 bytes `0x60..0x67`. It never retries or restores after a partial PP error.
 `EnableDynamicLabels` (byte `0x3E` bit 6, "Allow Dynamic Labelling") is
-reported read-only.
+reported with its source-verified inverse, **Block Dynamic Updates**. The
+optional `--block-dynamic-updates yes|no` control uses a separate, canonical
+control plan and verifies all neighboring raw bits. See
+[classic label controls](classic-dlt-label-controls.md) for its original
+database/physical save distinction, focused native evidence and text workflow.
 
 ```sh
 # Offline, from a PP export or native DBGETXML
@@ -264,9 +268,11 @@ PYTHONPATH=src:tests:. .venv/bin/python -m pytest tests/test_dlt_labels.py -k na
 
 - Slot numbers are PP array indexes 1..8 (the catalogue declares eight
   inputs). Their mapping to physical keys and pages is not verified.
-- Label text, languages, variant contents, dynamic-label transfer and
-  `Block Dynamic Updates` are not implemented here; the relationship between
-  that checkbox and `EnableDynamicLabels` is not source-verified.
+- `dlt text` supports explicit TEXT contents by language ID and variant in
+  existing project Group/Trigger action records; `dlt-labels` supports the
+  database Block Dynamic Updates control. Language definition/default edits,
+  live language selection, dynamic-label transfer, FONT/ICON conversion and
+  physical control-save ordering remain unsupported by these workflows.
 - Other classic dialog tabs, the original Toolkit dialog, physical PP transfer,
   display rendering and power-cycle persistence are unverified.
 - Firmware 1.4.00 and internal revisions are refused rather than extrapolated.
@@ -305,6 +311,6 @@ KEYGL5 catalogue numbers other than 5055EDL, and non-database eDLT workflows
 at revisions other than 5.5.00, need their own evidence before admission.
 Physical behavior at 1.6.x, 1.7.x and 5.4.x is unverified. The original eDLT
 editor was reviewed from source and not executed at those revisions. Classic
-DLT key functions beyond label variants, label text and language transfer, the
+DLT key functions beyond label variants, label and language transfer, the
 original classic dialogs, eDLT firmware package-to-revision mapping and all
 physical behavior remain open.

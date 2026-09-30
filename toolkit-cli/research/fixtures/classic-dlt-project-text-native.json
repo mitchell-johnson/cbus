@@ -1,0 +1,116 @@
+{
+  "format": "cbus-classic-dlt-project-text-native-v1",
+  "original": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "ranges": [
+      {
+        "name": "TGroupTagDLTCGateAgent.AgentSave",
+        "va": "0x1213388",
+        "size": 76,
+        "meaning": "creates the project DLT tag when needed, then updates its fields",
+        "sha256": "fa5208903b0cb5347bcf381950d4fe4bfa375c5f0e1e1bbb0d6916fe6d4a402a"
+      },
+      {
+        "name": "TGroupTagDLTCGateAgent.CreateGroupLanguageDLTTag",
+        "va": "0x12134E4",
+        "size": 245,
+        "meaning": "Group or Level parent; ensures TagsDLT collection then creates TagDLT",
+        "sha256": "7c2102cfd54e11f1fd661fb1acd8c1e574f350d355884a6678fbded7f1785586"
+      },
+      {
+        "name": "TGroupTagDLTCGateAgent.UpdateGroupLanguageDLTTag",
+        "va": "0x1213634",
+        "size": 219,
+        "meaning": "writes LanguageID, FlavourID, TagType, TagValue then saves the project",
+        "sha256": "3fc40b50374ac6d567b888e294ac3eedffadde15f6d311c7cfb1a07ff8de16d9"
+      }
+    ],
+    "literal_fields_verified": [
+      "TagsDLT",
+      "TagDLT",
+      "LanguageID",
+      "FlavourID",
+      "TagType",
+      "TagValue"
+    ],
+    "network_language_schema_sha256": "bea4976cd355f660884d16bbbfe4627831c9f756557ae6fb1189a43f9aa5f956",
+    "network_language_identity_field": "ID",
+    "original_gui_executed": false
+  },
+  "oracle": {
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "version": "3.4.0 build 2001",
+    "owned_loopback_listeners": true,
+    "cleanup_complete": true,
+    "work_removed": true,
+    "process_exit_confirmed": true,
+    "physical_endpoint": false
+  },
+  "cases": [
+    {
+      "kind": "Group",
+      "set_status": 301,
+      "language_ids": [
+        0,
+        1,
+        255
+      ],
+      "variants": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "text_cases": [
+        "empty",
+        "ASCII/XML escaping",
+        "Latin1",
+        "BMP/supplementary Unicode",
+        "1024 ASCII characters",
+        "TAB/LF/CR"
+      ],
+      "label_count": 6,
+      "new_tag_oids_allocated": true,
+      "existing_tag_oids_retained": true,
+      "other_variants_preserved": true,
+      "language_definitions_preserved": true,
+      "save_close_load_verified": true,
+      "action_address_and_value_preserved": false
+    },
+    {
+      "kind": "Level",
+      "set_status": 301,
+      "language_ids": [
+        0,
+        1,
+        255
+      ],
+      "variants": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "text_cases": [
+        "empty",
+        "ASCII/XML escaping",
+        "Latin1",
+        "BMP/supplementary Unicode",
+        "1024 ASCII characters",
+        "TAB/LF/CR"
+      ],
+      "label_count": 6,
+      "new_tag_oids_allocated": true,
+      "existing_tag_oids_retained": true,
+      "other_variants_preserved": true,
+      "language_definitions_preserved": true,
+      "save_close_load_verified": true,
+      "action_address_and_value_preserved": true
+    }
+  ],
+  "labels_transferred": false,
+  "display_verified": false,
+  "source_sha256": "50a76053fd34ed15f368c49371975d8ea17d0073e58104af2a4cd89fd41903eb"
+}

@@ -59,8 +59,8 @@ LAYOUT = MappingProxyType({
 })
 FIELDS = tuple(LAYOUT)
 CHANGED = ('LabelFlavourLSB', 'LabelFlavourMSB')
-# I_DLT.xml "Allow Dynamic Labelling". Reported read-only: its mapping to the
-# Toolkit "Block Dynamic Updates" checkbox has not been source-verified.
+# I_DLT.xml "Allow Dynamic Labelling". The optional dlt_controls editor owns
+# the original inverse "Block Dynamic Updates" control.
 DYNAMIC_FLAG = ('EnableDynamicLabels', (0x3E, 1, 1, 6, 0, 'bit'))
 
 
@@ -202,11 +202,12 @@ class ClassicDltLabels:
         if not isinstance(variants, dict) or not variants:
             raise DltLabelError('Supply at least one slot=variant selection')
         requested = []
-        for slot, value in sorted(variants.items()):
+        for slot, value in variants.items():
             if isinstance(slot, bool) or not isinstance(slot, int) or not 1 <= slot <= SLOTS:
                 raise DltLabelError(f'Label variant slot must be an integer in 1..{SLOTS}')
             flavour_bits(value)
             requested.append((slot, value))
+        requested.sort()
         expected = self.snapshot(current)
         lsb, msb = list(expected['LabelFlavourLSB']), list(expected['LabelFlavourMSB'])
         for slot, value in requested:
@@ -228,7 +229,7 @@ class ClassicDltLabels:
         return self.check_identity(session.unit_type, session.firmware, session.catalog_number,
                                    subject='Native session')
 
-    def _verify_session(self, session):
+    def _verify_session(self, session, *, fields=FIELDS):
         document = xml_text(session.info('*'))
         if '<!DOCTYPE' in document.upper() or '<!ENTITY' in document.upper():
             raise DltLabelError('Unsupported native schema declarations')
@@ -236,15 +237,15 @@ class ClassicDltLabels:
             root = ET.fromstring(document)
         except ET.ParseError as error:
             raise DltLabelError('Invalid native parameter schema') from error
-        fields = {}
+        native_fields = {}
         for param in root.iter():
             if param.tag.rsplit('}', 1)[-1] == 'Param':
                 row = {child.tag.rsplit('}', 1)[-1]: child.text or '' for child in param}
-                if row.get('Name') in fields:
+                if row.get('Name') in native_fields:
                     raise DltLabelError('Duplicate native parameter schema')
-                fields[row.get('Name')] = row
-        for name in FIELDS:
-            native, local = fields.get(name, {}), self.spec.get(name).fields
+                native_fields[row.get('Name')] = row
+        for name in fields:
+            native, local = native_fields.get(name, {}), self.spec.get(name).fields
             if native.get('Type', '').lower() != local.get('Type', '').lower():
                 raise DltLabelError('Native parameter type mismatch: ' + name)
             for field, default in (('Address', None), ('ArraySize', '1'), ('BitAddress', '0'),
