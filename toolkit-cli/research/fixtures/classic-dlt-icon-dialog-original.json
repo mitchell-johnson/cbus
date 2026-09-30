@@ -1,0 +1,4153 @@
+{
+  "format": "cbus-classic-dlt-icon-dialog-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": {
+    "icon_ok": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.btnOKClick",
+      "start": "0xc13ab8",
+      "stop": "0xc13f44",
+      "sha256": "301a5f06522b1436f0c7f44aee9e48af608dc55dc128b39b336531ba8658cbcf"
+    },
+    "execute": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.Execute",
+      "start": "0xc12588",
+      "stop": "0xc12950",
+      "sha256": "a434a695fc094b617696692892193ba23474af8a950ccd17b2405d2f41f144ae"
+    },
+    "prepare_tabs": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.PrepareTabs",
+      "start": "0xc11cc0",
+      "stop": "0xc124d0",
+      "sha256": "494270f40881311104360bbc1caa7b0e6e035dcf5a6566c71b3f2b7603de7b6c"
+    },
+    "radio_click": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.rbTabLabelTextClick",
+      "start": "0xc130f0",
+      "stop": "0xc132a8",
+      "sha256": "4f9809b1b25deeaec610b51869d5e15e203782d3f0bdad2967f23fc2d2be2466"
+    },
+    "form_show": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.FormShow",
+      "start": "0xc12950",
+      "stop": "0xc1296c",
+      "sha256": "55fa28c702b5e770c821efba9d06bfcdcd5e5d93cac51c2605ec79640646e002"
+    },
+    "predefined_default": {
+      "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypePredefined",
+      "start": "0xf36d74",
+      "stop": "0xf36db0",
+      "sha256": "62461c1dd17213559090b4e46d43525ca518c1f382f4c11917a158fdb673c874"
+    },
+    "text_default": {
+      "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypeText",
+      "start": "0xf36db0",
+      "stop": "0xf36dfc",
+      "sha256": "e0773c5121444b5593a63ffadd232575cabeb2830909ecb927e9bbbed89d391f"
+    },
+    "group_finalise": {
+      "symbol": "CIS_TCommonCBus.TCBusGroup.FinaliseLanguage",
+      "start": "0xf287d8",
+      "stop": "0xf2880c",
+      "sha256": "1e0103828eb7a344050147644a32106e09302740a4970ab32478294014573503"
+    },
+    "level_finalise": {
+      "symbol": "CIS_TCommonCBus.TLevel.FinaliseLanguage",
+      "start": "0xf27098",
+      "stop": "0xf270cc",
+      "sha256": "ee97385601f253fa0c852f152d1bf7972fdc0e3cd1f5d741ce7e026fb169f0aa"
+    }
+  },
+  "fragments": {
+    "execute_visibility_and_existing_type": {
+      "start": "0xc125d0",
+      "stop": "0xc12672",
+      "sha256": "e5bf5522e2a187f11034ee82d940e26a1d6bc7d4f4a51e30099ccec167e42dcf"
+    }
+  },
+  "rules": {
+    "visible_icon_choice": "Execute hides the ICON radio unless current language ID is202; this is the visible-choice gate, not the default-type predicate",
+    "existing_type": "Execute checks the radio for existing TEXT0, ICON1, DYNAMIC2 or FONT3, even if the ICON radio was hidden for a non202 language",
+    "force_graphic": "Later Execute form+0x47a can override selection to DYNAMIC and disable TEXT; excluded from this ordinary ICON transaction",
+    "tab_activation": "FormShow invokes shared radio-click handler, which activates its page, calls PrepareTabs and RefreshControls; checked ICON invokes PopulatePredefinedGraphicsList without another language gate",
+    "default_predicates": "Predefined default iff nonnil LanguageType ID202; text default iff nonnil ID neither0 nor202. These govern collection initialization and do not disable TEXT in Execute",
+    "selection": "Negative combo ItemIndex skips tag mutation; otherwise SetTagType(1), obtain Items[ItemIndex].Value and VarToUStr, then SetTagValue",
+    "identifier": "Combo item Value is the integer parsed from catalogue name; ImageIndex and selected ItemIndex are separate and are not the stored ICON identifier",
+    "handler_validation": "The OK branch itself does not check catalogue membership, language ID or decimal range; the portable API admits only explicitly selected pinned built-in IDs1..91 and ordinary language202",
+    "accept": "Both selected and unselected branches reach ModalResult1; ordinary acceptance clears selected flavour broadcast flag then finalizes the entire selected language for group or level with nil supplied-model override",
+    "deferred": "form+0x478 skips broadcast reset and FinaliseLanguage but still accepts the chosen tag value",
+    "collection": "Fresh selected202 language defaults missing flavour1 to ICON with constructor-empty value; existing TEXT/ICON retain type and take20 UTF16 units; false initialization deletes missing cached alternates; finalization visits all4 flavours and retains chosen legacy0 identity",
+    "boundary": "Collection behavior is independently pinned by the existing language-dialog collection receipt; this probe hooks finalizers and does not execute graph allocation or persistent storage"
+  },
+  "catalogue": {
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+      "Images/DLTP/index.txt": "c6cca64deaed7bb5ad814b2aaf4c37b580396bf38c057aae8bd616fadfd26310"
+    },
+    "index": {
+      "relative_name": "Images/DLTP/index.txt",
+      "bytes": 2392,
+      "sha256": "c6cca64deaed7bb5ad814b2aaf4c37b580396bf38c057aae8bd616fadfd26310",
+      "count": 91,
+      "encoding": "ASCII",
+      "field_order": [
+        "identifier",
+        "description",
+        "bitmap filename"
+      ]
+    },
+    "rows": [
+      {
+        "id": 1,
+        "label": "Air Conditioner"
+      },
+      {
+        "id": 2,
+        "label": "Arm"
+      },
+      {
+        "id": 3,
+        "label": "Away"
+      },
+      {
+        "id": 4,
+        "label": "Balcony"
+      },
+      {
+        "id": 5,
+        "label": "Back"
+      },
+      {
+        "id": 6,
+        "label": "Bath"
+      },
+      {
+        "id": 7,
+        "label": "Bed 1"
+      },
+      {
+        "id": 8,
+        "label": "Bed 2"
+      },
+      {
+        "id": 9,
+        "label": "Bed 3"
+      },
+      {
+        "id": 10,
+        "label": "Bed 4"
+      },
+      {
+        "id": 11,
+        "label": "Channel +"
+      },
+      {
+        "id": 12,
+        "label": "Channel -"
+      },
+      {
+        "id": 13,
+        "label": "Close"
+      },
+      {
+        "id": 14,
+        "label": "Cool"
+      },
+      {
+        "id": 15,
+        "label": "Dim Up"
+      },
+      {
+        "id": 16,
+        "label": "Dim Down"
+      },
+      {
+        "id": 17,
+        "label": "Dining"
+      },
+      {
+        "id": 18,
+        "label": "Disarm"
+      },
+      {
+        "id": 19,
+        "label": "Dishwasher"
+      },
+      {
+        "id": 20,
+        "label": "Down"
+      },
+      {
+        "id": 21,
+        "label": "DVD Player"
+      },
+      {
+        "id": 22,
+        "label": "Entertain"
+      },
+      {
+        "id": 23,
+        "label": "Entry"
+      },
+      {
+        "id": 24,
+        "label": "Exit"
+      },
+      {
+        "id": 25,
+        "label": "Family"
+      },
+      {
+        "id": 26,
+        "label": "Fan"
+      },
+      {
+        "id": 27,
+        "label": "Fan 1"
+      },
+      {
+        "id": 28,
+        "label": "Fan 2"
+      },
+      {
+        "id": 29,
+        "label": "Fish Tank"
+      },
+      {
+        "id": 30,
+        "label": "Garage"
+      },
+      {
+        "id": 31,
+        "label": "Garden"
+      },
+      {
+        "id": 32,
+        "label": "Goodbye"
+      },
+      {
+        "id": 33,
+        "label": "Guest"
+      },
+      {
+        "id": 34,
+        "label": "Hall"
+      },
+      {
+        "id": 35,
+        "label": "Heat"
+      },
+      {
+        "id": 36,
+        "label": "Heater"
+      },
+      {
+        "id": 37,
+        "label": "Heating"
+      },
+      {
+        "id": 38,
+        "label": "HiFi 1"
+      },
+      {
+        "id": 39,
+        "label": "HiFi 2"
+      },
+      {
+        "id": 40,
+        "label": "Home"
+      },
+      {
+        "id": 41,
+        "label": "Jacuzzi"
+      },
+      {
+        "id": 42,
+        "label": "Key"
+      },
+      {
+        "id": 43,
+        "label": "Key 1"
+      },
+      {
+        "id": 44,
+        "label": "Key 2"
+      },
+      {
+        "id": 45,
+        "label": "Key 3"
+      },
+      {
+        "id": 46,
+        "label": "Key 4"
+      },
+      {
+        "id": 47,
+        "label": "Key 5"
+      },
+      {
+        "id": 48,
+        "label": "Key 6"
+      },
+      {
+        "id": 49,
+        "label": "Key 7"
+      },
+      {
+        "id": 50,
+        "label": "Key 8"
+      },
+      {
+        "id": 51,
+        "label": "Kitchen"
+      },
+      {
+        "id": 52,
+        "label": "Lamp"
+      },
+      {
+        "id": 53,
+        "label": "Laundry"
+      },
+      {
+        "id": 54,
+        "label": "Living"
+      },
+      {
+        "id": 55,
+        "label": "Lobby"
+      },
+      {
+        "id": 56,
+        "label": "Lounge"
+      },
+      {
+        "id": 57,
+        "label": "Master"
+      },
+      {
+        "id": 58,
+        "label": "Master On"
+      },
+      {
+        "id": 59,
+        "label": "Master Off"
+      },
+      {
+        "id": 60,
+        "label": "Meeting"
+      },
+      {
+        "id": 61,
+        "label": "Next"
+      },
+      {
+        "id": 62,
+        "label": "Nursery"
+      },
+      {
+        "id": 63,
+        "label": "Office"
+      },
+      {
+        "id": 64,
+        "label": "On"
+      },
+      {
+        "id": 65,
+        "label": "Off"
+      },
+      {
+        "id": 66,
+        "label": "Open"
+      },
+      {
+        "id": 67,
+        "label": "Pantry"
+      },
+      {
+        "id": 68,
+        "label": "Party"
+      },
+      {
+        "id": 69,
+        "label": "Play"
+      },
+      {
+        "id": 70,
+        "label": "Pool"
+      },
+      {
+        "id": 71,
+        "label": "Porch"
+      },
+      {
+        "id": 72,
+        "label": "Radio"
+      },
+      {
+        "id": 73,
+        "label": "Rumpus"
+      },
+      {
+        "id": 74,
+        "label": "Sauna"
+      },
+      {
+        "id": 75,
+        "label": "Scene 1"
+      },
+      {
+        "id": 76,
+        "label": "Scene 2"
+      },
+      {
+        "id": 77,
+        "label": "Scene 3"
+      },
+      {
+        "id": 78,
+        "label": "Scene 4"
+      },
+      {
+        "id": 79,
+        "label": "Spa"
+      },
+      {
+        "id": 80,
+        "label": "Stairs"
+      },
+      {
+        "id": 81,
+        "label": "Studio"
+      },
+      {
+        "id": 82,
+        "label": "Study"
+      },
+      {
+        "id": 83,
+        "label": "Theatre"
+      },
+      {
+        "id": 84,
+        "label": "Toilet"
+      },
+      {
+        "id": 85,
+        "label": "TV"
+      },
+      {
+        "id": 86,
+        "label": "TV 1"
+      },
+      {
+        "id": 87,
+        "label": "TV 2"
+      },
+      {
+        "id": 88,
+        "label": "Up"
+      },
+      {
+        "id": 89,
+        "label": "Volume +"
+      },
+      {
+        "id": 90,
+        "label": "Volume -"
+      },
+      {
+        "id": 91,
+        "label": "Water"
+      }
+    ],
+    "ordered_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91
+    ],
+    "methods": [
+      {
+        "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.PopulatePredefinedGraphicsList",
+        "start": "0xc1387c",
+        "end": "0xc13ab8",
+        "sha256": "c3c55112ea63946f944ce0563ba19db061060437598923df1141e500500c7d7b"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GetPictogramList",
+        "start": "0xbcd33c",
+        "end": "0xbcd37c",
+        "sha256": "de5a1d4e473494af57bc69cd163706affdf9e941d882f3039e2e0da1c02b1c46"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GenImageStrings",
+        "start": "0xbccc5c",
+        "end": "0xbcccd4",
+        "sha256": "afe7d8ca6873bbb834aac506babc7a8ecf48632be0bfe4c8193dd5186569ca5e"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GenDirStr",
+        "start": "0xbcc778",
+        "end": "0xbcc834",
+        "sha256": "cf100710c1479607d3eed9ca4f0f7d4f2bf5def83dc82c760fbb22980ee616f9"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GenContextStr",
+        "start": "0xbcc834",
+        "end": "0xbcc8c8",
+        "sha256": "9640fdbc87c907fccf1b7926d0559a0cd068d40167f2bdde4c2246d3ec8957ba"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GenSetName",
+        "start": "0xbcc8c8",
+        "end": "0xbcc8ec",
+        "sha256": "95cbe223b098ff5aaf9321c4fc2b09950fca194a83258b48d6422fc680666da6"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.ParseRecord",
+        "start": "0xbcc8ec",
+        "end": "0xbcca30",
+        "sha256": "48d5836a61ad467a47f8c71e81c173ec1283dbc649be3688f3a16fcddaa3f50e"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.GeneratePictogramSet",
+        "start": "0xbccabc",
+        "end": "0xbccc5c",
+        "sha256": "6e831cfe492e6af6dd2eb027599bfdabb1759607f8f9d4c17c9fbf548a278eeb"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.Reg",
+        "start": "0xbcca30",
+        "end": "0xbccabc",
+        "sha256": "c4997e2321af84c9e4a725f655f445118c8d98feded828f354499d9176399535"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageFactory.RegisterImage",
+        "start": "0x7d5f8c",
+        "end": "0x7d60b0",
+        "sha256": "6c1e5de5a8ced8f44b4a93f71ca5eb3d241e3608d26ac13c8d486bc14519a1fd"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageFactory.CreateImageCache",
+        "start": "0x7d5d7c",
+        "end": "0x7d5e10",
+        "sha256": "105635451c31c3712f209b0a772b6e19e9d56b9c2adb069cfd9989c5137ba01a"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageCacheList.AddImageCache",
+        "start": "0x7d58a0",
+        "end": "0x7d58c4",
+        "sha256": "d19609bef8dc6719f6749723216ad0d489e311350e4e7d42bedfa697a368a5c0"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageFactory.FindImageNames",
+        "start": "0x7d658c",
+        "end": "0x7d6644",
+        "sha256": "a3f64303c0c667c9da98e72c5a3bb5e32c976cfc30b28c685b9b66b582dc6d87"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageCacheList.ImageCacheByName",
+        "start": "0x7d5a44",
+        "end": "0x7d5afc",
+        "sha256": "d736977dcbb43f9a7b46d51a8530cc9bfedd60adac6e9fe4b746e2f0dee50e8f"
+      },
+      {
+        "symbol": "CIS_TClientGraphic.TClientGraphicFactory.FindPictogram",
+        "start": "0xbcd1fc",
+        "end": "0xbcd288",
+        "sha256": "cab3f12dfe796bef4046239372cb4d383f3bf14facdb4ca71064b5c12b30edfc"
+      },
+      {
+        "symbol": "CIS_TImageFactory.TImageFactory.FindGraphic",
+        "start": "0x7d6370",
+        "end": "0x7d6488",
+        "sha256": "e52c5e92a2cf8a5a22c376979df1477a2aa962aeba294d9c4a0b12c3526859a3"
+      },
+      {
+        "symbol": "Classes.TStrings.SetValue",
+        "start": "0x646d7c",
+        "end": "0x646e30",
+        "sha256": "00d37abfd0bde7123a2fcf60ae05cf6431b2c140451e930809a947268155dba0"
+      },
+      {
+        "symbol": "Classes.TStrings.IndexOfName",
+        "start": "0x646568",
+        "end": "0x64663c",
+        "sha256": "20968e9bb28a1c0d38376883082a630b4520c0179434da090f9eae6e0654af1f"
+      }
+    ],
+    "findings": {
+      "context": "PopulatePredefinedGraphicsList passes pictogram type1; type1 resolves DLTP and executable-relative Images/DLTP/index.txt.",
+      "load_gate": "GeneratePictogramSet reads index only when the image set is not already registered. Existing process cache prevents reloading.",
+      "parse": "First token parses ID using StrToIntDef(token,0); require positive ID and nonempty remainder not beginning //. Next tokens are description then filename. Registration name is decimal IntToStr(ID).",
+      "registration": "Index records are processed forward; RegisterImage creates a new cache and AddImageCache appends to TList. Registration does not deduplicate names.",
+      "name_list": "FindImageNames walks cache forward and sets output string-list Values[name]=description. A new nonempty name appends; later nonempty descriptions replace the existing value in place; an empty description deletes that name, so a subsequent nonempty occurrence appends anew.",
+      "bitmap_lookup": "FindPictogram uses decimal ID as image name; ImageCacheByName scans forward and returns the first exact-name match. Duplicate registration can therefore pair a later label with the first bitmap.",
+      "combo": "PopulatePredefinedGraphicsList adds items in returned list order. ImageIndex is zero-based list index; Value is integer identifier from name; Description is the corresponding string-list value. Icon identity is not ImageIndex.",
+      "pinned_catalogue": "The pinned file has91 unique canonical IDs1..91 and nonempty labels, so fresh-load list/combobox order is exactly the returned ordered table.",
+      "limitations": "Source facts assume a fresh or unmodified DLTP image-set cache and ordinary new unsorted TStringList. No bitmap bytes, previews, full GUI execution, changed-installation discovery, C-Gate operation or device acceptance is included."
+    }
+  },
+  "observations": {
+    "icon_ok": [
+      {
+        "selected_index": 0,
+        "item_integer_value": 1,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "1",
+          "index_reads": 2,
+          "item_reads": [
+            0
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "1"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 1,
+        "item_integer_value": 2,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "2",
+          "index_reads": 2,
+          "item_reads": [
+            1
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "2"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 2,
+        "item_integer_value": 3,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "3",
+          "index_reads": 2,
+          "item_reads": [
+            2
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "3"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 3,
+        "item_integer_value": 4,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "4",
+          "index_reads": 2,
+          "item_reads": [
+            3
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "4"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 4,
+        "item_integer_value": 5,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "5",
+          "index_reads": 2,
+          "item_reads": [
+            4
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "5"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 5,
+        "item_integer_value": 6,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "6",
+          "index_reads": 2,
+          "item_reads": [
+            5
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "6"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 6,
+        "item_integer_value": 7,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "7",
+          "index_reads": 2,
+          "item_reads": [
+            6
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "7"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 7,
+        "item_integer_value": 8,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "8",
+          "index_reads": 2,
+          "item_reads": [
+            7
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "8"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 8,
+        "item_integer_value": 9,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "9",
+          "index_reads": 2,
+          "item_reads": [
+            8
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "9"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 9,
+        "item_integer_value": 10,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "10",
+          "index_reads": 2,
+          "item_reads": [
+            9
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "10"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 10,
+        "item_integer_value": 11,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "11",
+          "index_reads": 2,
+          "item_reads": [
+            10
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "11"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 11,
+        "item_integer_value": 12,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "12",
+          "index_reads": 2,
+          "item_reads": [
+            11
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "12"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 12,
+        "item_integer_value": 13,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "13",
+          "index_reads": 2,
+          "item_reads": [
+            12
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "13"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 13,
+        "item_integer_value": 14,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "14",
+          "index_reads": 2,
+          "item_reads": [
+            13
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "14"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 14,
+        "item_integer_value": 15,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "15",
+          "index_reads": 2,
+          "item_reads": [
+            14
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "15"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 15,
+        "item_integer_value": 16,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "16",
+          "index_reads": 2,
+          "item_reads": [
+            15
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "16"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 16,
+        "item_integer_value": 17,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "17",
+          "index_reads": 2,
+          "item_reads": [
+            16
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "17"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 17,
+        "item_integer_value": 18,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "18",
+          "index_reads": 2,
+          "item_reads": [
+            17
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "18"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 18,
+        "item_integer_value": 19,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "19",
+          "index_reads": 2,
+          "item_reads": [
+            18
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "19"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 19,
+        "item_integer_value": 20,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "20",
+          "index_reads": 2,
+          "item_reads": [
+            19
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "20"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 20,
+        "item_integer_value": 21,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "21",
+          "index_reads": 2,
+          "item_reads": [
+            20
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "21"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 21,
+        "item_integer_value": 22,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "22",
+          "index_reads": 2,
+          "item_reads": [
+            21
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "22"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 22,
+        "item_integer_value": 23,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "23",
+          "index_reads": 2,
+          "item_reads": [
+            22
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "23"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 23,
+        "item_integer_value": 24,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "24",
+          "index_reads": 2,
+          "item_reads": [
+            23
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "24"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 24,
+        "item_integer_value": 25,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "25",
+          "index_reads": 2,
+          "item_reads": [
+            24
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "25"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 25,
+        "item_integer_value": 26,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "26",
+          "index_reads": 2,
+          "item_reads": [
+            25
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "26"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 26,
+        "item_integer_value": 27,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "27",
+          "index_reads": 2,
+          "item_reads": [
+            26
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "27"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 27,
+        "item_integer_value": 28,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "28",
+          "index_reads": 2,
+          "item_reads": [
+            27
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "28"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 28,
+        "item_integer_value": 29,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "29",
+          "index_reads": 2,
+          "item_reads": [
+            28
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "29"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 29,
+        "item_integer_value": 30,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "30",
+          "index_reads": 2,
+          "item_reads": [
+            29
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "30"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 30,
+        "item_integer_value": 31,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "31",
+          "index_reads": 2,
+          "item_reads": [
+            30
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "31"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 31,
+        "item_integer_value": 32,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "32",
+          "index_reads": 2,
+          "item_reads": [
+            31
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "32"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 32,
+        "item_integer_value": 33,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "33",
+          "index_reads": 2,
+          "item_reads": [
+            32
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "33"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 33,
+        "item_integer_value": 34,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "34",
+          "index_reads": 2,
+          "item_reads": [
+            33
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "34"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 34,
+        "item_integer_value": 35,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "35",
+          "index_reads": 2,
+          "item_reads": [
+            34
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "35"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 35,
+        "item_integer_value": 36,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "36",
+          "index_reads": 2,
+          "item_reads": [
+            35
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "36"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 36,
+        "item_integer_value": 37,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "37",
+          "index_reads": 2,
+          "item_reads": [
+            36
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "37"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 37,
+        "item_integer_value": 38,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "38",
+          "index_reads": 2,
+          "item_reads": [
+            37
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "38"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 38,
+        "item_integer_value": 39,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "39",
+          "index_reads": 2,
+          "item_reads": [
+            38
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "39"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 39,
+        "item_integer_value": 40,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "40",
+          "index_reads": 2,
+          "item_reads": [
+            39
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "40"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 40,
+        "item_integer_value": 41,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "41",
+          "index_reads": 2,
+          "item_reads": [
+            40
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "41"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 41,
+        "item_integer_value": 42,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "42",
+          "index_reads": 2,
+          "item_reads": [
+            41
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "42"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 42,
+        "item_integer_value": 43,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "43",
+          "index_reads": 2,
+          "item_reads": [
+            42
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "43"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 43,
+        "item_integer_value": 44,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "44",
+          "index_reads": 2,
+          "item_reads": [
+            43
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "44"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 44,
+        "item_integer_value": 45,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "45",
+          "index_reads": 2,
+          "item_reads": [
+            44
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "45"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 45,
+        "item_integer_value": 46,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "46",
+          "index_reads": 2,
+          "item_reads": [
+            45
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "46"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 46,
+        "item_integer_value": 47,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "47",
+          "index_reads": 2,
+          "item_reads": [
+            46
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "47"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 47,
+        "item_integer_value": 48,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "48",
+          "index_reads": 2,
+          "item_reads": [
+            47
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "48"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 48,
+        "item_integer_value": 49,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "49",
+          "index_reads": 2,
+          "item_reads": [
+            48
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "49"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 49,
+        "item_integer_value": 50,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "50",
+          "index_reads": 2,
+          "item_reads": [
+            49
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "50"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 50,
+        "item_integer_value": 51,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "51",
+          "index_reads": 2,
+          "item_reads": [
+            50
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "51"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 51,
+        "item_integer_value": 52,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "52",
+          "index_reads": 2,
+          "item_reads": [
+            51
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "52"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 52,
+        "item_integer_value": 53,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "53",
+          "index_reads": 2,
+          "item_reads": [
+            52
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "53"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 53,
+        "item_integer_value": 54,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "54",
+          "index_reads": 2,
+          "item_reads": [
+            53
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "54"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 54,
+        "item_integer_value": 55,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "55",
+          "index_reads": 2,
+          "item_reads": [
+            54
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "55"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 55,
+        "item_integer_value": 56,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "56",
+          "index_reads": 2,
+          "item_reads": [
+            55
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "56"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 56,
+        "item_integer_value": 57,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "57",
+          "index_reads": 2,
+          "item_reads": [
+            56
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "57"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 57,
+        "item_integer_value": 58,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "58",
+          "index_reads": 2,
+          "item_reads": [
+            57
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "58"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 58,
+        "item_integer_value": 59,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "59",
+          "index_reads": 2,
+          "item_reads": [
+            58
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "59"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 59,
+        "item_integer_value": 60,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "60",
+          "index_reads": 2,
+          "item_reads": [
+            59
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "60"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 60,
+        "item_integer_value": 61,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "61",
+          "index_reads": 2,
+          "item_reads": [
+            60
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "61"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 61,
+        "item_integer_value": 62,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "62",
+          "index_reads": 2,
+          "item_reads": [
+            61
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "62"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 62,
+        "item_integer_value": 63,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "63",
+          "index_reads": 2,
+          "item_reads": [
+            62
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "63"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 63,
+        "item_integer_value": 64,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "64",
+          "index_reads": 2,
+          "item_reads": [
+            63
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "64"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 64,
+        "item_integer_value": 65,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "65",
+          "index_reads": 2,
+          "item_reads": [
+            64
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "65"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 65,
+        "item_integer_value": 66,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "66",
+          "index_reads": 2,
+          "item_reads": [
+            65
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "66"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 66,
+        "item_integer_value": 67,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "67",
+          "index_reads": 2,
+          "item_reads": [
+            66
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "67"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 67,
+        "item_integer_value": 68,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "68",
+          "index_reads": 2,
+          "item_reads": [
+            67
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "68"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 68,
+        "item_integer_value": 69,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "69",
+          "index_reads": 2,
+          "item_reads": [
+            68
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "69"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 69,
+        "item_integer_value": 70,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "70",
+          "index_reads": 2,
+          "item_reads": [
+            69
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "70"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 70,
+        "item_integer_value": 71,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "71",
+          "index_reads": 2,
+          "item_reads": [
+            70
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "71"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 71,
+        "item_integer_value": 72,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "72",
+          "index_reads": 2,
+          "item_reads": [
+            71
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "72"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 72,
+        "item_integer_value": 73,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "73",
+          "index_reads": 2,
+          "item_reads": [
+            72
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "73"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 73,
+        "item_integer_value": 74,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "74",
+          "index_reads": 2,
+          "item_reads": [
+            73
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "74"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 74,
+        "item_integer_value": 75,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "75",
+          "index_reads": 2,
+          "item_reads": [
+            74
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "75"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 75,
+        "item_integer_value": 76,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "76",
+          "index_reads": 2,
+          "item_reads": [
+            75
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "76"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 76,
+        "item_integer_value": 77,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "77",
+          "index_reads": 2,
+          "item_reads": [
+            76
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "77"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 77,
+        "item_integer_value": 78,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "78",
+          "index_reads": 2,
+          "item_reads": [
+            77
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "78"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 78,
+        "item_integer_value": 79,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "79",
+          "index_reads": 2,
+          "item_reads": [
+            78
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "79"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 79,
+        "item_integer_value": 80,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "80",
+          "index_reads": 2,
+          "item_reads": [
+            79
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "80"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 80,
+        "item_integer_value": 81,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "81",
+          "index_reads": 2,
+          "item_reads": [
+            80
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "81"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 81,
+        "item_integer_value": 82,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "82",
+          "index_reads": 2,
+          "item_reads": [
+            81
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "82"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 82,
+        "item_integer_value": 83,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "83",
+          "index_reads": 2,
+          "item_reads": [
+            82
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "83"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 83,
+        "item_integer_value": 84,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "84",
+          "index_reads": 2,
+          "item_reads": [
+            83
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "84"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 84,
+        "item_integer_value": 85,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "85",
+          "index_reads": 2,
+          "item_reads": [
+            84
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "85"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 85,
+        "item_integer_value": 86,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "86",
+          "index_reads": 2,
+          "item_reads": [
+            85
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "86"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 86,
+        "item_integer_value": 87,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "87",
+          "index_reads": 2,
+          "item_reads": [
+            86
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "87"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 87,
+        "item_integer_value": 88,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "88",
+          "index_reads": 2,
+          "item_reads": [
+            87
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "88"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 88,
+        "item_integer_value": 89,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "89",
+          "index_reads": 2,
+          "item_reads": [
+            88
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "89"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 89,
+        "item_integer_value": 90,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "90",
+          "index_reads": 2,
+          "item_reads": [
+            89
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "90"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 90,
+        "item_integer_value": 91,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "91",
+          "index_reads": 2,
+          "item_reads": [
+            90
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "91"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 42,
+        "item_integer_value": 1,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "1",
+          "index_reads": 2,
+          "item_reads": [
+            42
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "1"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 0,
+        "item_integer_value": 92,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "92",
+          "index_reads": 2,
+          "item_reads": [
+            0
+          ],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "92"
+            },
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": -1,
+        "item_integer_value": null,
+        "target": "group",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 0,
+          "tag_value": "before",
+          "index_reads": 1,
+          "item_reads": [],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "FinaliseLanguage",
+              "target": "group",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": -1,
+        "item_integer_value": null,
+        "target": "level",
+        "deferred": false,
+        "result": {
+          "accepted": true,
+          "tag_type": 0,
+          "tag_value": "before",
+          "index_reads": 1,
+          "item_reads": [],
+          "broadcast_marked": false,
+          "calls": [
+            {
+              "operation": "FinaliseLanguage",
+              "target": "level",
+              "language": 202,
+              "supplied_model": null
+            }
+          ]
+        }
+      },
+      {
+        "selected_index": 90,
+        "item_integer_value": 91,
+        "target": "group",
+        "deferred": true,
+        "result": {
+          "accepted": true,
+          "tag_type": 1,
+          "tag_value": "91",
+          "index_reads": 2,
+          "item_reads": [
+            90
+          ],
+          "broadcast_marked": true,
+          "calls": [
+            {
+              "operation": "SetTagType",
+              "value": 1
+            },
+            {
+              "operation": "SetTagValue",
+              "value": "91"
+            }
+          ]
+        }
+      }
+    ],
+    "eligibility": [
+      {
+        "language_id": null,
+        "predefined_default": false,
+        "text_default": false,
+        "execute_fragment": []
+      },
+      {
+        "language_id": 0,
+        "predefined_default": false,
+        "text_default": false,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 1,
+        "predefined_default": false,
+        "text_default": true,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 14,
+        "predefined_default": false,
+        "text_default": true,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 64,
+        "predefined_default": false,
+        "text_default": true,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 116,
+        "predefined_default": false,
+        "text_default": true,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 202,
+        "predefined_default": true,
+        "text_default": false,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": false,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": false,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": false,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": false,
+            "checked": "FONT"
+          }
+        ]
+      },
+      {
+        "language_id": 255,
+        "predefined_default": false,
+        "text_default": true,
+        "execute_fragment": [
+          {
+            "saved_tag_type": 0,
+            "icon_hidden": true,
+            "checked": "TEXT"
+          },
+          {
+            "saved_tag_type": 1,
+            "icon_hidden": true,
+            "checked": "ICON"
+          },
+          {
+            "saved_tag_type": 2,
+            "icon_hidden": true,
+            "checked": "DYNAMIC"
+          },
+          {
+            "saved_tag_type": 3,
+            "icon_hidden": true,
+            "checked": "FONT"
+          }
+        ]
+      }
+    ]
+  },
+  "collection": {
+    "format": "cbus-classic-dlt-language-dialog-source-v1",
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": [
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.InitialiseLanguages",
+        "start": "0xf37154",
+        "end": "0xf37474",
+        "sha256": "e5ea278559e75e931cd8eeb0ec3022f3b34bf0f05be071f32de6bc83c1a7d523"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.FinaliseLanguage",
+        "start": "0xf37474",
+        "end": "0xf376d0",
+        "sha256": "6b2be99a4402b52b36076b2e424404a37f55c0869ef909cf6c010f4cd210b00b"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.AddLanguageTypes",
+        "start": "0xf3707c",
+        "end": "0xf37154",
+        "sha256": "171811a6074cc1b60c0f063bf3e11e42c67615157f1940579b3b5deb92427da3"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.ItemByLanguageType",
+        "start": "0xf3701c",
+        "end": "0xf3707c",
+        "sha256": "661f78c7dcfd244b62a9b423ac6ff200ccfb33684faf0beb87fa6c25ce17ca43"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavourCollection.ItemByFlavour",
+        "start": "0xf36abc",
+        "end": "0xf36b1c",
+        "sha256": "944202e907dcdfddbeb786afe891755582a69dc9389a6d36414058f96f18af61"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLT.TGroupTagDLTCollection.ItemByLanguageAndFlavourID",
+        "start": "0x85a208",
+        "end": "0x85a9d0",
+        "sha256": "949cea9ae0d91506a430d04f38bae25c31305d08a0c8b5bef2ba1e98ec953767"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypeText",
+        "start": "0xf36db0",
+        "end": "0xf36dfc",
+        "sha256": "e0773c5121444b5593a63ffadd232575cabeb2830909ecb927e9bbbed89d391f"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypePredefined",
+        "start": "0xf36d74",
+        "end": "0xf36db0",
+        "sha256": "62461c1dd17213559090b4e46d43525ca518c1f382f4c11917a158fdb673c874"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.InternalCreate",
+        "start": "0xf36b1c",
+        "end": "0xf36c00",
+        "sha256": "ceb6bc798ea1da228f8673e5a7ba89e4f22f66db620dbd82c0ff2ee93a8fb239"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavour.InternalCreate",
+        "start": "0xf3657c",
+        "end": "0xf366a0",
+        "sha256": "d9c9cb60d383eab2013f28ccacc60826c4d3dc91ecb88a3803649d4e5a279854"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.InternalCreate",
+        "start": "0x8583a4",
+        "end": "0x858484",
+        "sha256": "02b97c5acd97a9fb26668f326009255159ee77eff5c8e164b7a12cc2e47640a2"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.SetTagTypeAsCode",
+        "start": "0x858658",
+        "end": "0x8587cc",
+        "sha256": "27300dd550935fb94fecc49e7fba1de165f0eed81df2d2d6a9878ae478ec28e4"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.GetTagTypeAsCode",
+        "start": "0x858584",
+        "end": "0x858658",
+        "sha256": "81fb479843ad40c256412a0186f4079821ce5a33d60d7ad0d63670576b4a7ed3"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.SetTagValue",
+        "start": "0x858528",
+        "end": "0x858584",
+        "sha256": "2552d12d3d4c932cfd36469988ae506695f1a8dd09ca577fad671cd42935a703"
+      },
+      {
+        "symbol": "CIS_TDLTGraphic.IsDLTFontTagValue",
+        "start": "0x856fbc",
+        "end": "0x856fe0",
+        "sha256": "02258e3a90b0f6a9251891223362eaf02fe218e9415a84330a6ee9cb50c25457"
+      },
+      {
+        "symbol": "CIS_jcl.StrLeft",
+        "start": "0x7b6c10",
+        "end": "0x7b6c38",
+        "sha256": "46d63e4aeeab6b246c4350843e3637f053eff68f97eae6b2d26a4627b22bb782"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusGroup.InitialiseLanguages",
+        "start": "0xf2879c",
+        "end": "0xf287d8",
+        "sha256": "f6bb4c85675229d43bd1e22c11d8543728f01189e58583dd1a017cc4af2005cd"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.InitialiseLanguages",
+        "start": "0xf27058",
+        "end": "0xf27098",
+        "sha256": "541bf0c52f32980272f8bd18e419b246b44fc8442166d3a9734c3366ebe02b92"
+      },
+      {
+        "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.GetAsString",
+        "start": "0x7ea47c",
+        "end": "0x7ea498",
+        "sha256": "585092057648a41980aebe9f38218af0280ac9ba8857bfeb748646509eeadc97"
+      },
+      {
+        "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.InternalGetDefaultRepresentation",
+        "start": "0x7ea5f8",
+        "end": "0x7ea61c",
+        "sha256": "6b92ff276125abf1581fd305518e7063b90a7d05d09348ab47511df2af42b1e9"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusGroup.GetDefaultRepresentation",
+        "start": "0xf280f4",
+        "end": "0xf28134",
+        "sha256": "307af7008710c4f12197191efc7eb5c7452a5a0ca49266c86cb0654b239f3110"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.GetDefaultRepresentation",
+        "start": "0xf26d88",
+        "end": "0xf26da8",
+        "sha256": "2c18a0246743059c53b2fb09d650dd6990212740dd6f75934f3ea467c62bf556"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.GetExtendedTagName",
+        "start": "0xf47dc4",
+        "end": "0xf47e88",
+        "sha256": "171023bb642a824d593457c47891799b2e40dc7bced102aedd0d2e5098b0ace0"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.InternalCreate",
+        "start": "0xf47718",
+        "end": "0xf47880",
+        "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.GetExtendedTagName",
+        "start": "0xf270cc",
+        "end": "0xf271a0",
+        "sha256": "561332ea951589ced3e77e410c591fe4500740d96edfe007d1c99c26025303f3"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.InternalCreate",
+        "start": "0xf26a48",
+        "end": "0xf26b98",
+        "sha256": "b76bd0c39d53eea017ae5c6017c7eb9ad25145240d700cf667cefdc771e841b0"
+      },
+      {
+        "symbol": "CIS_GlobalSoftwareParameters.UseAddressValueFormat",
+        "start": "0x85b3d8",
+        "end": "0x85b3ec",
+        "sha256": "e1f27ca9a514e3d84d404eb190dece2b3f7ec2873bfeed3e58a411dbfbc8c80f"
+      },
+      {
+        "symbol": "CIS_TLanguageType.Add",
+        "start": "0x8541ec",
+        "end": "0x854260",
+        "sha256": "f24056b4ae305e90410b7a61d921f384162bc070507f8e34859c237f2b68dcf8"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentSave",
+        "start": "0x1213388",
+        "end": "0x1213414",
+        "sha256": "6271e999de8989599e919091e8ed97cbd10c259feb48e483f4fc392579ba9623"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentDelete",
+        "start": "0x1213318",
+        "end": "0x1213374",
+        "sha256": "dccd3bfe8a4086c28f0aacbf2dc92bf67b1be01d914efd898c5b8d395b39d946"
+      }
+    ],
+    "arguments": {
+      "InitialiseLanguages": {
+        "eax": "model GroupLanguageCollection",
+        "edx": "LanguageTypeReferenceCollection",
+        "ecx": "saved GroupTagDLTCollection",
+        "stack_ebp_plus_8": "preserve missing alternate model flavours"
+      },
+      "FinaliseLanguage": {
+        "eax": "model GroupLanguageCollection",
+        "edx": "requested LanguageType object",
+        "ecx": "optional supplied GroupLanguage object; nil resolves requested object identity",
+        "stack_ebp_plus_8": "saved GroupTagDLTCollection"
+      }
+    },
+    "rules": {
+      "graph": "Group/Level owns saved TagsDLT and separate model GroupLanguages. Each model language references a LanguageType object and owns Flavours; each flavour owns DLTTag(type,value). New DLTTag is TEXT with empty value. New language gets flavour1 only.",
+      "language_reconciliation": "Initialise always calls AddLanguageTypes(types,true): remove missing language object references backward, preserve surviving order, append missing requested languages in supplied order. Numeric saved-tag lookup and object-identity model-language lookup are distinct.",
+      "iteration": "Initialise iterates model languages in current collection order and flavours1..4. Finalise operates one requested language and flavours1..4, with each mutation completed before the next flavour.",
+      "saved_lookup": "First exact requested languageID/flavour row wins. Only flavour1 falls back to legacy flavour0 when exact1 is absent. Finalise fallback uses selected model language ID; exact lookup/new row uses requested language ID.",
+      "legacy_identity": "Existing fallback flavour0 remains flavour0 on update. If both0 and1 exist, only1 is selected and0 survives. New nonempty rows always get requested languageID and flavour1..4.",
+      "existing_saved_initialisation": "Ensure matching model flavour. SetTagTypeAsCode first, then assign complete saved value for resulting type3/FONT or first20 UTF16 code units otherwise.",
+      "dynamic_type_order": "Case-insensitive TEXT=0,ICON=1,FONT=3; DYNAMIC becomesFONT iff current pre-assignment model value contains exactly9 commas, otherwise2; unknown code becomesTEXT. SetTagValue does not reclassify.",
+      "missing_first_flavour": "Ensure flavour1. Language ID not0/202 resets tag toTEXT and empty, then Group/Level owner.GetAsString left20 if present. ID202 setsICON without clearing existing value. ID0 leaves existing type/value unchanged.",
+      "missing_alternate_flavour": "Absent saved flavour2..4 removes existing model flavour iff stack Boolean isfalse; true preserves it. Neither path creates an absent alternate flavour.",
+      "finalise_create": "If selected saved row absent and model flavour exists with value !=empty, append saved object then set requested languageID and current flavourID. StorageSave later creates persistence.",
+      "finalise_delete": "If selected saved row exists and model flavour absent or its value exactlyempty, call StorageDelete, then Extract from saved collection, then Free. Whitespace is nonempty.",
+      "finalise_update": "For nonempty model flavour, compare saved type code and saved value against full model code/value BEFORE truncation. Only if different: set type code; set full FONT value or first20 UTF16 units; call StorageSave.",
+      "unknown_saved_rows": "Rows of other languageIDs, flavours outside0..4, and shadowed duplicates are not swept by Finalise. Init changes only model cache. A selected unknown type is interpreted asTEXT; it cannot be promised preserved by a TEXT-only API.",
+      "utf16": "StrLeft(value,20) calls Delphi System.@UStrCopy(value,start1,count20): count is UTF16 code units, not Unicode code points; a surrogate pair may be split.",
+      "owner_display": "Group non255 uses GetExtendedTagName: optional FormattedAddress(address,false)+space-hyphen-space prefix under UseAddressValueFormat. Group255 uses TagName directly. Level prefix additionally needs model byte+0xbc, whose constructor default istrue. TagName is object attribute+0x9c. Missing-flavour1 fallback requires exact owner display metadata, not an assumed XML TagName.",
+      "scope_admission": "TEXT-only fresh-model transactions avoid retained DYNAMIC classification state. Reject nonTEXT rows in normalized scope unless complete cache/image/type semantics are supplied; require owner display metadata if fallback flavour1 is absent."
+    },
+    "boundary": "Static source evidence only. No original model/GUI execution, storage transaction, language-object cache reconstruction, or hardware acceptance is implied."
+  },
+  "boundary": "Original ICON OK button, default predicates and visibility/type fragment only; synthetic VCL/Variant/tag/finalizer hooks. Catalogue and collection source extraction only. No full native or managed GUI, bitmap rendering, server persistence or physical labels."
+}

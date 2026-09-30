@@ -168,12 +168,13 @@
    "SaveScenes rewrites SceneTriggerGroup/Level/Rate, SceneVectorOffset and SceneVector",
    "The base agent rewrites Application, ApplicationConnectEnabled, SynchroniseToWired, ForwardingMode, ForwardingRoute and StatusMonitorApplication",
    "The Remote Switch Application1 default and the group-255 cascade in HandleModeChange",
-   "Project remote-control unit, group and scene object creation"
+   "Project remote-control unit, group and scene object creation",
+   "After main PP SAVE, ProjectSave and LoadStatus, wireless AfterSave performs a separate UseSecurity PP save; terminal failure/persistence is independent. See wireless-connection-source-review.json."
   ],
   "forwarding_route": {
    "source": "TCBusWirelessGatewayCGateAgent.BeforeSaveProgrammingInformation 0x1258f30",
-   "rule": "ForwardingMode = bridge address 0 != 255; ForwardingRoute appends six bridge addresses (255 after the first unused one) and, when ForwardingMode is set, prefixes GetDepthAndCountByte 0x1258f08 = depth + depth * 8, where depth is the first unused bridge index + 1",
-   "editor": "shown raw only; project topology dependent"
+   "rule": "ForwardingMode = bridge address 0 != 255; ForwardingRoute tests and appends each of six bridge entries independently, retaining later non-255 entries after a gap. When ForwardingMode is set it prefixes GetDepthAndCountByte 0x1258f08 = depth + depth * 8, where depth is the first unused bridge index + 1. With all six entries non-255 this routine leaves depth zero; initial attribute-string buffer lifecycle remains unverified. See wireless-connection-source-review.json for the corrected source proof and bounded editor.",
+   "editor": "The separate wireless_connection editor resolves one-to-five extra-network routes from frozen topology; arbitrary stored tails and full original parent save remain outside that subset."
   },
   "help": {
    "13876.htm": "Network gateway mode and Remote switch mode",
@@ -260,18 +261,18 @@
   ],
   "key_masks": {
    "rule": "SaveKeyMask 0x12855f4 writes KeyMaskAllowed 0, KeyMaskSave 0, KeyCurrentMask = 2^n - 1 over the unit key collection, KeyEnableMask1..4 = 0xFFFF, KeyMaskNetworkVariable = key-mask control group or 255 and KeyMaskNetworkVariableLevels from the four control levels; no 1.18 dialog control edits the four enable masks",
-   "key_set_control": "The Key Set Control tab (TfrmWirelessUnitGlobalKeySet) saves KeyOffset* through SaveKeySets 0x1284e74, not the key masks"
+   "key_set_control": "The Key Set Control tab (TfrmWirelessUnitGlobalKeySet) saves KeyOffset* through SaveKeySets 0x1284e74, not the key masks",
+   "key_count": "TCBusWirelessInputUnit.Init 0xd4ab1c constructs 16 InputKeys (0xd4ab2b), so normal SaveKeyMask 0x12855f4 writes KeyCurrentMask=65535 independently of visible 2/4/8-button counts. See wireless-connection-source-review.json."
   }
  },
  "unresolved": [
   "TMulletScene field +0x78 read by SaveRemotes is assumed to be the 0-based scene position that LoadRemoteKeys decodes with ItemByNumber(nibble + 1)",
   "Whether the remote combo offers an empty entry that clears a remote; the editor's clear follows the SaveRemotes 'no remote' encoding",
   "The non-empty scene-vector check of AllRemoteScenesKeysHaveScenes is not reproduced (vector contents are not decoded)",
-  "Remote-control unit classes other than TWTXU/TWTXUP (the key map assumes the WTXU map)",
-  "KeyCurrentMask key count used by SaveKeyMask"
+  "Remote-control unit classes other than TWTXU/TWTXUP (the key map assumes the WTXU map)"
  ],
  "out_of_scope": [
-  "Network Gateway Connection tab edits (Application, ApplicationConnectEnabled, SynchroniseToWired, ForwardingMode, ForwardingRoute, StatusMonitorApplication)",
+  "Connection controls are implemented separately in wireless_connection for a bounded WGATE5F profile; complete original parent save and other profiles remain outside the remotes editor",
   "Scenes tab / Wireless Scene Manager",
   "Radio learn/join, house-code transfer and physical remote pairing",
   "Decorator and other CBusWirelessIOUnit dialogs (12558.htm)"

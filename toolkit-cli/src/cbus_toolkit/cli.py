@@ -2710,6 +2710,8 @@ def _cgate(args):
     import ssl
     from .cgate import CGateClient
     timeout = _cgate_timeout(args)
+    from .wireless_cli import preflight as wireless_preflight
+    wireless_limits = wireless_preflight(args)
     dali_edits = None
     if args.action == "dali":
         from .dali_commissioning_cli import preconnect as dali_preconnect
@@ -2786,6 +2788,7 @@ def _cgate(args):
     large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml"))
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
+    connection_limits.update(wireless_limits)
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "edlt-labels":
@@ -2916,6 +2919,12 @@ def _cgate(args):
                 result = getattr(db, args.remote_action)(args.path)
             return result, 0
         if args.action == "unit":
+            if hasattr(args, "_wireless_action_plan"):
+                from .wireless_cli import action_native
+                return action_native(args, client)
+            if hasattr(args, "_wireless_project_remote_plan"):
+                from .wireless_cli import project_remote_native
+                return project_remote_native(args, client)
             return _programming(args, client), 0
         if args.action == "physical-pp":
             from .physical_programming_cli import run as physical_programming_run

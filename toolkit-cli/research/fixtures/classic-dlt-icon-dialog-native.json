@@ -1,0 +1,49 @@
+{
+  "format": "cbus-classic-dlt-icon-dialog-native-v1",
+  "passed": true,
+  "scope": "Owned original C-Gate synthetic database XML only",
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "original_full_dialog_executed": false,
+  "original_collection_executed": false,
+  "physical_hardware_verified": false,
+  "icon_rendering_verified": false,
+  "network_opened": false,
+  "cases": [
+    {
+      "kind": "Group",
+      "set_status": 301,
+      "legacy_zero_oid_retained": true,
+      "same_value_type_change_persisted": true,
+      "empty_icon_alternate_deleted": true,
+      "other_selected_text_normalized": true,
+      "builtin_icon_created": 91,
+      "foreign_font_and_out_of_range_dynamic_preserved": true,
+      "network_languages_preserved": true
+    },
+    {
+      "kind": "Level",
+      "set_status": 301,
+      "legacy_zero_oid_retained": true,
+      "same_value_type_change_persisted": true,
+      "empty_icon_alternate_deleted": true,
+      "other_selected_text_normalized": true,
+      "builtin_icon_created": 91,
+      "foreign_font_and_out_of_range_dynamic_preserved": true,
+      "network_languages_preserved": true
+    },
+    {
+      "kind": "Group",
+      "missing_first_icon_stays_absent": true,
+      "owner_display_context_not_required": true,
+      "builtin_icon_created": 91
+    },
+    {
+      "kind": "Group",
+      "exact_first_selected_over_legacy": true,
+      "shadowed_legacy_unchanged": true,
+      "both_oids_retained": true
+    }
+  ],
+  "action_address_and_value_preserved": true,
+  "project_save_close_reload_passed": true
+}

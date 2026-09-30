@@ -1,0 +1,53 @@
+{
+  "baseline_commit": "096ea48e29a3227e9e44cf14319136b2e8edfda5",
+  "format": "thermostat-disabled-remotes-focused-acceptance-v1",
+  "full_test_suite_run": false,
+  "limits": [
+    "Enabled remote references and application/group creation remain outside this PP projection.",
+    "No new remote editing admission or complete remote/quick-zone/form workflow is claimed.",
+    "Program flags and source are read from the post-edit snapshot, not a retained GUI session.",
+    "The source receipt proves branch semantics; native tests prove PP save/reload and preservation, not original GUI execution."
+  ],
+  "native": {
+    "cleanup_complete": true,
+    "cni_connections": [],
+    "disabled_remote_alias_cases": 4,
+    "receipt": "research/experiments/2026-09-30/thermostat-disabled-remotes-native.json",
+    "sha256": "32d646cc9852534abfe586417c65ad2adb40d5ec0a0a02548b3c8fb490b7cd19",
+    "tests_passed": 7,
+    "tests_skipped": 0
+  },
+  "new_wheel_built": false,
+  "offline": {
+    "files": [
+      "test_thermostat_settings.py",
+      "test_thermostat_settings_guard.py",
+      "test_thermostat_settings_dialog_rules.py",
+      "test_thermostat_post_load.py",
+      "test_thermostat_templates.py",
+      "test_thermostat_settings_temperature_vectors.py"
+    ],
+    "subtests_passed": 618,
+    "tests_passed": 50,
+    "tests_skipped": 0
+  },
+  "origin_main_rechecked": "9a792616d9fd09efc2b8c1c597fb8eccee26da31",
+  "original_source": {
+    "checks_passed": 129,
+    "independent_branch_examples": 9,
+    "method_hashes": 20,
+    "production_oracle_used": false,
+    "receipt": "research/experiments/2026-09-30/thermostat-remote-save-static.json",
+    "sha256": "730570b165b84e45e865f6a7188b750b9221268935269e22eefd69f8f4064b3c"
+  },
+  "original_whole_form_executed": false,
+  "physical_devices_accessed": false,
+  "scope": "Disabled-only remote setback/schedule dependent PP save writes and invalid setback source refusal",
+  "source_sha256": {
+    "research/thermostat_remote_save_static.py": "011abce2f737b2ee316eeb6864a0a90842d6778341098a8c4ef9df9ac3b5eef2",
+    "src/cbus_toolkit/thermostat_post_load.py": "6ca049e0d97e70cdb0ea9210a47676f9fb92996d46afd6e6c57f8539caac5afd",
+    "src/cbus_toolkit/thermostat_settings.py": "4964e5eee8c8f343720af99530d4a3eea931f097f745005c678c86d0b16957cf",
+    "tests/test_thermostat_settings.py": "5ba2cd6363ce13662183ea6881986311af1e94267f3a059e1d27f5785256a4f9",
+    "tests/test_thermostat_settings_native.py": "65af0dd91a4fb91e725d21d84903735f31d35cb382e00a6fb5d8adb0352d80af"
+  }
+}

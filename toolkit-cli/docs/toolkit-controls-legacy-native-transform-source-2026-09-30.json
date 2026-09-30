@@ -1,0 +1,140 @@
+{
+  "format": "cbus-project-legacy-transform-native-v1",
+  "target": "original C-Gate 3.4.0 build 2001, owned XML repository and loopback only",
+  "sources": {
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "v22tov23_xslt_sha256": "5674534824826a2db5e3b762c207ce0e566298e54703f628d16f9b3d2d47dab2",
+    "fixture_sha256": {
+      "native": "4249fba21a15c4018b3c3c4d8b4c126697a9c990382c3bf23cec0cc51b3c98da",
+      "encoding": "d9512bfdf248f203f7b2e5558eb736eeedd00b1ec208ec2c6230f29b3d533d3c",
+      "dtd": "35e2c58d4f08ec2306b914210fa3603407f971daa76d1edbe000f21e0f48c4c7",
+      "xml11": "ac0ce71275e85dec2b6f14a075d1e25b3b4142971e91239ad261f1918bcfe75f"
+    },
+    "test_sha256": "59172bba8c9ecb555794ebef67e6bb8a2620742e33bbf452281cf3d89163a983",
+    "portable_test_sha256": "e4b9a5083d820de48327f82bc5f116e566c7e3f5322325b1bdd325178c44159f",
+    "portable_module_sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
+    "cli_module_sha256": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e",
+    "native_module_sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+    "cli_dispatch_sha256": "4b74ef744fa572985924e6ed8f45bc5e9301f4a99f687ac4d58fa4ad153ef81d",
+    "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "help": [
+    "101-Help: Syntax:  TRANSFORM PROJECT [--test] <project-name> [<xslt-file-name> [<output-project-name>]]",
+    "101-Help: Transform a project database",
+    "101-Help:  <project-name> is the xml file to be transformed (relative to C-Gate tag directory)",
+    "101-Help:  <xslt-file-name> is the xslt transform script (relative to C-Gate's transform directory)",
+    "101 Help:  <output-project-name> is the name of the resulting project (relative to C-Gate tag directory)"
+  ],
+  "preview": {
+    "response": [
+      "199-current DBVersion is: 2.2",
+      "199-wanted DBVersion is: 2.3",
+      "199-Calculated transform list:",
+      "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+      "200 OK."
+    ],
+    "backup_absent_before_test": true,
+    "creates_backup_without_changing_xml": true
+  },
+  "cases": [
+    {
+      "name": "RPMAL",
+      "source_case": "RPMAL",
+      "source_sha256": "92c68a8fa0eb9381ba7ae3df82fdbf1ca1e2c274fc1a1b669e6f8595c1c47ba6",
+      "native_output_sha256": "eb1f52f1020f920cce0417aa517e29fce7d5cb5e827fb057782e7cff5b326b15",
+      "backup_sha256": "92c68a8fa0eb9381ba7ae3df82fdbf1ca1e2c274fc1a1b669e6f8595c1c47ba6",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "--test",
+      "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "transform_response": "200 OK.",
+      "load_after": "200 OK.",
+      "readback_code": 344,
+      "readback_db_version": "2.3",
+      "readback_project_address": "RPMAL",
+      "readback_project_tag": "RPMAL",
+      "readback_groups": [
+        [
+          "1",
+          "First"
+        ],
+        [
+          "255",
+          "<Unused>"
+        ]
+      ],
+      "readback_oid_count": 61
+    },
+    {
+      "name": "FRENC",
+      "source_case": "windows1252-utf8-full",
+      "source_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "native_output_sha256": "013d8f4dffe845a564bd9de2f56231c36f2048ad906f00f519d2a53909cfb5ee",
+      "backup_sha256": "946e8ec20334484c49c9d9041a1f7c34e101b4ca4c01947a0f208fc103efefd4",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
+      "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "transform_response": "200 OK.",
+      "load_after": "200 OK.",
+      "readback_code": 344,
+      "readback_db_version": "2.3",
+      "readback_project_address": "FRENC",
+      "readback_project_tag": "FRENC",
+      "readback_groups": [],
+      "readback_oid_count": 4
+    },
+    {
+      "name": "FRDTD",
+      "source_case": "one-text-repair",
+      "source_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+      "native_output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
+      "backup_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
+      "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "transform_response": "200 OK.",
+      "load_after": "200 OK.",
+      "readback_code": 344,
+      "readback_db_version": "2.3",
+      "readback_project_address": "FRDTD",
+      "readback_project_tag": "FRDTD",
+      "readback_groups": [],
+      "readback_oid_count": 4
+    },
+    {
+      "name": "FRXML11",
+      "source_case": "c1-text-full",
+      "source_sha256": "8ee3552b48c3588510e1790de8437dd4a210b2d9921941ea219ef0c197b7a0fb",
+      "native_output_sha256": "eafeea84196d28fb3832f3863b446bf42244c21484f30b52e56837e41e7df224",
+      "backup_sha256": "8ee3552b48c3588510e1790de8437dd4a210b2d9921941ea219ef0c197b7a0fb",
+      "backup_absent_before_load": true,
+      "backup_absent_after_rejected_load": true,
+      "backup_created_by": "transform",
+      "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+      "transform_response": "200 OK.",
+      "load_after": "200 OK.",
+      "readback_code": 344,
+      "readback_db_version": "2.3",
+      "readback_project_address": "FRXML11",
+      "readback_project_tag": "FRXML11",
+      "readback_groups": [],
+      "readback_oid_count": 4
+    }
+  ],
+  "service": {
+    "listener_ownership_verified": true,
+    "listener_count": 6,
+    "process_exit_confirmed": true,
+    "work_removed": true,
+    "cleanup_complete": true
+  },
+  "physical_networks_opened": false,
+  "scope": "Four generated repaired inputs; no arbitrary-project or Toolkit GUI parity claim",
+  "acceptance_context": "source",
+  "raw_receipt_sha256": "76160a5b9340c03a878bf297f09d0271eec4721e1c4bfe52a076bf13fc779cfa",
+  "actual_imported_current_cli_sha256": "4b74ef744fa572985924e6ed8f45bc5e9301f4a99f687ac4d58fa4ad153ef81d",
+  "execution_boundary": "Current NativeProjects API and direct C-Gate commands with owned synthetic projects; portable CLI is exercised separately. No fresh native CLI wrapper invocation is claimed."
+}

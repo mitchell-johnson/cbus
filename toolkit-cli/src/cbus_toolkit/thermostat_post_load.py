@@ -547,6 +547,41 @@ def form_save_scalars(values, family):
     return result
 
 
+DISABLED_REMOTE_DEFAULTS = {
+    'RemoteSetbackOnGroup': 30, 'RemoteSetbackOffGroup': 31,
+    'RemoteScheduleEnable': 0, 'RemoteScheduleOnGroup': 32,
+    'RemoteScheduleOffGroup': 33, 'RemoteScheduleOverrideGroup': 34,
+}
+
+
+def form_save_disabled_remotes(values, family):
+    """Original disabled-branch writes without dereferencing remote groups.
+
+    Enabled setback and schedule references require the original application
+    graph and are deliberately outside this PP-only projection. AfterLoad
+    ignores raw RemoteScheduleEnable and derives the model flag from the two
+    normalized program flags; BeforeSave writes literal defaults when off.
+    """
+    if family not in ('basic', 'programmable'):
+        raise ThermostatPostLoadError('Unknown thermostat family')
+    source = values['RemoteSetbackControlSource']
+    if type(source) is not int or not 0 <= source <= 2:
+        # Above 2, original AfterLoad clears both references but BeforeSave
+        # takes its source>0 dereference branch. Do not project a valid save.
+        raise ThermostatPostLoadError('RemoteSetbackControlSource must be 0..2 for original form save')
+    if family == 'programmable':
+        for name in ('EvapProgramEnabled', 'NonEvapProgramEnabled'):
+            if type(values[name]) is not int or not 0 <= values[name] <= 255:
+                raise ThermostatPostLoadError(name + ' must be a one-byte integer')
+    result = {}
+    if source == 0:
+        result.update({n: DISABLED_REMOTE_DEFAULTS[n]
+                       for n in ('RemoteSetbackOnGroup', 'RemoteSetbackOffGroup')})
+    if family == 'programmable' and values['EvapProgramEnabled'] != 1 and values['NonEvapProgramEnabled'] == 0:
+        result.update({n: v for n, v in DISABLED_REMOTE_DEFAULTS.items() if n.startswith('RemoteSchedule')})
+    return result
+
+
 # name: (AfterLoad conversion, BeforeSave conversion, signed byte, upper clamp)
 # Pinned in research/thermostat_settings_temperature_static.py.  Only the two
 # upper guard fields receive the additional 127 clamp in BeforeSave.

@@ -1,0 +1,1699 @@
+{
+  "after_load_event_suppression": [
+    {
+      "hook_call": "0x128e4eb",
+      "service": "CBus",
+      "unhook_call": "0x128e0aa"
+    },
+    {
+      "hook_call": "0x128ec8c",
+      "service": "ZoneManager",
+      "unhook_call": "0x128e539"
+    },
+    {
+      "hook_call": "0x128f81e",
+      "service": "Plant",
+      "unhook_call": "0x128eca6"
+    },
+    {
+      "hook_call": "0x128f8f7",
+      "service": "Measurement",
+      "unhook_call": "0x128f830"
+    },
+    {
+      "hook_call": "0x1299b63",
+      "service": "Schedule",
+      "unhook_call": "0x1299b22"
+    }
+  ],
+  "check_count": 29,
+  "checker_sha256": "4b539c61068f9f66b92c9d04963721e0b54dc5cf630dcc0854dba2e396304189",
+  "checks": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate@0x7f4511": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation@0x12994f5": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation@0x129953a": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation@0x1299abe": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation@0x1299b22": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation@0x1299b63": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128e0aa": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128e4eb": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128e527": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128e539": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128ec8c": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128eca6": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128f81e": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128f830": true,
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation@0x128f8f7": true,
+    "CIS_TThermostat.TThermostat.AfterConstruction@0xfea5b2": true,
+    "CIS_TThermostat.TThermostat.AfterConstruction@0xfea5bc": true,
+    "CIS_TThermostat.TThermostat.AfterConstruction@0xfea5c4": true,
+    "advanced_ui_declarations_only_flags": true,
+    "advanced_ui_hook_does_not_call_base_hook": true,
+    "advanced_ui_hook_vmt": true,
+    "advanced_ui_hooks_only_two_flags": true,
+    "advanced_ui_unhook_vmt": true,
+    "base_constructs_six_owned_children": true,
+    "corrected_native_seed": true,
+    "fifteen_temperature_fixed_points": true,
+    "no_direct_base_ui_hook_call_in_executable_code_sections": true,
+    "programmable_constructs_advanced_ui_time_schedule": true,
+    "zones_construct_five_boolean_attributes": true
+  },
+  "complete_initialization_closed": false,
+  "constructor_callback_wiring": {
+    "TCBusParameters": [],
+    "TPlantControlService": [],
+    "TProgrammableThermostat": [
+      {
+        "handler": "CIS_TThermostat.TProgrammableThermostat.HandleEvapProgramEnableChange",
+        "instruction": "dword ptr [eax + 0xc8], 0xfed134",
+        "store": "0xfed01e"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0xb0], 0xfea7b0",
+        "store": "0xfed039"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0x80], 0xfea7b0",
+        "store": "0xfed0ae"
+      }
+    ],
+    "TScheduleService": [],
+    "TTemperatureMeasurementService": [],
+    "TThermostat": [
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0x98], 0xfea7b0",
+        "store": "0xfea451"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleInstalledZonesChange",
+        "instruction": "dword ptr [eax + 0xa0], 0xfea824",
+        "store": "0xfea46c"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0x118], 0xfea7b0",
+        "store": "0xfea4b4"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0x150], 0xfea7b0",
+        "store": "0xfea51e"
+      },
+      {
+        "handler": "CIS_TThermostat.TThermostat.HandleZoneChange",
+        "instruction": "dword ptr [eax + 0x88], 0xfea7b0",
+        "store": "0xfea566"
+      }
+    ],
+    "TThermostatInstallations": [],
+    "TUIService": [],
+    "TZoneManagerService": []
+  },
+  "constructors_executed": false,
+  "direct_base_ui_hook_calls": [],
+  "format": "cbus-thermostat-quick-zone-constructor-static-v1",
+  "fresh_used_zones_constructor_mask": 0,
+  "limits": [
+    "Attribute inventory is explicit declarations of listed classes, not complete inherited CBus/network/workspace object layout.",
+    "No whole-form execution, original PP load/save/reload or constructor execution is established.",
+    "Prior four-callback core fixture manually used TUIService. It is not evidence for fresh programmable AdvancedUI callback wiring."
+  ],
+  "methods": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate": {
+      "address": "0x7f44d8",
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.Create": {
+      "address": "0x7eabb0",
+      "sha256": "2787031c80b1db46caf9e73c4ddd9b4cfd64e63374100e01cc78fe19a72011b7"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.CreateComplete": {
+      "address": "0x7eab78",
+      "sha256": "ee01a20dc8b012fb1a2582347404b984e8f4cf042b76f10f84de91e9446c2091"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.CreateInWorkSpace": {
+      "address": "0x7ea6ac",
+      "sha256": "1df68a1522c9278cd4e37130bb722b5c23edc3635f7cacea3b3776542659591a"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.GetWorkSpace": {
+      "address": "0x7ea9dc",
+      "sha256": "ca13f0dd5f39cb9a14d15c9c584816b836cb3fcd19f88c59149d7ba5f519cf4c"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.SetWorkSpace": {
+      "address": "0x7ea78c",
+      "sha256": "32e5efd4c2d7ff8563defd6adc46f3177d32baee0faff559d7977442bb9d2895"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.AfterConstruction": {
+      "address": "0x76a4a0",
+      "sha256": "5dce859013ffc09e3d9f4eb263a7adea98abeca6bbc4d41684cc8a733fd7a834"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Create": {
+      "address": "0x76a0f0",
+      "sha256": "9215469e1caa2ba3be6240f941122ea159a70408d0b95304dfb8de53c86e97f9"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.CreateComplete": {
+      "address": "0x76a460",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TThermostat.TAdvancedUIService.HookEvents": {
+      "address": "0xfdd2d4",
+      "sha256": "16d00e6b8cd446cc2ed046316f5a1cf94067c3708bfa09c096151094c95d3611"
+    },
+    "CIS_TThermostat.TAdvancedUIService.InternalCreate": {
+      "address": "0xfdd0d4",
+      "sha256": "58c7040ab2460d80f5b2e684eb7ebcfecbb69fb0bfc179311b9e82332d3ba3b5"
+    },
+    "CIS_TThermostat.TAdvancedUIService.UnhookEvents": {
+      "address": "0xfdd30c",
+      "sha256": "41d72068f76fcca3af387afd0f05560ec60e15a284e428b110e5975fc42b67df"
+    },
+    "CIS_TThermostat.TCBusParameters.AfterConstruction": {
+      "address": "0xfdb990",
+      "sha256": "d1de7adbdd0eab8bf48e0d6456957b06e469fdc31ef1848a7c1e48252c1319a5"
+    },
+    "CIS_TThermostat.TCBusParameters.HookEvents": {
+      "address": "0xfdb9d0",
+      "sha256": "9f6b1b05234f96622b709ddfad37f9611d64077d00999fb7ed8cfab6932a0b73"
+    },
+    "CIS_TThermostat.TCBusParameters.InternalCreate": {
+      "address": "0xfdb6bc",
+      "sha256": "f7d587101c50c82161d3ceb3336bb7ab36415806d9cf5447b310dc5de6e29ddc"
+    },
+    "CIS_TThermostat.TCBusParameters.UnhookEvents": {
+      "address": "0xfdb9f0",
+      "sha256": "89b5d6e0d14ba0db02aed9d63a0a8ce074bc2056c799f7aec9a0ed8773a58822"
+    },
+    "CIS_TThermostat.TPlantControlService.AfterConstruction": {
+      "address": "0xfe15f8",
+      "sha256": "54fd0b9be53cd00e3a21dc355262bed844118da126c0c80a801ebd1cf2fb5940"
+    },
+    "CIS_TThermostat.TPlantControlService.HandleVentPlantTypeChange": {
+      "address": "0xfe1d20",
+      "sha256": "a06a22e068daa2e6c185bd1b849a9984465fe0c9c5dad7fb0e37cdf831877473"
+    },
+    "CIS_TThermostat.TPlantControlService.HookEvents": {
+      "address": "0xfe1664",
+      "sha256": "bb827ae5efb0f2fac84f1dfe0bb9e852995bec5d14d3c46af0592c2e3b91e166"
+    },
+    "CIS_TThermostat.TPlantControlService.InternalCreate": {
+      "address": "0xfe012c",
+      "sha256": "08d5c62fffd60127237b95834174e6dabdc16c8a9967e74f57abccd24d1a80a9"
+    },
+    "CIS_TThermostat.TPlantControlService.UnhookEvents": {
+      "address": "0xfe16b0",
+      "sha256": "ebb124cd9b388d150cd990828a93e2d2282f2f3a284b0a8ce1173d12f7d29fdf"
+    },
+    "CIS_TThermostat.TProgrammableThermostat.AfterConstruction": {
+      "address": "0xfecfc8",
+      "sha256": "ff13988d1aea8b97bdacf4e6c81dbd4c53085ab01bbfa8568f2d0435d7ee8ae6"
+    },
+    "CIS_TThermostat.TProgrammableThermostat.InternalCreate": {
+      "address": "0xfecf18",
+      "sha256": "837b8bc832e11be3495551f13a443e92fc0ffee9c785d2b694112c7bf7668430"
+    },
+    "CIS_TThermostat.TScheduleService.AfterConstruction": {
+      "address": "0xfea038",
+      "sha256": "fa5dc309769819fac27714f9e8a5228c10d4333b8d324534a991d997ca6e8e95"
+    },
+    "CIS_TThermostat.TScheduleService.HookEvents": {
+      "address": "0xfea074",
+      "sha256": "4105abd1bdcf7445aab1cc796795c11eaee641413c7b59faaf1140a485739e7b"
+    },
+    "CIS_TThermostat.TScheduleService.InternalCreate": {
+      "address": "0xfe9f8c",
+      "sha256": "cea64aa0806ca51a5f1f37bbe45331047a2fdc2dd98a71fe2fb1a2b840a062a7"
+    },
+    "CIS_TThermostat.TScheduleService.UnhookEvents": {
+      "address": "0xfea094",
+      "sha256": "d936b3461f83fa9c8b5b292407d6f1bbc7a41408d3d101d7a8d6785e1bd5b751"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.AfterConstruction": {
+      "address": "0xfdbfdc",
+      "sha256": "d6bc9d053c636b8585d96df4421b5dae90f9e7229d7e63bb1676b729ee954f96"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.HookEvents": {
+      "address": "0xfdc018",
+      "sha256": "d3f1a83ff9ed9217a56360451a1033fed1c3f638cf751fcf27ac37f06a43e66a"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.InternalCreate": {
+      "address": "0xfdbdf8",
+      "sha256": "ee3779cebd7838ad6d7a83f9fca244f42eda5c8187d44a8dd43c164e9ba464ba"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.UnHookEvents": {
+      "address": "0xfdc038",
+      "sha256": "4537ed85484a77ed54d1269f39bb9c11906a472e5f68f3a8e1b90f45647a7d64"
+    },
+    "CIS_TThermostat.TThermostat.AfterConstruction": {
+      "address": "0xfea404",
+      "sha256": "105eac281e6c8dabdc67dad35a2c93a9850e6967f4dbf9e04994e870ecf4e7cd"
+    },
+    "CIS_TThermostat.TThermostat.InternalCreate": {
+      "address": "0xfea134",
+      "sha256": "c295d6af4e272c8e00994ff747e39ab3d790e8fcd360a371dbe4e920f213f0da"
+    },
+    "CIS_TThermostat.TThermostatInstallations.AfterConstruction": {
+      "address": "0xfed75c",
+      "sha256": "f754084a464277a77dabd880651126c335382e684a6c14411188ef402729d641"
+    },
+    "CIS_TThermostat.TThermostatInstallations.InternalCreate": {
+      "address": "0xfed748",
+      "sha256": "aa980eb94355aeb9361020eb13548fe6effe27c68774f67891f10969b416bb1c"
+    },
+    "CIS_TThermostat.TTimeService.InternalCreate": {
+      "address": "0xfe9e70",
+      "sha256": "8eb2649d83b7cf5cadac9ba230d244bf1f5f3f99c6551581152956aa29ec9d52"
+    },
+    "CIS_TThermostat.TUIService.AfterConstruction": {
+      "address": "0xfdc7c0",
+      "sha256": "ce868bbc983ff0faac1ac9769d5bacafefcf9267fb79130c924205b3940e6ad7"
+    },
+    "CIS_TThermostat.TUIService.HookEvents": {
+      "address": "0xfdc800",
+      "sha256": "b71294fa35350adeba79971b0e4d97b27849e1b5873cbbd12b88d8048b285aeb"
+    },
+    "CIS_TThermostat.TUIService.InternalCreate": {
+      "address": "0xfdc25c",
+      "sha256": "56e8fd72cc4094293b9e699def67d98155c40ee913e662ee2ba8827ab48b5b62"
+    },
+    "CIS_TThermostat.TUIService.UnhookEvents": {
+      "address": "0xfdc820",
+      "sha256": "9a159df23d9355e720645e7f2d53e6758415440ad7021e8d13b251087480b163"
+    },
+    "CIS_TThermostat.TZoneManagerService.AfterConstruction": {
+      "address": "0xfddf98",
+      "sha256": "edd3df1dd1838e6d86fab865acd0efac6f24723045c72af1b452410c4d1f4a17"
+    },
+    "CIS_TThermostat.TZoneManagerService.HookEvents": {
+      "address": "0xfde088",
+      "sha256": "63fc3915c2d7bb031382adb58082fc796d75843bf4d2599d230f15208c7018e2"
+    },
+    "CIS_TThermostat.TZoneManagerService.InternalCreate": {
+      "address": "0xfdd338",
+      "sha256": "149e7f01f36dcbf1f51ccf1ed9244dd2449e63f07a02dadd4cf8caca7247d729"
+    },
+    "CIS_TThermostat.TZoneManagerService.UnhookEvents": {
+      "address": "0xfde154",
+      "sha256": "7abc64d96a9da3f72cbc8feb2edd6f16753b030503f7a124a206651a9619c182"
+    },
+    "CIS_TThermostatCommon.TZones.InternalCreate": {
+      "address": "0xca52d4",
+      "sha256": "65ab4bcc28ed1798b1b965092f9e99f9199896a8ec9a8007cd061350c6428ebb"
+    }
+  },
+  "model_attribute_declarations": {
+    "TAdvancedUIService": [
+      {
+        "callsite": "0xfdd0fb",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapProgramEnabled",
+        "slot": "0xb8",
+        "store": "0xfdd103"
+      },
+      {
+        "callsite": "0xfdd121",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "NonEvapProgramEnabled",
+        "slot": "0xbc",
+        "store": "0xfdd129"
+      }
+    ],
+    "TCBusParameters": [
+      {
+        "callsite": "0xfdb6f0",
+        "class": "CIS_TStringAttribute..TStringAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ManufacturerCode",
+        "slot": "0x78",
+        "store": "0xfdb6f8"
+      },
+      {
+        "callsite": "0xfdb713",
+        "class": "CIS_TStringAttribute..TStringAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "VersionNumber",
+        "slot": "0x7c",
+        "store": "0xfdb71b"
+      },
+      {
+        "callsite": "0xfdb736",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "ZoneGroup",
+        "slot": "0x80",
+        "store": "0xfdb73e"
+      },
+      {
+        "callsite": "0xfdb75c",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "InstalledZones",
+        "slot": "0x84",
+        "store": "0xfdb764"
+      },
+      {
+        "callsite": "0xfdb782",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ApplicationNumber",
+        "slot": "0x88",
+        "store": "0xfdb78a"
+      },
+      {
+        "callsite": "0xfdb7a8",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "Verbose",
+        "slot": "0x8c",
+        "store": "0xfdb7b0"
+      },
+      {
+        "callsite": "0xfdb7ce",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "SystemRefreshTime",
+        "slot": "0x90",
+        "store": "0xfdb7d6"
+      },
+      {
+        "callsite": "0xfdb7f4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeartbeatTime",
+        "slot": "0x94",
+        "store": "0xfdb7fc"
+      }
+    ],
+    "TPlantControlService": [
+      {
+        "callsite": "0xfe0160",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "PlantMinimumOnTime",
+        "slot": "0x78",
+        "store": "0xfe0168"
+      },
+      {
+        "callsite": "0xfe0183",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "PlantMinimumOffTime",
+        "slot": "0x7c",
+        "store": "0xfe018b"
+      },
+      {
+        "callsite": "0xfe01a6",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "PlantCycleTime",
+        "slot": "0x80",
+        "store": "0xfe01ae"
+      },
+      {
+        "callsite": "0xfe01c6",
+        "class": "CIS_TThermostat..TPlantStagesAttribute",
+        "constructor": "CIS_TThermostat.TPlantStagesAttribute.Create",
+        "name": "CoolingPlantStages",
+        "slot": "0x84",
+        "store": "0xfe01ce"
+      },
+      {
+        "callsite": "0xfe01e6",
+        "class": "CIS_TThermostat..TPlantStagesAttribute",
+        "constructor": "CIS_TThermostat.TPlantStagesAttribute.Create",
+        "name": "HeatingPlantStages",
+        "slot": "0x88",
+        "store": "0xfe01ee"
+      },
+      {
+        "callsite": "0xfe0206",
+        "class": "CIS_TThermostat..TPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TPlantTypeAttribute.Create",
+        "name": "InternalPlantType",
+        "slot": "0x8c",
+        "store": "0xfe020e"
+      },
+      {
+        "callsite": "0xfe022c",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "InternalPlantZones",
+        "slot": "0x90",
+        "store": "0xfe0234"
+      },
+      {
+        "callsite": "0xfe0252",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "InternalPlantModes",
+        "slot": "0x94",
+        "store": "0xfe025a"
+      },
+      {
+        "callsite": "0xfe0278",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanSpeedControlEnable",
+        "slot": "0x98",
+        "store": "0xfe0280"
+      },
+      {
+        "callsite": "0xfe029e",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanSpeeds",
+        "slot": "0x9c",
+        "store": "0xfe02a6"
+      },
+      {
+        "callsite": "0xfe02c4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanDefaultSpeed",
+        "slot": "0xa0",
+        "store": "0xfe02cc"
+      },
+      {
+        "callsite": "0xfe02ea",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanOnDelay",
+        "slot": "0xa4",
+        "store": "0xfe02f2"
+      },
+      {
+        "callsite": "0xfe0310",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanOffDelay",
+        "slot": "0xa8",
+        "store": "0xfe0318"
+      },
+      {
+        "callsite": "0xfe0336",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantFanEnable",
+        "slot": "0xac",
+        "store": "0xfe033e"
+      },
+      {
+        "callsite": "0xfe035c",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanSpeedControlEnable",
+        "slot": "0xb0",
+        "store": "0xfe0364"
+      },
+      {
+        "callsite": "0xfe0382",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanSpeeds",
+        "slot": "0xb4",
+        "store": "0xfe038a"
+      },
+      {
+        "callsite": "0xfe03a8",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanDefaultSpeed",
+        "slot": "0xb8",
+        "store": "0xfe03b0"
+      },
+      {
+        "callsite": "0xfe03ce",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanOnDelay",
+        "slot": "0xbc",
+        "store": "0xfe03d6"
+      },
+      {
+        "callsite": "0xfe03f4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanOffDelay",
+        "slot": "0xc0",
+        "store": "0xfe03fc"
+      },
+      {
+        "callsite": "0xfe041a",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantFanEnable",
+        "slot": "0xc4",
+        "store": "0xfe0422"
+      },
+      {
+        "callsite": "0xfe043a",
+        "class": "CIS_TThermostat..TVentPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TVentPlantTypeAttribute.Create",
+        "name": "VentPlantType",
+        "slot": "0xc8",
+        "store": "0xfe0442"
+      },
+      {
+        "callsite": "0xfe0460",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "InternalRelay1Group",
+        "slot": "0xcc",
+        "store": "0xfe0468"
+      },
+      {
+        "callsite": "0xfe0486",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "InternalRelay2Group",
+        "slot": "0xd0",
+        "store": "0xfe048e"
+      },
+      {
+        "callsite": "0xfe04ac",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "InternalRelay3Group",
+        "slot": "0xd4",
+        "store": "0xfe04b4"
+      },
+      {
+        "callsite": "0xfe04d2",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "InternalRelay4Group",
+        "slot": "0xd8",
+        "store": "0xfe04da"
+      },
+      {
+        "callsite": "0xfe04f8",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "InternalRelay5Group",
+        "slot": "0xdc",
+        "store": "0xfe0500"
+      },
+      {
+        "callsite": "0xfe051e",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapCoolerFillTime",
+        "slot": "0xe0",
+        "store": "0xfe0526"
+      },
+      {
+        "callsite": "0xfe0544",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapCoolerIdleTime",
+        "slot": "0xe4",
+        "store": "0xfe054c"
+      },
+      {
+        "callsite": "0xfe056a",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapCoolerDumpTime",
+        "slot": "0xe8",
+        "store": "0xfe0572"
+      },
+      {
+        "callsite": "0xfe0590",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapCoolerPrewetTime",
+        "slot": "0xec",
+        "store": "0xfe0598"
+      },
+      {
+        "callsite": "0xfe05b6",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapCoolerDryTime",
+        "slot": "0xf0",
+        "store": "0xfe05be"
+      },
+      {
+        "callsite": "0xfe05dc",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolActivationOutputGroup",
+        "slot": "0xf4",
+        "store": "0xfe05e4"
+      },
+      {
+        "callsite": "0xfe0602",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolStage1OutputGroup",
+        "slot": "0xf8",
+        "store": "0xfe060a"
+      },
+      {
+        "callsite": "0xfe0628",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolStage2OutputGroup",
+        "slot": "0xfc",
+        "store": "0xfe0630"
+      },
+      {
+        "callsite": "0xfe064e",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolStage3OutputGroup",
+        "slot": "0x100",
+        "store": "0xfe0656"
+      },
+      {
+        "callsite": "0xfe0674",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolFanLowOutputGroup",
+        "slot": "0x104",
+        "store": "0xfe067c"
+      },
+      {
+        "callsite": "0xfe069a",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolFanMediumOutputGroup",
+        "slot": "0x108",
+        "store": "0xfe06a2"
+      },
+      {
+        "callsite": "0xfe06c0",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "CoolFanHighOutputGroup",
+        "slot": "0x10c",
+        "store": "0xfe06c8"
+      },
+      {
+        "callsite": "0xfe06e6",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatActivationOutputGroup",
+        "slot": "0x110",
+        "store": "0xfe06ee"
+      },
+      {
+        "callsite": "0xfe070c",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatStage1OutputGroup",
+        "slot": "0x114",
+        "store": "0xfe0714"
+      },
+      {
+        "callsite": "0xfe0732",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatStage2OutputGroup",
+        "slot": "0x118",
+        "store": "0xfe073a"
+      },
+      {
+        "callsite": "0xfe0758",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatStage3OutputGroup",
+        "slot": "0x11c",
+        "store": "0xfe0760"
+      },
+      {
+        "callsite": "0xfe077e",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatFanLowOutputGroup",
+        "slot": "0x120",
+        "store": "0xfe0786"
+      },
+      {
+        "callsite": "0xfe07a4",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatFanMediumOutputGroup",
+        "slot": "0x124",
+        "store": "0xfe07ac"
+      },
+      {
+        "callsite": "0xfe07ca",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "HeatFanHighOutputGroup",
+        "slot": "0x128",
+        "store": "0xfe07d2"
+      },
+      {
+        "callsite": "0xfe07f0",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "DamperZone1OutputGroup",
+        "slot": "0x12c",
+        "store": "0xfe07f8"
+      },
+      {
+        "callsite": "0xfe0816",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "DamperZone2OutputGroup",
+        "slot": "0x130",
+        "store": "0xfe081e"
+      },
+      {
+        "callsite": "0xfe083c",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "DamperZone3OutputGroup",
+        "slot": "0x134",
+        "store": "0xfe0844"
+      },
+      {
+        "callsite": "0xfe0862",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "DamperZone4OutputGroup",
+        "slot": "0x138",
+        "store": "0xfe086a"
+      },
+      {
+        "callsite": "0xfe0888",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "DamperModulationEnable",
+        "slot": "0x13c",
+        "store": "0xfe0890"
+      },
+      {
+        "callsite": "0xfe08ae",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "VariableFanCoilEnable",
+        "slot": "0x140",
+        "store": "0xfe08b6"
+      },
+      {
+        "callsite": "0xfe08d4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "VariableFanCoilTiming",
+        "slot": "0x144",
+        "store": "0xfe08dc"
+      },
+      {
+        "callsite": "0xfe08fa",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EnableHVACRelayDrive",
+        "slot": "0x148",
+        "store": "0xfe0902"
+      }
+    ],
+    "TProgrammableThermostat": [
+      {
+        "callsite": "0xfecf3f",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "TimeService",
+        "slot": "0x1e8",
+        "store": "0xfecf47"
+      },
+      {
+        "callsite": "0xfecf65",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ScheduleService",
+        "slot": "0x1ec",
+        "store": "0xfecf6d"
+      }
+    ],
+    "TScheduleService": [
+      {
+        "callsite": "0xfe9fc0",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ControlledZones",
+        "slot": "0x78",
+        "store": "0xfe9fc8"
+      }
+    ],
+    "TTemperatureMeasurementService": [
+      {
+        "callsite": "0xfdbe2c",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "TemperatureOffset",
+        "slot": "0x78",
+        "store": "0xfdbe34"
+      },
+      {
+        "callsite": "0xfdbe4f",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "MeasuredZones",
+        "slot": "0x7c",
+        "store": "0xfdbe57"
+      },
+      {
+        "callsite": "0xfdbe72",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EnableTemperatureSensor",
+        "slot": "0x90",
+        "store": "0xfdbe7a"
+      },
+      {
+        "callsite": "0xfdbe98",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "TemperatureSendDifferential",
+        "slot": "0x80",
+        "store": "0xfdbea0"
+      }
+    ],
+    "TThermostat": [
+      {
+        "callsite": "0xfea15b",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CBusParameters",
+        "slot": "0x1a0",
+        "store": "0xfea163"
+      },
+      {
+        "callsite": "0xfea181",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "UIService",
+        "slot": "0x1e4",
+        "store": "0xfea189"
+      },
+      {
+        "callsite": "0xfea1a7",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ZoneManagerService",
+        "slot": "0x1a4",
+        "store": "0xfea1af"
+      },
+      {
+        "callsite": "0xfea1cd",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "PlantControlService",
+        "slot": "0x1a8",
+        "store": "0xfea1d5"
+      },
+      {
+        "callsite": "0xfea1f3",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "TemperatureMeasurementService",
+        "slot": "0x1ac",
+        "store": "0xfea1fb"
+      },
+      {
+        "callsite": "0xfea219",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ThermostatInstallations",
+        "slot": "0x1b0",
+        "store": "0xfea221"
+      },
+      {
+        "callsite": "0xfea23f",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "UsedZones",
+        "slot": "0x1d8",
+        "store": "0xfea247"
+      },
+      {
+        "callsite": "0xfea265",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "ACApplicationObject",
+        "slot": "0x1dc",
+        "store": "0xfea26d"
+      }
+    ],
+    "TThermostatInstallations": [],
+    "TTimeService": [
+      {
+        "callsite": "0xfe9e9e",
+        "class": "CIS_TThermostat..TSendIntervalAttribute",
+        "constructor": "CIS_TThermostat.TSendIntervalAttribute.Create",
+        "name": "SendInterval",
+        "slot": "0x78",
+        "store": "0xfe9ea6"
+      }
+    ],
+    "TUIService": [
+      {
+        "callsite": "0xfdc28a",
+        "class": "CIS_TThermostat..TTemperatureUnitAttribute",
+        "constructor": "CIS_TThermostat.TTemperatureUnitAttribute.Create",
+        "name": "TemperatureUnits",
+        "slot": "0x78",
+        "store": "0xfdc292"
+      },
+      {
+        "callsite": "0xfdc2a7",
+        "class": "CIS_TThermostat..TTimeUnitAttribute",
+        "constructor": "CIS_TThermostat.TTimeUnitAttribute.Create",
+        "name": "TimeUnits",
+        "slot": "0x7c",
+        "store": "0xfdc2af"
+      },
+      {
+        "callsite": "0xfdc2ca",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "DisplayBacklightIdleBrightness",
+        "slot": "0x80",
+        "store": "0xfdc2d2"
+      },
+      {
+        "callsite": "0xfdc2f0",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "DisplayBacklightActiveBrightness",
+        "slot": "0x84",
+        "store": "0xfdc2f8"
+      },
+      {
+        "callsite": "0xfdc316",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "KeyBacklightIdleBrightness",
+        "slot": "0x88",
+        "store": "0xfdc31e"
+      },
+      {
+        "callsite": "0xfdc33c",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "KeyBacklightActiveBrightness",
+        "slot": "0x8c",
+        "store": "0xfdc344"
+      },
+      {
+        "callsite": "0xfdc362",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "BacklightActiveTime",
+        "slot": "0x90",
+        "store": "0xfdc36a"
+      },
+      {
+        "callsite": "0xfdc388",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "BacklightDimTime",
+        "slot": "0x94",
+        "store": "0xfdc390"
+      },
+      {
+        "callsite": "0xfdc3ae",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "UIAllocatedZones",
+        "slot": "0x98",
+        "store": "0xfdc3b6"
+      },
+      {
+        "callsite": "0xfdc3d4",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "BeepEnable",
+        "slot": "0x9c",
+        "store": "0xfdc3dc"
+      },
+      {
+        "callsite": "0xfdc3fa",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapComfortStartTemp",
+        "slot": "0xa0",
+        "store": "0xfdc402"
+      },
+      {
+        "callsite": "0xfdc420",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapComfortStepSize",
+        "slot": "0xa4",
+        "store": "0xfdc428"
+      },
+      {
+        "callsite": "0xfdc446",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapComfortNumberOfSteps",
+        "slot": "0xa8",
+        "store": "0xfdc44e"
+      },
+      {
+        "callsite": "0xfdc466",
+        "class": "CIS_TThermostat..TZoneAttribute",
+        "constructor": "CIS_TThermostat.TZoneAttribute.Create",
+        "name": "ZoneTemperatureDisplay",
+        "slot": "0xac",
+        "store": "0xfdc46e"
+      }
+    ],
+    "TZoneManagerService": [
+      {
+        "callsite": "0xfdd36c",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "ControlledZones",
+        "slot": "0x78",
+        "store": "0xfdd374"
+      },
+      {
+        "callsite": "0xfdd389",
+        "class": "CIS_TThermostat..TPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TPlantTypeAttribute.Create",
+        "name": "HeatingPlantType",
+        "slot": "0x7c",
+        "store": "0xfdd391"
+      },
+      {
+        "callsite": "0xfdd3ac",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatingPlantInstalledZones",
+        "slot": "0x80",
+        "store": "0xfdd3b4"
+      },
+      {
+        "callsite": "0xfdd3cc",
+        "class": "CIS_TThermostat..TPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TPlantTypeAttribute.Create",
+        "name": "CoolingPlantType",
+        "slot": "0x84",
+        "store": "0xfdd3d4"
+      },
+      {
+        "callsite": "0xfdd3f2",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "CoolingPlantInstalledZones",
+        "slot": "0x88",
+        "store": "0xfdd3fa"
+      },
+      {
+        "callsite": "0xfdd412",
+        "class": "CIS_TThermostat..TPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TPlantTypeAttribute.Create",
+        "name": "HeatCoolPlantType",
+        "slot": "0x8c",
+        "store": "0xfdd41a"
+      },
+      {
+        "callsite": "0xfdd432",
+        "class": "CIS_TThermostat..TPlantTypeAttribute",
+        "constructor": "CIS_TThermostat.TPlantTypeAttribute.Create",
+        "name": "VentingPlantType",
+        "slot": "0x90",
+        "store": "0xfdd43a"
+      },
+      {
+        "callsite": "0xfdd458",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "VentingPlantInstalledZones",
+        "slot": "0x94",
+        "store": "0xfdd460"
+      },
+      {
+        "callsite": "0xfdd478",
+        "class": "CIS_TThermostat..TFanOperationModeAttribute",
+        "constructor": "CIS_TThermostat.TFanOperationModeAttribute.Create",
+        "name": "FanOperationMode",
+        "slot": "0x98",
+        "store": "0xfdd480"
+      },
+      {
+        "callsite": "0xfdd49e",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "MaximumSetTemperature",
+        "slot": "0x9c",
+        "store": "0xfdd4a6"
+      },
+      {
+        "callsite": "0xfdd4c4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "MinimumSetTemperature",
+        "slot": "0xa0",
+        "store": "0xfdd4cc"
+      },
+      {
+        "callsite": "0xfdd4ea",
+        "class": "CIS_TObjectAttribute..TObjectAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardEnableZones",
+        "slot": "0xa4",
+        "store": "0xfdd4f2"
+      },
+      {
+        "callsite": "0xfdd510",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardEnable",
+        "slot": "0xa8",
+        "store": "0xfdd518"
+      },
+      {
+        "callsite": "0xfdd536",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardUpperTemperature",
+        "slot": "0xb0",
+        "store": "0xfdd53e"
+      },
+      {
+        "callsite": "0xfdd55c",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardMaximumUpperTemperature",
+        "slot": "0xb4",
+        "store": "0xfdd564"
+      },
+      {
+        "callsite": "0xfdd582",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardMinimumUpperTemperature",
+        "slot": "0xb8",
+        "store": "0xfdd58a"
+      },
+      {
+        "callsite": "0xfdd5a8",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardLowerTemperature",
+        "slot": "0xbc",
+        "store": "0xfdd5b0"
+      },
+      {
+        "callsite": "0xfdd5ce",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardMaximumLowerTemperature",
+        "slot": "0xc0",
+        "store": "0xfdd5d6"
+      },
+      {
+        "callsite": "0xfdd5f4",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "GuardMinimumLowerTemperature",
+        "slot": "0xc4",
+        "store": "0xfdd5fc"
+      },
+      {
+        "callsite": "0xfdd61a",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "RemoteSetbackControlSource",
+        "slot": "0xc8",
+        "store": "0xfdd622"
+      },
+      {
+        "callsite": "0xfdd640",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "RemoteSetbackOnGroup",
+        "slot": "0xcc",
+        "store": "0xfdd648"
+      },
+      {
+        "callsite": "0xfdd666",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "RemoteSetbackOffGroup",
+        "slot": "0xd0",
+        "store": "0xfdd66e"
+      },
+      {
+        "callsite": "0xfdd68c",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "SetbackLevel",
+        "slot": "0xd4",
+        "store": "0xfdd694"
+      },
+      {
+        "callsite": "0xfdd6b2",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapStartProportionalTemperature",
+        "slot": "0xd8",
+        "store": "0xfdd6ba"
+      },
+      {
+        "callsite": "0xfdd6d8",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "EvapStopProportionalTemperature",
+        "slot": "0xdc",
+        "store": "0xfdd6e0"
+      },
+      {
+        "callsite": "0xfdd6fe",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatCoolIntegralFactor",
+        "slot": "0xe0",
+        "store": "0xfdd706"
+      },
+      {
+        "callsite": "0xfdd724",
+        "class": "CIS_TIntegerAttribute..TIntegerAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "HeatCoolDifferentialFactor",
+        "slot": "0xe4",
+        "store": "0xfdd72c"
+      },
+      {
+        "callsite": "0xfdd74a",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "RemoteScheduleOnGroup",
+        "slot": "0xe8",
+        "store": "0xfdd752"
+      },
+      {
+        "callsite": "0xfdd770",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "RemoteScheduleOffGroup",
+        "slot": "0xec",
+        "store": "0xfdd778"
+      },
+      {
+        "callsite": "0xfdd796",
+        "class": "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute",
+        "constructor": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+        "name": "RemoteScheduleOverrideGroup",
+        "slot": "0xf0",
+        "store": "0xfdd79e"
+      },
+      {
+        "callsite": "0xfdd7bc",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "RemoteScheduleEnable",
+        "slot": "0xf4",
+        "store": "0xfdd7c4"
+      },
+      {
+        "callsite": "0xfdd7e6",
+        "class": "CIS_TEnumeratedTypeAttribute..TEnumeratedTypeAttribute",
+        "constructor": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.Create",
+        "name": "ZoneManagerMasterSlave",
+        "slot": "0xf8",
+        "store": "0xfdd7ee"
+      }
+    ],
+    "TZones": [
+      {
+        "callsite": "0xca5308",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "UnswitchedZone",
+        "slot": "0x78",
+        "store": "0xca5310"
+      },
+      {
+        "callsite": "0xca532b",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "Zone1",
+        "slot": "0x7c",
+        "store": "0xca5333"
+      },
+      {
+        "callsite": "0xca534e",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "Zone2",
+        "slot": "0x80",
+        "store": "0xca5356"
+      },
+      {
+        "callsite": "0xca5374",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "Zone3",
+        "slot": "0x84",
+        "store": "0xca537c"
+      },
+      {
+        "callsite": "0xca539a",
+        "class": "CIS_TBooleanAttribute..TBooleanAttribute",
+        "constructor": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+        "name": "Zone4",
+        "slot": "0x88",
+        "store": "0xca53a2"
+      }
+    ]
+  },
+  "native_seed_sha256": "b6b100cd52e786130a20c9df431649cea56ffb2dc1771de628dbb96f11e5828c",
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "owned_child_allocations": {
+    "TCBusParameters": [
+      {
+        "callsite": "0xfdb9b4",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x84"
+      }
+    ],
+    "TPlantControlService": [
+      {
+        "callsite": "0xfe161c",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x90"
+      },
+      {
+        "callsite": "0xfe1649",
+        "class": "CIS_TThermostat..TPlantModes",
+        "object_attribute_slot": "0x94"
+      }
+    ],
+    "TProgrammableThermostat": [
+      {
+        "callsite": "0xfecfec",
+        "class": "CIS_TThermostat..TAdvancedUIService",
+        "object_attribute_slot": "0x1e4"
+      },
+      {
+        "callsite": "0xfed058",
+        "class": "CIS_TThermostat..TTimeService",
+        "object_attribute_slot": "0x1e8"
+      },
+      {
+        "callsite": "0xfed085",
+        "class": "CIS_TThermostat..TScheduleService",
+        "object_attribute_slot": "0x1ec"
+      }
+    ],
+    "TScheduleService": [
+      {
+        "callsite": "0xfea05c",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x78"
+      }
+    ],
+    "TTemperatureMeasurementService": [
+      {
+        "callsite": "0xfdc000",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x7c"
+      }
+    ],
+    "TThermostat": [
+      {
+        "callsite": "0xfea428",
+        "class": "CIS_TThermostat..TCBusParameters",
+        "object_attribute_slot": "0x1a0"
+      },
+      {
+        "callsite": "0xfea48b",
+        "class": "CIS_TThermostat..TZoneManagerService",
+        "object_attribute_slot": "0x1a4"
+      },
+      {
+        "callsite": "0xfea4e4",
+        "class": "CIS_TThermostat..TPlantControlService",
+        "object_attribute_slot": "0x1a8"
+      },
+      {
+        "callsite": "0xfea53d",
+        "class": "CIS_TThermostat..TTemperatureMeasurementService",
+        "object_attribute_slot": "0x1ac"
+      },
+      {
+        "callsite": "0xfea585",
+        "class": "CIS_TThermostat..TThermostatInstallations",
+        "object_attribute_slot": "0x1b0"
+      },
+      {
+        "callsite": "0xfea5b2",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x1d8"
+      }
+    ],
+    "TThermostatInstallations": [],
+    "TUIService": [
+      {
+        "callsite": "0xfdc7e4",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x98"
+      }
+    ],
+    "TZoneManagerService": [
+      {
+        "callsite": "0xfddfbc",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x78"
+      },
+      {
+        "callsite": "0xfddfe6",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x80"
+      },
+      {
+        "callsite": "0xfde013",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x88"
+      },
+      {
+        "callsite": "0xfde040",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0x94"
+      },
+      {
+        "callsite": "0xfde06d",
+        "class": "CIS_TThermostatCommon..TZones",
+        "object_attribute_slot": "0xa4"
+      }
+    ]
+  },
+  "public_action_admission": false,
+  "runtime_bridge": {
+    "full_after_load_prerequisites": [
+      "All declared inherited and service attributes, object-reference graph and type-correct integer/string/enum PP agents.",
+      "Explicit workspace, allocator, object registration and CreateInWorkSpace constructors, or retain an explicit source-shaped synthetic-graph boundary.",
+      "Existing network254, output application56/group255, AC172/group255, Enable203/group255 and actuator115/116 with non-bare tags.",
+      "Preserve original unhook/load/hook order; Plant VentPlantType2 under active hooks can change VentingPlantType0 and fan state.",
+      "Installation-list construction and source-exact InstallationCode0 selection.",
+      "Global Celsius preference unchanged; integer/string/variant and enum collection callbacks beyond current Boolean-only ABI closure."
+    ],
+    "remaining_gui_boundary": "Initial binding, whether any event changes constructor UsedZones0 before the click, queued Plant type message0x423 and combo/native notification ordering; a scalar fixed point is not complete form preservation.",
+    "smallest_next_boundary": "Original AdvancedUI Unhook/Hook on two zero flag attributes, actual AdvancedUI VMT, no injected base UIAllocatedZones callback; then bounded IncludeZone with fresh constructor UsedZones0, subject to separately verified pre-click initialization."
+  },
+  "service_attribute_hooks": {
+    "TAdvancedUIService": [
+      {
+        "attribute_slot": "0xb8",
+        "callsite": "0xfdd2ea",
+        "handler": "CIS_TThermostat.TAdvancedUIService.HandleEvapProgramEnabledAfterChange"
+      },
+      {
+        "attribute_slot": "0xbc",
+        "callsite": "0xfdd300",
+        "handler": "CIS_TThermostat.TAdvancedUIService.HandleEvapProgramEnabledAfterChange"
+      }
+    ],
+    "TCBusParameters": [
+      {
+        "attribute_slot": "0x84",
+        "callsite": "0xfdb9e6",
+        "handler": "CIS_TThermostat.TCBusParameters.HandleInstalledZonesAfterChange"
+      }
+    ],
+    "TPlantControlService": [
+      {
+        "attribute_slot": "0x90",
+        "callsite": "0xfe167a",
+        "handler": "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0x94",
+        "callsite": "0xfe1690",
+        "handler": "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0xc8",
+        "callsite": "0xfe16a6",
+        "handler": "CIS_TThermostat.TPlantControlService.HandleVentPlantTypeChange"
+      }
+    ],
+    "TScheduleService": [
+      {
+        "attribute_slot": "0x78",
+        "callsite": "0xfea087",
+        "handler": "CIS_TThermostat.TScheduleService.HandleZoneAfterChange"
+      }
+    ],
+    "TTemperatureMeasurementService": [
+      {
+        "attribute_slot": "0x7c",
+        "callsite": "0xfdc02b",
+        "handler": "CIS_TThermostat.TTemperatureMeasurementService.HandleZoneAfterChange"
+      }
+    ],
+    "TUIService": [
+      {
+        "attribute_slot": "0x98",
+        "callsite": "0xfdc816",
+        "handler": "CIS_TThermostat.TUIService.HandleZoneAfterChange"
+      }
+    ],
+    "TZoneManagerService": [
+      {
+        "attribute_slot": "0x7c",
+        "callsite": "0xfde09b",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleHeatingPlantTypeAfterChange"
+      },
+      {
+        "attribute_slot": "0x84",
+        "callsite": "0xfde0b1",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleCoolingPlantTypeAfterChange"
+      },
+      {
+        "attribute_slot": "0x8c",
+        "callsite": "0xfde0c7",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleHeatCoolPlantTypeAfterChange"
+      },
+      {
+        "attribute_slot": "0x90",
+        "callsite": "0xfde0dd",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleVentingPlantTypeAfterChange"
+      },
+      {
+        "attribute_slot": "0x78",
+        "callsite": "0xfde0f0",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0x80",
+        "callsite": "0xfde106",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0x88",
+        "callsite": "0xfde11c",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0x94",
+        "callsite": "0xfde132",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange"
+      },
+      {
+        "attribute_slot": "0xa4",
+        "callsite": "0xfde148",
+        "handler": "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange"
+      }
+    ]
+  },
+  "temperature_fixed_points": {
+    "EvapComfortStartTemp": {
+      "model": 16,
+      "raw": 64,
+      "saved": 64
+    },
+    "EvapComfortStepSize": {
+      "model": 1,
+      "raw": 4,
+      "saved": 4
+    },
+    "EvapStartProportionalTemperature": {
+      "model": -2,
+      "raw": 248,
+      "saved": 248
+    },
+    "EvapStopProportionalTemperature": {
+      "model": 10,
+      "raw": 40,
+      "saved": 40
+    },
+    "GuardLowerTemperature": {
+      "model": 5,
+      "raw": 196,
+      "saved": 196
+    },
+    "GuardMaximumLowerTemperature": {
+      "model": 10,
+      "raw": 216,
+      "saved": 216
+    },
+    "GuardMaximumUpperTemperature": {
+      "model": 45,
+      "raw": 100,
+      "saved": 100
+    },
+    "GuardMinimumLowerTemperature": {
+      "model": 0,
+      "raw": 176,
+      "saved": 176
+    },
+    "GuardMinimumUpperTemperature": {
+      "model": 33,
+      "raw": 52,
+      "saved": 52
+    },
+    "GuardUpperTemperature": {
+      "model": 40,
+      "raw": 80,
+      "saved": 80
+    },
+    "MaximumSetTemperature": {
+      "model": 32,
+      "raw": 32,
+      "saved": 32
+    },
+    "MinimumSetTemperature": {
+      "model": 15,
+      "raw": 15,
+      "saved": 15
+    },
+    "SetbackLevel": {
+      "model": 5,
+      "raw": 196,
+      "saved": 196
+    },
+    "TemperatureOffset": {
+      "model": 0,
+      "raw": 0,
+      "saved": 0
+    },
+    "TemperatureSendDifferential": {
+      "model": 8,
+      "raw": 32,
+      "saved": 32
+    }
+  }
+}

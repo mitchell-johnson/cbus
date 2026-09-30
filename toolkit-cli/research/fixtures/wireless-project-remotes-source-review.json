@@ -1,0 +1,342 @@
+{
+  "format": "cbus-wireless-project-remotes-source-review-v1",
+  "review_date": "2026-09-30",
+  "scope": "Source-bounded WTXU project metadata creation for an admitted WGATE5F advanced gateway; no PP initialization, gateway mapping rewrite or pairing.",
+  "source": {
+    "executable": "CBusToolkit.exe",
+    "file_version": "1.18.0.2754",
+    "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map": "CBusToolkit.map",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "machine": "0x14c",
+    "image_base": "0x600000",
+    "clr_directory_size": 0
+  },
+  "corrections_to_prior_follow_up_receipt": [
+    "CreateWirelessRemoteUnit passes a nil Delphi Unicode string to SetSerialNumber, not numeric zero. The initial model serial is empty.",
+    "There are three effective ProjectSave dispatches: explicit constructor save, inherited Database AgentSave, and explicit creation caller save. Two call sites in the outer constructors do not describe the complete save lifecycle.",
+    "The constructor first dispatch uses one empty verb. IsInVerbs compares exact strings and does not treat it as every verb. Catalogue, serial, description and State are not part of the first persisted database row."
+  ],
+  "admitted_profile": {
+    "gateway_unit_type": "WGATE5F",
+    "gateway_firmware_minimum": "2.2.90",
+    "gateway_firmware_maximum": "2.4.99",
+    "remote_unit_type": "WTXU",
+    "remote_firmware": "0",
+    "remote_catalogue": "5888TXBA",
+    "remote_spec": "WTXU.xml",
+    "catalogue_firmware_range": [
+      "0",
+      "9"
+    ],
+    "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "decoded_spec_sha256": "2c0237c2512be989c4434e74b5cfd6981173ec46b8c3af3ce8318738033bfb97",
+    "catalogue_defaults": {
+      "ClassName": "CBusPCI",
+      "IsDefault": "true",
+      "IsAddressable": "false",
+      "InputCount": "0",
+      "OutputCount": "0",
+      "GroupCount": "0"
+    },
+    "WGATE5N_admitted": false,
+    "catalogue_admission": "Exactly one WTXU row with the recorded metadata, no WTXU alternatives and no competing exact/prefix/alternate catalogue resolution; never infer another remote model from a related specification."
+  },
+  "inheritance": {
+    "WTXU_type_metadata": "0x00d481c4",
+    "actual_vmt": "0x00d4821c",
+    "InternalCreate": "VMT+0x0c resolves 0x00f2ef2c TCBUSUnit.InternalCreate",
+    "Init": "VMT+0xe4 resolves 0x00f2ef18 TCBUSUnit.Init",
+    "StorageSave_verbs": "VMT+0x80 resolves 0x007f409c TPersistableObject.StorageSave and forwards the exact verb array to AgentSave",
+    "Description": "TCGateObject.InternalCreate0x00f47718 creates TStringAttribute Description. TStringAttribute.InternalCreate0x007f37ac assigns the empty Unicode string. WTXU introduces no overriding Init/InternalCreate in this VMT."
+  },
+  "rules": [
+    {
+      "rule": "allocation",
+      "source": "GetFirstUnusedAddressAfter1000x00d44f18",
+      "result": "Visit100..255 inclusive in ascending order and choose the first address absent from the source network. Original returns0 on exhaustion; this bounded workflow refuses instead of targeting0."
+    },
+    {
+      "rule": "tag",
+      "source": "GetUniqueName0x00d44b1c; MakeUniqueName0x007b8580; NameIsUnique0x007b84e8",
+      "result": "Collect all source-network unit TagNames. Use Remote 01, then Remote 02 upward with minimum decimal width2. Equality is exact case-sensitive Unicode. Other-network names do not participate."
+    },
+    {
+      "rule": "model_constructor",
+      "source": "CreateWirelessRemoteUnit0x00d44c18",
+      "result": "Factory GetUnit(WTXU,0); assign WTXU, firmware0, catalogue row, empty model serial, allocated Address, unique TagName, UnitName REMOTE and model State New; attach to source network; StorageSave with one empty verb; ProjectSave. State New is model state, not a proven State database write."
+    },
+    {
+      "rule": "first_database_row",
+      "source": "TCBusUnitCGateAgent.AgentSave0x00cb72bc,0x00cb748b..0x00cb75c3; IsInVerbs0x007ef46c",
+      "result": "A blank OID adds a Unit and writes UnitType, FirmwareVersion, UnitName, Address and TagName. The empty verb does not enter Database or ProgrammingParameters. The remote subclass may resolve catalogue and reassert UnitType. No PP LOAD/RESET/SAVE occurs."
+    },
+    {
+      "rule": "serial",
+      "source": "SetSerialNumber0x00f303fc; FormatSerialNumber0x007f3140",
+      "result": "A nonempty serial containing a dot is retained. A nonempty undotted string is formatted separately; empty remains empty. The bounded API admits only canonical known decimal-dot native serials and rejects malformed, sentinel or existing selected-network identities; it does not reproduce permissive malformed-string formatting."
+    },
+    {
+      "rule": "second_model_update",
+      "source": "CreateRemoteControlUnit0x0125a738",
+      "result": "After the constructor, assign the supplied serial; resolve WTXU catalogue and StringReplace its first asterisk with empty using flags0; dispatch Database. Pinned5888TXBA contains no asterisk; other catalogue shapes are not admitted."
+    },
+    {
+      "rule": "database_save_boundary",
+      "source": "TCBusUnitCGateAgent.AgentSave0x00cb767f..0x00cb7829",
+      "result": "Database writes SerialNumber, Description, CatalogNumber and TagName, then dispatches ProjectSave. Empty catalogue fallback is unused for this exact admitted nonempty row."
+    },
+    {
+      "rule": "third_save_boundary",
+      "source": "TCBusRemoteControlCGateAgent.AgentSave0x012897e8; CreateRemoteControlUnit0x0125a823..0x0125a849",
+      "result": "After the inherited Database save, the remote agent resolves catalogue back to UnitType and can reassert it; caller dispatches its explicit ProjectSave. The adapter retains three distinct save attempts."
+    },
+    {
+      "rule": "project_save_dispatch_is_not_coalesced",
+      "source": "TProjectCGateAgent.AgentSave0x012091f8; SaveProject0x01209e4c; CommandProjectSave0x0120a3e4; TcgcProjectSave.GenerateCommandText0x01137fa8",
+      "result": "Exact ProjectSave verb calls SaveProject directly. SaveProject unconditionally calls CommandProjectSave, which constructs and executes one command before handling the result. No dirty-state or repeated-save suppression gate precedes CommandExecute in this path."
+    },
+    {
+      "rule": "native_bookkeeping",
+      "source": "wireless-project-remotes-native-acceptance.json",
+      "result": "C-Gate3.4 ProjectSave regenerates only the UUID text of Project/Config[Application=cgate]/OID and its direct Property/OID nodes in the accepted case. Post-save preservation allows those UUID-text changes only; preflight stale checking remains exact. Presence/shape, all Name/Value fields, unknown content and every non-config identity remain compared."
+    }
+  ],
+  "adapter_differences": [
+    "The original uses CGateAdd/CommandDBSet (TcgcDBSet0x00cab100) with OID selectors. The bounded adapter uses DBADDSAFE/DBSETSAFE with the explicit frozen path and verifies the created OID and complete metadata before saving.",
+    "Native DBSETSAFE rejects rewriting an unchanged TagName as a self-collision. The adapter leaves the already verified tag in place instead of issuing that redundant original DBSET. Repeated initial UnitType reassertion with the same value is likewise represented by the constructor UnitType write.",
+    "Original source emits a unit-count warning after first save when the network has more than100 units. The bounded CLI does not execute that GUI notification; allocation is still bounded100..255.",
+    "Strict duplicate-address/name/serial, malformed-serial, unknown-profile and exhausted-address refusals are bounded admission guards, not claims that the original GUI refused the same input.",
+    "The workflow retains a partially created row after any uncertain command and never automatically rolls back, retries or resumes a save. Receipt save-attempt/completion fields distinguish each confirmed earlier boundary from an uncertain later one."
+  ],
+  "preservation": "Freeze the complete project XML tree and source SHA before connection. Reproduce the plan; exact stale-check before and after all-project-network closed/idle inspection; create only one new WTXU row; compare the entire existing tree, including every gateway PP value, after removing that one row. Native-generated configuration UUID changes are narrowly allowed only after the first ProjectSave.",
+  "save_sequence": [
+    "identity database row -> constructor ProjectSave",
+    "SerialNumber/Description/CatalogNumber metadata -> inherited Database ProjectSave",
+    "remote UnitType reassertion -> caller ProjectSave"
+  ],
+  "acceptance": {
+    "original_toolkit_executed": false,
+    "original_component_oracle_executed": false,
+    "native_cgate_database_acceptance": "wireless-project-remotes-native-acceptance.json",
+    "physical_pairing_verified": false,
+    "household_network_or_radio_touched": false,
+    "gateway_mapping_save_included": false,
+    "pp_defaults_written": false,
+    "full_original_dialog_parity": false
+  },
+  "verified_method_count": 42,
+  "methods": {
+    "0x7b84e8": {
+      "symbol": "CIS_Strings.NameIsUnique",
+      "size": 152,
+      "sha256": "cf738897695a2dbb9fd84653167e1a27d72588557dc4094c30725ac2dec89cef"
+    },
+    "0x7b8580": {
+      "symbol": "CIS_Strings.MakeUniqueName",
+      "size": 264,
+      "sha256": "a39fd2f6bb259230820402a9e96739751ff942469c2eb8c91da36f7b25385a24"
+    },
+    "0x7ee240": {
+      "symbol": "CIS_TCustomFlashObject.TFlashWorkSpace.StorageSave",
+      "size": 12,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "0x7ef1e4": {
+      "symbol": "CIS_TCustomFlashObject.TFlashAgent.AgentSave",
+      "size": 32,
+      "sha256": "f3b8d4b284b95a5dcc2d6d40b381d1020e37381866612fa196dde47f5b972cd5"
+    },
+    "0x7ef458": {
+      "symbol": "CIS_TCustomFlashObject.TFlashAgent.AgentSave",
+      "size": 20,
+      "sha256": "87e2ddade475e9b49ebacf565d607ac23c616888365e655aac49faed9c2e8645"
+    },
+    "0x7ef46c": {
+      "symbol": "CIS_TCustomFlashObject.TFlashAgent.IsInVerbs",
+      "size": 132,
+      "sha256": "a941401ecb35bfec027271dfb89676d7263626dc99a3b82e34ef8b944840c3b4"
+    },
+    "0x7f3140": {
+      "symbol": "CIS_CBus.FormatSerialNumber",
+      "size": 652,
+      "sha256": "0eab457ef12326e0b375eb7078509e30d23509b48835b774f611791490667726"
+    },
+    "0x7f37ac": {
+      "symbol": "CIS_TStringAttribute.TStringAttribute.InternalCreate",
+      "size": 40,
+      "sha256": "b2fc88b81327f8e2c960c8bff3d9364e68678d8ce9ba7fb9ceaf069993c8f4e4"
+    },
+    "0x7f405c": {
+      "symbol": "CIS_TIdentifiableObject.TPersistableObject.StorageSave",
+      "size": 32,
+      "sha256": "5d5275b1f2ad0b3c571edecc4ccb584669d4add5c0b89f8ff38cd9e70fc826dd"
+    },
+    "0x7f409c": {
+      "symbol": "CIS_TIdentifiableObject.TPersistableObject.StorageSave",
+      "size": 196,
+      "sha256": "96983cbe85a955cffd0e1d122d33adf65538d2e6620e9493ed7d052a3b3fe0ce"
+    },
+    "0xc1a7b0": {
+      "symbol": "CIS_TCISUnitFactory.TUnitTypeFactory.GetUnit",
+      "size": 572,
+      "sha256": "c1880a392aa24f74c6d71b3bf261c0b3319485000598a41fadbdae3eb9ab0095"
+    },
+    "0xcac354": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.AgentSave",
+      "size": 104,
+      "sha256": "8996d2b5923db1df9b14d91281ff07fe54adef66363c6e7bad558250d877c289"
+    },
+    "0xcac504": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.UpdateCGateValue",
+      "size": 272,
+      "sha256": "2ee8f07f61c598bf53a43eb1a8f44cb857094519d52069b877fe770d4123211a"
+    },
+    "0xcac698": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CGateAdd",
+      "size": 560,
+      "sha256": "01d46a10ced372f6188aadc40182d4bc2c7f8ad22b8f804a39be8b36a02a2af9"
+    },
+    "0xcac928": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CommandDBSet",
+      "size": 456,
+      "sha256": "6b426870691e983d78a22c72c06974511c65c0cfbf8a42cb46841f02a394bbaf"
+    },
+    "0xcb524c": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate",
+      "size": 968,
+      "sha256": "ca6224f18662e8133b0420a1a878288ae003869946a91993b15622293b83b39c"
+    },
+    "0xcb72bc": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentSave",
+      "size": 3412,
+      "sha256": "ed80928aac4ac6caca38a15d0005eb2d547bb83b70b12ae6e171975518aa056b"
+    },
+    "0xcc9a34": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AgentSave",
+      "size": 228,
+      "sha256": "9c0414ed0c690952a79bfad9983c1dbdbbf39474d5e5213cd2ddace5e1156226"
+    },
+    "0xd44b1c": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.GetUniqueName",
+      "size": 252,
+      "sha256": "9a906964602bf3ea2cda811ea2c041b7fc579df734c3926585297255a7f84c32"
+    },
+    "0xd44c18": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.CreateWirelessRemoteUnit",
+      "size": 768,
+      "sha256": "28d6e7ef29cdaf1dd90589e5faa75cc6a3336102c73c781425fa19c17f109e96"
+    },
+    "0xd44f18": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.GetFirstUnusedAddressAfter100",
+      "size": 76,
+      "sha256": "f850b31fc5899025107dbc784eee5972db642719277ef1e3249d1305cd984397"
+    },
+    "0xf2ef18": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.Init",
+      "size": 20,
+      "sha256": "5547c878a7e8d53540178200a4cdfd28dfa5b2e3e6039cd5dae69e903bc31ac4"
+    },
+    "0xf2ef2c": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.InternalCreate",
+      "size": 1728,
+      "sha256": "d8b54a3c78dcf4c83813a24a364a4308845111125afcc5e2fc589a0ed4a24f77"
+    },
+    "0xf303fc": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.SetSerialNumber",
+      "size": 212,
+      "sha256": "3f4313f3080a8409c6dba355cd09554873dc6288b4fafda12e1bb93efd5535c3"
+    },
+    "0xf30670": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.HandleUnitCatalogNumberChange",
+      "size": 76,
+      "sha256": "9eed825adbff1ae8b5b3b491522893d1e8418e3277934c3bd5b940156af7970d"
+    },
+    "0xf3ef80": {
+      "symbol": "CIS_TUnitType.TUnitType.HasCatalogNumberInAlternates",
+      "size": 820,
+      "sha256": "1c70ef68ef15b1b03d46fa1505173fc4831b1d6f5e22aedcecb896bf42c73a5f"
+    },
+    "0xf3fbc4": {
+      "symbol": "CIS_TUnitType.TUnitTypeManager.FindUnitByCode",
+      "size": 252,
+      "sha256": "b2b9f8cad770ade66705d066f3e86059b0bfb89b0f4c820fe3c86fa4115958f0"
+    },
+    "0xf3ffe4": {
+      "symbol": "CIS_TUnitType.TUnitTypeManager.FindUnitByCatalogCode",
+      "size": 544,
+      "sha256": "4b582de63c4c1d64a2fbdd36eec0f734c257d50039c18a0e7ce989e896150522"
+    },
+    "0xf41418": {
+      "symbol": "CIS_TUnitType.TCGateUnitCatalog.InternalCreate",
+      "size": 476,
+      "sha256": "8544dc0ad85436924c6917ba28cb3c4c386f723343f2226b9304fa42f80d20b7"
+    },
+    "0xf47718": {
+      "symbol": "CIS_TCBusObject.TCGateObject.InternalCreate",
+      "size": 360,
+      "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260"
+    },
+    "0x1137fa8": {
+      "symbol": "CIS_TcgcProjectSave.TcgcProjectSave.GenerateCommandText",
+      "size": 96,
+      "sha256": "8cd0bfda427b30169be99503f8e119d1e560a9e00c816e278de037dea96f3036"
+    },
+    "0x12091f8": {
+      "symbol": "CIS_TProjectCGateAgent.TProjectCGateAgent.AgentSave",
+      "size": 388,
+      "sha256": "93a519b7389a799aa317e583ba811a39bc02242ae33c73f2c1339a4b88162ca0"
+    },
+    "0x1209e4c": {
+      "symbol": "CIS_TProjectCGateAgent.TProjectCGateAgent.SaveProject",
+      "size": 20,
+      "sha256": "4f33ec7e7d2e2375ac4392f86a43eb72d6ffc61a65ff343bc6971ab4b2075253"
+    },
+    "0x120a3e4": {
+      "symbol": "CIS_TProjectCGateAgent.TProjectCGateAgent.CommandProjectSave",
+      "size": 424,
+      "sha256": "d951d371d1aca5795c3a45aba88ef801e64587c934e8992778529d815605b81a"
+    },
+    "0x1213388": {
+      "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentSave",
+      "size": 140,
+      "sha256": "6271e999de8989599e919091e8ed97cbd10c259feb48e483f4fc392579ba9623"
+    },
+    "0x121d664": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AgentSave",
+      "size": 620,
+      "sha256": "ec70d7eca5861cf8bed1d312e6e150f8ce4fc527a373f28483740ab7341b803d"
+    },
+    "0x1257e64": {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.AgentSave",
+      "size": 172,
+      "sha256": "16437b63a661e86bf858b77aa83701a17c367c62160c1125fd3321b6ee98332a"
+    },
+    "0x125a738": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateRemoteControlUnit",
+      "size": 424,
+      "sha256": "d2c514873e53465e3bb382de67585b418dfff73dcf8dee0034aa153fd6268f7f"
+    },
+    "0x12877e0": {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.TCBusWirelessInputUnitCGateAgent.AgentSave",
+      "size": 192,
+      "sha256": "7310ddb1634817482dc9b867c2f346042f21873f2bc845bdd49f6c1ffb048129"
+    },
+    "0x1289704": {
+      "symbol": "CIS_TCBusRemoteControlCGateAgent.TCBusRemoteControlCGateAgent.InternalCreate",
+      "size": 20,
+      "sha256": "26a5a29ac2554191ec87d2d3e1b7fcdca5f9b8dab5d7a1f4c3959b2b26b31a71"
+    },
+    "0x12897e8": {
+      "symbol": "CIS_TCBusRemoteControlCGateAgent.TCBusRemoteControlCGateAgent.AgentSave",
+      "size": 320,
+      "sha256": "16b24bc9cfda2378a4ec77cba6fbdbea6c15a0d9c8575cb3a0b634b5b89dee53"
+    },
+    "0x129705c": {
+      "symbol": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AgentSave",
+      "size": 408,
+      "sha256": "21e6d7889f9bfbd7f40c90ed4b30d5a670a01d78f7cda7e27fc14281888d8863"
+    }
+  },
+  "reproduction": "Read-only recover.py regex extraction from the pinned local EXE/MAP, using PE image-base/RVA translation and Capstone5.0.7. Every listed method span hash was freshly recomputed against the executable; the three WTXU VMT target words were asserted independently. No raw vendor executable, MAP, unit specification or assembly listing is committed."
+}

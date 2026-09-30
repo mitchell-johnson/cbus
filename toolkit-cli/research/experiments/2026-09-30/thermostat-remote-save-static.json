@@ -1,0 +1,435 @@
+{
+  "checks": {
+    "0x128e90b": true,
+    "0x128e928": true,
+    "0x128e93f": true,
+    "0x128e942": true,
+    "0x128e967": true,
+    "0x128e972": true,
+    "0x128e975": true,
+    "0x128e9ad": true,
+    "0x128e9b8": true,
+    "0x128e9bb": true,
+    "0x128e9eb": true,
+    "0x128e9ec": true,
+    "0x128ea0e": true,
+    "0x128ea1a": true,
+    "0x128ea1d": true,
+    "0x128ea52": true,
+    "0x128ea5e": true,
+    "0x128ea61": true,
+    "0x128ea89": true,
+    "0x128ea8b": true,
+    "0x128ea9d": true,
+    "0x128ea9f": true,
+    "0x1294d61": true,
+    "0x1294d7e": true,
+    "0x1294d80": true,
+    "0x1294d8f": true,
+    "0x1294d94": true,
+    "0x1294dc9": true,
+    "0x1294dce": true,
+    "0x1294dfe": true,
+    "0x1294e13": true,
+    "0x1294e1b": true,
+    "0x1294e24": true,
+    "0x1294e39": true,
+    "0x1294e41": true,
+    "0x129953a": true,
+    "0x129978c": true,
+    "0x129979a": true,
+    "0x129979b": true,
+    "0x12997a0": true,
+    "0x12997af": true,
+    "0x12997bd": true,
+    "0x12997cb": true,
+    "0x12997cc": true,
+    "0x12997d1": true,
+    "0x12997e3": true,
+    "0x1299877": true,
+    "0x1299889": true,
+    "0x12998a1": true,
+    "0x12998b3": true,
+    "0x12998c5": true,
+    "0x12998cc": true,
+    "0x12998db": true,
+    "0x12998e2": true,
+    "0x12998e4": true,
+    "0x12998e8": true,
+    "0x12998f9": true,
+    "0x1299912": true,
+    "0x1299937": true,
+    "0x1299942": true,
+    "0x1299945": true,
+    "0x1299988": true,
+    "0x129998b": true,
+    "0x12999ce": true,
+    "0x12999d1": true,
+    "0x1299a07": true,
+    "0x1299a09": true,
+    "0x1299a0e": true,
+    "0x1299a3f": true,
+    "0x1299a41": true,
+    "0x1299a46": true,
+    "0x1299a77": true,
+    "0x1299a79": true,
+    "0x1299a7e": true,
+    "0x1299abe": true,
+    "0x1299fb7": true,
+    "0x1299fbe": true,
+    "0x1299fcd": true,
+    "0x1299fd4": true,
+    "0x1299fe3": true,
+    "0x1299fea": true,
+    "0x1299ff6": true,
+    "0x129a00b": true,
+    "0x129a028": true,
+    "0x129a062": true,
+    "0x129a09c": true,
+    "0x129a0cf": true,
+    "0x129a0e1": true,
+    "0x129a0f2": true,
+    "0x129a107": true,
+    "0x129a10f": true,
+    "0x129a118": true,
+    "0x129a12d": true,
+    "0x129a135": true,
+    "0x129a13e": true,
+    "0x129a153": true,
+    "0x129a15b": true,
+    "0x850943": true,
+    "0x850946": true,
+    "0x8509de": true,
+    "0x850adf": true,
+    "0xf47a1c": true,
+    "0xfdea84": true,
+    "0xfdfe2f": true,
+    "0xfdfe3a": true,
+    "0xfdfe42": true,
+    "EvapProgramEnabled_pp_attribute": true,
+    "NonEvapProgramEnabled_pp_attribute": true,
+    "RemoteScheduleEnable_pp_attribute": true,
+    "RemoteScheduleOffGroup_pp_attribute": true,
+    "RemoteScheduleOnGroup_pp_attribute": true,
+    "RemoteScheduleOverrideGroup_pp_attribute": true,
+    "RemoteSetbackControlSource_pp_attribute": true,
+    "RemoteSetbackOffGroup_pp_attribute": true,
+    "RemoteSetbackOnGroup_pp_attribute": true,
+    "address_getter_has_no_nil_guard": true,
+    "advanced_ui_HookEvents_no_calls": true,
+    "advanced_ui_UnhookEvents_no_calls": true,
+    "advanced_ui_final_call_only_rehooks_handlers": true,
+    "advanced_ui_load_unhooks_program_flag_handlers": true,
+    "intrinsic_program_flag_handler_only_sets_remote_enable": true,
+    "load_never_reads_raw_remote_schedule_enable": true,
+    "model_integer_vmt_integer_setter": true,
+    "model_integer_vmt_value_setter": true,
+    "schedule_model_boolean": true,
+    "source_model_plain_integer": true,
+    "source_no_bounds_or_beforechange_AfterConstruction": true,
+    "source_no_bounds_or_beforechange_HookEvents": true,
+    "source_no_bounds_or_beforechange_InternalCreate": true
+  },
+  "format": "cbus-thermostat-remote-save-static-v1",
+  "independent_source_branch_examples": [
+    {
+      "disabled_group_writes": [
+        32,
+        33,
+        34
+      ],
+      "loaded_flags": [
+        0,
+        0
+      ],
+      "raw_flags": [
+        0,
+        0
+      ],
+      "raw_remote_enable": 0,
+      "saved_remote_enable": 0
+    },
+    {
+      "disabled_group_writes": [
+        32,
+        33,
+        34
+      ],
+      "loaded_flags": [
+        0,
+        0
+      ],
+      "raw_flags": [
+        0,
+        0
+      ],
+      "raw_remote_enable": 1,
+      "saved_remote_enable": 0
+    },
+    {
+      "disabled_group_writes": [
+        32,
+        33,
+        34
+      ],
+      "loaded_flags": [
+        0,
+        0
+      ],
+      "raw_flags": [
+        0,
+        0
+      ],
+      "raw_remote_enable": 255,
+      "saved_remote_enable": 0
+    },
+    {
+      "disabled_group_writes": [
+        32,
+        33,
+        34
+      ],
+      "loaded_flags": [
+        0,
+        0
+      ],
+      "raw_flags": [
+        2,
+        0
+      ],
+      "raw_remote_enable": 255,
+      "saved_remote_enable": 0
+    },
+    {
+      "disabled_group_writes": [
+        32,
+        33,
+        34
+      ],
+      "loaded_flags": [
+        0,
+        0
+      ],
+      "raw_flags": [
+        255,
+        0
+      ],
+      "raw_remote_enable": 1,
+      "saved_remote_enable": 0
+    },
+    {
+      "disabled_group_writes": null,
+      "loaded_flags": [
+        1,
+        0
+      ],
+      "raw_flags": [
+        1,
+        0
+      ],
+      "raw_remote_enable": 0,
+      "saved_remote_enable": 1
+    },
+    {
+      "disabled_group_writes": null,
+      "loaded_flags": [
+        0,
+        1
+      ],
+      "raw_flags": [
+        0,
+        1
+      ],
+      "raw_remote_enable": 0,
+      "saved_remote_enable": 1
+    },
+    {
+      "disabled_group_writes": null,
+      "loaded_flags": [
+        0,
+        1
+      ],
+      "raw_flags": [
+        0,
+        2
+      ],
+      "raw_remote_enable": 0,
+      "saved_remote_enable": 1
+    },
+    {
+      "disabled_group_writes": null,
+      "loaded_flags": [
+        0,
+        1
+      ],
+      "raw_flags": [
+        255,
+        255
+      ],
+      "raw_remote_enable": 0,
+      "saved_remote_enable": 1
+    }
+  ],
+  "limits": [
+    "Fresh scalar/model projection only; no intervening GUI edits or callbacks are simulated.",
+    "AfterLoad detaches and reattaches the intrinsic program-flag handlers; the reattachment does not invoke them. Their handler only recomputes the same OR. The final RemoteSchedule attribute Changed call can notify subscribers, whose arbitrary effects are not covered by this static projection.",
+    "The disabled branches overwrite untouched group PP bytes with decimal30/31 or32/33/34, not255. These branch outputs do not dereference group objects.",
+    "Enabled address preservation is conditional on successful original application/group resolution; the load may create missing objects. No inventory-free complete load is claimed.",
+    "RemoteSetbackControlSource is a plain integer with no branch clamp to0..2. Raw3..255 takes nil load references and a positive-source save dereference.",
+    "Programmable disabled loading still calls GetEnableControlApplication and may create application203. PP-only projection does not reproduce those model side effects.",
+    "Decoded unit specification prose labels sources1/2 oppositely to the pinned executable; the application routing recorded here follows executable branches.",
+    "Original instruction execution, original form/dialog enable rules, native persistence, hardware behavior and full Toolkit parity remain outside this static receipt."
+  ],
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed_this_run": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_devices_accessed": false,
+  "pp_attribute_slots": {
+    "EvapProgramEnabled": "0x2a8",
+    "NonEvapProgramEnabled": "0x2ac",
+    "RemoteScheduleEnable": "0x17c",
+    "RemoteScheduleOffGroup": "0x174",
+    "RemoteScheduleOnGroup": "0x170",
+    "RemoteScheduleOverrideGroup": "0x178",
+    "RemoteSetbackControlSource": "0x150",
+    "RemoteSetbackOffGroup": "0x158",
+    "RemoteSetbackOnGroup": "0x154"
+  },
+  "production_implementation_used": false,
+  "remote_setback_byte_domains": [
+    {
+      "dependent_pp_writes_need_group_inventory": false,
+      "load_group_references": null,
+      "raw": 0,
+      "save_groups": [
+        30,
+        31
+      ]
+    },
+    {
+      "load_application": "unit.ApplicationObject from ApplicationNumber",
+      "load_group_create": true,
+      "raw": 1,
+      "save_groups": "loaded object addresses"
+    },
+    {
+      "load_application": 203,
+      "load_group_create": true,
+      "raw": 2,
+      "save_groups": "loaded object addresses"
+    },
+    {
+      "load_group_references": null,
+      "raw_range": [
+        3,
+        255
+      ],
+      "save_groups": "dereferences nil; no safe original fresh-save projection"
+    }
+  ],
+  "routines": {
+    "CIS_TCBusObject.TCGateObject.GetAddressAsInteger": {
+      "address": "0xf47a10",
+      "sha256": "29e51f5d44bbbdf14cf1164607c98dc68cb323c7caa1f2d593bed173972e9341"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1299b98",
+      "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.InternalCreate": {
+      "address": "0x1298928",
+      "sha256": "374b666b51f9403ab31919d0e15d2fa731814a6ce8f18f390f1f83866cdcb8db"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x129471c",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "address": "0x128b948",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate": {
+      "address": "0x850798",
+      "sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetValue": {
+      "address": "0x850ac4",
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    },
+    "CIS_TThermostat.TAdvancedUIService.HandleEvapProgramEnabledAfterChange": {
+      "address": "0xfdd2a0",
+      "sha256": "6ba16af8c3666d8a79afde8330cbbf3c27b2c015b5874577b5f8e092aa97143e"
+    },
+    "CIS_TThermostat.TAdvancedUIService.HookEvents": {
+      "address": "0xfdd2d4",
+      "sha256": "16d00e6b8cd446cc2ed046316f5a1cf94067c3708bfa09c096151094c95d3611"
+    },
+    "CIS_TThermostat.TAdvancedUIService.UnhookEvents": {
+      "address": "0xfdd30c",
+      "sha256": "41d72068f76fcca3af387afd0f05560ec60e15a284e428b110e5975fc42b67df"
+    },
+    "CIS_TThermostat.TProgrammableThermostat.AfterConstruction": {
+      "address": "0xfecfc8",
+      "sha256": "ff13988d1aea8b97bdacf4e6c81dbd4c53085ab01bbfa8568f2d0435d7ee8ae6"
+    },
+    "CIS_TThermostat.TProgrammableThermostat.HandleEvapProgramEnableChange": {
+      "address": "0xfed134",
+      "sha256": "87b53a05688c05c9d7190d824f2fd15898bd14b19796f4c7981677c10ea02bb3"
+    },
+    "CIS_TThermostat.TZoneManagerService.AfterConstruction": {
+      "address": "0xfddf98",
+      "sha256": "edd3df1dd1838e6d86fab865acd0efac6f24723045c72af1b452410c4d1f4a17"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetRemoteSetbackControlSource": {
+      "address": "0xfdea78",
+      "sha256": "c30ef65269ea2b721c2cdb0a210880f27722725467ea54eb1ebbc5c223899f38"
+    },
+    "CIS_TThermostat.TZoneManagerService.HookEvents": {
+      "address": "0xfde088",
+      "sha256": "63fc3915c2d7bb031382adb58082fc796d75843bf4d2599d230f15208c7018e2"
+    },
+    "CIS_TThermostat.TZoneManagerService.InternalCreate": {
+      "address": "0xfdd338",
+      "sha256": "149e7f01f36dcbf1f51ccf1ed9244dd2449e63f07a02dadd4cf8caca7247d729"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetRemoteSetbackControlSource": {
+      "address": "0xfdfe08",
+      "sha256": "29c07adf95485deaab63571137936bfcaefbc8bcdf59d63ef09c68db03bd646d"
+    }
+  },
+  "schedule_flag_byte_domains": {
+    "EvapProgramEnabled": "raw == 1",
+    "NonEvapProgramEnabled": "raw > 0",
+    "RemoteScheduleEnable": "raw ignored; model = normalized Evap OR NonEvap",
+    "before_save_enable": "model RemoteScheduleEnable OR Evap OR NonEvap",
+    "disabled_group_load": {
+      "address": 255,
+      "application": 203,
+      "create": false
+    },
+    "disabled_pp_save": {
+      "RemoteScheduleEnable": 0,
+      "RemoteScheduleOffGroup": 33,
+      "RemoteScheduleOnGroup": 32,
+      "RemoteScheduleOverrideGroup": 34
+    },
+    "enabled_group_load": {
+      "addresses": "PP group values",
+      "application": 203,
+      "create": true
+    },
+    "enabled_pp_save": "RemoteScheduleEnable=1; groups use loaded object addresses"
+  }
+}

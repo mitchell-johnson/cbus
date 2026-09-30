@@ -90,13 +90,37 @@ and its verified receipt.
 | `TOutputDocumentor` | `RELDN4`, `RELDN8`, `RELDN8B`, `RELDN12`, `DIMDN4`, `DIMDN4F`, `DIMDN8`, `DIMDN8F` | Recovered: channel/groups/logic-function table |
 | `TOutputDocumentor` | `ANODN4`, `DIMDS8`, `DIMPR1/2/4`, `RELDB1`, `RELDC4` | Recovered table when the explicit firmware selects the pinned native class |
 | `TOutputDocumentor` | `DIMDH4`, `RELDN4A/8A/16A`; `DIMDD4/4F/8/8F` at firmware `1.3.0–9` | Recovered base-only body: native NCC classes fail this documentor's dimmer-class check |
-| `TOutputDocumentor`, `TErrorReportOutputDocumentor` | remaining output classes, including earlier `DIMDD` firmware | Partial: base block, channel table marked |
+| `TErrorReportOutputDocumentor` | `DIMDU4`, `DIMPR3A/6A/12A` with an explicit registered firmware | Recovered channel/logic table, error-trigger actions and enable-group usage |
+| `TOutputDocumentor` | remaining output classes, including earlier `DIMDD` firmware | Partial: base block, channel table marked |
+| `TFanControllerDocumentor` | `RELDF1` at canonical `2.4.xx–2.6.xx` | Recovered single channel, controller role, speed labels and thresholds under the shared source mapping |
 | `TBridgeDocumentor` | `BRIDGE1N/1F/2N/2F`, `GATEWLS/N/F` | Recovered: adjacent network, application connections, adjacent/remote forwarding and destination |
 | `TClassicOutputDocumentor` | `RELAY1`, `RELAY2`, `RELAY4`, `DIMMER4`, `AN_OUT4` | Recovered: associated groups and logic function per channel |
 | `TDMXGatewayDocumentor` | `DMXDO12` | Recovered: groups and 512 DMX slots |
 | `TClassicKeyInputDocumentor` | `KEY1`, `KEY2`, `KEY4` | Recovered: timing, macro/micro functions, group controls, preset levels and timer expiry |
+| `TClassicKeyInputDocumentor` | `KEYIR1/4`, `KEYBC2/4`, `KEYAUX4`, `DINAUX4`, `BCNC4A/B` with an explicit registered firmware | Recovered inherited tables, native physical key counts and AUX macro override |
+| `TClassicKeyInputDocumentor` | `KEYC1/2/4`, `KEYCIR1/4` with an explicit registered firmware (`1.8.01–9`) | Recovered eight ordinary-key tables with physical/virtual/IR labels; scene dependencies are decoded independently |
 | `TClassicKeyInputDocumentor` | other classic key types | Partial: base block and a marker |
-| every other documentor | Neo key inputs, PIR, light-level and ST7 sensors, multisensor, thermostat, SENTEMP, WHAA, DALI, fan, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways, DLT | Unrecovered: base block and a marker |
+| `TNeoInputDocumentor`, `TNeoProInputDocumentor` | `KEYA3`, `KEYB4`, `KEYM4`, `KEYM8` at `1.3.01–2.9.99`; `KEYE1` at `2.5.00` | Recovered ordinary controls and canonical scene bodies for complete admitted snapshots; other model states remain partial |
+| `TDLTDocumentor` | `KEYBL5`, `KEYML5`, `KEYDL4` at `3.0.00` | Recovered inherited NeoPro tables and label mode, with the same snapshot restrictions |
+| `TCustomSceneControllerDocumentor` | `SCNCTL5` with an explicit registered firmware | Recovered five-scene body, commands, trigger selectors and master-off fields for complete admitted snapshots |
+| `TPIRDocumentor`, `TST7PIRSensorDocumentor` | registered `SENPIRSS`, `SENPIROA`, `SENPIRIA`, `SENPIRIB` classes | Recovered four-key ordinary controls, enable-group appendix and bounded group/action usage; surface multisensor and encoded scene keys excluded |
+| `TSENTEMPDocumentor`, `TSENTEMPProDocumentor`, `TDigitalTemperatureSensorDocumentor` | registered `SENTEMP`, `SENTEMPB`, `SENTEMP4` classes | Recovered consumed control/broadcast fields and four-channel reports under explicit Celsius/period-decimal formatting |
+| every other documentor | other Neo key inputs, light-level sensors, multisensor, thermostat, WHAA, DALI, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
+
+The [Neo body note](project-documentation-neo.md) records physical and virtual
+key labels, secondary applications, the native scene-ramp indexing quirk and
+the fresh-model limits. The original Timer template changes a zero primary
+block timer to 300 seconds during loading; the classic and Neo adapters both
+apply this default while retaining an explicit Idle expiry. Scene Modify,
+configured joins, block relocation and noncanonical scene tables remain open.
+
+[DLT](project-documentation-dlt.md) adds the exact `Labels: Static` or
+`Labels: Dynamic` suffix after the inherited body. Its separate programming and
+label editor is not invoked. [SCNCTL5](project-documentation-scene-controller.md)
+keeps five scenes with three shared primary and six secondary commands each,
+including the original distinction between custom and Dragan ramp fields.
+Its master-off selector uses the original fresh default
+`DisplayAddressValue=false`; saved display preferences are not loaded.
 
 The output table follows the original row format: `<tr><td>channel</td><td>groups</td>[<td>Max|Min|&nbsp;</td>]</tr>`.
 Channel groups come from `GroupAddress`. Logic groups 1–4 sit at
@@ -131,13 +155,39 @@ groups. Timing labels use the native enums, including the stored ramp value
 255 becoming `4 secs`. Macro detection reproduces registered command vectors,
 application subsets and shutter aliases; custom functions retain the four
 micro-function columns. Repeated controls remain repeated. Their stored
-levels and timers come from the first unit block matching the group, even
+levels and timers come from the first unit block matching the application/group pair, even
 when that block is assigned to another key. Named presets resolve by Level
-Address, independently of Level Value. Other classic input models still need
-their own native interface and programming-state mappings. Block order models
+Address, independently of Level Value. The [additional classic profiles](project-documentation-classic-profiles.md)
+use the same report with their native physical key counts. AUX units replace
+Bell Press with Aux On/Off; BCNC units preserve stored commands because their
+forced defaults apply only before saving. [KEYC and KEYCIR](project-documentation-neoclassic.md)
+use eight keys and blocks, with the original physical/virtual/IR labels. Their
+Classic documentor does not append a Scenes table. Explicit ordinary selectors
+are required even though the model reports scenes disabled: the loader still
+consumes encoded scene selectors. Block order models
 a freshly initialized native key collection loaded from ascending PP bits;
 association history in an existing GUI session is not present in a saved PP
 snapshot and is not reproduced.
+
+The [PIR projection](project-documentation-pir.md) preserves four ordinary keys,
+SENPIR macro overrides, mixed block applications and the opposite enable-group
+polarity of the old and ST7 classes. ST7 scene keys remain partial, and its scene
+dependency list requires positive evidence that the scene table is empty.
+
+[Temperature bodies](project-documentation-temperature.md) retain native
+control and broadcast modes, loader clamps and disabled-value defaults. SENTEMP
+uses the ceiling of the high/low average. SENTEMP4 preserves the original
+unclosed table and its absolute Fahrenheit threshold conversion. The project
+renderer explicitly uses Celsius and a period decimal separator; stored Toolkit
+preferences and Windows locale are not loaded.
+
+[Specialized outputs](project-documentation-special-outputs.md) add the four
+error-report output classes and RELDF1. Fan reports consume one scalar channel
+group, resolve Master/Stand Alone/Slave roles and retain native speed ranges,
+including reversed ranges. Canonical `2.4.xx`, `2.5.xx` and `2.6.xx` share the
+same unconditional mapping; this is software projection coverage, not native
+or hardware firmware-continuum acceptance. Other firmware and non-BMP label
+copying remain partial. Architectural and Bytecraft bodies still need separate loaders.
 
 Bridge bodies use `Application[0..1]`, `ApplicationConnectEnabled`,
 `BridgeCount` and `BridgeAddress`. Their private application-255 names are
@@ -150,9 +200,9 @@ empty prefix displays the original `Unknown Network` text.
 ## Group usage and action selectors
 
 Input/Output/Other lists now reproduce the original unit-link/description
-layout for fifteen admitted DIN output types, five classic output types, and
-nine classic key types (`KEY1/2/4`, `KEYIR1/4`, `KEYBC2/4`, `KEYAUX4`,
-`DINAUX4`). Input descriptions retain block-major key ordering, duplicate key
+layout for fifteen admitted DIN output types, four error-report output types,
+five classic output types, and eleven classic key types (`KEY1/2/4`, `KEYIR1/4`,
+`KEYBC2/4`, `KEYAUX4`, `DINAUX4`, `BCNC4A/B`). Input descriptions retain block-major key ordering, duplicate key
 uses and `Block (Unused)`. DIN output descriptions list channels then used or
 unused logic groups; classic output descriptions list logic groups. Other
 usage includes the recovered area and indicator-brightness group rules.
@@ -182,6 +232,32 @@ levels, empty units, unused selectors and interleaved multiple uses. These
 cases supply explicit action strings and getter results; they independently
 check the wrapper rather than complete native project loading or composition.
 See the [comparison note](../research/experiments/2026-09-30/project-documentor-trigger-original.md).
+
+The admitted Neo/NeoPro and DLT families also report
+[group and action uses](project-documentation-neo-usage.md). They retain the
+native primary-recall, scene-overwrite, secondary-recall order and duplicate
+uses. Neo scene dependencies distinguish unused scenes; DLT reports retained
+scenes through its own override. SCNCTL5 preserves repeated `Scene N` command
+dependencies and combines matching master-off and scene selector descriptions.
+Bounded instruction comparisons execute the original methods with synthetic
+objects; they do not establish complete native project loading or page parity.
+
+PIR action usage retains its inherited primary-application-only Classic method,
+including on ST7 units with secondary-application blocks. PIR group usage keeps
+native corridor and broadcast dependencies even when the corresponding active
+flag is false. Temperature usage follows the selected control/broadcast mode;
+fan output usage identifies its scalar Channel 1. Error-report outputs append
+both matching error and clear actions and preserve the Enable group reference.
+Each method refuses missing consumed data independently of body recovery.
+
+KEYC/CIR input usage counts physical keys and separately scans loaded scene
+commands. Ordinary keys all reference Scene 1, so other retained scenes can be
+reported as unused. Missing or noncanonical scene data preserves known block
+uses with a partial marker. Their Classic action method scans all eight keys,
+including virtual/IR keys, only for the primary application. Unsupported join
+capabilities suppress join descriptions; the inherited corridor group reference
+is still reported when it matches. These distinctions are source-derived and do
+not establish original loader or generated-page acceptance.
 
 ## Status interval and ordering
 
@@ -222,7 +298,8 @@ such section. The following are marked:
 - `Inputs:`, `Outputs:` and `Other:` usage outside the admitted families;
 - `Status Report Interval` when any potential participant lacks a known mapping
   or consumed PP;
-- `ActionSelectorUse` outside the base, classic-key and admitted fan/temperature implementations;
+- `ActionSelectorUse` outside the base and admitted classic-key, Neo/DLT,
+  scene-controller and fan/temperature implementations;
 - unrecovered per-type `DocumentHTML` bodies and the partial data listed above.
 
 Without `--catalog`, the three calculator lines read `not calculated`. With a
@@ -239,6 +316,8 @@ with each unit's `CatalogNumber`, `Burden` and
 - The `TfrmProjectDocumentor` progress dialog (`Network %d of %d`,
   `Generating Documentation`) and cancellation. These are **not implemented**.
 - The original process's registry/locale-dependent application/group/level order.
+- Saved `DisplayAddressValue` formatting for the SCNCTL5 master-off selector;
+  the report uses the original fresh default and records that basis.
 - `DateTimeToString` month names, which depend on the locale. The CLI uses
   English names.
 - The scan-error branch (`An Error occurred while scanning this unit…`), which

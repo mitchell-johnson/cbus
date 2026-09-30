@@ -1,0 +1,65 @@
+{
+  "format": "cbus-project-documentor-dlt-original-leaf-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "method": {
+    "symbol": "CIS_TDLTDocumentor.TDLTDocumentor.DocumentHTML",
+    "start": "0xffd744",
+    "end": "0xffd800",
+    "sha256": "b19a3894d2074e4d790d5b8ad2ea7380f207e8e04b75362230c1d384ac62fb2e"
+  },
+  "observations": [
+    {
+      "is_dlt": false,
+      "blocked": false,
+      "calls": [
+        "inherited_neopro",
+        "dynamic_label_class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "is_dlt": false,
+      "blocked": true,
+      "calls": [
+        "inherited_neopro",
+        "dynamic_label_class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "is_dlt": true,
+      "blocked": false,
+      "calls": [
+        "inherited_neopro",
+        "dynamic_label_class_test",
+        "get_block_dynamic_updates",
+        "append_suffix"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "Labels: Dynamic"
+      ]
+    },
+    {
+      "is_dlt": true,
+      "blocked": true,
+      "calls": [
+        "inherited_neopro",
+        "dynamic_label_class_test",
+        "get_block_dynamic_updates",
+        "append_suffix"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "Labels: Static"
+      ]
+    }
+  ],
+  "original_generated_page_comparison": "not_obtained",
+  "boundary": "Original wrapper instructions only; inherited body, class test, boolean storage and string list are synthetic hooks. No GUI, native loader, saved project or physical device."
+}

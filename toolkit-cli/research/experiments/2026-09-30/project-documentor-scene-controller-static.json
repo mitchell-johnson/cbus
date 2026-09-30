@@ -1,0 +1,191 @@
+{
+  "checks": {
+    "action_identity_not_value": true,
+    "action_labels_separator": true,
+    "body_base_first": true,
+    "body_generic_ramp_getter": true,
+    "body_no_trailing_break": true,
+    "body_unused_scene_and_command_filters": true,
+    "control_application_202": true,
+    "dragan_255_is_one_other_invalid_raises": true,
+    "factory": true,
+    "five_scenes": true,
+    "group_label": true,
+    "group_matches_each_command": true,
+    "group_method_slots": true,
+    "level_percent_updates": true,
+    "loader_indexing": true,
+    "master_as_string_extended_tag_chain": true,
+    "master_as_string_not_level_link": true,
+    "master_dragan_mapping": true,
+    "master_extended_tag_format_branch": true,
+    "master_selector_by_address": true,
+    "master_standard_format_fresh_default": true,
+    "nine_commands": true,
+    "pp:ControlAppGroupAddress": true,
+    "pp:MasterOffCustomRampRate": true,
+    "pp:MasterOffRampRate": true,
+    "pp:MasterOffTriggerLevel": true,
+    "pp:PrimaryGroupAddress": true,
+    "pp:PrimaryGroupAddressLevel": true,
+    "pp:Scene1SecondaryGroupTable": true,
+    "pp:Scene2SecondaryGroupTable": true,
+    "pp:Scene3SecondaryGroupTable": true,
+    "pp:Scene4SecondaryGroupTable": true,
+    "pp:Scene5SecondaryGroupTable": true,
+    "pp:SceneCustomRampRate": true,
+    "pp:SceneRampRate": true,
+    "pp:SceneTriggerLevel": true,
+    "pp:SecondaryMasterOffEnabled": true,
+    "primary_master_off_true": true,
+    "primary_report_ramp_is_generic_custom": true,
+    "scene_selector_by_address": true,
+    "three_primary_six_secondary": true
+  },
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "factory": [
+    {
+      "admitted": false,
+      "agent": "TCustomSceneControllerCGateAgent",
+      "agent_methods": {
+        "agent_load": "TCBusLearnUnitCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "agent_registration": "0x1397f64",
+      "class": "TSCNCTL5",
+      "class_registration": "0x1391663",
+      "documentors": [
+        [
+          "TCustomSceneControllerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "firmware_max": "9",
+      "firmware_min": "0",
+      "refusal_reason": "agent TCustomSceneControllerCGateAgent has no admitted CSV association model",
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "unit_type": "SCNCTL5"
+    }
+  ],
+  "format": "cbus-project-documentor-scene-controller-static-v1",
+  "limits": [
+    "Complete consumed PP arrays; invalid Dragan values and implicit loader defaults are not admitted.",
+    "Existing displayed group and selector records required; no original auto-creation is projected.",
+    "Fresh five-scene, nine-command model only; prior in-memory added objects are not represented.",
+    "Master selector uses the original standard tag-name default; registry DisplayAddressValue prefixes are not projected.",
+    "Source reconstruction and isolated original-method probes do not establish original generated-page acceptance."
+  ],
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "master_selector_format_basis": "standard tag-name profile; DisplayAddressValue=false (original fresh default)",
+  "methods": {
+    "CIS_GlobalSoftwareParameters.LoadParametersFromRegistry": {
+      "end": "0x85b924",
+      "sha256": "b795c0830c979300b3b19b0ee41c2e4d62bdd9564bfb1105398c2da0dbe347b9",
+      "start": "0x85b67c"
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "end": "0xc9d2f4",
+      "sha256": "d2c1cb2fef77e968e3939a0e552f181a18dfb03f52d80490eb47a3f8bb27cf43",
+      "start": "0xc9d25c"
+    },
+    "CIS_TCommonCBus.IntegerToCBusRampRate": {
+      "end": "0xf25168",
+      "sha256": "49877e801228278908f029872a54ba566772bb233b21bc3ffde00c667f3b340b",
+      "start": "0xf25130"
+    },
+    "CIS_TCommonCBus.TLevel.GetDefaultRepresentation": {
+      "end": "0xf26da8",
+      "sha256": "2c18a0246743059c53b2fb09d650dd6990212740dd6f75934f3ea467c62bf556",
+      "start": "0xf26d88"
+    },
+    "CIS_TCommonCBus.TLevel.GetExtendedTagName": {
+      "end": "0xf271a0",
+      "sha256": "561332ea951589ced3e77e410c591fe4500740d96edfe007d1c99c26025303f3",
+      "start": "0xf270cc"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.GetAsString": {
+      "end": "0x7ea498",
+      "sha256": "585092057648a41980aebe9f38218af0280ac9ba8857bfeb748646509eeadc97",
+      "start": "0x7ea47c"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.InternalGetDefaultRepresentation": {
+      "end": "0x7ea61c",
+      "sha256": "6b92ff276125abf1581fd305518e7063b90a7d05d09348ab47511df2af42b1e9",
+      "start": "0x7ea5f8"
+    },
+    "CIS_TCustomSceneControllerCGateAgent.LoadControlAppGroup": {
+      "end": "0x122801c",
+      "sha256": "fb3966ee5e8de7c957987c77e021623e1d65e02a0595f49d471b763b6a278166",
+      "start": "0x1227e38"
+    },
+    "CIS_TCustomSceneControllerCGateAgent.LoadMasterOff": {
+      "end": "0x12280c0",
+      "sha256": "cb85bedb375a8b123f603cad6a55d93bea51734450bd828e3a81203673dd879d",
+      "start": "0x122801c"
+    },
+    "CIS_TCustomSceneControllerCGateAgent.LoadScenes": {
+      "end": "0x12284c0",
+      "sha256": "f7061a62104c26b80a66b98c617eef9719a41c0b83b22664b65cfef4142e4675",
+      "start": "0x12280c0"
+    },
+    "CIS_TCustomSceneControllerCGateAgent.TCustomSceneControllerCGateAgent.InternalCreate": {
+      "end": "0x1227c7c",
+      "sha256": "e36aebb034d6acfe17837128b3ecc52191b05ec39d695b4086d39ea88b7a92f2",
+      "start": "0x1227314"
+    },
+    "CIS_TCustomSceneControllerDocumentor.TCustomSceneControllerDocumentor.ActionSelectorUse": {
+      "end": "0x10096ac",
+      "sha256": "b37f8855a8b1a6d974df2ecf4e2b419e26a77b9549ac159149408ca970c8b501",
+      "start": "0x10094e0"
+    },
+    "CIS_TCustomSceneControllerDocumentor.TCustomSceneControllerDocumentor.DocumentHTML": {
+      "end": "0x1009eb4",
+      "sha256": "e6c9176bb3c50a9c8b8ad0cf46233b802512614a68903b76b9ee2f6dfb68300f",
+      "start": "0x10096ac"
+    },
+    "CIS_TCustomSceneUnit.TCustomSceneUnit.DescribeInputGroupDependencyAdvanced": {
+      "end": "0xd16cf0",
+      "sha256": "6c3a44995eb94ef092d0979cd1b8fa2d3bad7768cdd1091d0d269ff9752a84bb",
+      "start": "0xd16bb4"
+    },
+    "CIS_TSCNCTL5.TSCNCTL5.MaximumCommandCount": {
+      "end": "0x100a14c",
+      "sha256": "dd55f29c49f56ce74c1f36dad25a5af8fc73bde0798f6e0b6df177bc6254fdd2",
+      "start": "0x100a134"
+    },
+    "CIS_TSCNCTL5.TSCNCTL5.MaximumSceneCount": {
+      "end": "0x100a164",
+      "sha256": "0388818d44fc7a184a71ea5b25e8d37b45aeb870c7b02b7aabc04e25c412fe3b",
+      "start": "0x100a14c"
+    },
+    "CIS_TScene.DraganRampRateToCBusRampRate": {
+      "end": "0xd15230",
+      "sha256": "ce81c573545454f6d72005bed158f8e380f0e35d58101d9b0025f20111b8a456",
+      "start": "0xd151c8"
+    },
+    "CIS_TScene.IntegerToDraganRampRate": {
+      "end": "0xd151b0",
+      "sha256": "68c246d6618b91de29d2376e5691535f46af036c8e300b138b1fd4e2056042b9",
+      "start": "0xd1511c"
+    },
+    "CIS_TScene.TSceneCommand.GetRampRate": {
+      "end": "0xd15dfc",
+      "sha256": "9883e4bd37313f796dee7f167c3034000e3be55b2e4a430474a5710043a75cc4",
+      "start": "0xd15dd8"
+    },
+    "CIS_TScene.TSceneCommand.HandleLevelAfterChange": {
+      "end": "0xd16170",
+      "sha256": "e255b80043a7ef6920cbddb8ffa21f3c8280a72046333eaddd8013b7df9f1dda",
+      "start": "0xd16084"
+    }
+  },
+  "model_sha256": "0bee388297b82f475099127aedcae45576a2db9c3c4efbafd817e0014a396871",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained"
+}

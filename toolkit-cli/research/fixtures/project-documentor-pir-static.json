@@ -1,0 +1,373 @@
+{
+  "format": "cbus-project-documentor-pir-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "body0:classic_first": true,
+    "body0:labels": true,
+    "body0:unused_before_polarity": true,
+    "body0:classic_action": true,
+    "body1:classic_first": true,
+    "body1:labels": true,
+    "body1:unused_before_polarity": true,
+    "body1:classic_action": true,
+    "old_enable_primary_application": true,
+    "old_enable_logic_zero_inverts": true,
+    "corridor_unsupported_only_gates_active": true,
+    "corridor_group_primary_unconditional": true,
+    "st7_corridor_attribute_rename": true,
+    "old_enable_pp_names": true,
+    "old_loader_core_first": true,
+    "old_pir_macro_override": true,
+    "st7_sensor_loader_neopro_first": true,
+    "st7_pir_loader_multisensor_first": true,
+    "st7_block_override_no_calls": true,
+    "st7_pir_macro_override": true,
+    "old_other_label": true,
+    "st7_input_labels": true,
+    "st7_input_unused_gate": true,
+    "st7_other_labels": true,
+    "st7_other_neopro_first": true,
+    "st7_broadcast_ignores_active": true,
+    "st7_enable_pp_names": true,
+    "SENPIRSS:1.00:four_blocks": true,
+    "SENPIRSS:1.00:four_physical_keys": true,
+    "SENPIRSS:1.00:stored_levels_enabled": true,
+    "SENPIRSS:1.00:primary_subset_senpir": true,
+    "SENPIRSS:1.00:brightness_disabled": true,
+    "SENPIRSS:1.00:output_base": true,
+    "SENPIROA:1.2.60:four_blocks": true,
+    "SENPIROA:1.2.60:four_physical_keys": true,
+    "SENPIROA:1.2.60:stored_levels_enabled": true,
+    "SENPIROA:1.2.60:primary_subset_senpir": true,
+    "SENPIROA:1.2.60:brightness_disabled": true,
+    "SENPIROA:1.2.60:output_base": true,
+    "SENPIRIA:1.2.60:four_blocks": true,
+    "SENPIRIA:1.2.60:four_physical_keys": true,
+    "SENPIRIA:1.2.60:stored_levels_enabled": true,
+    "SENPIRIA:1.2.60:primary_subset_senpir": true,
+    "SENPIRIA:1.2.60:brightness_disabled": true,
+    "SENPIRIA:1.2.60:output_base": true,
+    "SENPIRIB:1.2.60:four_blocks": true,
+    "SENPIRIB:1.2.60:four_physical_keys": true,
+    "SENPIRIB:1.2.60:stored_levels_enabled": true,
+    "SENPIRIB:1.2.60:primary_subset_senpir": true,
+    "SENPIRIB:1.2.60:brightness_disabled": true,
+    "SENPIRIB:1.2.60:output_base": true,
+    "SENPIROA:2.0.01:four_blocks": true,
+    "SENPIROA:2.0.01:four_physical_keys": true,
+    "SENPIROA:2.0.01:stored_levels_enabled": true,
+    "SENPIROA:2.0.01:primary_subset_senpir": true,
+    "SENPIROA:2.0.01:brightness_disabled": true,
+    "SENPIROA:2.0.01:output_base": true,
+    "SENPIROA:2.0.01:secondary_subset_senpir": true,
+    "SENPIROA:2.0.01:join_unsupported": true,
+    "SENPIROA:2.0.01:dual_join_unsupported": true,
+    "SENPIROA:2.0.01:corridor_unsupported": true,
+    "SENPIROA:2.0.01:key_disable_unsupported": true,
+    "SENPIRIA:2.0.01:four_blocks": true,
+    "SENPIRIA:2.0.01:four_physical_keys": true,
+    "SENPIRIA:2.0.01:stored_levels_enabled": true,
+    "SENPIRIA:2.0.01:primary_subset_senpir": true,
+    "SENPIRIA:2.0.01:brightness_disabled": true,
+    "SENPIRIA:2.0.01:output_base": true,
+    "SENPIRIA:2.0.01:secondary_subset_senpir": true,
+    "SENPIRIA:2.0.01:join_unsupported": true,
+    "SENPIRIA:2.0.01:dual_join_unsupported": true,
+    "SENPIRIA:2.0.01:corridor_unsupported": true,
+    "SENPIRIA:2.0.01:key_disable_unsupported": true,
+    "SENPIRIB:2.0.01:four_blocks": true,
+    "SENPIRIB:2.0.01:four_physical_keys": true,
+    "SENPIRIB:2.0.01:stored_levels_enabled": true,
+    "SENPIRIB:2.0.01:primary_subset_senpir": true,
+    "SENPIRIB:2.0.01:brightness_disabled": true,
+    "SENPIRIB:2.0.01:output_base": true,
+    "SENPIRIB:2.0.01:secondary_subset_senpir": true,
+    "SENPIRIB:2.0.01:join_unsupported": true,
+    "SENPIRIB:2.0.01:dual_join_unsupported": true,
+    "SENPIRIB:2.0.01:corridor_unsupported": true,
+    "SENPIRIB:2.0.01:key_disable_unsupported": true
+  },
+  "registrations": [
+    {
+      "unit_type": "SENPIRSS",
+      "class": "CIS_TSENPIRSS..TSENPIRSS",
+      "firmware": [
+        "1.00",
+        "2.0.00"
+      ],
+      "slots": {
+        "0x128": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TSENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MacroFunctionSubsetName"
+      }
+    },
+    {
+      "unit_type": "SENPIROA",
+      "class": "CIS_TSENPIRSS..TSENPIROA",
+      "firmware": [
+        "1.2.60",
+        "2.0.00"
+      ],
+      "slots": {
+        "0x128": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TSENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MacroFunctionSubsetName"
+      }
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "class": "CIS_TSENPIRSS..TSENPIRSS",
+      "firmware": [
+        "1.2.60",
+        "2.0.00"
+      ],
+      "slots": {
+        "0x128": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TSENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MacroFunctionSubsetName"
+      }
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "class": "CIS_TSENPIRSS..TSENPIRSS",
+      "firmware": [
+        "1.2.60",
+        "2.0.00"
+      ],
+      "slots": {
+        "0x128": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TSENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MacroFunctionSubsetName"
+      }
+    },
+    {
+      "unit_type": "SENPIROA",
+      "class": "CIS_TSENPIRSS..TST7SENPIROA",
+      "firmware": [
+        "2.0.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TST7SENPIROA.MaximumKeyCount",
+        "0x194": "CIS_TSENPIRSS.TST7SENPIROA.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetName",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TSENPIRSS.TST7SENPIROA.IsJoinModeSupported",
+        "0x238": "CIS_TSENPIRSS.TST7SENPIROA.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "class": "CIS_TSENPIRSS..TST7SENPIRSS",
+      "firmware": [
+        "2.0.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TST7SENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TSENPIRSS.TST7SENPIRSS.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetName",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TSENPIRSS.TST7SENPIRSS.IsJoinModeSupported",
+        "0x238": "CIS_TSENPIRSS.TST7SENPIRSS.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "class": "CIS_TSENPIRSS..TST7SENPIRSS",
+      "firmware": [
+        "2.0.01",
+        "2.3.9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRSS.TST7SENPIRSS.MaximumKeyCount",
+        "0x194": "CIS_TSENPIRSS.TST7SENPIRSS.GetMaximumVirtualKeyCount",
+        "0x19c": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelPropertiesEnabled",
+        "0x1a0": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelStorePropertiesEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetName",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TSENPIRSS.TST7SENPIRSS.IsJoinModeSupported",
+        "0x238": "CIS_TSENPIRSS.TST7SENPIRSS.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    }
+  ],
+  "methods": {
+    "CIS_TPIRDocumentor.TPIRDocumentor.DocumentHTML": {
+      "start": "0xcee870",
+      "end": "0xceea84",
+      "sha256": "d4f84c765a843bd7b704774cf9b1b10fb12749b3de2e73b60c4d3595cb9e467e",
+      "resources": []
+    },
+    "CIS_TST7PIRSensorDocumentor.TST7PIRSensorDocumentor.DocumentHTML": {
+      "start": "0xceebc4",
+      "end": "0xceedd8",
+      "sha256": "41c52a518c861aad1d6f4d65feccb3118f2c0fa5cbf60f77a7d30d1a31fe59e4",
+      "resources": []
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.GetEnableGroup": {
+      "start": "0x121fd5c",
+      "end": "0x121fdd4",
+      "sha256": "8184e55e5b121e4ec0609220ec662211b0e2e303d7af6213e36b12cf28eff6d3",
+      "resources": []
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.GetKeyValues": {
+      "start": "0x121fdd4",
+      "end": "0x1220068",
+      "sha256": "bee8717dbe603e08fa06c1b806fa9c9b5562d4478381beef31c61d84d2992764",
+      "resources": []
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.InternalCreate": {
+      "start": "0x121faf0",
+      "end": "0x121fbb4",
+      "sha256": "2898ecf06fed9454662ccf5300f20d7c2233e144d464d3a3ccc0909735fcdbf9",
+      "resources": []
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x12202e4",
+      "end": "0x122030c",
+      "sha256": "8fac7871daa1767647b091794dede0ba7fa45ff9de2cec88af100b58f6273545",
+      "resources": []
+    },
+    "CIS_TSENPIRSS.TSENPIRSS.RefreshMacroFunctionOverrides": {
+      "start": "0xcefe40",
+      "end": "0xcefe94",
+      "sha256": "d784376bfc4f9a0f5edc8a5ead5788d85e32fcbc5a90e40280f01ad239896adb",
+      "resources": []
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.InternalCreate": {
+      "start": "0xcf6eb8",
+      "end": "0xcf7b20",
+      "sha256": "8b464bd7a94c3adcbc14a663dad23f20ad15a737a71da748e373a67b53b89b12",
+      "resources": []
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf4890",
+      "end": "0xcf4cb8",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1",
+      "resources": []
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf8064",
+      "end": "0xcf80a0",
+      "sha256": "657ab2f034e7b8677a757962c4682838e05edae5ae48d1299ceffc03cfff4b6a",
+      "resources": []
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.RefreshKeyBlockOverrides": {
+      "start": "0xcfe0e4",
+      "end": "0xcfe0f0",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "resources": []
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.RefreshMacroFunctionOverrides": {
+      "start": "0xcfe0f0",
+      "end": "0xcfe144",
+      "sha256": "7715e420a7eb580d14e496caad32769be78d8263339f593d8d6da20f473b55c9",
+      "resources": []
+    },
+    "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xca1c6c",
+      "end": "0xca1d04",
+      "sha256": "036f9aa1377a8bee2ec85274b3ca13193e1f82f7b53c05cf07f643506b7c5904",
+      "resources": [
+        "PIR Enable Group"
+      ]
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcfa928",
+      "end": "0xcfad94",
+      "sha256": "0c9203f8c3e771a59f4c0853c2930abc93195cf4c50a448ebb66eca756324387",
+      "resources": [
+        "Key %d",
+        "Light Level Maintenance",
+        "Block (Unused)",
+        "Scene %d",
+        "Scene %d (Unused)"
+      ]
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcfad94",
+      "end": "0xcfaedc",
+      "sha256": "72a4ee5cf0fc957877e042d76aa560e07f6f9e331dbd4469781f59dac768a948",
+      "resources": [
+        "Light Level Maintenance Enable",
+        "Occupancy Enable",
+        "Corridor Link",
+        "Light Level Broadcast Group"
+      ]
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup": {
+      "start": "0xc97940",
+      "end": "0xc97b48",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes": {
+      "start": "0xced05c",
+      "end": "0xced154",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xced154",
+      "end": "0xced538",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861",
+      "resources": []
+    }
+  },
+  "original_generated_page_comparison": "not_obtained",
+  "original_loader_execution": "not_executed"
+}

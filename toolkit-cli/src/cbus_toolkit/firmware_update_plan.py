@@ -241,9 +241,17 @@ def read_package_entries(package, password, *, names=None, expected_sha256=None)
                     raise FirmwarePackageError(f'Package entry exceeds the {MAX_IMAGE_SIZE}-byte image limit')
                 if sum(info.file_size for info in selected) > MAX_PACKAGE_PLAINTEXT:
                     raise FirmwarePackageError('Selected package plaintext exceeds the aggregate byte limit')
+                # Non-deflate ZIP decoders can allocate their full output
+                # before a bounded read clips it to a forged declared size.
+                # Check every selected codec before opening even the first
+                # entry. pyzipper exposes AES's inner method as compress_type.
                 for info in selected:
-                    if _encryption(info) == 'aes' and pyzipper is None:
+                    if info.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
+                        continue
+                    if info.compress_type == 99 and pyzipper is None:
                         raise FirmwarePackageError('AES-encrypted entries require the optional firmware extra (pyzipper)')
+                    raise FirmwarePackageError('Firmware package entries must use Stored or Deflated compression, including inside AES; other ZIP codecs are unsupported')
+                for info in selected:
                     with archive.open(info, pwd=password) as stream:
                         data = stream.read(MAX_IMAGE_SIZE + 1)
                     if len(data) != info.file_size:

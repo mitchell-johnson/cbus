@@ -1,0 +1,214 @@
+{
+  "format": "cbus-wireless-scenes-native-acceptance-v1",
+  "backend": "local",
+  "scope": "Owned native C-Gate closed synthetic database projects; no radio or physical network",
+  "executed_test_id": "tests/test_wireless_scenes_native.py::WirelessScenesNativeTest::test_native_scene_arrays_editor_preservation_and_reload",
+  "original_toolkit_gui_executed": false,
+  "physical_hardware_verified": false,
+  "types": [
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.2.90",
+      "catalog_number": "5800WCGA",
+      "physical_hardware_verified": false,
+      "saved_phases": [
+        "two-scenes-primary-secondary-with-level255",
+        "third-empty-scene-terminator-with-preserved-tail",
+        "clear-scene-list-with-complete-vector-preserved"
+      ],
+      "missing_action_metadata_refused_before_io": true,
+      "stale_scene_and_remote_dependencies_refused_without_write": true,
+      "stale_project_refused_without_write": true,
+      "unrelated_parameters_preserved": 63,
+      "two_scene_vector_prefix_hex": "070009FFFF0380FF",
+      "unused_vector_tail_preserved": true,
+      "secondary_offset_raw": 133,
+      "all_phases_save_close_reload_verified": true,
+      "all_networks_closed_and_idle": true,
+      "connection_route_and_remote_mappings_preserved": true
+    },
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.4.00",
+      "catalog_number": "SLC5800WCGD",
+      "physical_hardware_verified": false,
+      "saved_phases": [
+        "two-scenes-primary-secondary-with-level255",
+        "third-empty-scene-terminator-with-preserved-tail",
+        "clear-scene-list-with-complete-vector-preserved"
+      ],
+      "missing_action_metadata_refused_before_io": true,
+      "stale_scene_and_remote_dependencies_refused_without_write": true,
+      "stale_project_refused_without_write": true,
+      "unrelated_parameters_preserved": 63,
+      "two_scene_vector_prefix_hex": "070009FFFF0380FF",
+      "unused_vector_tail_preserved": true,
+      "secondary_offset_raw": 133,
+      "all_phases_save_close_reload_verified": true,
+      "all_networks_closed_and_idle": true,
+      "connection_route_and_remote_mappings_preserved": true
+    }
+  ],
+  "passed": true,
+  "source_sha256": {
+    "src/cbus_toolkit/wireless_scenes.py": "9178625311673d3a1048dd1418b10f95baad37afab9d954f3b501be4391e3437",
+    "src/cbus_toolkit/wireless_gateway.py": "d9d4c5a0a4afed1cf231d505ecec8ddfbf489e28f064f89cc4246fce45e05bdd",
+    "src/cbus_toolkit/wireless_connection.py": "7837e41c5d1bc7ed59ba686fcf1cd15398887cbca3cd82a36906771efc007c1b",
+    "tests/test_wireless_scenes_native.py": "043f7e0a81c317bc02f3d06f19d18c1b2c2309feec99274a84b436e34abb4c10",
+    "tests/test_wireless_connection_native.py": "cc2b16a55c9e8deb4d4733d91788591dc6d0f858ae950cb4b7a43a8b3962979b"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "native_array_transport": {
+    "unit_type": "WGATE5F",
+    "firmware": "2.4.00",
+    "probes": [
+      {
+        "parameter": "SceneTriggerGroup",
+        "case": "short",
+        "sent_count": 3,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerGroup",
+        "case": "empty",
+        "sent_count": 0,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerGroup",
+        "case": "oversized",
+        "sent_count": 9,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerLevel",
+        "case": "short",
+        "sent_count": 3,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerLevel",
+        "case": "empty",
+        "sent_count": 0,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerLevel",
+        "case": "oversized",
+        "sent_count": 9,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerRate",
+        "case": "short",
+        "sent_count": 3,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerRate",
+        "case": "empty",
+        "sent_count": 0,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneTriggerRate",
+        "case": "oversized",
+        "sent_count": 9,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVectorOffset",
+        "case": "short",
+        "sent_count": 3,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVectorOffset",
+        "case": "empty",
+        "sent_count": 0,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVectorOffset",
+        "case": "oversized",
+        "sent_count": 9,
+        "read_count": 8,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVector",
+        "case": "short",
+        "sent_count": 3,
+        "read_count": 100,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVector",
+        "case": "empty",
+        "sent_count": 0,
+        "read_count": 100,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      },
+      {
+        "parameter": "SceneVector",
+        "case": "oversized",
+        "sent_count": 101,
+        "read_count": 100,
+        "accepted": true,
+        "raw_bytes_verified": true,
+        "unrelated_parameters_preserved": true
+      }
+    ],
+    "scope": "Native PP array transport only; not the original Toolkit scene serializer",
+    "save_close_reload_passed": true
+  },
+  "network_open_commands": 0,
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Homebrew (build 11.0.32.1+0)\nOpenJDK 64-Bit Server VM Homebrew (build 11.0.32.1+0, mixed mode)",
+    "listener_ownership_verified": true,
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true
+  }
+}

@@ -16,6 +16,7 @@
     "class_slots_KEY1": true,
     "class_slots_KEY2": true,
     "class_slots_KEY4": true,
+    "classic_loader_final_macro_refresh_follows_block_timer_load": true,
     "controls_exclude_group_255": true,
     "controls_preserve_duplicate_groups": true,
     "descriptions_registered_in_ordinal_order": true,
@@ -27,6 +28,7 @@
     "key_counts": true,
     "key_loader_calls_core": true,
     "level_percentage_rounding": true,
+    "loader_locks_stage_changes_until_final_macro_refresh": true,
     "macro_key_application_subsets": true,
     "macro_primary_block_and_application_guard": true,
     "macro_refresh_uses_source_filter_zero": true,
@@ -49,9 +51,11 @@
     "ramp_type_bounds": true,
     "timer_decoded_as_unsigned_seconds": true,
     "timer_expiry_allowed_ordinals": true,
+    "timer_expiry_default_tests_nil_not_idle_ordinal": true,
     "timer_expiry_other_ordinals_normalized_to_off": true,
     "timer_high_low_little_endian_word": true,
     "timer_loaded_without_scaling": true,
+    "timer_template_defaults_zero_primary_timer_before_lock_check": true,
     "timing_descriptions": true,
     "timing_followed_by_key_table": true,
     "timing_registration": true,
@@ -867,6 +871,12 @@
       "sha256": "4e423d03fee0f16a764e0f95b933d46eb2dfca9bdcb2bfebe00ead54e5735746",
       "start": "0xd11434"
     },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "end": "0xd12c2c",
+      "literals": [],
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf",
+      "start": "0xd12adc"
+    },
     "CIS_TInputKey.TInputKey.IdenticalMacroFunctionRefresh": {
       "end": "0xd10cb8",
       "literals": [],
@@ -912,6 +922,12 @@
       "literals": [],
       "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7",
       "start": "0xd11a5c"
+    },
+    "CIS_TInputKey.TInputKey.SetMicroFunction": {
+      "end": "0xd118a0",
+      "literals": [],
+      "sha256": "57d7d31ca370bece954e05f89a9b729e6ae15082ddaf3dd8da4a9a4acd797226",
+      "start": "0xd117b4"
     },
     "CIS_TKey1.TKey1.MaximumKeyCount": {
       "end": "0xf70d6c",
@@ -1554,7 +1570,8 @@
       10
     ],
     "other_expiry_ordinals": 15,
-    "seconds": "(TimerHighByte << 8) | TimerLowByte"
+    "seconds": "(TimerHighByte << 8) | TimerLowByte",
+    "timer_template_zero_primary_default_seconds": 300
   },
   "timing_descriptions": [
     "0 ms",

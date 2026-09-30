@@ -285,7 +285,17 @@ RECOVERED_BODIES = {
     "Bridge": "recovered",  # Requires the stored application/forwarding PP fields.
     "ClassicOutput": "recovered",
     "DMXGateway": "recovered",
-    "ClassicKeyInput": "partial",  # KEY1/2/4 only; other interface/PP state remains open.
+    "ClassicKeyInput": "partial",  # Source-pinned classic families; other interfaces/PP state remain open.
+    "NeoInput": "partial",  # Source-pinned families and fresh PP model only.
+    "NeoProInput": "partial",
+    "DLT": "partial",
+    "CustomSceneController": "partial",  # Complete SCNCTL5 snapshots; loader failures remain open.
+    "FanController": "partial",  # Exact RELDF1 profile, role and stored-label model.
+    "SENTEMP": "partial",
+    "SENTEMPPro": "partial",
+    "DigitalTemperatureSensor": "partial",
+    "PIR": "partial",
+    "ST7PIRSensor": "partial",
 }
 PARITY = {
     "model_basis": "static_disassembly_of_original_toolkit",
@@ -296,6 +306,8 @@ PARITY = {
     "progress_dialog": "not_implemented",
     "collection_order_basis": "explicit_offline_address_order; original application/group/level order depends on registry and Windows locale",
     "status_report_basis": "stored_pp_snapshot; original programming-load success/failure not observed",
+    "scene_master_selector_format_basis": "DisplayAddressValue=false (original fresh default); saved preference not loaded",
+    "temperature_format_basis": "celsius; period decimal separator; stored Toolkit preferences and Windows locale not loaded",
     "encoding": "utf-8-bom-crlf-per-TStringList.SaveToFile(TEncoding.UTF8)",
 }
 
@@ -737,7 +749,19 @@ def document_bridge(out: _Writer, network: Network, unit: Unit, model: ProjectMo
 
 def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectModel) -> dict[str, Any]:
     """TProjectDocumentor.InsertHTMLUnit."""
-    from .project_documentation_devices import DOCUMENTORS
+    from .project_documentation_devices import DOCUMENTORS as device_documentors
+    from .project_documentation_classic_profiles import CLASSIC_PROFILE_COUNTS, document_classic_profile
+    from .project_documentation_dlt import document_dlt
+    from .project_documentation_neo import DOCUMENTORS as neo_documentors, neo_profile
+    from .project_documentation_neoclassic import NEOCLASSIC_TYPES, document_neoclassic
+    from .project_documentation_scene_controller import document_scene_controller
+    from .project_documentation_special_outputs import document_fan
+    from .project_documentation_temperature import document_temperature
+    from .project_documentation_pir import document_pir
+    documentors = {**device_documentors, **neo_documentors, "DLT": document_dlt,
+                   "CustomSceneController": document_scene_controller, "FanController": document_fan,
+                   **{name: document_temperature for name in ("SENTEMP", "SENTEMPPro", "DigitalTemperatureSensor")},
+                   "PIR": document_pir, "ST7PIRSensor": document_pir}
     out.add(f'<h3><a name="{network.address}_unit_{unit.address}">{unit.name} - {unit.unit_type}</a>'
             ' [ <a href="#contents">top</a> ]</h3>')
     record = {"network": network.address, "unit": unit.address, "unit_type": unit.unit_type}
@@ -746,6 +770,16 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
         return {**record, "documentor": None, "status": "heading_only"}
     short = select_documentor(unit.unit_type, unit.firmware)
     body = DOCUMENTOR_METHODS[short][0]
+    if body == "ClassicKeyInput" and unit.unit_type.upper() in CLASSIC_PROFILE_COUNTS:
+        documentors[body] = document_classic_profile
+    if body == "ClassicKeyInput" and unit.unit_type.upper() in NEOCLASSIC_TYPES:
+        documentors[body] = document_neoclassic
+    if body in neo_documentors:
+        try:
+            neo_profile(unit)
+        except ValueError:
+            # A shared documentor does not establish a device's PP loader.
+            documentors.pop(body)
     if body in _BASE_ONLY_BODIES:
         document_base(out, network, unit)
         status = "recovered"
@@ -753,8 +787,8 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
         status = document_output(out, network, unit)
     elif body == "Bridge":
         status = document_bridge(out, network, unit, model)
-    elif body in DOCUMENTORS:
-        status = DOCUMENTORS[body](out, network, unit)
+    elif body in documentors:
+        status = documentors[body](out, network, unit)
     else:
         document_base(out, network, unit)
         out.mark(network, unit, f"{documentor_class(body)}.DocumentHTML")

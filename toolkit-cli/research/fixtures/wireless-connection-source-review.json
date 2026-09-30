@@ -1,0 +1,530 @@
+{
+  "format": "cbus-wireless-connection-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "review_date": "2026-09-30",
+  "evidence_kind": "Static x86 MAP-symbol disassembly, DFM bindings, decoded parameter schemas and help intent. Original Toolkit code was not executed.",
+  "provenance": {
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "unit_catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "form_resource_sha256": {
+      "TFRMWIRELESSGATEWAY": "9efcd0379a54797c4cb9959f67b5a185ce259e2b7192a305381c0508702e6519",
+      "TFRMWIRELESSGATEWAYREMOTE": "f2bf2d62ebfa2078c548bac130cf8655f5f38e05f54330c933f6b840ab434dfc",
+      "TFRMWIRELESSGATEWAYREMOTES": "f03d6f738a284c56a8331b37b3c33e3613a1db549d39d6642b12072b288ba4fe"
+    },
+    "unitspec_sha256": {
+      "WGATE5X.xml": "27d308935b7afb95baa3db7df2e9018b7e4e8e79eaf0ecc53789e0a228a59c8a",
+      "WGATE5X_2.xml": "bae66bf3d67549d4d21283dceec7d2a308e9855222f9d9353ae5cf9a0883e1c5"
+    },
+    "machine": "0x14c",
+    "image_base": "0x600000",
+    "clr_directory_size": 0,
+    "disassembler": "capstone 5.0.7",
+    "pe_parser": "pefile 2024.8.26",
+    "method_hash_scope": "Original bytes from the MAP method start to the next code symbol; bytes and vendor files are not included."
+  },
+  "profile": {
+    "admitted": {
+      "unit_type": "WGATE5F",
+      "firmware_min": "2.2.90",
+      "firmware_max": "2.4.99",
+      "spec": "WGATE5X_2.xml",
+      "required_mode": "Network Gateway (MapWirelessRemotes=0)"
+    },
+    "registration": "0x13888e8 registers WGATE5F 2.2.90..2.4.99 with TCBusWirelessGatewayAdvancedUnit / AdvancedCGateAgent.",
+    "wgate5n_boundary": "0x1388745 registers WGATE5N 2.2.90..2.4.99 with the base TCBusWirelessGatewayUnit. Shared base Connection fields and the same decoded specification do not establish Advanced Remote Switch support. WGATE5N Connection admission remains deliberately unimplemented; this is not evidence that its original Connection tab is absent.",
+    "visibility": "HandleModeChange 0x110f250 is Advanced-only; SetValues 0x110f3ec hides Connection while MapWirelessRemotes is true."
+  },
+  "parameters": {
+    "Application": {
+      "paged_address": "0x21",
+      "length": 2,
+      "domain": "two integer bytes",
+      "default": [
+        255,
+        255
+      ],
+      "agent_attribute_offset": "0x88"
+    },
+    "ApplicationConnectEnabled": {
+      "paged_address": "0x41",
+      "bit": 0,
+      "default": 1,
+      "agent_attribute_offset": "0x108"
+    },
+    "SynchroniseToWired": {
+      "paged_address": "0x41",
+      "bit": 2,
+      "default": 0,
+      "agent_attribute_offset": "0x10c"
+    },
+    "ForwardingMode": {
+      "paged_address": "0x41",
+      "bit": 1,
+      "default": 0,
+      "agent_attribute_offset": "0x110"
+    },
+    "ForwardingRoute": {
+      "paged_address": "0x42",
+      "length": 7,
+      "domain": "integer bytes",
+      "default": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "agent_attribute_offset": "0x114"
+    },
+    "StatusMonitorApplication": {
+      "paged_address": "0x37",
+      "length": 1,
+      "default": 56,
+      "agent_attribute_offset": "0x118"
+    }
+  },
+  "controls": [
+    {
+      "control": "Application 1 / Application 2",
+      "parameter": "Application",
+      "rule": "BeforeSave 0x1258f30 writes both application addresses. OnApplication1Change 0x110f988 forces Application2=255 and disables its combo when Application1=255; otherwise enables it. CreateSpecialApplications 0xd421ac names primary255 All Applications and secondary255 <Unused>.",
+      "list_rule": "LoadApplications 0xd425b8 calls LoadApplicationsList 0xd42478 separately for Applications1 and Applications2. Both append every source-network application; only address255 is substituted with the side-specific special object. There is no opposite-selection exclusion: equal eligible addresses are selectable.",
+      "filter": "TFlashCxApplicationComboBox.IsItemValid 0xbc0040 accepts GetCanAddGroups, or address255 with its default allow flag. The constructor 0xbbef24 defaults the unrestricted flag false and the address255 flag true. Gateway Initialise 0x110ecfc does not override these flags.",
+      "dependency_guard": "Changing either application is refused while scenes or remote mappings are configured until the original callbacks and possible project metadata creation are implemented."
+    },
+    {
+      "control": "Send to adjacent network (wired)",
+      "parameter": "ApplicationConnectEnabled",
+      "rule": "Copies AdjacentNetwork. chkAdjacentNetworkClick 0x110f9f8 clears SynchroniseToWired when unchecked and, when visible, enables that checkbox exactly while adjacent is checked."
+    },
+    {
+      "control": "Synchronise to wired",
+      "parameter": "SynchroniseToWired",
+      "rule": "Copies the checkbox. Base GetSynchroniseToWiredEnabled 0xd42e00 returns true; older subclass 0xd42e14 returns false. Bounded profile follows the base rule; requesting true while adjacent is off fails."
+    },
+    {
+      "control": "Send to other remote network / network choice",
+      "parameter": "ForwardingMode, ForwardingRoute",
+      "rule": "chkRemoteNetworkClick 0x110fa70 enables the destination combo while checked; if no destination it chooses first available remote network and invokes ChangeBridgeAddress. Off sets destination nil and clears bridge addresses. CLI requires an explicit destination instead of choosing an ordered GUI-list default."
+    },
+    {
+      "control": "Status Monitor Application",
+      "parameter": "StatusMonitorApplication",
+      "rule": "Independent selected application address saved at 0x12591a2. The combo uses source-network Applications and the same default group-capable filter. No dependency on the adjacent or synchronisation checkbox was found in DFM bindings or Initialise/change handlers."
+    }
+  ],
+  "application_filter": {
+    "source": [
+      "0xf26108",
+      "0x85ae74",
+      "0x136bc30",
+      "0xbc0040"
+    ],
+    "algorithm": "GetCanAddGroups rejects255, permits an application absent from the standard table, permits standard field+0x3a=true, and additionally permits25 and172. The combo separately permits255.",
+    "constructor": "0x85af20 defaults standard application field+0x3a=true.",
+    "registry_false_addresses": [
+      25,
+      172,
+      192,
+      205,
+      206,
+      208,
+      223,
+      224,
+      228,
+      255
+    ],
+    "explicit_reenabled_addresses": [
+      25,
+      172
+    ],
+    "combo_rejected_addresses": [
+      192,
+      205,
+      206,
+      208,
+      223,
+      224,
+      228
+    ],
+    "selected_application_precondition": "A changed non255 address must exist in the frozen source-network Application collection. No missing metadata is silently created. Unchanged legacy values are preserved."
+  },
+  "route": {
+    "model_change": "ChangeBridgeAddress 0xd42cf0 clears its model addresses, initializes seven output entries to255, and invokes BuildForwardingRoute with the gateway network, chosen destination, and gateway unit address.",
+    "direction": "BuildForwardingRoute 0xd3f44c looks up the adjacent project network by gateway UNIT address. CanAddNetwork 0xd3f50c follows an actual bridge unit from its containing network to the project network whose address equals that unit address; it skips the previous network and already visited networks. It does not synthesize reverse edges or require reciprocal bridge halves.",
+    "original_bridge_predicate": "IsBridge 0xf415f4 lowercases the type and recognizes bridge1n, bridge2n, bridge1f, bridge2f, gatewls, gatewlsn, gatewlsf, wgate5n, wgate5f, wgate5xn, wgate5xf.",
+    "admitted_bridge_types": [
+      "BRIDGE2N",
+      "BRIDGE2F"
+    ],
+    "destination_list": "LoadRemoteNetworks 0xd42860 and ExploreRemoteNetwork 0xd42748 exclude the source and initially adjacent network. Stored route entries contain networks beyond the initial adjacent network.",
+    "save": "BeforeSave 0x1258f30 sets ForwardingMode from first bridge !=255 and appends six bridge slots, testing EACH slot independently at 0x1259054..0x1259114. The first255 records depth=index+1. Later non255 entries are retained. With forwarding enabled, GetDepthAndCountByte 0x1258f08 prepends depth+8*depth.",
+    "load": "AfterLoad 0x1258ca0 loads stored indices1..6 when forwarding is enabled, replacing each individually missing project network with255 at 0x1258daa..0x1258dd8. Destination selection at 0x1258dff..0x1258e55 uses the contiguous prefix only.",
+    "bounded_route_encoding": "Only contiguous one-to-five extra-network routes are written: header9*(extra_count+1), route entries, then255 padding to seven bytes. Six non255 slots leave original local depth0 (header0), so six-extra-network writes remain refused.",
+    "explicit_disable": "The editor normalizes an explicit disable to ForwardingMode0 plus seven255 bytes. Original disabled-save loop appends six255 entries without a header; its reusable string-buffer lifecycle is not established. The fixed seven-byte normalization is a bounded database operation, not an exact original parent-save claim.",
+    "fail_closed": "Freeze source identity, networks, interfaces, actual unit identities and Application membership. Reject missing, ambiguous, cyclic, disconnected or unsupported bridge profiles before PP mutation. Do not silently rewrite a malformed stored tail for a non-route edit.",
+    "independent_literal_case": {
+      "source_network": 254,
+      "gateway_unit_address": 200,
+      "adjacent_network": 200,
+      "actual_directional_units": [
+        {
+          "network": 200,
+          "unit": 123,
+          "type": "BRIDGE2N"
+        },
+        {
+          "network": 123,
+          "unit": 99,
+          "type": "BRIDGE2F"
+        }
+      ],
+      "destination": 99,
+      "extra_networks": [
+        123,
+        99
+      ],
+      "forwarding_mode": 1,
+      "forwarding_route": [
+        27,
+        123,
+        99,
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "application_change_dependencies": {
+    "scene_hooks": "Advanced ApplicationChanged 0xd44acc and Application2Changed 0xd44aa4 invoke RefreshSceneGroupsFromApplication 0xd45214. App255 clears matching scene commands and resets the secondary flag. A non255 replacement rebinds each command group by address through the new application, potentially creating project metadata.",
+    "remote_hooks": "SetupRemotes 0x110e2e8 creates all eight directors regardless of Network Gateway mode. SetupFlashHooks 0x110a840 registers Application1/2 callbacks. HandleApplication1Change 0x110d918 sets primary group nil for255, otherwise a missing or mismatched group becomes group255 of the new application. HandleApplication2Change 0x110db08 does the analogous reset, but255 toggles secondary keys to primary through HandleAppSwitcherPress 0x110dce4 / SetPrimaryApplication 0xd459b0 and clears their group selection.",
+    "boundary": "Do not preserve configured mappings across application edits as if that reproduced the original callbacks. Route, adjacent, synchronisation and status edits preserve the remote tables; application edits require an empty scene/mapping state in this slice."
+  },
+  "whole_dialog_save_boundary": {
+    "scope": "Connection plans write only changed Connection parameters. They are not execution of the complete original dialog or wireless parent save.",
+    "use_security": "Wireless BeforeSaveProgrammingInformation 0x1258434 computes UseSecurity but clears attribute flag+0x58 at0x1258521; generic Set guard0xcbb696..0xcbb69a skips it. SaveProgrammingInformation 0xcbdc30 performs main SAVE at0xcbde7e, then ProjectSave at0xcbdecb..0xcbdeee, then LoadStatus at0xcbdef4..0xcbdf12, then AfterSave dispatch0xcbdf1d. Wireless AfterSave0x1257e40 calls SaveEncryptionParam0x1257f10: a SEPARATE terminal PP START/LOAD/SET UseSecurity/SAVE with6000ms timeout. It is not part of the first SAVE.",
+    "terminal_failure": "SaveEncryptionParam catches ECGateCommand at0x125802f, records Unit not responding, and does not retry. Matching existing session uses that lock; otherwise it acquires and cleans up its own session/lock.",
+    "not_reproduced": [
+      "Whole remote and scene table rewrites",
+      "Radio/security parent lifecycle",
+      "Application metadata creation and callbacks for configured mappings",
+      "Original GUI validation and physical forwarding effects"
+    ]
+  },
+  "wrm_correction": {
+    "source": [
+      "0xd4ab1c",
+      "0x12855f4"
+    ],
+    "rule": "Normal TCBusWirelessInputUnit.Init sets InputKeys count16 at0xd4ab2b..0xd4ab3b. SaveKeyMask counts that collection and sums1<<i, producing KeyCurrentMask65535. The visible2/4/8-button counts do not determine this whole-dialog mask.",
+    "boundary": "This corrects the earlier unresolved construction count. It does not expand the WRM globals editor into a complete wireless-unit dialog save."
+  },
+  "corrections_to_earlier_receipt": [
+    "wireless-source-review.json forwarding_route.rule says 255 after the first unused one. Fresh per-entry branch review proves later valid entries are retained; the earlier phrase must not be used as the save algorithm.",
+    "The normal WRM InputKeys construction count is16; the prior unresolved KeyCurrentMask count is now statically resolved.",
+    "UseSecurity has a separate terminal PP SAVE after main SAVE, ProjectSave and LoadStatus."
+  ],
+  "follow_up_readiness": {
+    "scenes": "SaveSceneVectorAndOffset0x125ac74 serializes group/level byte pairs plus255; offset is cursor|(secondary<<7). SaveScenes0x125ad80 writes trigger group/level/rate and up to8 offsets, unused slots255/255/0/255, and pads the vector toward100. LoadScenes0x125a248 accepts offsets!=255 and(offset&127)<100. Complete metadata creation, vector initialization/tail behavior and original validation still need an independent oracle before an editable Scenes slice.",
+    "project_remote_creation": "CreateWirelessRemoteUnit0xd44c18 constructs WTXU firmware0, catalogue metadata, serial0, first free unit address100..255 (returns0 if exhausted), UnitName REMOTE and stateNew, then dispatches and ProjectSave. CreateRemoteControlUnit0x125a738 subsequently changes serial and removes the first catalogue asterisk, then dispatches and saves again. These project saves precede gateway mapping save and are not atomic or physical pairing.",
+    "recommendation": "Keep the Connection commit independent. Source pins the scene byte codec and remote allocation/name rules, but the listed metadata, lifecycle and acceptance work is still required before a coherent editable Scenes or project-remote creation slice.",
+    "remote_unique_name": "GetUniqueName0xd44b1c collects all source-network unit TagNames and uses resource Remote with MakeUniqueName0x7b8580: Remote 01, then Remote 02 upward using decimal minimum width2 until NameIsUnique0x7b84e8 finds no exact case-sensitive Unicode string match.",
+    "scene_vector_load": "CreateVector0x1259c84 resolves primary/secondary ApplicationByAppType, reads group/level pairs from the offset while group!=255 and cursor<100, creates group references with FindGroupByAddress(add=true), and advances by2. CreateScenesFromVectors0x1259ecc obtains TriggerControlApplication, creates trigger groups with add=true and non255 actions with FindLevelByAddress(add=true).",
+    "blocking_work": [
+      "Scenes: review TIntArrayCGateAttribute.SetArrayInteger and parent attribute initialization to settle preservation of an existing vector tail; SaveScenes itself fills only from the resulting attribute length to100, not from the newly used cursor.",
+      "Scenes: review the Scenes director add/delete/edit validation, ordering, shared vectors, empty-vector checks and capacity handling before exposing controls.",
+      "Scenes: pin generated application/group/action metadata and independent native PP/raw-byte/project-save/reload/preservation cases for edits.",
+      "WTXU creation: pin exact effective inherited unit defaults, catalogue-backed fields and accepted native database representation.",
+      "WTXU creation: implement and independently test the two observed project-save boundaries, collision/exhaustion refusal, partial-failure reporting, and gateway-mapping preservation without claiming atomicity."
+    ]
+  },
+  "acceptance_boundary": {
+    "original_toolkit_executed": false,
+    "radio_or_household_network_touched": false,
+    "physical_pairing_verified": false,
+    "physical_forwarding_verified": false,
+    "native_database_proof": "Tracked separately from this source-only receipt; database PP/raw-byte/save/reload success does not establish physical parity.",
+    "native_preconditions": "Malformed plans and mismatched targets fail in preconnect preflight without PP reads. Valid targets require fresh consumed DB XML facts, exact source-network lock, exclusive project ownership and all project networks closed/idle. PP SAVE updates the database unit; PROJECT SAVE is a separate caller action and is explicitly exercised by native acceptance."
+  },
+  "methods": {
+    "0x7b84e8": {
+      "symbol": "CIS_Strings.NameIsUnique",
+      "size": 152,
+      "sha256": "cf738897695a2dbb9fd84653167e1a27d72588557dc4094c30725ac2dec89cef"
+    },
+    "0x7b8580": {
+      "symbol": "CIS_Strings.MakeUniqueName",
+      "size": 264,
+      "sha256": "a39fd2f6bb259230820402a9e96739751ff942469c2eb8c91da36f7b25385a24"
+    },
+    "0x85ae74": {
+      "symbol": "CIS_TStandardCBusApplications.TStandardCBusApplication.Create",
+      "size": 244,
+      "sha256": "571cba94dc0dbdee553d85d478afc0f22356cd782775017113fc6f2bf3d8b757"
+    },
+    "0xbbef24": {
+      "symbol": "CIS_TFlashCxApplicationComboBox.TFlashCxApplicationComboBox.Create",
+      "size": 296,
+      "sha256": "e6055a90b67bfb34da4e3729ceaa3fb77b1fdff5a10f577f34d51d5c24c12a51"
+    },
+    "0xbc0040": {
+      "symbol": "CIS_TFlashCxApplicationComboBox.TFlashCxApplicationComboBox.IsItemValid",
+      "size": 80,
+      "sha256": "a3bdb0cebd826afafa2ee5f4966e05e0e76378f14a244716c261a1f450eb3824"
+    },
+    "0xcbdc30": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation",
+      "size": 1104,
+      "sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33"
+    },
+    "0xd3f3e0": {
+      "symbol": "CIS_TcdBridgeForwardingRoute.BuildForwardingRoute",
+      "size": 108,
+      "sha256": "574f11f16689cb493a254d928b1fc44994a01d2204b5d389afa17cf09ffaaf21"
+    },
+    "0xd3f44c": {
+      "symbol": "CIS_TcdBridgeForwardingRoute.TcdBridgeForwardingRoute.BuildForwardingRoute",
+      "size": 192,
+      "sha256": "1d6b1202098cabed255094a30d67a22e76f34530a2f8bec8bfab05a5be9e028b"
+    },
+    "0xd3f50c": {
+      "symbol": "CIS_TcdBridgeForwardingRoute.TcdBridgeForwardingRoute.CanAddNetwork",
+      "size": 372,
+      "sha256": "c1615a060f1c4bf769eedc448515e311d6c4a89c5d934eac89237ead749e92d6"
+    },
+    "0xd421ac": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.CreateSpecialApplications",
+      "size": 376,
+      "sha256": "b3e4a9a423bbf04b978749a8c25f1468a8071540ab1509d4d1f7d806f807b568"
+    },
+    "0xd42478": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.LoadApplicationsList",
+      "size": 320,
+      "sha256": "9ba541e3e97d38c1e0568cc3a9ff17ae2c4bc2f57c74c4b0bc3beae485971b58"
+    },
+    "0xd425b8": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.LoadApplications",
+      "size": 104,
+      "sha256": "f18d79c64d5eabef6c9ec88dde5288921fd7097b7926203b7cb3ff4b80514416"
+    },
+    "0xd42620": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.CreateApplicationLists",
+      "size": 296,
+      "sha256": "868afe3eebd505d0ccbf5e922561a40f67eaeecea2920505837db1369e48fe10"
+    },
+    "0xd42748": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.ExploreRemoteNetwork",
+      "size": 280,
+      "sha256": "d19882c130b04129ca4bdf07fd9fae1f297b970701356473a92660314e011f2a"
+    },
+    "0xd42860": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.LoadRemoteNetworks",
+      "size": 188,
+      "sha256": "b27e1572288247ea4613fd04d7455bfed9e0e95029e678fbc7004ab2a03f6a5d"
+    },
+    "0xd42cf0": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.ChangeBridgeAddress",
+      "size": 208,
+      "sha256": "3019f1603ea4b580d45da2ab00aa578fd19d7120f2ee45fcd43076fc3402923f"
+    },
+    "0xd42e00": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.GetSynchroniseToWiredEnabled",
+      "size": 20,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "0xd42e14": {
+      "symbol": "CIS_TCBusWirelessGatewayUnit.TCBusWGUnitNoSynchroniseToWired.GetSynchroniseToWiredEnabled",
+      "size": 20,
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "0xd44aa4": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.Application2Changed",
+      "size": 40,
+      "sha256": "a0cbe8eed3ca80115f1be608eab9836309b1b341af448e58a84008a9f1e111d3"
+    },
+    "0xd44acc": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.ApplicationChanged",
+      "size": 40,
+      "sha256": "803d891c7ff386e06d7660410039c086f70e55ca4bcb3a45ad350fd09dd488b5"
+    },
+    "0xd44b1c": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.GetUniqueName",
+      "size": 252,
+      "sha256": "9a906964602bf3ea2cda811ea2c041b7fc579df734c3926585297255a7f84c32"
+    },
+    "0xd44c18": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.CreateWirelessRemoteUnit",
+      "size": 768,
+      "sha256": "28d6e7ef29cdaf1dd90589e5faa75cc6a3336102c73c781425fa19c17f109e96"
+    },
+    "0xd44f18": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.GetFirstUnusedAddressAfter100",
+      "size": 76,
+      "sha256": "f850b31fc5899025107dbc784eee5972db642719277ef1e3249d1305cd984397"
+    },
+    "0xd45214": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TCBusWirelessGatewayAdvancedUnit.RefreshSceneGroupsFromApplication",
+      "size": 520,
+      "sha256": "cd667dd1f778e3a21a10049e46f1f89e94555c2105a3fc1db4b81ebebb2b009a"
+    },
+    "0xd459b0": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedUnit.TWirelessGatewayRemoteKey.SetPrimaryApplication",
+      "size": 232,
+      "sha256": "e3bc60ccda0df6cf39fe548a7e84a1b9df1b027bccfd9d92beaf47634451b41d"
+    },
+    "0xd4ab1c": {
+      "symbol": "CIS_TCBusWirelessInputUnit.TCBusWirelessInputUnit.Init",
+      "size": 180,
+      "sha256": "3f39d7d2e8c911070d84aee3c50fee19a74bdaab3e45b03f143cdb3cdb5f0677"
+    },
+    "0xf26108": {
+      "symbol": "CIS_TCommonCBus.TCBUSApplication.GetCanAddGroups",
+      "size": 108,
+      "sha256": "3e453ce7f05420aefb8d0a5fb993d59d207b8b3e63db80e66e23081a47e4df76"
+    },
+    "0xf415f4": {
+      "symbol": "CIS_TUnitType.TCGateUnitCatalog.IsBridge",
+      "size": 528,
+      "sha256": "30c7915e42c65697fdf17f560e6b2ed6e9e8774678ac9d1a06d611e4d83778d8"
+    },
+    "0x110a840": {
+      "symbol": "CIS_TcdWirelessGatewayRemote.TcdWirelessGatewayRemote.SetupFlashHooks",
+      "size": 288,
+      "sha256": "7190a5551461f1ad0a76d0a4f05d41bccd85a2f5345750afc72a4017b2b71bd3"
+    },
+    "0x110d918": {
+      "symbol": "CIS_TcdWirelessGatewayRemote.TcdWirelessGatewayRemote.HandleApplication1Change",
+      "size": 496,
+      "sha256": "10f403766e1506e3404c8c0770bda66b6b598e85822c35ed27ec2d1924ca9e4d"
+    },
+    "0x110db08": {
+      "symbol": "CIS_TcdWirelessGatewayRemote.TcdWirelessGatewayRemote.HandleApplication2Change",
+      "size": 476,
+      "sha256": "0e50e93c049e5e861ed4bf1ab9e0f141a3ab3f27309ed6a1d94ea085005613e8"
+    },
+    "0x110dce4": {
+      "symbol": "CIS_TcdWirelessGatewayRemote.TcdWirelessGatewayRemote.HandleAppSwitcherPress",
+      "size": 220,
+      "sha256": "650378e3d95dd9a047fe40bb61771ecdbee5b183d297e4619aa1cb327e2b8434"
+    },
+    "0x110e2e8": {
+      "symbol": "CIS_TcdWirelessGatewayRemotes.TcdWirelessGatewayRemotes.SetupRemotes",
+      "size": 580,
+      "sha256": "85d1c9ce6478ed7bf8ba9149a37c87043f21185e923daa17789cefd67d542f02"
+    },
+    "0x110ecfc": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.Initialise",
+      "size": 1244,
+      "sha256": "edfdc2a704b2863b88b2ccf7537dba7fd8b98c653c760ae0d22d98cf89d68a53"
+    },
+    "0x110f250": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.HandleModeChange",
+      "size": 384,
+      "sha256": "57291b5be3fa7e215239f432057522e185c567e9e9c2086719efaaaf30b36930"
+    },
+    "0x110f3ec": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.SetValues",
+      "size": 1436,
+      "sha256": "df6f76a249f3e68c98be951a79459cd9fe26c43d3152421314a53d8a00c68eac"
+    },
+    "0x110f988": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.OnApplication1Change",
+      "size": 112,
+      "sha256": "3ad432372284fbed1fd09a8c1e73a91ed071e1d66c1018ae2f49a5e3b1435774"
+    },
+    "0x110f9f8": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.chkAdjacentNetworkClick",
+      "size": 120,
+      "sha256": "145a09472fe8f072eef15165d74df6101cee5d74bec16bf25253263d9e2015b8"
+    },
+    "0x110fa70": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.chkRemoteNetworkClick",
+      "size": 212,
+      "sha256": "5cfab6dae51a87e4a97b8bf5c770df5663e7aa375d63e1342601cfac6b0806f4"
+    },
+    "0x110fb44": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.OnChangeRemoteNetwork",
+      "size": 32,
+      "sha256": "58bd9816d3831590d7f429a66109a04f98725c18f576d5739886738f9a6fcdfb"
+    },
+    "0x1257e40": {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.AfterSaveProgrammingInformation",
+      "size": 36,
+      "sha256": "77f58dc9f21b8b57905f309f0142fb93724b7a32908da14e699f21128388890a"
+    },
+    "0x1257f10": {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.SaveEncryptionParam",
+      "size": 612,
+      "sha256": "89fda07c46bad71f218420e639baaf702de860d1b8572811e0baf2ed850f6c39"
+    },
+    "0x1258434": {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 616,
+      "sha256": "8d4f39d6d9556f10f7fb62901a4ad33060695dfdc88188637cf1cd21b43bb7de"
+    },
+    "0x125889c": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.InternalCreate",
+      "size": 556,
+      "sha256": "7cde5a21fb3f9d2b8ed7ff419286bc1b156261ed385a93daa46964cd4dabbe3c"
+    },
+    "0x1258ca0": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.AfterLoadProgrammingInformation",
+      "size": 596,
+      "sha256": "43d070945832c102d4c7112a7cd5c4fa33343feb3ba1398a0facf7ba92817ec5"
+    },
+    "0x1258f08": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.GetDepthAndCountByte",
+      "size": 40,
+      "sha256": "4330ca6c17a40e1b0bf661e976a492322cdeada02498d822a1e6f990a89d22a7"
+    },
+    "0x1258f30": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 868,
+      "sha256": "f20e9865730ecabf3e7d0d510909f7e09d645b4c6bd9e89f1ea21dcbb3796b0a"
+    },
+    "0x1259c84": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateVector",
+      "size": 584,
+      "sha256": "03f6a102668a455680f81350949b51ee3ba4398f4d0ddb09640a16b38449fde3"
+    },
+    "0x1259ecc": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateScenesFromVectors",
+      "size": 892,
+      "sha256": "b28bf68fae979c4689e1c3ca8f20fa1b88fce80ab724486f09b0e28957c0d30e"
+    },
+    "0x125a248": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.LoadScenes",
+      "size": 372,
+      "sha256": "a65e489b02db5a245245139fd693bbbe04d35d732819f3d94b6490a63ed9334c"
+    },
+    "0x125a738": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateRemoteControlUnit",
+      "size": 424,
+      "sha256": "d2c514873e53465e3bb382de67585b418dfff73dcf8dee0034aa153fd6268f7f"
+    },
+    "0x125ac74": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.SaveSceneVectorAndOffset",
+      "size": 268,
+      "sha256": "8d1e3fa5c30549c2b2b4758579544d5dd4cd83bc0661f0b2a7d0d20353e3b128"
+    },
+    "0x125ad80": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.SaveScenes",
+      "size": 624,
+      "sha256": "f1b1aabf0238ee935612b87a2f9a4b6ca3e188460e7771ee7f6af32a66a9d70e"
+    },
+    "0x12855f4": {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveKeyMask",
+      "size": 888,
+      "sha256": "309b672eef342616da7d968544c13298c930b6116aa1da76d1f2253593e0fdfb"
+    },
+    "0x136bc30": {
+      "symbol": "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications",
+      "size": 1348,
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    }
+  }
+}

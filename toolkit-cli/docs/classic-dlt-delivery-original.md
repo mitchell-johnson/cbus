@@ -9,6 +9,10 @@ The separate [broadcast compiler and assessment](classic-dlt-broadcast.md)
 implements the bounded per-flavour command/cache sequence with prepared bitmap
 inputs. It performs no I/O and does not implement the whole-unit save below.
 
+The [unit-label lifecycle planner](classic-dlt-unit-delivery.md) now composes
+explicit resolved keys through those save boundaries and assesses supplied
+typed operation outcomes. It performs no transport or complete PP serialization.
+
 The ordinary Toolkit save has this order:
 
 1. Save unit programming with dynamic labels temporarily enabled.
@@ -38,10 +42,13 @@ including keys 1 and 8, missing flavours, blank/default tags and both bitmap
 states. It runs the original branch instructions but supplies object lookups,
 strings and callback targets. It does not send C-Gate commands.
 
-The original retains nuanced failure behavior: exceptions within the
-retained-flavour dispatch region are collected while later keys continue;
-fallback missing-flavour clears lie outside that local handler. The form keeps
-at most ten displayed errors. The separate SaveFlavours path stages the two
+The original retains nuanced failure behavior: `ECGateCommand`-family exceptions
+within the retained-flavour dispatch region are collected while later keys
+continue; other exception classes abort. Fallback missing-flavour clears lie
+outside that local handler. The newer
+[static orchestration receipt](../research/fixtures/classic-dlt-unit-delivery-source.json)
+pins that exception table and class ancestry without CPU execution. The form
+keeps at most ten displayed errors. The separate SaveFlavours path stages the two
 flavour arrays without committing an already-open session; it saves and closes
 only a session that it opened itself.
 

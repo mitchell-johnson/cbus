@@ -167,15 +167,17 @@ class ClassicKeyData:
     expiry: list[int]
 
 
-def classic_key_data(unit: Unit) -> ClassicKeyData:
+def classic_key_data(unit: Unit, *, key_count: int | None = None, macro_resolver=None) -> ClassicKeyData:
     """Bounded native PP loader projection for KEY1/KEY2/KEY4.
 
-    These classes have four blocks and no IBistable interface. IR, auxiliary,
-    bus-coupler and Neo model state is deliberately outside this adapter.
+    The default profiles have four blocks and no IBistable interface. A caller
+    supplying a count/resolver must independently establish its PP loader and
+    model topology; this alone does not admit another unit family.
     """
-    count = CLASSIC_KEY_COUNTS.get(unit.unit_type.upper())
-    if count is None:
+    count = CLASSIC_KEY_COUNTS.get(unit.unit_type.upper()) if key_count is None else key_count
+    if type(count) is not int or not 0 <= count <= 8:
         raise ValueError("unrecovered classic key class")
+    resolve_macro = classic_key_macro if macro_resolver is None else macro_resolver
     application = _primary_application(unit)
     debounce = _required_array(unit, "DebounceTime", 1, 63)[0]
     long_press = _required_array(unit, "LongPressTime", 1, 63)[0]
@@ -189,10 +191,20 @@ def classic_key_data(unit: Unit) -> ClassicKeyData:
     high = _required_array(unit, "TimerHighByte", 4)
     low = _required_array(unit, "TimerLowByte", 4)
     expiry = _required_array(unit, "TimerExpiryCommand", 4, 15)
+    commands = list(zip(*stages))
+    timers = [(h << 8) | l for h, l in zip(high, low)]
+    for mask, microfunctions in zip(masks, commands):
+        primary = next((block for block in range(4) if mask & (1 << block)), None)
+        kind = resolve_macro(microfunctions, application,
+                             stored1[primary] if primary is not None else None,
+                             stored2[primary] if primary is not None else None)[0]
+        if primary is not None and not timers[primary] and (kind == 6 or 29 <= kind <= 35):
+            # The native template-change event runs this before checking locks,
+            # including when a fresh saved PP model is being loaded.
+            timers[primary] = 300
     return ClassicKeyData(application, (KEY_TIMING_DESCRIPTIONS[debounce], KEY_TIMING_DESCRIPTIONS[long_press],
                                         *(KEY_RAMP_DESCRIPTIONS[value] for value in ramp_ordinals)),
-                          groups, masks, list(zip(*stages)), stored1, stored2,
-                          [(h << 8) | l for h, l in zip(high, low)],
+                          groups, masks, commands, stored1, stored2, timers,
                           [value if value in _KEY_TIMER_EXPIRY else 15 for value in expiry])
 
 
@@ -223,8 +235,11 @@ def _classic_preset_cell(network: Network, application: int, group_address: int,
 
 
 def _classic_key_controls(network: Network, data: ClassicKeyData, commands: tuple[int, ...],
-                          blocks: list[int], kind: int) -> str:
-    groups = [data.groups[block] for block in blocks if data.groups[block] != 255]
+                          blocks: list[int], kind: int, block_applications=None) -> str:
+    applications = ([data.application] * len(data.groups) if block_applications is None
+                    else block_applications)
+    identities = list(zip(applications, data.groups))
+    groups = [identities[block] for block in blocks if data.groups[block] != 255]
     if kind == 16 or not groups:
         return "&nbsp;"
     result = '<table border="1"><tr><th>Group</th>'
@@ -235,15 +250,15 @@ def _classic_key_controls(network: Network, data: ClassicKeyData, commands: tupl
     if 7 in commands:
         result += "<th>Timer</th><th>Expiry</th>"
     result += "</tr>"
-    for group in groups:
+    for application, group in groups:
         # ItemByGroup searches all unit blocks and returns the first match;
         # that block need not belong to this key. Duplicate rows are retained.
-        block = data.groups.index(group)
-        result += f"<tr><td>{_group_link(network, data.application, group)}</td>"
+        block = identities.index((application, group))
+        result += f"<tr><td>{_group_link(network, application, group)}</td>"
         if 12 in commands:
-            result += _classic_preset_cell(network, data.application, group, data.stored1[block])
+            result += _classic_preset_cell(network, application, group, data.stored1[block])
         if 6 in commands:
-            result += _classic_preset_cell(network, data.application, group, data.stored2[block])
+            result += _classic_preset_cell(network, application, group, data.stored2[block])
         if 7 in commands:
             hours, remaining = divmod(data.timers[block], 3600)
             minutes, seconds = divmod(remaining, 60)
@@ -252,40 +267,59 @@ def _classic_key_controls(network: Network, data: ClassicKeyData, commands: tupl
     return result + "</table>"
 
 
-def document_classic_key(out: _Writer, network: Network, unit: Unit) -> str:
-    """TClassicKeyInputDocumentor body for the source-pinned KEY1/2/4 model."""
-    from .project_documentation import document_base, format_html_string
-    document_base(out, network, unit)
-    try:
-        data = classic_key_data(unit)
-        rows = []
-        for key, commands in enumerate(data.commands):
-            blocks = [block for block in range(4) if data.masks[key] & (1 << block)]
-            primary = blocks[0] if blocks else None
+def classic_key_lines(network: Network, data: ClassicKeyData, *, macros=None, key_prefixes=None,
+                      block_applications=None) -> list[str]:
+    """Render an independently recovered key model using the shared native table.
+
+    Optional macro, application and interface facts come from the owning unit
+    adapter; the renderer never derives them from a unit-name suffix.
+    """
+    from .project_documentation import format_html_string
+    count = len(data.commands)
+    if any(values is not None and len(values) != count for values in (macros, key_prefixes)):
+        raise ValueError("key report metadata count mismatch")
+    if block_applications is not None and len(block_applications) != len(data.groups):
+        raise ValueError("block application count mismatch")
+    rows = []
+    for key, commands in enumerate(data.commands):
+        blocks = [block for block in range(len(data.groups)) if data.masks[key] & (1 << block)]
+        primary = blocks[0] if blocks else None
+        if macros is None:
             kind, label = classic_key_macro(commands, data.application,
                                             data.stored1[primary] if primary is not None else None,
                                             data.stored2[primary] if primary is not None else None)
-            if kind == 26:
-                micro = ('<table border="1"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr>'
-                         + "".join(f"<td>{MICRO_FUNCTION_LABELS[command]}</td>" for command in commands)
-                         + "</tr></table>")
-            else:
-                micro = "&nbsp;"
-            controls = _classic_key_controls(network, data, commands, blocks, kind)
-            rows.append(f"<tr><td>{key + 1}</td><td>{format_html_string(label)}</td><td>{micro}</td><td>{controls}</td></tr>")
+        else:
+            kind, label = macros[key]
+        if kind == 26:
+            micro = ('<table border="1"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr>'
+                     + "".join(f"<td>{MICRO_FUNCTION_LABELS[command]}</td>" for command in commands)
+                     + "</tr></table>")
+        else:
+            micro = "&nbsp;"
+        controls = _classic_key_controls(network, data, commands, blocks, kind, block_applications)
+        prefix = key_prefixes[key] if key_prefixes is not None else ""
+        rows.append(f"<tr><td>{prefix}{key + 1}</td><td>{format_html_string(label)}</td>"
+                    f"<td>{micro}</td><td>{controls}</td></tr>")
+    lines = ['<table border="1">']
+    for label, value in zip(("Debounce", "Long Press", "Ramp 1", "Ramp 2"), data.timings):
+        lines.append(f"<tr><th>{label}</th><td>{value}</td></tr>")
+    lines += ["</table>", "<br/>", '<table border="1">',
+              "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+              *rows, "</table>"]
+    return lines
+
+
+def document_classic_key(out: _Writer, network: Network, unit: Unit) -> str:
+    """TClassicKeyInputDocumentor body for the source-pinned KEY1/2/4 model."""
+    from .project_documentation import document_base
+    document_base(out, network, unit)
+    try:
+        lines = classic_key_lines(network, classic_key_data(unit))
     except ValueError as exc:
         out.mark(network, unit, f"Classic key controls: {exc}")
         return "partial"
-    out.add('<table border="1">')
-    for label, value in zip(("Debounce", "Long Press", "Ramp 1", "Ramp 2"), data.timings):
-        out.add(f"<tr><th>{label}</th><td>{value}</td></tr>")
-    out.add("</table>")
-    out.add("<br/>")
-    out.add('<table border="1">')
-    out.add("<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>")
-    for row in rows:
-        out.add(row)
-    out.add("</table>")
+    for line in lines:
+        out.add(line)
     return "recovered"
 
 

@@ -1,0 +1,751 @@
+{
+  "format": "cbus-project-documentor-pir-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": {
+    "CIS_TPIRDocumentor.TPIRDocumentor.DocumentHTML": {
+      "start": "0xcee870",
+      "end": "0xceea84",
+      "sha256": "d4f84c765a843bd7b704774cf9b1b10fb12749b3de2e73b60c4d3595cb9e467e"
+    },
+    "CIS_TST7PIRSensorDocumentor.TST7PIRSensorDocumentor.DocumentHTML": {
+      "start": "0xceebc4",
+      "end": "0xceedd8",
+      "sha256": "41c52a518c861aad1d6f4d65feccb3118f2c0fa5cbf60f77a7d30d1a31fe59e4"
+    },
+    "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.ActionSelectorUse": {
+      "start": "0xca628c",
+      "end": "0xca6610",
+      "sha256": "d42d5a833c1255f27719d95b6a7798a9a5959f3a3c50e10d6bd30a2c8ab80e83"
+    }
+  },
+  "appendix_cases": [
+    {
+      "st7": false,
+      "class_match": false,
+      "unused": false,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "st7": false,
+      "class_match": false,
+      "unused": true,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "st7": false,
+      "class_match": true,
+      "unused": true,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable/Disable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": false,
+      "class_match": true,
+      "unused": true,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable/Disable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": false,
+      "class_match": true,
+      "unused": false,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test",
+        "polarity"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": false,
+      "class_match": true,
+      "unused": false,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test",
+        "polarity"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Disable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": false,
+      "unused": false,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": false,
+      "unused": true,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": true,
+      "unused": true,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable/Disable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": true,
+      "unused": true,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable/Disable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": true,
+      "unused": false,
+      "off": false,
+      "calls": [
+        "inherited_classic_body",
+        "class_test",
+        "polarity"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Enable Group: <fixture group><br />"
+      ]
+    },
+    {
+      "st7": true,
+      "class_match": true,
+      "unused": false,
+      "off": true,
+      "calls": [
+        "inherited_classic_body",
+        "class_test",
+        "polarity"
+      ],
+      "lines": [
+        "<synthetic inherited body>",
+        "<br />",
+        "PIR Disable Group: <fixture group><br />"
+      ]
+    }
+  ],
+  "action_cases": [
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "primary-recall",
+      "html": "Key 1<br/>Key 1"
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "secondary-recall",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "same-app-two-passes",
+      "html": "Key 1<br/>Key 1"
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 99,
+      "value": 22,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "secondary-stored1-gates-recall2",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 99,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "secondary-value-distinct",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "different-block-application",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": 11
+        }
+      ],
+      "name": "scene-overwrites-primary",
+      "html": "Key 1<br/>Key 1"
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": 11
+        },
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 6,
+          "trigger": 11
+        }
+      ],
+      "name": "last-scene-wins",
+      "html": "Key 1<br/>Key 1<br/>Key 2<br/>Key 2"
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [],
+          "scene": 3,
+          "trigger": 11
+        },
+        {
+          "commands": [
+            12,
+            6
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "scene-then-secondary",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 3,
+          "trigger": 22
+        }
+      ],
+      "name": "scene-selector-address-not-value",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "nil-scene-trigger",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 255,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 8,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 7,
+          "trigger": 255
+        }
+      ],
+      "name": "selector-255-is-real",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        },
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 6
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            7
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "secondary-timer-expiry",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        56,
+        202
+      ],
+      "control_group": 9,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 12
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            8
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null
+        }
+      ],
+      "name": "secondary-start-does-not-retrigger",
+      "html": ""
+    },
+    {
+      "application": 202,
+      "group": 255,
+      "address": 11,
+      "value": 22,
+      "applications": [
+        202,
+        56
+      ],
+      "control_group": 255,
+      "blocks": [
+        {
+          "application": 202,
+          "group": 8,
+          "stored1": 11,
+          "stored2": 22,
+          "expiry": 15
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            0
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 4,
+          "trigger": 11
+        }
+      ],
+      "name": "control-group-255-is-real",
+      "html": ""
+    }
+  ],
+  "original_generated_page_comparison": "not_obtained",
+  "original_loader_execution": "not_executed",
+  "boundary": "Original appendix wrappers and inherited Classic action instructions with synthetic string, collection, group display, inherited body and attribute hooks; no GUI, native loader, full original page or hardware."
+}

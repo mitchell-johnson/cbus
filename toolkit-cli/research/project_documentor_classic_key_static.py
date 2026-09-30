@@ -63,6 +63,8 @@ METHODS = (
     INPUT_KEY + "RefreshKeyApplicationFromKeySecondary", INPUT_KEY + "RefreshKeySecondaryFromBlockSecondary",
     INPUT_KEY + "InternalCreate", CORE_UNIT + "InternalCreate", CORE_UNIT + "InputKeysChanged",
     CORE_UNIT + "InputKeyBlocksChanged", CORE_UNIT + "RefreshKeyBlockOverrides",
+    INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent",
+    INPUT_KEY + "SetMicroFunction",
 )
 
 
@@ -148,6 +150,38 @@ def inspect(exe: Path, map_file: Path) -> dict:
     counts = {f"KEY{n}": constant_result(f"CIS_TKey{n}.TKey{n}.MaximumKeyCount") for n in (1, 2, 4)}
     markup = methods[DOCUMENT]["literal_at"]
     checks = {
+        "loader_locks_stage_changes_until_final_macro_refresh": (
+            call(KEY_AGENT + "GetKeyValues", 0x1215E0A, INPUT_KEY + "GetMacroFunctionPin")
+            and call(KEY_AGENT + "GetKeyValues", 0x1215E0F, "CIS_TLock.TLock.Lock")
+            and call(KEY_AGENT + "GetKeyValues", 0x1215F63, "CIS_TLock.TLock.Unlock")
+            and call(KEY_AGENT + "GetKeyValues", 0x1215F8E, INPUT_KEY + "MacroFunctionRefresh")
+            and call(INPUT_KEY + "SetMicroFunction", 0xD117CC, "CIS_TLock.TLock.Locked")
+            and has(INPUT_KEY + "SetMicroFunction", 0xD117D3, "je", "0xd11831")
+            and has(INPUT_KEY + "SetMicroFunction", 0xD11811, "push", "0xd1189a")
+            and call(INPUT_KEY + "SetMicroFunction", 0xD11895, INPUT_KEY + "RefreshTemplateFromMacroFunction")),
+        "classic_loader_final_macro_refresh_follows_block_timer_load": (
+            call(KEY_AGENT + "TCBusKeyInputCGateAgent.AfterLoadProgrammingInformation", 0x12162EA,
+                 CORE_AGENT + "AfterLoadProgrammingInformation")
+            and call(KEY_AGENT + "TCBusKeyInputCGateAgent.AfterLoadProgrammingInformation", 0x12162F7,
+                     KEY_AGENT + "GetKeyValues")
+            and call(KEY_AGENT + "TCBusKeyInputCGateAgent.AfterLoadProgrammingInformation", 0x12162FE,
+                     KEY_AGENT + "GetIndicatorBlocks")
+            and call(CORE_AGENT + "AfterLoadProgrammingInformation", 0xCC8730, BLOCK_VALUES)),
+        "timer_template_defaults_zero_primary_timer_before_lock_check": (
+            call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B00,
+                 "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.GetFunctionType")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B05, "sub", "al, 6")
+            and call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B12, INPUT_KEY + "GetPrimaryBlock")
+            and call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B23, BLOCK + "GetTimer")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B28, "test", "ax, ax")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B2D, "mov", "dx, 0x12c")
+            and call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B34, BLOCK + "SetTimer")
+            and call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B6E, "CIS_TLock.TLock.Locked")),
+        "timer_expiry_default_tests_nil_not_idle_ordinal": (
+            call(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B3C, BLOCK + "GetTimerExpiryCommand")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B41, "test", "eax, eax")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B43, "jne", "0xd12b5d")
+            and has(INPUT_KEY + "HandleMacroFunctionTemplateAfterChangeEvent", 0xD12B4C, "mov", "dl, 0xf")),
         "unit_registrations": key_registrations == [
             (f"KEY{n}", f"CIS_TKey{n}..TKey{n}", "0", "9") for n in (1, 2, 4)],
         "key_counts": counts == KEY_COUNTS,
@@ -328,6 +362,7 @@ def inspect(exe: Path, map_file: Path) -> dict:
             "pipeline": "First ordered global match, primary-block shutter conversion, then KEY application subset; disallowed becomes 26.",
         },
         "timer_source": {"seconds": "(TimerHighByte << 8) | TimerLowByte",
+                         "timer_template_zero_primary_default_seconds": 300,
                          "expiry_allowed_ordinals": [0, 15, 4, 9, 12, 6, 10],
                          "other_expiry_ordinals": 15},
         "checks": checks,

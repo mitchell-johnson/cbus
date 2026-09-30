@@ -1,0 +1,853 @@
+{
+  "format": "cbus-wireless-scenes-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "review_date": "2026-09-30",
+  "evidence_kind": "Static original x86 EXE/MAP, RTTI/VMT resolution and decoded parameter schema. No original vendor routine or GUI was executed.",
+  "provenance": {
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "unit_catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "form_resource_sha256": {
+      "TFRMWIRELESSGATEWAY": "9efcd0379a54797c4cb9959f67b5a185ce259e2b7192a305381c0508702e6519",
+      "TFRMWIRELESSGATEWAYREMOTE": "f2bf2d62ebfa2078c548bac130cf8655f5f38e05f54330c933f6b840ab434dfc",
+      "TFRMWIRELESSGATEWAYREMOTES": "f03d6f738a284c56a8331b37b3c33e3613a1db549d39d6642b12072b288ba4fe"
+    },
+    "unitspec_sha256": {
+      "WGATE5X.xml": "27d308935b7afb95baa3db7df2e9018b7e4e8e79eaf0ecc53789e0a228a59c8a",
+      "WGATE5X_2.xml": "bae66bf3d67549d4d21283dceec7d2a308e9855222f9d9353ae5cf9a0883e1c5"
+    },
+    "machine": "0x14c",
+    "image_base": "0x600000",
+    "clr_directory_size": 0,
+    "disassembler": "capstone 5.0.7",
+    "pe_parser": "pefile 2024.8.26",
+    "method_hash_scope": "Original bytes from the MAP method start to the next code symbol; bytes and vendor files are not included."
+  },
+  "profile": {
+    "unit_type": "WGATE5F",
+    "firmware_min": "2.2.90",
+    "firmware_max": "2.4.99",
+    "spec": "WGATE5X_2.xml",
+    "required_mode": "Remote Switch (MapWirelessRemotes=1)",
+    "registration": "Advanced WGATE5F registration0x13888e8; WGATE5N uses base class registration0x1388745 and is not admitted.",
+    "visibility": "SetValues0x110f3ec calls EnableRemotesControls0x110fc8c with MapWirelessRemotes; that method sets both Remotes(+0x474) and Scenes(+0x47c) tab visibility to this Boolean. Base/non-Advanced classes hide both."
+  },
+  "parameters": {
+    "SceneTriggerGroup": {
+      "paged_address": "0x130",
+      "array_size": 8,
+      "agent_attribute_offset": "0x1a0",
+      "spec_default": 255,
+      "unused_save_value": 255
+    },
+    "SceneTriggerLevel": {
+      "paged_address": "0x138",
+      "array_size": 8,
+      "agent_attribute_offset": "0x1a4",
+      "spec_default": 255,
+      "unused_save_value": 255
+    },
+    "SceneTriggerRate": {
+      "paged_address": "0x140",
+      "array_size": 8,
+      "agent_attribute_offset": "0x1a8",
+      "spec_default": 255,
+      "unused_save_value": 0
+    },
+    "SceneVectorOffset": {
+      "paged_address": "0x150",
+      "array_size": 8,
+      "agent_attribute_offset": "0x1ac",
+      "spec_default": 255,
+      "unused_save_value": 255
+    },
+    "SceneVector": {
+      "paged_address": "0x158",
+      "array_size": 100,
+      "agent_attribute_offset": "0x1b0",
+      "spec_default": 255,
+      "unused_save_value": "Preserve existing loaded tail; do not clear."
+    }
+  },
+  "load_contract": {
+    "offsets": "LoadScenes0x125a248 clears model Scenes and Vectors, scans every stored offset in order, skips255, interprets bit7 as secondary and low7 as start; starts>=100 are skipped. Every admitted offset creates its own vector; duplicate offsets are not shared objects.",
+    "pairs": "CreateVector0x1259c84 resolves selected primary/secondary ApplicationByAppType0x125ab18 and asserts nonnil. While cursor<100, read group and level (out-of-range default255); group255 terminates, otherwise append a group/level command and advance2. Level255 is data. Offset99 with a non255 group reads default255 for the missing level100.",
+    "compaction": "CreateScenesFromVectors0x1259ecc indexes the compacted vector list and reads trigger group/action/rate tables at that compacted ordinal. It does not retain the original sparse offset slot index. A malformed hole before a valid offset therefore shifts which metadata is used.",
+    "rates": "Each configured scene calls TMulletScene.SetRampRate0xafc7ec. This sign-extends the byte into a Variant; enum SetValue0x84847c dispatches SetAsInteger0x8483cc, which enforces RTTI min0/max15 and raises for other values. Unused slots are not loaded into a scene. No IntegerToCBusRampRate normalization helper is called on this path.",
+    "metadata": "Automatic metadata lookup/creation happens while loading; see native_metadata. A nonempty offsets attribute invokes CreateScenesFromVectors even when all entries are255."
+  },
+  "save_contract": {
+    "entry": "Advanced BeforeSaveProgrammingInformation0x125b438 invokes gateway base save, then SaveUnitInfo0x125b3bc, which saves mode, remote tables and Scenes. This receipt isolates the Scenes contract; a five-parameter editor is not the entire parent save.",
+    "slot_tables": "SaveScenes0x125ad80 iterates scene collection order. Each row stores its trigger-group address or255, action address or255, and raw enum ordinal. Remaining rows through index7 become group255/action255/rate0/offset255.",
+    "vector": "Cursor starts0. SaveSceneVectorAndOffset0x125ac74 stores offset=cursor+(secondary<<7), writes each command group then level, then one255 terminator; cursor advances2 per command plus1 per scene. Every scene is serialized independently, with no vector deduplication.",
+    "tail": "TIntArrayCGateAttribute.SetArrayInteger0xf432c4 parses the entire current attribute string, grows only when length<=index, replaces one element and serializes the entire resulting array through SetArrayIntegers0xf43564. It does not truncate. SaveScenes pads255 only from resulting array length to100 at0x125af45..0x125af9c. With a loaded100-byte vector, all old bytes after the newly written prefix are preserved. Saving zero scenes leaves the whole old100-byte vector unchanged.",
+    "initialization": "SaveProgrammingInformation0xcbdc30 calls SetCGateAgentEditedState0xcbd704 before virtual BeforeSave; that method changes only edited flags(+0x38), not attribute values. TCGateAgent.BeforeSave0xcac4e0 is empty; the reviewed unit/wireless/gateway BeforeSave chain does not clear SceneVector. SaveUnitInfo and SaveScenes likewise do not clear it.",
+    "emitted_shape": "For a full PP snapshot, emit exactly8 groups,8 actions,8 rates,8 offsets and100 vector bytes. Preserve the old vector suffix explicitly rather than relying on native partial-array behavior."
+  },
+  "scene_manager_contract": {
+    "configuration": "ExecuteSceneManagerForWirelessGateway0xf8738c selects scene type4, memory allocation1, maximum8 scenes, apparent maximum12 commands and shared memory100 bytes.",
+    "capacity": "Shared usage is sum(2*command_count+1) over every scene, including empty ones. CheckAvailableMemoryForNewCommand0xf8a21c bypasses the12-command per-scene check for allocation1, then applies the shared-memory check. Admitted complete scene state uses at most100 bytes and8 scenes.",
+    "ui_capacity_detail": "GetPercentMemoryInUse0xf88834 reports99 bytes as100. AddScene update requires reported usage<100 and scene count<8, so a49-command single scene (99 bytes) blocks adding another empty scene through that immediate UI path. This does not make100-byte layouts universally invalid: final layout validity and a specific GUI operation sequence are separate.",
+    "empty": "Empty scenes are accepted and cost one terminator byte. Validate0xf8b610 rejects unassigned application255, not zero commands. FormCloseQuery0xf8acd0 shuffles empty scenes only for allocation0, not wireless allocation1.",
+    "applications": "A scene uses an existing selected primary or secondary application. An application255 selection is rejected by the manager; neither an unassigned source object nor synthetic special application255 is a source for admitted command edits.",
+    "groups": "RepopulateAvailableGroups0xf8cde4 excludes group255 and groups already present in the selected scene. Ordinary Add therefore admits unique group addresses0..254 per scene. Each command level is an integer byte0..255.",
+    "ordering_and_sharing": "LoadMulletScenes0xf89380 clones each nonnil scene vector into its own temporary generic scene in collection order. SaveMulletScenes0xf89bd4 clears the old vector collection and builds one new vector per temporary scene. Existing scene objects are reused by ordinal, missing objects added, trailing objects deleted. Trigger/action/ramp metadata is not copied from manager generic scenes; it stays on the reused original ordinal scene objects.",
+    "deletion_example": "For original bodiesA/B/C with ordinal metadata1/2/3, deletingB in the manager produces bodyA+metadata1 and bodyC+metadata2, then deletes original scene3. Remote references to surviving ordinal scene objects follow their changed body. TFlashObjectReference.ObjectDestroyed0x7ed3e8 clears references to deleted trailing scene objects.",
+    "direct_replacement_boundary": "An explicit full-scene replacement composes scene-body editing with separate scene-detail controls. It must not be described as executing only the original manager dialog or its individual add/delete sequence."
+  },
+  "scene_detail_contract": {
+    "ramp": "TMulletScene.InternalCreate0xafc3b8 binds RampRate to TCBusRampRate RTTI0x8544e8; enum min0/max15. Scene-key detail Initialise0x10e4174 binds the combo to Scene.RampRate.EnumValues at0x10e44e3..0x10e450d.",
+    "ramp_seconds_by_ordinal": [
+      0,
+      4,
+      8,
+      12,
+      20,
+      30,
+      40,
+      60,
+      90,
+      120,
+      180,
+      300,
+      420,
+      600,
+      900,
+      1020
+    ],
+    "trigger_change": "HandleTriggerGroupChange0x10e47dc clears the scene action reference whenever its trigger group changes. A composed replacement with changed trigger must select the final action explicitly; silently retaining the old action object is not the callback.",
+    "detail_validation": "ValidateControlGroupAssigned0x10e4a68 requires a group and rejects its IsUnused/address255 state. ValidateActionSelectorAssigned0x10e4ae0 requires an action object but does not independently reject action address255. A stored action255, however, reloads without creating/selecting an action object. Empty/unassigned scenes created by the manager remain a different state from accepting the detail dialog."
+  },
+  "remote_dependencies": {
+    "after_manager": "PerformScenesEdit0x10f6740 invokes EnsureSceneKeysAreValid0x10f6470 after manager acceptance. In its gateway path it visits remote keys and clears a scene reference when the key function is neither0 nor1 and its scene vector is empty. It does not reset function/mask.",
+    "final_validation": "ValidateProgramming0x11102a8 first invokes AllRemoteScenesKeysHaveScenes0x111000c and then AllScenesHaveGroupsAssigned0x110fe58. Only existing/assigned remotes are checked, all16 keys each. Every nonzero function requires a scene; only function2 (Scene Toggle) additionally requires nonempty commands. Function1 (Scene Set) may reference an empty scene. Referenced scenes require nonnil trigger-group and action references.",
+    "bounded_editor": "Preserve all remote mapping bytes and identities. Refuse removal or invalidation of any referenced scene, malformed encoded scene reference, a referenced scene lacking trigger/action metadata, or a SceneToggle target becoming empty. Do not silently rewrite mapping masks/functions or guess reference repair."
+  },
+  "native_metadata": {
+    "vector_commands": "For each valid loaded offset, CreateVector obtains the selected primary/secondary application object and asserts nonnil (0x1259cc8..0x1259cdd). Reads group,level pairs with default255 while offset<100; group255 ends vector and is not looked up; every preceding group calls FindGroupByAddress(create=true), then numeric SetLevel. Command level255 remains255 and creates no level metadata.",
+    "source_application": "ApplicationByAppType uses unit VMT+0xb0 primary or+0xb4 secondary; WGATE5F advanced class slots resolve generic TCBUSUnit.GetApplicationObject/GetApplication2Object, which return reference attributes. CreateVector does not manufacture a missing source application. Freeze source application availability; reject absent/unresolved object before I/O. Do not infer a catalogue dependency in these group/level methods.",
+    "trigger_application": "LoadScenes calls CreateScenesFromVectors whenever SceneOffsets text is nonempty, even all255/no vectors. That method first GetTriggerControlApplication, before vector-count test. GetTriggerControlApplication calls FindOrCreateApplicationByAddress(202), CheckAndCreate calls ApplicationByAddress(create=true). Missing202 added, Address202, name Trigger Control, StorageSave; app CGate agent adds Application, updates Address/Description and TagName then requests ProjectSave. Application creation has recursion guard; selected source assertion rejects resulting nil.",
+    "trigger_groups": "CreateScenesFromVectors calls FindGroupByAddress(trigger,create=true) even trigger255. GroupByAddress returns an existing exact-address group unchanged; if missing and count<256, creates Address=G, assigns default tag and StorageSave(GroupSave). At count>=256, returns nil without creating. Group255 tag is resource <Unused>. For other groups, tag is StandardCBusApplications.GetGroupName(app) + decimal address.",
+    "native_group_tags": {
+      "48..95": "Group N",
+      "202": "Trigger Group N",
+      "203": "Enable Network Variable N",
+      "255": "<Unused>"
+    },
+    "trigger_actions": "Only if trigger group nonnil, group address!=255, action!=255: FindLevelByAddress(action,create=true,actionSelectorName=true). Existing exact address returned unchanged. Missing action added with Address=Value=N, TagName=Action Selector N. No level creation for action255 or unused/nil trigger. Non255 trigger/action255 clears scene level reference to nil.",
+    "save_boundaries": "GroupSave reaches GroupCGateAgent.AgentSave: CreateGroup -> CGateAdd Group -> Address; generic AgentSave updates TagName; requests ProjectSave. Level StorageSave reaches LevelCGateAgent.AgentSave: CGateAdd Level -> Address -> CommandDBAdd TagsDLT container -> Value -> TagName -> ProjectSave; FindLevelByAddress then requests ProjectSave again. These automatic load metadata writes precede/separate from gateway PP save.",
+    "native_defaults": "Native TCBusGroup.InternalCreate builds empty Levels, TagsDLT and Languages collections; native TLevel.InternalCreate builds Value attribute and TagsDLT/Languages collections. No 4-variant population occurs in the inspected constructors. TGroupTagDLTCollection.Create names an initially empty collection only. GroupLanguageCollection.Create creates one First font object in its private font factory, not four DLT tags. Do not transfer managed eDLT four-blank-variant assumptions to wireless native metadata.",
+    "generic_fields": "TCGateObject.InternalCreate declares Address, TagName (maximum32) and Description. Missing application CGate save explicitly writes its Description; group save only inspected Address/TagName; Level save writes Address/Value/TagName and creates TagsDLT. Exact native schema readback/blank-container defaults remain a separate acceptance obligation.",
+    "sentinel_special_app": "Gateway special application255 objects are unattached synthetic All Applications and <Unused> entries. CreateSpecialApplications does not append them to a network application manager. Conservative planner should refuse nonempty command vectors bound to255 until that synthetic-owner path has independent acceptance.",
+    "group255_persistence": "Group255 has no virtual-object exemption on this path. GroupByAddressExclude0xf28d10 searches actual collection entries only; TCBusGroupManager.Create0xf2880c does not preload255. StorageSave overload0x7f409c has no address/IsUnused filter and forwards the class-selected agent. GetAgent0x7f3df8 selects by class; registration0x13971a8 maps TCBusGroup to TCBusGroupCGateAgent, whose AgentSave/CreateGroup performs CGateAdd Group, Address, TagName and ProjectSave without excluding255. Thus an existing group255 is required for loaded or desired scenes with unused trigger255 in the bounded editor; otherwise the original load would create persisted metadata. This differs from the unattached special APPLICATION255 objects."
+  },
+  "metadata_resources": [
+    {
+      "pointer": "0x13c1ca8",
+      "record": "0x85a2c8",
+      "text": "<Unused>"
+    },
+    {
+      "pointer": "0x13c1d14",
+      "record": "0xf210dc",
+      "text": "Group"
+    },
+    {
+      "record": "0x85a9f0",
+      "text": "Trigger Control"
+    },
+    {
+      "record": "0x85aa28",
+      "text": "Trigger Group"
+    },
+    {
+      "record": "0x85aa50",
+      "text": "Enable Network Variable"
+    }
+  ],
+  "bounded_implementation": {
+    "operation": "Explicit full ordered scene replacement, composing scene body and detail controls.",
+    "owned_parameters": [
+      "SceneTriggerGroup",
+      "SceneTriggerLevel",
+      "SceneTriggerRate",
+      "SceneVectorOffset",
+      "SceneVector"
+    ],
+    "preserve": "All other PP parameters, including Connection, mode, wireless security and all remote mapping fields; preserve unused vector suffix exactly.",
+    "metadata": "Require existing frozen application/group/action metadata. Missing metadata fails before mutation. Original load-time automatic application/group/action creation and their ProjectSave boundaries are recorded but not reproduced in this slice.",
+    "original_execution": false,
+    "persistence": "Database PP SAVE and separate PROJECT SAVE/reload are distinct. Native acceptance is recorded separately; static review does not establish native schema acceptance or physical scene execution."
+  },
+  "independent_literal_cases": [
+    {
+      "name": "ordered_primary_secondary_with_level255",
+      "existing_vector": "Any100-byte vector; suffix from index8 remains exact.",
+      "scenes": [
+        {
+          "secondary": false,
+          "trigger_group": 10,
+          "action": 20,
+          "rate": 5,
+          "commands": [
+            [
+              7,
+              0
+            ],
+            [
+              9,
+              255
+            ]
+          ]
+        },
+        {
+          "secondary": true,
+          "trigger_group": 11,
+          "action": 21,
+          "rate": 0,
+          "commands": [
+            [
+              3,
+              128
+            ]
+          ]
+        }
+      ],
+      "expected_groups": [
+        10,
+        11,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_actions": [
+        20,
+        21,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_rates": [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_offsets": [
+        0,
+        133,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_vector_prefix": [
+        7,
+        0,
+        9,
+        255,
+        255,
+        3,
+        128,
+        255
+      ],
+      "preserved_suffix_start": 8
+    },
+    {
+      "name": "append_empty_primary",
+      "base_case": "ordered_primary_secondary_with_level255",
+      "additional_scene": {
+        "secondary": false,
+        "trigger_group": 255,
+        "action": 255,
+        "rate": 0,
+        "commands": []
+      },
+      "expected_offsets": [
+        0,
+        133,
+        8,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_vector_prefix": [
+        7,
+        0,
+        9,
+        255,
+        255,
+        3,
+        128,
+        255,
+        255
+      ],
+      "preserved_suffix_start": 9,
+      "precondition": "No assigned scene key invalidated by the empty/unassigned scene."
+    },
+    {
+      "name": "zero_scenes",
+      "scenes": [],
+      "expected_groups": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_actions": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_rates": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "expected_offsets": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "expected_vector": "Exact entire existing100-byte vector."
+    }
+  ],
+  "corrections_and_distinctions": [
+    "Unused SceneVector suffix is preserved; padding from newly used cursor would differ from original source.",
+    "The apparent12-command field is not the wireless shared-memory limit.",
+    "SceneSet can reference an empty scene; only SceneToggle has the extra nonempty-vector validation.",
+    "Do not apply generic IntegerToCBusRampRate255-to1 normalization: gateway load uses a range-checked enum setter directly.",
+    "Native wireless Trigger group names/defaults and real unused-group creation differ from managed eDLT metadata recipes.",
+    "Manager-only edits retain trigger/action/ramp by ordinal; explicit full replacement composes additional scene-detail controls."
+  ],
+  "remaining_acceptance": [
+    "Original GUI execution and visual/control interaction parity.",
+    "Automatic native metadata creation schema/default-container persistence and its independent save boundaries.",
+    "Physical wireless scene delivery, pairing, forwarding and power-cycle behavior."
+  ],
+  "methods": {
+    "0x7ed3e8": {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectReference.ObjectDestroyed",
+      "size": 52,
+      "sha256": "a036b845a9dfc8f18b85d634ef17b452c732885685da4eb266e2f7d18798784d"
+    },
+    "0x7f3df8": {
+      "symbol": "CIS_TIdentifiableObject.TPersistableObject.GetAgent",
+      "size": 304,
+      "sha256": "3d0764ec35f7b41600ed5799c5c1f54fab97ed03f07cd5c1dd236baf2aee1421"
+    },
+    "0x7f409c": {
+      "symbol": "CIS_TIdentifiableObject.TPersistableObject.StorageSave",
+      "size": 196,
+      "sha256": "96983cbe85a955cffd0e1d122d33adf65538d2e6620e9493ed7d052a3b3fe0ce"
+    },
+    "0x8482c4": {
+      "symbol": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.AsInteger",
+      "size": 28,
+      "sha256": "6ac044cd7922f8ff642324542856112d4148197cc964390728742d176024d915"
+    },
+    "0x8483cc": {
+      "symbol": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetAsInteger",
+      "size": 176,
+      "sha256": "3c06181be8d17788c283da6867792dd6620eeecbc809bb019b58de1b12d6a877"
+    },
+    "0x84847c": {
+      "symbol": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetValue",
+      "size": 40,
+      "sha256": "2f107c6e6edcf3a85269a7cfdd34f9fe84518b0530c233fefe1a7981bc0e3ffd"
+    },
+    "0x85a080": {
+      "symbol": "CIS_TGroupTagDLT.TGroupTagDLTCollection.Create",
+      "size": 188,
+      "sha256": "0c7b2e0086663d1b273ed558c2e2bcbee18c18eb31c430356b7d032789192f2e"
+    },
+    "0x85ae74": {
+      "symbol": "CIS_TStandardCBusApplications.TStandardCBusApplication.Create",
+      "size": 244,
+      "sha256": "571cba94dc0dbdee553d85d478afc0f22356cd782775017113fc6f2bf3d8b757"
+    },
+    "0x85b2c4": {
+      "symbol": "CIS_TStandardCBusApplications.TStandardCBusApplications.GetGroupName",
+      "size": 72,
+      "sha256": "0114adf84ee6a600c5a167903295d1d121e7831b8c583edb857df01d34633a8f"
+    },
+    "0xafc334": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneDirector.InternalCreate",
+      "size": 132,
+      "sha256": "e44612038eb87d72e18a8800dcad176476c80602d0a22ec02e55c804ab739350"
+    },
+    "0xafc3b8": {
+      "symbol": "CIS_TWirelessScene.TMulletScene.InternalCreate",
+      "size": 356,
+      "sha256": "356152766cb32adfce6b67cdfda17b7498f1f9f4337068c38f31542dd06e6aaf"
+    },
+    "0xafc75c": {
+      "symbol": "CIS_TWirelessScene.TMulletScene.GetRampRate",
+      "size": 36,
+      "sha256": "330adee0ebf7dd2747b2b7a2f18bb1045a93d92decc6728c4c2fa8ab4489191c"
+    },
+    "0xafc7ec": {
+      "symbol": "CIS_TWirelessScene.TMulletScene.SetRampRate",
+      "size": 100,
+      "sha256": "a64590be40672a0a275780981d53edcdf8bc8688dede8b92214b5ed97219fe12"
+    },
+    "0xafc850": {
+      "symbol": "CIS_TWirelessScene.TMulletScene.SetVector",
+      "size": 36,
+      "sha256": "46e608c3fd0246d6c1600887d9db8cb6e6b9a31bc97feb14541a8bb02e85eb8b"
+    },
+    "0xafc874": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneCollection.Add",
+      "size": 88,
+      "sha256": "3677fb5c3578f1ec29c7395ee426ec063ce73535b72a0efc8329ec6763770ff5"
+    },
+    "0xafc90c": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneCollection.ItemByNumber",
+      "size": 356,
+      "sha256": "95a9b8f787168e2b3bc52440852a8a6d60603c2a09fa989d2417604c162b5cbd"
+    },
+    "0xafca70": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneVector.InternalCreate",
+      "size": 92,
+      "sha256": "02c5e8be47f24d26031881ed9baaec9544e0636634f7835aa5cf2eb40ccad9a1"
+    },
+    "0xafccbc": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneVectorCollection.Add",
+      "size": 68,
+      "sha256": "3473fb51a9e6e61d6a13b3a883a97766d5893d9fc3d44d31e2d2f77516d719a8"
+    },
+    "0xafcd40": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneCommand.InternalCreate",
+      "size": 164,
+      "sha256": "40073b07df3f4ba40cef25ab3f23cfbed2242539783e8485586126db844e6ad2"
+    },
+    "0xafce50": {
+      "symbol": "CIS_TWirelessScene.TMulletSceneCommand.SetLevel",
+      "size": 96,
+      "sha256": "82361994077e91bdd68631c79721c41b8550a9ad9ad235ab158701a529790a72"
+    },
+    "0xcac354": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.AgentSave",
+      "size": 104,
+      "sha256": "8996d2b5923db1df9b14d91281ff07fe54adef66363c6e7bad558250d877c289"
+    },
+    "0xcac4e0": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 12,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "0xcbd704": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetCGateAgentEditedState",
+      "size": 72,
+      "sha256": "82257f45b72165d01d586494377c9debb1f5562ca76183c5e57f28ed6d6ebace"
+    },
+    "0xcbdc30": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation",
+      "size": 1104,
+      "sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33"
+    },
+    "0xcbe84c": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 584,
+      "sha256": "fc9e972194c6d22ba511438f6bca3f0c9e8f7f438a7569ab359c05bcea05e4e6"
+    },
+    "0xf25704": {
+      "symbol": "CIS_TCommonCBus.TCBUSApplication.InternalCreate",
+      "size": 340,
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a"
+    },
+    "0xf264b8": {
+      "symbol": "CIS_TCommonCBus.TCBUSApplicationManager.CheckAndCreate",
+      "size": 32,
+      "sha256": "6aa8a446059c35fcb30a9e520c50e05cedffd4c5bd6f7ce5a2d5fd374d65cc34"
+    },
+    "0xf264fc": {
+      "symbol": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress",
+      "size": 716,
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b"
+    },
+    "0xf26a48": {
+      "symbol": "CIS_TCommonCBus.TLevel.InternalCreate",
+      "size": 336,
+      "sha256": "b76bd0c39d53eea017ae5c6017c7eb9ad25145240d700cf667cefdc771e841b0"
+    },
+    "0xf2724c": {
+      "symbol": "CIS_TCommonCBus.TLevelManager.Add",
+      "size": 72,
+      "sha256": "b7eab030c10cdf44e7f8d05db0ecc073132d45e9f0f7b62fa008e2aeea07a85a"
+    },
+    "0xf2742c": {
+      "symbol": "CIS_TCommonCBus.TLevelManager.FindLevelByAddress",
+      "size": 592,
+      "sha256": "682cac65b928f9e1b98dca786b5e53c2fc1d3070ae27722c840d937e5769769e"
+    },
+    "0xf2775c": {
+      "symbol": "CIS_TCommonCBus.TTargetLevel.InternalCreate",
+      "size": 84,
+      "sha256": "58daa52a8d352860003738c52a12977bf8550842e54e867f27a927eff046df48"
+    },
+    "0xf27984": {
+      "symbol": "CIS_TCommonCBus.TCBusGroup.InternalCreate",
+      "size": 704,
+      "sha256": "856404baa4ac67bbd744210d3a98f471faf7f9d25c35f22aed8aa627046a42fe"
+    },
+    "0xf2880c": {
+      "symbol": "CIS_TCommonCBus.TCBusGroupManager.Create",
+      "size": 176,
+      "sha256": "22f77db372a22d30e964a134592683b831b23fb9eeee09c430311b2d08820885"
+    },
+    "0xf288f0": {
+      "symbol": "CIS_TCommonCBus.TCBusGroupManager.Add",
+      "size": 72,
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9"
+    },
+    "0xf28b68": {
+      "symbol": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress",
+      "size": 424,
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    "0xf28d10": {
+      "symbol": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude",
+      "size": 108,
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2"
+    },
+    "0xf28f58": {
+      "symbol": "CIS_TCommonCBus.TCBusGroupManager.FindGroupByAddress",
+      "size": 40,
+      "sha256": "a6f960e5325ea8adc0b36eb2b3c9b7dd1f91a1fa3bbfa958aa30bdeaacf1c24a"
+    },
+    "0xf2b0a0": {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.FindOrCreateApplicationByAddress",
+      "size": 56,
+      "sha256": "24edc2caecf56d02ce3d9be02386b266d7bbef46ea4018c2333efd1cd5df7f5f"
+    },
+    "0xf2b174": {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.GetTriggerControlApplication",
+      "size": 32,
+      "sha256": "7a795ce0de328e918d74a92aa7b8ac250fb87c9ec98b74c16a9cd7460303c6f9"
+    },
+    "0xf2ebc0": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+      "size": 48,
+      "sha256": "6a6bb9724a27eecef89d082873a9f4b393c5d184bf5621cba22ed752517949e4"
+    },
+    "0xf2ebf0": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object",
+      "size": 48,
+      "sha256": "585977982818789244bf6a034df13b44148eec0ed51ba70d9997cf754d6ded49"
+    },
+    "0xf36dfc": {
+      "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.Create",
+      "size": 316,
+      "sha256": "8c6070c6c44094227376e2fa6de5a2e606456c729ce2e0d42d22a3c06975c986"
+    },
+    "0xf432c4": {
+      "symbol": "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+      "size": 192,
+      "sha256": "035ab470c36840078380c7c908601428a0a8707010e2fc429ded135869b2dc23"
+    },
+    "0xf43564": {
+      "symbol": "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayIntegers",
+      "size": 160,
+      "sha256": "b267d3c1bfecac0e99059ffec95bf0851f07fab2684317213ed9fb2a5eb0727e"
+    },
+    "0xf47718": {
+      "symbol": "CIS_TCBusObject.TCGateObject.InternalCreate",
+      "size": 360,
+      "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260"
+    },
+    "0xf8738c": {
+      "symbol": "CIS_TfrmSceneManager.ExecuteSceneManagerForWirelessGateway",
+      "size": 220,
+      "sha256": "af743dc36e365a20c45fbc00cdecb1204b57450975be97dfcb590df575d7cbfb"
+    },
+    "0xf883d8": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.HasEmptyScenesWithinList",
+      "size": 136,
+      "sha256": "a2f5fb00e8b65be84d20468807368a4e559149d8d06866612aa8a91f205dab29"
+    },
+    "0xf887c8": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.GetNumberOfScenesInUse",
+      "size": 108,
+      "sha256": "b70c48e34e84f408bed53449a62a5338de49074e7a59311800f80ddaea18f937"
+    },
+    "0xf88834": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.GetPercentMemoryInUse",
+      "size": 152,
+      "sha256": "7983ad20ce82811e64438247fdacaf348bfa5d0d622a03920489772f315fb660"
+    },
+    "0xf88908": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.ShuffleEmptyScenesToEndOfList",
+      "size": 820,
+      "sha256": "b1b911cc671dc0c5b890894234a0198747a8da43af9bd505816527adfa5e25ff"
+    },
+    "0xf89380": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.LoadMulletScenes",
+      "size": 556,
+      "sha256": "698517ce14ccc4a47bd8b853d4efc2a0427b1d1d9f4a8cacd84ed271caa2e41d"
+    },
+    "0xf895ac": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.SaveChanges",
+      "size": 284,
+      "sha256": "b2352f3dbf9ee3aedb9d6db49afe68e6060461bd273eb77eca8902156f4debea"
+    },
+    "0xf89b3c": {
+      "symbol": "CIS_TfrmSceneManager.AddCommands",
+      "size": 152,
+      "sha256": "06ea808be265641784f2b756e119e4a32a2b4370c348e3cc9e6194c3b0c63cfc"
+    },
+    "0xf89bd4": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.SaveMulletScenes",
+      "size": 780,
+      "sha256": "554fcaae6902555b5d91670c11c3c62fa06c80fd951cef5e0fc9ad882aaaa781"
+    },
+    "0xf89ee0": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.ApplicationTypeByApplication",
+      "size": 400,
+      "sha256": "a35ca92e90b498e71011ba5353d39ccbd21719c25a813d5c23ddda074fcfea62"
+    },
+    "0xf8a21c": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.CheckAvailableMemoryForNewCommand",
+      "size": 348,
+      "sha256": "5ac6792dccc2282c6e62abed8ffe01c18df35c2a5051c33e611a3c1a9092a813"
+    },
+    "0xf8a378": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.CheckAvailableMemoryForPaste",
+      "size": 112,
+      "sha256": "a604bbb453d6a71d0b88408660ebc9ea04552613728a05aa0fcc60504f918492"
+    },
+    "0xf8acd0": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.FormCloseQuery",
+      "size": 208,
+      "sha256": "fdf405154d418066dc8f90834de1ba997161bb0bf028a4a9f6400489eb11172b"
+    },
+    "0xf8ae5c": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.actAddSceneExecute",
+      "size": 104,
+      "sha256": "fb04152c9679fc1b02f8f0fb97987c84330b83fba03a0bf17007a2ac2c0b31cd"
+    },
+    "0xf8aec4": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.actDeleteSceneExecute",
+      "size": 492,
+      "sha256": "d86f38d2eb35e4dd046164d07f1beef1418bb4ad28006ba736e5592880adb1e9"
+    },
+    "0xf8b610": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.Validate",
+      "size": 160,
+      "sha256": "0e992139927fe8adee5a31b0d2299246043071c217b7d303d43e33c18399ebdc"
+    },
+    "0xf8b97c": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.actAddSceneCommandExecute",
+      "size": 604,
+      "sha256": "16195bd56a9ca3be6e1b8f2e6df2cdb654104acc6a3eebc6d6e54d3c5461078d"
+    },
+    "0xf8bbd8": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.actAddSceneCommandUpdate",
+      "size": 184,
+      "sha256": "1223ac618407953083cace21f8cec217b9bb9b0c3f71f9fd4688d313f45b0de9"
+    },
+    "0xf8bc90": {
+      "symbol": "CIS_TfrmSceneManager.TfrmSceneManager.actAddSceneUpdate",
+      "size": 88,
+      "sha256": "29ecd22727993b326582b5f67191adfe032a7c381b03d2caad57d4358de883b5"
+    },
+    "0xf8cde4": {
+      "symbol": "CIS_TfrmSceneManager.TGroupsDataSource.RepopulateAvailableGroups",
+      "size": 252,
+      "sha256": "5621f8209432d5c6a4a3b5d1e431c9cf5342b67fe4b239e4e774c225a79891e4"
+    },
+    "0x10e4174": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.Initialise",
+      "size": 1640,
+      "sha256": "7314bff3552c08b5fc1f6d37213e3d720a65037dba17a49b2c374f85a9d049cb"
+    },
+    "0x10e47dc": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.HandleTriggerGroupChange",
+      "size": 84,
+      "sha256": "3fa6c170914724daf17e2cae7c485add7dc9d02ce0d430f9f108e1f343cbc1b9"
+    },
+    "0x10e48fc": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.Validate",
+      "size": 64,
+      "sha256": "0f6a2a33482edbdecef3dd9933447a0275e8ee88aed2d37919416468b98612e6"
+    },
+    "0x10e493c": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.ValidateCorrectSceneIsSelected",
+      "size": 300,
+      "sha256": "95f80181b6568a0dbca5121f29bff8bfc33170558e41ede729643466d9a00278"
+    },
+    "0x10e4a68": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.ValidateControlGroupAssigned",
+      "size": 120,
+      "sha256": "c07ba605b61aaf7c4d5d54f652b6462827242215b6d55f64e00a4f6e0abbb29b"
+    },
+    "0x10e4ae0": {
+      "symbol": "CIS_TfrmMulletKeyScene.TfrmMulletKeyScene.ValidateActionSelectorAssigned",
+      "size": 92,
+      "sha256": "b49d70e92d1ec22b1e15799f179369049ef7e5776d948375237550dc72c6a38c"
+    },
+    "0x10f6470": {
+      "symbol": "CIS_TfrmMulletSceneGroups.TfrmMulletSceneGroups.EnsureSceneKeysAreValid",
+      "size": 720,
+      "sha256": "2ff4f9133e07dea182bdeb8448e1e73bd24ef301cee998ec00e943f7ab367866"
+    },
+    "0x10f6740": {
+      "symbol": "CIS_TfrmMulletSceneGroups.TfrmMulletSceneGroups.PerformScenesEdit",
+      "size": 284,
+      "sha256": "866a503769063ecdc2cea0aee44f763532df0634dc90af17adaa288f2ec92435"
+    },
+    "0x110f3ec": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.SetValues",
+      "size": 1436,
+      "sha256": "df6f76a249f3e68c98be951a79459cd9fe26c43d3152421314a53d8a00c68eac"
+    },
+    "0x110fc8c": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.EnableRemotesControls",
+      "size": 460,
+      "sha256": "e7aa5355dd7b5d0d2ec450551841fe09fb8b2853537120fc84cdfd6acd8e82a5"
+    },
+    "0x110fe58": {
+      "symbol": "CIS_TddCBusWirelessGateway.AllScenesHaveGroupsAssigned",
+      "size": 436,
+      "sha256": "a3fcd3a34d1920d746adf694d6da08c58222a20213923fb38d392c3fd943a7b4"
+    },
+    "0x111000c": {
+      "symbol": "CIS_TddCBusWirelessGateway.AllRemoteScenesKeysHaveScenes",
+      "size": 488,
+      "sha256": "fb72373a056e7ca55bcfaa51194df196cf469b7b2b35ca2250045f3d74c1f9ed"
+    },
+    "0x11102a8": {
+      "symbol": "CIS_TddCBusWirelessGateway.TddCBusWirelessGateway.ValidateProgramming",
+      "size": 572,
+      "sha256": "82b1d454dba8ec839bd5b0c82dae7570d14a44c2f60adc5745a1a4604ba8aef9"
+    },
+    "0x120e3a4": {
+      "symbol": "CIS_TCBusApplicationCGateAgent.TCBusApplicationCGateAgent.AgentSave",
+      "size": 556,
+      "sha256": "3b6cf883d4ed054cadfb18a4d0c1d6b5e06f85e2a891b069eec8b8b26e8a8eda"
+    },
+    "0x1210d28": {
+      "symbol": "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.AgentSave",
+      "size": 412,
+      "sha256": "88b10b4d543b77a8a0ed05b87562a247ca36ec099d6be2dd0d2606b4537b0137"
+    },
+    "0x1210f3c": {
+      "symbol": "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.CreateGroup",
+      "size": 212,
+      "sha256": "0b8aadea6e3fe603b08ff7cb3e0f700fb42ffbeaa9dd4c7dae32dae0e5800b6c"
+    },
+    "0x1213a58": {
+      "symbol": "CIS_TLevelCGateAgent.TLevelCGateAgent.AgentSave",
+      "size": 580,
+      "sha256": "39baccd84d07207525c13c06978a68804e0298a4b880a65082b8ab9d0684be02"
+    },
+    "0x1258434": {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 616,
+      "sha256": "8d4f39d6d9556f10f7fb62901a4ad33060695dfdc88188637cf1cd21b43bb7de"
+    },
+    "0x1258f30": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 868,
+      "sha256": "f20e9865730ecabf3e7d0d510909f7e09d645b4c6bd9e89f1ea21dcbb3796b0a"
+    },
+    "0x12597c8": {
+      "symbol": "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.GetApplicationObject",
+      "size": 612,
+      "sha256": "a386b1fddcc1e1508615fede47c7f2c4e413011fee41048797e4b03de9345b6e"
+    },
+    "0x1259c84": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateVector",
+      "size": 584,
+      "sha256": "03f6a102668a455680f81350949b51ee3ba4398f4d0ddb09640a16b38449fde3"
+    },
+    "0x1259ecc": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.CreateScenesFromVectors",
+      "size": 892,
+      "sha256": "b28bf68fae979c4689e1c3ca8f20fa1b88fce80ab724486f09b0e28957c0d30e"
+    },
+    "0x125a248": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.LoadScenes",
+      "size": 372,
+      "sha256": "a65e489b02db5a245245139fd693bbbe04d35d732819f3d94b6490a63ed9334c"
+    },
+    "0x125ab18": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.TCBusWirelessGatewayAdvancedCGateAgent.ApplicationByAppType",
+      "size": 68,
+      "sha256": "3458c86a1623b40d4851b6b1e3561099315e39011b06509b3e124ed5c9712dc0"
+    },
+    "0x125ab5c": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.UpdateScenesEditedState",
+      "size": 280,
+      "sha256": "ea9c659e8ac8cefa29cfd12a83bff1ecbf284edacd5c49dd2e3a813a520baf9d"
+    },
+    "0x125ac74": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.SaveSceneVectorAndOffset",
+      "size": 268,
+      "sha256": "8d1e3fa5c30549c2b2b4758579544d5dd4cd83bc0661f0b2a7d0d20353e3b128"
+    },
+    "0x125ad80": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.SaveScenes",
+      "size": 624,
+      "sha256": "f1b1aabf0238ee935612b87a2f9a4b6ca3e188460e7771ee7f6af32a66a9d70e"
+    },
+    "0x125b3bc": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.SaveUnitInfo",
+      "size": 124,
+      "sha256": "ae269648333ab22c3a74aa0143e5eb73d7268985bd35febb353fb0ec1acf155a"
+    },
+    "0x125b438": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.TCBusWirelessGatewayAdvancedCGateAgent.BeforeSaveProgrammingInformation",
+      "size": 76,
+      "sha256": "62e5b5b45d1ea0b1fdcf1ced60b8c28188079988e5d6a7abed895f51d884705b"
+    },
+    "0x125b658": {
+      "symbol": "CIS_TCBusWirelessGatewayAdvancedCGateAgent.TCBusWirelessGatewayAdvancedCGateAgent.InternalCreate",
+      "size": 1056,
+      "sha256": "450ede971b078d47712bb2057bdc7acd027f854f932920770bc799aa5158d735"
+    },
+    "0x136bc30": {
+      "symbol": "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications",
+      "size": 1348,
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    },
+    "0x13971a8": {
+      "symbol": "CIS_TCBusGroupCGateAgent.CIS_TCBusGroupCGateAgent",
+      "size": 104,
+      "sha256": "0e55724de1ec1fb88d6ff604033c6931c02df442fb5346aebfc404756bc40202"
+    }
+  }
+}

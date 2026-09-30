@@ -245,7 +245,12 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
             name: _sha(Path(model.__file__).with_name(name + ".py").read_bytes())
             for name in ("project_documentation_devices", "project_documentation_native",
                          "project_documentation_status", "project_documentation_usage",
-                         "project_documentation_outputs")
+                         "project_documentation_outputs", "project_documentation_neo",
+                         "project_documentation_neo_usage", "project_documentation_dlt",
+                         "project_documentation_scene_controller", "project_documentation_classic_profiles",
+                         "project_documentation_special_outputs", "project_documentation_temperature",
+                         "project_documentation_pir", "project_documentation_neoclassic",
+                         "project_documentation_neoclassic_usage")
         },
         "method_spans": {short: {"start": hex(m["start"]), "end": hex(m["end"]), "bytes": m["end"] - m["start"],
                                  "sha256": m["sha256"]} for short, m in methods.items()},

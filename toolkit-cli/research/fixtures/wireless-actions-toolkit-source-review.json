@@ -1,0 +1,385 @@
+{
+  "format": "cbus-wireless-actions-toolkit-source-review-v1",
+  "review_date": "2026-09-30",
+  "scope": "Original Toolkit wireless Status dialog and Reset/Recall operational-statistics command wrappers. MAISync is a separate native C-Gate action, not an identified original Status callback.",
+  "evidence_kind": "Static original x86 source recovery only; method bytes independently rehashed from the pinned executable. No original component execution, C-Gate DO execution, physical query, network opening or radio operation.",
+  "source": {
+    "executable": "CBusToolkit.exe",
+    "file_version": "1.18.0.2754",
+    "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map": "CBusToolkit.map",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "machine": "0x14c",
+    "image_base": "0x600000"
+  },
+  "profile_boundary": {
+    "original_gui_class": "TfrmWirelessUnit.SetData0x10d23e8 and TcdWirelessUnitStatus.SetData0x10d1498 assert IsClass(TCBusWirelessUnit), class metadata0xaf4400. The shared CreateStatusForm0x10d2fd8 creates TcdWirelessUnitStatus without an advanced-gateway check.",
+    "firmware": "No firmware comparison appears in these shared Status admission paths. The WGATE5F2.2.90..2.4.99 edit-workflow bound must not be treated as the native action catalogue bound.",
+    "executor": "Exact native class/catalogue admission and DO/GET response shapes require the separate pinned C-Gate action source review. This receipt does not infer eligible concrete unit types from an arbitrary wireless name prefix.",
+    "initialization": "SetData asserts TCBusWirelessUnit and stores pointer only; no firmware check or refresh. Create initializes online,busy,callbackbusy,refreshfailed=false. Initialise creates frame, hides Update/Reset/grids, binds clicks, no initial I/O. External framework RefreshData (VMT+0x14) sets refresh-eligibility=IsPhysicalUnit OR HasMatchingPhysicalUnit, then calls RefreshDataOnForm. HasMatchingPhysicalUnit is recomputed as online. Retry Update visible when refreshfailed and eligible; successful online PopulateGUI reveals both buttons/grids."
+  },
+  "status_parameters": {
+    "address": "0x13bbe4c",
+    "size": 12,
+    "sha256": "bef0b9ccbd61b28f1eaa233d6ddcf1de8cd687387b729555dfdad411d7a808bc",
+    "ordered_names": [
+      "UnitSupplyVoltage",
+      "BackgroundSignalPower",
+      "LastPacketReceivedPower"
+    ],
+    "excluded_from_original_grid": "UnitTemperature is a native property but is not one of the three original Status grid parameters.",
+    "display": "Only UnitSupplyVoltage receives a textual first case-sensitive mv to space+mV substitution. There is no numeric rescaling in FormatParameterValue.",
+    "display_rows": [
+      {
+        "name": "UnitSupplyVoltage",
+        "label": "Processor Supply Voltage",
+        "format": "Replace first case-sensitive mv with space+mV; StringReplace flags0"
+      },
+      {
+        "name": "BackgroundSignalPower",
+        "label": "Background Signal Power",
+        "format": "unchanged"
+      },
+      {
+        "name": "LastPacketReceivedPower",
+        "label": "Last Packet Received Power",
+        "format": "unchanged"
+      }
+    ]
+  },
+  "original_refresh": {
+    "entry": "btnUpdateStatusClick0x10d1c08 invokes RefreshDataOnForm0x10d17cc after the active-context/busy guards and disables Update/Reset during the call. RefreshDataOnForm also has its own reentry guard and restores cursor/guard in finally.",
+    "order": [
+      "RefreshDataOnForm: determine HasMatchingPhysicalUnit; acquire busy guard",
+      "Resync: unit StorageLoad(ParameterSync, TimeOut=15000)",
+      "PopulateGUI when still online: LoadParametersIntoGrid",
+      "GET UnitSupplyVoltage",
+      "GET BackgroundSignalPower",
+      "GET LastPacketReceivedPower",
+      "LoadStatisticsIntoGrid: RecallOpStats",
+      "Only after successful recall: GetOperationalStatistics",
+      "Update grid only after successful recall and GET"
+    ],
+    "resync": "Resync0x10d19d4 uses ParameterSync and TimeOut=15000. Unit AgentLoad0xcb6228..6293 recognizes ParameterSync, obtains timeout, and calls CommandDoPSync0xcc08c8; TcgcDoPsync.GenerateCommandText0xcb3098 emits do <target> Psync. It is not MAISync.",
+    "target": "CommandDoPSync uses project-prefix plus OID for an existing object, otherwise GetPhysicalAddress. Reset/Recall helpers use GetAddressAsCGateID. An adapter that admits only a canonical physical address is a deliberate narrower target boundary.",
+    "failure": "Resync begins timeoutflag=false. Success sets refreshfailed=false. ECGateCommandTimeOut -> online=false,refreshfailed=true,timeoutflag=true. ECGateErrorPSyncUnitNotFound -> online=false,refreshfailed=true. No automatic retry in director. PopulateGUI skips both parameter/stat loads when online=false. Timeout text Failed to load status parameters from unit; missing/offline text Unit not found at this address on network. Reset/recall/get false shows Cannot access wireless unit. Parameter GET false only omits that row. Old stats grid is preserved on recall/GET false because Clear occurs only after both successes.",
+    "cache": "C-Gate GET properties are cached reads according to the separate native source review. A cached-only adapter operation must not imply original refresh or current physical measurements.",
+    "broader_psync_boundary": "Native source follow-up traces Psync through wireless diagnostics and status refresh, including application/error/serial cache changes. Psync is broader than reading cached measurements; its physical path is not executed or accepted by this receipt."
+  },
+  "original_reset": {
+    "entry": "btnResetOpStatsClick asks confirmation0xC0F first; on return1, enabled owner and not callback-busy, disables Update and Reset, calls ResetOperationalStatistics, restores buttons in finally. ResetOperationalStatistics uses shared busy guard; ResetOpStats true -> Resync -> PopulateGUI (thus same ordered parameter/recall/stats refresh). False -> error0xC10, no refresh. Catches only ECGateErrorResetOpStatsUnitNotFound -> error0xC07; other exceptions unwind through busy cleanup.",
+    "success_order": [
+      "DO ResetOpStats",
+      "Resync using ParameterSync/TimeOut=15000",
+      "PopulateGUI: three parameter GETs, RecallOpStats, then GET OpStats"
+    ],
+    "failure": "When ResetOpStats returns false, no subsequent refresh is performed. One typed reset-only adapter action must not claim to reproduce the complete GUI callback sequence or infer counters are zero from send completion."
+  },
+  "command_wrappers": {
+    "reset": {
+      "command": "do <unit> ResetOpStats",
+      "generate": "0xea447c",
+      "timeout_ms": 8000,
+      "wrapper": "0xea4318",
+      "process_results": "0xea44fc"
+    },
+    "recall": {
+      "command": "do <unit> RecallOpStats",
+      "generate": "0x10cfcf8",
+      "timeout_ms": 8000,
+      "wrapper": "0x10cfb88",
+      "process_results": "0x10cfd7c"
+    },
+    "psync": {
+      "command": "do <unit> Psync",
+      "generate": "0xcb3098",
+      "caller": "0xcc08c8",
+      "gui_timeout_ms": 15000
+    },
+    "cached_stats": {
+      "command": "get <unit> OpStats",
+      "generate": "0x10d048c",
+      "wrapper": "0x10d01b4"
+    },
+    "completion": "Reset/Recall OnProcessResults recognizes 202 plus Done and calls SetCompleted. Both map 401/Bad object/Unit not found or Operation failed to a unit-not-found exception, 420/Access denied/Insufficient access level to insufficient-access exception, and 408 to a generic No Catalog Available error. Recall additionally marks completed in its408 branch; that is still failure, never success.",
+    "retry": "Reset/Recall wrappers each call CommandExecute once and contain no retry loop. Reviewed CommandExecute0x843860 calls InternalSendCommand0x8437bc once for the operation; an optional distinct prefix command is not an operation retry. InternalSendCommand calls SendCommand once when connected, otherwise records Not connected to C-Gate. Lower native bus retry behavior belongs to the C-Gate review.",
+    "stats_parsing": "ParseResults0x10d04fc extracts text after OpStats={ through the closing brace, replaces semicolons with commas, loads a TStringList, and ExpandNames0x10d0644 rewrites counter names for display. Preserve the exact native counter-key contract in the typed parser instead of treating display labels as wire keys."
+  },
+  "absence_checks": {
+    "automatic_timer": "The original TFRMWIRELESSUNITSTATUS form resource has no Timer/OnTimer token and the reviewed Status director methods expose no timer callback. This is a manual/event-driven Status dialog, not evidence for periodic polling.",
+    "form_resource": {
+      "name": "TFRMWIRELESSUNITSTATUS",
+      "size": 4108,
+      "sha256": "51df1674e912eb7cd646db8556bcc5ab65ac3406c2e25455745aa44fb18868c8"
+    },
+    "mai_sync": "No MAISync/maisync/MAISYNC literal was found in pinned EXE ASCII or UTF-16, and no reviewed Status callback invokes it. Native MAISync implementation does not establish an original Toolkit GUI action."
+  },
+  "bounded_adapter_contract": [
+    "Separate cached reads from explicit physical requests in API and result metadata.",
+    "Report native command success separately from physical hardware acceptance; Reset send completion is not a counter readback.",
+    "Do not include ParameterSync in cached-status or silently append it to a bounded action.",
+    "A standalone reset or recall operation does not include the original GUI refresh sequence unless that complete sequence is implemented explicitly.",
+    "Use fail-closed parsing for failed/malformed native replies; preserve unknown cached status and missing or stale counter data as such.",
+    "Do not add automatic retries, PP loads/saves, ProjectSave, network opening or radio pairing to this action boundary."
+  ],
+  "acceptance": {
+    "original_toolkit_executed": false,
+    "physical_hardware_verified": false,
+    "household_network_or_radio_touched": false,
+    "native_action_software_review": "Separate C-Gate receipt; cached GET acceptance does not prove a physical refresh."
+  },
+  "verified_method_count": 50,
+  "methods": {
+    "0x8435dc": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.Create",
+      "size": 200,
+      "sha256": "ef73b8e483d707e5737996723c5951b74daea5bd2f4defd0c3e00b452e6b0e21"
+    },
+    "0x8437bc": {
+      "symbol": "CIS_TCGateCommand.InternalSendCommand",
+      "size": 164,
+      "sha256": "3583bbfbac3a4dbfe7080e63a1b3d2a732c06cba47285e67b12cd5c25603b3e6"
+    },
+    "0x843860": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.CommandExecute",
+      "size": 892,
+      "sha256": "2a178ac3350bcf00d4275958f76aaea58a97c051cda5c52c987a39715485da60"
+    },
+    "0x843c5c": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.GenerateCommandText",
+      "size": 24,
+      "sha256": "c98175c0a0aee155d4b3516e98358c5d24d993ba6f0196835cfd70be9ab89849"
+    },
+    "0xcb2b74": {
+      "symbol": "CIS_TcgcGetCustom.TcgcGetCustom.GenerateCommandText",
+      "size": 20,
+      "sha256": "f32ad09a8939d2d67f5558b6bfe55dce4ba67b4e561c51cb40b22bc97748b4f5"
+    },
+    "0xcb3010": {
+      "symbol": "CIS_TcgcDoPsync.TcgcDoPsync.Create",
+      "size": 84,
+      "sha256": "31828707f295dd5df3061ae06d12674d7fd45b592488b76b4f1d5360e425270c"
+    },
+    "0xcb3098": {
+      "symbol": "CIS_TcgcDoPsync.TcgcDoPsync.GenerateCommandText",
+      "size": 104,
+      "sha256": "c30f70ca512b472d81c8aa883e71975163bec538f3f2545fd0a3e10b1ab3fa89"
+    },
+    "0xcb3100": {
+      "symbol": "CIS_TcgcDoPsync.TcgcDoPsync.OnProcessResults",
+      "size": 788,
+      "sha256": "436f1be818000d64d00f425f6aeb7eb562b926c7e82fc48a19bd02ba71a77cda"
+    },
+    "0xcb5d0c": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad",
+      "size": 5552,
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5"
+    },
+    "0xcc08c8": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.CommandDoPSync",
+      "size": 344,
+      "sha256": "27c435ed6949ba0005ca26af33f9736bd05377b850ece749fd407809eaa03b3f"
+    },
+    "0xcc3140": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.PhysicalUnitParameterSyncQuick",
+      "size": 96,
+      "sha256": "3cf764bf4f9febf21b80afa839e0ad016100460fa3375860c478a5f34bcb3ddd"
+    },
+    "0xea4318": {
+      "symbol": "CIS_TcgcResetWirelessOpStats.ResetOpStats",
+      "size": 232,
+      "sha256": "018669ff96ea2e4ced284cb5b695871b57c2080e5f9249940e6b8b55a4d20e1d"
+    },
+    "0xea4400": {
+      "symbol": "CIS_TcgcResetWirelessOpStats.TcgcResetWirelessOpStats.Create",
+      "size": 72,
+      "sha256": "25b3711b21db78ac41cc0a10b1e45f84b393527c7f2483d6d25c0a1e1e69007b"
+    },
+    "0xea4448": {
+      "symbol": "CIS_TcgcResetWirelessOpStats.TcgcResetWirelessOpStats.Destroy",
+      "size": 52,
+      "sha256": "5859b49d855da0edca8eba0a43dc6720025af30f2de1389d580a862e931a2503"
+    },
+    "0xea447c": {
+      "symbol": "CIS_TcgcResetWirelessOpStats.TcgcResetWirelessOpStats.GenerateCommandText",
+      "size": 128,
+      "sha256": "357380a1c6abe27de57006e0bee91976e56e19bd6bd7a7468f972d02f65b0979"
+    },
+    "0xea44fc": {
+      "symbol": "CIS_TcgcResetWirelessOpStats.TcgcResetWirelessOpStats.OnProcessResults",
+      "size": 836,
+      "sha256": "7c95a47dabf001059ec6a42a1902f3a4e1868ff98e06c42f98e215c10ba47483"
+    },
+    "0xf344bc": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.HasMatchingPhysicalUnit",
+      "size": 44,
+      "sha256": "8a034ff181956432b74aa0c52a67b0b8c7bbe3925fa035161bb4e32614deeefc"
+    },
+    "0xf345fc": {
+      "symbol": "CIS_TCommonCBus.TCBUSUnit.SetIsPhysicalUnit",
+      "size": 28,
+      "sha256": "efec93ac27d42a5a7fb1a0d488106814c1943e43e21f1106a36e59b2251d6866"
+    },
+    "0x10cfb88": {
+      "symbol": "CIS_TcgcRecallWirelessOpStats.RecallOpStats",
+      "size": 244,
+      "sha256": "b933e16145f63100f6106b6b9664b31a55bcb0c372a84da22309a3772908982a"
+    },
+    "0x10cfc7c": {
+      "symbol": "CIS_TcgcRecallWirelessOpStats.TcgcRecallWirelessOpStats.Create",
+      "size": 72,
+      "sha256": "9eb9be0280ff9049eb2fd542dbe8b066f667c56424a8556ad89d71086415f9e7"
+    },
+    "0x10cfcc4": {
+      "symbol": "CIS_TcgcRecallWirelessOpStats.TcgcRecallWirelessOpStats.Destroy",
+      "size": 52,
+      "sha256": "2ed64e3022ffd0dcf977bfa6959c176976ca8672024c59addade5e15ae72d1d9"
+    },
+    "0x10cfcf8": {
+      "symbol": "CIS_TcgcRecallWirelessOpStats.TcgcRecallWirelessOpStats.GenerateCommandText",
+      "size": 132,
+      "sha256": "9bcc7fd80443b2e89052c31b419e0c9d0fc38db02b9a5ebc777228a430d64d1a"
+    },
+    "0x10cfd7c": {
+      "symbol": "CIS_TcgcRecallWirelessOpStats.TcgcRecallWirelessOpStats.OnProcessResults",
+      "size": 812,
+      "sha256": "30e3b7f0c30be4fb26a995cb2c5098ff27331490db55568b43203166289edcf4"
+    },
+    "0x10d01b4": {
+      "symbol": "CIS_TcgcGetWirelessOperationalStatistics.GetOperationalStatistics",
+      "size": 728,
+      "sha256": "809bf8c851045ebe28cfa38f85974209ef225fe7f62649bd3b638436515dec23"
+    },
+    "0x10d048c": {
+      "symbol": "CIS_TcgcGetWirelessOperationalStatistics.TcgcGetWirelessOperationalStatistics.GenerateCommandText",
+      "size": 112,
+      "sha256": "af1fac145719b86f0f4f1ece4a33781d69ed4bf185336418d401d02923f45c2c"
+    },
+    "0x10d04fc": {
+      "symbol": "CIS_TcgcGetWirelessOperationalStatistics.TcgcGetWirelessOperationalStatistics.ParseResults",
+      "size": 328,
+      "sha256": "174900e491f8367bfd58d56d429b52e9da1befd375e21e408ff1ea81b3db28b3"
+    },
+    "0x10d0644": {
+      "symbol": "CIS_TcgcGetWirelessOperationalStatistics.TcgcGetWirelessOperationalStatistics.ExpandNames",
+      "size": 2736,
+      "sha256": "2da900f890678132dd72b28cd0083b1aaabb98cf1733d575d8e1a4a6927b9bad"
+    },
+    "0x10d10f4": {
+      "symbol": "CIS_TcgcGetWirelessOperationalStatistics.TcgcGetWirelessOperationalStatistics.Destroy",
+      "size": 92,
+      "sha256": "3ac42cf4b9e442c782db49ec5a4f06b426fc6bcfe9fe44354852c3f03c832c6f"
+    },
+    "0x10d12c4": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.Create",
+      "size": 96,
+      "sha256": "7c68cb4ccf4fda698e0e80a94a6635c473fd6cc01b27c04a82e34ec7d9ea2656"
+    },
+    "0x10d1324": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.Destroy",
+      "size": 92,
+      "sha256": "d7b3933df8d7e054c1b6a52e9abc7ab570fee5c7c2dcc04dad26ae50a5f8fa90"
+    },
+    "0x10d1380": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.Initialise",
+      "size": 244,
+      "sha256": "dd89e1f1a53d4e1313982490583addbc6ca5b56ee3e924181537ba379d8ade59"
+    },
+    "0x10d1474": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.SetupFormAsTab",
+      "size": 24,
+      "sha256": "2f249693507543130e44582a6376809ce4af86835c8fd25160af4be6b655888b"
+    },
+    "0x10d148c": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.SetupFlashComponents",
+      "size": 12,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "0x10d1498": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.SetData",
+      "size": 356,
+      "sha256": "2c66095e611f38ce189d3dfada6c29bedceae287b83633efcf7289330e5ca13c"
+    },
+    "0x10d15fc": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.GetData",
+      "size": 28,
+      "sha256": "fe8067dcf0f283fc36b5b9e1f155ac1f3208169f9079ff091290af351cbefc2f"
+    },
+    "0x10d1618": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.SetUnitOnline",
+      "size": 372,
+      "sha256": "61a65f0a2a1d47b00559cf215c523c9d68bb65fa778af4a9cf9c049f68113ea9"
+    },
+    "0x10d178c": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.RefreshData",
+      "size": 64,
+      "sha256": "962f19b73cb942769dd1eac70382770ca4c4f77c707af4d3770ac5c72c21cef4"
+    },
+    "0x10d17cc": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.RefreshDataOnForm",
+      "size": 132,
+      "sha256": "1da7b7e759ce5657b18aedcd928761b3335a2231a97278944a5bd043a83fccfe"
+    },
+    "0x10d1850": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.ResetOperationalStatistics",
+      "size": 268,
+      "sha256": "ca39023901875d3e5221fdd39e69ad988ba1db03dc7f1d9c36dc38142d01cf9a"
+    },
+    "0x10d195c": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.PopulateGUI",
+      "size": 120,
+      "sha256": "0be98e1da966558a4dd4665f848e0931e80209a70515a66dcce33102d17b78d8"
+    },
+    "0x10d19d4": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.Resync",
+      "size": 248,
+      "sha256": "4491395461e35fc90484a6d22fc1dfe7ebff991ecf82208d9212ccbe1eee1c61"
+    },
+    "0x10d1acc": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.LoadParametersIntoGrid",
+      "size": 316,
+      "sha256": "a51e50282a16bd163db06cb51999401b8ded15b8cc55841e1c238908a76ddfd9"
+    },
+    "0x10d1c08": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.btnUpdateStatusClick",
+      "size": 184,
+      "sha256": "a9eb4eac7ffb05537a81a5248810c3b2dc2751444f8b38f8cc822c80fbeed01f"
+    },
+    "0x10d1cc0": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.btnResetOpStatsClick",
+      "size": 236,
+      "sha256": "39b0cd0219354f42ccd3f62e1e7c122bb355cfe5554465634ed3b028527d339f"
+    },
+    "0x10d1dac": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.FormatParameterName",
+      "size": 360,
+      "sha256": "52d5ffb8ba6d6c5b37bc6218c02d5f6360dd141a91a9fe4f8f6f10fe5b69bbd0"
+    },
+    "0x10d1f14": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.FormatParameterValue",
+      "size": 168,
+      "sha256": "cdc8fc4b5ce8c0389972d272794fdeaa93cc310e2ca2d95928e2eebf072a1b16"
+    },
+    "0x10d1fbc": {
+      "symbol": "CIS_TcdWirelessUnitStatus.TcdWirelessUnitStatus.LoadStatisticsIntoGrid",
+      "size": 428,
+      "sha256": "f2534d12fa45e7f2aceb1046e14b1a1de737b410eee776750e00c503e8f2d94b"
+    },
+    "0x10d2168": {
+      "symbol": "CIS_TcdWirelessUnitStatus.Finalization",
+      "size": 72,
+      "sha256": "806a8405a371e91713f3290b32b6019dc0be5f3799d448b72a7abdda5d66804e"
+    },
+    "0x10d23e8": {
+      "symbol": "CIS_TfrmWirelessBaseUnit.TfrmWirelessUnit.SetData",
+      "size": 548,
+      "sha256": "ae639ddafb155a331069febda849b9fce71e479660776066c8428ece4d1e3e8e"
+    },
+    "0x10d2fd8": {
+      "symbol": "CIS_TfrmWirelessBaseUnit.TfrmWirelessUnit.CreateStatusForm",
+      "size": 32,
+      "sha256": "fcd24a28cd018477ae84e58075c0f8014e9a16ebec7a1176dba6345775356cf1"
+    }
+  },
+  "reproduction": "Read-only recover.py symbol extraction against pinned local EXE/MAP with Capstone5.0.7 and pefile2024.8.26; only method metadata/hashes and semantic summaries retained. No proprietary source, binary resource or assembly listing is included."
+}

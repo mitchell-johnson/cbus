@@ -915,6 +915,8 @@ See [iope-settings.md](docs/iope-settings.md).
 
 ## DLT profiles and classic label variants
 
+Classic `dlt icon-dialog` provides pinned language-202 built-in icon transactions; `dlt unit-delivery plan|assess` models the ordered save/label/reblock lifecycle offline. See [batch evidence and limits](docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md).
+
 `dlt profiles` reports the DLT/eDLT registry and why an identity is admitted or
 refused by each workflow. Classic Saturn/Neo/Decorator DLT units (KEYBL5,
 KEYML5, KEYDL4) support per-key label-variant selection with `dlt labels
@@ -1651,6 +1653,8 @@ identity, so deleting or moving a referenced scene is rejected. Original DLL
 packing, capacity, CRCs, native raw bytes and CLI save/reload are tested.
 
 ## Thermostat temperature conversions
+
+Thermostat settings now include disabled remote save defaults. Saved-project documentation also admits bounded Neo/DLT/NeoClassic, sensor and specialized-output bodies. Their [batch provenance](docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md) separates retained component evidence, native database persistence and unresolved complete GUI/hardware acceptance.
 
 Fourteen original integer temperature conversions are available offline, with an
 explicit Celsius or Fahrenheit preference:

@@ -1,0 +1,130 @@
+{
+  "format": "cbus-project-documentor-pir-macro-source-comparison-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "vectors": 983040,
+  "scenarios": [
+    {
+      "application": 56,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "6b86847cfb2e5414593a592f658b659c88b1f2b150a5dba5a7a4b3b510a7f759"
+    },
+    {
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "6b86847cfb2e5414593a592f658b659c88b1f2b150a5dba5a7a4b3b510a7f759"
+    },
+    {
+      "application": 56,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "2c66b9864653b452c8b045dc7129e4914fad48da37f146b56eb6c3e3e43b23bb"
+    },
+    {
+      "application": 56,
+      "stored1": 252,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "53ee03109bfe68c65037d83ec52c08c1cae351d000e6677c675234920ac326b2"
+    },
+    {
+      "application": 56,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "9ffc93c41a091ff38531873ed3bccdb82ea4a8b0baba28a2aad576c23ddd1322"
+    },
+    {
+      "application": 202,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "61680fa8b5f8f359af33dd81a9a3f16d1d917711d1f055f62e85c90d30868d07"
+    },
+    {
+      "application": 202,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "61680fa8b5f8f359af33dd81a9a3f16d1d917711d1f055f62e85c90d30868d07"
+    },
+    {
+      "application": 202,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "61680fa8b5f8f359af33dd81a9a3f16d1d917711d1f055f62e85c90d30868d07"
+    },
+    {
+      "application": 202,
+      "stored1": 252,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "61680fa8b5f8f359af33dd81a9a3f16d1d917711d1f055f62e85c90d30868d07"
+    },
+    {
+      "application": 202,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "61680fa8b5f8f359af33dd81a9a3f16d1d917711d1f055f62e85c90d30868d07"
+    },
+    {
+      "application": 255,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 252,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    }
+  ],
+  "boundary": "Independent native registration/subset decoding and transcribed refresh rules; no original method or GUI execution.",
+  "original_generated_page_comparison": "not_obtained"
+}

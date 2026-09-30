@@ -161,7 +161,7 @@ def run(*, vendor, java, spec_dir):
     for unit_type in CATALOGS:
         inputs.spec(unit_type)
     refusals = []
-    for source_type, target_type in (('KEYBC2', 'BCN2B'), ('DINAUX4', 'BCI4A'),
+    for source_type, target_type in (('SENPILL', 'SENPILL'), ('DINAUX4', 'BCN4B'),
                                      ('KEYC1', 'KEY1'), ('KEY1', 'KEY1')):
         try:
             ToolkitTweakerConversion(NoIO(), source_type, None, target_type, None)

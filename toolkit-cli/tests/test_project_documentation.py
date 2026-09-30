@@ -401,7 +401,12 @@ def test_committed_static_receipt_matches_the_model():
         name: hashlib.sha256(Path(doc.__file__).with_name(name + ".py").read_bytes()).hexdigest()
         for name in ("project_documentation_devices", "project_documentation_native",
                      "project_documentation_status", "project_documentation_usage",
-                     "project_documentation_outputs")}
+                     "project_documentation_outputs", "project_documentation_neo",
+                     "project_documentation_neo_usage", "project_documentation_dlt",
+                     "project_documentation_scene_controller", "project_documentation_classic_profiles",
+                     "project_documentation_special_outputs", "project_documentation_temperature",
+                     "project_documentation_pir", "project_documentation_neoclassic",
+                     "project_documentation_neoclassic_usage")}
     statuses = {row["body_status"] for row in receipt["documentor_classes"].values()}
     assert statuses == {"recovered", "partial", "unrecovered"}
 

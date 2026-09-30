@@ -1,0 +1,1147 @@
+{
+  "format": "cbus-wireless-actions-cgate-source-review-v1",
+  "target": "C-Gate 3.4.0.2001",
+  "evidence": "Static review of pinned original classes; obfuscated case-sensitive names extracted individually into separate temporary directories before CFR decompilation. No DO, PSync, NET SYNC, PP or network-open command was executed.",
+  "inputs": {
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "class_sha256": {
+      "ny.class": "b0d92463d8b4d141433036a0c785772a02224e5e47f5b34179a200e934116b5b",
+      "nM.class": "1f54f5c6aa13de4b9282afe609e7e7b704e8b52a3ea87db8648590698a32efed",
+      "nA.class": "6342b0f159fdc02fd5890e4356cbc1aa5b4fa26482b7f8855af1cf1afd4356c4",
+      "Ci.class": "7383d103634d21aaea09dec42859284a2ed2ba8afb320e26bec45d50e3cbaf63",
+      "Ch.class": "7e1cab3036dda420bef7aadb087623086024eb155c699bddba4c56a090616549",
+      "Cn.class": "a54231d1de8277cf33c3fd94d3139bcd73525dd9670e4faceef283d86d14f7d0",
+      "Ce.class": "6242a9b1b76c3df1a02b534306a37eba285e6ad514e0900bc27c661e51d106cb",
+      "Cf.class": "221cbb867e75cb40adc46dd4d9f898ce42547062512f8411ad80fb7aa928215f",
+      "Bo.class": "ada2ef2a98992e7a357bfe0a4b43dafb7e0bcee58fe7eff482086c05529f4724",
+      "bB.class": "e88b42824ab1d928f46bcb048140c4045ff43b400e8f2b57f5b0ae56b79481a7",
+      "bp.class": "6e2ce9b27fc29ebb60599f5030d6949bba7d15449440f5cec56f3df27c4f62b6",
+      "ci.class": "f8dcfac9c5f70f83bf68f586a939649df4dc5257e3177491b941b64939dde50d",
+      "cO.class": "51ac77d75f4535112e0bb81574a73dae42f7c81d311a12ad0d5aec92ce171c0f",
+      "cG.class": "8dd5a4210ac84326630a41a7764b366638e84aecfd2b67c7e7d61dec702fdea6",
+      "cH.class": "c3d83ae27c19b6220f0ebc221dc371eb5233d4fcf0fa2e77aa2ec2aacd2a7250",
+      "cM.class": "b02a9ce40853d2a3aef7db447b2f7ab5f8aee219e4d7bc858f06e1a1780ca2e2",
+      "Cl.class": "a44d99c45adb2621403fc0d6626efb4e7e2fdf48480a7b9ddd7bf5f1489f125e",
+      "Ck.class": "a2e2635b8296179805958ea1948d1e327caf451b8d0d27f16b4ee3241b8c432e",
+      "cQ.class": "31ee63321f48ed47082832ac7e62139613fb74a4ff678062abab12ad670a5c30",
+      "cP.class": "a142e79df986ff2ef168f22e3a059786887a95d83445d32c122c82004e4854a7",
+      "cp.class": "e254bfde5fbc28a188ca64f47499936d401969a3f48f84867b739047873a8920",
+      "aW.class": "a083758468278319e94af30bd60b69a222efb4c6f3298c8847d2b6feda2b594d",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit.class": "a308d822df321955e4585f18ae4691caa54362448ce4caa568fe070439c6e3f9",
+      "com/clipsal/cgate/cbus/core/CBusUnit.class": "4c2276834c3f72fc4f905276e6bc01582cce69e53c865fd6c49398ce74a4ebb9",
+      "com/clipsal/cgate/cbus/dev/CBusNGUnit.class": "6d2e9cc21b9c40e2db2a2907a1fe387b76fad1ba28d59a077a265a8b8caadf6f",
+      "com/clipsal/cgate/cbus/dev/CBus2Unit.class": "77cb2d63650179f5fc39ab17f309608ded1368da9ac03ce28f9fea9d7e76e9de",
+      "com/clipsal/cgate/cbus/dev/CBus2Unit$3.class": "e04072e58cb3f01b8baebd73dfa9d490d8195ed12fdcab3f0ebf4fffc88e90d5",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessIOUnit.class": "bda5562e79acb5cfb48314fce1861cd1d81034913ebe1c24e3ed98bab74d452d",
+      "com/clipsal/cgate/cbus/dev/WirelessCBusGateway.class": "d3d2f3d788ec15a49ef59e6ca97d9fb43ffb6bc6b28e0723a3ea8e9db271c5a1",
+      "com/clipsal/cgate/cmd/Response.class": "1fbc3682b8d546673c3accf2651156f7b676f4a2aa8cdc34eba47e94415237ef",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$1.class": "539075e8ac00e8ba0cda66f11bb9315cefaff98f7410ab2210f3e46f24932243",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$2.class": "7950cb3c4dbc5a7386dd32486428fbd4068e2503cce0cbb10b50ab4543307714",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$3.class": "2ebbbfa44133982a1c35bfe2e4d60d39b98d7caf6c3e8b946b094ff6f959ee6f",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$4.class": "bf7ebd0ba8d5e2dc00e54b4d000511587683b35d4863492473226bb6fb9deaf3",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$5.class": "8e8cb00d917197e4254ead821a8ab485577475fabd79d814a77185a5c2f3e48a",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$6.class": "c9ce879ef4f4ecf48ce35220aa47beead003f73bee60f0508ad2c4a550e714c2",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$MAISyncExposer.class": "a605cabb3adef68d9baa26f8624da9e80e81edc3223cdd63f636f88ed4b6cfab",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$ResetOpStatsExposer.class": "8b7006aaca9427d9b20c4c418a6836758c9bc67fd09c77092422070505ad62c8",
+      "com/clipsal/cgate/cbus/dev/CBusWirelessUnit$RecallOpStatsExposer.class": "1e4f9507905575efaeee2ca2090bcbf4b894d2a9bc93ffcfe260a51ce96f05c2"
+    }
+  },
+  "admission": {
+    "policy": "Bounded initial admission uses the existing exact WGATE5F and WRM profiles below; it does not infer from a type prefix or extend gateway programming support to WGATE5N.",
+    "gateway_unit_type": "WGATE5F",
+    "gateway_class": "WirelessCBusGateway extends CBusWirelessUnit",
+    "wrm_unit_types": [
+      "WRM2D1",
+      "WRM2R1",
+      "WRM4D1",
+      "WRM4D2",
+      "WRM4R1",
+      "WRM4R2",
+      "WRM8D1",
+      "WRM8D2",
+      "WRM8R1",
+      "WRM8R2"
+    ],
+    "wrm_class": "CBusWirelessIOUnit extends CBusWirelessUnit",
+    "catalogue_rows_grouped_by_identical_metadata": [
+      {
+        "unit_type": "WRM2D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5852D2L1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM2D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854D2L1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858D2L1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854D1L2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858D1L2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM2D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5852D2T1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM2D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854D2T1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858D2T1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854D1T2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858D1T2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM2D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5852D2L1TA",
+        "alternative_catalogue_numbers": "E5852D2L1EC",
+        "spec_filename": "WRM2D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854D2L1TA",
+        "alternative_catalogue_numbers": "E5854D2L1EC",
+        "spec_filename": "WRM4D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858D2L1TA",
+        "alternative_catalogue_numbers": "E5858D2L1EC",
+        "spec_filename": "WRM8D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854D1L2TA",
+        "alternative_catalogue_numbers": "E5854D1L2EC",
+        "spec_filename": "WRM4D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858D1L2TA",
+        "alternative_catalogue_numbers": "E5858D1L2EC",
+        "spec_filename": "WRM8D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM2D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5852D2T1TA",
+        "alternative_catalogue_numbers": "E5852D2T1EC",
+        "spec_filename": "WRM2D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854D2T1TA",
+        "alternative_catalogue_numbers": "E5854D2T1EC",
+        "spec_filename": "WRM4D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858D2T1TA",
+        "alternative_catalogue_numbers": "E5858D2T1EC",
+        "spec_filename": "WRM8D1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854D1T2TA",
+        "alternative_catalogue_numbers": "E5854D1T2EC",
+        "spec_filename": "WRM4D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8D2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858D1T2TA",
+        "alternative_catalogue_numbers": "E5858D1T2EC",
+        "spec_filename": "WRM8D2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM2R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5852R8F1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM2R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854R8F1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858R8F1AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4R2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5854R4F2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM4R2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8R2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "5858R4F2AA",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WRM8R2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM2R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5852R8F1TA",
+        "alternative_catalogue_numbers": "E5852R8F1EC",
+        "spec_filename": "WRM2R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854R8F1TA",
+        "alternative_catalogue_numbers": "E5854R8F1EC",
+        "spec_filename": "WRM4R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8R1",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858R8F1TA",
+        "alternative_catalogue_numbers": "E5858R8F1EC",
+        "spec_filename": "WRM8R1_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM4R2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5854R4F2TA",
+        "alternative_catalogue_numbers": "E5854R4F2EC",
+        "spec_filename": "WRM4R2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WRM8R2",
+        "class_name": "CBusWirelessIOUnit",
+        "catalog_number": "E5858R4F2TA",
+        "alternative_catalogue_numbers": "E5858R4F2EC",
+        "spec_filename": "WRM8R2_2.xml",
+        "firmware_ranges": [
+          [
+            "2.0.0",
+            "2.0.99"
+          ],
+          [
+            "2.1.0",
+            "2.1.99"
+          ],
+          [
+            "2.2.0",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WGATE5F",
+        "class_name": "WirelessCBusGateway",
+        "catalog_number": "5800WCGA",
+        "alternative_catalogue_numbers": "5800WCGC",
+        "spec_filename": "WGATE5X_2.xml",
+        "firmware_ranges": [
+          [
+            "2.2.90",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      },
+      {
+        "unit_type": "WGATE5F",
+        "class_name": "WirelessCBusGateway",
+        "catalog_number": "SLC5800WCGD",
+        "alternative_catalogue_numbers": "",
+        "spec_filename": "WGATE5X_2.xml",
+        "firmware_ranges": [
+          [
+            "2.2.90",
+            "2.2.99"
+          ],
+          [
+            "2.3.0",
+            "2.3.99"
+          ],
+          [
+            "2.4.0",
+            "2.4.99"
+          ]
+        ]
+      }
+    ],
+    "outside_initial_admission": "The catalogue also assigns wireless subclasses to other types including WGATE5N, WPA/WRB/WRD/WRP/WPCI/WPCL variants. This is native method exposure evidence only; other Toolkit profiles and physical acceptance are not admitted here."
+  },
+  "command_contract": {
+    "do_dispatch": "ny.runCommand resolves one object or a wildcard set through Bk, normalizes the method in Bo, and invokes its Ch exposure; typed callers must use one fully qualified unit and no wildcard.",
+    "do_access_level": 3,
+    "success": {
+      "code": 202,
+      "line_template": "202 Done: //PROJECT/NETWORK/p/UNIT",
+      "evidence": "Ci.a=true; ny passes object signature to Response; Response maps202 toDone and formats colon-tail."
+    },
+    "failures": {
+      "400": "Address syntax or missing arguments",
+      "401": "Missing/unresolvable runtime object",
+      "402": "Method not exposed or parameter absent",
+      "405": "Method argument rejected",
+      "408": "Method failed; Recall may include Op stats recall failed",
+      "420": "Insufficient access"
+    },
+    "parse_requirements": "Require exactly one matching target success; inspect every response line for errors, including continuations. Reject success for another unit and malformed/mixed frames. Do not equate generic200OK with action completion.",
+    "get_access_level": 2,
+    "get_line_template": "300 //PROJECT/NETWORK/p/UNIT: RequestedProperty=value",
+    "get_errors": {
+      "400": "Address syntax",
+      "401": "Object not found",
+      "402": "Parameter absent",
+      "408": "Parameter operation failed",
+      "420": "Access denied",
+      "500": "Device exception"
+    },
+    "identity_get_properties": [
+      "Type",
+      "Version",
+      "CatalogNumber",
+      "SerialNumber"
+    ],
+    "database_identity_fields": [
+      "UnitType",
+      "FirmwareVersion",
+      "CatalogNumber",
+      "SerialNumber",
+      "OID"
+    ],
+    "version_format": {
+      "getter": "cH.a copies CBusUnit.g verbatim into the Version property.",
+      "construction": "CBusUnit constructor stores its supplied version string directly.",
+      "physical_refresh": "CBusUnit.j uses aW.a(reply, 0, 8), which appends bytes as characters and calls String.trim only.",
+      "comparison_policy": "No numeric conversion or leading-zero normalization is present. Exact database/runtime string comparison conservatively rejects any differing representation."
+    },
+    "serial_format": {
+      "getter": "CBus2Unit$3 invokes CBus2Unit.b, formatting cached Y and Z as Long.toString(Y) + decimal point + Long.toString(Z).",
+      "get_performs_physical_io": false,
+      "read_access_level": 3
+    },
+    "identity_note": "cG/cH/cM and CBus2Unit$3 project cached object fields. Database unit presence alone does not establish a matching runtime object or physical device."
+  },
+  "cache_contract": {
+    "status": {
+      "fields": [
+        "UnitTemperature",
+        "UnitSupplyVoltage",
+        "BackgroundSignalPower",
+        "LastPacketReceivedPower"
+      ],
+      "initial_value": "unknown",
+      "get_performs_physical_io": false,
+      "proof": "CBusWirelessUnit creates fourCn values with nullCe callbacks; Cn.a(access) returns its stored string. nM GET calls the property accessor only.",
+      "refresh": "CBusWirelessUnit.u invokes bB.q/r/s/t for IDENTIFY50/51/52/53. Each failed read overwrites only its field withunknown; remaining reads still run; returnsfalse if any failed.",
+      "text_reply_lengths": [
+        3,
+        6,
+        4,
+        4
+      ],
+      "text_handling": "bB trims returned text; this source does not establish numeric units, decimal locale or scaling."
+    },
+    "mai": {
+      "get_performs_physical_io": false,
+      "initial_value": -1,
+      "fields_to_byte_index": {
+        "ManufacturerCode": 0,
+        "ProductClass": 1,
+        "MediaType": 2,
+        "ProcessSelector": 6,
+        "FeatureSet": 7
+      },
+      "successful_value_range": [
+        0,
+        255
+      ],
+      "refresh": "MAISync reads IDENTIFYFE and accepts exactly8bytes; replaces all8cachedbytes and firesD() if anychanged. Failure preserves previous cache.",
+      "readback_limit": "Only5of8bytes are exposed by the listed properties; no claim of full raw MAI readback."
+    },
+    "op_stats": {
+      "get_performs_physical_io": false,
+      "initial_value": "{}",
+      "fields": [
+        "PacketsReceived",
+        "PacketsReceivedWithError",
+        "PacketsNAKd",
+        "PacketsNCAd",
+        "CollisionsDetected",
+        "TransmitAttempts",
+        "TransmitCancellations",
+        "CollisionsDetectedinTAP",
+        "CollisionsNotifiedDetected",
+        "TransmissionsDropped",
+        "SuccessfulTransmissions",
+        "TransmissionsNAKd"
+      ],
+      "line_value_format": "{PacketsReceived=N; PacketsReceivedWithError=N; ...; TransmissionsNAKd=N}",
+      "counter_range": [
+        0,
+        4294967295
+      ],
+      "decode": "Exactly48replybytes; twelve unsigned little-endian32-bit values. Recall retrieves four12-byte chunks from addresses0,12,24,36 before replacing any counter.",
+      "unsigned_decode_bytecode": {
+        "method": "CBusWirelessUnit$RecallOpStatsExposer.a",
+        "i2l_offsets": [
+          63,
+          70,
+          81,
+          92
+        ],
+        "lshl_offsets": [
+          73,
+          84,
+          95
+        ],
+        "shift_bits": [
+          8,
+          16,
+          24
+        ],
+        "lastore_offset": 97,
+        "conclusion": "Each byte is widened to long before shifting; ff ff ff ff yields 4294967295 without signed-int shift overflow."
+      },
+      "failed_recall": "Any missing/short chunk yieldsCi(Op stats recall failed) and preserves every oldcachedcounter.",
+      "reset": "ResetOpStats issues CAL08 and returns success on completed send; it does not clear or refresh the C-Gate counter cache.",
+      "parser": "Accept{} as unavailable; otherwise require all12distinct named counters, bounded unsigneddecimal values and no unrecognized fields. Never treat previous cached values as a fresh successful recall after failure."
+    }
+  },
+  "psync_boundary": {
+    "command": "DO //PROJECT/NETWORK/p/UNIT PSync",
+    "class_path": "cO -> CBusUnit.k -> l -> virtualm/o/n",
+    "access_level": 4,
+    "radio_reads": "Wirelessm invokes CBus2Unit.x IDENTIFY4 diagnostics; n invokes u IDENTIFY50..53. WRMIO n adds s(), which returns true.",
+    "additional_effects": "Diagnostic refresh can update application cache through E.c, errorflags, parameter checksum and serial replacement state; serial mismatch may invoke deeper synchronization. State transitions2 then3/4 and event notifications are part of the path.",
+    "decision": "Do not substitute PSync for cached GET or describe it as a status-only read; its broader refresh transaction needs an explicit contract."
+  },
+  "timeouts_and_retries": {
+    "mai_fixed_toolkit_timeout_ms": null,
+    "native_policy": "bB inherits cp/aW; aW.f usesselectednetwork.s as response-delay andnetwork.t as retrycounts whenZ=-1/q=-1. MAISync does not override them. The field initializer3000isnot a fixed effective timeout.",
+    "wrapper_policy": "Use explicit bounded client timeout and stop after an uncertain command; record timeout as client policy. No automatic CLI replay.",
+    "physical_exact_once_verified": false,
+    "reason": "A single DO request can use the native backend retry policy; no claim of exactly one radio frame."
+  },
+  "correction_to_prior_boundary": "wireless-cgate-boundary.json originally associated status GET with IDENTIFY reads. The IDENTIFY work is in the explicit refresh path; cached GET itself does not send it.",
+  "acceptance_boundary": {
+    "original_toolkit_executed": false,
+    "physical_actions_executed": false,
+    "physical_hardware_verified": false,
+    "radio_or_household_network_touched": false,
+    "native_positive_cache_values_verified": false,
+    "native_database_cache_absence_receipt": "wireless-actions-native-acceptance.json",
+    "valid_response_parsing": "Use independent synthetic peers for positive202/300 cases; static response formatting is source-proven, while closed DB units did not materialize runtime caches."
+  }
+}

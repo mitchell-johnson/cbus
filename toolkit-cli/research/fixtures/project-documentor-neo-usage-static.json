@@ -1,0 +1,374 @@
+{
+  "format": "cbus-project-documentor-neo-usage-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "method_hash:CIS_TNeoInputDocumentor.TNeoInputDocumentor.ActionSelectorUse": true,
+    "method_hash:CIS_TNeoProInputDocumentor.TNeoProInputDocumentor.ActionSelectorUse": true,
+    "method_hash:CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced": true,
+    "method_hash:CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced": true,
+    "method_hash:CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced": true,
+    "method_hash:CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced": true,
+    "neo_parent_classic_first": true,
+    "neo_scene_label": true,
+    "neo_scene_replaces_result": true,
+    "neo_scene_index_plus_one": true,
+    "pro_parent_neo_first": true,
+    "pro_secondary_application": true,
+    "pro_repeated_key_labels": true,
+    "pro_stored1_outer_gate": true,
+    "pro_distinct_address_value": true,
+    "neo_group_labels": true,
+    "neo_group_unused_macro_16": true,
+    "neo_group_physical_or_join_windows": true,
+    "neo_scene_usage_from_key_scene": true,
+    "neo_other_labels": true,
+    "pro_other_labels": true,
+    "dlt_group_labels_no_unused_scenes": true,
+    "dlt_scene_ignores_key_scene": true,
+    "dlt_keys_per_page_join_gate": true,
+    "pro_disable_pp_binding": true,
+    "pro_disable_enable_application": true,
+    "corridor_group_pp_binding": true,
+    "corridor_group_primary_unconditional": true,
+    "brightness_maximum_block_index": true,
+    "brightness_nonempty_string_gate": true,
+    "pro_join_max_four_keys": true,
+    "KEYA3:1.3.01:output_base": true,
+    "KEYA3:1.3.01:eight_blocks": true,
+    "KEYA3:1.3.01:brightness_enabled": true,
+    "KEYA3:1.3.01:native_key_count": true,
+    "KEYA3:1.5.03:output_base": true,
+    "KEYA3:1.5.03:eight_blocks": true,
+    "KEYA3:1.5.03:brightness_enabled": true,
+    "KEYA3:1.5.03:native_key_count": true,
+    "KEYB4:1.3.01:output_base": true,
+    "KEYB4:1.3.01:eight_blocks": true,
+    "KEYB4:1.3.01:brightness_enabled": true,
+    "KEYB4:1.3.01:native_key_count": true,
+    "KEYB4:1.5.03:output_base": true,
+    "KEYB4:1.5.03:eight_blocks": true,
+    "KEYB4:1.5.03:brightness_enabled": true,
+    "KEYB4:1.5.03:native_key_count": true,
+    "KEYM4:1.3.01:output_base": true,
+    "KEYM4:1.3.01:eight_blocks": true,
+    "KEYM4:1.3.01:brightness_enabled": true,
+    "KEYM4:1.3.01:native_key_count": true,
+    "KEYM4:1.5.03:output_base": true,
+    "KEYM4:1.5.03:eight_blocks": true,
+    "KEYM4:1.5.03:brightness_enabled": true,
+    "KEYM4:1.5.03:native_key_count": true,
+    "KEYM8:1.3.01:output_base": true,
+    "KEYM8:1.3.01:eight_blocks": true,
+    "KEYM8:1.3.01:brightness_enabled": true,
+    "KEYM8:1.3.01:native_key_count": true,
+    "KEYM8:1.5.03:output_base": true,
+    "KEYM8:1.5.03:eight_blocks": true,
+    "KEYM8:1.5.03:brightness_enabled": true,
+    "KEYM8:1.5.03:native_key_count": true,
+    "KEYE1:0:output_base": true,
+    "KEYE1:0:eight_blocks": true,
+    "KEYE1:0:brightness_enabled": true,
+    "KEYE1:0:native_key_count": true,
+    "KEYML5:0:output_base": true,
+    "KEYML5:0:eight_blocks": true,
+    "KEYML5:0:brightness_enabled": true,
+    "KEYML5:0:native_key_count": true,
+    "KEYBL5:0:output_base": true,
+    "KEYBL5:0:eight_blocks": true,
+    "KEYBL5:0:brightness_enabled": true,
+    "KEYBL5:0:native_key_count": true,
+    "KEYDL4:0:output_base": true,
+    "KEYDL4:0:eight_blocks": true,
+    "KEYDL4:0:brightness_enabled": true,
+    "KEYDL4:0:native_key_count": true
+  },
+  "registrations": [
+    {
+      "unit_type": "KEYA3",
+      "class": "CIS_TKEYA3..TKEYA3_A",
+      "firmware": [
+        "1.3.01",
+        "1.5.02"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYA3.TKEYA3_A.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYA3",
+      "class": "CIS_TKEYA3..TKEYA3",
+      "firmware": [
+        "1.5.03",
+        "2.9.99"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYA3.TKEYA3.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYB4",
+      "class": "CIS_TKEYB4..TKEYB4_A",
+      "firmware": [
+        "1.3.01",
+        "1.5.02"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYB4.TKEYB4_A.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYB4",
+      "class": "CIS_TKEYB4..TKEYB4",
+      "firmware": [
+        "1.5.03",
+        "2.9.99"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYB4.TKEYB4.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYM4",
+      "class": "CIS_TKEYM4..TKEYM4_A",
+      "firmware": [
+        "1.3.01",
+        "1.5.02"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM4.TKEYM4_A.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYM4",
+      "class": "CIS_TKEYM4..TKEYM4",
+      "firmware": [
+        "1.5.03",
+        "2.9.99"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM4.TKEYM4.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYM8",
+      "class": "CIS_TKEYM8..TKEYM8_A",
+      "firmware": [
+        "1.3.01",
+        "1.5.02"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM8.TKEYM8_A.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYM8",
+      "class": "CIS_TKEYM8..TKEYM8",
+      "firmware": [
+        "1.5.03",
+        "2.9.99"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM8.TKEYM8.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYE1",
+      "class": "CIS_TKEYEx..TKEYEx",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYEx.TKEYEx.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYML5",
+      "class": "CIS_TKEYML5..TKEYML5",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYML5.TKEYML5.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYBL5",
+      "class": "CIS_TKEYBL5..TKEYBL5",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYBL5.TKEYBL5.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYDL4",
+      "class": "CIS_TKEYDL4..TKEYDL4",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYDL4.TKEYDL4.MaximumKeyCount",
+        "0x1a8": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled"
+      }
+    }
+  ],
+  "methods": {
+    "CIS_TNeoInputDocumentor.TNeoInputDocumentor.ActionSelectorUse": {
+      "start": "0xca7b04",
+      "end": "0xca7c38",
+      "sha256": "bca3bb35da7f846239a7db0527573a28c2f11fc8202a883190af8d7a7787631b",
+      "resources": [
+        "Triggers Scene "
+      ]
+    },
+    "CIS_TNeoProInputDocumentor.TNeoProInputDocumentor.ActionSelectorUse": {
+      "start": "0xccda5c",
+      "end": "0xccdde0",
+      "sha256": "086af6b075b371a2763e640c9822f1caa6c9ecbdb454ba07d234b64a39a76f9e",
+      "resources": []
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd075cc",
+      "end": "0xd079e0",
+      "sha256": "df1e6a8ecf2c7ed2fe15bf5a802f909ded412f4b797bc0e6bc498e1a67f1b892",
+      "resources": [
+        "Key %d",
+        "Block (Unused)",
+        "Scene %d",
+        "Scene %d (Unused)"
+      ]
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd079e0",
+      "end": "0xd07ad4",
+      "sha256": "3983a28c79a0a306b96ef2bfd078d7b36b6ea6ec0f8d480e87b6059d4cc17b32",
+      "resources": [
+        "Join Group",
+        "DualJoinGroup"
+      ]
+    },
+    "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xca06c0",
+      "end": "0xca07cc",
+      "sha256": "b207387846cc725a4a675545e5b46c422c1a024c02de1eda28da2490b615a354",
+      "resources": [
+        "Key Disable Group",
+        "Corridor Link Group",
+        "Control App Group"
+      ]
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xce52f8",
+      "end": "0xce55c4",
+      "sha256": "eca104106ac736ea48608093e0017a0836c37778280f4f591403cb03339dbff6",
+      "resources": [
+        "Key %d",
+        "Block (Unused)",
+        "Scene %d"
+      ]
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.InternalCreate": {
+      "start": "0xcec648",
+      "end": "0xcec964",
+      "sha256": "ead8ff3a29e6d39d99ae2bde53fc5600824c2505aeefc6a8d3715b7a57f819cc",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xced154",
+      "end": "0xced538",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.CreateCorridorLinkAttributes": {
+      "start": "0xcec964",
+      "end": "0xcecae4",
+      "sha256": "0c91c1f176bf5dcc62b7f754c9c7f4f4c800b913661d5adb4a51c13be25b4085",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes": {
+      "start": "0xced05c",
+      "end": "0xced154",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b",
+      "resources": []
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetIndicatorBrightness": {
+      "start": "0xcc7f18",
+      "end": "0xcc8080",
+      "sha256": "0adbce6f75aae2526fa8b7fa34c090335a5acd6d8594ab0905bfd35f45936ce2",
+      "resources": []
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsJoinModeSupported": {
+      "start": "0xd067d4",
+      "end": "0xd06864",
+      "sha256": "3683c44c6058b3b712d2c332a203bc554916ed3252083703804d578f9adc4bbd",
+      "resources": []
+    }
+  },
+  "original_generated_page": "unassessed",
+  "original_loader_execution": "not executed"
+}

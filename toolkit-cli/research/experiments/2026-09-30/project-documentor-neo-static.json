@@ -1,0 +1,2604 @@
+{
+  "boundary": [
+    "Source-only body/loader and class-profile facts; KEYE1 admission is exactly firmware 2.5.00, narrower than its factory registration.",
+    "Adapters admit explicit canonical scene pair tables and aligned ordered scene boundaries only; the source loader itself is less restrictive.",
+    "SceneKeySelector=1 with JPCommand other than 14 enters SceneModify/template25, which remains outside the admitted adapter.",
+    "Fresh extension defaults are scene trigger nil and ramp ordinal zero; an ordinary key is assigned scene one even when its selector is zero.",
+    "Pre-existing in-memory extension state and historical block-reference order are not represented by the fresh-model adapter.",
+    "Scene template changes refresh block references before the macro lock check. Canonical admission requires mask=1<<key, the linear block unused in the primary application, and no other key sharing it.",
+    "Block lookup matches group object identity: adapters must distinguish application plus group address and return the first matching block.",
+    "Original trigger-table ramp lookup uses scene index rather than matching key index.",
+    "Missing project application/group/level objects require explicit handling; this receipt does not accept invented project metadata or auto-create effects.",
+    "No original generated HTML, complete native project load, visual or print acceptance was obtained."
+  ],
+  "checks": {
+    "added_neo_macro_types_are_unreachable_by_first_nibble_match": true,
+    "block_group_resolution_is_application_scoped": true,
+    "block_lookup_uses_first_group_object_identity": true,
+    "classic_join_key_range": true,
+    "classic_neo_prefix_resources": true,
+    "classic_scene_control_table_markup": true,
+    "classic_scene_control_uses_own_key_ramp": true,
+    "classic_unconnected_key_prefix": true,
+    "cold_extension_fields_created": true,
+    "cold_extension_scene_change_handler_is_noop": true,
+    "cold_object_reference_constructor_clears_reference": true,
+    "cold_ramp_enum_starts_at_zero": true,
+    "empty_or_initial_255_scene_table_skips_commands": true,
+    "has_scenes_checks_commands_not_enabled_flag": true,
+    "keyex_default_masks_follow_last_type_character": true,
+    "keyex_keys_2_3_4_use_mask_bits": true,
+    "keyex_loader_keeps_low_four_bits": true,
+    "keyex_mask_missing_bit_zero_uses_type_default": true,
+    "missing_trigger_cell_is_nbsp": true,
+    "neo_body_requires_neo_class": true,
+    "neo_body_requires_nonempty_scenes": true,
+    "neo_full_ordered_markup": true,
+    "neo_inherits_classic_body_first": true,
+    "neo_subset_scene_admission": true,
+    "ordinary_keys_attach_to_scene_one": true,
+    "ordinary_keys_use_normal_macro_refresh": true,
+    "original_trigger_ramp_uses_scene_index": true,
+    "pp_ControlAppGroupAddress": true,
+    "pp_SceneKeySelector": true,
+    "pp_SceneTable": true,
+    "pp_SceneTablePointer": true,
+    "pro_delegates_to_neo_body": true,
+    "pro_has_no_additional_markup": true,
+    "profile_factory_classes": true,
+    "profile_physical_key_counts": true,
+    "profiles_have_eight_blocks_and_virtual_keys": true,
+    "profiles_have_no_bistable_interface": true,
+    "scene24_assigns_default_macro_commands": true,
+    "scene24_binding_assigns_default_group": true,
+    "scene24_default_commands_are_idle": true,
+    "scene24_number_is_indicator_assignment_plus_one": true,
+    "scene24_ramp_uses_sr_command": true,
+    "scene24_requires_jp_14": true,
+    "scene24_trigger_uses_lp_and_lr_nibbles": true,
+    "scene_binding_refresh_removes_references_then_uses_linear_block": true,
+    "scene_collection_padded_to_eight": true,
+    "scene_commands_use_primary_application": true,
+    "scene_control_group_is_find_or_create_including_255": true,
+    "scene_group_and_level_order": true,
+    "scene_key_types_23_24_25": true,
+    "scene_loader_clears_old_collection": true,
+    "scene_loader_skips_255_and_later_duplicate_groups": true,
+    "scene_modify_is_separate_template25_branch": true,
+    "scene_modify_skips_ordinary_template_assignment": true,
+    "scene_pointer_boundary_is_next_pointer_equal_offset_plus_162": true,
+    "scene_rows_keep_collection_order_and_gaps": true,
+    "scene_selector_one_changes_command_interpretation": true,
+    "scene_table_pair_level_and_stride": true,
+    "scene_template_refreshes_blocks_before_lock_check": true,
+    "scene_trigger_lookup_can_add_by_address": true,
+    "timer_macro_zero_primary_timer_becomes_300_seconds": true,
+    "trigger_level_uses_matching_key": true,
+    "triggers_require_same_scene_identity_and_nonnil_level": true
+  },
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "format": "cbus-project-documentor-neo-static-v1",
+  "keye1_mask_rule": "If bit 0 is clear use default 1; then retain low four bits. Key 1 is connected; keys 2..4 use bits 1..3.",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": {
+    "CIS_CBus.LevelToPercent": {
+      "end": "0x7f2aec",
+      "literals": [],
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a",
+      "start": "0x7f2ac8"
+    },
+    "CIS_Maths.NibblesToInt": {
+      "end": "0x7f0f30",
+      "literals": [],
+      "sha256": "7162e53003cce06998f178eb3ed47a0119f79949b754c955688cfde59e65054f",
+      "start": "0x7f0f10"
+    },
+    "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x12d2858",
+      "literals": [],
+      "sha256": "f1aa5185160b312faf0c25f968863718357b80e68825f9b58137fa24a4b2fe95",
+      "start": "0x12d2818"
+    },
+    "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.LoadKeyMask": {
+      "end": "0x12d2748",
+      "literals": [
+        "KeyMask"
+      ],
+      "sha256": "aa274d1074717d07c66d66b79cad2033522aa166ff50cf8fb07301cdb038844e",
+      "start": "0x12d25ac"
+    },
+    "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.SetDefaultKeysIfNeeded": {
+      "end": "0x12d27fc",
+      "literals": [],
+      "sha256": "b8d316ba535af69d9c008a6a969f17ddd2491904500019c9a5602f57c79a3134",
+      "start": "0x12d2780"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount": {
+      "end": "0xd07d80",
+      "literals": [],
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e",
+      "start": "0xd07d68"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InfraredBankPropertyEnabled": {
+      "end": "0xd087c4",
+      "literals": [],
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "start": "0xd087b0"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsJoinModeSupported": {
+      "end": "0xd08cd0",
+      "literals": [],
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "start": "0xd08cbc"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+      "end": "0xd08734",
+      "literals": [],
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e",
+      "start": "0xd0871c"
+    },
+    "CIS_TCBusNeoReflectionInputUnit.TCBusNeoProReflectionInputUnit.InfraredBankPropertyEnabled": {
+      "end": "0xccd8f8",
+      "literals": [],
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "start": "0xccd8e4"
+    },
+    "CIS_TCBusNeoReflectionInputUnit.TCBusNeoReflectionInputUnit.InfraredBankPropertyEnabled": {
+      "end": "0xccd8bc",
+      "literals": [],
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "start": "0xccd8a8"
+    },
+    "CIS_TCBusNeoSaturnInputUnit.TCBusNeoProSaturnInputUnit.InfraredBankPropertyEnabled": {
+      "end": "0xcd0a04",
+      "literals": [],
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "start": "0xcd09f0"
+    },
+    "CIS_TCBusNeoSaturnInputUnit.TCBusNeoSaturnInputUnit.InfraredBankPropertyEnabled": {
+      "end": "0xcd09c8",
+      "literals": [],
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "start": "0xcd09b4"
+    },
+    "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.DocumentHTML": {
+      "end": "0xca79d0",
+      "literals": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>",
+        "</td></tr>",
+        "<tr><th>Long Press</th><td>",
+        "</td></tr>",
+        "<tr><th>Ramp 1</th><td>",
+        "</td></tr>",
+        "<tr><th>Ramp 2</th><td>",
+        "</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th>",
+        "<th>Bistable</th>",
+        "<th>Macro Function</th>",
+        "<th>Micro Functions</th>",
+        "<th>Controls</th></tr>",
+        "Unconnected Key ",
+        " ",
+        " ",
+        " ",
+        "<tr><td>",
+        "</td>",
+        "<td>Yes</td>",
+        "<td>No</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "<table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr></table></td><td>",
+        "&nbsp;</td><td>",
+        "&nbsp;",
+        "<table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr>",
+        "<td>Scene ",
+        "</td>",
+        "<td>",
+        "</td></tr></table>",
+        "<table border=\"1\"><tr>",
+        "<th>Group</th>",
+        "<th>Preset 1</th>",
+        "<th>Preset 2</th>",
+        "<th>Timer</th><th>Expiry</th>",
+        "</tr>",
+        "<tr>",
+        "<td>",
+        "</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        " (",
+        "%)",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "&nbsp;",
+        "</td></tr>",
+        "</table>"
+      ],
+      "sha256": "d43b2075facbf168f2d3a28acc89fcbaed4d923ad8b4e0b15077c6825f5982cb",
+      "start": "0xca6610"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "end": "0xf28d10",
+      "literals": [
+        "%s %d",
+        "GroupSave"
+      ],
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930",
+      "start": "0xf28b68"
+    },
+    "CIS_TCommonCBus.TLevelManager.FindLevelByAddress": {
+      "end": "0xf2767c",
+      "literals": [
+        "Action Selector",
+        "%s %d",
+        "Level",
+        "%s %d",
+        "ProjectSave"
+      ],
+      "sha256": "682cac65b928f9e1b98dca786b5e53c2fc1d3070ae27722c840d937e5769769e",
+      "start": "0xf2742c"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+      "end": "0xcc76f8",
+      "literals": [
+        " "
+      ],
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263",
+      "start": "0xcc75e4"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "end": "0xccaef4",
+      "literals": [
+        "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiProjects1\\InstallationSoftware\\Code\\Entity\\CGateAgents\\CIS_TCoreNeoInputCGateAgent.pas",
+        "CBusUnit.InputKeys must be initialized prior to loading key information",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1",
+      "start": "0xcca51c"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetSceneCommands": {
+      "end": "0xccb180",
+      "literals": [
+        " ",
+        " "
+      ],
+      "sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145",
+      "start": "0xccaf50"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0xccb450",
+      "literals": [],
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838",
+      "start": "0xccb180"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.GetControlAppGroup": {
+      "end": "0xcca51c",
+      "literals": [
+        "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiProjects1\\InstallationSoftware\\Code\\Entity\\CGateAgents\\CIS_TCoreNeoInputCGateAgent.pas",
+        "TriggerControllApplication.Groups not found"
+      ],
+      "sha256": "65f874185368a21450b8b30c98c28c603d4f451e70bd98ab834803489cfbf0e4",
+      "start": "0xcca350"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate": {
+      "end": "0xcca140",
+      "literals": [
+        "ControlAppGroupAddress",
+        "EnableNightlight",
+        "EnableNightlightControl",
+        "DisableTimerFlash",
+        "FirstKeyThrowAway",
+        "IndicatorPressedLevel",
+        "TimerDuration",
+        "PatchEnable",
+        "SceneKeySelector",
+        "SceneTable",
+        "SceneTablePointer",
+        "DisableIR",
+        "IRBank"
+      ],
+      "sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b",
+      "start": "0xcc9d04"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications": {
+      "end": "0xced05c",
+      "literals": [],
+      "sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833",
+      "start": "0xcecf80"
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyConnected": {
+      "end": "0xd06640",
+      "literals": [],
+      "sha256": "ac150e5e7593bc23c7db44fc90cb94ef14c19fe8830d21a7bb56dc58f7a26299",
+      "start": "0xd0660c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.Clear": {
+      "end": "0x7ed36c",
+      "literals": [
+        "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_TCustomFlashObject.pas",
+        "WorkSpace should have been set",
+        "C:\\Dev\\GitHub\\CBus\\toolkit\\DelphiComponents\\Clipsal\\FlashXML\\Code\\CIS_TCustomFlashObject.pas",
+        "Source should have been set"
+      ],
+      "sha256": "14994304322c74e2cf02edafb88631853916bc57153d74619e04fdc6b1cb2481",
+      "start": "0x7ed124"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.Create": {
+      "end": "0x7ed0e8",
+      "literals": [],
+      "sha256": "46c2c8e8b968f6615e1b9a29880feabcb4acced55bfbc432dfbcd3a37bf8ec32",
+      "start": "0x7ed06c"
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLGroup": {
+      "end": "0xca5c6c",
+      "literals": [
+        "<a href=\"#",
+        "_",
+        "_",
+        "\">",
+        "</a>"
+      ],
+      "sha256": "3b654652b21badb0e10e63152d4edd6353022923250e96575f34a604846b2644",
+      "start": "0xca5b2c"
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLLevel": {
+      "end": "0xca5da4",
+      "literals": [
+        "<a href=\"#",
+        "_",
+        "_",
+        "_",
+        "\">",
+        "</a>"
+      ],
+      "sha256": "5334a86735beb390967d1a0374af746be64fe0856fe1584d7d8c8c1bf11ad301",
+      "start": "0xca5c6c"
+    },
+    "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.InternalCreate": {
+      "end": "0x84836c",
+      "literals": [],
+      "sha256": "6f7c7fe81dd395cc14b03f2d7673e992d053514d5d6d2c9e54a2c28b7ad735eb",
+      "start": "0x848348"
+    },
+    "CIS_TInputKey.TInputBlock.GetApplicationForBlock": {
+      "end": "0xd0f200",
+      "literals": [],
+      "sha256": "e8e994e843820a6497dd732b0cad5e62c52a612c072e23af85b8c42f8fee0767",
+      "start": "0xd0f1dc"
+    },
+    "CIS_TInputKey.TInputBlock.SecondaryApplicationMatchesApplicationState": {
+      "end": "0xd0fba0",
+      "literals": [],
+      "sha256": "b7837dd8029fccc4a1424ec66fc799ae138a4cfa8c1134b1726d069721580758",
+      "start": "0xd0fb58"
+    },
+    "CIS_TInputKey.TInputBlockCollection.ItemByGroup": {
+      "end": "0xd104c8",
+      "literals": [],
+      "sha256": "b121ead16702d19f8ef5e503b90da465125033e9a85c88c785df8dc57e9054d6",
+      "start": "0xd10464"
+    },
+    "CIS_TInputKey.TInputKey.CalcLinearBlock": {
+      "end": "0xd12a9c",
+      "literals": [],
+      "sha256": "c2448f5a84c54bd8996286786afa11142891730bfae74a262cebf0176f8cd625",
+      "start": "0xd12a64"
+    },
+    "CIS_TInputKey.TInputKey.GetApplicationForKey": {
+      "end": "0xd13e80",
+      "literals": [],
+      "sha256": "f9be1f285db94107b12bbb016fb428640c7926315e74e58bd1791ef4bc5d3602",
+      "start": "0xd13e3c"
+    },
+    "CIS_TInputKey.TInputKey.GetIsSceneKey": {
+      "end": "0xd11614",
+      "literals": [],
+      "sha256": "9c401b20facab664a58af884324a05e2d44dbd46923db67e83d4f99761fc6b0e",
+      "start": "0xd115bc"
+    },
+    "CIS_TInputKey.TInputKey.GetIsSceneModifyKey": {
+      "end": "0xd11694",
+      "literals": [],
+      "sha256": "e6466b6da57daa29602a51b259e220d39f88f8d8b3f5b2039d19e73990544c65",
+      "start": "0xd1165c"
+    },
+    "CIS_TInputKey.TInputKey.GetPrimaryBlock": {
+      "end": "0xd11470",
+      "literals": [],
+      "sha256": "4e423d03fee0f16a764e0f95b933d46eb2dfca9bdcb2bfebe00ead54e5735746",
+      "start": "0xd11434"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "end": "0xd12c2c",
+      "literals": [],
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf",
+      "start": "0xd12adc"
+    },
+    "CIS_TInputKey.TInputKey.InternalCreate": {
+      "end": "0xd1103c",
+      "literals": [
+        "InputKey",
+        "MacroFunctionTemplate",
+        "MacroFunction",
+        "PrimaryGroup",
+        "ExtensionNeo",
+        "InputIndicator",
+        "BlockListNew",
+        "ApplicationState",
+        "Application"
+      ],
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad",
+      "start": "0xd10cb8"
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplate": {
+      "end": "0xd12688",
+      "literals": [],
+      "sha256": "ef0a34087c39fb0483e85b8a0781730d6e98733103105f8d7435d7ed8b55f8ff",
+      "start": "0xd12668"
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplateScene": {
+      "end": "0xd12a64",
+      "literals": [],
+      "sha256": "55fc404a82307263ee2e27e498b7137e37ba4b3066120663ddda7bb459f11327",
+      "start": "0xd12788"
+    },
+    "CIS_TInputKey.TInputKey.RefreshKeyApplicationFromKeySecondary": {
+      "end": "0xd12e54",
+      "literals": [],
+      "sha256": "e8515589afc4425b5e38862ec948edac9f3d5e38a2119d3622c132f8a9bc7f97",
+      "start": "0xd12d50"
+    },
+    "CIS_TInputKey.TInputKey.RefreshKeySecondaryFromBlockSecondary": {
+      "end": "0xd12d10",
+      "literals": [],
+      "sha256": "e340a91b36693c906cc4f0d24db98f365df72873eb2235f9af3d3c272216777b",
+      "start": "0xd12c94"
+    },
+    "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromTemplate": {
+      "end": "0xd11c54",
+      "literals": [],
+      "sha256": "d73920eaf21e1b0c24ab401116ce15a5ccbc9ad6057371b49df918f393b3531c",
+      "start": "0xd11c14"
+    },
+    "CIS_TInputKey.TInputKey.SetMacroFunctionTemplate": {
+      "end": "0xd11740",
+      "literals": [],
+      "sha256": "9b8d8858816d9432b30aa4973a357213844d43094067eabf5686446a14f99cfb",
+      "start": "0xd1171c"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.AfterConstruction": {
+      "end": "0xc99c3c",
+      "literals": [],
+      "sha256": "b011cd98af631abf072a30c16d57929cb1d1f2d16052314fc3cbd227aeaa10d4",
+      "start": "0xc99c28"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.GetScene": {
+      "end": "0xc99c80",
+      "literals": [],
+      "sha256": "7d5fe1beb805570584b823b50e566928d2239c91881a48abca3d7e1a0b7e7d2d",
+      "start": "0xc99c5c"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.GetSceneRampRate": {
+      "end": "0xc99ca4",
+      "literals": [],
+      "sha256": "330adee0ebf7dd2747b2b7a2f18bb1045a93d92decc6728c4c2fa8ab4489191c",
+      "start": "0xc99c80"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.GetSceneTriggerLevel": {
+      "end": "0xc99cc8",
+      "literals": [],
+      "sha256": "1b1a07531dc8e29ee73a99b8d0007d1cce0b8faacd39194d0ceca6a5761e4cb7",
+      "start": "0xc99ca4"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.HandleSceneAfterChangeEvent": {
+      "end": "0xc99e70",
+      "literals": [],
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a",
+      "start": "0xc99e60"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.InternalCreate": {
+      "end": "0xc99c28",
+      "literals": [
+        "TNeoInputKey",
+        "Scene",
+        "SceneRampRate",
+        "SceneTriggerLevel",
+        "SceneRampFunction",
+        "SceneRampMacroFunctionTemplate",
+        "LabelFlavour"
+      ],
+      "sha256": "b15e815108c8353f4e10216994fc423444611c04ab1c9361d65da7a9c04ec172",
+      "start": "0xc999a0"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.SetScene": {
+      "end": "0xc99d54",
+      "literals": [],
+      "sha256": "6afb05365134ff6294692b465480540bc3a038bd416ad57169ad9faaac7b2c24",
+      "start": "0xc99d30"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.SetSceneRampRate": {
+      "end": "0xc99db8",
+      "literals": [],
+      "sha256": "211341d65e20d10dc21f4b8f3e0f1c6c98d7c1eba9c000325f858b6a41a411b5",
+      "start": "0xc99d54"
+    },
+    "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.SetSceneTriggerLevel": {
+      "end": "0xc99ddc",
+      "literals": [],
+      "sha256": "9b8d8858816d9432b30aa4973a357213844d43094067eabf5686446a14f99cfb",
+      "start": "0xc99db8"
+    },
+    "CIS_TKEYA3.TKEYA3.MaximumKeyCount": {
+      "end": "0xccf0b4",
+      "literals": [],
+      "sha256": "4ea6f9613498bf40753c4850a18c7ebc6f07f3c62d6cd9392ccfb88703abc681",
+      "start": "0xccf09c"
+    },
+    "CIS_TKEYA3.TKEYA3_A.MaximumKeyCount": {
+      "end": "0xccf088",
+      "literals": [],
+      "sha256": "4ea6f9613498bf40753c4850a18c7ebc6f07f3c62d6cd9392ccfb88703abc681",
+      "start": "0xccf070"
+    },
+    "CIS_TKEYB4.TKEYB4.MaximumKeyCount": {
+      "end": "0xcd169c",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0xcd1684"
+    },
+    "CIS_TKEYB4.TKEYB4_A.MaximumKeyCount": {
+      "end": "0xcd1670",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0xcd1658"
+    },
+    "CIS_TKEYEx.TKEYEx.GetDefaultKeyMask": {
+      "end": "0xea919c",
+      "literals": [],
+      "sha256": "12d3cb4778889f20db0962644b86bbb2841c37607493493be72f47f89f4a82da",
+      "start": "0xea90a4"
+    },
+    "CIS_TKEYEx.TKEYEx.InfraredBankPropertyEnabled": {
+      "end": "0xea9414",
+      "literals": [],
+      "sha256": "db8544e9028a84b918bff75ef3fb2b4328cae4ba4d619074fcf3f20492f330d4",
+      "start": "0xea93a4"
+    },
+    "CIS_TKEYEx.TKEYEx.IsKeyConnected": {
+      "end": "0xea9238",
+      "literals": [],
+      "sha256": "42f826dbd27d2cc9b836d7145308684c8258a951e142f5c3b1645a55fcbe743c",
+      "start": "0xea919c"
+    },
+    "CIS_TKEYEx.TKEYEx.MaximumKeyCount": {
+      "end": "0xea902c",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0xea9014"
+    },
+    "CIS_TKEYM4.TKEYM4.MaximumKeyCount": {
+      "end": "0xceb234",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0xceb21c"
+    },
+    "CIS_TKEYM4.TKEYM4_A.MaximumKeyCount": {
+      "end": "0xceb208",
+      "literals": [],
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "start": "0xceb1f0"
+    },
+    "CIS_TKEYM8.TKEYM8.MaximumKeyCount": {
+      "end": "0xceb870",
+      "literals": [],
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e",
+      "start": "0xceb858"
+    },
+    "CIS_TKEYM8.TKEYM8_A.MaximumKeyCount": {
+      "end": "0xceb844",
+      "literals": [],
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e",
+      "start": "0xceb82c"
+    },
+    "CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory": {
+      "end": "0xc96a5c",
+      "literals": [
+        "Unused",
+        "On",
+        "Off",
+        "On/Off",
+        "Dimmer",
+        "On Up",
+        "Off Down",
+        "Timer",
+        "Bell Press",
+        "Dimmer Up",
+        "Dimmer Down",
+        "Soft Up",
+        "Soft Down",
+        "Trigger 1",
+        "Trigger 2",
+        "Shutter Toggle",
+        "Shutter Open Toggle",
+        "Shutter Close Toggle",
+        "Shutter Open",
+        "Shutter Close",
+        "Shutter Stop",
+        "<Fan Speed Cycle>",
+        "<Scene>",
+        "Clock Timer",
+        "Aux On/Off",
+        "Day Move",
+        "Night Move",
+        "Sunset",
+        "Any Move",
+        "Day Move",
+        "Night Move",
+        "Security",
+        "On/Off",
+        "Off/On",
+        "On/Off Toggle",
+        "On/Off Toggle Timer",
+        "On/Off Timer",
+        "Off/On Timer",
+        "Memory Toggle",
+        "Soft On/Soft Off",
+        "Soft On/Hard Off",
+        "Hard On/Soft Off",
+        "Ramp Up",
+        "Ramp Down",
+        "Occupancy Detector",
+        "Bell Press",
+        "On",
+        "Off",
+        "Scene Set",
+        "Scene Toggle",
+        "Scene Toggle",
+        "Scene Set",
+        "Scene On/Off"
+      ],
+      "sha256": "9a20b298d7aedb678c24327cd64dc933d7733d872a3d1025a8b3b8bbcd843432",
+      "start": "0xc95b84"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate": {
+      "end": "0xc96cb8",
+      "literals": [],
+      "sha256": "f0257da639b24bd6eace5603830c373214f745de495af74adca68074195eba10",
+      "start": "0xc96c60"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate_Microfunctions": {
+      "end": "0xc96dcc",
+      "literals": [],
+      "sha256": "8353fdc15ee02b5a1dda85987bad889c1533283c8944e3e1da5ecb08da540920",
+      "start": "0xc96d6c"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.GetMicroFunctionGroupDefault": {
+      "end": "0xc97e00",
+      "literals": [],
+      "sha256": "e6e3e8fbe09bee725e61dc309e55c21534d63483a029e22c3165d7dec83b6350",
+      "start": "0xc97da4"
+    },
+    "CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory": {
+      "end": "0xc920e0",
+      "literals": [
+        "Toggle",
+        "Start",
+        "Retrigger",
+        "Toggle",
+        "Retrigger",
+        "Toggle",
+        "Retrigger",
+        "Start",
+        "Toggle",
+        "Retrigger",
+        "Start"
+      ],
+      "sha256": "da7e1a9ec728553d8f9eb8feb1644d8eb3f01c12aed2e4dd57d31471f3d0d128",
+      "start": "0xc912c0"
+    },
+    "CIS_TNeoInputDocumentor.TNeoInputDocumentor.DocumentHTML": {
+      "end": "0xca82ec",
+      "literals": [
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td></tr>",
+        "</table></td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "<td>",
+        "%",
+        "<br />",
+        "<br />",
+        "</td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "sha256": "49784c380ced69fcd5b254ee783bbad531788972b30ac259c876cdf03e57618b",
+      "start": "0xca7c38"
+    },
+    "CIS_TNeoInputDocumentor.TNeoInputDocumentor.HasScenes": {
+      "end": "0xca8350",
+      "literals": [],
+      "sha256": "8fb97939d88a79fc3a8b95451d8c211dc6204315bb5bf57d55ba05ccb31d895a",
+      "start": "0xca82ec"
+    },
+    "CIS_TNeoProInputDocumentor.TNeoProInputDocumentor.DocumentHTML": {
+      "end": "0xccde04",
+      "literals": [],
+      "sha256": "28b9a0507e3b014d60bcae1ea3e37363dbe3b6492241818d91af0e95645f7c61",
+      "start": "0xccdde0"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate": {
+      "end": "0x7ddb2c",
+      "literals": [],
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87",
+      "start": "0x7ddab0"
+    }
+  },
+  "neo_macro_subsets": {
+    "0": [
+      16,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      26
+    ],
+    "202": [
+      16,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      26
+    ],
+    "255": [
+      16
+    ]
+  },
+  "ordinary_macro_table_proof": {
+    "additional_types_by_family_application": {
+      "NEO": {
+        "0": [
+          23,
+          24
+        ],
+        "202": [
+          23,
+          24
+        ],
+        "255": []
+      },
+      "NEOPRO": {
+        "0": [
+          23,
+          24,
+          25
+        ],
+        "202": [
+          23,
+          24,
+          25
+        ],
+        "255": []
+      },
+      "NEOPRO_S": {
+        "0": [],
+        "202": [],
+        "255": []
+      }
+    },
+    "first_idle_match": 16,
+    "first_match_types": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      21,
+      31,
+      32,
+      33,
+      34,
+      36,
+      37,
+      38,
+      39,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      51,
+      52
+    ]
+  },
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "profile_classes": {
+    "CIS_TKEYA3..TKEYA3": {
+      "ancestry": [
+        {
+          "class": "TKEYA3",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xccedb0"
+        },
+        {
+          "class": "TCBusNeoProReflectionInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xccd5b8"
+        },
+        {
+          "class": "TCBusNeoProInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xca0254"
+        },
+        {
+          "class": "TCoreNeoProInputUnit",
+          "interface_table": "0xd0579c",
+          "interface_table_sha256": "4e87b477bae7fc465a0dc40c68b9983e3baa8b3fa9e332607aa3996724f9e194",
+          "interfaces": [
+            "9645f549-1204-49ef-9067-2881380f9456",
+            "2917a5a4-00f4-411f-9593-da018910ce51",
+            "e90bc197-a689-4f87-a458-ba541d928fb5"
+          ],
+          "vmt": "0xd0584c"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYA3.TKEYA3.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoReflectionInputUnit.TCBusNeoProReflectionInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyConnected"
+      },
+      "unit_type": "KEYA3"
+    },
+    "CIS_TKEYA3..TKEYA3_A": {
+      "ancestry": [
+        {
+          "class": "TKEYA3_A",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xccead8"
+        },
+        {
+          "class": "TCBusNeoReflectionInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xccd2a8"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYA3.TKEYA3_A.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoReflectionInputUnit.TCBusNeoReflectionInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "?"
+      },
+      "unit_type": "KEYA3"
+    },
+    "CIS_TKEYB4..TKEYB4": {
+      "ancestry": [
+        {
+          "class": "TKEYB4",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xcd1398"
+        },
+        {
+          "class": "TCBusNeoProSaturnInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xcd06d0"
+        },
+        {
+          "class": "TCBusNeoProInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xca0254"
+        },
+        {
+          "class": "TCoreNeoProInputUnit",
+          "interface_table": "0xd0579c",
+          "interface_table_sha256": "4e87b477bae7fc465a0dc40c68b9983e3baa8b3fa9e332607aa3996724f9e194",
+          "interfaces": [
+            "9645f549-1204-49ef-9067-2881380f9456",
+            "2917a5a4-00f4-411f-9593-da018910ce51",
+            "e90bc197-a689-4f87-a458-ba541d928fb5"
+          ],
+          "vmt": "0xd0584c"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYB4.TKEYB4.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoSaturnInputUnit.TCBusNeoProSaturnInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyConnected"
+      },
+      "unit_type": "KEYB4"
+    },
+    "CIS_TKEYB4..TKEYB4_A": {
+      "ancestry": [
+        {
+          "class": "TKEYB4_A",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xcd10c0"
+        },
+        {
+          "class": "TCBusNeoSaturnInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xcd03cc"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYB4.TKEYB4_A.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoSaturnInputUnit.TCBusNeoSaturnInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "?"
+      },
+      "unit_type": "KEYB4"
+    },
+    "CIS_TKEYEx..TKEYEx": {
+      "ancestry": [
+        {
+          "class": "TKEYEx",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xea8d54"
+        },
+        {
+          "class": "TCBusNeoProSaturnInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xcd06d0"
+        },
+        {
+          "class": "TCBusNeoProInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xca0254"
+        },
+        {
+          "class": "TCoreNeoProInputUnit",
+          "interface_table": "0xd0579c",
+          "interface_table_sha256": "4e87b477bae7fc465a0dc40c68b9983e3baa8b3fa9e332607aa3996724f9e194",
+          "interfaces": [
+            "9645f549-1204-49ef-9067-2881380f9456",
+            "2917a5a4-00f4-411f-9593-da018910ce51",
+            "e90bc197-a689-4f87-a458-ba541d928fb5"
+          ],
+          "vmt": "0xd0584c"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "9",
+      "firmware_min": "0",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYEx.TKEYEx.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TKEYEx.TKEYEx.InfraredBankPropertyEnabled",
+        "0x268": "CIS_TKEYEx.TKEYEx.IsKeyConnected"
+      },
+      "unit_type": "KEYE1"
+    },
+    "CIS_TKEYM4..TKEYM4": {
+      "ancestry": [
+        {
+          "class": "TKEYM4",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xceaf30"
+        },
+        {
+          "class": "TCBusNeoProStandardInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xce9750"
+        },
+        {
+          "class": "TCBusNeoProInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xca0254"
+        },
+        {
+          "class": "TCoreNeoProInputUnit",
+          "interface_table": "0xd0579c",
+          "interface_table_sha256": "4e87b477bae7fc465a0dc40c68b9983e3baa8b3fa9e332607aa3996724f9e194",
+          "interfaces": [
+            "9645f549-1204-49ef-9067-2881380f9456",
+            "2917a5a4-00f4-411f-9593-da018910ce51",
+            "e90bc197-a689-4f87-a458-ba541d928fb5"
+          ],
+          "vmt": "0xd0584c"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM4.TKEYM4.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyConnected"
+      },
+      "unit_type": "KEYM4"
+    },
+    "CIS_TKEYM4..TKEYM4_A": {
+      "ancestry": [
+        {
+          "class": "TKEYM4_A",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xceac58"
+        },
+        {
+          "class": "TCBusNeoStandardInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xce9444"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM4.TKEYM4_A.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "?"
+      },
+      "unit_type": "KEYM4"
+    },
+    "CIS_TKEYM8..TKEYM8": {
+      "ancestry": [
+        {
+          "class": "TKEYM8",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xceb56c"
+        },
+        {
+          "class": "TCBusNeoProStandardInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xce9750"
+        },
+        {
+          "class": "TCBusNeoProInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xca0254"
+        },
+        {
+          "class": "TCoreNeoProInputUnit",
+          "interface_table": "0xd0579c",
+          "interface_table_sha256": "4e87b477bae7fc465a0dc40c68b9983e3baa8b3fa9e332607aa3996724f9e194",
+          "interfaces": [
+            "9645f549-1204-49ef-9067-2881380f9456",
+            "2917a5a4-00f4-411f-9593-da018910ce51",
+            "e90bc197-a689-4f87-a458-ba541d928fb5"
+          ],
+          "vmt": "0xd0584c"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM8.TKEYM8.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyConnected"
+      },
+      "unit_type": "KEYM8"
+    },
+    "CIS_TKEYM8..TKEYM8_A": {
+      "ancestry": [
+        {
+          "class": "TKEYM8_A",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xceb294"
+        },
+        {
+          "class": "TCBusNeoStandardInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xce9444"
+        },
+        {
+          "class": "TCBusNeoInputUnit",
+          "interface_table": "0xd06ad8",
+          "interface_table_sha256": "d89822915cb8287a2edc671d203006cae6fc83d0396ef0dd2170bef2c36a9b47",
+          "interfaces": [
+            "bc2b848d-889f-4f38-844e-2445395922d8",
+            "9e251564-172f-44b0-b1dc-12a0d165dc47"
+          ],
+          "vmt": "0xd06b6c"
+        },
+        {
+          "class": "TCBusKeyInputUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xc9fe14"
+        },
+        {
+          "class": "TCoreKeyInputUnit",
+          "interface_table": "0xc9d864",
+          "interface_table_sha256": "7ccdbe49a5bc4f8939b26f052f737967e83f5dc076f4792d3a865a74094b99f6",
+          "interfaces": [
+            "96fe8b22-1d3f-4893-a8c3-e8907fc4012e",
+            "15594ce2-f53b-47f0-a0f0-729e057f96cd"
+          ],
+          "vmt": "0xc9d8f8"
+        },
+        {
+          "class": "TCustomKeyInputUnit",
+          "interface_table": "0xd0d118",
+          "interface_table_sha256": "cb1db537dbff1a005fc0ce79fc012983f8680e6c34ce8a72fd8ff730ad110550",
+          "interfaces": [
+            "fd7c717c-2764-4ef3-a111-00d9b9096861",
+            "c1498e98-5752-4fd7-a16c-63c528f2035d"
+          ],
+          "vmt": "0xd0d1ac"
+        },
+        {
+          "class": "TCBusInputUnit",
+          "interface_table": "0xc9cf78",
+          "interface_table_sha256": "b251d81c9b2b7d883abdd504bae200a0b5f49e07e1d5be8f0f9e0e7289fba980",
+          "interfaces": [
+            "b9f6b2d7-40ec-4399-883d-f40f76931f58"
+          ],
+          "vmt": "0xc9cff0"
+        },
+        {
+          "class": "TCBusLearnUnit",
+          "interface_table": "0xeddf9c",
+          "interface_table_sha256": "291aca308f649600f53bc291897d6a7bb9fb01f882af0f9d87d8e9fa4809554f",
+          "interfaces": [
+            "f318a21f-1ca6-409c-b308-e8d9ed79774b"
+          ],
+          "vmt": "0xede014"
+        },
+        {
+          "class": "TCBUSUnit",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf21184"
+        },
+        {
+          "class": "TCGateObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf474cc"
+        },
+        {
+          "class": "TCBUSObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0xf473a4"
+        },
+        {
+          "class": "TPersistableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3cf4"
+        },
+        {
+          "class": "TIdentifiableObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7f3bc8"
+        },
+        {
+          "class": "TFlashObject",
+          "interface_table": "0x7e67fc",
+          "interface_table_sha256": "1d72934fecbea31cb1e05543b2c8ee119a91f6efa9a16cc5aac7417aa67a372a",
+          "interfaces": [
+            "00000000-0000-0000-0000-000000000000"
+          ],
+          "vmt": "0x7e6874"
+        },
+        {
+          "class": "TFoundationObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6644"
+        },
+        {
+          "class": "TCustomFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7e6528"
+        },
+        {
+          "class": "TFlashElement",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x769b1c"
+        },
+        {
+          "class": "TManagedFlashObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7698f8"
+        },
+        {
+          "class": "TBASEObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x7681a4"
+        },
+        {
+          "class": "TObject",
+          "interface_table": "0x0",
+          "interface_table_sha256": null,
+          "interfaces": [],
+          "vmt": "0x6014fc"
+        }
+      ],
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "slots": {
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYM8.TKEYM8_A.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InfraredBankPropertyEnabled",
+        "0x268": "?"
+      },
+      "unit_type": "KEYM8"
+    }
+  },
+  "profiles": [
+    {
+      "documentor": "NeoInput",
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "unit_type": "KEYA3"
+    },
+    {
+      "documentor": "NeoProInput",
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "unit_type": "KEYA3"
+    },
+    {
+      "documentor": "NeoInput",
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "unit_type": "KEYB4"
+    },
+    {
+      "documentor": "NeoProInput",
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "unit_type": "KEYB4"
+    },
+    {
+      "documentor": "NeoInput",
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "unit_type": "KEYM4"
+    },
+    {
+      "documentor": "NeoProInput",
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "unit_type": "KEYM4"
+    },
+    {
+      "documentor": "NeoInput",
+      "firmware_max": "1.5.02",
+      "firmware_min": "1.3.01",
+      "unit_type": "KEYM8"
+    },
+    {
+      "documentor": "NeoProInput",
+      "firmware_max": "2.9.99",
+      "firmware_min": "1.5.03",
+      "unit_type": "KEYM8"
+    },
+    {
+      "documentor": "NeoProInput",
+      "firmware": "2.5.00",
+      "unit_type": "KEYE1"
+    }
+  ],
+  "resources": {
+    "0x13c26cc": "&nbsp;",
+    "0x13c2878": "IR Key",
+    "0x13c2e5c": "Join Key",
+    "0x13c34b0": "Virtual Key"
+  },
+  "scene24_macro_group": {
+    "group_type": 56,
+    "jp_sr_lp_lr": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "template_type": 24
+  }
+}

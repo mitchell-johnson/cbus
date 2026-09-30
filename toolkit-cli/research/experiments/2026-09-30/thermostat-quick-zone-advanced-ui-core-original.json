@@ -1,0 +1,865 @@
+{
+  "abi_adapter_calls": {
+    "enter": 14,
+    "leave": 14,
+    "variant_clear_empty_or_bool": 7
+  },
+  "abi_adapter_semantics": {
+    "Enter/LeaveCriticalSection0x60e35c/0x60e6c8": "Owned reference-list locks only; balanced single-thread recursive depth; stdcall one pointer.",
+    "VariantClear0x627b14": "Owned stack VT_EMPTY/VT_BOOL only; clear type word, preserve inactive payload, return S_OK; original OleAut32 excluded."
+  },
+  "actual_instruction_engine_sha256": [
+    "7207c8e3d7a63118fb0bca73e01816797fd51b1d8a39a4cbc7abfd562ee59c85",
+    "7a379c419496cdc98d098fa356a1e9b4fdb90f4c325b4d98e60042ab3d8216b0"
+  ],
+  "adapter_stack_type_word_writes": 7,
+  "after_masks": {
+    "ControlledZones": 3,
+    "CoolingPlantInstalledZones": 1,
+    "HeatingPlantInstalledZones": 1,
+    "InstalledZones": 3,
+    "InternalPlantZones": 3,
+    "MeasuredZones": 3,
+    "ScheduleControlledZones": 3,
+    "UIAllocatedZones": 3,
+    "UsedZones": 2,
+    "VentingPlantInstalledZones": 1
+  },
+  "callback_trace": [
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "UsedZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "UIAllocatedZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "InternalPlantZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange",
+      "object": "plant",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TThermostat.HandleZoneChange",
+      "object": "thermostat",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "MeasuredZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TTemperatureMeasurementService.HandleZoneAfterChange",
+      "object": "measurement",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TThermostat.HandleZoneChange",
+      "object": "thermostat",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "ScheduleControlledZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TScheduleService.HandleZoneAfterChange",
+      "object": "schedule",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TThermostat.TThermostat.HandleZoneChange",
+      "object": "thermostat",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions",
+      "object": "templates",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "InstalledZones.bit1",
+      "phase": "include_zone_1"
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "object": "ControlledZones.bit1",
+      "phase": "include_zone_1"
+    }
+  ],
+  "child_exit_code": 0,
+  "constructors_executed": false,
+  "corrections_from_prior_synthetic_fixture": [
+    "Actual TAdvancedUIService VMT and virtual hook overrides.",
+    "UIAllocatedZones after-change callback nil; only three dedicated model zone events.",
+    "UsedZones initial0 instead of retained1; isolated include produces2 rather than3."
+  ],
+  "expected_masks": {
+    "ControlledZones": 3,
+    "CoolingPlantInstalledZones": 1,
+    "HeatingPlantInstalledZones": 1,
+    "InstalledZones": 3,
+    "InternalPlantZones": 3,
+    "MeasuredZones": 3,
+    "ScheduleControlledZones": 3,
+    "UIAllocatedZones": 3,
+    "UsedZones": 2,
+    "VentingPlantInstalledZones": 1
+  },
+  "full_original_form_executed": false,
+  "hooked": {
+    "EvapProgramEnabled": {
+      "code": "0xfdd2a0",
+      "owner_is_nil": false,
+      "owner_is_ui": true
+    },
+    "NonEvapProgramEnabled": {
+      "code": "0xfdd2a0",
+      "owner_is_nil": false,
+      "owner_is_ui": true
+    },
+    "UIAllocatedZones": {
+      "code": "0x0",
+      "owner_is_nil": true,
+      "owner_is_ui": false
+    }
+  },
+  "input": {
+    "EvapProgramEnabled": false,
+    "NonEvapProgramEnabled": false,
+    "action": "IncludeZone(1)",
+    "before_masks": {
+      "ControlledZones": 3,
+      "CoolingPlantInstalledZones": 1,
+      "HeatingPlantInstalledZones": 1,
+      "InstalledZones": 3,
+      "InternalPlantZones": 1,
+      "MeasuredZones": 1,
+      "ScheduleControlledZones": 1,
+      "UIAllocatedZones": 1,
+      "UsedZones": 0,
+      "VentingPlantInstalledZones": 1
+    },
+    "master_slave": 0,
+    "plant_types": [
+      0,
+      0,
+      0
+    ],
+    "templates_action_guard": true
+  },
+  "instruction_budget": 200000,
+  "instruction_count": 15961,
+  "methods": [
+    {
+      "end": "0x768278",
+      "entries": 15,
+      "name": "CIS_TBaseObject.TBASEObject.BeginUpdate",
+      "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c",
+      "start": "0x768268"
+    },
+    {
+      "end": "0x7682c8",
+      "entries": 15,
+      "name": "CIS_TBaseObject.TBASEObject.EndUpdate",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc",
+      "start": "0x7682a4"
+    },
+    {
+      "end": "0x7682a4",
+      "entries": 57,
+      "name": "CIS_TBaseObject.TBASEObject.Changed",
+      "sha256": "5a9c6a024e075c145d2f93358a03b7d4f84d50bd2c6f0dab270718df286b3167",
+      "start": "0x768278"
+    },
+    {
+      "end": "0x7682e4",
+      "entries": 52,
+      "name": "CIS_TBaseObject.TBASEObject.GetUpdating",
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb",
+      "start": "0x7682c8"
+    },
+    {
+      "end": "0x76a420",
+      "entries": 38,
+      "name": "CIS_TManagedFlashObject.TManagedFlashObject.Changed",
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8",
+      "start": "0x76a3cc"
+    },
+    {
+      "end": "0x76a460",
+      "entries": 164,
+      "name": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b",
+      "start": "0x76a444"
+    },
+    {
+      "end": "0x76a494",
+      "entries": 28,
+      "name": "CIS_TManagedFlashObject.TManagedFlashObject.DoChangeNotification",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "start": "0x76a488"
+    },
+    {
+      "end": "0x76a804",
+      "entries": 28,
+      "name": "CIS_TManagedFlashObject.TFlashElementStatePublisher.Changed",
+      "sha256": "3b1530e099d161fb94bb258ba8569259306efb12df64fcc1f9348d53b6bdd20d",
+      "start": "0x76a7c8"
+    },
+    {
+      "end": "0x7ece6c",
+      "entries": 5,
+      "name": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "start": "0x7ece44"
+    },
+    {
+      "end": "0x7ece94",
+      "entries": 5,
+      "name": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "start": "0x7ece6c"
+    },
+    {
+      "end": "0x7eca48",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TCISAttribute.Changed",
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6",
+      "start": "0x7eca04"
+    },
+    {
+      "end": "0x7ecd28",
+      "entries": 70,
+      "name": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange",
+      "sha256": "c45096cc2a19b8d46a39798914dd615f1109b0a0a7f09bd9ca781a917c35902a",
+      "start": "0x7ecd00"
+    },
+    {
+      "end": "0x7ec674",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "start": "0x7ec640"
+    },
+    {
+      "end": "0x7e7e38",
+      "entries": 5,
+      "name": "CIS_TCustomFlashObject.TAttributeManager.BeginUpdate",
+      "sha256": "e2dc560bd6d6af1a5e027ce8feab28b9bc85e6bcb9b191338b707ea08aa91ffd",
+      "start": "0x7e7e10"
+    },
+    {
+      "end": "0x7e7ea0",
+      "entries": 5,
+      "name": "CIS_TCustomFlashObject.TAttributeManager.EndUpdate",
+      "sha256": "4bb2c13a0e0579f16406129064d37d8a43266fe93a5571ebd691265c03805ad7",
+      "start": "0x7e7e78"
+    },
+    {
+      "end": "0x7ee114",
+      "entries": 19,
+      "name": "CIS_TCustomFlashObject.TFlashEntityManager.Changed",
+      "sha256": "3505e275d49d0a0a84bcdae1075b0a8fa965c212c55333a290311ffebef4584d",
+      "start": "0x7ee0ec"
+    },
+    {
+      "end": "0x7ee134",
+      "entries": 70,
+      "name": "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange",
+      "sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df",
+      "start": "0x7ee114"
+    },
+    {
+      "end": "0x7eaa44",
+      "entries": 24,
+      "name": "CIS_TCustomFlashObject.TCustomFlashObject.Changed",
+      "sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099",
+      "start": "0x7eaa10"
+    },
+    {
+      "end": "0x7eae04",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TCustomFlashObject.DoChangeNotification",
+      "sha256": "0a3010193f71c37b59579c1d8c647ebc77e439fff8b241bc5e1fe989efa45957",
+      "start": "0x7eade4"
+    },
+    {
+      "end": "0x7f08d4",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReferenceList.Changed",
+      "sha256": "82a07e0263b1e3741b0aeaa3513cf0fdf7d941e72038b7095a6cd827f87c6d08",
+      "start": "0x7f084c"
+    },
+    {
+      "end": "0x7f084c",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReferenceList.Count",
+      "sha256": "e8e0e863cc6d98e237bbac7247d385c8039f84a4ee45278ed1011c2e79fad4cb",
+      "start": "0x7f082c"
+    },
+    {
+      "end": "0x7f07e4",
+      "entries": 9,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReferenceList.Getitems",
+      "sha256": "c96461c8e7713639a603ea2e2f60f656d1130a06a3d4501ee3745723f8f54676",
+      "start": "0x7f07c0"
+    },
+    {
+      "end": "0x7f0e04",
+      "entries": 23,
+      "name": "CIS_TCustomFlashObject.TThreadSafeList.Count",
+      "sha256": "39879932c79cab577c49ea2d604f61f4211bfc87ff57684635966415e95f1730",
+      "start": "0x7f0de8"
+    },
+    {
+      "end": "0x7f0c50",
+      "entries": 9,
+      "name": "CIS_TCustomFlashObject.TThreadSafeList.Get",
+      "sha256": "67565b88e07155108b23c72f1398cc8647e662f19ba8e508f4392203937fadb3",
+      "start": "0x7f0c2c"
+    },
+    {
+      "end": "0x7f0d38",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TThreadSafeList.LockList",
+      "sha256": "82ea1657111d66b02031903e715c4839926124fc77311eb718eed2d93be0ae04",
+      "start": "0x7f0d10"
+    },
+    {
+      "end": "0x7f0e50",
+      "entries": 14,
+      "name": "CIS_TCustomFlashObject.TThreadSafeList.UnlockList",
+      "sha256": "cb8e39343c45afe185efea72dd0a8fd1e4e5aecdaeae3f91d74c58bfaad8a149",
+      "start": "0x7f0e04"
+    },
+    {
+      "end": "0x7ed3e8",
+      "entries": 9,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReference.ObjectChanged",
+      "sha256": "7afab599ae69adb9977c6f08f5ef6891571a67dfb79150c353a955e49ad4d334",
+      "start": "0x7ed3c4"
+    },
+    {
+      "end": "0x7ed3c4",
+      "entries": 18,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReference.GetFlashObject",
+      "sha256": "234e65154b3c0261e17dd00f2163f8f5f852b89419cfb1aab3e2198742095d22",
+      "start": "0x7ed3a0"
+    },
+    {
+      "end": "0x7ed68c",
+      "entries": 18,
+      "name": "CIS_TCustomFlashObject.TFlashObjectReference.ResolveReference",
+      "sha256": "fb0c76794fcaaf8c758111beb938ca33aba43d4f07bf4b74de29132c5abc56e7",
+      "start": "0x7ed41c"
+    },
+    {
+      "end": "0x7dd448",
+      "entries": 18,
+      "name": "CIS_TCustomObjectAttribute.TCustomObjectAttribute.GetFlashObject",
+      "sha256": "ff7fb92ef86e2dd75acb2f7a72e46afee5d7f2bd22cb0868fc476fa0b6c6dd24",
+      "start": "0x7dd428"
+    },
+    {
+      "end": "0x7de740",
+      "entries": 18,
+      "name": "CIS_TObjectAttribute.TObjectAttribute.GetFlashObject",
+      "sha256": "d2c750bfed0c85f5453780938eb0ba27edc36979ec9d7776704296a7325fe2a6",
+      "start": "0x7de538"
+    },
+    {
+      "end": "0x7de2ac",
+      "entries": 9,
+      "name": "CIS_TObjectAttribute.TObjectAttribute.ObjectChanged",
+      "sha256": "4589079c7e5ff1c36ce256dd8cf7ec5c193d6d71a716f6a0df762f0c2af3e60b",
+      "start": "0x7de294"
+    },
+    {
+      "end": "0x7f43fc",
+      "entries": 52,
+      "name": "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean",
+      "sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db",
+      "start": "0x7f43d8"
+    },
+    {
+      "end": "0x7f4660",
+      "entries": 7,
+      "name": "CIS_TBooleanAttribute.TBooleanAttribute.SetValue",
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c",
+      "start": "0x7f4638"
+    },
+    {
+      "end": "0x7f4638",
+      "entries": 7,
+      "name": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "start": "0x7f45e0"
+    },
+    {
+      "end": "0x8482e0",
+      "entries": 5,
+      "name": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.AsInteger",
+      "sha256": "6ac044cd7922f8ff642324542856112d4148197cc964390728742d176024d915",
+      "start": "0x8482c4"
+    },
+    {
+      "end": "0xca52d4",
+      "entries": 7,
+      "name": "CIS_TThermostatCommon.TZones.IncludeZone",
+      "sha256": "297de92b0da1f85066397d173c184cf6bde3e9af99940a2559ea6c4653ee01d2",
+      "start": "0xca51d0"
+    },
+    {
+      "end": "0xfeccd4",
+      "entries": 1,
+      "name": "CIS_TThermostat.TThermostat.GetUsedZones",
+      "sha256": "95fd0372ae8fb08a7367cecec5fb58ff10f7dfe25723060ccbd787c3c71279b3",
+      "start": "0xfeccb0"
+    },
+    {
+      "end": "0xfeb440",
+      "entries": 1,
+      "name": "CIS_TThermostat.TThermostat.GetUIService",
+      "sha256": "681bc090339bcc194ea1b405b70ee90b98220b80ab99547e58e44f30ee9897cf",
+      "start": "0xfeb41c"
+    },
+    {
+      "end": "0xfeb3d4",
+      "entries": 1,
+      "name": "CIS_TThermostat.TThermostat.GetPlantControlService",
+      "sha256": "4d99d7f4a05a0006e208cba0f26f6500b91f05d60eefa9f2d987286c7069a2e6",
+      "start": "0xfeb3b0"
+    },
+    {
+      "end": "0xfeb3f8",
+      "entries": 1,
+      "name": "CIS_TThermostat.TThermostat.GetTemperatureMeasurementService",
+      "sha256": "5a1c1e851adb9d90ee6855afbb11e4863493ca37876e8d7c8ead57b2012596cd",
+      "start": "0xfeb3d4"
+    },
+    {
+      "end": "0xfea7b0",
+      "entries": 6,
+      "name": "CIS_TThermostat.TThermostat.GetZoneManagerService",
+      "sha256": "0b91c5321ba7833d7679996a201a092edb77ebf6a55980aaaf4c67e4eb856d8f",
+      "start": "0xfea78c"
+    },
+    {
+      "end": "0xfea78c",
+      "entries": 1,
+      "name": "CIS_TThermostat.TThermostat.GetCBusParameters",
+      "sha256": "1639652beedb4d70771df46aaf9390eb3d96c3605399767f82080f3c90ef4491",
+      "start": "0xfea768"
+    },
+    {
+      "end": "0xfea824",
+      "entries": 3,
+      "name": "CIS_TThermostat.TThermostat.HandleZoneChange",
+      "sha256": "5bf14ee60d75152f3b73782929a01ac5b9d984d2d6f432cf5ea98264e3f879aa",
+      "start": "0xfea7b0"
+    },
+    {
+      "end": "0xfed2d4",
+      "entries": 1,
+      "name": "CIS_TThermostat.TProgrammableThermostat.GetScheduleService",
+      "sha256": "713db45aa62d32a8b2bdd93c49772db2d967a123264024be54a5222613754883",
+      "start": "0xfed2b0"
+    },
+    {
+      "end": "0xfdc894",
+      "entries": 1,
+      "name": "CIS_TThermostat.TUIService.GetUIAllocatedZones",
+      "sha256": "e325293a2091f4f1e2d36f5f9574390d07501db1a4ac0a703bed5927894eb44c",
+      "start": "0xfdc870"
+    },
+    {
+      "end": "0xfe1bb8",
+      "entries": 1,
+      "name": "CIS_TThermostat.TPlantControlService.GetInternalPlantZones",
+      "sha256": "8a04141aad92e8923d0a5a5cd4eec3575da72161e78a5dcb456a8ba1df49ecc7",
+      "start": "0xfe1b94"
+    },
+    {
+      "end": "0xfe1e4c",
+      "entries": 1,
+      "name": "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange",
+      "sha256": "65974198aa6ac8e08ddeebf5c9a81f130a52d128debdfab709994bfdc0e0213c",
+      "start": "0xfe1de4"
+    },
+    {
+      "end": "0xfdc0c8",
+      "entries": 1,
+      "name": "CIS_TThermostat.TTemperatureMeasurementService.GetMeasuredZones",
+      "sha256": "813ee0b691951e6481cf1ae992ccfc616facb528d9a4c0b09c3e37e5f457ec89",
+      "start": "0xfdc0a4"
+    },
+    {
+      "end": "0xfdc144",
+      "entries": 1,
+      "name": "CIS_TThermostat.TTemperatureMeasurementService.HandleZoneAfterChange",
+      "sha256": "5bf355654ba387126f2d46311eb7f345e51543fd2357057493022a756fa15d04",
+      "start": "0xfdc110"
+    },
+    {
+      "end": "0xfea100",
+      "entries": 1,
+      "name": "CIS_TThermostat.TScheduleService.GetControlledZones",
+      "sha256": "20c7353053e63df7c78b3954f0d0a9479ee6efe25b59425667515f55c838db5a",
+      "start": "0xfea0dc"
+    },
+    {
+      "end": "0xfea134",
+      "entries": 1,
+      "name": "CIS_TThermostat.TScheduleService.HandleZoneAfterChange",
+      "sha256": "77ad1c1e6204e19f9f90ce46612b0f57fcf672e05353202c1f6a06825708cfbb",
+      "start": "0xfea100"
+    },
+    {
+      "end": "0xfdba60",
+      "entries": 1,
+      "name": "CIS_TThermostat.TCBusParameters.GetInstalledZones",
+      "sha256": "7d5fe1beb805570584b823b50e566928d2239c91881a48abca3d7e1a0b7e7d2d",
+      "start": "0xfdba3c"
+    },
+    {
+      "end": "0xfde7ac",
+      "entries": 1,
+      "name": "CIS_TThermostat.TZoneManagerService.GetControlledZones",
+      "sha256": "20c7353053e63df7c78b3954f0d0a9479ee6efe25b59425667515f55c838db5a",
+      "start": "0xfde788"
+    },
+    {
+      "end": "0xfdeb74",
+      "entries": 2,
+      "name": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave",
+      "sha256": "d56dfd09655ee7ce4c856bae0bea33665058e7a888e80ecf5caa1fdf3e3f14e3",
+      "start": "0xfdeb50"
+    },
+    {
+      "end": "0xfdea30",
+      "entries": 1,
+      "name": "CIS_TThermostat.TZoneManagerService.GetHeatingPlantType",
+      "sha256": "f856d6a7b07fad2543bd7937144257bae747528f5d7fb7df68303d9660913cd6",
+      "start": "0xfdea10"
+    },
+    {
+      "end": "0xfde7f4",
+      "entries": 1,
+      "name": "CIS_TThermostat.TZoneManagerService.GetCoolingPlantType",
+      "sha256": "c714a60a806e66f391a4002849f2c0201b4527204f3ddc61f8481913d34d1150",
+      "start": "0xfde7d0"
+    },
+    {
+      "end": "0xfdeb50",
+      "entries": 1,
+      "name": "CIS_TThermostat.TZoneManagerService.GetVentingPlantType",
+      "sha256": "e56653c6868b271bc3654b9b73577ccafec9b94709b8cd128d9196033c08f486",
+      "start": "0xfdeb2c"
+    },
+    {
+      "end": "0xfdaa34",
+      "entries": 3,
+      "name": "CIS_TThermostat.TPlantTypeAttribute.AsPlantTypeEnum",
+      "sha256": "6cad8d18b9e29fd881b6f35c54a739b5a35174e1afe36ad844b0faa11bfb9ab0",
+      "start": "0xfdaa14"
+    },
+    {
+      "end": "0x111df60",
+      "entries": 3,
+      "name": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange",
+      "sha256": "89c7732f572ab3f5030fa6860db128f07e33cfedf662489c0bdc947981f1b1c2",
+      "start": "0x111df48"
+    },
+    {
+      "end": "0x111eafc",
+      "entries": 3,
+      "name": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions",
+      "sha256": "70e7b90e0184574cc18f6d5d35a76b2e87ae1cd535631bf93781d352fdf29b18",
+      "start": "0x111e97c"
+    },
+    {
+      "end": "0x111d98c",
+      "entries": 1,
+      "name": "CIS_TcdThermostatTemplates.IncludeZone",
+      "sha256": "a1b459d1fd020791af52d6916e58740587faf194e7c4b542e87836abddabd7ee",
+      "start": "0x111d7cc"
+    },
+    {
+      "end": "0x62f4d8",
+      "entries": 7,
+      "name": "Variants.@VarFromBool",
+      "sha256": "a67a1c2ab5e82086666296faf4d598274dfec4b5c91502b6643e70977398fcde",
+      "start": "0x62f4b0"
+    },
+    {
+      "end": "0x62c3a4",
+      "entries": 7,
+      "name": "Variants.@VarToBool",
+      "sha256": "c3f1a32d74f046245e62ef53d828809910b7a860e190cf37b0d5f02fca22b57b",
+      "start": "0x62c398"
+    },
+    {
+      "end": "0x62c398",
+      "entries": 7,
+      "name": "Variants.@VarToBoolean",
+      "sha256": "4fdcfc2e3c1007f3fc512651043d20f9dc8839281eff12e6a3bf55273beea3c2",
+      "start": "0x62bffc"
+    },
+    {
+      "end": "0x629f24",
+      "entries": 35,
+      "name": "Variants.@VarClr",
+      "sha256": "21983c8c16624fa3d8fcfc9d92493490460349e4acd4f9717cd1e138353e8c4d",
+      "start": "0x629f1c"
+    },
+    {
+      "end": "0x629f1c",
+      "entries": 35,
+      "name": "Variants.@VarClear",
+      "sha256": "8ec7cba38d30965d6948a645e1d08d64396fa2ccd7e9d1375d4b78bc6172c358",
+      "start": "0x629f08"
+    },
+    {
+      "end": "0x629f08",
+      "entries": 7,
+      "name": "Variants.VarClearDeep",
+      "sha256": "6f3c86e37edc4684423561f9fb891e300581a01256049e6555478c50b6765d77",
+      "start": "0x629e74"
+    },
+    {
+      "end": "0x629b4c",
+      "entries": 7,
+      "name": "Variants.VarResultCheck",
+      "sha256": "94ea7b5d0f48848129d76a806d6f603bd2c8946c0ad1a53f8194dd3e8f53844a",
+      "start": "0x629b40"
+    },
+    {
+      "end": "0x606438",
+      "entries": 1,
+      "name": "System.@IsClass",
+      "sha256": "95b655a581f0360ca7a6325e32680a6e50e659fa75c0a50b9e364ab51cc118fe",
+      "start": "0x606414"
+    },
+    {
+      "end": "0x6064fc",
+      "entries": 1,
+      "name": "System.TObject.InheritsFrom",
+      "sha256": "ab0f7d49b8fda6af91180435e1206112bb941adc152756ba34a0cf23892652b3",
+      "start": "0x6064e8"
+    },
+    {
+      "end": "0x6099c0",
+      "entries": 7,
+      "name": "System.@FinalizeArray",
+      "sha256": "208bcd0064ddc522234d283ac17b3b0ff3e2471129a5e59d9ecd76be54a4fd43",
+      "start": "0x6098b0"
+    },
+    {
+      "end": "0x6098b0",
+      "entries": 35,
+      "name": "System.@VarClr",
+      "sha256": "47556d9f516def3306f4cb91eba3c3fa286c7932b31e4c7e7f0b5d052cfa5919",
+      "start": "0x609898"
+    },
+    {
+      "end": "0x60bcbc",
+      "entries": 18,
+      "name": "System.@IntfClear",
+      "sha256": "55f7e7ce518d0cf58ca8c82f88d766dc16d3f82cb97ebd1104e254ef0b896491",
+      "start": "0x60bca4"
+    },
+    {
+      "end": "0x643960",
+      "entries": 9,
+      "name": "Classes.TList.Get",
+      "sha256": "010af392a703b39a9b2524d9ae64956e176620e970621c119b38b33661843f1b",
+      "start": "0x64393c"
+    },
+    {
+      "end": "0xfdd30c",
+      "entries": 1,
+      "name": "CIS_TThermostat.TAdvancedUIService.HookEvents",
+      "sha256": "16d00e6b8cd446cc2ed046316f5a1cf94067c3708bfa09c096151094c95d3611",
+      "start": "0xfdd2d4"
+    },
+    {
+      "end": "0xfdd338",
+      "entries": 1,
+      "name": "CIS_TThermostat.TAdvancedUIService.UnhookEvents",
+      "sha256": "41d72068f76fcca3af387afd0f05560ec60e15a284e428b110e5975fc42b67df",
+      "start": "0xfdd30c"
+    }
+  ],
+  "network_denied_by_macos_sandbox": true,
+  "omissions": [
+    "Full constructors and initialized form provenance",
+    "GUI publishers/expression consumers",
+    "workspace",
+    "parent EnableDisableZone callback",
+    "unrelated model attributes",
+    "project/group metadata",
+    "original AfterLoad/BeforeSave/save/reload",
+    "outer click/confirmation",
+    "native Windows message queue"
+  ],
+  "original_image_unchanged_after_runtime_data_seed": true,
+  "original_instruction_bytes_verified_at_every_execution": true,
+  "original_instruction_events": 15926,
+  "passed": true,
+  "pp_load_save_reload_executed": false,
+  "probe_sha256": "3b5c30c80ba6f67ad451eea4875cced1a4b781478e07082f5aaa780cf7c1356c",
+  "public_action_accepted": false,
+  "runtime_data_initialization": {
+    "slot": "0x13a1010",
+    "source": "Original Variants.Variants0x13691f0..0x13691fb via [0x13c2f58].",
+    "target": "0x629f1c"
+  },
+  "schema": "cbus-thermostat-quick-zone-advanced-ui-core-original-v1",
+  "scope": "Corrected bounded quick-zone core fixture with the programmable Advanced UI.\n\nFresh-model provenance corrections: TAdvancedUIService uses its actual VMT and\noriginal HookEvents/UnhookEvents; UIAllocatedZones has no inherited after-change\ncallback. UsedZones is explicitly zero before the action, matching its recovered\nconstructor default while initial Templates binding suppresses its recomputation.\nThis executes selected original routines over an owned prepared graph. It does\nnot execute constructors, initial GUI binding, a whole form, PP load/save/reload,\nproject/group operations, or native Windows notifications.\n",
+  "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "source_routes": {
+    "advanced_ui_vmt": "0xfd8d38",
+    "base_probe_sha256": "ad112c8653471232598251c98ab1726973539a52075db1c2f8c1e3e5225b5a1d",
+    "checks": {
+      "actual_virtual_hook": true,
+      "actual_virtual_unhook": true,
+      "advanced_class_pointer": true,
+      "advanced_internal_create_calls_base_then_two_flags": true,
+      "evap_boolean_at_b8": true,
+      "hook_has_no_inherited_call": true,
+      "hook_installs_flag_handler_twice": true,
+      "hook_only_targets_two_flags": true,
+      "non_evap_boolean_at_bc": true,
+      "programmable_constructs_advanced_ui": true,
+      "programmable_retains_ui_zone_event_endpoint": true,
+      "programmable_sets_flag_event_endpoint": true,
+      "thermostat_assigns_new_used_zones": true,
+      "unhook_has_no_inherited_call": true,
+      "unhook_only_targets_two_flags": true,
+      "zone_boolean_value_explicitly_starts_false": true
+    },
+    "methods": [
+      {
+        "end": "0xfdd1a0",
+        "name": "CIS_TThermostat.TAdvancedUIService.InternalCreate",
+        "sha256": "58c7040ab2460d80f5b2e684eb7ebcfecbb69fb0bfc179311b9e82332d3ba3b5",
+        "start": "0xfdd0d4"
+      },
+      {
+        "end": "0xfdd30c",
+        "name": "CIS_TThermostat.TAdvancedUIService.HookEvents",
+        "sha256": "16d00e6b8cd446cc2ed046316f5a1cf94067c3708bfa09c096151094c95d3611",
+        "start": "0xfdd2d4"
+      },
+      {
+        "end": "0xfdd338",
+        "name": "CIS_TThermostat.TAdvancedUIService.UnhookEvents",
+        "sha256": "41d72068f76fcca3af387afd0f05560ec60e15a284e428b110e5975fc42b67df",
+        "start": "0xfdd30c"
+      },
+      {
+        "end": "0xfed0bc",
+        "name": "CIS_TThermostat.TProgrammableThermostat.AfterConstruction",
+        "sha256": "ff13988d1aea8b97bdacf4e6c81dbd4c53085ab01bbfa8568f2d0435d7ee8ae6",
+        "start": "0xfecfc8"
+      },
+      {
+        "end": "0xfdc800",
+        "name": "CIS_TThermostat.TUIService.AfterConstruction",
+        "sha256": "ce868bbc983ff0faac1ac9769d5bacafefcf9267fb79130c924205b3940e6ad7",
+        "start": "0xfdc7c0"
+      },
+      {
+        "end": "0xca5450",
+        "name": "CIS_TThermostatCommon.TZones.InternalCreate",
+        "sha256": "65ab4bcc28ed1798b1b965092f9e99f9199896a8ec9a8007cd061350c6428ebb",
+        "start": "0xca52d4"
+      },
+      {
+        "end": "0x111e0cc",
+        "name": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.Initialise",
+        "sha256": "893f59464291150d433d290e06cae56c517b3ba59d0d7b8e359d6b71049dfaf6",
+        "start": "0x111df60"
+      },
+      {
+        "end": "0x111e97c",
+        "name": "CIS_TcdThermostatTemplates.UpdateFlashZoneVariables",
+        "sha256": "d92ae488da5f4d633e146ccae3bff7579d20767ac120c9aac47808f1e073e454",
+        "start": "0x111e7d8"
+      },
+      {
+        "end": "0x7f4548",
+        "name": "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate",
+        "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee",
+        "start": "0x7f44d8"
+      },
+      {
+        "end": "0xfea5ec",
+        "name": "CIS_TThermostat.TThermostat.AfterConstruction",
+        "sha256": "105eac281e6c8dabdc67dad35a2c93a9850e6967f4dbf9e04994e870ecf4e7cd",
+        "start": "0xfea404"
+      }
+    ]
+  },
+  "unhooked": {
+    "EvapProgramEnabled": {
+      "code": "0x0",
+      "owner_is_nil": true,
+      "owner_is_ui": false
+    },
+    "NonEvapProgramEnabled": {
+      "code": "0x0",
+      "owner_is_nil": true,
+      "owner_is_ui": false
+    },
+    "UIAllocatedZones": {
+      "code": "0x0",
+      "owner_is_nil": true,
+      "owner_is_ui": false
+    }
+  },
+  "unique_original_instruction_count": 1289,
+  "writes": {
+    "owned": 180,
+    "seh": 96,
+    "stack": 4627
+  },
+  "writes_outside_owned_state": 0
+}

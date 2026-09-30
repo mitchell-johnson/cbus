@@ -100,6 +100,43 @@ def test_all_five_native_timer_vectors_and_only_retrigger_adds_timer_column(comm
         assert '<td>18h12m15s</td><td>Off Key</td>' in lines[9]  # unsupported expiry8→Off15
 
 
+@pytest.mark.parametrize("commands", [(11, 7, 0, 7), (13, 7, 15, 0), (13, 8, 13, 8),
+                                      (0, 7, 0, 7), (0, 7, 15, 0)])
+def test_timer_macro_load_defaults_only_zero_primary_timer_and_keeps_idle_expiry(commands):
+    params = pp((commands,))
+    params.update(BlockAllocation=[10], TimerHighByte=[0] * 4,
+                  TimerLowByte=[0] * 4, TimerExpiryCommand=[0] * 4)
+    unit = doc.Unit(12, "Key", "KEY1", "", "", "1.2.00", "",
+                    {name: " ".join(map(str, values)) for name, values in params.items()}, {})
+    data = devices.classic_key_data(unit)
+    assert data.timers == [0, 300, 0, 0]
+    assert data.expiry == [0] * 4  # A real Idle object does not take the nil fallback.
+    unit.parameters["TimerLowByte"] = "0 30 0 0"
+    assert devices.classic_key_data(unit).timers == [0, 30, 0, 0]
+    unit.parameters["BlockAllocation"] = "0"
+    unit.parameters["TimerLowByte"] = "0 0 0 0"
+    assert devices.classic_key_data(unit).timers == [0] * 4
+    unit.parameters["BlockAllocation"] = "2"
+    unit.parameters["Application"] = "255"
+    assert devices.classic_key_data(unit).timers == [0] * 4  # Rejected template becomes Custom directly.
+
+
+def test_shared_key_table_keeps_equal_group_addresses_in_separate_applications():
+    params = pp(((12, 0, 0, 0),))
+    params.update(GroupAddress=[1, 1, 255, 255], BlockAllocation=[3], LightLevelStore1=[128, 255, 0, 0])
+    unit = doc.Unit(12, "Key", "KEY1", "", "", "1.2.00", "",
+                    {name: " ".join(map(str, values)) for name, values in params.items()}, {})
+    net = network()
+    net.applications.append(doc.Application(202, "Triggers", "", [
+        doc.Group(1, "Modes", "", [doc.Level(255, "All", 0)])]))
+    lines = devices.classic_key_lines(net, devices.classic_key_data(unit),
+                                      macros=[(26, "Custom")], block_applications=[56, 202, 56, 56])
+    row = lines[9]
+    assert '<a href="#254_56_1_128">Evening &<b>scene</b></a> (50%)' in row
+    assert '<a href="#254_202_1_255">All</a> (100%)' in row
+    assert row.index('#254_56_1') < row.index('#254_202_1')
+
+
 @pytest.mark.parametrize("level,expected", [(0, 0), (1, 1), (2, 1), (127, 50), (128, 50),
                                            (129, 51), (254, 100), (255, 100)])
 def test_original_level_percentage_rounding(level, expected):

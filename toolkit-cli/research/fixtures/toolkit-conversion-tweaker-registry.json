@@ -124,7 +124,11 @@
    ],
    "assignments": [],
    "summary": "marks 13 Neo/IR attributes immutable (target default retained)",
-   "refusal": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered",
+   "refusal": null,
+   "profile": "input-1.2.67-to-fresh-input-1.2.67",
+   "source_firmware": "1.2.67",
+   "target_firmware": "1.2.67",
+   "hook_summary": "fresh Learn flags are true/true/false; non-Neo sources and targets with HasApplication2=false leave group and indicator strings unchanged; brightness is writable for KEY1/2/4 and immutable for KEYBC2/4 and BCNC4A/B",
    "call_sites": 11
   },
   "TTweakerKeyToDLT": {
@@ -203,10 +207,16 @@
    },
    "summary": "TTweakerInputUnit rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1",
    "refusal": null,
-   "profile": "classic-1.2.67-to-fresh-neo-2.5.00",
+   "profiles": [
+    "classic-1.2.67-to-fresh-neo-2.5.00",
+    "coupler-1.2.67-to-fresh-neo-2.2.00"
+   ],
    "source_firmware": "1.2.67",
-   "target_firmware": "2.5.00",
-   "hook_summary": "fresh target Learn hook enables LearnMode/LearnAnyApp and disables LearnedFlag; CoreKey moves group index4 to index8 and enables IndicatorBrightness; NeoPro suppresses 13 fields for a non-NeoPro source",
+   "target_firmwares": [
+    "2.5.00",
+    "2.2.00"
+   ],
+   "hook_summary": "fresh target Learn hook enables LearnMode/LearnAnyApp and disables LearnedFlag; CoreKey moves group index4 to index8 and enables IndicatorBrightness; NeoPro suppresses 13 fields for a non-NeoPro source; CouplerPro then makes IndicatorBrightness immutable",
    "call_sites": 98
   },
   "TTweakerNeoToKey": {
@@ -887,11 +897,15 @@
     "KEY2",
     "KEY4",
     "KEYIR1",
-    "KEYIR4"
+    "KEYIR4",
+    "KEYBC2",
+    "KEYBC4",
+    "DINAUX4"
    ],
    "overrides_before_unit_conversion_save": true,
-   "conversion_role": "source_only",
+   "conversion_hook_profile": "input-1.2.67-to-fresh-input-1.2.67",
    "source_firmware": "1.2.67",
+   "target_firmware": "1.2.67",
    "attributes": [
     [
      "Application",
@@ -1316,6 +1330,426 @@
      true
     ]
    ]
+  },
+  "TCBusCouplerProInputCGateAgent": {
+   "unit_types": [
+    "BCN2B",
+    "BCN4B",
+    "BCI4A"
+   ],
+   "overrides_before_unit_conversion_save": true,
+   "conversion_hook_profile": "coupler-1.2.67-to-fresh-neo-2.2.00",
+   "target_firmware": "2.2.00",
+   "attributes": [
+    [
+     "Application",
+     true
+    ],
+    [
+     "FirmwareVersion",
+     false
+    ],
+    [
+     "Project",
+     true
+    ],
+    [
+     "SerialNo",
+     false
+    ],
+    [
+     "State",
+     false
+    ],
+    [
+     "UnitAddress",
+     true
+    ],
+    [
+     "UnitName",
+     true
+    ],
+    [
+     "UnitType",
+     false
+    ],
+    [
+     "LearnAnyApp",
+     true
+    ],
+    [
+     "LearnMode",
+     true
+    ],
+    [
+     "LearnedFlag",
+     true
+    ],
+    [
+     "AreaGroupAddress",
+     true
+    ],
+    [
+     "StatusReportInterval",
+     true
+    ],
+    [
+     "GroupAddress",
+     true
+    ],
+    [
+     "DebounceTime",
+     true
+    ],
+    [
+     "IndicatorBrightness",
+     false
+    ],
+    [
+     "LongPressTime",
+     true
+    ],
+    [
+     "EEPROMLevelStore",
+     true
+    ],
+    [
+     "LightIndex",
+     true
+    ],
+    [
+     "LightLevel",
+     true
+    ],
+    [
+     "LightLevelStore1",
+     true
+    ],
+    [
+     "LightLevelStore2",
+     true
+    ],
+    [
+     "RampRate",
+     true
+    ],
+    [
+     "IRBank",
+     true
+    ],
+    [
+     "JPCommand",
+     true
+    ],
+    [
+     "SRCommand",
+     true
+    ],
+    [
+     "LPCommand",
+     true
+    ],
+    [
+     "LRCommand",
+     true
+    ],
+    [
+     "BlockAllocation",
+     true
+    ],
+    [
+     "IndicatorBlockAssignment",
+     true
+    ],
+    [
+     "IndicatorFunction",
+     true
+    ],
+    [
+     "TimerHighByte",
+     true
+    ],
+    [
+     "TimerLowByte",
+     true
+    ],
+    [
+     "TimerExpiryCommand",
+     true
+    ],
+    [
+     "ControlAppGroupAddress",
+     true
+    ],
+    [
+     "EnableNightlight",
+     true
+    ],
+    [
+     "EnableNightlightControl",
+     true
+    ],
+    [
+     "DisableTimerFlash",
+     true
+    ],
+    [
+     "FirstKeyThrowAway",
+     true
+    ],
+    [
+     "IndicatorPressedLevel",
+     true
+    ],
+    [
+     "TimerDuration",
+     true
+    ],
+    [
+     "PatchEnable",
+     true
+    ],
+    [
+     "SceneKeySelector",
+     true
+    ],
+    [
+     "SceneTable",
+     true
+    ],
+    [
+     "SceneTablePointer",
+     true
+    ],
+    [
+     "DisableIR",
+     true
+    ],
+    [
+     "IDBacklightIllumination",
+     true
+    ],
+    [
+     "EnableNightlightOnPCx",
+     true
+    ],
+    [
+     "EnableNightlightOnPA6",
+     true
+    ],
+    [
+     "PrimaryColour",
+     true
+    ],
+    [
+     "DisableIRNEC",
+     true
+    ],
+    [
+     "KeyDisableGroup",
+     true
+    ],
+    [
+     "KeyDisableGroupInvert",
+     true
+    ],
+    [
+     "CorridorLinkEnable",
+     true
+    ],
+    [
+     "CorridorMasterGroup",
+     true
+    ],
+    [
+     "CorridorGroupBlock",
+     true
+    ],
+    [
+     "CorridorOfficeGroupBlock",
+     true
+    ],
+    [
+     "JoinPrimaryApplication",
+     true
+    ],
+    [
+     "JoinSecondaryApplication",
+     true
+    ],
+    [
+     "DualJoinPrimaryApplication",
+     true
+    ],
+    [
+     "DualJoinSecondaryApplication",
+     true
+    ],
+    [
+     "SecondApplicationBlocks",
+     true
+    ],
+    [
+     "BistableSwitchBlock",
+     true
+    ],
+    [
+     "GroupAssertOnPowerup",
+     true
+    ]
+   ]
+  },
+  "TBCNC4CGateAgent": {
+   "unit_types": [
+    "BCNC4A",
+    "BCNC4B"
+   ],
+   "overrides_before_unit_conversion_save": true,
+   "conversion_hook_profile": "input-1.2.67-to-fresh-input-1.2.67",
+   "source_firmware": "1.2.67",
+   "target_firmware": "1.2.67",
+   "attributes": [
+    [
+     "Application",
+     true
+    ],
+    [
+     "FirmwareVersion",
+     false
+    ],
+    [
+     "Project",
+     true
+    ],
+    [
+     "SerialNo",
+     false
+    ],
+    [
+     "State",
+     false
+    ],
+    [
+     "UnitAddress",
+     true
+    ],
+    [
+     "UnitName",
+     true
+    ],
+    [
+     "UnitType",
+     false
+    ],
+    [
+     "LearnAnyApp",
+     true
+    ],
+    [
+     "LearnMode",
+     true
+    ],
+    [
+     "LearnedFlag",
+     true
+    ],
+    [
+     "AreaGroupAddress",
+     true
+    ],
+    [
+     "StatusReportInterval",
+     true
+    ],
+    [
+     "GroupAddress",
+     true
+    ],
+    [
+     "DebounceTime",
+     true
+    ],
+    [
+     "IndicatorBrightness",
+     false
+    ],
+    [
+     "LongPressTime",
+     true
+    ],
+    [
+     "EEPROMLevelStore",
+     true
+    ],
+    [
+     "LightIndex",
+     true
+    ],
+    [
+     "LightLevel",
+     true
+    ],
+    [
+     "LightLevelStore1",
+     true
+    ],
+    [
+     "LightLevelStore2",
+     true
+    ],
+    [
+     "RampRate",
+     true
+    ],
+    [
+     "InfraRedBank",
+     true
+    ],
+    [
+     "JPCommand",
+     true
+    ],
+    [
+     "SRCommand",
+     true
+    ],
+    [
+     "LPCommand",
+     true
+    ],
+    [
+     "LRCommand",
+     true
+    ],
+    [
+     "BlockAllocation",
+     true
+    ],
+    [
+     "IndicatorBlockAssignment",
+     true
+    ],
+    [
+     "IndicatorFunction",
+     true
+    ],
+    [
+     "TimerHighByte",
+     true
+    ],
+    [
+     "TimerLowByte",
+     true
+    ],
+    [
+     "TimerExpiryCommand",
+     true
+    ],
+    [
+     "GAVBroadcastFlag",
+     false
+    ]
+   ]
   }
  },
  "native_accepted_classes": [
@@ -1323,7 +1757,8 @@
   "TTweakerDIMDU4_TO_DIMDN",
   "TTweakerRELDN8_TO_X",
   "TTweakerRELDNX_TO_8",
-  "TTweakerKeyToNeo"
+  "TTweakerKeyToNeo",
+  "TTweakerInputUnit"
  ],
  "pair_refusals": [
   {
@@ -1332,29 +1767,9 @@
    "reason": "native RELDN4 logic arrays have four elements, but the original reverse tweaker reads eight without padding; no defined safe conversion is established"
   },
   {
-   "source": "KEYBC2",
-   "target": "BCN2B",
-   "reason": "source is outside the admitted classic-key to fresh Neo model profile"
-  },
-  {
-   "source": "KEYBC2",
-   "target": "BCN4B",
-   "reason": "source is outside the admitted classic-key to fresh Neo model profile"
-  },
-  {
-   "source": "KEYBC4",
-   "target": "BCN2B",
-   "reason": "source is outside the admitted classic-key to fresh Neo model profile"
-  },
-  {
-   "source": "KEYBC4",
-   "target": "BCN4B",
-   "reason": "source is outside the admitted classic-key to fresh Neo model profile"
-  },
-  {
-   "source": "DINAUX4",
-   "target": "BCI4A",
-   "reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "source": "SENPILL",
+   "target": "SENPILL",
+   "reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
   }
  ],
  "registrations": [
@@ -2579,80 +2994,80 @@
    "target": "KEY2",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db0c",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY1",
    "target": "KEY4",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db28",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY2",
    "target": "KEY1",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db44",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY2",
    "target": "KEY4",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db60",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY4",
    "target": "KEY1",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db7c",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY4",
    "target": "KEY2",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139db98",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEYBC2",
    "target": "KEYBC4",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139dbb4",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEYBC4",
    "target": "KEYBC2",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139dbd0",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "BCNC4A",
    "target": "BCNC4B",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139dbec",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "BCNC4B",
    "target": "BCNC4A",
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139dc08",
-   "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "SENPILL",
@@ -2660,47 +3075,47 @@
    "tweaker_class": "TTweakerInputUnit",
    "call_va": "0x139dc24",
    "decision": "refused",
-   "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+   "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
   },
   {
    "source": "KEYBC2",
    "target": "BCN2B",
    "tweaker_class": "TTweakerKeyToNeo",
    "call_va": "0x139dc40",
-   "decision": "refused",
-   "refusal_reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEYBC2",
    "target": "BCN4B",
    "tweaker_class": "TTweakerKeyToNeo",
    "call_va": "0x139dc5c",
-   "decision": "refused",
-   "refusal_reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEYBC4",
    "target": "BCN2B",
    "tweaker_class": "TTweakerKeyToNeo",
    "call_va": "0x139dc78",
-   "decision": "refused",
-   "refusal_reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEYBC4",
    "target": "BCN4B",
    "tweaker_class": "TTweakerKeyToNeo",
    "call_va": "0x139dc94",
-   "decision": "refused",
-   "refusal_reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "DINAUX4",
    "target": "BCI4A",
    "tweaker_class": "TTweakerKeyToNeo",
    "call_va": "0x139dcb0",
-   "decision": "refused",
-   "refusal_reason": "source is outside the admitted classic-key to fresh Neo model profile"
+   "decision": "admitted",
+   "refusal_reason": null
   },
   {
    "source": "KEY1",
@@ -3695,5 +4110,5 @@
    "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
   }
  ],
- "limits": "Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata (tag, description, serial, readdress, source deletion and project save) is outside this receipt. The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: its four-element source logic would cause undefined original array reads. Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh target model at 2.5.00; its five coupler/auxiliary registrations remain refused. Every other registered or unregistered pair is refused with the reason recorded here. Static evidence is separate from native C-Gate execution and does not establish original Toolkit GUI or physical acceptance."
+ "limits": "Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata (tag, description, serial, readdress, source deletion and project save) is outside this receipt. The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: its four-element source logic would cause undefined original array reads. Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh target model at 2.5.00. Its five coupler/auxiliary registrations use a separate fresh 2.2.00 target model profile with the CouplerPro brightness suppression. InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; its SENPILL self-conversion remains refused pending the separate sensor hook. Every other registered or unregistered pair is refused with the reason recorded here. Static evidence is separate from native C-Gate execution and does not establish original Toolkit GUI or physical acceptance."
 }

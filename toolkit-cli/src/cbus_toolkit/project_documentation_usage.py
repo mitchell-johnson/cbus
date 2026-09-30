@@ -23,7 +23,7 @@ DIGITAL_ACTIONS = (
     ("BroadcastTriggerGroup", "BroadcastActionSelector", "Trigger Temperature Report"),
 )
 DIGITAL_CHANNEL_COUNT = 4
-NO_INDICATOR_BRIGHTNESS = frozenset({"KEYBC2", "KEYBC4", "KEYAUX4", "DINAUX4"})
+NO_INDICATOR_BRIGHTNESS = frozenset({"KEYBC2", "KEYBC4", "KEYAUX4", "DINAUX4", "BCNC4A", "BCNC4B"})
 GROUP_LABELS = ("Channel %d", "Logic Group", "Logic Group (Unused)", "Key %d", "Block (Unused)",
                 "Area Group", "Indicator Brightness Group")
 
@@ -58,6 +58,19 @@ def _application(unit: UnitSnapshot) -> int | None:
     return values[0] if values else None
 
 
+def _classic_usage_count(unit: UnitSnapshot) -> int | None:
+    typ = unit.unit_type.upper()
+    if typ in SUPPORTED_UNITS:
+        return SUPPORTED_UNITS[typ]
+    if typ in {"BCNC4A", "BCNC4B"}:
+        from .project_documentation_classic_profiles import classic_profile
+        try:
+            return classic_profile(unit)[0]
+        except ValueError:
+            pass
+    return None
+
+
 def _joined(items: list[str]) -> Usage:
     # Native per-unit methods append a trailing '|'. InsertHTMLGroup* removes
     # precisely the final character, then replaces every remaining | with <br/>.
@@ -69,9 +82,40 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
     if kind not in {"input", "output", "other"}:
         raise ValueError("Group usage kind must be input, output or other")
     typ = unit.unit_type.upper()
+    if typ == "SCNCTL5":
+        from .project_documentation_scene_controller import scene_controller_group_usage
+        return scene_controller_group_usage(unit, application, group, kind)
+    from .project_documentation import select_documentor
+    documentor = select_documentor(typ, getattr(unit, "firmware", ""))
+    from .project_documentation_neoclassic import NEOCLASSIC_TYPES
+    if typ in NEOCLASSIC_TYPES:
+        from .project_documentation_neoclassic_usage import neoclassic_group_usage
+        return neoclassic_group_usage(unit, application, group, kind)
+    if documentor in {"PIR", "ST7PIRSensor"}:
+        from .project_documentation_pir import pir_group_usage
+        return pir_group_usage(unit, application, group, kind)
+    if documentor in {"NeoInput", "NeoProInput", "DLT"}:
+        from .project_documentation_neo_usage import neo_group_usage
+        profile = None
+        if documentor == "DLT":
+            from .project_documentation_dlt import dlt_profile
+            try:
+                profile = dlt_profile(unit)
+            except ValueError as exc:
+                return _missing(str(exc))
+        return neo_group_usage(unit, application, group, kind, profile=profile, dlt=documentor == "DLT")
     if typ == "SENTEMP4":
         return _digital_group_usage(unit, application, group, kind)
+    if typ in {"SENTEMP", "SENTEMPB"}:
+        from .project_documentation_temperature import temperature_group_usage
+        return temperature_group_usage(unit, application, group, kind)
+    from .project_documentation_special_outputs import ERROR_CHANNELS, error_output_other_usage
+    if typ in ERROR_CHANNELS and kind == "other":
+        return error_output_other_usage(unit, application, group)
     if typ == "RELDF1":
+        if kind == "output":
+            from .project_documentation_special_outputs import fan_output_usage
+            return fan_output_usage(unit, application, group)
         if kind == "other":
             return Usage()  # TCBusDimmerUnit's base-only override.
         if kind == "input":
@@ -91,7 +135,8 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
     classic = typ in CLASSIC_OUTPUT_CHANNELS
     profile = output_profile(unit)
     din = profile is not None
-    keys = typ in SUPPORTED_UNITS
+    key_count = _classic_usage_count(unit)
+    keys = key_count is not None
     if not (classic or din or keys):
         return _missing("unit group dependency implementation")
     if ((classic or din) and kind == "input") or (din and kind == "other") or (keys and kind == "output"):
@@ -112,7 +157,7 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
             brightness = unit.parameters.get("IndicatorBrightness")
             if brightness is None:
                 missing.append("IndicatorBrightness")
-            elif brightness.strip():
+            elif brightness:
                 # GetIndicatorBrightness creates this group whenever the PP
                 # brightness string is nonempty, even for fixed brightness.
                 groups = _array(unit, "GroupAddress", 5)
@@ -123,8 +168,8 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
         return Usage("<br/>".join(descriptions), "partial" if missing else "recovered", tuple(missing))
     if keys:
         groups = _array(unit, "GroupAddress", 4)
-        masks = _array(unit, "BlockAllocation", SUPPORTED_UNITS[typ])
-        stages = [_array(unit, stage, SUPPORTED_UNITS[typ], 15) for stage in STAGES]
+        masks = _array(unit, "BlockAllocation", key_count)
+        stages = [_array(unit, stage, key_count, 15) for stage in STAGES]
         missing = [name for name, value in zip(("GroupAddress", "BlockAllocation", *STAGES),
                                              (groups, masks, *stages)) if value is None]
         if missing:
@@ -133,7 +178,7 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
         for block in range(4):
             if groups[block] != group:
                 continue
-            matches = [f"Key {key + 1}" for key in range(SUPPORTED_UNITS[typ])
+            matches = [f"Key {key + 1}" for key in range(key_count)
                        if masks[key] & (1 << block) and any(stage[key] for stage in stages)]
             descriptions.extend(matches or ["Block (Unused)"])
         return _joined(descriptions)
@@ -202,7 +247,31 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
     """Reproduce admitted ActionSelectorUse methods, retaining their native quirks."""
     if action_documentor == "UnitType":
         return Usage()
+    if action_documentor == "ErrorReportOutput":
+        from .project_documentation_special_outputs import error_output_action_usage
+        return error_output_action_usage(unit, application, group, address, value)
     typ = unit.unit_type.upper()
+    if action_documentor == "ClassicKeyInput":
+        from .project_documentation_neoclassic import NEOCLASSIC_TYPES
+        if typ in NEOCLASSIC_TYPES:
+            from .project_documentation_neoclassic_usage import neoclassic_action_selector_usage
+            return neoclassic_action_selector_usage(unit, application, group, address, value)
+        from .project_documentation_pir import PIR_TYPES, pir_action_selector_usage
+        if typ in PIR_TYPES:
+            return pir_action_selector_usage(unit, application, group, address, value)
+    if action_documentor == "CustomSceneController" and typ == "SCNCTL5":
+        from .project_documentation_scene_controller import scene_controller_action_usage
+        return scene_controller_action_usage(unit, application, group, address, value)
+    if action_documentor in {"NeoInput", "NeoProInput"}:
+        from .project_documentation_dlt import DLT_TYPES, dlt_profile
+        from .project_documentation_neo_usage import neo_action_selector_usage
+        profile = None
+        if typ in DLT_TYPES:
+            try:
+                profile = dlt_profile(unit)
+            except ValueError as exc:
+                return _missing(str(exc))
+        return neo_action_selector_usage(unit, application, group, address, value, profile=profile)
     if action_documentor in DIRECT_ACTIONS and typ == DIRECT_ACTIONS[action_documentor][0]:
         _, group_parameter, selector_parameter, label = DIRECT_ACTIONS[action_documentor]
         matches, missing = _selector_match(unit, application, group, address, group_parameter, selector_parameter)
@@ -218,7 +287,8 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
         if missing:
             return _missing(*missing)
         return Usage("<li />" + DIGITAL_ACTIONS[0][2] if matches[0][0] else "")
-    if action_documentor != "ClassicKeyInput" or typ not in SUPPORTED_UNITS:
+    key_count = _classic_usage_count(unit)
+    if action_documentor != "ClassicKeyInput" or key_count is None:
         return _missing("ActionSelectorUse implementation")
     primary = _application(unit)
     if primary is None:
@@ -227,7 +297,7 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
         return Usage()
     names = ("GroupAddress", "BlockAllocation", "LightLevelStore1", "LightLevelStore2",
              "TimerExpiryCommand", *STAGES)
-    counts = (4, SUPPORTED_UNITS[typ], 4, 4, 4, *([SUPPORTED_UNITS[typ]] * 4))
+    counts = (4, key_count, 4, 4, 4, *([key_count] * 4))
     arrays = [_array(unit, name, count, 15 if name in (*STAGES, "TimerExpiryCommand") else 255)
               for name, count in zip(names, counts)]
     missing = [name for name, values in zip(names, arrays) if values is None]
@@ -235,7 +305,7 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
         return _missing(*missing)
     groups, masks, stored1, stored2, expiry, *stages = arrays
     descriptions = []
-    for key in range(SUPPORTED_UNITS[typ]):
+    for key in range(key_count):
         commands = {stage[key] for stage in stages}
         for block in range(4):
             if not masks[key] & (1 << block) or groups[block] != group or stored1[block] != address:

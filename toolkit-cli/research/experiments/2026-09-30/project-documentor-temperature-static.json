@@ -1,0 +1,245 @@
+{
+  "format": "cbus-project-documentor-temperature-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "model_sha256": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b",
+  "factory": [
+    {
+      "unit_type": "SENTEMP",
+      "firmware_min": "1.00",
+      "firmware_max": "1.2.68",
+      "class": "TSENTEMP",
+      "class_registration": "0x138fc1b",
+      "agent": "TSENTEMPCGateAgent",
+      "agent_registration": "0x1397ea8",
+      "agent_methods": {
+        "agent_load": "TSENTEMPCGateAgent.AgentLoad",
+        "load_groups": "TSENTEMPCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TSENTEMPDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TSENTEMPCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENTEMPB",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TSENTEMPPro",
+      "class_registration": "0x138fce8",
+      "agent": "TSENTEMPProCGateAgent",
+      "agent_registration": "0x1397f1c",
+      "agent_methods": {
+        "agent_load": "TSENTEMPProCGateAgent.AgentLoad",
+        "load_groups": "TSENTEMPProCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TSENTEMPProDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TSENTEMPProCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENTEMP4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_RDTS",
+      "class_registration": "0x139c343",
+      "agent": "TCBusDigitalTemperatureSensorCGateAgent",
+      "agent_registration": "0x139c3c8",
+      "agent_methods": {
+        "agent_load": "TCBusDigitalTemperatureSensorCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TDigitalTemperatureSensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBUSUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusDigitalTemperatureSensorCGateAgent has no admitted CSV association model"
+    }
+  ],
+  "format_basis": "explicit Celsius / period-decimal profile; original running preferences not observed",
+  "checks": {
+    "factory": true,
+    "TSENTEMP:dependency_slots": true,
+    "TSENTEMPPro:dependency_slots": true,
+    "TCBusDigitalTemperatureSensor:dependency_slots": true,
+    "SENTEMP:base_first": true,
+    "SENTEMP:temperature_preference": true,
+    "SENTEMPB:base_first": true,
+    "SENTEMPB:temperature_preference": true,
+    "SENTEMP4:base_first": true,
+    "SENTEMP4:temperature_preference": true,
+    "degree_resources": true,
+    "TSENTEMP:pp_names": true,
+    "TSENTEMP:pp_offsets": true,
+    "TSENTEMPPro:pp_names": true,
+    "TSENTEMPPro:pp_offsets": true,
+    "SENTEMP:ceil_average": true,
+    "SENTEMP:margin_difference": true,
+    "SENTEMP:heating_zero": true,
+    "SENTEMP:economy_pp": true,
+    "Pro:modes": true,
+    "Pro:selector_address": true,
+    "Pro:interval_sentinel_default_clamp": true,
+    "Pro:threshold_sentinels_halving_clamp": true,
+    "Pro:display_threshold_divisor": true,
+    "Pro:group_mapping": true,
+    "Pro:target_array_indices": true,
+    "Pro:target_economy_clamps": true,
+    "Digital:pp_names": true,
+    "Digital:hvac_unused_mode": true,
+    "Digital:trim_and_empty_name": true,
+    "Digital:interval_seconds_disabled_default": true,
+    "Digital:threshold_eighths_disabled_default": true,
+    "Digital:four_channels": true,
+    "Digital:absolute_fahrenheit_threshold": true,
+    "Digital:malformed_final_table": true,
+    "interval_minutes_seconds": true,
+    "zones_labels": true,
+    "decimal_half_up": true,
+    "dependency_labels": true
+  },
+  "methods": {
+    "CIS_TCBusDigitalTemperatureSensor.TCBusDigitalTemperatureSensor.GetMaxChannels": {
+      "start": "0x11c2920",
+      "end": "0x11c2938",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorChannelParameters.AfterLoadProgrammingInformation": {
+      "start": "0x12ecb64",
+      "end": "0x12ecfa8",
+      "sha256": "d0235d1ce4465324cc882d75dfbc4f9c451dd7ddcb152d430483e4d1bbf4e705"
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorChannelParameters.Create": {
+      "start": "0x12ed57c",
+      "end": "0x12ed8d0",
+      "sha256": "ed16321b5eb8bdf8d7e1e7a752816a1bf5c6cfdf3496f4ffebc0bf52d312a344"
+    },
+    "CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.DocumentHTML": {
+      "start": "0x12ea558",
+      "end": "0x12eac64",
+      "sha256": "282e282c7988ec52f2f8b5274ddaa48d12833aacc18da95b4f69f84478484c35"
+    },
+    "CIS_TDocumentorCommon.DisplaySENTEMPProInterval": {
+      "start": "0xca6044",
+      "end": "0xca6144",
+      "sha256": "652c53670ffa55c225cfa8b5ac3e49af526b949b00261552c99f26e221f0599c"
+    },
+    "CIS_TDocumentorCommon.DisplayZones": {
+      "start": "0xca5e90",
+      "end": "0xca6044",
+      "sha256": "5513509e97f6577ed48cca63dfb3ccc0ac2818a0357e2377df33427728614e1d"
+    },
+    "CIS_TSENTEMP.TSENTEMP.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xfcffd8",
+      "end": "0xfd0070",
+      "sha256": "c830946a42f705e752995cde647280b2b4dd3b4a6b06c08b3ae1a0c78ec52225"
+    },
+    "CIS_TSENTEMP.TSENTEMP.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xfd0070",
+      "end": "0xfd0144",
+      "sha256": "c2063d433160bfd77554827ecba4fb3dc0c7df4579857147bf8b5c47a52dcb9b"
+    },
+    "CIS_TSENTEMPCGateAgent.TSENTEMPCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1222f34",
+      "end": "0x1223128",
+      "sha256": "b14a158f8ece942872cab33e45079be4d404ef9dfa02d00b3d359d92f1860ee9"
+    },
+    "CIS_TSENTEMPCGateAgent.TSENTEMPCGateAgent.InternalCreate": {
+      "start": "0x1222868",
+      "end": "0x1222b74",
+      "sha256": "6da2e9cb17a00471b05830e686c6cebb7a2f5244c4612af3df00ae1e736e15cd"
+    },
+    "CIS_TSENTEMPDocumentor.TSENTEMPDocumentor.DocumentHTML": {
+      "start": "0xfcf1c8",
+      "end": "0xfcf6e8",
+      "sha256": "9e99d02892e1e661a17760620de315e95f6aaad7c0e34ac47e49cda3144e19d0"
+    },
+    "CIS_TSENTEMPPro.TSENTEMPPro.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xfd43dc",
+      "end": "0xfd4480",
+      "sha256": "908506284a9e097eca41a74626d8424ddafc3c08e0e6fd63e45d23bb14eb0939"
+    },
+    "CIS_TSENTEMPPro.TSENTEMPPro.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xfd4480",
+      "end": "0xfd462c",
+      "sha256": "21b0ea3935764e6c4d9fa1cc7661ab5a5e5557c22bca256cf34d2527e7714752"
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1224b08",
+      "end": "0x12255d8",
+      "sha256": "cc3188648af1fc5b684477f49fefed84e47d54df944c7478b60b5364cfc16d48"
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.InternalCreate": {
+      "start": "0x12238f8",
+      "end": "0x1223d74",
+      "sha256": "dcb24c9868993c3ff1136bad444b238f2696171f6e8f8275939d8b7fe4649a01"
+    },
+    "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.DocumentHTML": {
+      "start": "0xfd2ab0",
+      "end": "0xfd36c8",
+      "sha256": "8673beea14546f65c7e24cbb8a5312da6c385235d106107c3e31d6c02dca6293"
+    },
+    "CIS_TThermostatCommon.IntegerToZones": {
+      "start": "0xca56d4",
+      "end": "0xca573c",
+      "sha256": "a2978f441b20a2a672a2dca0315e068fc3f8e9b80343df3be5570703b5026b03"
+    },
+    "CIS_jcl.CelsiusToFahrenheit": {
+      "start": "0x7b6c38",
+      "end": "0x7b6c6c",
+      "sha256": "0fd029fd20b424d8cbfc55581042f84c77a00e4f9a077fb2451a833972ea385d"
+    },
+    "SysUtils.FloatToDecimal": {
+      "start": "0x61cca8",
+      "end": "0x61ced4",
+      "sha256": "9c5c4ee68e1bb3a4b552197532c7cfe351027368a45a7bb122650c9bb8fb9e59"
+    },
+    "SysUtils.FloatToText": {
+      "start": "0x61c33c",
+      "end": "0x61c63c",
+      "sha256": "7f6a4efe4abdab03eff696fdfd7b614cdb7bf7b02647503c0def633025e5404e"
+    }
+  },
+  "limits": [
+    "Only consumed complete saved PP fields; no original programming-load success/failure or prior mutable model state.",
+    "Existing displayed group/level records are required; native auto-creation is not projected.",
+    "Explicit Celsius or Fahrenheit with period decimal; no running preferences or Windows locale observed.",
+    "Original malformed Digital table and disabled broadcast default values are retained.",
+    "Source/method evidence is not original complete generated-page acceptance."
+  ]
+}

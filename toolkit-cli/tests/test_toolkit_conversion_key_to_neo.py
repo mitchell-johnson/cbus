@@ -291,16 +291,17 @@ class KeyToNeoLiteralTests(unittest.TestCase):
 
 
 class KeyToNeoGuardTests(unittest.TestCase):
-    def test_five_registered_coupler_pairs_are_refused_before_io(self):
+    def test_five_registered_coupler_pairs_reject_the_classic_target_profile(self):
         for source_type, target_type in REFUSED_COUPLER_PAIRS:
             with self.subTest(source=source_type, target=target_type):
                 self.assertEqual(tweakers.lookup(source_type, target_type), 'TTweakerKeyToNeo')
-                with self.assertRaises(tweakers.TweakerRefused):
-                    tweakers.ToolkitTweakerConversion(NoIO(), source_type, None, target_type, None)
+                with self.assertRaises(tweakers.TweakerConversionError):
+                    tweakers.plan_writes(source_type, target_type, source_values(), set(source_values()),
+                                         target_firmware='2.5.00')
 
     def test_recovered_key_rules_do_not_broaden_other_hooks_or_unregistered_pairs(self):
         for source_type, target_type in (
-            ('KEY1', 'KEY2'), ('KEYC1', 'KEY1'), ('KEY1', 'KEYDL4'),
+            ('KEYIR1', 'KEY2'), ('KEYC1', 'KEY1'), ('KEY1', 'KEYDL4'),
             ('KEYM2', 'KEYDL4'), ('SENPIRSS', 'SENPIRIA'), ('PC_DAL2', 'PC_DAL2B'),
             ('KEY1', 'KEYCIR1'), ('KEYIR1', 'KEYC1'), ('KEY1', 'KEYM6'),
         ):

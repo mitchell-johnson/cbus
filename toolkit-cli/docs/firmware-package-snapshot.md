@@ -30,6 +30,13 @@ the directory record. Plaintext stays in memory.
 The ZIP reader verifies entry CRC where applicable; the optional `pyzipper`
 reader supplies AES support and verifies its integrity check. Password, CRC,
 AES HMAC, truncation and unsupported-format failures stop image admission.
+Every selected compression method is now admitted before the first entry
+opens: Stored and Deflate are supported, including AES's normalized inner
+method; BZIP2, LZMA and unknown codecs are refused before decoder construction.
+Tiny forged-header/interception tests cover the boundary without executing
+a resource-exhaustion payload. This follow-up has separate focused acceptance
+from the earlier snapshot identity receipt; neither is a blanket allocation
+or vendor authenticity guarantee.
 The shared updater password and archive checks establish integrity only: the
 archive has no vendor signature, and neither an admitted digest nor a successful
 decryption proves authenticity, bootability or suitability for a physical unit.

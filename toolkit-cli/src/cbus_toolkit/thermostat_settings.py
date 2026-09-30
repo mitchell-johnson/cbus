@@ -20,8 +20,9 @@ from uuid import uuid4
 from .addressing import NetworkAddressing
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer
-from .thermostat_post_load import (TEMPERATURE_SAVE_RULES, ThermostatPostLoadError, damper_modulation_save,
-                                    form_save_fans, form_save_scalars, form_save_temperatures, virtual_plant_type)
+from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RULES, ThermostatPostLoadError,
+                                    damper_modulation_save, form_save_disabled_remotes, form_save_fans,
+                                    form_save_scalars, form_save_temperatures, virtual_plant_type)
 from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
@@ -62,6 +63,7 @@ def form_save(values: Mapping[str, int], family: str, *, temperature_preference=
     result['DamperModulationEnable'] = damper_modulation_save(values['DamperModulationEnable'],
                                                               virtual_plant_type(values))
     result.update(form_save_scalars(values, family))
+    result.update(form_save_disabled_remotes(values, family))
     if temperature_preference is not None:
         result.update(form_save_temperatures(values, temperature_preference=temperature_preference))
     return result
@@ -76,6 +78,7 @@ class SettingsPlan:
     dependent: tuple[tuple[str, int, int], ...]
     dialog_rules_json: str
     temperature_preference: str | None = None
+    disabled_remote_parameters: tuple[str, ...] = ()
 
     @property
     def expected(self):
@@ -98,6 +101,10 @@ class SettingsPlan:
                     'parameters': list(TEMPERATURE_SAVE_RULES)
                                   if self.temperature_preference is not None else [],
                     'thermostat_temperature_units_used_as_preference': False},
+                'disabled_remote_defaults': {
+                    'parameters': list(self.disabled_remote_parameters),
+                    'enabled_reference_resolution_replayed': False,
+                    'complete_remote_workflow_reproduced': False},
                 'complete_form_lifecycle_reproduced': False,
                 'dialog_rule_subset': json.loads(self.dialog_rules_json),
                 'dialog_enable_rules_reproduced': False, 'physical_device_programmed': False}
@@ -176,7 +183,8 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         # not the admission contract for raw PP edits or a replayed event loop.
         dialog = {'available': False, 'reason': str(error), 'dialog_enable_rules_reproduced': False}
     return SettingsPlan(family, unit_type, tuple(sorted(snapshot.items())), tuple(sorted(parsed.items())),
-                        dependent, json.dumps(dialog, sort_keys=True), temperature_preference)
+                        dependent, json.dumps(dialog, sort_keys=True), temperature_preference,
+                        tuple(n for n in DISABLED_REMOTE_DEFAULTS if n in saved))
 
 
 @dataclass(frozen=True)

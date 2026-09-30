@@ -133,7 +133,8 @@ class NativeThermostatSettingsTests(unittest.TestCase):
         first = {'CoolingPlantFanSpeeds': 1, 'HeatingPlantFanOnDelay': 12, 'CoolingPlantFanOffDelay': 24,
                  'DisplayBacklightIdleBrightness': 2, 'DisplayBacklightActiveBrightness': 127,
                  'KeyBacklightIdleBrightness': 255, 'BeepEnable': 1, 'VariableFanCoilEnable': 1,
-                 'TemperatureUnits': 0, 'EnableHVACRelayDrive': 0, 'DamperModulationEnable': 2}
+                 'TemperatureUnits': 0, 'EnableHVACRelayDrive': 0, 'DamperModulationEnable': 2,
+                 'RemoteSetbackOnGroup': 30, 'RemoteSetbackOffGroup': 31}
         for index, unit_type in enumerate(('PC_TSA', 'PC_TSA5', 'PC_TSB', 'PC_TSB5')):
             family_type = unit_type.removesuffix('5')
             path = self.network + '/p/' + str(50 + index)
@@ -193,6 +194,80 @@ class NativeThermostatSettingsTests(unittest.TestCase):
             refusals.append({'path': path, 'edits': edits, 'error': str(caught.exception.cause)})
         self.assertEqual(xml_text(self.database.get('//' + self.project, xml=True)), before)
         self.evidence['refusals'] = refusals
+
+    def test_disabled_remote_defaults_through_cli_for_all_four_aliases(self):
+        from cbus_toolkit.cli import build_parser
+        from cbus_toolkit.thermostat_templates_cli import run
+        self.database.add(self.network, 'application', 203, 'Existing Enable')
+        self.database.add(self.network + '/203', 'group', 32, 'Preserve existing remote group')
+        group_before = xml_text(self.database.get(self.network + '/203', xml=True))
+        cases = []
+        for index, unit_type in enumerate(('PC_TSA', 'PC_TSA5', 'PC_TSB', 'PC_TSB5')):
+            path = self.network + '/p/' + str(170 + index)
+            self.database.create_unit(self.network, 170 + index, 'RemoteDefaults' + str(index), unit_type,
+                                      '5.4.01', catalog_number=FAMILY[unit_type.removesuffix('5')][1])
+            programmable = unit_type.startswith('PC_TSA')
+            seed = {'RemoteSetbackControlSource': 0, 'RemoteSetbackOnGroup': 200, 'RemoteSetbackOffGroup': 201}
+            literal = {'RemoteSetbackOnGroup': 30, 'RemoteSetbackOffGroup': 31}
+            if programmable:
+                seed.update(EvapProgramEnabled=2, NonEvapProgramEnabled=0, RemoteScheduleEnable=255,
+                            RemoteScheduleOnGroup=202, RemoteScheduleOffGroup=203, RemoteScheduleOverrideGroup=204)
+                literal.update(EvapProgramEnabled=0, RemoteScheduleEnable=0, RemoteScheduleOnGroup=32,
+                               RemoteScheduleOffGroup=33, RemoteScheduleOverrideGroup=34)
+            with Programmer(self.client).load(self.network, '/db' + path) as session:
+                for name, value in seed.items():
+                    session.set(name, str(value))
+                session.save_to_source()
+            for action in ('save', 'close', 'load'):
+                self.projects.operation(action, self.project)
+            before = self.values(path)
+            unit_before = xml_text(self.database.get(path, xml=True))
+            documents = []
+            for action in ('preview', 'apply'):
+                arguments = ['thermostat', 'settings', action, path, '--set', 'PlantCycleTime=' + before['PlantCycleTime'],
+                             '--host', '127.0.0.1', '--port', str(self.service.port), '--spec-dir', SPEC_DIR,
+                             '--exclusive-project']
+                if action == 'apply':
+                    arguments += ['--backup-project', 'B' + uuid4().hex[:7].upper()]
+                args = build_parser().parse_args(arguments)
+                document, status = run(args, CGateClient)
+                self.assertEqual(status, 0)
+                documents.append(document)
+                if action == 'preview':
+                    self.assertEqual(xml_text(self.database.get(path, xml=True)), unit_before)
+            preview, result = documents
+            self.assertEqual(result['state'], 'verified_saved')
+            self.assertTrue(result['unit_record_preserved'])
+            self.assertFalse(preview['disabled_remote_defaults']['enabled_reference_resolution_replayed'])
+            after = self.values(path)
+            self.assertEqual({n: int(after[n], 0) for n in literal}, literal)
+            expected = preview['expected']
+            self.assertEqual({n: v for n, v in after.items() if n not in expected},
+                             {n: v for n, v in before.items() if n not in expected})
+            self.assertEqual(xml_text(self.database.get(self.network + '/203', xml=True)), group_before)
+            manager = NativeThermostatSettings(self.client, self.store)
+            again = manager.plan(path, {'PlantCycleTime': before['PlantCycleTime']}, exclusive_project=True)
+            self.assertEqual(manager.apply(again)['state'], 'already_applied')
+            cases.append({'unit_type': unit_type, 'seed': seed, 'literal_expected': literal,
+                          'preview_did_not_write': True, 'unrelated_parameters_and_group_preserved': True,
+                          'unit_record_preserved': True, 'state': result['state'], 'second_save': 'already_applied'})
+        self.evidence['disabled_remote_cases'] = cases
+
+    def test_invalid_remote_source_is_refused_without_writes(self):
+        path = self.unit(180, 'PC_TSA')
+        with Programmer(self.client).load(self.network, '/db' + path) as session:
+            session.set('RemoteSetbackControlSource', '3')
+            session.save_to_source()
+        for action in ('save', 'close', 'load'):
+            self.projects.operation(action, self.project)
+        before = xml_text(self.database.get('//' + self.project, xml=True))
+        manager = NativeThermostatSettings(self.client, self.store)
+        with self.assertRaises(Exception) as caught:
+            manager.plan(path, {'PlantCycleTime': 15}, exclusive_project=True)
+        self.assertIsInstance(caught.exception.cause, ThermostatTemplateError)
+        self.assertIn('RemoteSetbackControlSource', str(caught.exception.cause))
+        self.assertEqual(xml_text(self.database.get('//' + self.project, xml=True)), before)
+        self.evidence['invalid_remote_source_refused'] = {'source': 3, 'project_unchanged': True}
 
     def test_temperature_preferences_and_controlled_mask_save_through_public_cli(self):
         from cbus_toolkit.cli import build_parser

@@ -26,6 +26,7 @@ def test_classic_input_block_major_order_duplicates_and_unused():
 def test_classic_other_order_and_native_fixed_brightness_group():
     assert group_usage(unit(), 202, 8, "other").html == "Area Group<br/>Indicator Brightness Group"
     assert group_usage(unit(IndicatorBrightness=""), 202, 8, "other").html == "Area Group"
+    assert group_usage(unit(IndicatorBrightness=" "), 202, 8, "other").html == "Area Group<br/>Indicator Brightness Group"
     assert group_usage(unit("KEYBC2"), 202, 8, "other").html == "Area Group"
     partial = group_usage(unit(AreaGroupAddress=None), 202, 8, "other")
     assert (partial.html, partial.status, partial.missing) == (

@@ -197,6 +197,13 @@
     "tests/test_unit_templates.py::UnitTemplateNativeTest",
     "tests/test_unit_templates_neo.py",
     "tests/test_wireless_gateway.py",
-    "tests/test_wireless_unit_globals.py"
+    "tests/test_wireless_unit_globals.py",
+    "tests/test_coupler_tweaker_native.py::NativeCouplerTweakerTests::test_original_literals_all_five_profiles_raw_pp_and_project_reload",
+    "tests/test_input_tweaker_native.py::NativeInputTweakerTests::test_original_literals_all_ten_profiles_raw_pp_and_project_reload",
+    "tests/test_wireless_actions_native.py::WirelessActionsNativeTest::test_database_units_do_not_invent_runtime_caches_or_trigger_physical_refresh",
+    "tests/test_wireless_base_connection_native.py::WirelessBaseConnectionNativeTest::test_plan_stale_apply_raw_readback_and_save_close_reload",
+    "tests/test_wireless_connection_native.py::WirelessConnectionNativeTest::test_plan_stale_apply_raw_readback_and_save_close_reload",
+    "tests/test_wireless_project_remotes_native.py::WirelessProjectRemotesNativeTest::test_owned_metadata_creation_save_boundaries_and_preservation",
+    "tests/test_wireless_scenes_native.py::WirelessScenesNativeTest::test_native_scene_arrays_editor_preservation_and_reload"
   ]
 }

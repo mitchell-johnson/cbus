@@ -535,6 +535,8 @@ verification is not unnamed-bit persistence. Display edits and label edits
 require separate invocations. Read `toolkit-cli/docs/classic-dlt-display.md` for
 source/native evidence and the remaining physical delivery/rendering limits.
 
+Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings project disabled remote defaults but do not resolve enabled references or create their application graph. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
+
 Thermostat settings apply one recovered form save, including dependent scalar,
 fan, slave-plant and relay-drive normalization. The result can differ on a later
 explicit save; do not add hidden saves to reach a fixed point. Raw PP values
@@ -550,12 +552,25 @@ and explicit `--group-sort address-ascending`; other manager orders remain refus
 
 ## Conversion, classic DLT and firmware boundaries
 
-The separate Toolkit conversion Python API admits 108 of 292 registered
-source/target pairs, including seven RELDN directions and 93 classic-to-Neo
-directions. This is separate from typed C-Gate conversion. A RELDN4 short
+The separate Toolkit conversion Python API admits 123 of 292 registered
+source/target pairs: eight dimmer, seven RELDN, 93 classic-to-Neo, five
+coupler-to-Neo (1.2.67→2.2.00) and ten non-sensor InputUnit directions
+(1.2.67→1.2.67). SENPILL self-conversion remains refused. This is separate from typed C-Gate conversion. A RELDN4 short
 four-token baseline is refused before I/O; require the admitted complete source
 profile. Metadata/delete/readdress lifecycle and physical conversion remain open.
 Read `toolkit-cli/docs/toolkit-conversion-tweakers.md`.
+
+Wireless Connection admits WGATE5N/F 2.2.90..2.4.99; Scenes and Remotes
+require WGATE5F. Database Connection/Scenes plans require the exact database
+source/lock, exclusive project ownership, closed networks and fresh stale checks.
+WTXU project-remote creation is metadata-only and crosses three explicit saves;
+it does not pair or initialize PP. Typed `wireless action plan` and
+`cgate unit ... wireless-action` separate cached GETs from explicit DOs.
+Use `--allow-physical-action` for effectful execution and at least eight seconds
+for Recall/Reset. Cached identity and a 202 acknowledgement do not prove
+physical identity, one bus frame, radio effects or backend retry behavior.
+The closed native action case proves 401 refusal, not positive action acceptance.
+See `toolkit-cli/docs/wireless.md`.
 
 For `dlt indicators plan`, repeat `--indicator-control NAME=VALUE` in the
 intended order. Inspect initialization changes, enabled controls and save/reopen

@@ -115,18 +115,20 @@
   {
    "id": "cgate-wireless:status",
    "cgate": "GET <unit> UnitTemperature|UnitSupplyVoltage|BackgroundSignalPower|LastPacketReceivedPower",
-   "source": "CBusWirelessUnit.u(aX) -> bB.q/r/s/t",
-   "command_template": "\\46{unit:02X}0021{attribute:02X} for attributes 50, 51, 52, 53",
+   "source": "CBusWirelessUnit cached Cn string properties with null read callbacks; constructor defaults unknown. Physical refresh is separately CBusWirelessUnit.n(aX)->u(aX)->bB.q/r/s/t during Psync.",
    "example_unit": 20,
-   "example": [
+   "reply": "GET returns cached strings (initially unknown). The separate physical refresh reads text fields of 3, 6, 4 and 4 bytes; failures reset the affected cache to unknown.",
+   "requires_live_network": false,
+   "why_live": "Cached GET has no physical I/O. Fresh readings require a separate explicit Psync physical operation; GET does not establish freshness.",
+   "refresh_command_template": "\\46{unit:02X}0021{attribute:02X} for attributes 50, 51, 52, 53",
+   "refresh_example": [
     "\\4614002150",
     "\\4614002151",
     "\\4614002152",
     "\\4614002153"
    ],
-   "reply": "text fields of 3, 6, 4 and 4 bytes; 'unknown' on failure",
-   "requires_live_network": true,
-   "why_live": "Measured radio and supply values are reported only by the physical unit"
+   "example": [],
+   "refresh_requires_live_network": true
   },
   {
    "id": "cgate-wireless:NET LEARN",
@@ -158,5 +160,6 @@
   "Radio acceptance of the composed commands",
   "PCI framing and checksum of these bodies on a real interface",
   "cmqttd (Rust) has no wireless unit actions or NET LEARN implementation"
- ]
+ ],
+ "correction": "The initial receipt conflated cached status GET with the internal physical status refresh. Fresh exact bytecode review separates them; see wireless-actions-cgate-source-review.json."
 }

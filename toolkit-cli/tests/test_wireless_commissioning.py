@@ -14,13 +14,16 @@ class BoundaryFixtureTests(unittest.TestCase):
         self.fixture = json.loads(FIXTURE.read_text())
         self.actions = {row['id']: row for row in self.fixture['actions']}
 
-    def test_fixture_is_sanitized_and_every_action_needs_a_live_network(self):
+    def test_fixture_is_sanitized_and_cached_status_does_not_need_a_live_network(self):
         text = FIXTURE.read_text()
         for forbidden in ('/Volumes/', 'password', 'C:\\\\'):
             self.assertNotIn(forbidden, text)
         self.assertEqual(len(self.fixture['inputs']['cgate_jar_sha256']), 64)
         self.assertIn('no bus', self.fixture['evidence'])
-        self.assertTrue(all(row['requires_live_network'] and row['why_live'] for row in self.actions.values()))
+        self.assertTrue(all(row['requires_live_network'] and row['why_live'] for key, row in self.actions.items()
+                            if key != 'cgate-wireless:status'))
+        self.assertFalse(self.actions['cgate-wireless:status']['requires_live_network'])
+        self.assertTrue(self.actions['cgate-wireless:status']['refresh_requires_live_network'])
 
     def test_unit_actions_reproduce_the_recorded_commands(self):
         commands = unit_action_commands(20)
@@ -29,8 +32,10 @@ class BoundaryFixtureTests(unittest.TestCase):
         self.assertFalse(commands['ResetOpStats']['reply_expected'])
         self.assertEqual(commands['RecallOpStats']['commands'], self.actions['cgate-wireless:RecallOpStats']['example'])
         self.assertEqual(list(OP_STATS_COUNTERS), self.actions['cgate-wireless:RecallOpStats']['counters'])
-        self.assertEqual([commands['status'][name]['commands'][0] for name in STATUS_ATTRIBUTES],
-                         self.actions['cgate-wireless:status']['example'])
+        self.assertEqual([commands['status'][name]['refresh_commands'][0] for name in STATUS_ATTRIBUTES],
+                         self.actions['cgate-wireless:status']['refresh_example'])
+        self.assertTrue(all(row['commands'] == [] and row['cached_only'] and not row['requires_live_network']
+                            for row in commands['status'].values()))
         self.assertEqual(unit_action_commands(255)['ResetOpStats']['commands'], ['\\46FF0008'])
         with self.assertRaises(ValueError):
             unit_action_commands(256)

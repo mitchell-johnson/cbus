@@ -1,0 +1,85 @@
+{
+  "format": "cbus-wireless-actions-native-cache-acceptance-v1",
+  "scope": "Owned closed synthetic database units; runtime cache absent and cached GET returns 401",
+  "physical_actions_executed": false,
+  "physical_hardware_verified": false,
+  "original_toolkit_executed": false,
+  "fresh_measurements_verified": false,
+  "profiles": [
+    {
+      "unit_type": "WGATE5F",
+      "firmware": "2.4.00",
+      "catalog_number": "5800WCGA",
+      "database_metadata_present": true,
+      "runtime_unit_cache_present": false,
+      "sanitized_responses": {
+        "Type": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "Version": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "CatalogNumber": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "SerialNumber": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "UnitTemperature": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "UnitSupplyVoltage": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "BackgroundSignalPower": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "LastPacketReceivedPower": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "ManufacturerCode": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "ProductClass": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "MediaType": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "ProcessSelector": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "FeatureSet": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)",
+        "OpStats": "401 Bad object or device ID: //SYNTH/254/p/20 (Unit not found)"
+      }
+    },
+    {
+      "unit_type": "WRM4R2",
+      "firmware": "2.4.00",
+      "catalog_number": "5854R4F2AA",
+      "database_metadata_present": true,
+      "runtime_unit_cache_present": false,
+      "sanitized_responses": {
+        "Type": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "Version": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "CatalogNumber": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "SerialNumber": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "UnitTemperature": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "UnitSupplyVoltage": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "BackgroundSignalPower": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "LastPacketReceivedPower": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "ManufacturerCode": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "ProductClass": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "MediaType": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "ProcessSelector": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "FeatureSet": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)",
+        "OpStats": "401 Bad object or device ID: //SYNTH/254/p/21 (Unit not found)"
+      }
+    }
+  ],
+  "passed": true,
+  "executed_test_id": "tests/test_wireless_actions_native.py::WirelessActionsNativeTest::test_database_units_do_not_invent_runtime_caches_or_trigger_physical_refresh",
+  "source_sha256": {
+    "tests/test_wireless_actions_native.py": "1880ad8d05676ca5802b35db6b284b58b4cd4e544392e97dab37e48dc2401b9b",
+    "src/cbus_toolkit/wireless_commissioning.py": "e8e0e701946649f3c091ddf2a207a8855e2efb5e485b2c3895c707cf2585bfc3",
+    "src/cbus_toolkit/wireless_actions.py": "58da6f28dd4c3838ece9e13afdf483adf8a7fd3aa2b09765ede74c5a5b75c27c"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "project_xml_envelope": [
+    "343-Begin XML snippet",
+    "344 End XML snippet"
+  ],
+  "typed_cached_api_refused_absent_runtime_before_action": true,
+  "project_unchanged": true,
+  "network_closed_and_idle_before_and_after": true,
+  "database_presence_does_not_establish_runtime_presence": true,
+  "positive_cached_values_verified": false,
+  "missing_unit_rejected_401": true,
+  "do_sync_pp_network_open_commands": 0,
+  "cached_get_commands": 37,
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Homebrew (build 11.0.32.1+0)\nOpenJDK 64-Bit Server VM Homebrew (build 11.0.32.1+0, mixed mode)",
+    "listener_ownership_verified": true,
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true
+  }
+}

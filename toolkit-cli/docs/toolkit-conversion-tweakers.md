@@ -24,8 +24,9 @@ receipt's counts, uniqueness, class coverage and decisions.
 | --- | --- | --- | --- |
 | TTweakerDIMDN_TO_DIMDU4 | 4 | InterLockingChannel=4; PowerUpDelay takes the aligned MaxDimmingLevel; MaxDimmingLevel=`0 0 0 0` | admitted |
 | TTweakerDIMDU4_TO_DIMDN | 4 | InterLockingChannel=0; MaxDimmingLevel takes the aligned PowerUpDelay; PowerUpDelay=`0 0 0 0` | admitted |
-| TTweakerInputUnit, TTweakerNeoToKey | 11, 13 | 13 Neo/IR attributes stay at target defaults | refused: target key-input conversion hook not recovered |
-| TTweakerKeyToNeo | 98 | as above, plus five attributes, IndicatorFunction 1→2/3→1 and the inherited Learn/CoreKey/NeoPro hooks | 93 classic-source pairs admitted for the fresh 1.2.67→2.5.00 profile; five coupler/auxiliary pairs refused |
+| TTweakerInputUnit | 11 | 13 Neo/IR attributes stay at target defaults; inherited Learn and target brightness flags | ten non-sensor pairs admitted for fresh 1.2.67→1.2.67; SENPILL self-conversion refused |
+| TTweakerNeoToKey | 13 | 13 Neo/IR attributes stay at target defaults | refused: secondary-application model rewrite is outside admitted profiles |
+| TTweakerKeyToNeo | 98 | as above, plus five attributes, IndicatorFunction 1→2/3→1 and the inherited Learn/CoreKey/NeoPro hooks; CouplerPro finally suppresses brightness | 93 classic-source pairs admitted for fresh 1.2.67→2.5.00; five coupler/auxiliary pairs admitted for fresh 1.2.67→2.2.00 |
 | TTweakerDLT, TTweakerKeyToDLT | 117, 15 | eight (or 13) attributes stay at defaults; LabelFlavourLSB/MSB=0; KeyToDLT also remaps IndicatorFunction | refused: DLT agent conversion hook not recovered |
 | TTweakerSENPIR, TTweakerSENLL | 16, 2 | renames between EnableGroupAddress/Logic and PIR/PEC enabler groups | refused: sensor agent conversion hook not recovered |
 | TTweakerPC_DAL2, TTweakerPC_DAL2B | 2, 2 | swaps the two Application values | refused: no native acceptance yet |
@@ -159,9 +160,9 @@ idempotent replacement or register any self-conversion pair.
 The existing API now admits 93 registered `TTweakerKeyToNeo` directions from
 KEY1, KEY2, KEY4, KEYIR1 and KEYIR4. The initial profile requires an actual
 source firmware of `1.2.67`, target firmware `2.5.00` and a freshly created
-target. The five KEYBC/DINAUX registrations remain refused. Historical Neo
-firmware, Neo-to-classic conversion and an existing edited target are outside
-this profile.
+target. The five KEYBC/DINAUX registrations use the separate coupler profile
+below. Historical Neo firmware, Neo-to-classic conversion and an existing
+edited target are outside this profile.
 
 ```python
 plan = plan_writes("KEY4", "KEYB4", source_values, set(target_spec.parameters),
@@ -210,3 +211,77 @@ static evidence separate from the executed C-Gate checks. All 93 directions
 passed native acceptance, including raw PP and 98 source/target units after
 save/close/reload. Original GUI replacement, retained target history, source
 deletion, final readdressing and hardware programming remain separate.
+
+## Coupler and auxiliary input to fresh Neo conversion
+
+The five remaining `TTweakerKeyToNeo` registrations use a distinct profile:
+KEYBC2/KEYBC4 → BCN2B/BCN4B, and DINAUX4 → BCI4A. Source firmware must be
+`1.2.67` and target firmware must be `2.2.00`. BCI4A uses the catalogue's
+explicit `BCN4B.xml` specification alias. Other aliases and firmware are
+refused before replacement creation.
+
+```python
+converter = ToolkitTweakerConversion(client, "DINAUX4", source_spec, "BCI4A", target_spec)
+result = converter.apply("//TEST/254/p/20", 40,
+                         target_firmware="2.2.00", target_catalog="L5504AUX")
+```
+
+The original source agent still has 35 attributes, including brightness and
+IR fields absent from these source PP schemas. The target CouplerPro agent
+inherits 62 CoreNeoPro attributes directly, then adds BistableSwitchBlock and
+GroupAssertOnPowerup. It does not construct NightlightColour. RetardationIndex
+exists only in target PP and retains its native baseline.
+
+The inherited group and indicator transformations apply in their original
+order. The coupler model's learning-property predicate returns true; fresh
+learned history remains false/false. Its final conversion hook then makes
+IndicatorBrightness immutable, overriding the inherited CoreKey decision.
+Native acceptance verifies retained brightness `0xff`, indicator tail
+`3 3 3 3`, the 16-entry light-level prefix within the 28-entry target array,
+source preservation and all eight source/target units after save/close/load.
+
+The [coupler source review](toolkit-key-to-coupler-conversion-source-review.md)
+and [five-pair native acceptance](toolkit-coupler-to-neo-native-acceptance.md)
+record the independent source and runtime evidence. Both KeyToNeo profiles
+together admit all 98 registrations within their exact firmware and fresh
+model boundaries. Original GUI and physical acceptance remain open.
+
+## Classic InputUnit conversion
+
+Ten `TTweakerInputUnit` registrations now admit source and fresh target
+firmware `1.2.67`: the six cross-pairs among KEY1, KEY2 and KEY4, KEYBC2 ↔
+KEYBC4, and BCNC4A ↔ BCNC4B. The separate SENPILL self-conversion remains
+refused. BCNC4B uses the explicit `BCNC4A.xml` catalogue alias in both roles.
+
+```python
+converter = ToolkitTweakerConversion(client, "KEY1", source_spec, "KEY4", target_spec)
+result = converter.apply("//TEST/254/p/20", 40,
+                         target_firmware="1.2.67", target_catalog="5034N")
+```
+
+All seven selected models have the same 35-attribute constructor inventory.
+The InputUnit tweaker suppresses 13 named attributes; only InfraRedBank exists
+in these targets. The inherited Learn hook enables LearnMode and LearnAnyApp
+at this revision, and disables LearnedFlag for fresh false/false model history.
+CoreKey consults the target brightness predicate: true for KEY1/2/4, false
+for KEYBC2/4 and BCNC4A/B. GAVBroadcastFlag remains initially immutable.
+
+Every selected model is non-Neo and has HasApplication2=false. No group
+reshape, secondary-application scrub or indicator remap runs. Pure planning
+therefore preserves aligned GroupAddress, IndicatorFunction and Application
+strings verbatim, including formatting; it does not parse or pad them.
+Runtime construction still requires the exact eight-group/four-indicator
+specification and firmware. Empty aligned values follow the original writable
+flag rules, and PP staging uses the existing native normalization contract.
+
+BCNC's ordinary save hook applies microfunction and learning defaults, but
+conversion bypasses that hook. Those defaults are not injected. PatchEnable
+is present only in native PP, absent from the agent inventory, and retains
+the target baseline even when the source PP contains a different value.
+
+The [InputUnit source review](toolkit-input-unit-conversion-source-review.md)
+and [native acceptance](toolkit-input-unit-native-acceptance.md) separate
+original instruction evidence from ten executed database conversions and
+17 units verified after save/close/reload. Original CPU/GUI execution,
+physical programming, other firmware and retained target models remain
+outside this acceptance.

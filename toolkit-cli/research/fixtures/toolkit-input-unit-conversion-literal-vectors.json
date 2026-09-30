@@ -1,0 +1,85 @@
+{
+  "format": "cbus-toolkit-input-unit-conversion-literal-vectors-v1",
+  "source_proof": "toolkit-input-unit-conversion-source-proof.json",
+  "original_code_executed": false,
+  "method": "Independent literal expectations from the original plain InputUnit tweaker's thirteen flag-helper calls and the inactive CoreKey value-rewrite predicates. No production converter used to derive expected values.",
+  "profile": {
+    "source_firmware": "1.2.67",
+    "target_firmware": "1.2.67",
+    "fresh_target_model": true,
+    "source_and_target_agent_attributes": 35,
+    "group_and_indicator_assignment_setters_in_selected_tweaker_hook_path": 0
+  },
+  "vectors": [
+    {
+      "name": "classic_byte_boundaries_and_indicator_codes_unchanged",
+      "source_type": "KEY1",
+      "target_type": "KEY4",
+      "aligned_group_address": "0 1 254 255 77 8 9 10",
+      "aligned_indicator_function": "0 1 2 3",
+      "expected_after_tweaker_and_hooks_group_address": "0 1 254 255 77 8 9 10",
+      "expected_after_tweaker_and_hooks_indicator_function": "0 1 2 3",
+      "expected_group_entry_count": 8,
+      "expected_indicator_entry_count": 4,
+      "expected_brightness_mutable": true
+    },
+    {
+      "name": "classic_coupler_nondefault_groups_and_indicators_unchanged",
+      "source_type": "KEYBC4",
+      "target_type": "KEYBC2",
+      "aligned_group_address": "17 42 63 128 254 19 20 21",
+      "aligned_indicator_function": "3 1 0 2",
+      "expected_after_tweaker_and_hooks_group_address": "17 42 63 128 254 19 20 21",
+      "expected_after_tweaker_and_hooks_indicator_function": "3 1 0 2",
+      "expected_brightness_mutable": false,
+      "brightness_pp_presence_required": false
+    },
+    {
+      "name": "bcnc_does_not_apply_ordinary_editor_defaults",
+      "source_type": "BCNC4B",
+      "target_type": "BCNC4A",
+      "aligned_group_address": "255 7 0 254 93 111 19 201",
+      "aligned_indicator_function": "1 3 3 1",
+      "expected_after_tweaker_and_hooks_group_address": "255 7 0 254 93 111 19 201",
+      "expected_after_tweaker_and_hooks_indicator_function": "1 3 3 1",
+      "expected_brightness_mutable": false,
+      "apply_micro_function_defaults_calls": 0,
+      "apply_learn_mode_defaults_calls": 0,
+      "source_specification_alias": "BCNC4A.xml"
+    },
+    {
+      "name": "unchanged_raw_aligned_format_is_not_reformatted",
+      "source_type": "KEY2",
+      "target_type": "KEY1",
+      "aligned_group_address": "0x00 0x01 0xFE 0xFF 0x4D 0x08 0x09 0x0A",
+      "aligned_indicator_function": "3 1 2 0",
+      "expected_after_tweaker_and_hooks_group_address": "0x00 0x01 0xFE 0xFF 0x4D 0x08 0x09 0x0A",
+      "expected_after_tweaker_and_hooks_indicator_function": "3 1 2 0",
+      "scope": "Exact already-aligned attribute strings; any later native PP normalization is a separate operation."
+    }
+  ],
+  "effective_flag_examples": [
+    {"attribute": "InfraRedBank", "initial_mutable": true, "after_plain_input_tweaker": false, "after_target_conversion_hook": false},
+    {"attribute": "GAVBroadcastFlag", "initial_mutable": false, "after_plain_input_tweaker": false, "after_target_conversion_hook": false},
+    {"attribute": "LearnedFlag", "initial_mutable": true, "fresh_model_current": false, "fresh_model_original": false, "after_target_conversion_hook": false},
+    {"attribute": "IndicatorBrightness", "target_types": ["KEY1", "KEY2", "KEY4"], "initial_mutable": false, "after_target_conversion_hook": true},
+    {"attribute": "IndicatorBrightness", "target_types": ["KEYBC2", "KEYBC4", "BCNC4A", "BCNC4B"], "initial_mutable": false, "after_target_conversion_hook": false}
+  ],
+  "preservation_obligations": [
+    "InfraRedBank target PP retains its baseline even when an aligned source attribute is nondefault, because the plain InputUnit tweaker suppresses that attribute.",
+    "The twelve other suppression names are absent from the selected constructor graphs; their helper lookups are no-ops and do not create attributes.",
+    "GAVBroadcastFlag retains the target baseline under the inherited constructor's immutable flag.",
+    "A source PP omission of IndicatorBrightness or InfraRedBank does not remove those attributes from the original agent constructor inventory.",
+    "BCNC ordinary editor defaults must not overwrite source-aligned group, indicator or other programming strings during conversion.",
+    "Target metadata and unrelated or unknown PP values retain the conversion workflow's established preservation rules.",
+    "BCNC4B retains its own registered model type while the separately evidenced BCNC4A.xml PP alias applies on either source or target."
+  ],
+  "refusal_examples": [
+    "SENPILL to SENPILL despite its original plain InputUnit registration",
+    "same-type classic or BCNC conversion when no original pair is registered",
+    "cross-family classic-to-KEYBC or KEYBC-to-BCNC pair not registered in these ten directions",
+    "source or target firmware other than the admitted 1.2.67 profile",
+    "unproved aliases, malformed source PP or wrong schema shapes",
+    "retained editor history supplied as a fresh target lifecycle"
+  ]
+}

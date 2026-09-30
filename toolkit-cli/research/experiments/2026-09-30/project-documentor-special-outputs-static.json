@@ -1,0 +1,599 @@
+{
+  "format": "cbus-project-documentor-special-outputs-static-v2",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "RELDF1.xml_sha256": "fb2b0b7a91bf76b944a1db5912ef2fe853dd1ee110ff93cdbebba0e4b373ea64",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "checks": {
+    "exact_factories": true,
+    "DIMDU4:channel_count": true,
+    "DIMDU4:class": true,
+    "DIMDU4:logic_count_four": true,
+    "DIMPR3A:channel_count": true,
+    "DIMPR3A:class": true,
+    "DIMPR3A:logic_count_four": true,
+    "DIMPR6A:channel_count": true,
+    "DIMPR6A:class": true,
+    "DIMPR6A:logic_count_four": true,
+    "DIMPR12A:channel_count": true,
+    "DIMPR12A:class": true,
+    "DIMPR12A:logic_count_four": true,
+    "RELDF1:channel_count": true,
+    "RELDF1:class": true,
+    "fan_zero_logic_groups": true,
+    "fan_pp_bindings": true,
+    "fan_inherited_din_load": true,
+    "fan_threshold_loaders": true,
+    "fan_body_inherited_output_first": true,
+    "fan_master_from_trigger_group_not_255": true,
+    "standalone_clears_master": true,
+    "slave_resolves_master_pointer": true,
+    "database_master_lookup": true,
+    "master_requires_fan_class": true,
+    "slave_has_link_and_no_threshold_table": true,
+    "low_positive_medium_unequal": true,
+    "percentage_increments_after_rounding": true,
+    "label_copy_all_four_max_eleven": true,
+    "label_copy_all_four": true,
+    "output_group_pp_direct_index": true,
+    "error_pp_bindings": true,
+    "error_inherited_din_loader": true,
+    "error_trigger_app": true,
+    "error_selector_address_not_value": true,
+    "error_group255_guard": true,
+    "error_action_first_set_second_append": true,
+    "error_action_labels": true,
+    "other_enable_group_identity": true,
+    "other_enable_label": true,
+    "fan_output_group_identity_including_255": true,
+    "fan_spec_shape": true,
+    "fan_label_spec_shape": true,
+    "fan_catalogue_uses_same_spec": true,
+    "fan_catalogue_ranges": true,
+    "fan_single_unconditional_spec": true,
+    "fan_consumed_schema_uniform": true,
+    "fan_mapping_no_firmware_calls": true,
+    "fan_agentload_master_copy_is_explicit_verb": true
+  },
+  "profiles": {
+    "DIMDU4": {
+      "channels": 4,
+      "logic_groups": 4,
+      "ancestry": [
+        "TDIMDU4",
+        "TDIMDUX",
+        "TCBusDimmerUnit",
+        "TCBusDINRailOutputUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ]
+    },
+    "DIMPR3A": {
+      "channels": 3,
+      "logic_groups": 4,
+      "ancestry": [
+        "TDIMPR3A",
+        "TDIMDUX",
+        "TCBusDimmerUnit",
+        "TCBusDINRailOutputUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ]
+    },
+    "DIMPR6A": {
+      "channels": 6,
+      "logic_groups": 4,
+      "ancestry": [
+        "TDIMPR6A",
+        "TDIMDUX",
+        "TCBusDimmerUnit",
+        "TCBusDINRailOutputUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ]
+    },
+    "DIMPR12A": {
+      "channels": 12,
+      "logic_groups": 4,
+      "ancestry": [
+        "TDIMPR12A",
+        "TDIMDUX",
+        "TCBusDimmerUnit",
+        "TCBusDINRailOutputUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ]
+    },
+    "RELDF1": {
+      "channels": 1,
+      "logic_groups": 0,
+      "ancestry": [
+        "TRELDF1",
+        "TCBusFanControllerUnit",
+        "TCBusDimmerUnit",
+        "TCBusDINRailOutputUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ]
+    }
+  },
+  "registrations": [
+    {
+      "unit_type": "DIMDU4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMDU4",
+      "class_registration": "0x1386e30",
+      "agent": "TDIMDNUXCGateAgent",
+      "agent_registration": "0x1398b38",
+      "agent_methods": {
+        "agent_load": "TBasicDinRailOutputCGateAgent.AgentLoad",
+        "load_groups": "TBasicDinRailOutputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TErrorReportOutputDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusDINRailOutputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusDimmerUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object",
+        "channel_getter": "TDIMDU4.GetMaxChannels",
+        "channels": 4,
+        "predicate_kind": "dimmer",
+        "visible_groups": 4
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMDNUXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "DIMPR3A",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMPR3A",
+      "class_registration": "0x1386e51",
+      "agent": "TDIMDNUXCGateAgent",
+      "agent_registration": "0x1398b50",
+      "agent_methods": {
+        "agent_load": "TBasicDinRailOutputCGateAgent.AgentLoad",
+        "load_groups": "TBasicDinRailOutputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TErrorReportOutputDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusDINRailOutputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusDimmerUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object",
+        "channel_getter": "TDIMPR3A.GetMaxChannels",
+        "channels": 3,
+        "predicate_kind": "dimmer",
+        "visible_groups": 3
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMDNUXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "DIMPR6A",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMPR6A",
+      "class_registration": "0x1386e72",
+      "agent": "TDIMDNUXCGateAgent",
+      "agent_registration": "0x1398b68",
+      "agent_methods": {
+        "agent_load": "TBasicDinRailOutputCGateAgent.AgentLoad",
+        "load_groups": "TBasicDinRailOutputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TErrorReportOutputDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusDINRailOutputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusDimmerUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object",
+        "channel_getter": "TDIMPR6A.GetMaxChannels",
+        "channels": 6,
+        "predicate_kind": "dimmer",
+        "visible_groups": 6
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMDNUXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "DIMPR12A",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMPR12A",
+      "class_registration": "0x1386e93",
+      "agent": "TDIMDNUXCGateAgent",
+      "agent_registration": "0x1398b80",
+      "agent_methods": {
+        "agent_load": "TBasicDinRailOutputCGateAgent.AgentLoad",
+        "load_groups": "TBasicDinRailOutputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TErrorReportOutputDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusDINRailOutputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusDimmerUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object",
+        "channel_getter": "TDIMPR12A.GetMaxChannels",
+        "channels": 12,
+        "predicate_kind": "dimmer",
+        "visible_groups": 12
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMDNUXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "RELDF1",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TRELDF1",
+      "class_registration": "0x1398987",
+      "agent": "TCBusFanControllerCGateAgent",
+      "agent_registration": "0x1398a08",
+      "agent_methods": {
+        "agent_load": "TCBusFanControllerCGateAgent.AgentLoad",
+        "load_groups": "TBasicDinRailOutputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TFanControllerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusDINRailOutputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusDimmerUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object",
+        "channel_getter": "TRELDF1.GetMaxChannels",
+        "channels": 1,
+        "predicate_kind": "dimmer",
+        "visible_groups": 1
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusFanControllerCGateAgent has no admitted CSV association model"
+    }
+  ],
+  "fan_firmware_ranges": [
+    [
+      "2.4.00",
+      "2.4.99"
+    ],
+    [
+      "2.5.00",
+      "2.5.99"
+    ],
+    [
+      "2.6.00",
+      "2.6.99"
+    ]
+  ],
+  "fan_catalogue_projection": {
+    "ranges": [
+      [
+        "2.4.00",
+        "2.4.99"
+      ],
+      [
+        "2.5.00",
+        "2.5.99"
+      ],
+      [
+        "2.6.00",
+        "2.6.99"
+      ]
+    ],
+    "spec_sha256": "fb2b0b7a91bf76b944a1db5912ef2fe853dd1ee110ff93cdbebba0e4b373ea64",
+    "spec_filename": "RELDF1.xml"
+  },
+  "fan_consumed_schema_parameters": [
+    "Application",
+    "FanTriggerGroup",
+    "GroupAddress",
+    "LabelHigh",
+    "LabelHighLength",
+    "LabelLow",
+    "LabelLowLength",
+    "LabelMed",
+    "LabelMedLength",
+    "LabelOff",
+    "LabelOffLength",
+    "LowToMedThresholdLevel",
+    "MasterUnitAddress",
+    "MedToHighThresholdLevel",
+    "StandAloneConfig"
+  ],
+  "fan_source_mapping_calls": {
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.InternalCreate": [
+      "CIS_TCGateAttribute.TBooleanCGateAttribute.Create",
+      "CIS_TCustomFlashObject.TFlashAttribute.Create",
+      "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.InternalCreate"
+    ],
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.AfterLoadProgrammingInformation": [
+      "CIS_TCBusDINRailOutputUnit.TCBusDINRailOutputUnit.GetRestrikeDelay",
+      "CIS_TCBusFanControllerCGateAgent.LoadPowerUpDelays",
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FanControllerUnit",
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FindActionSelectorBySimpleAddress",
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FindTriggerGroupBySimpleAddress",
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.GetMasterUnit",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelLow",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelMed",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetFanTriggerGroup",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetChangeOverDelay",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetConfiguration",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetDLTLabelHigh",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetDLTLabelLanguage",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetDLTLabelLow",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetDLTLabelMed",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetDLTLabelOff",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetFanActionSelector",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetFanTriggerGroup",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetLowMedThreshold",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetMedHighThreshold",
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetUseKickstartTime",
+      "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+      "CIS_TCommonCBus.TCBUSUnit.GetNetwork",
+      "CIS_TCommonCBus.TCBusNetwork.InitialiseLanguages",
+      "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.AfterLoadProgrammingInformation",
+      "CIS_TLanguageType.TLanguageTypeReferenceCollection.ItemByIdentifier",
+      "System.@UStrArrayClr",
+      "System.@UStrClr",
+      "System.@UStrCopy"
+    ],
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.GetMasterUnit": [
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FanControllerUnit",
+      "CIS_TCommonCBus.TCBUSUnit.GetNetwork",
+      "CIS_TCommonCBus.TCBUSUnitManager.UnitByAddress",
+      "System.@IsClass"
+    ],
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetLowMedThreshold": [
+      "Variants.@VarClr",
+      "Variants.@VarFromInt"
+    ],
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetMedHighThreshold": [
+      "Variants.@VarClr",
+      "Variants.@VarFromInt"
+    ],
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit": [
+      "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetFanTriggerGroup",
+      "CIS_TCBusObject.TCGateObject.GetAddressAsInteger"
+    ],
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.AgentLoad": [
+      "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.LoadFanParametersFromMaster",
+      "CIS_TCustomFlashObject.TFlashAgent.IsInVerbs",
+      "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.AgentLoad"
+    ]
+  },
+  "native_firmware_continuum_acceptance": "unassessed",
+  "fan_parameter_bindings": {
+    "LowToMedThresholdLevel": "0x148",
+    "MedToHighThresholdLevel": "0x14c",
+    "LabelOff": "0x154",
+    "LabelLow": "0x158",
+    "LabelMed": "0x15c",
+    "LabelHigh": "0x160",
+    "LabelOffLength": "0x164",
+    "LabelLowLength": "0x168",
+    "LabelMedLength": "0x16c",
+    "LabelHighLength": "0x170",
+    "FanTriggerGroup": "0x174",
+    "MasterUnitAddress": "0x180",
+    "StandAloneConfig": "0x184"
+  },
+  "methods": {
+    "CIS_TCBusDimmerUnit.TCBusDimmerUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd2b010",
+      "end": "0xd2b200",
+      "sha256": "64cf7d3973001c7804b22ee5b0416e19d110692af08f13f852fa13826d09034d"
+    },
+    "CIS_TCBusDimmerUnit.TCBusDimmerUnit.GetMaxLogicGroups": {
+      "start": "0xd2b684",
+      "end": "0xd2b69c",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1230590",
+      "end": "0x1230a9c",
+      "sha256": "7f818e4474f96181372be80b581a6a87a36d9d8cd9ae68ce50c87e0d8a7bf808"
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.AgentLoad": {
+      "start": "0x1230a9c",
+      "end": "0x1230b80",
+      "sha256": "d1affa2dfbb8cfc33ab5c551c426283059fb5c818258a805d64fa3b9a5553539"
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.GetMasterUnit": {
+      "start": "0x12318b8",
+      "end": "0x1231940",
+      "sha256": "fb5901b7bca1523dbb17bbf4732367f20dc609b80e1c7473fa814a7df346a783"
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.InternalCreate": {
+      "start": "0x1231940",
+      "end": "0x1231efc",
+      "sha256": "109d91ec240f7867baebd77533e604d56a7dd3ce52e6ef47ea23c751faaa7423"
+    },
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit": {
+      "start": "0xdbce6c",
+      "end": "0xdbcea8",
+      "sha256": "29759b7c5e5491d73331aefae1f4cac6894a173fe05df70bbb6f73ae002319b4"
+    },
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetLowMedThreshold": {
+      "start": "0xdbd814",
+      "end": "0xdbd874",
+      "sha256": "763be9531334734e44a2077802ef0235556b873415413426abdbd6ca585c4189"
+    },
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.SetMedHighThreshold": {
+      "start": "0xdbd874",
+      "end": "0xdbd8d4",
+      "sha256": "5be85ca921a65fa070c65b682fc08fc32d38dd03d44018bcf72168c75200fa9d"
+    },
+    "CIS_TDIMDUX.TDIMDU4.GetMaxChannels": {
+      "start": "0xd27508",
+      "end": "0xd27520",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TDIMDUX.TDIMDU4.GetMaxLogicGroups": {
+      "start": "0xd27520",
+      "end": "0xd27538",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TDIMDUX.TDIMDUX.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd266a0",
+      "end": "0xd26738",
+      "sha256": "6d34b0a8f34d4c1cc9f63c3a4d817a954c2f452373504205497ccdb011a2fee8"
+    },
+    "CIS_TDIMDUX.TDIMPR12A.GetMaxChannels": {
+      "start": "0xd27720",
+      "end": "0xd27738",
+      "sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697"
+    },
+    "CIS_TDIMDUX.TDIMPR12A.GetMaxLogicGroups": {
+      "start": "0xd27738",
+      "end": "0xd27750",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TDIMDUX.TDIMPR3A.GetMaxChannels": {
+      "start": "0xd27538",
+      "end": "0xd27550",
+      "sha256": "4ea6f9613498bf40753c4850a18c7ebc6f07f3c62d6cd9392ccfb88703abc681"
+    },
+    "CIS_TDIMDUX.TDIMPR3A.GetMaxLogicGroups": {
+      "start": "0xd27550",
+      "end": "0xd27568",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TDIMDUX.TDIMPR6A.GetMaxChannels": {
+      "start": "0xd2762c",
+      "end": "0xd27644",
+      "sha256": "595a10120c857be345693e56c0c960fca7fe329b3fbfd92efcde3b996fdbb72f"
+    },
+    "CIS_TDIMDUX.TDIMPR6A.GetMaxLogicGroups": {
+      "start": "0xd27644",
+      "end": "0xd2765c",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TDIMDUXCGateAgent.TDIMDNUXCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x12423dc",
+      "end": "0x1242870",
+      "sha256": "e1bd0581af90cc3f0f7c45b41ca72dfbe922854ecda297aa33cc0c23ef123023"
+    },
+    "CIS_TDIMDUXCGateAgent.TDIMDNUXCGateAgent.InternalCreate": {
+      "start": "0x12420c4",
+      "end": "0x12423dc",
+      "sha256": "c5c893d229e650b64ca1943ffc6c921ea1143b62ed2013136604128e67a50d25"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x122d350",
+      "end": "0x122dbf0",
+      "sha256": "b44ec6798eaf5f124272c0bab07b3c2daf9882dd31f577f767185e4681998614"
+    },
+    "CIS_TErrorReportOutputDocumentor.TErrorReportOutputDocumentor.ActionSelectorUse": {
+      "start": "0xd250f0",
+      "end": "0xd2523c",
+      "sha256": "02eb2bde6ece43bf8e086c9231d06babf86581038e18a0e36b40ea7497c96207"
+    },
+    "CIS_TFanControllerDocumentor.TFanControllerDocumentor.DocumentHTML": {
+      "start": "0x122fa64",
+      "end": "0x1230034",
+      "sha256": "b8d2fec3da0b881f102808dbf269b47192c54398dbd8b782621f4958ab83fe3b"
+    },
+    "CIS_TRELDF1.TRELDF1.GetMaxChannels": {
+      "start": "0x1230274",
+      "end": "0x123028c",
+      "sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    }
+  },
+  "limits": [
+    "Fresh saved database-unit model only; no original whole loader or page execution.",
+    "RELDF1 canonical 2.4.xx, 2.5.xx and 2.6.xx use one source snapshot projection; native firmware continuum is unassessed.",
+    "Missing PP does not become defaults. Labels require BMP text. No master-copy AgentLoad verb is projected.",
+    "Architectural and Bytecraft bodies remain unrecovered."
+  ]
+}

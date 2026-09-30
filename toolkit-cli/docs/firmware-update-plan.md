@@ -126,6 +126,22 @@ entries, nonregular inputs, more than 1024 directory entries, inputs over
 512 MiB, entries over 64 MiB and selected plaintext totaling over 64 MiB are
 refused. The aggregate bound is an added software limit, not a vendor rule.
 
+Before any selected entry is opened, the reader admits only Stored (method 0)
+and Deflate (method 8), including the actual compression method inside an AES
+wrapper. BZIP2, LZMA and other ZIP codecs are refused: their decoders can
+allocate output or dictionaries before a bounded read clips to a forged
+declared size. With `pyzipper`, the parsed AES extra field exposes that actual
+method; without it, method 99 retains the explicit optional-firmware-extra
+refusal. All selected methods are checked before any entry is decrypted.
+
+Directory-only inspection of the exact four vendor archives pinned in
+[original-oracle-firmware-update-plan.json](../research/fixtures/original-oracle-firmware-update-plan.json)
+found method 8 for all entries: versions 1.3.0, 1.4.0 and 1.5.0 use AES method
+99 around Deflate (2, 2 and 3 entries respectively), and 1.7.0 uses Deflate
+directly (4 entries). That inspection opened no entry and used no password.
+No retained package requires another codec. This allowlist is an additional
+software admission limit, not a claim about every codec the original accepts.
+
 The default loader used by `update-run`, `update-resume` and `update-simulate`
 accepts raw images only. Valid DFU containers and recognizable damaged
 containers are refused before a device opener can be constructed. The

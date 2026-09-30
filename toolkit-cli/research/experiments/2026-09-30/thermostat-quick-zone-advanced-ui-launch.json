@@ -1,0 +1,55 @@
+{
+  "schema": "cbus-thermostat-advanced-ui-historical-launch-v1",
+  "provenance": "Read-only retrieval of the existing completed commandExecution from the worker thread. No probe was rerun to create this note.",
+  "worker_thread_id": "<historical-worker-thread-id>",
+  "execution": {
+    "type": "commandExecution",
+    "id": "<historical-command-execution-id>",
+    "command": "<historical approved launch command withheld: machine-specific interpreter, repository, vendor and receipt paths; inline network-denying sandbox profile retained below>",
+    "cwd": "<historical-repository-work-directory>",
+    "status": "completed",
+    "exitCode": 0,
+    "durationMs": 5588,
+    "output": {
+      "text": "{\"passed\": true, \"original_instruction_events\": 15926}\n",
+      "truncated": false
+    }
+  },
+  "approval_provenance": "Worker retained summary confirms sandbox_permissions=require_escalated for this single successful launch; the read_thread commandExecution record does not expose the original approval argument object. Any future execution still requires tool approval.",
+  "interpreter": "<historical-probe-python-interpreter>",
+  "profile": {
+    "executable": "/usr/bin/sandbox-exec",
+    "argument": "-p",
+    "contents": "(version 1)(allow default)(deny network*)",
+    "file_path": null,
+    "reason": "The successful launcher supplies an inline profile; it creates no profile file."
+  },
+  "nested_command_provenance": "Derived from the pinned launcher lines 226\u2013229 using the historical outer arguments and machine-specific paths; not a separately captured child argv log. Paths are withheld in this public derivative.",
+  "receipt": "thermostat-quick-zone-advanced-ui-core-original.json",
+  "receipt_sha256": "0af4aa1adbd7d31d6bbc414df54ad20f5fc501ea3aab6fef811c641adaebc980",
+  "probe_sha256": "3b5c30c80ba6f67ad451eea4875cced1a4b781478e07082f5aaa780cf7c1356c",
+  "base_probe_sha256": "ad112c8653471232598251c98ab1726973539a52075db1c2f8c1e3e5225b5a1d",
+  "limits": [
+    "Exact corrected AdvancedUI prepared-graph harness only.",
+    "Not a default-sandbox execution recipe or approval for another harness.",
+    "Full original form and public quick-zone workflow remain unaccepted.",
+    "Existing accepted receipt is immutable; launcher uses exclusive creation."
+  ],
+  "publication_sanitization": {
+    "format": "cbus-historical-receipt-publication-sanitization-v1",
+    "original_sha256": "ecd6a1d30a6a6746014303459dd5a4a8ff5751eaca69382524b9f6ebab937828",
+    "fields_normalized": [
+      "/worker_thread_id",
+      "/execution/id",
+      "/execution/command",
+      "/execution/cwd",
+      "/interpreter",
+      "/nested_command_provenance"
+    ],
+    "raw_original_preserved_privately": true,
+    "historical_outcomes_preserved": true,
+    "source_binary_result_fingerprints_preserved": true,
+    "fresh_execution_performed": false,
+    "note": "Public derivative of existing historical evidence. Machine-specific paths and runtime identities are normalized; this is not a fresh rerun."
+  }
+}

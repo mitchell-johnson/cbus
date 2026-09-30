@@ -1,0 +1,309 @@
+{
+  "format": "cbus-wireless-base-connection-source-review-v1",
+  "recommendation": "Admit bounded WGATE5N 2.2.90..2.4.99 Connection only; keep Advanced Remotes/Scenes/Mode unavailable.",
+  "evidence_kind": "Fresh static EXE/MAP review plus private decoded spec/catalogue parsing; no original GUI execution, native C-Gate execution, build or physical network action.",
+  "provenance": {
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "unit_catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "unitspec_sha256": {
+      "WGATE5X.xml": "27d308935b7afb95baa3db7df2e9018b7e4e8e79eaf0ecc53789e0a228a59c8a",
+      "WGATE5X_2.xml": "bae66bf3d67549d4d21283dceec7d2a308e9855222f9d9353ae5cf9a0883e1c5"
+    }
+  },
+  "admission": {
+    "unit_type": "WGATE5N",
+    "firmware_min": "2.2.90",
+    "firmware_max": "2.4.99",
+    "spec": "WGATE5X_2.xml",
+    "class": "TCBusWirelessGatewayUnit",
+    "registration": "0x1388745..0x1388761 pushes 2.2.90 and 2.4.99, loads base class reference [0xd4175c], type pointer 0x1388800 and calls RegisterUnitType 0xc1ab5c.",
+    "catalogue_matches": {
+      "2.2.90": [
+        {
+          "catalog_number": "5800WCGA",
+          "alternatives": [
+            "5800WCGC"
+          ],
+          "description": "Wireless Network Gateway (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.2.90",
+          "maximum_version": "2.2.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.2.90",
+            "MaxVersion": "2.2.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway",
+            "IsInternal": "true"
+          }
+        },
+        {
+          "catalog_number": "SLC5800WCGD",
+          "alternatives": [],
+          "description": "Wireless Network Gateway, Square D (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.2.90",
+          "maximum_version": "2.2.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.2.90",
+            "MaxVersion": "2.2.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway"
+          }
+        }
+      ],
+      "2.4.00": [
+        {
+          "catalog_number": "5800WCGA",
+          "alternatives": [
+            "5800WCGC"
+          ],
+          "description": "Wireless Network Gateway (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.4.0",
+          "maximum_version": "2.4.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.4.0",
+            "MaxVersion": "2.4.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway"
+          }
+        },
+        {
+          "catalog_number": "SLC5800WCGD",
+          "alternatives": [],
+          "description": "Wireless Network Gateway, Square D (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.4.0",
+          "maximum_version": "2.4.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.4.0",
+            "MaxVersion": "2.4.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway"
+          }
+        }
+      ],
+      "2.4.99": [
+        {
+          "catalog_number": "5800WCGA",
+          "alternatives": [
+            "5800WCGC"
+          ],
+          "description": "Wireless Network Gateway (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.4.0",
+          "maximum_version": "2.4.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.4.0",
+            "MaxVersion": "2.4.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway"
+          }
+        },
+        {
+          "catalog_number": "SLC5800WCGD",
+          "alternatives": [],
+          "description": "Wireless Network Gateway, Square D (wireless near side)",
+          "unit_type": "WGATE5N",
+          "minimum_version": "2.4.0",
+          "maximum_version": "2.4.99",
+          "spec_filename": "WGATE5X_2.xml",
+          "default": false,
+          "revision": {
+            "UnitType": "WGATE5N",
+            "MinVersion": "2.4.0",
+            "MaxVersion": "2.4.99",
+            "UnitSpecName": "WGATE5X_2.xml",
+            "ClassName": "WirelessCBusGateway"
+          }
+        }
+      ]
+    },
+    "older_registration_ranges": [
+      {
+        "firmware": [
+          "0",
+          "1.1.0"
+        ],
+        "class": "TCBusWGUnitNoSynchroniseToWired",
+        "source": "0x138867f..0x138869b"
+      },
+      {
+        "firmware": [
+          "1.2.0",
+          "1.4.91"
+        ],
+        "class": "TCBusWGUnitNoRepeatSALTransmission",
+        "source": "0x13886c1..0x13886dd"
+      },
+      {
+        "firmware": [
+          "1.4.92",
+          "2.2.89"
+        ],
+        "class": "TCBusWirelessGatewayUnit",
+        "source": "0x1388703..0x138871f"
+      }
+    ],
+    "older_profile_boundary": "Not proposed for this slice. Older layouts/catalogue and subclass enablement need separate evidence/acceptance."
+  },
+  "connection_parameters": {
+    "Application": {
+      "address": "0x21",
+      "length": 2,
+      "bit_size": 8,
+      "bit_address": 0,
+      "program_method": "paged",
+      "type": "int",
+      "default": "$FF $FF",
+      "declared_source": "WGATE5X.xml"
+    },
+    "ApplicationConnectEnabled": {
+      "address": "0x41",
+      "length": 1,
+      "bit_size": 1,
+      "bit_address": 0,
+      "program_method": "paged",
+      "type": "bit",
+      "default": "1",
+      "declared_source": "WGATE5X.xml",
+      "spec_bit_size_default": 8
+    },
+    "SynchroniseToWired": {
+      "address": "0x41",
+      "length": 1,
+      "bit_size": 1,
+      "bit_address": 2,
+      "program_method": "paged",
+      "type": "bit",
+      "default": "0",
+      "declared_source": "WGATE5X.xml",
+      "spec_bit_size_default": 8
+    },
+    "ForwardingMode": {
+      "address": "0x41",
+      "length": 1,
+      "bit_size": 1,
+      "bit_address": 1,
+      "program_method": "paged",
+      "type": "bit",
+      "default": "0",
+      "declared_source": "WGATE5X.xml",
+      "spec_bit_size_default": 8
+    },
+    "ForwardingRoute": {
+      "address": "0x42",
+      "length": 7,
+      "bit_size": 8,
+      "bit_address": 0,
+      "program_method": "paged",
+      "type": "int",
+      "default": "$FF $FF $FF $FF $FF $FF $FF",
+      "declared_source": "WGATE5X.xml"
+    },
+    "StatusMonitorApplication": {
+      "address": "0x37",
+      "length": 1,
+      "bit_size": 8,
+      "bit_address": 0,
+      "program_method": "paged",
+      "type": "int",
+      "default": "$38",
+      "declared_source": "WGATE5X.xml"
+    }
+  },
+  "dialog_semantics": {
+    "class_bind": "Initialise 0x110ed82 loads base class ref [0xd4175c] into form+0x404 and binds gateway unit at0x110ed8e..0x110eda2.",
+    "base_mode_visibility": "SetValues 0x110f57a loads Advanced class ref [0xd4477c], IsClass at0x110f580, JE at0x110f587 jumps base path0x110f6ea. Base path hides form+0x484 Mode, +0x474 Remotes and +0x47c Scenes. It never changes form+0x420 Connection visibility.",
+    "advanced_connection_visibility": "Only Advanced path calls GetMapWirelessRemotes0xd44f64 at0x110f595 and toggles Connection +0x420 with NOT result at0x110f598..0x110f5ac. Therefore MapWirelessRemotes is not a WGATE5N admission/control gate even though its shared spec declares the field.",
+    "base_init": "TCBusWirelessGatewayUnit.Init0xd42354 calls common Unit.Init, LoadApplications0xd425b8, LoadRemoteNetworks0xd42860.",
+    "base_application_callbacks": "HandleApplication1Change0xd42ea8 calls GetApplication1 then common SetApplicationObject0xf30014; HandleApplication2Change0xd42ecc calls GetApplication2 then common SetApplication2Object0xf30038. No Advanced scene/remotes calls in those methods.",
+    "advanced_application_dependency_boundary": "Advanced scene/remotes callbacks from prior receipt apply only to WGATE5F Advanced. WGATE5N should preserve shared stored remote/scene bytes as unowned state; it should not forbid base Application edits just because those unused shared fields contain nondefaults.",
+    "synchronisation": "Base GetSynchroniseToWiredEnabled0xd42e00 returns true. Existing adjacent checkbox dependency applies: adjacent false clears SynchroniseToWired; true synchronisation with adjacent false is invalid.",
+    "controls": "Existing six-field Connection source receipt covers Application1/2, adjacent, synchronise, remote destination and status application controls and shared base agent load/save. Same decoded spec by itself was not used to establish this GUI routing."
+  },
+  "route_and_save": {
+    "agent": "TCBusWirelessGatewayCGateAgent.InternalCreate0x125889c creates five gateway Connection attributes after wireless inherited InternalCreate; Application is inherited attribute+0x88.",
+    "length": "ForwardingRoute fixed7: depth/count header followed six slots. Keep admitted contiguous one-to-five extra-network routes only; six non255 extra slots leave original depth0/header0.",
+    "encoding": "header9*(extra_count+1), extra network addresses, 255 padding; gateway own unit address names adjacent network and is not stored in extra route.",
+    "directional_topology": "Actual directional bridge units only; keep admitted BRIDGE2N/BRIDGE2F route families. Do not infer reverse links or admit all IsBridge types.",
+    "save": "Shared base BeforeSave0x1258f30 copies both application bytes; adjacent, synchronisation, forwarding mode/route, independent status monitor application. It tests each of six bridge slots independently, preserving valid entries after a255 hole.",
+    "dependencies": "Freeze source identity, source network Application membership and actual directional topology. Full shared spec/raw PP snapshot may be retained as conservative stale guard, without claiming Advanced fields are base GUI dependencies.",
+    "whole_dialog_boundary": "Changed-only six-field Connection PP saves do not implement parent radio/security lifecycle: wireless terminal UseSecurity PP save occurs after main PP SAVE, ProjectSave, LoadStatus. Preserve existing explicit bounded-operation disclosure.",
+    "agent_registration": "Fresh agent initializer 0x13991cc..0x139921d: 0x13991dc loads [0x12586b4] TCBusWirelessGatewayCGateAgent; 0x13991e2 loads [0xd4175c] TCBusWirelessGatewayUnit; 0x13991e8 calls RegisterAgent0x7ef350. Base N therefore uses the exact shared base Connection agent, not AdvancedCGateAgent."
+  },
+  "native_synthetic_feasibility": {
+    "feasible": true,
+    "executed": false,
+    "basis": "Existing test_wireless_connection_native.py owned local C-Gate fixture creates closed synthetic source/adjacent/two bridge networks, rejects NET OPEN, and permits PP LOAD/SAVE only /db targets. Native catalogue has explicit WGATE5N2.2.90/2.4.00/2.4.99 WGATE5X_2 records for5800WCGA/5800WCGC andSLC5800WCGD.",
+    "needed_cases": [
+      "WGATE5N2.2.90 and2.4.00 positive database PP roundtrip/reload",
+      "Exact six-field raw memory/unknown-hole preservation",
+      "Application edits with nondefault MapWirelessRemotes and nondefault remote/scene shared fields must succeed preserving unowned bytes",
+      "Advanced WGATE5F MapWirelessRemotes/application scene/remotes guards remain unchanged",
+      "Out-of-bounds type/firmware rejection; unsupported route family refusal before PP writes"
+    ],
+    "not_established": [
+      "Original Toolkit GUI interaction acceptance",
+      "Physical radio routing/security outcomes",
+      "Original whole-dialog parent save"
+    ]
+  },
+  "fresh_method_hashes": {
+    "unit_registration": {
+      "address": "0x1388668",
+      "size": 353,
+      "sha256": "7f3a9ed76254dab5c9ff3d453ca93d6f37f4eca584d94a66e81bcdfac2b3a6c7"
+    },
+    "base_init": {
+      "address": "0xd42354",
+      "size": 36,
+      "sha256": "d6b0162b6e61d9e431449a9557638d4ed548cefea79fa03cf62e6f396337f42d"
+    },
+    "base_primary_callback": {
+      "address": "0xd42ea8",
+      "size": 36,
+      "sha256": "376a5cc0b63162d215ca038cec7adea6633564df6434c329d9551b55707cb67f"
+    },
+    "base_secondary_callback": {
+      "address": "0xd42ecc",
+      "size": 36,
+      "sha256": "b6044d458d6eb0c59d9392d2fea95a9d999fc3bdd09395c84e18ea3b54289a9c"
+    },
+    "dialog_initialise": {
+      "address": "0x110ecfc",
+      "size": 1244,
+      "sha256": "edfdc2a704b2863b88b2ccf7537dba7fd8b98c653c760ae0d22d98cf89d68a53"
+    },
+    "dialog_set_values": {
+      "address": "0x110f3ec",
+      "size": 1436,
+      "sha256": "df6f76a249f3e68c98be951a79459cd9fe26c43d3152421314a53d8a00c68eac"
+    },
+    "base_agent_registration": {
+      "address": "0x13991cc",
+      "size": 82,
+      "sha256": "e38675ed03392e8fd5d05dde2389834e9cf44f948159ecf91761630ffd9da796"
+    }
+  },
+  "other_profiles": "WRB/WRP/WRD remain useful later but need independent registration/class/director/agent, exact own field ownership and native acceptance. No new claim of shared GUI from shared spec made.",
+  "remaining_blockers": "No source blocker for bounded WGATE5N2.2.90..2.4.99 Connection. Older registrations, six-entry routes, other bridge families, original parent save and physical forwarding remain outside admission.",
+  "review_date": "2026-09-30",
+  "implementation_evidence": "wireless-base-connection-native-acceptance.json records subsequent positive owned closed-project acceptance; static source review alone is not runtime acceptance."
+}

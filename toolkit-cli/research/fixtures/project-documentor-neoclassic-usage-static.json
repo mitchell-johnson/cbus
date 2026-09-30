@@ -1,0 +1,237 @@
+{
+  "format": "cbus-project-documentor-neoclassic-usage-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "classic_action_primary_application": true,
+    "classic_action_uses_all_key_collection": true,
+    "neo_input_join_capability_before_getter": true,
+    "neo_input_dual_join_capability_before_getter": true,
+    "neo_input_unused_macro_gate": true,
+    "neo_input_physical_count_gate": true,
+    "neo_scene_used_scans_all_key_objects": true,
+    "neo_scene_use_is_scene_pointer_identity": true,
+    "other_join_capability_before_getter": true,
+    "other_dual_join_capability_before_getter": true,
+    "scene_loader_unconditional_before_keys": true,
+    "scene_selector_independent_of_scenes_enabled": true,
+    "scene_clear_before_decode": true,
+    "empty_table_skips_pointers": true,
+    "initial_unused_skips_pointers": true,
+    "scene_group_unused_skip": true,
+    "scene_duplicate_group_skip": true,
+    "scene_groups_primary_application": true,
+    "scene_pairs_stride_two": true,
+    "scene_boundary_next_pointer_plus162": true,
+    "scene_pad_eight": true,
+    "unsupported_corridor_still_loads_group": true,
+    "brightness_ninth_group_index_maxblocks": true,
+    "KEYCIR1:input_inherited_neo": true,
+    "KEYCIR1:other_inherited_neopro": true,
+    "KEYCIR1:output_empty_base": true,
+    "KEYCIR1:eight_blocks": true,
+    "KEYCIR1:eight_virtual_keys": true,
+    "KEYCIR1:physical_keys": true,
+    "KEYCIR1:0x234_unsupported": true,
+    "KEYCIR1:0x238_unsupported": true,
+    "KEYCIR1:0x244_unsupported": true,
+    "KEYCIR1:key_disable_supported": true,
+    "KEYC1:input_inherited_neo": true,
+    "KEYC1:other_inherited_neopro": true,
+    "KEYC1:output_empty_base": true,
+    "KEYC1:eight_blocks": true,
+    "KEYC1:eight_virtual_keys": true,
+    "KEYC1:physical_keys": true,
+    "KEYC1:0x234_unsupported": true,
+    "KEYC1:0x238_unsupported": true,
+    "KEYC1:0x244_unsupported": true,
+    "KEYC1:key_disable_supported": true,
+    "KEYC2:input_inherited_neo": true,
+    "KEYC2:other_inherited_neopro": true,
+    "KEYC2:output_empty_base": true,
+    "KEYC2:eight_blocks": true,
+    "KEYC2:eight_virtual_keys": true,
+    "KEYC2:physical_keys": true,
+    "KEYC2:0x234_unsupported": true,
+    "KEYC2:0x238_unsupported": true,
+    "KEYC2:0x244_unsupported": true,
+    "KEYC2:key_disable_supported": true,
+    "KEYC4:input_inherited_neo": true,
+    "KEYC4:other_inherited_neopro": true,
+    "KEYC4:output_empty_base": true,
+    "KEYC4:eight_blocks": true,
+    "KEYC4:eight_virtual_keys": true,
+    "KEYC4:physical_keys": true,
+    "KEYC4:0x234_unsupported": true,
+    "KEYC4:0x238_unsupported": true,
+    "KEYC4:0x244_unsupported": true,
+    "KEYC4:key_disable_supported": true,
+    "KEYCIR4:input_inherited_neo": true,
+    "KEYCIR4:other_inherited_neopro": true,
+    "KEYCIR4:output_empty_base": true,
+    "KEYCIR4:eight_blocks": true,
+    "KEYCIR4:eight_virtual_keys": true,
+    "KEYCIR4:physical_keys": true,
+    "KEYCIR4:0x234_unsupported": true,
+    "KEYCIR4:0x238_unsupported": true,
+    "KEYCIR4:0x244_unsupported": true,
+    "KEYCIR4:key_disable_supported": true
+  },
+  "registrations": [
+    {
+      "unit_type": "KEYCIR1",
+      "class": "CIS_TKEYCIR1..TKEYCIR1",
+      "firmware": [
+        "1.8.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYCIR1.TKEYCIR1.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x234": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYC1",
+      "class": "CIS_TKEYC1..TKEYC1",
+      "firmware": [
+        "1.8.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYC1.TKEYC1.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x234": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYC2",
+      "class": "CIS_TKEYC2..TKEYC2",
+      "firmware": [
+        "1.8.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYC2.TKEYC2.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x234": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYC4",
+      "class": "CIS_TKEYC4..TKEYC4",
+      "firmware": [
+        "1.8.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYC4.TKEYC4.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x234": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "unit_type": "KEYCIR4",
+      "class": "CIS_TKEYCIR4..TKEYCIR4",
+      "firmware": [
+        "1.8.01",
+        "9"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TKEYCIR4.TKEYCIR4.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x234": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    }
+  ],
+  "methods": {
+    "CIS_TClassicKeyInputDocumentor.TClassicKeyInputDocumentor.ActionSelectorUse": {
+      "start": "0xca628c",
+      "end": "0xca6610",
+      "sha256": "d42d5a833c1255f27719d95b6a7798a9a5959f3a3c50e10d6bd30a2c8ab80e83"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd075cc",
+      "end": "0xd079e0",
+      "sha256": "df1e6a8ecf2c7ed2fe15bf5a802f909ded412f4b797bc0e6bc498e1a67f1b892"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd079e0",
+      "end": "0xd07ad4",
+      "sha256": "3983a28c79a0a306b96ef2bfd078d7b36b6ea6ec0f8d480e87b6059d4cc17b32"
+    },
+    "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xca06c0",
+      "end": "0xca07cc",
+      "sha256": "b207387846cc725a4a675545e5b46c422c1a024c02de1eda28da2490b615a354"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xccb180",
+      "end": "0xccb450",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetSceneCommands": {
+      "start": "0xccaf50",
+      "end": "0xccb180",
+      "sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "start": "0xcca51c",
+      "end": "0xccaef4",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes": {
+      "start": "0xced05c",
+      "end": "0xced154",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b"
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetIndicatorBrightness": {
+      "start": "0xcc7f18",
+      "end": "0xcc8080",
+      "sha256": "0adbce6f75aae2526fa8b7fa34c090335a5acd6d8594ab0905bfd35f45936ce2"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xced154",
+      "end": "0xced538",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    }
+  },
+  "original_generated_page_comparison": "not_obtained",
+  "original_loader_execution": "not_executed",
+  "boundary": "Pinned static methods and virtual slots only. No native CPU probe or original GUI execution."
+}

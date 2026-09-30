@@ -7,6 +7,10 @@ import json
 from pathlib import Path
 
 
+from project_legacy_transform_receipt_source import (CLI_SHA256, historical_cli,
+                                                     assert_current_project_carry_forward)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / "research/fixtures/project-legacy-transform-native-receipt.json"
 RECEIPT_SHA256 = "8b9bed9a578c946e4a31f700446371e562d9d29312a35a4dedce13b78362d1c0"
@@ -14,7 +18,6 @@ SOURCES = {
     "portable_module_sha256": "src/cbus_toolkit/project_legacy_transform.py",
     "cli_module_sha256": "src/cbus_toolkit/project_legacy_transform_cli.py",
     "native_module_sha256": "src/cbus_toolkit/native.py",
-    "cli_dispatch_sha256": "src/cbus_toolkit/cli.py",
     "portable_test_sha256": "tests/test_project_legacy_transform.py",
     "test_sha256": "tests/test_project_legacy_transform_native.py",
     "owned_service_harness_sha256": "research/local_cgate.py",
@@ -32,6 +35,9 @@ def test_native_legacy_transform_receipt_is_source_bound() -> None:
     assert receipt["physical_networks_opened"] is False
     assert receipt["service"]["listener_ownership_verified"] is True
     assert receipt["service"]["cleanup_complete"] is True
+    assert receipt["sources"]["cli_dispatch_sha256"] == CLI_SHA256
+    historical_cli()
+    assert_current_project_carry_forward()
     for field, path in SOURCES.items():
         assert receipt["sources"][field] == digest(ROOT / path)
     assert receipt["preview"]["backup_absent_before_test"] is True
@@ -50,3 +56,17 @@ def test_native_legacy_transform_receipt_is_source_bound() -> None:
         assert case["readback_project_address"] == case["name"]
     assert cases[0]["backup_created_by"] == "--test"
     assert all(case["backup_created_by"] == "transform" for case in cases[1:])
+
+
+def test_project_source_carry_forward_detects_argument_and_forwarding_changes() -> None:
+    from project_legacy_transform_receipt_source import project_source_contract
+
+    source = historical_cli()
+    expected = project_source_contract(source)
+    for old, changed in ((b'"--xslt-file"', b'"--different-xslt-file"'),
+                         (b'xslt_file=getattr(args, "xslt_file", None)',
+                          b'xslt_file=getattr(args, "wrong_field", None)'),
+                         (b'project_legacy_transform_run(args)',
+                          b'project_legacy_transform_run(None)')):
+        assert source.count(old) == 1
+        assert project_source_contract(source.replace(old, changed)) != expected

@@ -1,0 +1,355 @@
+{
+  "format": "cbus-project-documentor-special-outputs-original-leaf-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_methods_executed": true,
+  "original_loader_executed": false,
+  "original_generated_page_compared": false,
+  "boundary": "Original Fan DocumentHTML and LevelToPercent instructions; inherited Output documentor, class test, role/threshold/label getters, DisplayHTMLUnit, TStringList and Delphi string operations are synthetic leaves. Original ErrorReportOutput ActionSelectorUse instructions use synthetic object-identity getters and a synthetic empty inherited action. No original loader, generated project page, GUI, network or hardware.",
+  "methods": {
+    "fan_body": {
+      "symbol": "CIS_TFanControllerDocumentor.TFanControllerDocumentor.DocumentHTML",
+      "start": "0x122fa64",
+      "end": "0x1230034",
+      "sha256": "b8d2fec3da0b881f102808dbf269b47192c54398dbd8b782621f4958ab83fe3b"
+    },
+    "percent": {
+      "symbol": "CIS_CBus.LevelToPercent",
+      "start": "0x7f2ac8",
+      "end": "0x7f2aec",
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+    },
+    "error_action": {
+      "symbol": "CIS_TErrorReportOutputDocumentor.TErrorReportOutputDocumentor.ActionSelectorUse",
+      "start": "0xd250f0",
+      "end": "0xd2523c",
+      "sha256": "02eb2bde6ece43bf8e086c9231d06babf86581038e18a0e36b40ea7497c96207"
+    }
+  },
+  "fan_cases": [
+    {
+      "name": "master-85-170",
+      "is_master": true,
+      "has_master": false,
+      "low_med": 85,
+      "med_high": 170,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrLAsg",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelLow",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelMed",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Master Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr><tr><td>Off</td><td>0%</td><td>Off <&></td></tr><tr><td>Low</td><td>1% - 34%</td><td>Low <&></td></tr><tr><td>Medium</td><td>35% - 67%</td><td>Medium <&></td></tr><tr><td>High</td><td>68% - 100%</td><td>High <&></td></tr></table>"
+      ],
+      "original_percent_inputs": [
+        85,
+        85,
+        170,
+        170
+      ]
+    },
+    {
+      "name": "standalone-collapsed-0-0",
+      "is_master": false,
+      "has_master": false,
+      "low_med": 0,
+      "med_high": 0,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrLAsg",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Stand Alone Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr><tr><td>Off</td><td>0%</td><td>Off <&></td></tr><tr><td>High</td><td>1% - 100%</td><td>High <&></td></tr></table>"
+      ],
+      "original_percent_inputs": [
+        0
+      ]
+    },
+    {
+      "name": "standalone-equal-100-100",
+      "is_master": false,
+      "has_master": false,
+      "low_med": 100,
+      "med_high": 100,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrLAsg",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelLow",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Stand Alone Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr><tr><td>Off</td><td>0%</td><td>Off <&></td></tr><tr><td>Low</td><td>1% - 40%</td><td>Low <&></td></tr><tr><td>High</td><td>41% - 100%</td><td>High <&></td></tr></table>"
+      ],
+      "original_percent_inputs": [
+        100,
+        100
+      ]
+    },
+    {
+      "name": "standalone-reversed-200-50",
+      "is_master": false,
+      "has_master": false,
+      "low_med": 200,
+      "med_high": 50,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrLAsg",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelLow",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelMed",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Stand Alone Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr><tr><td>Off</td><td>0%</td><td>Off <&></td></tr><tr><td>Low</td><td>1% - 79%</td><td>Low <&></td></tr><tr><td>Medium</td><td>80% - 20%</td><td>Medium <&></td></tr><tr><td>High</td><td>21% - 100%</td><td>High <&></td></tr></table>"
+      ],
+      "original_percent_inputs": [
+        200,
+        200,
+        50,
+        50
+      ]
+    },
+    {
+      "name": "standalone-high-255",
+      "is_master": false,
+      "has_master": false,
+      "low_med": 85,
+      "med_high": 255,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrLAsg",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelOff",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelLow",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetLowMedThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelMed",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetMedHighThreshold",
+        "SysUtils.IntToStr",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.GetDLTLabelHigh",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Stand Alone Unit</b><br />",
+        "<table border=\"1\"><tr><th>Fan Speed</th><th>Threshold</th><th>Label</th></tr><tr><td>Off</td><td>0%</td><td>Off <&></td></tr><tr><td>Low</td><td>1% - 34%</td><td>Low <&></td></tr><tr><td>Medium</td><td>35% - 100%</td><td>Medium <&></td></tr><tr><td>High</td><td>101% - 100%</td><td>High <&></td></tr></table>"
+      ],
+      "original_percent_inputs": [
+        85,
+        85,
+        255,
+        255
+      ]
+    },
+    {
+      "name": "slave-no-speed-table",
+      "is_master": false,
+      "has_master": true,
+      "low_med": 85,
+      "med_high": 170,
+      "labels": {
+        "off": "Off <&>",
+        "low": "Low <&>",
+        "medium": "Medium <&>",
+        "high": "High <&>"
+      },
+      "leaf_calls": [
+        "CIS_TOutputDocumentor.TOutputDocumentor.DocumentHTML",
+        "System.@IsClass",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "CIS_TDocumentorCommon.DisplayHTMLUnit",
+        "System.@UStrCatN",
+        "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit",
+        "System.@UStrArrayClr"
+      ],
+      "lines": [
+        "<synthetic inherited Output body>",
+        "<b>Slave Unit</b><br />",
+        "Master: <a href=\"#254_7\">Master <synthetic></a><br />"
+      ],
+      "original_percent_inputs": []
+    }
+  ],
+  "error_action_cases": [
+    {
+      "name": "error-action-0",
+      "report_match": false,
+      "clear_match": false,
+      "leaf_calls": [
+        "CIS_TProjectDocumentor.TUnitTypeDocumentor.ActionSelectorUse",
+        "System.@IsClass",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorAcSel",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorClearAcSel",
+        "System.@UStrArrayClr"
+      ],
+      "html": ""
+    },
+    {
+      "name": "error-action-1",
+      "report_match": true,
+      "clear_match": false,
+      "leaf_calls": [
+        "CIS_TProjectDocumentor.TUnitTypeDocumentor.ActionSelectorUse",
+        "System.@IsClass",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorAcSel",
+        "System.LoadResString",
+        "System.@UStrCat3",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorClearAcSel",
+        "System.@UStrArrayClr"
+      ],
+      "html": "<li />Trigger Error Report"
+    },
+    {
+      "name": "error-action-2",
+      "report_match": false,
+      "clear_match": true,
+      "leaf_calls": [
+        "CIS_TProjectDocumentor.TUnitTypeDocumentor.ActionSelectorUse",
+        "System.@IsClass",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorAcSel",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorClearAcSel",
+        "System.LoadResString",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "html": "<li />Trigger Error Report Clear"
+    },
+    {
+      "name": "error-action-3",
+      "report_match": true,
+      "clear_match": true,
+      "leaf_calls": [
+        "CIS_TProjectDocumentor.TUnitTypeDocumentor.ActionSelectorUse",
+        "System.@IsClass",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorAcSel",
+        "System.LoadResString",
+        "System.@UStrCat3",
+        "CIS_TDIMDUX.TDIMDUX.GetTriggerErrorClearAcSel",
+        "System.LoadResString",
+        "System.@UStrCatN",
+        "System.@UStrArrayClr"
+      ],
+      "html": "<li />Trigger Error Report<li />Trigger Error Report Clear"
+    }
+  ]
+}

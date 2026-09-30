@@ -1,0 +1,541 @@
+{
+  "format": "cbus-project-documentor-neo-input-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": {
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "sha256": "df1e6a8ecf2c7ed2fe15bf5a802f909ded412f4b797bc0e6bc498e1a67f1b892",
+      "start": "0xd075cc",
+      "end": "0xd079e0"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.DescribeInputGroupDependencyAdvanced": {
+      "sha256": "eca104106ac736ea48608093e0017a0836c37778280f4f591403cb03339dbff6",
+      "start": "0xce52f8",
+      "end": "0xce55c4"
+    }
+  },
+  "boundary": "original Neo/DLT input method instructions with synthetic getters/string/collection stubs and disabled joins; no PP loader or original page",
+  "cases": [
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "neo-blocks-then-scenes",
+      "html": "Key 1<br/>Key 2<br/>Key 1<br/>Scene 1<br/>Scene 2 (Unused)<br/>Scene 3"
+    },
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": true,
+      "name": "dlt-all-scenes-used",
+      "html": "Key 1<br/>Key 2<br/>Key 1<br/>Scene 1<br/>Scene 2<br/>Scene 3"
+    },
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 1,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 16
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "unused-macro",
+      "html": "Block (Unused)<br/>Block (Unused)<br/>Scene 1<br/>Scene 2 (Unused)<br/>Scene 3 (Unused)"
+    },
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "virtual-key-scene-reference-still-used",
+      "html": "Key 1<br/>Key 2<br/>Key 1<br/>Scene 1<br/>Scene 2 (Unused)<br/>Scene 3"
+    },
+    {
+      "application": 202,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "different-application",
+      "html": ""
+    },
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 9,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "unallocated-block",
+      "html": "Block (Unused)"
+    },
+    {
+      "application": 56,
+      "applications": [
+        56,
+        202
+      ],
+      "group": 8,
+      "physical_count": 2,
+      "blocks": [
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 8
+        },
+        {
+          "application": 56,
+          "group": 9
+        }
+      ],
+      "keys": [
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0,
+            1
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 0,
+          "trigger": null,
+          "macro_type": 26
+        },
+        {
+          "commands": [
+            12
+          ],
+          "blocks": [
+            0
+          ],
+          "scene": 2,
+          "trigger": null,
+          "macro_type": 26
+        }
+      ],
+      "scenes": [
+        [
+          8,
+          8
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "dlt": false,
+      "name": "duplicate-scene-commands",
+      "html": "Key 1<br/>Key 2<br/>Key 1<br/>Scene 1<br/>Scene 1"
+    }
+  ]
+}

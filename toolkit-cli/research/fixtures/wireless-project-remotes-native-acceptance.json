@@ -1,0 +1,262 @@
+{
+  "format": "cbus-wireless-project-remotes-native-acceptance-v1",
+  "scope": "Owned native C-Gate closed synthetic database projects only",
+  "original_toolkit_gui_executed": false,
+  "physical_pairing_verified": false,
+  "physical_hardware_verified": false,
+  "passed": true,
+  "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+  "spec_sha256": "2c0237c2512be989c4434e74b5cfd6981173ec46b8c3af3ce8318738033bfb97",
+  "uncertain_saves": [
+    {
+      "boundary": 1,
+      "save_attempts": 1,
+      "later_commands": 0,
+      "replay_attempts": 0,
+      "save_close_reload_passed": true,
+      "gateway_mapping_preserved": true,
+      "failure_receipt": {
+        "attempted_commands_count": 5,
+        "created_address": 100,
+        "created_oid": "af984d90-9ed8-103f-bb6a-c612d7724890",
+        "created_path": "//WR102E4C/254/p/100",
+        "creation_attempted": true,
+        "creation_confirmed": true,
+        "format": "cbus-wireless-project-remote-apply-v1",
+        "gateway_mappings_changed": false,
+        "native_config_oid_changes_allowed_after_save": true,
+        "original_toolkit_executed": false,
+        "physical_pairing_verified": false,
+        "pp_initialized": false,
+        "preserved_existing_project": false,
+        "project_save_attempts": [
+          {
+            "attempted": true,
+            "completed": false,
+            "stage": "constructor"
+          }
+        ],
+        "retry_performed": false,
+        "rollback_performed": false,
+        "saved": false,
+        "stage": "constructor",
+        "tag_name": "Remote 01",
+        "uncertain_save": true
+      },
+      "injection": "Native save executed; caller acknowledgement withheld afterward"
+    },
+    {
+      "boundary": 2,
+      "save_attempts": 2,
+      "later_commands": 0,
+      "replay_attempts": 0,
+      "save_close_reload_passed": true,
+      "gateway_mapping_preserved": true,
+      "failure_receipt": {
+        "attempted_commands_count": 9,
+        "created_address": 100,
+        "created_oid": "afadf870-9ed8-103f-bbda-c612d7724890",
+        "created_path": "//WR47C054/254/p/100",
+        "creation_attempted": true,
+        "creation_confirmed": true,
+        "format": "cbus-wireless-project-remote-apply-v1",
+        "gateway_mappings_changed": false,
+        "native_config_oid_changes_allowed_after_save": true,
+        "original_toolkit_executed": false,
+        "physical_pairing_verified": false,
+        "pp_initialized": false,
+        "preserved_existing_project": false,
+        "project_save_attempts": [
+          {
+            "attempted": true,
+            "completed": true,
+            "stage": "constructor"
+          },
+          {
+            "attempted": true,
+            "completed": false,
+            "stage": "database_agent"
+          }
+        ],
+        "retry_performed": false,
+        "rollback_performed": false,
+        "saved": false,
+        "stage": "database_agent",
+        "tag_name": "Remote 01",
+        "uncertain_save": true
+      },
+      "injection": "Native save executed; caller acknowledgement withheld afterward"
+    },
+    {
+      "boundary": 3,
+      "save_attempts": 3,
+      "later_commands": 0,
+      "replay_attempts": 0,
+      "save_close_reload_passed": true,
+      "gateway_mapping_preserved": true,
+      "failure_receipt": {
+        "attempted_commands_count": 11,
+        "created_address": 100,
+        "created_oid": "afc81020-9ed8-103f-bc7e-c612d7724890",
+        "created_path": "//WR5C11BE/254/p/100",
+        "creation_attempted": true,
+        "creation_confirmed": true,
+        "format": "cbus-wireless-project-remote-apply-v1",
+        "gateway_mappings_changed": false,
+        "native_config_oid_changes_allowed_after_save": true,
+        "original_toolkit_executed": false,
+        "physical_pairing_verified": false,
+        "pp_initialized": false,
+        "preserved_existing_project": false,
+        "project_save_attempts": [
+          {
+            "attempted": true,
+            "completed": true,
+            "stage": "constructor"
+          },
+          {
+            "attempted": true,
+            "completed": true,
+            "stage": "database_agent"
+          },
+          {
+            "attempted": true,
+            "completed": false,
+            "stage": "creation_caller"
+          }
+        ],
+        "retry_performed": false,
+        "rollback_performed": false,
+        "saved": false,
+        "stage": "creation_caller",
+        "tag_name": "Remote 01",
+        "uncertain_save": true
+      },
+      "injection": "Native save executed; caller acknowledgement withheld afterward"
+    }
+  ],
+  "source_sha256": {
+    "src/cbus_toolkit/wireless_project_remotes.py": "29861cab8c6c99e3e22ad5b23cf16c7b15d309f1e10b139ac8f818c0a77c96b2",
+    "src/cbus_toolkit/wireless_cli.py": "24504353a73a9e3bee6c03e640b399be82b72792cb08254b11b5afdf155a695d",
+    "src/cbus_toolkit/cli.py": "8491d422bf5e5f3fe01b0d25e0b34ba4789340677b6b051fefc8749b32af1b84",
+    "tests/test_wireless_project_remotes_native.py": "7bfdc943b5895a953645c1962b75533027321c9e6712cd5ac74a864ab4c9b998"
+  },
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "success": {
+    "address": 101,
+    "tag_name": "Remote 02",
+    "save_count": 3,
+    "first_metadata_fields": [
+      "Address",
+      "FirmwareVersion",
+      "OID",
+      "TagName",
+      "UnitName",
+      "UnitType"
+    ],
+    "final_metadata_fields": [
+      "Address",
+      "CatalogNumber",
+      "Description",
+      "FirmwareVersion",
+      "OID",
+      "SerialNumber",
+      "TagName",
+      "UnitName",
+      "UnitType"
+    ],
+    "remote_pp_mutations": 0,
+    "result": {
+      "format": "cbus-wireless-project-remote-apply-v1",
+      "created_path": "//WR904F55/254/p/101",
+      "created_address": 101,
+      "tag_name": "Remote 02",
+      "stage": "complete",
+      "project_save_attempts": [
+        {
+          "stage": "constructor",
+          "attempted": true,
+          "completed": true
+        },
+        {
+          "stage": "database_agent",
+          "attempted": true,
+          "completed": true
+        },
+        {
+          "stage": "creation_caller",
+          "attempted": true,
+          "completed": true
+        }
+      ],
+      "attempted_commands_count": 11,
+      "creation_attempted": true,
+      "creation_confirmed": true,
+      "created_oid": "af711680-9ed8-103f-ba92-c612d7724890",
+      "saved": true,
+      "uncertain_save": false,
+      "retry_performed": false,
+      "rollback_performed": false,
+      "preserved_existing_project": true,
+      "native_config_oid_changes_allowed_after_save": true,
+      "pp_initialized": false,
+      "gateway_mappings_changed": false,
+      "physical_pairing_verified": false,
+      "original_toolkit_executed": false,
+      "result_project_sha256": "83d7f0c3215cdb87e5562af8043b9a7ddfcb7a19ca9d3405797829b11c1a1394"
+    },
+    "native_config_oids_regenerated_per_save": [
+      52,
+      52,
+      52
+    ],
+    "native_config_values_and_order_preserved": true,
+    "gateway_parameters_preserved": 68,
+    "save_close_reload_passed": true
+  },
+  "effective_pp_defaults": {
+    "UnitAddress": "0xff",
+    "Application": "0xff 0xff",
+    "Project": "CLIPSAL ",
+    "NetworkAddress": "0xff",
+    "UnitName": "NEWUNIT ",
+    "SerialNo": "0x0 0x0 0x0 0x0",
+    "CustType": "0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff"
+  },
+  "read_only_pp_load_left_metadata_unchanged": true,
+  "stale_plan_refused_before_mutation": true,
+  "duplicate_serial_refused_before_mutation": true,
+  "native_derived_frozen_xml_refusals_before_io": [
+    "duplicate_address",
+    "duplicate_name",
+    "duplicate_identity",
+    "address_exhaustion"
+  ],
+  "native_cli": {
+    "entrypoint": "python -m cbus_toolkit",
+    "subprocess_invocations": 4,
+    "decoded_unit_specification_available": false,
+    "physical_hardware_verified": false,
+    "dry_run_verified_without_project_mutation": true,
+    "project_save_stages": [
+      "constructor",
+      "database_agent",
+      "creation_caller"
+    ],
+    "gateway_parameters_preserved": 68,
+    "stale_plan_refused_without_project_mutation": true,
+    "save_close_reload_passed": true,
+    "network_closed_and_idle_before_and_after": true
+  },
+  "network_open_command_audit_scope": "In-process harness commands; CLI subprocesses use exact /db sources with closed/idle checks before and after",
+  "network_open_commands": 0,
+  "service": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Homebrew (build 11.0.32.1+0)\nOpenJDK 64-Bit Server VM Homebrew (build 11.0.32.1+0, mixed mode)",
+    "listener_ownership_verified": true,
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true
+  }
+}

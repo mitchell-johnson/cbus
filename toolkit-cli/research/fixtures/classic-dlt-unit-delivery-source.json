@@ -1,0 +1,1353 @@
+{
+  "boundary": {
+    "caller_model_verified": false,
+    "excluded_prerequisites": [
+      "project/network/unit identity resolution",
+      "key role and owner resolution",
+      "network/owner language initialization",
+      "ordinary bitmap loading",
+      "prepared bitmap rendering",
+      "C-Gate project context"
+    ],
+    "executor": false,
+    "native_cgate_executed": false,
+    "original_cpu_executed": false,
+    "physical_acceptance": false,
+    "whole_pp_serializer": false
+  },
+  "checks": [
+    {
+      "address": "0x121c28f",
+      "check": "inherited_hook",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c297",
+      "check": "kfi_first",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c2b1",
+      "check": "reset_errors",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c2c8",
+      "check": "default_present_skips_initialization",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c2d7",
+      "check": "initialize_missing_default",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c304",
+      "check": "load_missing_default_graphics",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c30d",
+      "check": "database_mode",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c314",
+      "check": "database_branch",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c329",
+      "check": "nil_unit_language_unchanged",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c36b",
+      "check": "update_existing_unit_language",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c379",
+      "check": "save_labels_gate",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c380",
+      "check": "save_labels_enabled",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c385",
+      "check": "transfer_gate",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c38c",
+      "check": "disabled_skips_keys",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c3a8",
+      "check": "no_keys_skips_keys",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c415",
+      "check": "modify_precedes_scene",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c431",
+      "check": "modify_missing_skips",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c444",
+      "check": "modify_unused_predicate",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c44b",
+      "check": "modify_unused_skips",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c47a",
+      "check": "modify_initialize_false",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c47c",
+      "check": "modify_initialize",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c4e4",
+      "check": "modify_bypasses_bitmap_load",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c4ff",
+      "check": "scene_predicate",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c527",
+      "check": "scene_owner",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c52e",
+      "check": "scene_missing_skips",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c583",
+      "check": "scene_initialize_false",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c585",
+      "check": "scene_initialize",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c602",
+      "check": "scene_bypasses_bitmap_load",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c61d",
+      "check": "ordinary_owner",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c624",
+      "check": "ordinary_missing_clears",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c641",
+      "check": "ordinary_unused_predicate",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c648",
+      "check": "ordinary_used_continues",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c688",
+      "check": "ordinary_unretained_clear",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c6d8",
+      "check": "ordinary_initialize_false",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c6da",
+      "check": "ordinary_initialize",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c74a",
+      "check": "ordinary_find_flavour",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c767",
+      "check": "ordinary_bitmap_present",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c776",
+      "check": "ordinary_dynamic",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c787",
+      "check": "ordinary_font",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c7a5",
+      "check": "ordinary_load_bitmap",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c7ae",
+      "check": "missing_flavour_clears",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c7d8",
+      "check": "local_handler_installed",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c7e6",
+      "check": "reset_retained_broadcast",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c801",
+      "check": "empty_value_clears",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c820",
+      "check": "default_value_clears",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c82f",
+      "check": "dynamic_checks_bitmap",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c840",
+      "check": "font_checks_bitmap",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c853",
+      "check": "bitmap_present_broadcasts",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c863",
+      "check": "key_index_plus_one",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c893",
+      "check": "retained_clear",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c89c",
+      "check": "mark_only_after_clear_returns",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c8b7",
+      "check": "retained_broadcast",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c8ca",
+      "check": "local_handler",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c99b",
+      "check": "caught_command_done",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c9a0",
+      "check": "caught_command_continues",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121c9ec",
+      "check": "missing_flavour_clear",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121ca0b",
+      "check": "collect_error",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121ca18",
+      "check": "next_key",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121ca1e",
+      "check": "repeat_keys",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d3a3",
+      "check": "database_gate",
+      "method": "before_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d3aa",
+      "check": "network_branch",
+      "method": "before_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d3bb",
+      "check": "database_inverts_block",
+      "method": "before_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d3e5",
+      "check": "network_enables",
+      "method": "before_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d730",
+      "check": "flavours_exclusive",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d735",
+      "check": "flavours_skips_parent_and_reblock",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d740",
+      "check": "inherited_save",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d75b",
+      "check": "database_skips_reblock",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d773",
+      "check": "alignment_skips_reblock",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d78b",
+      "check": "readdress_skips_reblock",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d79f",
+      "check": "save_reblock",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "address": "0x121d8e1",
+      "check": "block_predicate",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d8e8",
+      "check": "unblocked_skips",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d8ee",
+      "check": "initial_session_false",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d8f5",
+      "check": "finally_registered",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d908",
+      "check": "read_session",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d90d",
+      "check": "save_session",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d914",
+      "check": "existing_skips_open",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d91b",
+      "check": "lock",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d929",
+      "check": "start",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d937",
+      "check": "load",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d94b",
+      "check": "set_enable_zero",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d950",
+      "check": "timeout",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d955",
+      "check": "changes_only_true",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d957",
+      "check": "network_save",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d95c",
+      "check": "save_for_both_sessions",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d972",
+      "check": "existing_skips_cleanup",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d97d",
+      "check": "end",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d987",
+      "check": "unlock_after_end",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d98d",
+      "check": "finally",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121d992",
+      "check": "finally_cleanup_entry",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "address": "0x121da22",
+      "check": "existing_skips_open",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121da4d",
+      "check": "stage_flavours",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121dac1",
+      "check": "existing_skips_save",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121dacf",
+      "check": "owned_save_in_finally",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121dadd",
+      "check": "owned_end_after_save",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121dae7",
+      "check": "owned_unlock_after_end",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0x121daf2",
+      "check": "finally_entry",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "address": "0xcbde7e",
+      "check": "save",
+      "method": "base_save",
+      "verified": true
+    },
+    {
+      "address": "0xcbdeee",
+      "check": "project_save",
+      "method": "base_save",
+      "verified": true
+    },
+    {
+      "address": "0xcbdf12",
+      "check": "load_status",
+      "method": "base_save",
+      "verified": true
+    },
+    {
+      "address": "0xcbdf1d",
+      "check": "after_save",
+      "method": "base_save",
+      "verified": true
+    },
+    {
+      "address": "0xcb7302",
+      "check": "to_database_changes_false",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb730c",
+      "check": "to_database_direction",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb7316",
+      "check": "to_database_transfer",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb733d",
+      "check": "to_network_changes_false",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb7347",
+      "check": "to_network_direction",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb7351",
+      "check": "to_network_transfer",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb7389",
+      "check": "database_transfer_false",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0xcb73bc",
+      "check": "ordinary_transfer_false",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "address": "0x121c1f4",
+      "check": "nil_language",
+      "method": "find_flavour",
+      "verified": true
+    },
+    {
+      "address": "0x121c23c",
+      "check": "compare_exact",
+      "method": "find_flavour",
+      "verified": true
+    },
+    {
+      "address": "0x121c255",
+      "check": "return_first_match",
+      "method": "find_flavour",
+      "verified": true
+    },
+    {
+      "address": "0xd115de",
+      "check": "scene",
+      "method": "scene_key",
+      "verified": true
+    },
+    {
+      "address": "0xd115ef",
+      "check": "scene_second",
+      "method": "scene_key",
+      "verified": true
+    },
+    {
+      "address": "0xd11600",
+      "check": "modify",
+      "method": "scene_key",
+      "verified": true
+    },
+    {
+      "address": "0xd1167e",
+      "check": "modify",
+      "method": "scene_modify_key",
+      "verified": true
+    },
+    {
+      "address": "0xd13f76",
+      "check": "direct_unused",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xd13f7b",
+      "check": "unused_falls_back",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xd13f8d",
+      "check": "fallback_current_application",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xd13f94",
+      "check": "fallback_flag",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xd13f99",
+      "check": "fallback_block",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xd13fb6",
+      "check": "fallback_group",
+      "method": "primary_group",
+      "verified": true
+    },
+    {
+      "address": "0xf27e25",
+      "check": "address255",
+      "method": "unused_group",
+      "verified": true
+    },
+    {
+      "address": "0x121db99",
+      "check": "gate",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dba0",
+      "check": "disabled_returns",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dbd5",
+      "check": "network",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dbf2",
+      "check": "unit_application",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dc37",
+      "check": "missing_key_skips",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dc4f",
+      "check": "key_byte",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dc5b",
+      "check": "set_slot",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dc63",
+      "check": "eight_slots",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121dc6c",
+      "check": "execute",
+      "method": "kfi_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121af90",
+      "check": "default_zero",
+      "method": "kfi_create",
+      "verified": true
+    },
+    {
+      "address": "0x121af9b",
+      "check": "eight_slots",
+      "method": "kfi_create",
+      "verified": true
+    },
+    {
+      "address": "0x121b058",
+      "check": "store_byte",
+      "method": "kfi_set",
+      "verified": true
+    },
+    {
+      "address": "0x121ae58",
+      "check": "unsigned_byte",
+      "method": "kfi_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121ae60",
+      "check": "decimal",
+      "method": "kfi_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121ae7d",
+      "check": "eight_values",
+      "method": "kfi_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121afdf",
+      "check": "prefix_mode",
+      "method": "kfi_results",
+      "verified": true
+    },
+    {
+      "address": "0x121afec",
+      "check": "has_response",
+      "method": "kfi_results",
+      "verified": true
+    },
+    {
+      "address": "0x121affa",
+      "check": "complete",
+      "method": "kfi_results",
+      "verified": true
+    },
+    {
+      "address": "0x121e284",
+      "check": "zero_skips",
+      "method": "clear_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121e2b9",
+      "check": "network",
+      "method": "clear_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121e2d6",
+      "check": "unit_application",
+      "method": "clear_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121e306",
+      "check": "set_key",
+      "method": "clear_builder",
+      "verified": true
+    },
+    {
+      "address": "0x121b156",
+      "check": "min_key",
+      "method": "clear_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121b15d",
+      "check": "below_clears_whole_unit",
+      "method": "clear_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121b162",
+      "check": "max_key",
+      "method": "clear_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121b169",
+      "check": "above_clears_whole_unit",
+      "method": "clear_generate",
+      "verified": true
+    },
+    {
+      "address": "0x121b31f",
+      "check": "syntax_tokens",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b362",
+      "check": "syntax_exception",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b382",
+      "check": "unsupported_tokens",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b3a1",
+      "check": "unsupported_exception",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b3a6",
+      "check": "prefix_mode",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b3b3",
+      "check": "has_response",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x121b3c1",
+      "check": "complete_after_errors",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "address": "0x843d27",
+      "check": "case_sensitive_position",
+      "method": "has_response",
+      "verified": true
+    },
+    {
+      "address": "0x843d2c",
+      "check": "position_one",
+      "method": "has_response",
+      "verified": true
+    },
+    {
+      "address": "0x843d2d",
+      "check": "prefix_equal",
+      "method": "has_response",
+      "verified": true
+    },
+    {
+      "address": "0x843df9",
+      "check": "error_state",
+      "method": "set_completed",
+      "verified": true
+    },
+    {
+      "address": "0x843dfd",
+      "check": "preserve_error",
+      "method": "set_completed",
+      "verified": true
+    },
+    {
+      "address": "0x843e02",
+      "check": "completed_state",
+      "method": "set_completed",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "after_save",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "agent_save",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "reblock",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "save_flavours_only",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "base_save",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "base_modes",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "kfi_generate",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "kfi_results",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "clear_generate",
+      "verified": true
+    },
+    {
+      "check": "required_literals",
+      "method": "clear_results",
+      "verified": true
+    },
+    {
+      "check": "exact_noop_body",
+      "method": "inherited_after_save",
+      "verified": true
+    },
+    {
+      "check": "required_body_operations",
+      "method": "contains_all",
+      "verified": true
+    },
+    {
+      "check": "required_body_operations",
+      "method": "set_exception",
+      "verified": true
+    },
+    {
+      "check": "required_body_operations",
+      "method": "command_create",
+      "verified": true
+    }
+  ],
+  "evidence": "static disassembly and Delphi exception-table decoding; no original execution",
+  "exception_table": {
+    "address": "0x121c8cf",
+    "ancestry": {
+      "ECGateCommand": [
+        "ECGateCommand",
+        "Exception",
+        "TObject"
+      ],
+      "ECGateException": [
+        "ECGateException",
+        "ECGateCommand",
+        "Exception",
+        "TObject"
+      ],
+      "ECGateSyntaxError": [
+        "ECGateSyntaxError",
+        "ECGateCommand",
+        "Exception",
+        "TObject"
+      ]
+    },
+    "catch_class": "ECGateCommand",
+    "catch_count": 1,
+    "handler": "0x121c8db"
+  },
+  "format": "cbus-classic-dlt-unit-delivery-source-v1",
+  "methods": {
+    "after_save": {
+      "bytes": 3656,
+      "sha256": "8dedcd10d9eafee76e275664aaf076df3d5a29405969c4b7fd1f37b8a177b660",
+      "start": "0x121c268",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterSaveProgrammingInformation"
+    },
+    "agent_save": {
+      "bytes": 620,
+      "sha256": "ec70d7eca5861cf8bed1d312e6e150f8ce4fc527a373f28483740ab7341b803d",
+      "start": "0x121d664",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AgentSave"
+    },
+    "base_modes": {
+      "bytes": 3412,
+      "sha256": "ed80928aac4ac6caca38a15d0005eb2d547bb83b70b12ae6e171975518aa056b",
+      "start": "0xcb72bc",
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentSave"
+    },
+    "base_results": {
+      "bytes": 96,
+      "sha256": "d5a032fdb2abd67482638abebc71f99466aa1124110142a997e280295389a0e9",
+      "start": "0x843c74",
+      "symbol": "CIS_TCGateCommand.TCGateCommand.OnProcessResults"
+    },
+    "base_save": {
+      "bytes": 1104,
+      "sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33",
+      "start": "0xcbdc30",
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation"
+    },
+    "before_save": {
+      "bytes": 904,
+      "sha256": "1ffc2d2eea2fb8e5bec8b783efd4fee1773b74d1e382a0c55d720047a6192b62",
+      "start": "0x121d16c",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeSaveProgrammingInformation"
+    },
+    "clear_builder": {
+      "bytes": 196,
+      "sha256": "9de3c5f5aceff00463726cd2c8eb5b729cc5579f7fbbb235522d2010661b9834",
+      "start": "0x121e274",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.CommandClearLabel"
+    },
+    "clear_generate": {
+      "bytes": 408,
+      "sha256": "72338a3a4ff24fdebd12b1792be0bbf72d7932ff7df9e3ff9bbe8d6930b34145",
+      "start": "0x121b12c",
+      "symbol": "CIS_TcgcLabelClear.TcgcLabelClear.GenerateCommandText"
+    },
+    "clear_results": {
+      "bytes": 544,
+      "sha256": "2e58c62c2c916b58ee2f9d4ab1d7f56da4f31bba75f5ae568f50b495ad7af36c",
+      "start": "0x121b2c4",
+      "symbol": "CIS_TcgcLabelClear.TcgcLabelClear.OnProcessResults"
+    },
+    "command_create": {
+      "bytes": 200,
+      "sha256": "ef73b8e483d707e5737996723c5951b74daea5bd2f4defd0c3e00b452e6b0e21",
+      "start": "0x8435dc",
+      "symbol": "CIS_TCGateCommand.TCGateCommand.Create"
+    },
+    "contains_all": {
+      "bytes": 100,
+      "sha256": "b98381720a1b8e4e0c22564c4493030e3d268fb3ff239b71321454ef337a0a78",
+      "start": "0x7b78f4",
+      "symbol": "CIS_Strings.StringContainsAll"
+    },
+    "find_flavour": {
+      "bytes": 140,
+      "sha256": "13ccffa25e9b0cdd8bff9ccd14b78cb1e4788fe254f861b1af21c6597a8dca8e",
+      "start": "0x121c1dc",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.FindFlavour"
+    },
+    "has_response": {
+      "bytes": 152,
+      "sha256": "bc16a06c0129162f09ea493c7fadf7fd61482b1482458cc150e2e3c04a9a2d42",
+      "start": "0x843cec",
+      "symbol": "CIS_TCGateCommand.TCGateCommand.HasResponse"
+    },
+    "inherited_after_save": {
+      "bytes": 12,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "start": "0xcac4ec",
+      "symbol": "CIS_TCGateAgent.TCGateAgent.AfterSaveProgrammingInformation"
+    },
+    "kfi_builder": {
+      "bytes": 268,
+      "sha256": "5a41ac7e778aaf9ef8af46076491275ce5df470db5ad404e4befd226f356a160",
+      "start": "0x121db88",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SetKeyFunctionIndicators"
+    },
+    "kfi_create": {
+      "bytes": 52,
+      "sha256": "02147f9281ed96392fd72a3171aa1fbf46afee949d0a743a085d67f9b87f37ee",
+      "start": "0x121af74",
+      "symbol": "CIS_TcgcKFISet.TcgcKFISet.InternalCreate"
+    },
+    "kfi_generate": {
+      "bytes": 356,
+      "sha256": "6691b480ae18e0aba2274e11156a7821e75a4b5ec328990df925346c3c35c98a",
+      "start": "0x121ae10",
+      "symbol": "CIS_TcgcKFISet.TcgcKFISet.GenerateCommandText"
+    },
+    "kfi_results": {
+      "bytes": 152,
+      "sha256": "85cba2d84931b6ef90129e3fc41cbf83c49a0c3d2dcb439d44e66110aa92cb7d",
+      "start": "0x121afa8",
+      "symbol": "CIS_TcgcKFISet.TcgcKFISet.OnProcessResults"
+    },
+    "kfi_set": {
+      "bytes": 36,
+      "sha256": "7ab58a8f203bb0b652576b696e8cf2a127978fa0a3fdb6262fefd581c4deac6a",
+      "start": "0x121b040",
+      "symbol": "CIS_TcgcKFISet.TcgcKFISet.SetKFI"
+    },
+    "primary_group": {
+      "bytes": 120,
+      "sha256": "a5f6c57d93c822d8b74ece136591dce708c36a6a2719df708d7d3e7fe3f731a4",
+      "start": "0xd13f54",
+      "symbol": "CIS_TInputKey.TInputKey.GetPrimaryDLTGroup"
+    },
+    "reblock": {
+      "bytes": 268,
+      "sha256": "0a5cd2cf25b408520b6f3b6d6a2d07367034060587295bc3c7ec7eef1b8821ff",
+      "start": "0x121d8d0",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SaveEnableDynamicLabelsOnly"
+    },
+    "save_flavours_only": {
+      "bytes": 428,
+      "sha256": "d69f79c66b397eb8c09d3359d401c3fe96353d37ec73b68695c170fa15ca3f62",
+      "start": "0x121d9dc",
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.SaveLabelFlavoursOnly"
+    },
+    "scene_key": {
+      "bytes": 88,
+      "sha256": "9c401b20facab664a58af884324a05e2d44dbd46923db67e83d4f99761fc6b0e",
+      "start": "0xd115bc",
+      "symbol": "CIS_TInputKey.TInputKey.GetIsSceneKey"
+    },
+    "scene_modify_key": {
+      "bytes": 56,
+      "sha256": "e6466b6da57daa29602a51b259e220d39f88f8d8b3f5b2039d19e73990544c65",
+      "start": "0xd1165c",
+      "symbol": "CIS_TInputKey.TInputKey.GetIsSceneModifyKey"
+    },
+    "set_completed": {
+      "bytes": 40,
+      "sha256": "e5425e89c582bf086db41c07769de2be3137b0d395c59248014c23d8d2aa9e8d",
+      "start": "0x843de4",
+      "symbol": "CIS_TCGateCommand.TCGateCommand.SetCompleted"
+    },
+    "set_exception": {
+      "bytes": 360,
+      "sha256": "6dd2c141ee98450899ba406d43421d731991c033f72933a517ec39b587a10402",
+      "start": "0x843e5c",
+      "symbol": "CIS_TCGateCommand.TCGateCommand.SetRealExceptionToRaise"
+    },
+    "unused_group": {
+      "bytes": 36,
+      "sha256": "d8303f159f3cd7404170fc45c6a79fcae0f526960c8eecc758908e64dea9ee19",
+      "start": "0xf27e14",
+      "symbol": "CIS_TCommonCBus.TCBusGroup.IsUnused"
+    }
+  },
+  "rules": {
+    "clear": {
+      "key_range": [
+        1,
+        8
+      ],
+      "key_template": "label clear {network}/{unit_application} {unit} {key}",
+      "other_nonzero": "generator omits key argument and therefore targets the whole unit",
+      "result": "Case-sensitive contains-all 400/Syntax Error maps ECGateSyntaxError; 402/Operation not supported maps ECGateException; then 200 OK prefix completes unless already error. No explicit 408 or bad-object branch.",
+      "timeout_ms": 20000,
+      "zero": "agent sends no command"
+    },
+    "failure": {
+      "collected": "Only ECGateCommand descendants raised during retained flavour reset/clear/broadcast are collected, then processing continues with the next key.",
+      "fatal": [
+        "KFI",
+        "default language/graphics initialization",
+        "owner language initialization",
+        "ordinary bitmap load",
+        "missing/unused primary clear",
+        "missing flavour clear",
+        "non-ECGateCommand exceptions inside the retained dispatch"
+      ],
+      "reblock": "Collected label errors permit reblock after inherited save returns. A propagated failure prevents that AgentSave continuation."
+    },
+    "keys": {
+      "bitmap": "Only ordinary selected DYNAMIC/FONT with empty bitmap invokes LoadDLTBitmap before the local catch; portable inputs must already resolve this prerequisite.",
+      "dispatch": "Every retained dispatch resets broadcast=false. Empty value or exact <Default> clears before type-specific payload validation; DYNAMIC/FONT with empty bitmap also clears. A successful retained clear marks true. Repeated shared flavours reset and broadcast again.",
+      "flavour": "FindFlavour returns the first exact selected flavour in collection order; a missing selected flavour clears key.",
+      "ordinary": "GetPrimaryDLTGroup uses a non-255 primary group, otherwise FindBlockUsedByThisKey(true, GetApplicationState) and its group; missing or unused resolved group clears key.",
+      "role_order": [
+        "scene_modify",
+        "scene",
+        "ordinary"
+      ],
+      "scene": "Missing SceneTriggerLevel skips key; this branch has no group IsUnused test.",
+      "scene_function_types": [
+        23,
+        24,
+        25
+      ],
+      "scene_modify": "ControlAppGroup missing or unused skips key; selected flavour uses the network default language.",
+      "scene_modify_function_type": 25,
+      "unused_group_address": 255
+    },
+    "kfi": {
+      "gate": "unit key-function-indicator enable byte at +0xDD",
+      "missing_key_value": 0,
+      "portable_range_basis": "deliberately narrower planner admission; not an original byte-coercion claim",
+      "portable_value_range": [
+        0,
+        15
+      ],
+      "result": "Only case-sensitive 200 OK prefix completes; no explicit mapped error tokens in this derived handler.",
+      "slots": 8,
+      "source_value_range": [
+        0,
+        255
+      ],
+      "template": "label kfiset {network}/{unit_application} {unit} {v1} {v2} {v3} {v4} {v5} {v6} {v7} {v8}",
+      "timeout_ms": 20000
+    },
+    "lifecycle": [
+      "network BeforeSave enables dynamic labels",
+      "inherited PP SAVE, ProjectSave and LoadStatus",
+      "AfterSave inherited no-op hook, KFI, reset label errors",
+      "initialize default language/graphics only when missing",
+      "network SaveDLTLabels OR transfer gate",
+      "ordered key dispatch",
+      "after inherited save returns, optionally reblock"
+    ],
+    "mode_boundary": "Portable planner admits ordinary network save and TransferDatabaseToNetwork only. Database, AlignUnit, DBReaddress, standalone SaveFlavours and dedicated clear verbs are excluded.",
+    "project_context": "KFI and CLEAR use numeric relative network/application targets, with no project prefix; the intended active C-Gate project is an external prerequisite.",
+    "reblock": {
+      "changes_only": true,
+      "cleanup": "A finally attempts END then UNLOCK only for a session not originally open, including SAVE failure. END failure prevents UNLOCK; cleanup is not independently verified by a planner outcome.",
+      "database": false,
+      "enable_dynamic_labels": 0,
+      "existing_session": [
+        "SET EnableDynamicLabels=0",
+        "SAVE"
+      ],
+      "gate": "BlockDynamicUpdates=true",
+      "owned_session": [
+        "LOCK",
+        "START",
+        "LOAD",
+        "SET EnableDynamicLabels=0",
+        "SAVE",
+        "END",
+        "UNLOCK"
+      ],
+      "save_flavours_contrast": "SaveLabelFlavoursOnly stages values without SAVE when the session is already open. Its owned-session finally executes SAVE before END and UNLOCK, so SAVE failure prevents those cleanup calls.",
+      "timeout_ms": 30000
+    }
+  },
+  "source_sha256": {
+    "exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  }
+}

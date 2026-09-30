@@ -51,7 +51,12 @@ INDICATOR_REMAP = {'attribute': 'IndicatorFunction', 'element_map': {'1': 2, '3'
 CLASSES = {
     'TTweakerInputUnit': {
         'recovered': True, 'renames': {}, 'immutable': INPUT_UNIT_IMMUTABLE, 'assignments': [],
-        'summary': 'marks 13 Neo/IR attributes immutable (target default retained)', 'refusal': HOOK_KEY},
+        'summary': 'marks 13 Neo/IR attributes immutable (target default retained)', 'refusal': None,
+        'profile': 'input-1.2.67-to-fresh-input-1.2.67',
+        'source_firmware': '1.2.67', 'target_firmware': '1.2.67',
+        'hook_summary': ('fresh Learn flags are true/true/false; non-Neo sources and targets with '
+                         'HasApplication2=false leave group and indicator strings unchanged; '
+                         'brightness is writable for KEY1/2/4 and immutable for KEYBC2/4 and BCNC4A/B')},
     'TTweakerNeoToKey': {
         'recovered': True, 'inherits': 'TTweakerInputUnit', 'renames': {}, 'immutable': INPUT_UNIT_IMMUTABLE,
         'assignments': [], 'summary': 'TTweakerInputUnit rules only', 'refusal': HOOK_KEY},
@@ -60,11 +65,12 @@ CLASSES = {
         'immutable': INPUT_UNIT_IMMUTABLE + KEY_TO_NEO_IMMUTABLE, 'assignments': [], 'element_remap': INDICATOR_REMAP,
         'summary': 'TTweakerInputUnit rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1',
         'refusal': None,
-        'profile': 'classic-1.2.67-to-fresh-neo-2.5.00',
-        'source_firmware': '1.2.67', 'target_firmware': '2.5.00',
+        'profiles': ['classic-1.2.67-to-fresh-neo-2.5.00', 'coupler-1.2.67-to-fresh-neo-2.2.00'],
+        'source_firmware': '1.2.67', 'target_firmwares': ['2.5.00', '2.2.00'],
         'hook_summary': ('fresh target Learn hook enables LearnMode/LearnAnyApp and disables LearnedFlag; '
                          'CoreKey moves group index4 to index8 and enables IndicatorBrightness; '
-                         'NeoPro suppresses 13 fields for a non-NeoPro source')},
+                         'NeoPro suppresses 13 fields for a non-NeoPro source; '
+                         'CouplerPro then makes IndicatorBrightness immutable')},
     'TTweakerDLT': {
         'recovered': True, 'renames': {}, 'immutable': DLT_IMMUTABLE,
         'assignments': [{'target': 'LabelFlavourLSB', 'literal': '0'}, {'target': 'LabelFlavourMSB', 'literal': '0'}],
@@ -122,8 +128,7 @@ CLASSES = {
 PAIR_REFUSALS = {
     ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
                           'reads eight without padding; no defined safe conversion is established'),
-    **{tuple(pair.split('>')): 'source is outside the admitted classic-key to fresh Neo model profile'
-       for pair in ('KEYBC2>BCN2B', 'KEYBC2>BCN4B', 'KEYBC4>BCN2B', 'KEYBC4>BCN4B', 'DINAUX4>BCI4A')},
+    ('SENPILL', 'SENPILL'): HOOK_SENSOR,
 }
 _BASE = [('Application', True), ('FirmwareVersion', False), ('Project', True), ('SerialNo', False),
          ('State', False), ('UnitAddress', True), ('UnitName', True), ('UnitType', False)]
@@ -149,10 +154,12 @@ AGENTS = {
                                           'attributes': [[n, m] for n, m in _BASE + _DIN[:-3]]},
 }
 # Source-pinned modern key profile; these are constructor flags, before hooks.
-AGENTS.update({'TCBusKeyInputCGateAgent': {'unit_types': ['KEY1', 'KEY2', 'KEY4', 'KEYIR1', 'KEYIR4'],
+AGENTS.update({'TCBusKeyInputCGateAgent': {'unit_types': ['KEY1', 'KEY2', 'KEY4', 'KEYIR1', 'KEYIR4',
+                                                      'KEYBC2', 'KEYBC4', 'DINAUX4'],
                              'overrides_before_unit_conversion_save': True,
-                             'conversion_role': 'source_only',
+                             'conversion_hook_profile': 'input-1.2.67-to-fresh-input-1.2.67',
                              'source_firmware': '1.2.67',
+                             'target_firmware': '1.2.67',
                              'attributes': [['Application', True],
                                             ['FirmwareVersion', False],
                                             ['Project', True],
@@ -276,8 +283,26 @@ AGENTS.update({'TCBusKeyInputCGateAgent': {'unit_types': ['KEY1', 'KEY2', 'KEY4'
                                                ['SecondApplicationBlocks', True],
                                                ['NightlightColour', True]]}})
 
+# The coupler constructor inherits the 62 CoreNeoPro attributes directly, then
+# adds its two fields; it does not call the NeoPro NightlightColour constructor.
+AGENTS['TCBusCouplerProInputCGateAgent'] = {
+    'unit_types': ['BCN2B', 'BCN4B', 'BCI4A'],
+    'overrides_before_unit_conversion_save': True,
+    'conversion_hook_profile': 'coupler-1.2.67-to-fresh-neo-2.2.00',
+    'target_firmware': '2.2.00',
+    'attributes': AGENTS['TCBusNeoProInputCGateAgent']['attributes'][:-1]
+                  + [['BistableSwitchBlock', True], ['GroupAssertOnPowerup', True]],
+}
+AGENTS['TBCNC4CGateAgent'] = {
+    'unit_types': ['BCNC4A', 'BCNC4B'],
+    'overrides_before_unit_conversion_save': True,
+    'conversion_hook_profile': 'input-1.2.67-to-fresh-input-1.2.67',
+    'source_firmware': '1.2.67', 'target_firmware': '1.2.67',
+    'attributes': AGENTS['TCBusKeyInputCGateAgent']['attributes'],
+}
+
 NATIVE_ACCEPTED = ('TTweakerDIMDN_TO_DIMDU4', 'TTweakerDIMDU4_TO_DIMDN', 'TTweakerRELDN8_TO_X', 'TTweakerRELDNX_TO_8',
-                   'TTweakerKeyToNeo')
+                   'TTweakerKeyToNeo', 'TTweakerInputUnit')
 TOOLKIT_SEMANTICS = {
     'uses_cgate_convertunit': False,
     'lookup': 'case-insensitive (source type, target type); first registration wins',
@@ -294,7 +319,10 @@ LIMITS = ('Static facts from the pinned Toolkit EXE/MAP; no original code was ex
           'The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: '
           'its four-element source logic would cause undefined original array reads. '
           'Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh '
-          'target model at 2.5.00; its five coupler/auxiliary registrations remain refused. '
+          'target model at 2.5.00. Its five coupler/auxiliary registrations use a separate fresh 2.2.00 '
+          'target model profile with the CouplerPro brightness suppression. '
+          'InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; '
+          'its SENPILL self-conversion remains refused pending the separate sensor hook. '
           'Every other registered or unregistered pair is refused with the reason recorded here. '
           'Static evidence is separate from native C-Gate execution and does not establish original '
           'Toolkit GUI or physical acceptance.')
@@ -369,7 +397,9 @@ def validate(receipt: dict) -> list[str]:
             check(not any(row['target'] in agent['unit_types'] and row['decision'] == 'admitted' for row in rows),
                   'source-only agent used as an admitted target in ' + name)
         check(not agent['overrides_before_unit_conversion_save'] or source_only
-              or agent.get('conversion_hook_profile') == 'classic-1.2.67-to-fresh-neo-2.5.00',
+              or agent.get('conversion_hook_profile') in ('classic-1.2.67-to-fresh-neo-2.5.00',
+                                                          'coupler-1.2.67-to-fresh-neo-2.2.00',
+                                                          'input-1.2.67-to-fresh-input-1.2.67'),
               'admitted agent hook in ' + name)
     text = json.dumps(receipt)
     for marker in ('<Param', 'DefaultValue', '<Address>'):

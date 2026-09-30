@@ -1,10 +1,11 @@
 """C-Gate 3.4 wireless learn and unit-action boundary, recovered from source.
 
-Radio learn/join and the wireless unit actions are live-network operations:
+Radio learn/join and the explicit wireless DO actions are live-network operations:
 C-Gate composes a C-Bus command, sends it through the network's interface
 and, for the read actions, waits for the unit's reply. This module reproduces
-only the command strings C-Gate composes (``aW.e``), so the boundary can be
-inspected and compared without a network. It never opens an endpoint.
+the command strings C-Gate composes (``aW.e``), so the boundary can be
+inspected and compared without a network. Status GETs read cached strings;
+the IDENTIFY commands belong to the separate Psync refresh path. It never opens an endpoint.
 
 Recovered from ``cgate.jar`` 3.4.0.2001 (research/fixtures/wireless-cgate-boundary.json):
 
@@ -13,7 +14,8 @@ Recovered from ``cgate.jar`` 3.4.0.2001 (research/fixtures/wireless-cgate-bounda
 * ``DO <unit> ResetOpStats`` CAL 0x08 with no reply;
 * ``DO <unit> RecallOpStats`` four 12-byte NG memory reads from address 0;
 * the ``UnitTemperature``/``UnitSupplyVoltage``/``BackgroundSignalPower``/
-  ``LastPacketReceivedPower`` status reads, IDENTIFY attributes 0x50..0x53.
+  ``LastPacketReceivedPower`` cached properties; Psync internally refreshes
+  them with IDENTIFY attributes 0x50..0x53.
 
 Offline wireless editing lives in :mod:`cbus_toolkit.wireless_gateway` and
 :mod:`cbus_toolkit.wireless_unit_globals`. See docs/wireless.md.
@@ -23,7 +25,8 @@ from types import MappingProxyType
 # kI help text; runCommand rejects every other grade as a syntax error.
 LEARN_GRADES = MappingProxyType({1: 'init relay', 2: 'init dim', 0x80: 'cancel', 0x81: 'exit relay',
                                  0x82: 'exit dim', 0x83: 'exit area'})
-# CBusWirelessUnit.u(): status properties read through bB IDENTIFY attributes.
+# CBusWirelessUnit.n()->u(): Psync refreshes these cached properties via bB.
+# Their GET accessors have no read callback and issue no bus command.
 STATUS_ATTRIBUTES = MappingProxyType({'UnitTemperature': 0x50, 'UnitSupplyVoltage': 0x51,
                                       'BackgroundSignalPower': 0x52, 'LastPacketReceivedPower': 0x53})
 # CBusWirelessUnit.au: OpStats counter order, each little-endian 32-bit.
@@ -74,7 +77,9 @@ def unit_action_commands(unit):
                                        for start in range(0, 48, 12)],
                           'reply_expected': True, 'reply_bytes': 48, 'counters': list(OP_STATS_COUNTERS),
                           'requires_live_network': True},
-        'status': {name: {'commands': [identify(attribute)], 'reply_expected': True, 'requires_live_network': True}
+        'status': {name: {'cgate': 'GET <unit> ' + name, 'commands': [], 'reply_expected': True,
+                          'requires_live_network': False, 'cached_only': True,
+                          'refresh_commands': [identify(attribute)], 'refresh_requires_live_network': True}
                    for name, attribute in STATUS_ATTRIBUTES.items()},
     }
 

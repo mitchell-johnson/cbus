@@ -21,6 +21,11 @@ KEY_ADMITTED = [(source, target) for source in ('KEY1', 'KEY2', 'KEY4', 'KEYIR1'
                                'KEYM2', 'KEYM4', 'KEYM8', 'KEYA1', 'KEYA3', 'KEYA6', 'KEYA8', 'KEYAV2', 'KEYAV4')]
 KEY_ADMITTED += [(source, target) for source in ('KEY1', 'KEY2', 'KEY4') for target in ('KEYC1', 'KEYC2', 'KEYC4')]
 KEY_ADMITTED += [(source, target) for source in ('KEYIR1', 'KEYIR4') for target in ('KEYCIR1', 'KEYCIR4')]
+KEY_ADMITTED += [('KEYBC2', 'BCN2B'), ('KEYBC2', 'BCN4B'), ('KEYBC4', 'BCN2B'),
+                 ('KEYBC4', 'BCN4B'), ('DINAUX4', 'BCI4A')]
+INPUT_ADMITTED = [(source, target) for source in ('KEY1', 'KEY2', 'KEY4')
+                 for target in ('KEY1', 'KEY2', 'KEY4') if source != target]
+INPUT_ADMITTED += [('KEYBC2', 'KEYBC4'), ('KEYBC4', 'KEYBC2'), ('BCNC4A', 'BCNC4B'), ('BCNC4B', 'BCNC4A')]
 
 
 def receipt():
@@ -60,7 +65,7 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(REFUSALS[name], spec['refusal'], name)
         self.assertEqual(set(REFUSALS), set(data['classes']))
         admitted_rows = {(row['source'], row['target']) for row in data['registrations'] if row['decision'] == 'admitted'}
-        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED))
+        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED + INPUT_ADMITTED))
         for name, rules in ASSIGNMENTS.items():
             recorded = [(rule['target'], 'literal' if 'literal' in rule else 'from', rule.get('literal', rule.get('from')))
                         for rule in data['classes'][name]['assignments']]

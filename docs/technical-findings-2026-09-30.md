@@ -88,6 +88,38 @@ independently matches 277 package files. Offline NCC and payload interpretation
 are now implemented; physical commands, authenticity, bootloader behavior and
 Windows acceptance remain open. No full-suite or hardware run is implied.
 
+## Integrated Toolkit controls and workflows
+
+The [latest batch report](../toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md)
+integrates the previously queued coupler/InputUnit conversion, wireless,
+classic DLT ICON/delivery, disabled thermostat defaults and additional
+documentor chains. It also adds early stored/Deflate-only firmware codec
+admission. The conversion registry now admits 123/292 pairs and refuses 169.
+The [domain reports](../toolkit-cli/docs/feature-batch-2026-09-30-conversions-wireless.md)
+and [DLT/thermostat/documentor boundaries](../toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md)
+retain exact owner provenance and outstanding acceptance work.
+
+The [composed receipt](../toolkit-cli/docs/toolkit-controls-acceptance-2026-09-30.json)
+preserves initial feature source/wheel results (1,291 pass, one historical
+binding failure, two static-input skips and 1,658 subtests), the final affected
+source result (188 pass/309 subtests), and the final wheel result (187 pass,
+one omitted-reference failure, followed by its exact-case pass). All seven
+new required native database gates executed successfully. All 297 final
+package files match source, wheel and installed bytes; 294 are unchanged from
+the initial feature wheel. This is qualified carry-forward plus focused
+follow-up, not a repeated full feature run on the final wheel.
+
+The [legacy route follow-up](../toolkit-cli/docs/toolkit-controls-legacy-route-acceptance-2026-09-30.json)
+passes 17 tests/50 subtests in source and the same wheel, without skips. It
+corrects two historical whole-CLI bindings exposed by the earlier firmware
+publication's failed CI. Exact historical archives and nine unchanged project
+AST subtrees preserve old proof; fresh native API storage is kept separate
+from portable CLI execution and forwarding evidence. Original receipt hashes
+and failed CI outcomes are unchanged. The
+[root validation](../toolkit-cli/docs/toolkit-controls-root-validation-2026-09-30.json)
+records package identity, source imports and sanitized derivative provenance.
+Full GUI, radio, physical update/transfer and power-cycle acceptance remain open.
+
 ## Queued local work at this snapshot
 
 These are inspected owner revisions, **not public commit links or permission
@@ -98,11 +130,6 @@ Uncommitted follow-on work is intentionally excluded from accepted results.
 
 | Area | Owner commit sequence after its published equivalent | Retained result, supplementary path and exact gap |
 | --- | --- | --- |
-| Thermostat | `b11945c5` → `be9c4bc1` | Disabled remote save defaults and corrected fresh AdvancedUI evidence, following the integrated temperature/allocation work. The disabled-default slice records 50 offline tests/618 subtests plus 7 native tests. Source 0 setback saves groups 30/31; both normalized program flags off saves schedule groups 32/33/34 and disables schedule. Enabled references and graph creation remain outside this projection. Path-bearing raw acceptance/launch records need sanitized derivative provenance before publication. |
-| Documentors | `2904332f` → `6a6ed918` → `c36a7e2d` | Neo/DLT/scene-controller and sensor/special-output bodies, following the integrated classic-key/output work. The earlier owner report records 656 passes, 8 intentional native-rerun skips; two stale source-hash failures were corrected and 85 affected tests rerun with one skip. The latest follow-up needs its own integrated receipt. `toolkit-cli/docs/project-documentation-{neo,dlt,scene-controller,pir,temperature,special-outputs,classic-profiles}.md` describe per-profile bounds. Full-page/GUI and unsupported loader/history acceptance stay open. |
-| Classic DLT | `e1dba8d6` → `25368d10` | ICON transaction and follow-on controls, following the integrated indicators/TEXT/broadcast work. The ICON owner scope reports 285 passes/104 subtests and one fresh-CPU-replay skip; ordinary native XML acceptance is separate. ICON uses selected catalogue Value, not list index; no bitmap rendering or physical transfer is established. |
-| Conversion | `6fdb3cca` → `2007228b` | Coupler/Neo and InputUnit conversions, following the integrated RELDN/classic-to-Neo pairs. InputUnit native receipt covers ten non-sensor directions at exact 1.2.67, 17 saved/reloaded units and 1,683 commands; its focused native test passed. `toolkit-cli/docs/toolkit-input-unit-{conversion-source-review,learning-source-review,native-acceptance}.md` distinguish learned mutability from raw PP defaults. SENPILL self-conversion and other revisions remain refused. |
-| Wireless | `d8f23c01` → `26dcae0c` → `e5ee2f09` → `7f8a2c34` | Connection, Scenes and WTXU metadata-only creation. Native receipt verifies four CLI invocations, three separate project-save stages, preservation of 68 gateway parameters and cold reload; pairing remains false. WTXU constructor serial is an empty string, and unchanged native TagName rewrites self-collide. The later cached/action executor is follow-on work, not acceptance of physical DO. |
 | eDLT templates | `7a23fb5d` → `48112a9c` | Format/preview, ordered assignments and second-model staging: 98 tests/420 subtests. `toolkit-cli/docs/edlt-template-{staged-lifecycle,rebind-recovery,terminal-recovery}.md` retain 67 assignment cases, 25 model-load cases, 31 proxy rebind cases and 14 terminal cases. Parent/registration patches remain unapplied in the owner snapshot; actual control binding and confirmed persistence are still required. Apply stays refused. |
 | IOPE | `690b0965` | Environment corridor/output controls: 41 tests/96 subtests, plus two separate native tests covering nine model/revision rows, 72 edits, 102 refusals and 162 raw-byte assertions. `toolkit-cli/docs/iope-{workflows,environment,output-settings}.md` and `iope-workflow-acceptance-summary.json` bind the historical wheel. Registration remains a separate integration patch. Logic/join-recovery/timer follow-on work must receive its own receipt. |
 | Firmware packages | `de74df7e` → `b058a43d` → `1b03e1da` integrated above | Immutable package execution admission, offline NCC transcripts and normalized payload interpretation now have focused source/wheel validation. Patchset analysis and CLI error-reporting follow-ups remain queued; vendor authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |

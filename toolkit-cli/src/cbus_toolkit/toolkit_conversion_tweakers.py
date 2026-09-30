@@ -8,8 +8,11 @@ registry (292 registrations, 13 tweaker classes) and each class's recovered
 rules are recorded in ``research/fixtures/toolkit-conversion-tweaker-registry.json``.
 
 The DIMDUx and RELDN tweaker rules are recovered; their agents inherit the
-empty base conversion hook. Classic-to-Neo conversion models the inherited
-Learn/CoreKey/NeoPro hooks only for the source-pinned fresh-target profile.
+empty base conversion hook. KeyToNeo conversion models the inherited
+Learn/CoreKey/NeoPro hooks and CouplerPro's final brightness suppression only
+for the source-pinned fresh-target profiles.
+Ten non-sensor InputUnit pairs apply only the recovered Learn and brightness
+flags; their non-Neo models leave all aligned parameter strings unchanged.
 Unsupported relay PP shapes are refused. Every other
 registered pair, and every unregistered pair, is refused before any I/O with
 the receipt's reason. Database metadata (tag, description, serial), source
@@ -24,6 +27,8 @@ from types import MappingProxyType
 from .cgate import CGateError
 from .native import NativeDatabase
 from .programming import Programmer, ProgrammingCommandError
+from . import toolkit_conversion_coupler_to_neo as coupler
+from . import toolkit_conversion_input_unit as input_unit
 from .toolkit_conversion_key_to_neo import (
     CLASSIC_ATTRIBUTES, CLASSIC_TYPES, KEY_TWEAKER, NEO_TYPES, NEOPRO_ATTRIBUTES,
     SOURCE_FIRMWARE, TARGET_FIRMWARE, apply_key_hooks, require_target_firmware, validate_key_spec,
@@ -135,7 +140,7 @@ NO_TWEAKER = ('no Toolkit tweaker is registered for this pair; untweaked Toolkit
               'the admitted scope')
 # Receipt refusal reason per class; None marks the natively accepted classes.
 REFUSALS = MappingProxyType({
-    'TTweakerInputUnit': _HOOK_KEY, 'TTweakerNeoToKey': _HOOK_KEY, 'TTweakerKeyToNeo': None,
+    'TTweakerInputUnit': None, 'TTweakerNeoToKey': _HOOK_KEY, 'TTweakerKeyToNeo': None,
     'TTweakerDLT': _HOOK_DLT, 'TTweakerKeyToDLT': _HOOK_DLT,
     'TTweakerSENPIR': _HOOK_SENSOR, 'TTweakerSENLL': _HOOK_SENSOR,
     'TTweakerPC_DAL2': _NOT_NATIVE, 'TTweakerPC_DAL2B': _NOT_NATIVE,
@@ -145,8 +150,7 @@ REFUSALS = MappingProxyType({
 PAIR_REFUSALS = MappingProxyType({
     ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
                           'reads eight without padding; no defined safe conversion is established'),
-    **{tuple(pair.split('>')): 'source is outside the admitted classic-key to fresh Neo model profile'
-       for pair in ('KEYBC2>BCN2B', 'KEYBC2>BCN4B', 'KEYBC4>BCN2B', 'KEYBC4>BCN4B', 'DINAUX4>BCI4A')},
+    ('SENPILL', 'SENPILL'): _HOOK_SENSOR,
 })
 
 
@@ -185,6 +189,9 @@ AGENT_ATTRIBUTES = MappingProxyType({
     'RELSM8': _BASE + _DIN[:-3],
     **{unit_type: CLASSIC_ATTRIBUTES for unit_type in CLASSIC_TYPES},
     **{unit_type: NEOPRO_ATTRIBUTES for unit_type in NEO_TYPES},
+    **{unit_type: CLASSIC_ATTRIBUTES for unit_type in coupler.COUPLER_SOURCE_TYPES},
+    **{unit_type: coupler.COUPLER_ATTRIBUTES for unit_type in coupler.COUPLER_TARGET_TYPES},
+    **{unit_type: input_unit.INPUT_ATTRIBUTES for unit_type in ('BCNC4A', 'BCNC4B')},
 })
 # Ordered TweakParameters rules: (target attribute, 'literal' | 'from', value or source attribute).
 ASSIGNMENTS = MappingProxyType({
@@ -240,24 +247,45 @@ def plan_writes(source_type, target_type, source_values, target_parameters, *, t
     parameters; an agent attribute without one would fail PP SET, which
     Toolkit swallows, so it is reported and not written.
 
-    Classic-to-Neo plans require ``target_firmware='2.5.00'`` and describe a
-    fresh model converted from source firmware 1.2.67. They must not be applied
+    Classic-to-Neo plans require ``target_firmware='2.5.00'``; coupler-to-Neo
+    plans require ``target_firmware='2.2.00'``. Both describe a fresh model
+    converted from source firmware 1.2.67. They must not be applied
     to an existing edited target; ``ToolkitTweakerConversion.apply`` enforces
     the runtime source firmware and creates the fresh replacement.
+    The ten non-sensor InputUnit pairs use source and target firmware 1.2.67.
     """
     tweaker = admitted(source_type, target_type)
+    coupler_profile = source_type.upper() in coupler.COUPLER_SOURCE_TYPES
     model_context = None
-    if tweaker == KEY_TWEAKER:
+    if tweaker == input_unit.INPUT_TWEAKER:
         try:
-            require_target_firmware(target_firmware)
+            input_unit.require_target_firmware(target_firmware)
         except ValueError as error:
             raise TweakerConversionError(str(error)) from error
         model_context = MappingProxyType({
-            'profile': 'classic-1.2.67-to-fresh-neo-2.5.00',
-            'source_firmware': SOURCE_FIRMWARE, 'target_firmware': TARGET_FIRMWARE,
+            'profile': 'input-1.2.67-to-fresh-input-1.2.67',
+            'source_firmware': input_unit.FIRMWARE, 'target_firmware': input_unit.FIRMWARE,
+            'fresh_target_model': True, 'target_learned_flag': False, 'target_learned_flag_original': False,
+            'source_has_application2': False, 'target_has_application2': False,
+            'source_is_neo': False, 'target_is_neo': False,
+            'indicator_brightness_property_enabled': target_type.upper() in input_unit.BRIGHTNESS_TYPES,
+            'target_programming_loaded_before_hook': False,
+        })
+    if tweaker == KEY_TWEAKER:
+        try:
+            (coupler.require_target_firmware if coupler_profile else require_target_firmware)(target_firmware)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
+        model_context = MappingProxyType({
+            'profile': ('coupler-1.2.67-to-fresh-neo-2.2.00' if coupler_profile
+                        else 'classic-1.2.67-to-fresh-neo-2.5.00'),
+            'source_firmware': SOURCE_FIRMWARE,
+            'target_firmware': coupler.TARGET_FIRMWARE if coupler_profile else TARGET_FIRMWARE,
             'fresh_target_model': True, 'target_learned_flag': False, 'target_learned_flag_original': False,
             'source_has_application2': False, 'indicator_brightness_property_enabled': True,
             'target_programming_loaded_before_hook': False,
+            **({'learn_mode_property_enabled': True, 'coupler_brightness_mutable_override': False}
+               if coupler_profile else {}),
         })
     source_attributes = {name for name, _ in AGENT_ATTRIBUTES[source_type.upper()]}
     target = AGENT_ATTRIBUTES[target_type.upper()]
@@ -285,9 +313,12 @@ def plan_writes(source_type, target_type, source_values, target_parameters, *, t
                 not_written.pop(name, None)
     if tweaker == KEY_TWEAKER:
         try:
-            apply_key_hooks(values, mutable, origin, not_written)
+            (coupler.apply_coupler_hooks if coupler_profile else apply_key_hooks)(
+                values, mutable, origin, not_written)
         except ValueError as error:
             raise TweakerConversionError(str(error)) from error
+    if tweaker == input_unit.INPUT_TWEAKER:
+        input_unit.apply_input_hooks(target_type.upper(), values, mutable, origin, not_written)
     for name, kind, operand in ASSIGNMENTS.get(tweaker, ()):
         if kind == 'from':
             if origin.get(operand) != 'copied' or values[operand] == '':
@@ -365,10 +396,18 @@ class ToolkitTweakerConversion:
         if self.tweaker in RELAY_TWEAKERS:
             self._relay_spec(self.source_type, source_spec, source=True)
             self._relay_spec(self.target_type, target_spec, source=False)
+        if self.tweaker == input_unit.INPUT_TWEAKER:
+            try:
+                input_unit.validate_input_spec(self.source_type, source_spec)
+                input_unit.validate_input_spec(self.target_type, target_spec)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         if self.tweaker == KEY_TWEAKER:
             try:
-                validate_key_spec(self.source_type, source_spec, source=True)
-                validate_key_spec(self.target_type, target_spec, source=False)
+                validate_spec = (coupler.validate_coupler_spec
+                                 if self.source_type in coupler.COUPLER_SOURCE_TYPES else validate_key_spec)
+                validate_spec(self.source_type, source_spec, source=True)
+                validate_spec(self.target_type, target_spec, source=False)
             except ValueError as error:
                 raise TweakerConversionError(str(error)) from error
         self.client, self.source_spec, self.target_spec = client, source_spec, target_spec
@@ -408,9 +447,16 @@ class ToolkitTweakerConversion:
             raise ValueError('Target address must be a different unit address 0..255')
         if self.tweaker in RELAY_TWEAKERS and not self.target_spec.supports_version(target_firmware):
             raise TweakerConversionError('Target firmware is outside the supplied relay specification')
+        if self.tweaker == input_unit.INPUT_TWEAKER:
+            try:
+                input_unit.require_target_firmware(target_firmware)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         if self.tweaker == KEY_TWEAKER:
             try:
-                require_target_firmware(target_firmware)
+                validate_firmware = (coupler.require_target_firmware
+                                     if self.source_type in coupler.COUPLER_SOURCE_TYPES else require_target_firmware)
+                validate_firmware(target_firmware)
             except ValueError as error:
                 raise TweakerConversionError(str(error)) from error
         network = source.rsplit('/p/', 1)[0]
@@ -418,7 +464,9 @@ class ToolkitTweakerConversion:
         if self._unit_type(source).upper() != self.source_type:
             raise TweakerConversionError('Source database unit type differs from the requested source type')
         if self.tweaker == KEY_TWEAKER and self._unit_firmware(source) != SOURCE_FIRMWARE:
-            raise TweakerConversionError('Classic-to-Neo conversion requires source firmware 1.2.67')
+            raise TweakerConversionError('KeyToNeo conversion requires source firmware 1.2.67')
+        if self.tweaker == input_unit.INPUT_TWEAKER and self._unit_firmware(source) != input_unit.FIRMWARE:
+            raise TweakerConversionError('InputUnit conversion requires source firmware 1.2.67')
         with self.programmer.load(network, '/db' + source) as session:
             source_values = session.values()
         # Validate and transform the complete source before creating a target.

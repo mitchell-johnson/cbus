@@ -52,7 +52,8 @@ def output_profile(unit):
     if kind in DIRECT_PROFILES and row is not None and row[3:5] == (
             "T" + kind, "TDinRailOutputCGateAgent"):
         return DIRECT_PROFILES[kind]
-    return None
+    from .project_documentation_special_outputs import special_output_profile
+    return special_output_profile(unit)
 
 
 def output_base_only(unit) -> bool:

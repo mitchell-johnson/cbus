@@ -8,6 +8,7 @@ The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bri
 - [Toolkit executable surface](../toolkit-cli/docs/toolkit-executable-surface.json): sanitized Toolkit 1.18.0 form, control and event inventory with pinned EXE/MAP provenance.
 - [Implementation review and path to 100%](parity-review-and-roadmap.md): independent review, all 40 ledger areas, 59 tracked work items, the first delivery batch and explicit gates to 100% acceptance.
 - [Technical findings and evidence index — 30 September 2026](technical-findings-2026-09-30.md): published and queued work, source-recovery corrections, canonical domain contracts, test evidence and remaining acceptance gaps.
+- [Integrated Toolkit controls batch](../toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md): conversion, wireless, DLT, thermostat and documentor functions, firmware codec admission, source/wheel evidence and historical receipt corrections.
 
 - [Status](status.md): completed functionality, known limits, and remaining validation.
 - [Architecture](architecture.md): data flow and crate responsibilities.

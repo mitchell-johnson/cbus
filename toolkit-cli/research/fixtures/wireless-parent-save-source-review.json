@@ -1,0 +1,344 @@
+{
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "methods": [
+    {
+      "symbol": "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.AgentLoad",
+      "va": "0x12ae570",
+      "size": 384,
+      "sha256": "270a3d9f141656757bb612e74fbe5b93485306df8193c50641091ec6a56bc50e"
+    },
+    {
+      "symbol": "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.SaveKeyMask",
+      "va": "0x12d2d48",
+      "size": 752,
+      "sha256": "47ae585b89d7ac4c7931ea09c726257016afed2b40e1d90054c5566a26422964"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.AgentLoad",
+      "va": "0xd82a58",
+      "size": 1552,
+      "sha256": "440fe42c740d295c32e8cb1f15469ae68b0b4a28a99b7e71c3ba8178ebbcc409"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetInterfaceState",
+      "va": "0xd85c78",
+      "size": 724,
+      "sha256": "05b214ec4564251f60daa8ba6d401bf8a2863cc4ba18ddec5f59f65650cf1e93"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetNetworkStatus",
+      "va": "0xd85f4c",
+      "size": 704,
+      "sha256": "3664107c56998e8b0419f461f0e9b979c6b730e526c5a391d86f0d81ac72cd10"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetNetworkSyncStatus",
+      "va": "0xd8620c",
+      "size": 712,
+      "sha256": "dd2457bac455be7fe83f4e9ff9b235c470b7c391b4400f1c20f83aab14b68438"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.LoadStatus",
+      "va": "0xd83678",
+      "size": 356,
+      "sha256": "b15683daed65fe07168bec66772baaf51fae9e07117200852945ea2c841b9932"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.LoadVoltage",
+      "va": "0xcc56d0",
+      "size": 216,
+      "sha256": "d6c1f5d60e247a77a41d0d20454359e1e374de2382bcd67b0cbb4c652927c66c"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad",
+      "va": "0xcb5d0c",
+      "size": 5552,
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "va": "0xcbe84c",
+      "size": 584,
+      "sha256": "fc9e972194c6d22ba511438f6bca3f0c9e8f7f438a7569ab359c05bcea05e4e6"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.CommandDoPSyncAsync",
+      "va": "0xcc0a20",
+      "size": 328,
+      "sha256": "529821df8fdfbae500df61dbbbc654381e41e9b2382b1a588981dee7f8955fc2"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetVoltageAsyncCommandFinished",
+      "va": "0xcbece4",
+      "size": 148,
+      "sha256": "ae2f654a6fecce30a85fedbf34de6e90671be2f43385f39257a546b8a85a9f5c"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadStatus",
+      "va": "0xcc57a8",
+      "size": 20,
+      "sha256": "101ba3ae24725e150794c4185faaf241fad70fe355a26301c1b929eddc2f72d2"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.PhysicalUnitGetVoltage",
+      "va": "0xcbed78",
+      "size": 576,
+      "sha256": "b0cb9ecb3fedccf272e8671bf9f31d1aba3c899ed954602bf33074ca24c4d7ef"
+    },
+    {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation",
+      "va": "0xcbdc30",
+      "size": 1104,
+      "sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnit.TCBusWirelessInputUnit.Init",
+      "va": "0xd4ab1c",
+      "size": 180,
+      "sha256": "3f39d7d2e8c911070d84aee3c50fee19a74bdaab3e45b03f143cdb3cdb5f0677"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.RemapDecoratorKeys",
+      "va": "0x1282034",
+      "size": 188,
+      "sha256": "68752fea3f61b42e29913b2a087a56685678b811fb48dc19fa0a00fc46b96231"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.RemapDecoratorKeys",
+      "va": "0x127df7c",
+      "size": 192,
+      "sha256": "cf372d98f42f7c8f5dff5a14a7ecd4f4ce880cafa386e34f74ffc0415d6550c5"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveBlocks",
+      "va": "0x12841b0",
+      "size": 380,
+      "sha256": "97728ddf42047e4703ec08d31b8ad7c792173638869d7412ed58052d8a804ee4"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveChannels",
+      "va": "0x1283a1c",
+      "size": 860,
+      "sha256": "679c2693e8f87898fb05dc40e1d37a526130210d32180bee3c522afae18a76ac"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveIndicators",
+      "va": "0x1283398",
+      "size": 1072,
+      "sha256": "ff86a3ae128d1ea9a0e807f3d1547b92e7263a76f7b761704d0b409e051fc115"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveKeyMask",
+      "va": "0x12855f4",
+      "size": 888,
+      "sha256": "309b672eef342616da7d968544c13298c930b6116aa1da76d1f2253593e0fdfb"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveKeys",
+      "va": "0x1284994",
+      "size": 840,
+      "sha256": "127e7c50c72ac81410dd5c6813ebadf3d2587af573e74068dc09a95e94cb408f"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveKeySets",
+      "va": "0x1284e74",
+      "size": 1736,
+      "sha256": "37698733098383d3a81e02224f539c1bada0801427fc00424acb5dd6bd878436"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveMacros",
+      "va": "0x1285fd4",
+      "size": 40,
+      "sha256": "a3f12e372dcbd7706fe7dc118c88b76b1feac12ab608c77037c9e68bf102bca8"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveScenes",
+      "va": "0x1285d18",
+      "size": 676,
+      "sha256": "5737c1570fa4233eb64418d28282b269358f23825fc3056277c0faabd5ed5af0"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.SaveUnitInfo",
+      "va": "0x1282458",
+      "size": 1492,
+      "sha256": "e7d5715217ddc54ad24e4cefd739e7a54d9af7127e78a7f93dc956b232ec52c3"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessInputUnitCGateAgent.TCBusWirelessInputUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "va": "0x1285ffc",
+      "size": 328,
+      "sha256": "1a4d96e1b178a36e6618ef5deacb1b19dc7bfb31914a1fade88198a7ebb38a03"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnit.TCBusWirelessUnit.GetUseSecurity",
+      "va": "0xaf4b9c",
+      "size": 36,
+      "sha256": "510af58c7cb27e4156d84de1725aca410f7c52c4df84b4d78dad6757b8e3f969"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnit.TCBusWirelessUnit.InternalCreate",
+      "va": "0xaf4818",
+      "size": 776,
+      "sha256": "7e390835989c3f54cbbc4a9fbcfcb8c78dc71c89e18644430046863c29aefd86"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnit.TCBusWirelessUnit.SetUseSecurity",
+      "va": "0xaf4dc0",
+      "size": 92,
+      "sha256": "6de1a9c022796c9afeb8750049a7cb32ba3082e6a34d7a71c9e6a549f45b6578"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.AfterLoadProgrammingInformation",
+      "va": "0x1258174",
+      "size": 384,
+      "sha256": "28abf05846e22bfc17704ce96616b3dad0b23aafbadfbc16c8c2fe2dbf5f7011"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "va": "0x1258434",
+      "size": 616,
+      "sha256": "8d4f39d6d9556f10f7fb62901a4ad33060695dfdc88188637cf1cd21b43bb7de"
+    },
+    {
+      "symbol": "CIS_TCBusWirelessUnitCGateAgent.TCBusWirelessUnitCGateAgent.SaveEncryptionParam",
+      "va": "0x1257f10",
+      "size": 612,
+      "sha256": "89fda07c46bad71f218420e639baaf702de860d1b8572811e0baf2ed850f6c39"
+    },
+    {
+      "symbol": "CIS_TcgcGetVoltage.TcgcGetVoltage.GenerateCommandText",
+      "va": "0xcb2d34",
+      "size": 120,
+      "sha256": "f61a94234ac13300af710cfc138047428aa642fb653f3caf7a660127ab64ade3"
+    },
+    {
+      "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentLoad",
+      "va": "0x1213374",
+      "size": 20,
+      "sha256": "87e2ddade475e9b49ebacf565d607ac23c616888365e655aac49faed9c2e8645"
+    }
+  ],
+  "format": "cbus-wireless-parent-save-source-review-v1",
+  "scope": "Read-only semantic source review of Toolkit 1.18 WRM parent save. No original code included in this report.",
+  "execution": "No original execution, network, radio, build, install or source copies.",
+  "findings": {
+    "use_security": {
+      "derivation": "GetUseSecurity af4b9c reads Boolean model attribute +1a0. AfterLoadProgrammingInformation 1258174 copies loaded PP UseSecurity attribute +e8 into that model via SetUseSecurity af4dc0 at12581ff. BeforeSave1258434 reads the model and stages its Boolean; it does not derive security from HouseCode or a network setting. Direct-call scan of .text found the setter only at12581ff; dynamic virtual/external setters are not excluded.",
+      "main_save_exclusion": "Attribute +58 cleared at1258521; generic SET guard skips it.",
+      "terminal_save": "After main PP SAVE, PROJECT SAVE, and network LoadStatus, wireless AfterSave calls SaveEncryptionParam1257f10. Separate START/LOAD/SET UseSecurity/SAVE timeout6000; existing matching session END retains lock, otherwise acquire lock; only newly owned session gets END/UNLOCK cleanup. SAVE ECGateCommand marks Unit not responding, no replay. Separate result phases required."
+    },
+    "load_status": {
+      "parent_target": "SaveProgrammingInformation cbdef4..cbdf12 loads Network object with exact verb LoadStatus. Network AgentLoad d82abb..d82ac7 dispatches to d83678. This is not unit AgentLoad.",
+      "network_behavior": "d83678 obtains InterfaceState, State, SyncState via C-Gate GET command objects against network OID, updates model; catches errors and sets fallback status. No physical unit PSYNC call in this network status path. Server-side cached/network GET behavior must be distinguished from physical polling.",
+      "generic_unit_behavior": "Unit AgentLoad cb6636 recognizes LoadStatus, sets LoadingStatus=true and calls CommandDoPSyncAsync timeout10000 atcb665e; PSYNC command helper cc0a20 targets existing unit OID or physical address. Thus generic UNIT LoadStatus cannot be replaced with a fabricated cached status. Separate unit LoadStatus method cc57a8 issues asynchronous voltage GET; NetVoltage verb cb64a8 calls PhysicalUnitGetVoltage which explicitly skips wireless units.",
+      "restriction": "Do not issue UNIT LoadStatus/PSYNC or open networks under database-only/no-radio acceptance. Network status reads may fit closed database scope, but native acceptance must verify exact command sequence and cached/error outcomes."
+    },
+    "key_current_mask": {
+      "rule": "Normal TCBusWirelessInputUnit.Init d4ab1c constructs16 InputKeys; SaveKeyMask12855f4 sums1<<i over full collection ->65535, independent of visible2/4/8 keys. Dynamic altered collection excluded.",
+      "other_normalizations": "KeyMaskAllowed=0, KeyMaskSave=0, KeyEnableMask1..4=65535; KeyMaskNetworkVariable=control group or255; four control levels encoded."
+    },
+    "coherent_parent_requirements": {
+      "order": [
+        "generic base BeforeSave cbe84c",
+        "wireless radio base1258434",
+        "SaveUnitInfo1282458",
+        "SaveIndicators1283398",
+        "SaveChannels1283a1c",
+        "SaveBlocks12841b0",
+        "SaveKeys1284994",
+        "SaveKeySets1284e74",
+        "SaveKeyMask12855f4",
+        "SaveScenes1285d18",
+        "SaveMacros1285fd4",
+        "edit-state virtual callback and profile-specific decorator key remap / installed-key adjustment",
+        "generic staged SET + main PP SAVE",
+        "PROJECT SAVE",
+        "NETWORK LoadStatus",
+        "terminal security PP save"
+      ],
+      "radio_base_fields": [
+        "HouseCode",
+        "PropagateCollisions (class-specific forced false branch)",
+        "UseSecurity deferred Boolean",
+        "RepeatSALTransmission",
+        "RepeaterKind",
+        "MaxTransmitAttempts",
+        "MaxAvoidanceCollisions",
+        "MaxPacketCollisions",
+        "LockFlag"
+      ],
+      "unit_info_fields": [
+        "Manufacturer",
+        "ModelName",
+        "InstalledKeys",
+        "InstalledChannels",
+        "ChannelRelayDelay",
+        "AllowFactoryClear",
+        "FeatureSet",
+        "KeyControlModifier",
+        "LearnAllowed",
+        "LearnMasterMode",
+        "LearnNetworkAllowed",
+        "LearnedFlag",
+        "DefaultDNCYCTimer",
+        "StatusRequestInterval",
+        "Password symbolic dependency only; no value inspected",
+        "OutputLevelSave",
+        "OutputLevelRestore",
+        "UnitInternalIntegerValue",
+        "InstallSWNumber"
+      ],
+      "indicator_dependencies": [
+        "activity/background/nightlight levels and groups",
+        "activity timeout",
+        "full indicator collection"
+      ],
+      "channel_dependencies": [
+        "installed channel count",
+        "output/application type and group",
+        "dimming curve",
+        "firmware-dependent CFL kickstart",
+        "minimum/maximum/threshold/saved levels"
+      ],
+      "block_dependencies": [
+        "full block collection",
+        "application/group mapping",
+        "memory1/memory2",
+        "expiry event"
+      ],
+      "key_dependencies": [
+        "real-key mapping",
+        "full key collection",
+        "JP/SR/LP/LR/DC/XR events",
+        "key sets and selectors",
+        "enable/restore/power-up key-set fields"
+      ],
+      "scene_dependencies": [
+        "scene director graph",
+        "enable group and level",
+        "ramp rate",
+        "vector encoding and offsets"
+      ],
+      "macros": "SaveMacros exists and is called; field effect must be proven rather than assumed absent.",
+      "base_dependency": "Generic unit BeforeSave also normalizes application/model fields; preserve exact full graph/spec/version and reject unsupported state. Changed-only editor preservation is not original parent normalization."
+    },
+    "recommendation": {
+      "decision": "Complete bounded parent save is not ready from the existing component subset evidence alone. Physical status is not inherently required by the actual post-save network LoadStatus path; generic UNIT LoadStatus is physical and must remain excluded from DB-only workflow.",
+      "safe_next_slice": "Implement a bounded ordered WRM globals/actions parameter transaction with full loaded raw PP preservation, one main SAVE and explicit exclusions for original whole-parent normalizations. Alternatively resolve full SaveUnitInfo/Indicators/Channels/Blocks/Keys/KeySets/Scenes/Macros plus model remaps first, then build a source-pinned parent normalization planner with distinct main/project/status/security outcomes.",
+      "remaining_evidence": [
+        "Exact complete field serialization and profile/firmware branches for all nine cascades",
+        "Generic base attribute mapping and edit-state semantics",
+        "Original-oracle DB session ownership/failure phase acceptance",
+        "Exact post-project-save persistence on terminal security failure",
+        "Network GET native cached/error outcomes under closed networks"
+      ]
+    }
+  },
+  "review_date": "2026-09-30",
+  "target": "Toolkit 1.18.0.2754",
+  "evidence_kind": "Fresh static original x86 method review; no original GUI, native parent-save or radio execution.",
+  "original_toolkit_executed": false,
+  "parent_save_executed": false,
+  "physical_hardware_verified": false
+}

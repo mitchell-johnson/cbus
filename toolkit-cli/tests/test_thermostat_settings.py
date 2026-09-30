@@ -28,7 +28,10 @@ def snapshot(**changes):
     values.update({name + 'Output': 255 for name in OUTPUTS})
     values.update(InternalPlantType=3, InternalPlantModes=0x1e, VentPlantType=2, ControlledZones=1,
                   HeatingPlantFanSpeeds=1, CoolingPlantFanSpeeds=1, HeatingPlantFanSpeedControlEnable=1,
-                  CoolingPlantFanSpeedControlEnable=1, InstalledZones=1, EnableHVACRelayDrive=0)
+                  CoolingPlantFanSpeedControlEnable=1, InstalledZones=1, EnableHVACRelayDrive=0,
+                  RemoteSetbackControlSource=0, RemoteSetbackOnGroup=30, RemoteSetbackOffGroup=31,
+                  RemoteScheduleEnable=0, RemoteScheduleOnGroup=32, RemoteScheduleOffGroup=33,
+                  RemoteScheduleOverrideGroup=34)
     values.update(changes)
     return {name: hex(value) for name, value in values.items()}
 
@@ -55,6 +58,68 @@ class ThermostatSettingsTests(unittest.TestCase):
         self.assertTrue(rules['available'])
         self.assertEqual(rules['used_zones'], 3)
         self.assertFalse(rules['dialog_enable_rules_reproduced'])
+
+    def test_disabled_remote_defaults_are_dependent_writes_for_all_aliases(self):
+        before = snapshot(RemoteSetbackOnGroup=255, RemoteSetbackOffGroup=12,
+                          RemoteScheduleEnable=255, RemoteScheduleOnGroup=11,
+                          RemoteScheduleOffGroup=255, RemoteScheduleOverrideGroup=254)
+        original = dict(before)
+        for unit_type in ('PC_TSA', 'PC_TSA5', 'PC_TSB', 'PC_TSB5'):
+            with self.subTest(unit_type=unit_type):
+                plan = plan_settings(self.store, unit_type, before, {'PlantCycleTime': 0})
+                expected = {'RemoteSetbackOnGroup': 30, 'RemoteSetbackOffGroup': 31}
+                if unit_type.startswith('PC_TSA'):
+                    expected.update(RemoteScheduleEnable=0, RemoteScheduleOnGroup=32,
+                                    RemoteScheduleOffGroup=33, RemoteScheduleOverrideGroup=34)
+                self.assertEqual(plan.expected, expected | {'PlantCycleTime': 0})
+                report = plan.as_dict()['disabled_remote_defaults']
+                self.assertEqual(set(report['parameters']), set(expected))
+                self.assertFalse(report['enabled_reference_resolution_replayed'])
+                self.assertFalse(report['complete_remote_workflow_reproduced'])
+                after = before | {n: hex(v) for n, v in expected.items()}
+                again = plan_settings(self.store, unit_type, after, {'PlantCycleTime': 0})
+                self.assertEqual(again.dependent, ())
+        self.assertEqual(before, original)
+
+    def test_program_disable_uses_post_edit_flags_and_ignores_raw_remote_enable(self):
+        before = snapshot(EvapProgramEnabled=1, NonEvapProgramEnabled=1, RemoteScheduleEnable=1,
+                          RemoteScheduleOnGroup=100, RemoteScheduleOffGroup=101,
+                          RemoteScheduleOverrideGroup=102)
+        edits = {'EvapProgramEnabled': 0, 'NonEvapProgramEnabled': 0}
+        plan = plan_settings(self.store, 'PC_TSA', before, edits)
+        self.assertEqual(plan.expected, edits | {'RemoteScheduleEnable': 0, 'RemoteScheduleOnGroup': 32,
+                                                'RemoteScheduleOffGroup': 33, 'RemoteScheduleOverrideGroup': 34})
+        # Original load clamps Evap>1 to0 but NonEvap>1 to1; raw remote enable
+        # is ignored. Enabled reference resolution is deliberately excluded.
+        for evap, nonevap, disabled in ((0, 0, True), (2, 0, True), (255, 0, True),
+                                        (1, 0, False), (0, 1, False), (0, 255, False), (2, 2, False)):
+            with self.subTest(evap=evap, nonevap=nonevap):
+                state = dict(before, EvapProgramEnabled=hex(evap), NonEvapProgramEnabled=hex(nonevap))
+                plan = plan_settings(self.store, 'PC_TSA', state, {'PlantCycleTime': 0})
+                names = plan.as_dict()['disabled_remote_defaults']['parameters']
+                self.assertEqual('RemoteScheduleEnable' in names, disabled)
+                if not disabled:
+                    self.assertTrue(all(n not in plan.expected for n in before if n.startswith('RemoteSchedule')))
+
+    def test_remote_reference_boundaries_and_dependency_validation(self):
+        for source in (1, 2):
+            before = snapshot(RemoteSetbackControlSource=source, RemoteSetbackOnGroup=99,
+                              RemoteSetbackOffGroup=101)
+            plan = plan_settings(self.store, 'PC_TSB', before, {'PlantCycleTime': 0})
+            self.assertEqual(plan.expected, {'PlantCycleTime': 0})
+        for source in (3, 255):
+            with self.assertRaisesRegex(ThermostatTemplateError, 'RemoteSetbackControlSource'):
+                plan_settings(self.store, 'PC_TSB', snapshot(RemoteSetbackControlSource=source),
+                              {'PlantCycleTime': 0})
+        for name in ('RemoteSetbackControlSource', 'RemoteSetbackOnGroup', 'RemoteSetbackOffGroup',
+                     'RemoteScheduleEnable', 'RemoteScheduleOnGroup', 'RemoteScheduleOffGroup',
+                     'RemoteScheduleOverrideGroup'):
+            before = snapshot()
+            del before[name]
+            with self.subTest(name=name), self.assertRaisesRegex(ThermostatTemplateError, 'dependency'):
+                plan_settings(self.store, 'PC_TSA', before, {'PlantCycleTime': 0})
+        with self.assertRaisesRegex(ThermostatTemplateError, 'not admitted'):
+            plan_settings(self.store, 'PC_TSA', snapshot(), {'RemoteScheduleOnGroup': 32})
 
     def test_range_family_and_admission_refusals(self):
         for edits in ({'InstalledZones': 32}, {'Nope': 1}, {'TimerEnable': 1}, {'ControlledZones': True},

@@ -6,6 +6,10 @@ import json
 from pathlib import Path
 
 
+from project_legacy_transform_receipt_source import (CLI_SHA256, historical_cli,
+                                                     assert_current_project_carry_forward)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / "research/fixtures/project-legacy-transform-versions-native-receipt.json"
 RECEIPT_SHA256 = "83cabc189adbcdfa148b21e880a771c75ba0ed55b489ca17ec1a2fb7828494a6"
@@ -13,7 +17,6 @@ SOURCE_FILES = {
     "native_test_sha256": "tests/test_project_legacy_transform_versions_native.py",
     "portable_module_sha256": "src/cbus_toolkit/project_legacy_transform.py",
     "native_module_sha256": "src/cbus_toolkit/native.py",
-    "cli_dispatch_sha256": "src/cbus_toolkit/cli.py",
     "portable_test_sha256": "tests/test_project_legacy_transform.py",
     "owned_service_harness_sha256": "research/local_cgate.py",
 }
@@ -37,6 +40,9 @@ def test_earlier_versions_receipt_is_source_bound() -> None:
     assert receipt["service"]["listener_ownership_verified"] is True
     assert receipt["service"]["cleanup_complete"] is True
     assert receipt["sources"]["transform_sha256"] == STYLESHEET_HASHES
+    assert receipt["sources"]["cli_dispatch_sha256"] == CLI_SHA256
+    historical_cli()
+    assert_current_project_carry_forward()
     for field, path in SOURCE_FILES.items():
         assert receipt["sources"][field] == digest(ROOT / path)
     cases = receipt["cases"]

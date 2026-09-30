@@ -1,0 +1,1711 @@
+{
+  "format": "cbus-project-documentor-scene-controller-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_methods_executed": true,
+  "original_loader_executed": false,
+  "original_generated_page_compared": false,
+  "master_selector_format_basis": "standard tag-name profile; DisplayAddressValue=false (original fresh default)",
+  "boundary": "Original body/action/input-dependency/IsSceneUnused plus Level.AsString/default-representation/extended-tag instructions, with explicit standard-format preference, synthetic getters, collections, common HTML formatters and Delphi string leaves. No original loader, project, GUI, network or hardware.",
+  "methods": {
+    "body": {
+      "symbol": "CIS_TCustomSceneControllerDocumentor.TCustomSceneControllerDocumentor.DocumentHTML",
+      "start": "0x10096ac",
+      "end": "0x1009eb4",
+      "sha256": "e6c9176bb3c50a9c8b8ad0cf46233b802512614a68903b76b9ee2f6dfb68300f"
+    },
+    "action": {
+      "symbol": "CIS_TCustomSceneControllerDocumentor.TCustomSceneControllerDocumentor.ActionSelectorUse",
+      "start": "0x10094e0",
+      "end": "0x10096ac",
+      "sha256": "b37f8855a8b1a6d974df2ecf4e2b419e26a77b9549ac159149408ca970c8b501"
+    },
+    "unused": {
+      "symbol": "CIS_TCustomSceneControllerDocumentor.TCustomSceneControllerDocumentor.IsSceneUnused",
+      "start": "0x1009eb4",
+      "end": "0x1009f18",
+      "sha256": "204ca52057eab4af2c61093927eee0814efa947f01471ec1026b0c32ffcf3ba0"
+    },
+    "input": {
+      "symbol": "CIS_TCustomSceneUnit.TCustomSceneUnit.DescribeInputGroupDependencyAdvanced",
+      "start": "0xd16bb4",
+      "end": "0xd16cf0",
+      "sha256": "6c3a44995eb94ef092d0979cd1b8fa2d3bad7768cdd1091d0d269ff9752a84bb"
+    },
+    "as_string": {
+      "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.GetAsString",
+      "start": "0x7ea47c",
+      "end": "0x7ea498",
+      "sha256": "585092057648a41980aebe9f38218af0280ac9ba8857bfeb748646509eeadc97"
+    },
+    "internal_representation": {
+      "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.InternalGetDefaultRepresentation",
+      "start": "0x7ea5f8",
+      "end": "0x7ea61c",
+      "sha256": "6b92ff276125abf1581fd305518e7063b90a7d05d09348ab47511df2af42b1e9"
+    },
+    "level_representation": {
+      "symbol": "CIS_TCommonCBus.TLevel.GetDefaultRepresentation",
+      "start": "0xf26d88",
+      "end": "0xf26da8",
+      "sha256": "2c18a0246743059c53b2fb09d650dd6990212740dd6f75934f3ea467c62bf556"
+    },
+    "extended_tag": {
+      "symbol": "CIS_TCommonCBus.TLevel.GetExtendedTagName",
+      "start": "0xf270cc",
+      "end": "0xf271a0",
+      "sha256": "561332ea951589ced3e77e410c591fe4500740d96edfe007d1c99c26025303f3"
+    }
+  },
+  "cases": [
+    {
+      "network": 254,
+      "application": 56,
+      "control_group": 8,
+      "master_selector": 11,
+      "master_ramp": 7,
+      "selectors": [
+        11,
+        22,
+        11,
+        44,
+        255
+      ],
+      "scenes": [
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            0,
+            1,
+            true
+          ],
+          [
+            1,
+            255,
+            13,
+            true
+          ],
+          [
+            2,
+            128,
+            15,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            2,
+            1,
+            0,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            129,
+            3,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ]
+      ],
+      "name": "sparse-duplicate-boundaries",
+      "lines": [
+        "Control Group: <a href=\"#254_202_8\">Group <8></a><br />",
+        "Master Off Action Selector: Action <11><br />",
+        "Master Off Ramp Rate: 60 secs<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Trigger</th><th>Controls</th></tr>",
+        "<tr>",
+        "<td>2</td>",
+        "<td><a href=\"#254_202_8_22\">Action <22></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>0%</td><td>4 secs</td><td>Yes</td></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>100%</td><td>600 secs</td><td>Yes</td></tr>",
+        "<tr><td><a href=\"#254_56_2\">Group <2></a></td><td>50%</td><td>1020 secs</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>3</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_2\">Group <2></a></td><td>1%</td><td>Instant</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>5</td>",
+        "<td><a href=\"#254_202_8_255\">Action <255></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>51%</td><td>12 secs</td><td>Yes</td></tr>",
+        "</table></td></tr>",
+        "</table>"
+      ],
+      "actions": [
+        {
+          "query": [
+            202,
+            8,
+            11
+          ],
+          "html": "Scene Master Off<br />Triggers Scene 3"
+        },
+        {
+          "query": [
+            202,
+            8,
+            22
+          ],
+          "html": "Triggers Scene 2"
+        },
+        {
+          "query": [
+            202,
+            8,
+            255
+          ],
+          "html": "Triggers Scene 5"
+        },
+        {
+          "query": [
+            202,
+            8,
+            99
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            56,
+            8,
+            11
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            9,
+            11
+          ],
+          "html": ""
+        }
+      ],
+      "inputs": [
+        {
+          "query": [
+            56,
+            1
+          ],
+          "native": "Scene 2|Scene 2|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            2
+          ],
+          "native": "Scene 2|Scene 3|"
+        },
+        {
+          "query": [
+            56,
+            255
+          ],
+          "native": "Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            99
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            202,
+            1
+          ],
+          "native": ""
+        }
+      ]
+    },
+    {
+      "network": 254,
+      "application": 56,
+      "control_group": 255,
+      "master_selector": 11,
+      "master_ramp": 7,
+      "selectors": [
+        11,
+        22,
+        11,
+        44,
+        255
+      ],
+      "scenes": [
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            0,
+            1,
+            true
+          ],
+          [
+            1,
+            255,
+            13,
+            true
+          ],
+          [
+            2,
+            128,
+            15,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            2,
+            1,
+            0,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            129,
+            3,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ]
+      ],
+      "name": "unused-control",
+      "lines": [
+        "Control Group: &#60;Unused&#62;<br />",
+        "Master Off Ramp Rate: 60 secs<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Controls</th></tr>",
+        "<tr>",
+        "<td>2</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>0%</td><td>4 secs</td><td>Yes</td></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>100%</td><td>600 secs</td><td>Yes</td></tr>",
+        "<tr><td><a href=\"#254_56_2\">Group <2></a></td><td>50%</td><td>1020 secs</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>3</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_2\">Group <2></a></td><td>1%</td><td>Instant</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>5</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>51%</td><td>12 secs</td><td>Yes</td></tr>",
+        "</table></td></tr>",
+        "</table>"
+      ],
+      "actions": [
+        {
+          "query": [
+            202,
+            255,
+            11
+          ],
+          "html": "Scene Master Off<br />Triggers Scene 3"
+        },
+        {
+          "query": [
+            202,
+            255,
+            22
+          ],
+          "html": "Triggers Scene 2"
+        },
+        {
+          "query": [
+            202,
+            255,
+            255
+          ],
+          "html": "Triggers Scene 5"
+        },
+        {
+          "query": [
+            202,
+            255,
+            99
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            56,
+            255,
+            11
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            9,
+            11
+          ],
+          "html": ""
+        }
+      ],
+      "inputs": [
+        {
+          "query": [
+            56,
+            1
+          ],
+          "native": "Scene 2|Scene 2|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            2
+          ],
+          "native": "Scene 2|Scene 3|"
+        },
+        {
+          "query": [
+            56,
+            255
+          ],
+          "native": "Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            99
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            202,
+            1
+          ],
+          "native": ""
+        }
+      ]
+    },
+    {
+      "network": 254,
+      "application": 56,
+      "control_group": 8,
+      "master_selector": 11,
+      "master_ramp": 7,
+      "selectors": [
+        11,
+        22,
+        11,
+        44,
+        255
+      ],
+      "scenes": [
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ]
+      ],
+      "name": "all-unused",
+      "lines": [
+        "Control Group: <a href=\"#254_202_8\">Group <8></a><br />",
+        "Master Off Action Selector: Action <11><br />",
+        "Master Off Ramp Rate: 60 secs<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Trigger</th><th>Controls</th></tr>",
+        "</table>"
+      ],
+      "actions": [
+        {
+          "query": [
+            202,
+            8,
+            11
+          ],
+          "html": "Scene Master Off"
+        },
+        {
+          "query": [
+            202,
+            8,
+            22
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            8,
+            255
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            8,
+            99
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            56,
+            8,
+            11
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            9,
+            11
+          ],
+          "html": ""
+        }
+      ],
+      "inputs": [
+        {
+          "query": [
+            56,
+            1
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            56,
+            2
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            56,
+            255
+          ],
+          "native": "Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            99
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            202,
+            1
+          ],
+          "native": ""
+        }
+      ]
+    },
+    {
+      "network": 254,
+      "application": 56,
+      "control_group": 8,
+      "master_selector": 11,
+      "master_ramp": 7,
+      "selectors": [
+        11,
+        11,
+        11,
+        11,
+        11
+      ],
+      "scenes": [
+        [
+          [
+            1,
+            0,
+            0,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            1,
+            1,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            2,
+            2,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            3,
+            3,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ],
+        [
+          [
+            1,
+            4,
+            4,
+            false
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ],
+          [
+            255,
+            255,
+            0,
+            true
+          ]
+        ]
+      ],
+      "name": "all-master-and-scene-matches",
+      "lines": [
+        "Control Group: <a href=\"#254_202_8\">Group <8></a><br />",
+        "Master Off Action Selector: Action <11><br />",
+        "Master Off Ramp Rate: 60 secs<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Trigger</th><th>Controls</th></tr>",
+        "<tr>",
+        "<td>1</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>0%</td><td>Instant</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>2</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>1%</td><td>4 secs</td><td>Yes</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>3</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>1%</td><td>8 secs</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>4</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>1%</td><td>12 secs</td><td>Yes</td></tr>",
+        "</table></td></tr>",
+        "<tr>",
+        "<td>5</td>",
+        "<td><a href=\"#254_202_8_11\">Action <11></a></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Groups</th><th>Level</th><th>Ramp Rate</th><th>Master Off</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">Group <1></a></td><td>2%</td><td>20 secs</td><td>No</td></tr>",
+        "</table></td></tr>",
+        "</table>"
+      ],
+      "actions": [
+        {
+          "query": [
+            202,
+            8,
+            11
+          ],
+          "html": "Scene Master Off<br />Triggers Scene 1<br />Triggers Scene 2<br />Triggers Scene 3<br />Triggers Scene 4<br />Triggers Scene 5"
+        },
+        {
+          "query": [
+            202,
+            8,
+            22
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            8,
+            255
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            8,
+            99
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            56,
+            8,
+            11
+          ],
+          "html": ""
+        },
+        {
+          "query": [
+            202,
+            9,
+            11
+          ],
+          "html": ""
+        }
+      ],
+      "inputs": [
+        {
+          "query": [
+            56,
+            1
+          ],
+          "native": "Scene 1|Scene 2|Scene 3|Scene 4|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            2
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            56,
+            255
+          ],
+          "native": "Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 1|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 2|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 3|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 4|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|Scene 5|"
+        },
+        {
+          "query": [
+            56,
+            99
+          ],
+          "native": ""
+        },
+        {
+          "query": [
+            202,
+            1
+          ],
+          "native": ""
+        }
+      ]
+    }
+  ]
+}

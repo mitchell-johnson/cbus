@@ -10,6 +10,10 @@ edits indicator mode, display inversion and clock visibility. The
 [original delivery sequence](classic-dlt-delivery-original.md) retains the
 physical staging evidence and remaining execution gaps.
 
+The separate [predefined ICON dialog](classic-dlt-icon-dialog.md) selects pinned
+built-in icons in language 202 and finalizes that language's project records.
+It preserves the existing exact TEXT editor and sends no labels to devices.
+
 ## Block Dynamic Updates
 
 `dlt labels show` reports `block_dynamic_updates` alongside the raw enable

@@ -177,7 +177,8 @@ def verify_native_schema(session, spec, fields, error):
         native, local = found.get(name, {}), spec.get(name).fields
         if native.get('Type', '').lower() != local.get('Type', '').lower():
             raise error('Native parameter type mismatch: ' + name)
-        for field, default in (('Address', None), ('ArraySize', '1'), ('BitAddress', '0'), ('ArraySkip', '0')):
+        for field, default in (('Address', None), ('ArraySize', '1'), ('BitAddress', '0'), ('ArraySkip', '0'),
+                               ('BitSize', '1' if local.get('Type', '').lower() == 'bit' else '8')):
             if _numbers(native.get(field, default)) != _numbers(local.get(field, default)):
                 raise error(f'Native parameter layout mismatch: {name}/{field}')
 
@@ -234,6 +235,11 @@ class WirelessGatewayEditor:
                       layout.array_skip, layout.parameter.type)
             if actual != expected:
                 raise WirelessGatewayError('Unsupported wireless gateway parameter layout: ' + name)
+
+    def connection_editor(self):
+        """Use the separately bounded Connection planner with this verified spec."""
+        from .wireless_connection import WirelessConnectionEditor
+        return WirelessConnectionEditor(self.spec)
 
     def snapshot(self, current):
         result = {}

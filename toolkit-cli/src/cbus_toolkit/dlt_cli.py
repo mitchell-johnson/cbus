@@ -86,8 +86,12 @@ def options(commands):
     text_options(ops)
     from .dlt_language_dialog_cli import options as dialog_options
     dialog_options(ops)
+    from .dlt_icon_dialog_cli import options as icon_dialog_options
+    icon_dialog_options(ops)
     from .dlt_broadcast_cli import options as broadcast_options
     broadcast_options(ops)
+    from .dlt_unit_delivery_cli import options as unit_delivery_options
+    unit_delivery_options(ops)
     for group, help_text in (
             ('labels', 'Show or plan classic DLT variants and dynamic-update controls offline'),
             ('display', 'Show or plan classic DLT indicator mode, display inversion and clock visibility'),
@@ -172,9 +176,15 @@ def offline(args):
     if args.action == 'text-dialog':
         from .dlt_language_dialog_cli import offline as dialog_offline
         return dialog_offline(args)
+    if args.action == 'icon-dialog':
+        from .dlt_icon_dialog_cli import offline as icon_dialog_offline
+        return icon_dialog_offline(args)
     if args.action == 'broadcast':
         from .dlt_broadcast_cli import offline as broadcast_offline
         return broadcast_offline(args)
+    if args.action == 'unit-delivery':
+        from .dlt_unit_delivery_cli import offline as unit_delivery_offline
+        return unit_delivery_offline(args)
     from .dlt_profiles import lookup, registry
     if args.action == 'profiles':
         if args.unit_type is None:

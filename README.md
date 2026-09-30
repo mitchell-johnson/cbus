@@ -19,9 +19,13 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
-The latest [conversion, DLT and temperature batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-dlt-temperature.md)
-documents the new conversion profiles, ordered DLT controls, thermostat rules,
-project reports and input/cleanup fixes, with their validation and remaining work.
+The latest [Toolkit controls batch](toolkit-cli/docs/feature-batch-2026-09-30-toolkit-controls.md)
+adds conversion profiles, wireless database workflows, classic DLT ICON and
+delivery models, thermostat defaults, more project reports and early firmware
+codec refusal. It records focused source/wheel validation and the remaining
+GUI and physical acceptance work. The earlier
+[conversion, DLT and temperature batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-dlt-temperature.md)
+retains its separate validation record.
 The earlier [DALI/SENLL batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
 retains its separate source-bound acceptance record.
 
@@ -125,13 +129,20 @@ requires its documented initially empty application and explicit
 `--group-sort address-ascending` profile.
 
 The separate [Toolkit conversion API](toolkit-cli/docs/toolkit-conversion-tweakers.md)
-admits 108 registered source/target pairs with native database evidence,
-including seven relay directions and 93 classic-to-Neo directions. Its
+admits 123 of 292 registered source/target pairs with native database evidence,
+including seven relay, 93 classic-to-Neo, five coupler-to-Neo and ten non-sensor
+InputUnit directions at the documented exact firmware profiles. Its
 source-preservation and refusal rules are documented independently of the
 typed C-Gate conversion command. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
 for these workflows.
+
+Wireless workflows now include bounded Connection/Scenes database edits,
+WTXU project metadata creation and typed cached status/statistics reads.
+Physical unit actions require explicit opt-in; successful acknowledgements
+remain separate from hardware effects. See the [wireless scope](toolkit-cli/docs/wireless.md)
+and [conversion/wireless batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-wireless.md).
 
 Firmware execution also binds package metadata and selected images to a
 bounded immutable snapshot. Resume checks that snapshot against the interrupted
