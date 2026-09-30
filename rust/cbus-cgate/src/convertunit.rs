@@ -17,6 +17,43 @@ pub const MAPPING_TABLE: &str = "ConvertUnitMappingTable.xml";
 /// Serial number written by a catalogue (mode 1) conversion.
 pub const CATALOG_SERIAL_NUMBER: &str = "00000000.0000";
 
+/// Source-backed output-channel skeleton created by native conversion.
+/// OIDs and the containing Unit remain the caller's database responsibility.
+pub fn target_output_channels(target: &str) -> Vec<(u16, String)> {
+    let count = match target.to_ascii_uppercase().as_str() {
+        "DIMDD4" | "RELDN4A" => 4,
+        "DIMDD8" | "RELDN8A" => 8,
+        "RELDN16A" => 16,
+        _ => 0,
+    };
+    (1..=count)
+        .map(|address| (address, format!("Channel{address}")))
+        .collect()
+}
+
+/// Admit only catalogue-backed DIN channel counts corroborated by the target.
+pub fn catalog_output_channels(
+    target: &str,
+    entry: &unitspec::CatalogEntry,
+) -> Result<Vec<(u16, String)>, String> {
+    if !entry.unit_type.eq_ignore_ascii_case(target) || !entry.is_default {
+        return Err("Conversion channels require the selected default target revision".into());
+    }
+    let channels = target_output_channels(target);
+    let class = entry.class_name.rsplit('.').next().unwrap_or("");
+    if !matches!(class, "CBus3DinDigDimmerUnit" | "CBus3DinRelayUnit") {
+        return if channels.is_empty() {
+            Ok(channels)
+        } else {
+            Err("Conversion target lacks DIN channel class".into())
+        };
+    }
+    if entry.output_count != Some(channels.len()) || channels.is_empty() {
+        return Err("Conversion catalogue output count does not match target".into());
+    }
+    Ok(channels)
+}
+
 const COMPATIBLE: &[(&str, &[&str])] = &[
     (
         "DIMDU4",
@@ -644,6 +681,27 @@ pub fn convert_parameters(
 mod tests {
     use super::*;
 
+    #[test]
+    fn conversion_channel_skeleton_matches_retained_target_families() {
+        for (target, count) in [
+            ("DIMDD4", 4),
+            ("DIMDD8", 8),
+            ("RELDN4A", 4),
+            ("RELDN8A", 8),
+            ("RELDN16A", 16),
+        ] {
+            let channels = target_output_channels(target);
+            assert_eq!(channels.len(), count);
+            assert_eq!(channels.first(), Some(&(1, "Channel1".to_string())));
+            assert_eq!(
+                channels.last(),
+                Some(&(count as u16, format!("Channel{count}")))
+            );
+        }
+        assert!(target_output_channels("DIMDN8").is_empty());
+        assert!(target_output_channels("UNKNOWN").is_empty());
+    }
+
     fn r(name: &str, p1: Option<&str>, p2: Option<&str>, p3: Option<&str>) -> Rule {
         Rule {
             name: name.to_string(),
@@ -750,11 +808,21 @@ mod tests {
         ));
         std::fs::create_dir_all(&dir).expect("create fixture directory");
         let unit = |catalog: &str, kind: &str, version: &str| {
+            let channels = if kind == "DIMDD4" {
+                "<OutputCount>4</OutputCount>"
+            } else {
+                ""
+            };
+            let class = if kind == "DIMDD4" {
+                "CBus3DinDigDimmerUnit"
+            } else {
+                "CBusDinDimmerUnit"
+            };
             format!(
-                "<Unit><CatalogNumber>{catalog}</CatalogNumber><FirmwareRevisions><Revision>\
+                "<Unit><CatalogNumber>{catalog}</CatalogNumber>{channels}<FirmwareRevisions><Revision>\
                  <UnitType>{kind}</UnitType><MinVersion>{version}</MinVersion>\
                  <MaxVersion>{version}</MaxVersion><UnitSpecName>{kind}.xml</UnitSpecName>\
-                 <IsDefault>true</IsDefault></Revision></FirmwareRevisions></Unit>"
+                 <IsDefault>true</IsDefault><ClassName>{class}</ClassName></Revision></FirmwareRevisions></Unit>"
             )
         };
         std::fs::write(
@@ -866,6 +934,7 @@ mod tests {
             assert!(xml.contains(expected), "{expected} missing from {xml}");
         }
         assert!(!xml.contains("Name=\"GroupAddress\""), "{xml}");
+        assert_conversion_document(&mut server, 20, "0x6");
 
         // Native admission and CONVERT-only identity refusal.
         for (command, text) in [
@@ -926,6 +995,35 @@ mod tests {
         ] {
             assert!(xml.contains(expected), "{expected} missing from {xml}");
         }
+        assert_conversion_document(&mut server, 22, "0x2");
+
+        // Ordered programming, independent identity and regenerated channel
+        // OIDs survive both a native-shaped XML replacement and project reload.
+        let before = server.handle("[read] DBGETXML //T/254/p/22").lines[0]
+            .strip_prefix("347-")
+            .unwrap()
+            .to_string();
+        assert_eq!(
+            server
+                .handle_document("[replace] DBSETXML //T/254/p/22", &before)
+                .status,
+            301
+        );
+        for command in [
+            "PROJECT SAVE T",
+            "PROJECT CLOSE T",
+            "PROJECT LOAD T",
+            "PROJECT USE T",
+        ] {
+            assert_eq!(server.handle(&format!("[reload] {command}")).status, 200);
+        }
+        assert_eq!(
+            server.handle("[read] DBGETXML //T/254/p/22").lines[0]
+                .strip_prefix("347-")
+                .unwrap(),
+            before
+        );
+        assert_conversion_document(&mut server, 22, "0x2");
 
         // Without the private mapping table, conversion fails closed.
         add_source(&mut server, 23, "1 2 3");
@@ -941,5 +1039,76 @@ mod tests {
                 .contains("<UnitType>DIMDN4</UnitType>")
         );
         std::fs::remove_dir_all(dir).expect("remove fixture");
+    }
+
+    fn assert_conversion_document(server: &mut crate::Server, address: u8, group: &str) {
+        let response = server.handle(&format!("[read] DBGETXML //T/254/p/{address}"));
+        let doc =
+            roxmltree::Document::parse(response.lines[0].strip_prefix("347-").unwrap()).unwrap();
+        let root = doc.root_element();
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_convertunit_database.json"
+        ))
+        .unwrap();
+        let names = root
+            .children()
+            .filter(|node| node.has_tag_name("PP"))
+            .map(|node| node.attribute("Name").unwrap())
+            .collect::<Vec<_>>();
+        let expected = vector["pp_order"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|name| name.as_str().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(names, expected);
+        assert_eq!(
+            root.children()
+                .find(|node| node.has_tag_name("UnitType"))
+                .unwrap()
+                .text(),
+            Some("DIMDD4")
+        );
+        assert_eq!(
+            root.children()
+                .find(|node| node.has_tag_name("PP") && node.attribute("Name") == Some("UnitType"))
+                .unwrap()
+                .attribute("Value"),
+            vector["pp_unit_type"].as_str()
+        );
+        assert_eq!(
+            root.children()
+                .find(|node| node.has_tag_name("PP")
+                    && node.attribute("Name") == Some("Ch1GroupAddress"))
+                .unwrap()
+                .attribute("Value"),
+            Some(group)
+        );
+        let channels = root
+            .children()
+            .filter(|node| node.has_tag_name("OutputChannel"))
+            .collect::<Vec<_>>();
+        assert_eq!(channels.len(), vector["channels"].as_array().unwrap().len());
+        let mut oids = std::collections::HashSet::new();
+        for (channel, expected) in channels.iter().zip(vector["channels"].as_array().unwrap()) {
+            let fields = channel
+                .children()
+                .filter(roxmltree::Node::is_element)
+                .map(|node| node.tag_name().name())
+                .collect::<Vec<_>>();
+            assert_eq!(fields, ["OID", "TagName", "Address"]);
+            let field = |name| {
+                channel
+                    .children()
+                    .find(|node| node.has_tag_name(name))
+                    .unwrap()
+                    .text()
+                    .unwrap()
+            };
+            assert!(crate::valid_uuid(field("OID")));
+            assert!(oids.insert(field("OID")));
+            assert_eq!(field("Address"), expected["Address"].as_str().unwrap());
+            assert_eq!(field("TagName"), expected["TagName"].as_str().unwrap());
+        }
     }
 }

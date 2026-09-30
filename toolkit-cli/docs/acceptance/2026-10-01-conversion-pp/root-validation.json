@@ -1,0 +1,49 @@
+{
+  "format": "cbus-convertunit-root-validation-v1",
+  "result": "passed",
+  "base_commit": "7cea3280456ab9512ce4609a73662ca5e9e83eaf",
+  "root_audit_script_sha256": "5ca9b3dacac76f2a565979080ea8eebf8d4a0b0c9a3d377101b18929ab80ab48",
+  "python_product_exact_roster_count": 321,
+  "python_product_roster_sha256": "9362a968dc648f0eb1ba90c2e1baff0c424b33a3fd3dac06290e0803efb5cb7d",
+  "reference_exact_roster_count": 2753,
+  "reference_roster_sha256": "b8c378594085cec4fe8070d04ad6e4f6dabec1932e33b68ef349738aedafb591",
+  "wheel_bytes_match_all_product_files": true,
+  "source_and_wheel_actual_imports_verified": true,
+  "subprocess_installed_only_receipts": {
+    "wheel-process-imports-79143.json": {
+      "sha256": "1383d8f8dc7034153abe84f99a4aeaa0464f1248fc3827e8fc551612e38eefe1",
+      "module_count": 150
+    },
+    "wheel-process-imports-79148.json": {
+      "sha256": "e7d4aa8314813c1a2612c354609812d94cd9f24803625c3eacfd30d07e2bc845",
+      "module_count": 150
+    },
+    "wheel-process-imports-79254.json": {
+      "sha256": "0ff83f5dbc1f7743d40e2f84f8e604f325ec28d71735d1561221a6029422b438",
+      "module_count": 148
+    }
+  },
+  "native_receipt_and_wire_hashes_verified": true,
+  "native_summary_sha256": "09db26ba20730ef71d0e90594cb5619eda7bb8156298f990eb1a19bcaa370630",
+  "rust_replay_private_sha256": "55bebd5d6e152c7470d0c9ff5cca6331151e8821486ef22f34e0904c45eec104",
+  "rust_replay_helper_sha256": "bba3b238a1f9ff27295d4a07da06fddd8a5310612f2fa6a6aa2e7d26845e9024",
+  "rust_current_source_fingerprints": {
+    "cgate-mock": {
+      "count": 161,
+      "sha256": "c728e7679e2afcac3b430029bb70645665d8ab16be55631f6b8cc1f328cd3c20"
+    },
+    "cmqttd": {
+      "count": 181,
+      "sha256": "a5b7166bf036863fc85abca50dcba4c4203481b75cbe04c6c2351fa90b4347c5"
+    }
+  },
+  "fresh_retained_original_replay_receipt_sha256": {
+    "cgate-session-differential-fixed.json": "1105dd878f9981e56210bb1c8aa3aea664336e363433dfbae6409ead6175b986",
+    "cgate-session-differential-cmqttd.json": "c51011055a39d0c9d67cbf158953117f810ae2e497cf3f5f0fcb05ae2476324d",
+    "cgate-tagged-session-differential-cgate-mock.json": "13696a2cfa3c33b280f3969a8d522c4b7d7ee40cfd344890e93e4513062a9382",
+    "cgate-tagged-session-differential-cmqttd.json": "5fad04b369b8789a425254c5985acabc9f6bb2ede0edef982856ce3feb75bf3c",
+    "cgate-dbsetxml-unit-differential-mock.json": "3a983400058f2fb467eebf2ea52f57e4d190a8daa56086822ba4cd2769f3b380",
+    "cgate-dbsetxml-unit-differential-cmqttd.json": "cb825217d58bff218c7c5ad63fb0ad852e93fbaf63fde5914145d85cc777fd6b"
+  },
+  "scope": "Independent root audit of retained raw results, exact source/wheel bytes and import origins; no new native or hardware execution."
+}

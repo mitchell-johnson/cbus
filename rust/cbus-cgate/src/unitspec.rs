@@ -7,7 +7,7 @@
 //! numeric validation, and the 128-file / 8MiB caps. A file this reader
 //! rejects yields no spec, and callers fall back to spec-free behavior.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 /// Authenticated copyright preamble some decrypted signed specs carry
@@ -42,6 +42,8 @@ pub struct CatalogEntry {
     pub is_default: bool,
     /// Implementing C-Gate class (`ClassName`), empty when absent.
     pub class_name: String,
+    /// Declared Unit output count; absent metadata stays absent.
+    pub output_count: Option<usize>,
 }
 
 /// Bounded, validated catalogue document plus the fields PP queries expose.
@@ -162,6 +164,18 @@ pub fn load_catalog(dir: &Path) -> Result<Catalog, String> {
                 unit_spec_name: child_text(revision, "UnitSpecName"),
                 is_default: child_text(revision, "IsDefault").eq_ignore_ascii_case("true"),
                 class_name: child_text(revision, "ClassName"),
+                output_count: {
+                    let count = child_text(unit, "OutputCount");
+                    if count.is_empty() {
+                        None
+                    } else {
+                        Some(
+                            count
+                                .parse::<usize>()
+                                .map_err(|_| "Invalid catalogue OutputCount")?,
+                        )
+                    }
+                },
             });
         }
     }
@@ -344,6 +358,201 @@ impl SpecParam {
             self.fields.push((tag, value));
         }
     }
+}
+
+/// Validate database PP strings before replacing a programming session.
+///
+/// This validation stage parses numeric arrays without encoding native session
+/// memory. It retains accepted strings, including short arrays and text spelling,
+/// except for declared range resets and absent values with declared defaults.
+/// Native GET/SAVE formatting, bit masking and missing-byte behavior require a
+/// separate memory model and are not established by this helper.
+pub fn database_pp_values(
+    spec: &[SpecParam],
+    stored: &BTreeMap<String, String>,
+) -> Result<BTreeMap<String, String>, String> {
+    database_pp_values_with_warnings(spec, stored).map(|(values, _)| values)
+}
+
+/// Also retain native range-reset advisories, in specification order.
+pub fn database_pp_values_with_warnings(
+    spec: &[SpecParam],
+    stored: &BTreeMap<String, String>,
+) -> Result<(BTreeMap<String, String>, Vec<String>), String> {
+    let mut result = BTreeMap::new();
+    let mut warnings = Vec::new();
+    for param in spec {
+        if let Some(value) = stored
+            .get(&param.name)
+            .map(String::as_str)
+            .or_else(|| param.get("DefaultValue"))
+        {
+            let kind = param.get("Type").unwrap_or("").trim().to_ascii_lowercase();
+            let original = value;
+            let value = database_range_value(param, original, &kind)?;
+            if value != original {
+                let (min, max) = if kind == "bit" {
+                    ("0", "1")
+                } else {
+                    (
+                        param.get("MinValue").unwrap_or(""),
+                        param.get("MaxValue").unwrap_or(""),
+                    )
+                };
+                warnings.push(format!(
+                    "Parameter '{}' value '{}' was reset to default value '{}' as it is out of range '{}' to '{}'",
+                    param.name, original, value, min, max
+                ));
+            }
+            let count = field_usize(param, "ArraySize", "1")?;
+            if count == 0 {
+                return Err(format!("Invalid ArraySize for {}", param.name));
+            }
+            if matches!(kind.as_str(), "int" | "long" | "bit") {
+                let tokens = value
+                    .split([' ', '\t', '\n', '\r', '\u{000c}'])
+                    .filter(|token| !token.is_empty())
+                    .collect::<Vec<_>>();
+                if tokens
+                    .iter()
+                    .take(count)
+                    .any(|token| !database_number(token, &kind))
+                {
+                    return Err(format!("Unable to load parameter {}", param.name));
+                }
+            } else if kind == "string" {
+                if value
+                    .trim_matches(|character| character <= '\u{0020}')
+                    .encode_utf16()
+                    .count()
+                    > count
+                {
+                    return Err(format!("Value too long for parameter {}", param.name));
+                }
+            } else if kind == "sixbit" {
+                let text = value
+                    .trim_matches(|character| character <= '\u{0020}')
+                    .to_uppercase();
+                if text.encode_utf16().count() > 8
+                    || text
+                        .chars()
+                        .any(|character| !(32..=96).contains(&u32::from(character)))
+                {
+                    return Err(format!("Invalid sixbit value for parameter {}", param.name));
+                }
+            } else {
+                return Err(format!("Unknown type for parameter {}", param.name));
+            }
+            result.insert(param.name.clone(), value.to_string());
+        }
+    }
+    Ok((result, warnings))
+}
+
+fn java_decode(raw: &str, kind: &str) -> Option<i64> {
+    let (sign, text) = if let Some(rest) = raw.strip_prefix('-') {
+        (-1i128, rest)
+    } else {
+        (1, raw.strip_prefix('+').unwrap_or(raw))
+    };
+    let (radix, digits) = if let Some(rest) = text
+        .strip_prefix("0x")
+        .or_else(|| text.strip_prefix("0X"))
+        .or_else(|| text.strip_prefix('#'))
+    {
+        (16, rest)
+    } else if text.len() > 1 && text.starts_with('0') {
+        (8, &text[1..])
+    } else {
+        (10, text)
+    };
+    if digits.is_empty() || digits.starts_with(['+', '-']) {
+        return None;
+    }
+    let parsed = i128::from_str_radix(digits, radix)
+        .ok()?
+        .checked_mul(sign)?;
+    let parsed = i64::try_from(parsed).ok()?;
+    if kind != "long" && i32::try_from(parsed).is_err() {
+        return None;
+    }
+    Some(parsed)
+}
+
+fn database_range_value<'a>(
+    param: &'a SpecParam,
+    value: &'a str,
+    kind: &str,
+) -> Result<&'a str, String> {
+    let bounds = if kind == "bit" {
+        Some((0, 1))
+    } else if matches!(kind, "int" | "long") {
+        param
+            .get("MinValue")
+            .zip(param.get("MaxValue"))
+            .and_then(|(min, max)| {
+                Some((
+                    java_decode(&min.replace('$', "0x"), kind)?,
+                    java_decode(&max.replace('$', "0x"), kind)?,
+                ))
+            })
+    } else {
+        None
+    };
+    if let Some((min, max)) = bounds {
+        let tokens = value
+            .trim_matches(|character| character <= '\u{0020}')
+            .split(' ');
+        // lp.java 1918–1926 stops the bit range pass at its first invalid
+        // value. A later malformed token therefore cannot cancel that reset.
+        // Int/long scan every token; any decode failure cancels their pass.
+        let outside = if kind == "bit" {
+            let mut outside = false;
+            for token in tokens {
+                let Some(number) = java_decode(&token.replace('$', "0x"), kind) else {
+                    break;
+                };
+                if number < min || number > max {
+                    outside = true;
+                    break;
+                }
+            }
+            outside
+        } else {
+            tokens
+                .map(|token| java_decode(&token.replace('$', "0x"), kind))
+                .collect::<Option<Vec<_>>>()
+                .is_some_and(|values| values.iter().any(|number| *number < min || *number > max))
+        };
+        if outside {
+            return param
+                .get("DefaultValue")
+                .ok_or_else(|| format!("Setting null value in param {}", param.name));
+        }
+    }
+    Ok(value)
+}
+
+fn database_number(token: &str, kind: &str) -> bool {
+    let lower = token.to_ascii_lowercase();
+    let (radix, digits) = if let Some(rest) = lower.strip_prefix("0x") {
+        (16, rest)
+    } else if let Some(rest) = lower.strip_prefix("0b") {
+        (2, rest)
+    } else if let Some(rest) = lower.strip_prefix('$') {
+        (16, rest)
+    } else {
+        (10, lower.as_str())
+    };
+    let unsigned = digits.strip_prefix(['+', '-']).unwrap_or(digits);
+    if unsigned.is_empty()
+        || !unsigned
+            .chars()
+            .all(|character| character.is_ascii() && character.is_digit(radix))
+    {
+        return false;
+    }
+    kind == "long" || i32::from_str_radix(digits, radix).is_ok()
 }
 
 /// Parse an integer in the specification grammar: optional sign, then
@@ -1184,6 +1393,139 @@ mod tests {
             fields: values.clone(),
             tags: Vec::new(),
             document_fields: values,
+        }
+    }
+
+    #[test]
+    fn database_load_preserves_raw_values_and_declared_defaults() {
+        let spec = vec![
+            param("Array", "int", &[("ArraySize", "2"), ("MinValue", "10")]),
+            param("Absent", "int", &[("DefaultValue", "7")]),
+            param("Undeclared", "string", &[]),
+        ];
+        let stored = BTreeMap::from([("Array".to_string(), "01  0XFF".to_string())]);
+        let loaded = database_pp_values(&spec, &stored).unwrap();
+        assert_eq!(loaded["Array"], "01  0XFF");
+        assert_eq!(loaded["Absent"], "7");
+        assert!(!loaded.contains_key("Undeclared"));
+        assert_eq!(stored.len(), 1);
+    }
+
+    #[test]
+    fn database_load_rejects_unparseable_consumed_conversion_tokens() {
+        let spec = vec![param("LogicFunction", "int", &[("ArraySize", "2")])];
+        for value in ["0x 0", "1.5 0", "2147483648 0", "-0x1 0", "0b2 0"] {
+            let stored = BTreeMap::from([("LogicFunction".to_string(), value.to_string())]);
+            assert!(database_pp_values(&spec, &stored)
+                .unwrap_err()
+                .contains("LogicFunction"));
+            assert_eq!(stored["LogicFunction"], value);
+        }
+    }
+
+    #[test]
+    fn database_numeric_parser_matches_java_prefix_sign_and_overflow_rules() {
+        for value in ["-1", "+1", "$FF", "0B101", "0x-1", "0x+1", "-2147483648"] {
+            assert!(database_number(value, "int"), "{value}");
+        }
+        assert!(!database_number("0xFFFFFFFF", "int"));
+        assert!(database_number("999999999999999999999999999999", "long"));
+    }
+
+    #[test]
+    fn database_range_reset_changes_session_only_and_validates_default() {
+        let spec = vec![param(
+            "Value",
+            "int",
+            &[("MinValue", "1"), ("MaxValue", "10"), ("DefaultValue", "3")],
+        )];
+        let stored = BTreeMap::from([("Value".to_string(), "11".to_string())]);
+        assert_eq!(database_pp_values(&spec, &stored).unwrap()["Value"], "3");
+        assert_eq!(stored["Value"], "11");
+        let invalid = vec![param("Value", "int", &[("DefaultValue", "broken")])];
+        assert!(database_pp_values(&invalid, &BTreeMap::new()).is_err());
+    }
+
+    #[test]
+    fn database_load_retains_native_range_reset_warning() {
+        let spec = vec![param(
+            "Application",
+            "int",
+            &[
+                ("ArraySize", "2"),
+                ("MinValue", "$00"),
+                ("MaxValue", "$FF"),
+                ("DefaultValue", "$38 $FF"),
+            ],
+        )];
+        let stored = BTreeMap::from([("Application".to_string(), "-1 0".to_string())]);
+        let (loaded, warnings) = database_pp_values_with_warnings(&spec, &stored).unwrap();
+        assert_eq!(loaded["Application"], "$38 $FF");
+        assert_eq!(stored["Application"], "-1 0");
+        assert_eq!(warnings, vec!["Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"]);
+        let valid = BTreeMap::from([("Application".to_string(), "1 2".to_string())]);
+        assert!(database_pp_values_with_warnings(&spec, &valid)
+            .unwrap()
+            .1
+            .is_empty());
+    }
+
+    #[test]
+    fn database_load_keeps_short_arrays_and_ignores_unconsumed_tokens() {
+        let spec = vec![param("Array", "int", &[("ArraySize", "2")])];
+        for value in ["", "1", "1 2 bad"] {
+            let stored = BTreeMap::from([("Array".to_string(), value.to_string())]);
+            assert_eq!(database_pp_values(&spec, &stored).unwrap()["Array"], value);
+        }
+    }
+
+    #[test]
+    fn database_bit_range_stops_before_later_malformed_tokens() {
+        let spec = vec![param(
+            "Bits",
+            "bit",
+            &[("ArraySize", "2"), ("DefaultValue", "0 0")],
+        )];
+        let stored = BTreeMap::from([("Bits".to_string(), "2 bad".to_string())]);
+        assert_eq!(database_pp_values(&spec, &stored).unwrap()["Bits"], "0 0");
+        for value in ["1 bad", "bad 2"] {
+            let stored = BTreeMap::from([("Bits".to_string(), value.to_string())]);
+            assert!(database_pp_values(&spec, &stored).is_err());
+        }
+        for kind in ["int", "long"] {
+            let spec = vec![param(
+                "Numbers",
+                kind,
+                &[
+                    ("ArraySize", "2"),
+                    ("MinValue", "0"),
+                    ("MaxValue", "1"),
+                    ("DefaultValue", "0 0"),
+                ],
+            )];
+            let stored = BTreeMap::from([("Numbers".to_string(), "2 bad".to_string())]);
+            assert!(database_pp_values(&spec, &stored).is_err());
+        }
+    }
+
+    #[test]
+    fn database_load_matches_exact_names_and_native_text_boundaries() {
+        let spec = vec![
+            param("Text", "string", &[("ArraySize", "2")]),
+            param("Label", "sixbit", &[("ArraySize", "8")]),
+        ];
+        let stored = BTreeMap::from([
+            ("Text".to_string(), "  AB  ".to_string()),
+            ("Label".to_string(), "lower".to_string()),
+            ("text".to_string(), "unrelated case".to_string()),
+        ]);
+        let loaded = database_pp_values(&spec, &stored).unwrap();
+        assert_eq!(loaded["Text"], "  AB  ");
+        assert_eq!(loaded["Label"], "lower");
+        assert!(!loaded.contains_key("text"));
+        for (name, value) in [("Text", "ABC"), ("Label", "123456789"), ("Label", "~")] {
+            let invalid = BTreeMap::from([(name.to_string(), value.to_string())]);
+            assert!(database_pp_values(&spec, &invalid).is_err());
         }
     }
 

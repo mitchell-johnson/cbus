@@ -1,0 +1,12 @@
+{
+  "format": "cbus-convertunit-synthetic-database-v1",
+  "evidence": "Synthetic specification and mapping-table interaction case; channel labels/counts follow retained native conversion facts. It is not an original full-wire capture.",
+  "pp_order": ["Ch1GroupAddress", "Keep", "ToggleDisable", "UnitName", "UnitType"],
+  "pp_unit_type": "0xff 0xff",
+  "channels": [
+    {"Address": "1", "TagName": "Channel1"},
+    {"Address": "2", "TagName": "Channel2"},
+    {"Address": "3", "TagName": "Channel3"},
+    {"Address": "4", "TagName": "Channel4"}
+  ]
+}

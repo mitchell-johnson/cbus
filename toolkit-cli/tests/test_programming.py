@@ -66,6 +66,43 @@ class ProgrammingTest(unittest.TestCase):
             self.session().open()
         self.assertEqual(self.client.commands, ["PROJECT USE CLI_TEST", "PP LOCK CLI_TEST_LOCK //CLI_TEST/254"])
 
+    def test_load_range_reset_advisory_retains_reply_and_cleans_up(self):
+        warning = "462-Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"
+        reply = Reply((warning, "200 OK."))
+        self.client.responses["PP LOAD CLI_TEST_SESSION /db//CLI_TEST/254/p/20"] = reply
+        with self.session() as session:
+            self.assertIs(session.load("/db//CLI_TEST/254/p/20"), reply)
+            self.assertEqual(session.source, "/db//CLI_TEST/254/p/20")
+            self.assertEqual(session.unit_type, "KEY4")
+            self.assertEqual(reply.lines[0], warning)
+        self.assertEqual(self.client.commands[-2:], ["PP END CLI_TEST_SESSION", "PP UNLOCK CLI_TEST_LOCK"])
+
+    def test_load_range_advisory_does_not_mask_errors(self):
+        warning = "462-Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"
+        for reply in [
+            Reply((warning.replace("462-", "462 "),), 462),
+            Reply((warning.replace("462-", "462 "), "200 OK.")),
+            Reply((warning, "408 Operation failed"), 408),
+            Reply((warning, "460-Bad parameter", "200 OK.")),
+            Reply((warning, "462-Unrelated error", "200 OK.")),
+            Reply(("462-Parameter reset to default", "200 OK.")),
+        ]:
+            with self.subTest(reply=reply):
+                self.client.responses["PP LOAD CLI_TEST_SESSION /db//CLI_TEST/254/p/20"] = reply
+                with self.assertRaises(ProgrammingCommandError) as captured:
+                    with self.programmer.load("//CLI_TEST/254", "/db//CLI_TEST/254/p/20", name="CLI_TEST_SESSION", lock_name="CLI_TEST_LOCK"):
+                        self.fail("LOAD should fail")
+                self.assertIs(captured.exception.reply, reply)
+                self.assertEqual(self.client.commands[-2:], ["PP END CLI_TEST_SESSION", "PP UNLOCK CLI_TEST_LOCK"])
+
+    def test_range_reset_advisory_on_other_commands_is_fatal(self):
+        reply = Reply(("462-Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'", "200 OK."))
+        for command in ["PP LOAD_FROM_FILE S KEY4.xml", "PP SET S Application -1", "DBGET //CLI_TEST/254/p/20"]:
+            with self.subTest(command=command):
+                self.client.responses[command] = reply
+                with self.assertRaises(ProgrammingCommandError):
+                    self.programmer._run(command)
+
     def test_failed_start_unlocks_successfully_acquired_lock(self):
         self.client.failures["PP START CLI_TEST_SESSION CLI_TEST_LOCK"] = RuntimeError("start failed")
         with self.assertRaises(RuntimeError):

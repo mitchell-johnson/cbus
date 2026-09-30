@@ -2730,7 +2730,7 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         "51000000-0000-4000-8000-000000000001</OID><TagName>New unit",
         &format!("{external_unit_oid}</OID><TagName>New unit"),
     );
-    let ambiguous_pp = replacement.replace(
+    let independent_pp = replacement.replace(
         "<PP Name=\"UnitAddress\" Value=\"0x15\"/>",
         "<PP Name=\"OID\" Value=\"shadow\"/>",
     );
@@ -2739,7 +2739,6 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         ("duplicate-address", duplicate_address),
         ("project-collision", project_collision),
         ("cross-network-unit-oid", cross_network_unit_oid),
-        ("ambiguous-pp", ambiguous_pp),
         ("incomplete", incomplete),
     ] {
         let response = server.handle_document(&format!("[{tag}] DBSETXML //MIXED/254"), &invalid);
@@ -2750,6 +2749,14 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
             "{tag} mutated the complete tree"
         );
     }
+    // Native accepts PP/OID independently of scalar object identity.
+    let accepted_pp = server.handle_document("[pp-oid] DBSETXML //MIXED/254", &independent_pp);
+    assert_eq!(accepted_pp.status, 301, "{accepted_pp:?}");
+    let pp_xml = server.handle("[pp-oid-read] DBGETXML //MIXED/254").lines[0].clone();
+    assert!(
+        pp_xml.contains("<PP Name=\"OID\" Value=\"shadow\"/>"),
+        "{pp_xml}"
+    );
     let accepted_duplicate =
         server.handle_document("[duplicate-oid] DBSETXML //MIXED/254", &duplicate_oid);
     assert_eq!(accepted_duplicate.status, 301, "{accepted_duplicate:?}");

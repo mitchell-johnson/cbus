@@ -36,6 +36,8 @@ pub mod manual;
 mod native_archive;
 mod object_access;
 mod port;
+#[cfg(test)]
+mod pp_namespace_tests;
 pub mod service;
 mod show;
 pub mod unitspec;
@@ -974,6 +976,39 @@ const DB_XML_UNIT_SCALARS: &[&str] = &[
     "GroupNumber",
 ];
 
+/// Retain the scalar OutputChannel shape used by database DIN conversions.
+/// Other channel extensions require independent schema compatibility evidence.
+fn db_xml_output_channel_template(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
+    let names = [
+        "OID",
+        "TagName",
+        "Address",
+        "Description",
+        "LocationCode",
+        "ChannelNameCode",
+    ];
+    let mut fields = BTreeMap::new();
+    for child in node.children().filter(roxmltree::Node::is_element) {
+        if child.tag_name().namespace().is_none() && names.contains(&child.tag_name().name()) {
+            let name = child.tag_name().name();
+            if fields
+                .insert(name, parse_db_xml_scalar(child, "OutputChannel")?)
+                .is_some()
+            {
+                return Err(format!("DBSETXML OutputChannel contains duplicate {name}"));
+            }
+        }
+    }
+    let mut output = "<OutputChannel>".to_string();
+    for name in names {
+        if let Some(value) = fields.get(name) {
+            output.push_str(&format!("<{name}>{}</{name}>", xml_escape(value)));
+        }
+    }
+    output.push_str("</OutputChannel>");
+    Ok(output)
+}
+
 /// A Unit keeps its own XML template because its schema contains the open
 /// ended PP catalogue. Original build 2001 discards comments, processing
 /// instructions, unknown namespaced markup and unknown plain scalar children.
@@ -993,6 +1028,8 @@ fn db_xml_unit_template(node: roxmltree::Node<'_, '_>) -> Result<String, String>
                 xml_escape(name),
                 xml_escape(value)
             ));
+        } else if child.tag_name().name() == "OutputChannel" {
+            output.push_str(&db_xml_output_channel_template(child)?);
         } else if DB_XML_UNIT_SCALARS.contains(&child.tag_name().name()) {
             let name = child.tag_name().name();
             let value = child
@@ -1041,7 +1078,6 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
             if parameter.is_empty()
                 || parameter.len() > 256
                 || parameter.chars().any(char::is_control)
-                || scalars.contains_key(parameter)
                 || !pp_fields.insert(parameter.to_string())
             {
                 return Err(
@@ -1050,6 +1086,10 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
                 );
             }
             pp_values.insert(parameter.to_string(), value.to_string());
+            continue;
+        }
+        if name == "OutputChannel" {
+            db_xml_output_channel_template(child)?;
             continue;
         }
         // The native Unit mapper admits its schema scalars and the open PP
@@ -1069,7 +1109,7 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
                 .filter(roxmltree::Node::is_text)
                 .filter_map(|node| node.text())
                 .collect::<String>();
-            if pp_fields.contains(name) || scalars.insert(name.to_string(), value).is_some() {
+            if scalars.insert(name.to_string(), value).is_some() {
                 return Err(
                     "DBSETXML contains a duplicate or ambiguous scalar Unit field".to_string(),
                 );
@@ -1092,9 +1132,7 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
         if standard && child.attributes().len() != 0 {
             return Err("DBSETXML scalar Unit fields do not accept attributes".to_string());
         }
-        if child.attributes().len() == 0
-            && (pp_fields.contains(name) || scalars.insert(name.to_string(), value).is_some())
-        {
+        if child.attributes().len() == 0 && scalars.insert(name.to_string(), value).is_some() {
             return Err("DBSETXML contains a duplicate or ambiguous scalar Unit field".to_string());
         }
     }
@@ -1132,12 +1170,18 @@ fn parse_db_xml_unit(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlUnit, S
 
     scalars.remove("OID");
     scalars.remove("Address");
-    scalars.extend(pp_values);
+    // Keep programming values independent of identically named metadata.
+    for (name, value) in &pp_values {
+        if !DB_XML_UNIT_SCALARS.contains(&name.as_str()) {
+            scalars.insert(name.clone(), value.clone());
+        }
+    }
     Ok(ParsedDbXmlUnit {
         oid,
         address,
         fields: scalars,
         pp_fields,
+        pp_values: pp_values.into_iter().collect(),
         document,
     })
 }
@@ -2199,6 +2243,7 @@ struct ParsedDbXmlUnit {
     address: u8,
     fields: HashMap<String, String>,
     pp_fields: BTreeSet<String>,
+    pp_values: BTreeMap<String, String>,
     document: String,
 }
 
@@ -2255,6 +2300,8 @@ pub struct DbPendingObject {
 pub struct ProjectTables {
     unit_documents: HashMap<String, String>,
     unit_pp_fields: HashMap<String, BTreeSet<String>>,
+    #[serde(default)]
+    unit_pp_values: HashMap<String, BTreeMap<String, String>>,
     db_xml_extras: HashMap<String, DbXmlExtras>,
     db_fields: HashMap<String, String>,
     objects: BTreeSet<String>,
@@ -2313,6 +2360,7 @@ pub struct Server {
     /// rows in each project-scoped unit document. A deterministic set keeps repository
     /// serialization byte-stable across otherwise unchanged restarts.
     unit_pp_fields: HashMap<String, BTreeSet<String>>,
+    unit_pp_values: HashMap<String, BTreeMap<String, String>>,
     /// Whether configured-project DLT tags were imported without an
     /// ambiguous pre-existing Group that may have intentionally cleared them.
     saved_project_group_dlt_labels_complete: bool,
@@ -2384,6 +2432,7 @@ pub struct Server {
     database_file_unit_documents: HashMap<String, HashMap<String, String>>,
     /// `<PP>` field ownership stored alongside internal project snapshots.
     database_file_unit_pp_fields: HashMap<String, HashMap<String, BTreeSet<String>>>,
+    database_file_unit_pp_values: HashMap<String, HashMap<String, BTreeMap<String, String>>>,
     /// Namespaced complete-object metadata stored with internal snapshots.
     database_file_db_xml_extras: HashMap<String, HashMap<String, DbXmlExtras>>,
     /// Project-scoped typed-object field rows stored with internal snapshots.
@@ -2445,6 +2494,7 @@ impl Server {
             db_fields: HashMap::new(),
             unit_documents: HashMap::new(),
             unit_pp_fields: HashMap::new(),
+            unit_pp_values: HashMap::new(),
             saved_project_group_dlt_labels_complete: false,
             db_xml_extras: HashMap::new(),
             objects: std::collections::HashSet::new(),
@@ -2471,6 +2521,7 @@ impl Server {
             database_files: HashMap::new(),
             database_file_unit_documents: HashMap::new(),
             database_file_unit_pp_fields: HashMap::new(),
+            database_file_unit_pp_values: HashMap::new(),
             database_file_db_xml_extras: HashMap::new(),
             database_file_db_fields: HashMap::new(),
             database_file_objects: HashMap::new(),
@@ -3287,6 +3338,7 @@ impl Server {
         let addressed = Self::addressed_unit_document_key(project, oid, address);
         if self.unit_documents.contains_key(&addressed)
             || self.unit_pp_fields.contains_key(&addressed)
+            || self.unit_pp_values.contains_key(&addressed)
         {
             addressed
         } else {
@@ -3294,10 +3346,51 @@ impl Server {
         }
     }
 
+    /// Programming values are separate from scalar database identity. Legacy
+    /// named PP rows remain readable; identity values lost by older stores
+    /// cannot be recovered by interpreting their metadata as device bytes.
+    fn stored_unit_pp_values(&self, project: &str, unit: &Unit) -> BTreeMap<String, String> {
+        let key = self.stored_unit_document_key(project, &unit.oid, unit.address);
+        let mut values = BTreeMap::new();
+        if let Some(names) = self.unit_pp_fields.get(&key) {
+            for name in names {
+                if !DB_XML_UNIT_SCALARS.contains(&name.as_str())
+                    && !matches!(name.as_str(), "Type" | "Version")
+                {
+                    if let Some(value) = unit.fields.get(name) {
+                        values.insert(name.clone(), value.clone());
+                    }
+                }
+            }
+        }
+        if let Some(stored) = self.unit_pp_values.get(&key) {
+            values.extend(stored.clone());
+        }
+        values
+    }
+
+    /// Replace one unit's PP namespace without replacing its database scalars.
+    fn replace_unit_pp_values(
+        &mut self,
+        project: &str,
+        oid: &str,
+        address: u8,
+        values: Vec<(String, String)>,
+    ) {
+        let key = self.stored_unit_document_key(project, oid, address);
+        self.unit_pp_fields.insert(
+            key.clone(),
+            values.iter().map(|(name, _)| name.clone()).collect(),
+        );
+        self.unit_pp_values
+            .insert(key, values.into_iter().collect());
+    }
+
     fn remove_unit_document_metadata(&mut self, project: &str, oid: &str, address: u8) {
         let addressed = Self::addressed_unit_document_key(project, oid, address);
         self.unit_documents.remove(&addressed);
         self.unit_pp_fields.remove(&addressed);
+        self.unit_pp_values.remove(&addressed);
         // Older repositories use the OID-only key. Keep it if a surviving
         // Unit with this OID still has no address-keyed metadata.
         let legacy_is_used = self.projects.get(project).is_some_and(|record| {
@@ -3312,12 +3405,14 @@ impl Server {
                     let key = Self::addressed_unit_document_key(project, oid, unit.address);
                     !self.unit_documents.contains_key(&key)
                         && !self.unit_pp_fields.contains_key(&key)
+                        && !self.unit_pp_values.contains_key(&key)
                 })
         });
         if !legacy_is_used {
             let legacy = Self::unit_document_key(project, oid);
             self.unit_documents.remove(&legacy);
             self.unit_pp_fields.remove(&legacy);
+            self.unit_pp_values.remove(&legacy);
         }
     }
 
@@ -3341,6 +3436,15 @@ impl Server {
             })
             .collect::<Vec<_>>();
         self.unit_pp_fields.extend(pp_fields);
+        let pp_values = self
+            .unit_pp_values
+            .iter()
+            .filter_map(|(key, value)| {
+                key.strip_prefix(&prefix)
+                    .map(|oid| (Self::unit_document_key(destination, oid), value.clone()))
+            })
+            .collect::<Vec<_>>();
+        self.unit_pp_values.extend(pp_values);
     }
 
     fn duplicate_db_xml_extras_project(&mut self, source: &str, destination: &str) {
@@ -3384,6 +3488,20 @@ impl Server {
                     .insert(Self::unit_document_key(destination, oid), value);
             }
         }
+
+        let pp_value_keys = self
+            .unit_pp_values
+            .keys()
+            .filter(|key| key.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        for key in pp_value_keys {
+            if let Some(value) = self.unit_pp_values.remove(&key) {
+                let oid = key.strip_prefix(&prefix).expect("matched prefix");
+                self.unit_pp_values
+                    .insert(Self::unit_document_key(destination, oid), value);
+            }
+        }
     }
 
     fn remap_db_xml_extras_project(&mut self, source: &str, destination: &str) {
@@ -3416,6 +3534,8 @@ impl Server {
         self.unit_documents
             .retain(|key, _| !key.starts_with(&unit_prefix));
         self.unit_pp_fields
+            .retain(|key, _| !key.starts_with(&unit_prefix));
+        self.unit_pp_values
             .retain(|key, _| !key.starts_with(&unit_prefix));
         self.db_xml_extras
             .retain(|key, _| !key.starts_with(&unit_prefix));
@@ -3596,6 +3716,11 @@ impl Server {
             .iter()
             .filter_map(|(key, value)| strip(key).map(|oid| (oid, value.clone())))
             .collect();
+        let unit_pp_values = self
+            .unit_pp_values
+            .iter()
+            .filter_map(|(key, value)| strip(key).map(|oid| (oid, value.clone())))
+            .collect();
         let db_xml_extras = self
             .db_xml_extras
             .iter()
@@ -3652,6 +3777,7 @@ impl Server {
         ProjectTables {
             unit_documents,
             unit_pp_fields,
+            unit_pp_values,
             db_xml_extras,
             db_fields,
             objects,
@@ -3668,6 +3794,8 @@ impl Server {
             .insert(archive.clone(), tables.unit_documents);
         self.database_file_unit_pp_fields
             .insert(archive.clone(), tables.unit_pp_fields);
+        self.database_file_unit_pp_values
+            .insert(archive.clone(), tables.unit_pp_values);
         self.database_file_db_xml_extras
             .insert(archive.clone(), tables.db_xml_extras);
         self.database_file_db_fields
@@ -3694,6 +3822,11 @@ impl Server {
                 .unwrap_or_default(),
             unit_pp_fields: self
                 .database_file_unit_pp_fields
+                .get(archive)
+                .cloned()
+                .unwrap_or_default(),
+            unit_pp_values: self
+                .database_file_unit_pp_values
                 .get(archive)
                 .cloned()
                 .unwrap_or_default(),
@@ -3745,6 +3878,12 @@ impl Server {
         self.unit_pp_fields.extend(
             tables
                 .unit_pp_fields
+                .into_iter()
+                .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
+        );
+        self.unit_pp_values.extend(
+            tables
+                .unit_pp_values
                 .into_iter()
                 .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
         );
@@ -5244,13 +5383,14 @@ impl Server {
     /// current state so later DBSET/PP SAVE operations cannot leave it stale.
     fn unit_xml_document(&self, project: &str, unit: &Unit) -> String {
         let document_key = self.stored_unit_document_key(project, &unit.oid, unit.address);
+        let pp_values = self.stored_unit_pp_values(project, unit);
         let pp = self
             .unit_pp_fields
             .get(&document_key)
             .cloned()
             .unwrap_or_default();
         let scalar = |name: &str| -> Option<String> {
-            if pp.contains(name) {
+            if pp.contains(name) && !DB_XML_UNIT_SCALARS.contains(&name) {
                 return None;
             }
             match name {
@@ -5316,10 +5456,13 @@ impl Server {
                 }
                 for name in &pp {
                     if !seen_pp.contains(name) {
+                        let Some(value) = pp_values.get(name) else {
+                            continue;
+                        };
                         output.push_str(&format!(
                             "<PP Name=\"{}\" Value=\"{}\"/>",
                             xml_escape(name),
-                            xml_escape(unit.fields.get(name).map(String::as_str).unwrap_or(""))
+                            xml_escape(value)
                         ));
                     }
                 }
@@ -5346,7 +5489,6 @@ impl Server {
                         "CatalogNumber",
                     ];
                     let plain = root.attributes().len() == 0
-                        && native_scalar.iter().all(|name| !pp.contains(*name))
                         && root.children().all(|child| {
                             if child.is_text() {
                                 return child.text().is_none_or(|text| text.trim().is_empty());
@@ -5390,24 +5532,27 @@ impl Server {
                         let mut seen_pp = BTreeSet::new();
                         for child in root.children().filter(|child| child.has_tag_name("PP")) {
                             if let Some(name) = child.attribute("Name") {
+                                let Some(value) = pp_values.get(name).filter(|_| pp.contains(name))
+                                else {
+                                    continue;
+                                };
                                 output.push_str(&format!(
                                     "<PP Name=\"{}\" Value=\"{}\"/>",
                                     xml_escape(name),
-                                    xml_escape(
-                                        unit.fields.get(name).map(String::as_str).unwrap_or("")
-                                    ),
+                                    xml_escape(value),
                                 ));
                                 seen_pp.insert(name.to_string());
                             }
                         }
                         for name in &pp {
                             if !seen_pp.contains(name) {
+                                let Some(value) = pp_values.get(name) else {
+                                    continue;
+                                };
                                 output.push_str(&format!(
                                     "<PP Name=\"{}\" Value=\"{}\"/>",
                                     xml_escape(name),
-                                    xml_escape(
-                                        unit.fields.get(name).map(String::as_str).unwrap_or("")
-                                    ),
+                                    xml_escape(value),
                                 ));
                             }
                         }
@@ -5458,13 +5603,10 @@ impl Server {
                                     && child.tag_name().name() == "PP"
                                 {
                                     if let Some(name) = child.attribute("Name") {
-                                        if pp.contains(name) {
+                                        if let Some(value) =
+                                            pp_values.get(name).filter(|_| pp.contains(name))
+                                        {
                                             let source = &template[child_range.clone()];
-                                            let value = unit
-                                                .fields
-                                                .get(name)
-                                                .map(String::as_str)
-                                                .unwrap_or("");
                                             output.push_str(
                                                 &xml_replace_opening_attribute(
                                                     source, "Value", value,
@@ -5472,8 +5614,6 @@ impl Server {
                                                 .unwrap_or_else(|| source.to_string()),
                                             );
                                             seen_pp.insert(name.to_string());
-                                        } else {
-                                            output.push_str(&template[child_range.clone()]);
                                         }
                                     } else {
                                         output.push_str(&template[child_range.clone()]);
@@ -7387,6 +7527,7 @@ impl Server {
             Ok(v) => v,
             Err(r) => return r,
         };
+        let mut warnings = Vec::new();
         session.source = Some(words[3].to_string());
         session.params.clear();
         session.dirty.clear();
@@ -7426,10 +7567,14 @@ impl Server {
                 .fields
                 .iter()
                 .filter(|(k, _)| {
-                    !matches!(k.as_str(), "UnitType" | "FirmwareVersion" | "CatalogNumber")
+                    !DB_XML_UNIT_SCALARS.contains(&k.as_str())
+                        && !matches!(k.as_str(), "Type" | "Version")
                 })
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect();
+            session
+                .params
+                .extend(self.stored_unit_pp_values(&proj_name, &unit));
             if session.unit_type.is_none() || session.firmware.is_none() {
                 // Match the client's own guard with a clear server-side
                 // error: identity-free records cannot seed a session.
@@ -7446,21 +7591,33 @@ impl Server {
             // is not invented).
             if let Some(unit_type) = session.unit_type.clone() {
                 if let Some(spec) = self.spec_for(&unit_type) {
-                    for param in &spec {
-                        if let Some(default) = param.get("DefaultValue") {
-                            session
-                                .params
-                                .entry(param.name.clone())
-                                .or_insert_with(|| default.to_string());
-                        }
-                    }
+                    let stored = session
+                        .params
+                        .iter()
+                        .map(|(name, value)| (name.clone(), value.clone()))
+                        .collect();
+                    session.params =
+                        match unitspec::database_pp_values_with_warnings(&spec, &stored) {
+                            Ok((values, advisories)) => {
+                                warnings = advisories;
+                                values.into_iter().collect()
+                            }
+                            Err(message) => {
+                                return err(tag, status::CONFLICT_STATE, &format!("408 {message}"))
+                            }
+                        };
                     session.raw = Self::pp_default_raw(&spec, &session.params);
                     session.raw_unit = session.raw.clone();
                     session.raw_changed.clear();
                 }
             }
         }
-        self.pp_store(tag, session)
+        let mut response = self.pp_store(tag, session);
+        response.lines = warnings
+            .into_iter()
+            .map(|message| format!("462-{message}"))
+            .collect();
+        response
     }
 
     /// Native `PP LOAD_FROM_FILE name filename`, restricted to the configured
@@ -7523,24 +7680,6 @@ impl Server {
     /// scans until then (this asymmetry with the mirroring `DBSETSAFE`
     /// path is intentional, not a missing sync).
     fn pp_persist(&mut self, session: &PpSession) -> Result<(), Response> {
-        // C-Bus 3 specifications declare a `UnitType` parameter. It is device
-        // memory, not the database identity, so never let it rename the unit.
-        let identity_params = session
-            .unit_type
-            .clone()
-            .and_then(|unit_type| self.spec_for(&unit_type))
-            .map(|spec| {
-                spec.into_iter()
-                    .map(|param| param.name)
-                    .filter(|name| {
-                        matches!(
-                            name.as_str(),
-                            "UnitType" | "Type" | "FirmwareVersion" | "Version" | "CatalogNumber"
-                        )
-                    })
-                    .collect::<HashSet<_>>()
-            })
-            .unwrap_or_default();
         let empty = String::new();
         let dest = session.source.as_ref().unwrap_or(&empty);
         let path = dest.strip_prefix("/db").unwrap_or(dest);
@@ -7552,6 +7691,86 @@ impl Server {
         let Some((proj_name, net, addr)) = self.unit_of(&path) else {
             return Err(err("", status::NOT_FOUND, "404 Unit not found"));
         };
+        let Some(existing) = self
+            .projects
+            .get(&proj_name)
+            .and_then(|project| project.networks.get(&net))
+            .and_then(|network| network.units.get(&addr))
+            .cloned()
+        else {
+            return Err(err("", status::NOT_FOUND, "404 Unit not found"));
+        };
+        let document_key = self.stored_unit_document_key(&proj_name, &existing.oid, addr);
+        let spec = session
+            .unit_type
+            .as_deref()
+            .and_then(|name| self.spec_for(name));
+        // Native SAVE replaces the complete parameter list in specification
+        // order. Without a specification retain the staged namespace in a
+        // deterministic order; no byte-memory normalization is implied.
+        let pp_values: Vec<_> = if let Some(spec) = spec {
+            spec.into_iter()
+                .filter_map(|param| {
+                    session
+                        .params
+                        .get(&param.name)
+                        .map(|value| (param.name, value.clone()))
+                })
+                .collect()
+        } else {
+            let mut values = session
+                .params
+                .iter()
+                .map(|(name, value)| (name.clone(), value.clone()))
+                .collect::<Vec<_>>();
+            values.sort_by(|left, right| left.0.cmp(&right.0));
+            values
+        };
+        let old_names = self
+            .unit_pp_fields
+            .get(&document_key)
+            .cloned()
+            .unwrap_or_default();
+        let old_document = self.unit_xml_document(&proj_name, &existing);
+        let pp_xml = pp_values
+            .iter()
+            .map(|(name, value)| {
+                format!(
+                    "<PP Name=\"{}\" Value=\"{}\"/>",
+                    xml_escape(name),
+                    xml_escape(value)
+                )
+            })
+            .collect::<String>();
+        // Replace only the PP children, preserving scalar and channel metadata.
+        let document = roxmltree::Document::parse(&old_document).expect("generated Unit XML");
+        let root = document.root_element();
+        let mut replacement = String::new();
+        let mut cursor = 0;
+        let mut inserted = false;
+        for child in root.children().filter(|child| {
+            child.is_element()
+                && child.tag_name().namespace().is_none()
+                && child.tag_name().name() == "PP"
+        }) {
+            let range = child.range();
+            replacement.push_str(&old_document[cursor..range.start]);
+            if !inserted {
+                replacement.push_str(&pp_xml);
+                inserted = true;
+            }
+            cursor = range.end;
+        }
+        if inserted {
+            replacement.push_str(&old_document[cursor..]);
+        } else {
+            let close = old_document
+                .rfind("</Unit>")
+                .expect("generated Unit closing tag");
+            replacement.push_str(&old_document[..close]);
+            replacement.push_str(&pp_xml);
+            replacement.push_str(&old_document[close..]);
+        }
         let Some(unit) = self
             .projects
             .get_mut(&proj_name)
@@ -7560,37 +7779,26 @@ impl Server {
         else {
             return Err(err("", status::NOT_FOUND, "404 Unit not found"));
         };
-        for (key, value) in session
-            .params
-            .iter()
-            .filter(|(key, _)| !identity_params.contains(*key))
-        {
-            unit.fields.insert(key.clone(), value.clone());
-            // Keep the dedicated struct fields in step with the map so
-            // direct struct readers never diverge from field reads.
-            match key.as_str() {
-                "UnitType" | "Type" => unit.unit_type = value.clone(),
-                "FirmwareVersion" | "Version" => unit.firmware = value.clone(),
-                // Same SYNC-ownership rule as DBSETSAFE: an explicit persist
-                // supersedes any stored multiplicity evidence.
-                "SerialNumber" => {
-                    unit.serial = value.clone();
-                    unit.serial_alternates.clear();
-                }
-                _ => {}
-            }
+        for name in old_names.iter().filter(|name| {
+            !DB_XML_UNIT_SCALARS.contains(&name.as_str())
+                && !matches!(name.as_str(), "Type" | "Version")
+        }) {
+            unit.fields.remove(name);
             self.db_fields
-                .insert(format!("{path}/{key}"), value.clone());
+                .remove(&format!("//{proj_name}/{net}/p/{addr}/{name}"));
+        }
+        for (key, value) in pp_values.iter().filter(|(key, _)| {
+            !DB_XML_UNIT_SCALARS.contains(&key.as_str())
+                && !matches!(key.as_str(), "Type" | "Version")
+        }) {
+            unit.fields.insert(key.clone(), value.clone());
+            self.db_fields
+                .insert(format!("//{proj_name}/{net}/p/{addr}/{key}"), value.clone());
         }
         let oid = unit.oid.clone();
-        let metadata_key = self.stored_unit_document_key(&proj_name, &oid, addr);
-        self.unit_pp_fields.entry(metadata_key).or_default().extend(
-            session
-                .params
-                .keys()
-                .filter(|key| !identity_params.contains(*key))
-                .cloned(),
-        );
+        let key = self.stored_unit_document_key(&proj_name, &oid, addr);
+        self.replace_unit_pp_values(&proj_name, &oid, addr, pp_values);
+        self.unit_documents.insert(key, replacement);
         Ok(())
     }
 
@@ -7888,15 +8096,21 @@ impl Server {
         else {
             return err(tag, status::ABSENT, "401 Unit not found");
         };
+        let pp_values = self.stored_unit_pp_values(&proj_name, unit);
         let wanted = words.get(3).copied().unwrap_or("*");
         if wanted == "*" {
-            let mut names: Vec<&String> = unit.fields.keys().collect();
+            let mut values = unit.fields.clone();
+            values.extend(pp_values);
+            let mut names: Vec<&String> = values.keys().collect();
             names.sort();
             let lines = names
                 .into_iter()
-                .map(|k| format!("{k}={}", unit.fields[k]))
+                .map(|k| format!("{k}={}", values[k]))
                 .collect();
             return parameter_reply(tag, lines);
+        }
+        if let Some(value) = pp_values.get(wanted) {
+            return parameter_reply(tag, vec![format!("{wanted}={value}")]);
         }
         // Same fallback as database reads so both paths agree.
         let value = unit.field(wanted);
@@ -8531,7 +8745,9 @@ impl Server {
         self.unit_documents
             .insert(document_key.clone(), parsed_unit.document);
         self.unit_pp_fields
-            .insert(document_key, parsed_unit.pp_fields);
+            .insert(document_key.clone(), parsed_unit.pp_fields);
+        self.unit_pp_values
+            .insert(document_key, parsed_unit.pp_values);
 
         let old_prefix = format!("//{project_name}/{network_address}/p/{old_address}");
         let new_prefix = format!("//{project_name}/{network_address}/p/{new_address}");
@@ -9290,7 +9506,9 @@ impl Server {
             self.unit_documents
                 .insert(document_key.clone(), unit.document.clone());
             self.unit_pp_fields
-                .insert(document_key, unit.pp_fields.clone());
+                .insert(document_key.clone(), unit.pp_fields.clone());
+            self.unit_pp_values
+                .insert(document_key, unit.pp_values.clone());
         }
         let repeated_app_oid = object.children.iter().any(|child| {
             child.kind == DbXmlKind::Application
@@ -9459,6 +9677,7 @@ impl Server {
                     self.stored_unit_document_key(&proj_name, &unit.oid, source_address);
                 let source_document = self.unit_documents.get(&source_key).cloned();
                 let source_pp_fields = self.unit_pp_fields.get(&source_key).cloned();
+                let source_pp_values = self.unit_pp_values.get(&source_key).cloned();
                 let address = addr as u8;
                 if self.projects[&proj_name].networks[&net]
                     .units
@@ -9494,7 +9713,11 @@ impl Server {
                         .insert(destination_key.clone(), document);
                 }
                 if let Some(pp_fields) = source_pp_fields {
-                    self.unit_pp_fields.insert(destination_key, pp_fields);
+                    self.unit_pp_fields
+                        .insert(destination_key.clone(), pp_fields);
+                }
+                if let Some(pp_values) = source_pp_values {
+                    self.unit_pp_values.insert(destination_key, pp_values);
                 }
                 self.objects.insert(format!("{}-unit-{address}", words[2]));
                 return Response {
@@ -9555,6 +9778,7 @@ impl Server {
                 let source_key = self.stored_unit_document_key(&proj_name, &unit.oid, src_addr);
                 let source_document = self.unit_documents.get(&source_key).cloned();
                 let source_pp_fields = self.unit_pp_fields.get(&source_key).cloned();
+                let source_pp_values = self.unit_pp_values.get(&source_key).cloned();
                 let addr = addr as u8;
                 let proj = self.projects.get_mut(&proj_name).expect("network resolved");
                 let network = proj.networks.get_mut(&net).expect("network resolved");
@@ -9579,7 +9803,11 @@ impl Server {
                         .insert(destination_key.clone(), document);
                 }
                 if let Some(pp_fields) = source_pp_fields {
-                    self.unit_pp_fields.insert(destination_key, pp_fields);
+                    self.unit_pp_fields
+                        .insert(destination_key.clone(), pp_fields);
+                }
+                if let Some(pp_values) = source_pp_values {
+                    self.unit_pp_values.insert(destination_key, pp_values);
                 }
                 self.objects.insert(format!("{}-unit-{addr}", words[2]));
                 return ok(tag, vec![], "200 OK");
@@ -10763,7 +10991,21 @@ impl Server {
                     unit.address = destination;
                     unit.fields
                         .insert("Address".to_string(), destination.to_string());
+                    let moved_oid = unit.oid.clone();
                     network.units.insert(destination, unit);
+                    let old_key =
+                        Self::addressed_unit_document_key(&current, &moved_oid, unit_address);
+                    let new_key =
+                        Self::addressed_unit_document_key(&current, &moved_oid, destination);
+                    if let Some(value) = self.unit_documents.remove(&old_key) {
+                        self.unit_documents.insert(new_key.clone(), value);
+                    }
+                    if let Some(value) = self.unit_pp_fields.remove(&old_key) {
+                        self.unit_pp_fields.insert(new_key.clone(), value);
+                    }
+                    if let Some(value) = self.unit_pp_values.remove(&old_key) {
+                        self.unit_pp_values.insert(new_key, value);
+                    }
                     let destination_path = format!("//{current}/{network_address}/p/{destination}");
                     self.remap_prefix(&object_path, &destination_path);
                 }
@@ -10969,6 +11211,23 @@ impl Server {
         }
         if let Some((proj_name, net, addr)) = self.unit_of(path) {
             if let Some(field) = path.rsplit('/').next().map(str::to_string) {
+                if !DB_XML_UNIT_SCALARS.contains(&field.as_str())
+                    && !matches!(field.as_str(), "Type" | "Version")
+                {
+                    if let Some(unit) = self
+                        .projects
+                        .get(&proj_name)
+                        .and_then(|p| p.networks.get(&net))
+                        .and_then(|n| n.units.get(&addr))
+                    {
+                        let key = self.stored_unit_document_key(&proj_name, &unit.oid, addr);
+                        if let Some(values) = self.unit_pp_values.get_mut(&key) {
+                            if values.contains_key(&field) {
+                                values.insert(field.clone(), value.to_string());
+                            }
+                        }
+                    }
+                }
                 for store in [false, true] {
                     let record = self
                         .projects

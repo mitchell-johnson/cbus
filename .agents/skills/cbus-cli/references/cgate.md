@@ -2139,3 +2139,24 @@ order. This enables the Toolkit database CSV single-unit/network/project
 snapshot workflows. Unmodeled native wrapper metadata is omitted; do not use
 this view as a lossless Schneider archive or infer original Toolkit manager
 order. See `docs/cmqttd-cgate.md` and the CSV profile restrictions.
+
+
+### Database conversion and independent PP names
+
+The maintained Rust servers keep scalar Unit identity separate from PP values,
+including colliding UnitType, UnitName, UnitAddress and OID names. Prefer complete
+Unit XML when importing a known PP image; never reconstruct a missing colliding
+PP from scalar metadata. Spec-backed database PP LOAD selects the schema by
+scalar identity, validates staged input and preserves the previous session on
+failure. Database SAVE replaces the declared PP list in specification order;
+this does not establish native byte-memory GET/SAVE normalization.
+
+CONVERTUNIT catalogue/move database results match thirty fresh original cases
+in each Rust server for ordered PP, selected identity, channel metadata and
+local save/load preservation. Use the existing typed cgate conversion commands
+with their reviewed backups and explicit targets. Native LOAD200 and GET315/408
+are separate facts: short arrays can load and still fail GET. The Python client
+retains a successful native PP LOAD462 reset-to-default advisory in its reply;
+other errors remain fatal. No hardware or full Toolkit conversion acceptance
+follows from those database comparisons. See
+[batch evidence and remaining work](../../../../toolkit-cli/docs/feature-batch-2026-10-01-conversion-pp.md).

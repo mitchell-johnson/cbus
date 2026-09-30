@@ -185,3 +185,137 @@ async fn database_add_copy_and_new_are_atomic_and_durable_across_daemon_restart(
     drop(sys);
     std::fs::remove_file(state).unwrap();
 }
+
+async fn document(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    tag: &str,
+    text: &str,
+    body: &str,
+) -> Vec<String> {
+    let delimiter = format!("DB_END_{tag}");
+    command(
+        reader,
+        writer,
+        tag,
+        &format!("{text} << {delimiter}\r\n{body}\r\n{delimiter}"),
+    )
+    .await
+}
+
+async fn assert_pp_namespace(
+    reader: &mut BufReader<tokio::net::tcp::OwnedReadHalf>,
+    writer: &mut tokio::net::tcp::OwnedWriteHalf,
+    address: u8,
+) {
+    let path = format!("//AUX/1/p/{address}");
+    let scalar_name = if address == 20 {
+        "Scalar label"
+    } else {
+        "Copy"
+    };
+    for (tag, name, value) in [
+        ("scalar_type", "UnitType", "SYNTH"),
+        ("scalar_name", "UnitName", scalar_name),
+    ] {
+        let reply = command(reader, writer, tag, &format!("DBGET {path}/{name}")).await;
+        assert!(
+            reply
+                .iter()
+                .any(|line| line.ends_with(&format!("/{name}={value}"))),
+            "{reply:?}"
+        );
+    }
+    let xml = command(reader, writer, "xml", &format!("DBGETXML {path}"))
+        .await
+        .join("\n");
+    assert!(
+        xml.contains(&format!("<UnitName>{scalar_name}</UnitName>")),
+        "{xml}"
+    );
+    for fragment in [
+        "<UnitType>SYNTH</UnitType>",
+        "<PP Name=\"UnitType\" Value=\"0x12 0x34\"/>",
+        "<PP Name=\"UnitName\" Value=\"PP label\"/>",
+        "<PP Name=\"UnknownParameter\" Value=\"retained\"/>",
+    ] {
+        assert!(xml.contains(fragment), "missing {fragment}: {xml}");
+    }
+}
+
+#[tokio::test]
+async fn database_pp_collisions_survive_copy_save_and_real_daemon_restart() {
+    let state = cbus_test_support::proc::temp_path("cgate-pp-namespace-lifecycle.json");
+    let mut sys = start_with(options(&state)).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = connect(&sys).await;
+    // This auxiliary database network stays closed; all traffic goes only to
+    // the owned daemon frontend, never to its declared CNI endpoint.
+    for (tag, text) in [
+        ("new", "PROJECT NEW AUX"),
+        ("network", "DBCREATENET 1 Auxiliary Cni 127.0.0.1:1"),
+        ("unit", "DBADDSAFE //AUX/1 Unit 20 Original"),
+    ] {
+        let reply = command(&mut reader, &mut writer, tag, text).await;
+        assert!(
+            reply
+                .last()
+                .is_some_and(|line| line.starts_with("200") || line.starts_with("301")),
+            "{text}: {reply:?}"
+        );
+    }
+    let unit = "<Unit><OID>72000000-0000-4000-8000-000000000020</OID><TagName>Original</TagName><Address>20</Address><UnitType>SYNTH</UnitType><UnitName>Scalar label</UnitName><FirmwareVersion>1.0.00</FirmwareVersion><PP Name=\"UnitType\" Value=\"0x12 0x34\"/><PP Name=\"UnitName\" Value=\"PP label\"/><PP Name=\"UnknownParameter\" Value=\"retained\"/></Unit>";
+    let reply = document(
+        &mut reader,
+        &mut writer,
+        "setxml",
+        "DBSETXML //AUX/1/p/20",
+        unit,
+    )
+    .await;
+    assert!(
+        reply
+            .last()
+            .is_some_and(|line| line.starts_with("301 OID=")),
+        "{reply:?}"
+    );
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "copy",
+            "DBCOPYSAFE //AUX/1/p/20 //AUX/1 21 Copy"
+        )
+        .await,
+        ["200 OK"]
+    );
+    assert_pp_namespace(&mut reader, &mut writer, 20).await;
+    assert_pp_namespace(&mut reader, &mut writer, 21).await;
+    assert_success(&command(&mut reader, &mut writer, "save", "PROJECT SAVE AUX").await);
+    drop(reader);
+    drop(writer);
+    drop(sys);
+
+    sys = start_with(options(&state)).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = connect(&sys).await;
+    assert_success(&command(&mut reader, &mut writer, "use", "PROJECT USE AUX").await);
+    assert_pp_namespace(&mut reader, &mut writer, 20).await;
+    assert_pp_namespace(&mut reader, &mut writer, 21).await;
+    // Also exercise the persisted saved image after the running project is closed.
+    assert_success(&command(&mut reader, &mut writer, "close", "PROJECT CLOSE AUX").await);
+    assert_success(&command(&mut reader, &mut writer, "load", "PROJECT LOAD AUX").await);
+    assert_pp_namespace(&mut reader, &mut writer, 20).await;
+    assert_pp_namespace(&mut reader, &mut writer, 21).await;
+    drop(reader);
+    drop(writer);
+    drop(sys);
+    std::fs::remove_file(state).unwrap();
+}
+
+fn assert_success(reply: &[String]) {
+    assert!(
+        reply.last().is_some_and(|line| line.starts_with("200 ")),
+        "{reply:?}"
+    );
+}

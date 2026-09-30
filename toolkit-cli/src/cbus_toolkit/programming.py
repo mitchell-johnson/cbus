@@ -135,7 +135,31 @@ class Programmer:
 
     def _run(self, command: str) -> Any:
         reply = self.client.command(command)
-        errors = [(code, message) for code, message in _rows(reply) if code >= 400]
+        rows = _rows(reply)
+        # Native PP LOAD can report range resets as continued 462 rows and
+        # still finish with 200 OK. Keep those advisories in the returned reply.
+        load_succeeded = (
+            command.split()[:2] == ["PP", "LOAD"]
+            and bool(rows)
+            and rows[-1][0] == 200
+            and getattr(reply, "code", 200) == 200
+        )
+        lines = getattr(reply, "lines", reply.splitlines() if isinstance(reply, str) else ())
+        continued_462 = {
+            match.group(1) for line in lines if isinstance(line, str)
+            and (match := re.fullmatch(r"(?:\[[^\]]+\]\s*)?462-(.*)", line))
+        }
+        errors = [
+            (code, message) for code, message in rows if code >= 400
+            and not (
+                load_succeeded and code == 462 and message in continued_462
+                and re.fullmatch(
+                    r"Parameter '[^\r\n]+' value '[^\r\n]*' was reset to default value "
+                    r"'[^\r\n]*' as it is out of range '[^\r\n]*' to '[^\r\n]*'",
+                    message,
+                )
+            )
+        ]
         if errors:
             raise ProgrammingCommandError(reply, errors)
         if getattr(reply, "code", 200) >= 400:

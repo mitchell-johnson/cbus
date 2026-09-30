@@ -424,6 +424,8 @@ struct Database {
     unit_documents: HashMap<String, String>,
     #[serde(default)]
     unit_pp_fields: HashMap<String, std::collections::BTreeSet<String>>,
+    #[serde(default)]
+    unit_pp_values: HashMap<String, std::collections::BTreeMap<String, String>>,
     /// Set after the configured project's unit templates and DLT metadata
     /// have been admitted. Older durable databases are upgraded once.
     #[serde(default)]
@@ -451,6 +453,9 @@ struct Database {
     #[serde(default)]
     database_file_unit_pp_fields:
         HashMap<String, HashMap<String, std::collections::BTreeSet<String>>>,
+    #[serde(default)]
+    database_file_unit_pp_values:
+        HashMap<String, HashMap<String, std::collections::BTreeMap<String, String>>>,
     #[serde(default)]
     database_file_db_xml_extras: HashMap<String, HashMap<String, crate::DbXmlExtras>>,
     #[serde(default)]
@@ -498,6 +503,7 @@ impl Database {
             db_fields: s.db_fields.clone(),
             unit_documents: s.unit_documents.clone(),
             unit_pp_fields: s.unit_pp_fields.clone(),
+            unit_pp_values: s.unit_pp_values.clone(),
             imported_project_metadata: true,
             saved_project_group_dlt_labels_complete: s.saved_project_group_dlt_labels_complete,
             db_xml_extras: s.db_xml_extras.clone(),
@@ -511,6 +517,7 @@ impl Database {
             saved_projects: Some(s.saved_projects.clone()),
             database_file_unit_documents: s.database_file_unit_documents.clone(),
             database_file_unit_pp_fields: s.database_file_unit_pp_fields.clone(),
+            database_file_unit_pp_values: s.database_file_unit_pp_values.clone(),
             database_file_db_xml_extras: s.database_file_db_xml_extras.clone(),
             database_file_db_fields: s.database_file_db_fields.clone(),
             database_file_objects: s.database_file_objects.clone(),
@@ -615,6 +622,7 @@ impl Database {
         s.db_fields = self.db_fields;
         s.unit_documents = self.unit_documents;
         s.unit_pp_fields = self.unit_pp_fields;
+        s.unit_pp_values = self.unit_pp_values;
         s.saved_project_group_dlt_labels_complete = self.saved_project_group_dlt_labels_complete;
         s.db_xml_extras = self.db_xml_extras;
         s.objects = self.objects.into_iter().collect();
@@ -629,6 +637,7 @@ impl Database {
         s.database_files = self.database_files;
         s.database_file_unit_documents = self.database_file_unit_documents;
         s.database_file_unit_pp_fields = self.database_file_unit_pp_fields;
+        s.database_file_unit_pp_values = self.database_file_unit_pp_values;
         s.database_file_db_xml_extras = self.database_file_db_xml_extras;
         s.database_file_db_fields = self.database_file_db_fields;
         s.database_file_objects = self.database_file_objects;
@@ -16946,7 +16955,18 @@ fn seed_project_xml_metadata(model: &mut Server, xml: &str, project_name: &str) 
                 .filter(|child| child.has_tag_name("PP"))
                 .filter_map(|child| child.attribute("Name").map(str::to_string))
                 .collect();
-            model.unit_pp_fields.entry(key).or_insert(pp);
+            model.unit_pp_fields.entry(key.clone()).or_insert(pp);
+            let values = unit
+                .children()
+                .filter(|child| child.has_tag_name("PP"))
+                .filter_map(|child| {
+                    Some((
+                        child.attribute("Name")?.to_string(),
+                        child.attribute("Value")?.to_string(),
+                    ))
+                })
+                .collect();
+            model.unit_pp_values.entry(key).or_insert(values);
         }
         for application in network
             .children()
@@ -17152,12 +17172,17 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 .parse::<u8>()
                 .map_err(io::Error::other)?;
             let mut fields = HashMap::new();
+            let mut pp_values = std::collections::BTreeMap::new();
             for child in u.children().filter(|c| c.is_element()) {
                 if child.has_tag_name("PP") {
                     if let (Some(key), Some(value)) =
                         (child.attribute("Name"), child.attribute("Value"))
                     {
-                        fields.insert(key.to_string(), value.to_string());
+                        pp_values.insert(key.to_string(), value.to_string());
+                        if !DB_XML_UNIT_SCALARS.contains(&key) && !matches!(key, "Type" | "Version")
+                        {
+                            fields.insert(key.to_string(), value.to_string());
+                        }
                     }
                 } else if child.children().all(|c| !c.is_element()) {
                     fields.insert(
@@ -17170,6 +17195,11 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 .attribute("oid")
                 .map(str::to_string)
                 .unwrap_or_else(fresh_oid);
+            let document_key = Server::unit_document_key(&name, &oid);
+            model
+                .unit_pp_fields
+                .insert(document_key.clone(), pp_values.keys().cloned().collect());
+            model.unit_pp_values.insert(document_key, pp_values);
             model.known_oids.insert(oid.clone());
             model.objects.insert(format!("//{name}/{net}/p/{addr}"));
             units.insert(
@@ -17247,4 +17277,79 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
     );
     model.current = Some(name.clone());
     Ok((model, name, address))
+}
+
+#[cfg(test)]
+mod pp_namespace_state_tests {
+    use super::*;
+
+    #[test]
+    fn durable_state_restores_explicit_pp_values_and_saved_images() {
+        let mut original = crate::pp_namespace_tests::fixture();
+        assert_eq!(original.handle("[test] PROJECT SAVE PPSTORE").status, 200);
+        let encoded = serde_json::to_vec(&Database::from_server(&original)).unwrap();
+        let database: Database = serde_json::from_slice(&encoded).unwrap();
+        let mut restored = Server::new(AccessLevel::Program).with_programming(true);
+        database.restore(&mut restored).unwrap();
+        crate::pp_namespace_tests::assert_namespace(&restored, "PPSTORE", 20);
+        assert_eq!(restored.handle("[test] PROJECT CLOSE PPSTORE").status, 200);
+        assert_eq!(restored.handle("[test] PROJECT LOAD PPSTORE").status, 200);
+        crate::pp_namespace_tests::assert_namespace(&restored, "PPSTORE", 20);
+    }
+    #[test]
+    fn configured_project_import_keeps_scalar_and_pp_collisions_independent() {
+        let xml = "<Project><TagName>IMPORTED</TagName><Network><TagName>Local</TagName><Address>254</Address><Unit><Address>20</Address><UnitType>SYNTH</UnitType><UnitName>Scalar label</UnitName><FirmwareVersion>1.0.00</FirmwareVersion><PP Name=\"UnitType\" Value=\"0x12 0x34\"/><PP Name=\"UnitName\" Value=\"PP label\"/><PP Name=\"UnknownParameter\" Value=\"retained\"/></Unit></Network></Project>";
+        let (mut model, project, network) = import_project(xml, None).unwrap();
+        assert_eq!(network, 254);
+        seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+        let unit = &model.projects[&project].networks[&254].units[&20];
+        assert_eq!(unit.field("UnitType"), "SYNTH");
+        assert_eq!(unit.field("UnitName"), "Scalar label");
+        assert_eq!(unit.field("UnknownParameter"), "retained");
+        let pp = model.stored_unit_pp_values(&project, unit);
+        assert_eq!(pp["UnitType"], "0x12 0x34");
+        assert_eq!(pp["UnitName"], "PP label");
+        let output = model.unit_xml_document(&project, unit);
+        assert!(
+            output.contains("<UnitName>Scalar label</UnitName>"),
+            "{output}"
+        );
+        assert!(
+            output.contains("<PP Name=\"UnitName\" Value=\"PP label\"/>"),
+            "{output}"
+        );
+    }
+
+    #[test]
+    fn copied_and_renamed_project_pp_values_survive_durable_archive_reload() {
+        let mut model = crate::pp_namespace_tests::fixture();
+        assert_eq!(model.handle("[test] PROJECT COPY PPSTORE COPY").status, 200);
+        assert_eq!(
+            model.handle("[test] PROJECT RENAME COPY RENAMED").status,
+            200
+        );
+        crate::pp_namespace_tests::assert_namespace(&model, "RENAMED", 20);
+        assert_eq!(model.handle("[test] PROJECT SAVE RENAMED").status, 200);
+        assert_eq!(
+            model
+                .handle("[test] PROJECT ARCHIVE RENAMED cmqttd:pp-namespace")
+                .status,
+            200
+        );
+        let database: Database =
+            serde_json::from_slice(&serde_json::to_vec(&Database::from_server(&model)).unwrap())
+                .unwrap();
+        let mut restored = Server::new(AccessLevel::Program).with_programming(true);
+        database.restore(&mut restored).unwrap();
+        assert_eq!(
+            restored
+                .handle("[test] PROJECT RESTORE ARCHIVED cmqttd:pp-namespace")
+                .status,
+            200
+        );
+        crate::pp_namespace_tests::assert_namespace(&restored, "ARCHIVED", 20);
+        assert_eq!(restored.handle("[test] PROJECT CLOSE RENAMED").status, 200);
+        assert_eq!(restored.handle("[test] PROJECT LOAD RENAMED").status, 200);
+        crate::pp_namespace_tests::assert_namespace(&restored, "RENAMED", 20);
+    }
 }

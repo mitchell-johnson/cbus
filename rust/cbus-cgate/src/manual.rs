@@ -4543,6 +4543,20 @@ impl Server {
         let Some(target_spec) = self.spec_for(&spec_stem) else {
             return no("301 no:Unable to read Unit spec");
         };
+        let channel_revision = self.catalog().ok().and_then(|catalog| {
+            catalog.entries.into_iter().find(|entry| {
+                entry.is_default
+                    && entry.catalog_number.eq_ignore_ascii_case(&catalog_number)
+                    && entry.unit_type.eq_ignore_ascii_case(&target_type)
+            })
+        });
+        let Some(channel_revision) = channel_revision else {
+            return no("301 no:Unexpected Catalog number");
+        };
+        let Ok(channels) = convertunit::catalog_output_channels(&target_type, &channel_revision)
+        else {
+            return no("301 no:Unexpected conversion channel metadata");
+        };
         let Some(table) = self
             .unitspec_dir
             .as_deref()
@@ -4553,13 +4567,9 @@ impl Server {
                 convertunit::MAPPING_TABLE
             ));
         };
-        let source_key = self.stored_unit_document_key(&project, &source.oid, old_address);
         let mut source_pp = self
-            .unit_pp_fields
-            .get(&source_key)
+            .stored_unit_pp_values(&project, &source)
             .into_iter()
-            .flatten()
-            .filter_map(|name| Some((name.clone(), source.fields.get(name)?.clone())))
             .collect::<Vec<_>>();
         // Native stores rendered PP strings, which the rules parse. Sessions
         // here retain the caller's spelling, so render through the source spec.
@@ -4597,28 +4607,18 @@ impl Server {
         let target = destination.as_ref().unwrap_or(&source).clone();
         let target_key = self.stored_unit_document_key(&project, &target.oid, target_address);
         let prefix = format!("//{project}/{net}/p/{target_address}");
-        let old_names = self.unit_pp_fields.remove(&target_key).unwrap_or_default();
-        // This model shares one field map between PP values and database
-        // scalars. Keep the database TagName and identity out of PP reach.
+        let old_names = self
+            .unit_pp_fields
+            .get(&target_key)
+            .cloned()
+            .unwrap_or_default();
+        // Database identity and programming parameters have independent
+        // namespaces, including identically named UnitType values.
         let tag_name = target
             .fields
             .get("TagName")
             .cloned()
             .unwrap_or_else(|| target.fields.get("UnitName").cloned().unwrap_or_default());
-        let converted = converted
-            .into_iter()
-            .filter(|(name, _)| {
-                !matches!(
-                    name.as_str(),
-                    "UnitType"
-                        | "Type"
-                        | "FirmwareVersion"
-                        | "Version"
-                        | "CatalogNumber"
-                        | "TagName"
-                )
-            })
-            .collect::<Vec<_>>();
         let unit = self
             .projects
             .get_mut(&project)
@@ -4626,8 +4626,10 @@ impl Server {
             .and_then(|n| n.units.get_mut(&target_address))
             .expect("conversion target resolved");
         for name in &old_names {
-            unit.fields.remove(name);
-            self.db_fields.remove(&format!("{prefix}/{name}"));
+            if !super::DB_XML_UNIT_SCALARS.contains(&name.as_str()) {
+                unit.fields.remove(name);
+                self.db_fields.remove(&format!("{prefix}/{name}"));
+            }
         }
         let mut identity = vec![
             ("TagName", tag_name),
@@ -4649,15 +4651,62 @@ impl Server {
             unit.fields.insert(name.to_string(), value.clone());
             self.db_fields.insert(format!("{prefix}/{name}"), value);
         }
-        for (name, value) in &converted {
-            unit.fields.insert(name.clone(), value.clone());
+        if let Some(device_name) = source.fields.get("DeviceName") {
+            unit.fields
+                .insert("DeviceName".to_string(), device_name.clone());
             self.db_fields
-                .insert(format!("{prefix}/{name}"), value.clone());
+                .insert(format!("{prefix}/DeviceName"), device_name.clone());
         }
-        self.unit_pp_fields.insert(
-            target_key,
-            converted.iter().map(|(name, _)| name.clone()).collect(),
-        );
+        for (name, value) in &converted {
+            if !super::DB_XML_UNIT_SCALARS.contains(&name.as_str()) {
+                unit.fields.insert(name.clone(), value.clone());
+                self.db_fields
+                    .insert(format!("{prefix}/{name}"), value.clone());
+            }
+        }
+        let target_oid = unit.oid.clone();
+        // A conversion replaces the complete ordered PP list. An old XML
+        // template must not resurrect removed source parameters or reorder
+        // the target specification's list.
+        let mut template = "<Unit>".to_string();
+        for name in [
+            "OID",
+            "TagName",
+            "Address",
+            "Description",
+            "UnitType",
+            "UnitName",
+            "SerialNumber",
+            "FirmwareVersion",
+        ] {
+            let value = match name {
+                "OID" => Some(unit.oid.clone()),
+                "Address" => Some(unit.address.to_string()),
+                _ => unit.fields.get(name).cloned(),
+            };
+            if let Some(value) = value {
+                template.push_str(&format!("<{name}>{}</{name}>", super::xml_escape(&value)));
+            }
+        }
+        for (name, value) in &converted {
+            template.push_str(&format!(
+                "<PP Name=\"{}\" Value=\"{}\"/>",
+                super::xml_escape(name),
+                super::xml_escape(value)
+            ));
+        }
+        for name in ["CatalogNumber", "DeviceName", "GroupNumber"] {
+            if let Some(value) = unit.fields.get(name) {
+                template.push_str(&format!("<{name}>{}</{name}>", super::xml_escape(value)));
+            }
+        }
+        for (address, name) in channels {
+            let oid = self.issue_oid();
+            template.push_str(&format!("<OutputChannel><OID>{oid}</OID><TagName>{}</TagName><Address>{address}</Address></OutputChannel>", super::xml_escape(&name)));
+        }
+        template.push_str("</Unit>");
+        self.replace_unit_pp_values(&project, &target_oid, target_address, converted);
+        self.unit_documents.insert(target_key, template);
         if destination.is_none() {
             return ok(tag, vec![], "200 OK.");
         }

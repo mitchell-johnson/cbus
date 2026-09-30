@@ -1,0 +1,1027 @@
+{
+  "format": "cbus-conversion-pp-batch-acceptance-v1",
+  "result": "passed",
+  "date": "2026-10-01",
+  "base_commit": "7cea3280456ab9512ce4609a73662ca5e9e83eaf",
+  "full_local_test_suite_run": false,
+  "scope": "Bounded native database conversion/namespace and local persistence, CLI LOAD advisories; full Toolkit/C-Gate parity remains unfinished.",
+  "native_summary": "native-summary.json",
+  "native_summary_sha256": "09db26ba20730ef71d0e90594cb5619eda7bb8156298f990eb1a19bcaa370630",
+  "native_positive_conversions": 30,
+  "native_negative_cases": 15,
+  "native_bare_boundary": 1,
+  "native_targeted": {
+    "positive_conversions": 2,
+    "scalar_pp_profiles": 2,
+    "absent_declared_pp_probes": 5,
+    "integer_grammar_probes": 12,
+    "pp_oid_import": 1
+  },
+  "rust_native_database_comparison": {
+    "cgate-mock": {
+      "executed": 30,
+      "passed": 30,
+      "failed": 0,
+      "cases": [
+        {
+          "id": "DIMDU4->DIMDN8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        }
+      ],
+      "cleanup": {
+        "project_deleted": true,
+        "process_terminal": true,
+        "resources_closed": true,
+        "listener_closed": true,
+        "cni_connections": 0,
+        "cni_terminal": true,
+        "cni_failure": null
+      },
+      "binary_sha256": "00edfc7bb0ca8c35bee9167f04debeafbf0e94b4fd539c7af7e2d44e2915896e"
+    },
+    "cmqttd": {
+      "executed": 30,
+      "passed": 30,
+      "failed": 0,
+      "cases": [
+        {
+          "id": "DIMDU4->DIMDN8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode1",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode2",
+          "ordered_pp_matches": true,
+          "identity_matches": true,
+          "channel_metadata_matches": true,
+          "reload_matches": true,
+          "passed": true,
+          "source_removed": true
+        }
+      ],
+      "cleanup": {
+        "project_deleted": true,
+        "process_terminal": true,
+        "resources_closed": true,
+        "listener_closed": true,
+        "cni_connections": 0,
+        "cni_terminal": true,
+        "cni_failure": null
+      },
+      "owned_pci_simulator_wire_records": 15,
+      "binary_sha256": "676b7c6028f095dbcaab55e6718a15b76316d613feb867d3cf0d5a2d5cfd9f20"
+    }
+  },
+  "rust_tests": {
+    "formal_passes": 62,
+    "executed_test_bodies": 60,
+    "failed": 0,
+    "ignored": 0,
+    "vendor_provisioning_early_return_branches": [
+      "unitspec::tests::installed_vendor_specs_have_supported_physical_layouts",
+      "unitspec::tests::installed_vendor_save_defaults_encode_for_supported_methods"
+    ],
+    "early_return_qualification": "CBUS_UNITSPEC_DIR was not provisioned for these unit-test branches; their formal passes do not establish vendor layout acceptance.",
+    "focused_logs": {
+      "namespace-final.log": {
+        "sha256": "baa25b11539ab945d6b2802fdd9adcf73b360abee9eec3e5b6c5a2fa7db9eba5",
+        "passed": 10,
+        "test_names": [
+          "service::pp_namespace_state_tests::configured_project_import_keeps_scalar_and_pp_collisions_independent",
+          "pp_namespace_tests::pp_save_preserves_scalar_identity_and_explicit_unit_name_collision",
+          "pp_namespace_tests::no_spec_load_save_does_not_fabricate_scalar_metadata_pp",
+          "pp_namespace_tests::invalid_database_pp_load_preserves_the_prior_session",
+          "pp_namespace_tests::database_load_emits_range_warning_with_success_and_keeps_database_value",
+          "pp_namespace_tests::scalar_and_pp_names_survive_xml_copy_address_and_saved_project",
+          "pp_namespace_tests::project_tables_roundtrip_preserves_pp_and_legacy_does_not_invent_identity_values",
+          "service::pp_namespace_state_tests::durable_state_restores_explicit_pp_values_and_saved_images",
+          "pp_namespace_tests::spec_save_replaces_old_pp_in_spec_order_and_preserves_channels",
+          "service::pp_namespace_state_tests::copied_and_renamed_project_pp_values_survive_durable_archive_reload"
+        ]
+      },
+      "convertunit-final.log": {
+        "sha256": "8d77cfc88a1e96c92afa6f71e760cf73773e07ffe54504d91f08693e9e0049c8",
+        "passed": 6,
+        "test_names": [
+          "convertunit::tests::admission_matches_native_table",
+          "convertunit::tests::conversion_channel_skeleton_matches_retained_target_families",
+          "convertunit::tests::table_rejects_unknown_rules_and_uses_first_duplicate",
+          "convertunit::tests::length_rules_omit_equal_lengths",
+          "convertunit::tests::numeric_rules_follow_java_rendering",
+          "convertunit::tests::server_converts_catalogue_and_move_targets_from_the_mapping_table"
+        ]
+      },
+      "unitspec-final.log": {
+        "sha256": "786cc51e4997f0dfa8d5f0127aab693c6f4ff02366e4d4d4ea3455a564933cc9",
+        "passed": 23,
+        "test_names": [
+          "unitspec::tests::installed_vendor_specs_have_supported_physical_layouts",
+          "unitspec::tests::installed_vendor_save_defaults_encode_for_supported_methods",
+          "unitspec::tests::database_numeric_parser_matches_java_prefix_sign_and_overflow_rules",
+          "unitspec::tests::database_load_keeps_short_arrays_and_ignores_unconsumed_tokens",
+          "unitspec::tests::database_load_rejects_unparseable_consumed_conversion_tokens",
+          "unitspec::tests::database_load_matches_exact_names_and_native_text_boundaries",
+          "unitspec::tests::database_load_retains_native_range_reset_warning",
+          "unitspec::tests::database_load_preserves_raw_values_and_declared_defaults",
+          "unitspec::tests::database_range_reset_changes_session_only_and_validates_default",
+          "unitspec::tests::database_bit_range_stops_before_later_malformed_tokens",
+          "unitspec::tests::ncc_programming_marks_a_cbus3_spec_for_nvm_commit",
+          "unitspec::tests::physical_layout_rejects_unverified_or_unbounded_shapes",
+          "unitspec::tests::physical_layout_decodes_native_numeric_text_and_array_map",
+          "unitspec::tests::physical_layout_encodes_with_read_modify_write_preservation",
+          "unitspec::tests::rejects_escape_and_cycles",
+          "unitspec::tests::loads_parameters",
+          "unitspec::tests::rejects_dotdot_include_segments",
+          "unitspec::tests::psync_burden_read_follows_the_catalogue_class",
+          "unitspec::tests::later_includes_override_earlier",
+          "unitspec::tests::rejects_symlink_escape",
+          "unitspec::tests::rejects_non_ascii_and_repeated_sign_numeric_metadata",
+          "unitspec::tests::rejects_repeated_include_and_bad_metadata",
+          "unitspec::tests::rejects_wide_fanout"
+        ]
+      },
+      "dbsetxml-final.log": {
+        "sha256": "6800def2426510d1be7e16a57a21b831f94686f7d849b5cbc29cbc3298dedfb1",
+        "passed": 19,
+        "test_names": [
+          "dbsetxml_combined_network_discards_unmodeled_namespace_markup",
+          "dbsetxml_network_discards_opaque_extension_unit",
+          "dbsetxml_combined_network_unit_matches_native_build_2001_capture",
+          "dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm",
+          "dbsetxml_group_dlt_labels_match_owned_native_lifecycle",
+          "dbsetxml_duplicate_oid_matches_owned_native_vectors",
+          "dbsetxml_level_dlt_label_matches_owned_native_lifecycle",
+          "dbsetxml_duplicate_leaf_applications_match_owned_native_vectors",
+          "dbsetxml_nested_same_oid_levels_match_owned_native_vectors",
+          "dbsetxml_nested_same_oid_applications_match_owned_native_vectors",
+          "dbsetxml_unit_mapper_keeps_known_optional_scalars_and_open_pp_catalogue",
+          "dbsetxml_replaces_evidenced_typed_database_trees_atomically",
+          "dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity",
+          "dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions",
+          "dbsetxml_replaces_typed_unit_and_discards_unmodeled_xml_markup",
+          "dbsetxml_replacement_mapper_matches_owned_native_edge_vectors",
+          "dbsetxml_post_load_level_tags_roundtrip_matches_owned_native_vectors",
+          "dbsetxml_reversed_and_multiple_leaf_applications_match_owned_native_vectors",
+          "dbsetxml_group_dlt_boundaries_match_owned_native_capture"
+        ]
+      },
+      "cmqttd-database-final.log": {
+        "sha256": "67ff77d2bc80a8d98cfe998cfd4771766b9b7ec37bd6aff25f312274b8c4aaa8",
+        "passed": 2,
+        "test_names": [
+          "database_pp_collisions_survive_copy_save_and_real_daemon_restart",
+          "database_add_copy_and_new_are_atomic_and_durable_across_daemon_restart"
+        ]
+      },
+      "mqtt-final.log": {
+        "sha256": "8c07a7efe2490883e6dcf463b2f9b5e1b95a6d1f832f6a061aaec8491f8066bf",
+        "passed": 1,
+        "test_names": [
+          "config_native_family_is_scoped_authenticated_durable_and_keeps_mqtt_live"
+        ]
+      },
+      "document-binding-final.log": {
+        "sha256": "a613379c1b4e58a3e0764ffc83850b19e88f43c257adc2e24c5a73710a287876",
+        "passed": 1,
+        "test_names": [
+          "config::disposition::tests::config_disposition_doc_table_is_generated"
+        ]
+      }
+    },
+    "format_check": {
+      "command": "cargo +1.92.0 fmt --check",
+      "exit_code": 0
+    },
+    "clippy": {
+      "command": "cargo +1.98.1 clippy --workspace --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "9b837bf93fa88cadbe05790a2e3b7e5393e3f54e2ef1c9fe201e58ec63334f04"
+    },
+    "release_build": {
+      "command": "cargo +1.92.0 build --release --workspace",
+      "exit_code": 0,
+      "log_sha256": "c9ef3b68d69664e1d157e575848e4f6146e26ad39b9aa75897123cb92d2ce4bd"
+    }
+  },
+  "python_each_mode": {
+    "normal_distinct": 119,
+    "subtest_reports": 66,
+    "failed": 0,
+    "skipped": 0,
+    "stages_disjoint": true
+  },
+  "python_reports": {
+    "stage1-source.json": {
+      "sha256": "8c9ca75153356d63d7f172c414f02affdea8c92b0b44c53639f099b72f0aa97d",
+      "normal_tests": 62,
+      "subtest_reports": 42,
+      "main_import_count": 11,
+      "main_imports": {
+        "cbus_toolkit": {
+          "package_relative": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.cli": {
+          "package_relative": "cli.py",
+          "sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a"
+        },
+        "cbus_toolkit.programming": {
+          "package_relative": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.cgate": {
+          "package_relative": "cgate.py",
+          "sha256": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15"
+        },
+        "cbus_toolkit.native": {
+          "package_relative": "native.py",
+          "sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a"
+        },
+        "cbus_toolkit.conversion": {
+          "package_relative": "conversion.py",
+          "sha256": "824ef5e6d9c3c076ead6efed7dbbf715ed131c3eb8ef9fe65f24fea612113d2c"
+        },
+        "cbus_toolkit.unitspec": {
+          "package_relative": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        },
+        "cbus_toolkit.memory": {
+          "package_relative": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "package_relative": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.conversion_mapping": {
+          "package_relative": "conversion_mapping.py",
+          "sha256": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09"
+        },
+        "cbus_toolkit.conversion_guard": {
+          "package_relative": "conversion_guard.py",
+          "sha256": "cda6eb34b301165f9d43b4881a56b90d47994562dd80dbb5cc95c42bb8c1c71b"
+        }
+      },
+      "collected_nodes_sha256": "f5455d7b228e67fc76d5c9bd2f024e56660c8716a69e383cbedc3b5359ff2330"
+    },
+    "stage1-wheel.json": {
+      "sha256": "9994a2b50d91e3f08cc51ab9f5e2a05c123c77ec3c0fa80353dcab38a3ae8dde",
+      "normal_tests": 62,
+      "subtest_reports": 42,
+      "main_import_count": 11,
+      "main_imports": {
+        "cbus_toolkit": {
+          "package_relative": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.cgate": {
+          "package_relative": "cgate.py",
+          "sha256": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15"
+        },
+        "cbus_toolkit.cli": {
+          "package_relative": "cli.py",
+          "sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a"
+        },
+        "cbus_toolkit.conversion": {
+          "package_relative": "conversion.py",
+          "sha256": "824ef5e6d9c3c076ead6efed7dbbf715ed131c3eb8ef9fe65f24fea612113d2c"
+        },
+        "cbus_toolkit.conversion_guard": {
+          "package_relative": "conversion_guard.py",
+          "sha256": "cda6eb34b301165f9d43b4881a56b90d47994562dd80dbb5cc95c42bb8c1c71b"
+        },
+        "cbus_toolkit.conversion_mapping": {
+          "package_relative": "conversion_mapping.py",
+          "sha256": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09"
+        },
+        "cbus_toolkit.memory": {
+          "package_relative": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.native": {
+          "package_relative": "native.py",
+          "sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "package_relative": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.programming": {
+          "package_relative": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.unitspec": {
+          "package_relative": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        }
+      },
+      "collected_nodes_sha256": "f5455d7b228e67fc76d5c9bd2f024e56660c8716a69e383cbedc3b5359ff2330"
+    },
+    "source.json": {
+      "sha256": "5efc76187ad2b7a89243de8908e762544b26d2308dc2b3e446db70c0b9521da0",
+      "normal_tests": 57,
+      "subtest_reports": 24,
+      "main_import_count": 19,
+      "main_imports": {
+        "cbus_toolkit": {
+          "package_relative": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.cli": {
+          "package_relative": "cli.py",
+          "sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a"
+        },
+        "cbus_toolkit.parity": {
+          "package_relative": "parity.py",
+          "sha256": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2"
+        },
+        "cbus_toolkit.cgate": {
+          "package_relative": "cgate.py",
+          "sha256": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15"
+        },
+        "cbus_toolkit.programming": {
+          "package_relative": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.simulator_labels": {
+          "package_relative": "simulator_labels.py",
+          "sha256": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c"
+        },
+        "cbus_toolkit.simulator_applications": {
+          "package_relative": "simulator_applications.py",
+          "sha256": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b"
+        },
+        "cbus_toolkit.simulator_enable": {
+          "package_relative": "simulator_enable.py",
+          "sha256": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da"
+        },
+        "cbus_toolkit.lighting_state": {
+          "package_relative": "lighting_state.py",
+          "sha256": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff"
+        },
+        "cbus_toolkit.simulator_addressing": {
+          "package_relative": "simulator_addressing.py",
+          "sha256": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a"
+        },
+        "cbus_toolkit.native": {
+          "package_relative": "native.py",
+          "sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a"
+        },
+        "cbus_toolkit.unitspec": {
+          "package_relative": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        },
+        "cbus_toolkit.memory": {
+          "package_relative": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "package_relative": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.classic_replacement": {
+          "package_relative": "classic_replacement.py",
+          "sha256": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62"
+        },
+        "cbus_toolkit.addressing": {
+          "package_relative": "addressing.py",
+          "sha256": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926"
+        },
+        "cbus_toolkit.serials": {
+          "package_relative": "serials.py",
+          "sha256": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc"
+        },
+        "cbus_toolkit.simulator_serial_addressing": {
+          "package_relative": "simulator_serial_addressing.py",
+          "sha256": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f"
+        },
+        "cbus_toolkit.simulator": {
+          "package_relative": "simulator.py",
+          "sha256": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5"
+        }
+      },
+      "collected_nodes_sha256": "84cfdaa30d1d51ee664ad60a592e017154553354c061aa279f2a53c12c786f96"
+    },
+    "wheel.json": {
+      "sha256": "66125ed78eeaa364a4b63a970b9bb1ce3e192ec744be10128797c0b7987368cf",
+      "normal_tests": 57,
+      "subtest_reports": 24,
+      "main_import_count": 19,
+      "main_imports": {
+        "cbus_toolkit": {
+          "package_relative": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.addressing": {
+          "package_relative": "addressing.py",
+          "sha256": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926"
+        },
+        "cbus_toolkit.cgate": {
+          "package_relative": "cgate.py",
+          "sha256": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15"
+        },
+        "cbus_toolkit.classic_replacement": {
+          "package_relative": "classic_replacement.py",
+          "sha256": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62"
+        },
+        "cbus_toolkit.cli": {
+          "package_relative": "cli.py",
+          "sha256": "27e07f15d69205673c5644105a9afe99d535a4f9fa5f3d28150a5287dcca384a"
+        },
+        "cbus_toolkit.lighting_state": {
+          "package_relative": "lighting_state.py",
+          "sha256": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff"
+        },
+        "cbus_toolkit.memory": {
+          "package_relative": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.native": {
+          "package_relative": "native.py",
+          "sha256": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "package_relative": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.parity": {
+          "package_relative": "parity.py",
+          "sha256": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2"
+        },
+        "cbus_toolkit.programming": {
+          "package_relative": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.serials": {
+          "package_relative": "serials.py",
+          "sha256": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc"
+        },
+        "cbus_toolkit.simulator": {
+          "package_relative": "simulator.py",
+          "sha256": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5"
+        },
+        "cbus_toolkit.simulator_addressing": {
+          "package_relative": "simulator_addressing.py",
+          "sha256": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a"
+        },
+        "cbus_toolkit.simulator_applications": {
+          "package_relative": "simulator_applications.py",
+          "sha256": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b"
+        },
+        "cbus_toolkit.simulator_enable": {
+          "package_relative": "simulator_enable.py",
+          "sha256": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da"
+        },
+        "cbus_toolkit.simulator_labels": {
+          "package_relative": "simulator_labels.py",
+          "sha256": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c"
+        },
+        "cbus_toolkit.simulator_serial_addressing": {
+          "package_relative": "simulator_serial_addressing.py",
+          "sha256": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f"
+        },
+        "cbus_toolkit.unitspec": {
+          "package_relative": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        }
+      },
+      "collected_nodes_sha256": "84cfdaa30d1d51ee664ad60a592e017154553354c061aa279f2a53c12c786f96"
+    }
+  },
+  "wheel_sha256": "d9f3e4836156c5331c215386938ddffaf446bfbff206ee837ffbf68291a5ef7d",
+  "python_private_summary_sha256": "fef39f6f04c953254bce116b4546afde92d9ad6d12ae90f808b7f9dd050d6247",
+  "exact_excluded_methods": {
+    "test_programming.py::NativeProgrammingTest": [
+      "test_offline_defaults_edit_copy_export_import_and_cleanup",
+      "test_spaced_checksum_actual_byte_change_reset_and_import"
+    ],
+    "test_conversion.py::NativeConversionTests": [
+      "test_catalog_conversion_backup_parameter_retention_and_persistence",
+      "test_move_preserves_destination_metadata_removes_source_and_exposes_address_mismatch",
+      "test_unsupported_conversion_and_unchanged_identity_have_no_mutation"
+    ],
+    "test_offline_conversion.py::NativeConversionTests": [
+      "test_nine_classic_pairs_native_values_raw_bytes_and_save_reload"
+    ],
+    "test_offline_conversion.py::BinaryEvidenceTests": [
+      "test_original_attribute_registration_and_alignment_exclusion"
+    ]
+  },
+  "excluded_method_count": 7,
+  "exclusion_qualification": "Named native/binary opt-in methods were excluded before collection; no GUI/hardware equivalence follows. Fresh original database probes are recorded separately.",
+  "preserved_initial_failures": [
+    "Native v1: network-create status expectation; v2: NET LIST argument; v3: ephemeral role and ownership bookkeeping; v4: real CLI advisory bug. Native summary retains raw hashes and cleanup facts.",
+    "Rust replay v1: expected missing-unit deletion status; v2: daemon NET LIST envelope after all 30 mock cases passed. Both cleaned owned children; v3 and subsequent final bindings passed.",
+    "Python expanded phase: 52 passed and 5 failed (3 stale generated SESSION records, 2 sandbox listener permissions), corrected by genuine receipt replay, generated register refresh and authorized owned listeners.",
+    "Later passing phases became historical when final documentation changed a conservative cfg-test source binding; genuine replay and fresh-wheel validation repeated against final frozen inputs."
+  ],
+  "parity": {
+    "broad_implemented": 18,
+    "broad_total": 42,
+    "source_records": 22103,
+    "registered_obligations": 487,
+    "fully_accepted_obligations": 0,
+    "denominator_ready": false,
+    "evidence_records": 3
+  },
+  "outstanding": [
+    "native database byte-memory GET/SAVE normalization and missing-byte semantics",
+    "arbitrary metadata/channel and cross-network copy lifecycle",
+    "original Toolkit full conversion/reset/template workflows",
+    "broad hardware and power-cycle acceptance"
+  ],
+  "root_validation": "root-validation.json",
+  "root_validation_sha256": "7b10cf3ef54277b28b0cc82e24c625063e23b33722ac2c89fe0330f3abdd5b82"
+}

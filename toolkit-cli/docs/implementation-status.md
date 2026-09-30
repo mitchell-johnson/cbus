@@ -48,6 +48,16 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [database conversion and PP namespace batch](feature-batch-2026-10-01-conversion-pp.md)
+adds independent scalar/PP persistence, schema-ordered parameter replacement,
+failed-load preservation and successful native range-reset advisories. Fresh
+original C-Gate runs cover 30 conversions, 15 refusals, one bare boundary and
+separate collision/default/grammar probes. Each Rust server matches all 30
+ordered PP/identity/channel results with local save/load preservation. Focused
+Rust, source and installed-wheel checks retain their explicit provisioning and
+memory-readback limits in the linked acceptance receipt. The broad ledger and
+zero fully accepted obligations are unchanged.
+
 The [XML mapper receipt refresh](feature-batch-2026-10-01-unit-mapper-receipts.md)
 reaccepts twelve retained original Unit cases and two combined Network checks
 against each current Rust server, with exact wire equality. It corrects stale

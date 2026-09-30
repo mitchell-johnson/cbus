@@ -19,6 +19,13 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+The latest [database conversion and PP persistence batch](toolkit-cli/docs/feature-batch-2026-10-01-conversion-pp.md)
+matches 30 original C-Gate conversion results in each Rust server, preserves
+independent unit metadata and programming parameters across saves and daemon
+restart, and fixes successful LOAD warning handling in the Python CLI.
+Native memory readback, complete Toolkit conversion workflows and physical
+acceptance remain open.
+
 The latest [routed commissioning and documentor batch](toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md)
 adds Rust apply/verify through one to six bridges, independent Python journal
 validation and offline project reconciliation, plus old Bytecraft DIMPR12 and

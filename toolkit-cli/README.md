@@ -1914,6 +1914,13 @@ Native conversion creates a project backup by default. `conversion move`
 transfers programming into an existing replacement unit and removes the source.
 See [conversion behavior and native limitations](docs/conversion.md).
 
+The [Rust database conversion batch](docs/feature-batch-2026-10-01-conversion-pp.md)
+compares 30 original catalogue/move results with both cgate-mock and cmqttd,
+including ordered PP, independent scalar metadata, channel metadata and
+save/load preservation. Database PP values remain separate from unit identity
+even when their names collide. Successful native PP LOAD range-reset warnings
+remain in the returned reply; terminal errors still fail the workflow.
+
 Classic settings can also be aligned between existing database units while
 retaining the destination's address and identity:
 

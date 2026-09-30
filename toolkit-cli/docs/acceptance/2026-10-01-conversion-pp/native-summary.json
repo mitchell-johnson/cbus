@@ -1,0 +1,2832 @@
+{
+  "format": "cbus-convertunit-native-summary-v1",
+  "scope": "Owned original C-Gate 3.4.0.2001 database-only conversion observations; closed loopback project. No hardware or Toolkit GUI execution. PP LOAD/GET diagnostics do not establish GET parity. Hashes attest private retained evidence without exporting vendor XML, full parameter/default tables, project identities or paths.",
+  "hash_encoding": "Structured hashes use UTF-8 JSON sorted keys, compact separators. Ordered PP hashes preserve XML child order. Private project values may contribute to hashes but are not disclosed.",
+  "runs": {
+    "targeted_v5": {
+      "outcome": "passed",
+      "provenance": {
+        "receipt_sha256": "dc64312f3e10989512bb072fc854895621f423d9160beaacbc5c6e349e186df7",
+        "wire_sha256": "f4166595b208beb1dd678d13f5f9225f177f17f9d5bbe2526b9e8d4dc705b506",
+        "helper_sha256": "43537ed5753cf0d2a4402e5bc514ae8cc8da6cc1927821b0c6000fba1047410e",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+        "keytool_sha256": "1ec91ecfa8537d89d9897b5ea9aeeb80207c3449b86aae4ef06bc8f76cb3c4ba",
+        "inputs_sha256": {
+          "ConvertUnitMappingTable.xml": "a48fbf06daaff9db3fbfd9fcae6922bfb532cce2ff21df1d7b33cf8622e3f80c",
+          "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+          "DIMDU4.xml": "59023710101effa51d73dcff787e4f674b5675d663cb254c3bffc2609dc3812e",
+          "DIMDN4.xml": "9ef6b13430f1eab1545235637a2b3b0409b1bf67910716b525a97d1477883eab",
+          "DIMDN8.xml": "00e71609255a8f267f2f8347c4216f0a2cbf09b4de409e158b62d6b1eec2c13b",
+          "I_NCC_OUTPUT_UNITS.xml": "768c2d4c4c205bb36ba359bf65052d3b5383a9d62ee095931ca7fcbeeabacea4",
+          "DIMDD4.xml": "83bf5a070f4b680b8b170a0678e8a15505c6cce4639d16ba3c05c67140fcc7b4",
+          "DIMDD8.xml": "72a5a3af8be82e447c9c66516530454d484ed8518d57093816f0628aa26a6dc4",
+          "RELDN4.xml": "377f9f9f1d0f1e1762db12c5c12bb785e23c5a026a0959559e2d528f43a633b3",
+          "RELDN8.xml": "923ad76d2d86401facc50f48cdbd1068adfcbd3448a1a4955274e01750687844",
+          "RELDN12.xml": "0771af6c71d664429c3c27c1b5aa9d4b9323ab560e2be0cb6e9064dbb7ee89c8",
+          "RELDN4A.xml": "a5a723386a1f85d4304b6c21055c3bcd16abafe586ed4ebb03f8340502f863b3",
+          "RELDN8A.xml": "3d8c1db6a451da762e032dc636d217639abfb9f2d2ea7f315a118cd59032b336",
+          "RELDN16A.xml": "016c9635368dcbac98670a419f203db1f6e3e2df6b1bc2be09c734891338a28d"
+        },
+        "product_bound_file_count": 321,
+        "product_relative_binding_roster_sha256": "875aa9660057b21742264ac0ea4cd9c4da54dc3b01b8a773e83874e6b357ddc3",
+        "actual_import_module_count": 8,
+        "actual_import_roster_sha256": "888042d9a0ef24bbb4348aad69d95524cb48c194fa445e9aac547cd3b67eebc7",
+        "actual_import_module_sha256": {
+          "cbus_toolkit": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+          "cbus_toolkit.cgate": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+          "cbus_toolkit.unitspec": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+          "cbus_toolkit.conversion_mapping": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09",
+          "cbus_toolkit.native": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+          "cbus_toolkit.programming": "d55effc91e0e8c0530a6886b717ba3ebf81827dbf814d608855100cce7c4a7bc",
+          "research.convertunit_pairs": "c80f00e0d9bd9af7c91ebd2e984d235ed77f9ab36f9079bd0b5812b86550c9cb",
+          "research.local_cgate": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+        },
+        "producer_sha256": "c80f00e0d9bd9af7c91ebd2e984d235ed77f9ab36f9079bd0b5812b86550c9cb",
+        "local_cgate_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+        "owned_access_policy": {
+          "content": "interface 127.0.0.1 Clipsal\n",
+          "sha256": "d6b62e8550eacbc52e5add1621f79d6772d61fd1f15076409d97db8931e2fbc8",
+          "scope": "fresh ephemeral loopback child only",
+          "required_role": "Clipsal",
+          "required_level": 7
+        }
+      },
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 9,
+        "all_observed_networks_closed": true,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": true,
+        "project_delete_200": true,
+        "project_cleanup_error_type": null,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "positive_cases": [
+        {
+          "id": "DIMDU4->DIMDD4/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDD4",
+          "mode": 1,
+          "table_index": 12,
+          "rules": [
+            "changePropertyName",
+            "channelProperties",
+            "convertDimChProfileData",
+            "convertDimChannelProfileSelection",
+            "convertErrorReportInterval",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "1c3bd3d8f6664f424be2a18e327723364e63825bf7baab637ad76c7989b7316f",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "1a89374147a777e311fcdefa548a212b78ba0563e73a87e13a6719ed9f3395ba",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "9003cc79aa6da86070659a88b88f1546126afef3548aa903cf8671aead2740e9",
+            "non_oid_scalar_count": 11,
+            "non_oid_scalars_sha256": "73697c5e609b5590dd57084fe1f78529e122f4f5d123d6e1e2e90b5f3c8f3dd1",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            6,
+            83
+          ],
+          "predicted_pp_sha256": "9003cc79aa6da86070659a88b88f1546126afef3548aa903cf8671aead2740e9",
+          "observed_pp_sha256": "9003cc79aa6da86070659a88b88f1546126afef3548aa903cf8671aead2740e9",
+          "native_pp_load_terminal_code": 408,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 0,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDD4",
+          "mode": 2,
+          "table_index": 12,
+          "rules": [
+            "changePropertyName",
+            "channelProperties",
+            "convertDimChProfileData",
+            "convertDimChannelProfileSelection",
+            "convertErrorReportInterval",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "5984fd3317bf6ab67462ac326ff6a89e8856925f4c64f8d4cb33a1838751495b",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d222d20534238ed1af743e6b2a89005fff372ded2caec163c47a8fa228ee718b",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "aff9da9868402f52b55497a7b290997a63166221110af45a961aa33583bb3dbb",
+            "non_oid_scalar_count": 10,
+            "non_oid_scalars_sha256": "f9ac60e4ab7714de2c1372d3296e0a2cade7b49934a0903fb3a3c2af84e7e612",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            83,
+            583
+          ],
+          "predicted_pp_sha256": "aff9da9868402f52b55497a7b290997a63166221110af45a961aa33583bb3dbb",
+          "observed_pp_sha256": "aff9da9868402f52b55497a7b290997a63166221110af45a961aa33583bb3dbb",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 197,
+          "native_pp_get_408_parameters": [
+            "DimChProfile2StartupDurationCycles",
+            "DimChProfile4StartupDurationCycles"
+          ],
+          "native_pp_get_observation_sha256": "bffefe85e93557148b926d9e5f1c2ab68b4890fefd1c93d1b2baff2e05811d02",
+          "native_pp_get_parity_claimed": false
+        }
+      ]
+    },
+    "pairs_v6": {
+      "outcome": "passed",
+      "provenance": {
+        "receipt_sha256": "30fe9d40baf9536974ff06de1c77052b5248a4e1a5b567377601d61be68513be",
+        "wire_sha256": "985d4cba51c5233aef879b610f06d0590312264d987b311305b7e0c59b2b548e",
+        "helper_sha256": "b7dfbe420cfd1126f06b2273ce9e1bc4eb20d558d475477a589bacf9f159f35b",
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+        "keytool_sha256": "1ec91ecfa8537d89d9897b5ea9aeeb80207c3449b86aae4ef06bc8f76cb3c4ba",
+        "inputs_sha256": {
+          "ConvertUnitMappingTable.xml": "a48fbf06daaff9db3fbfd9fcae6922bfb532cce2ff21df1d7b33cf8622e3f80c",
+          "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+          "DIMDU4.xml": "59023710101effa51d73dcff787e4f674b5675d663cb254c3bffc2609dc3812e",
+          "DIMDN4.xml": "9ef6b13430f1eab1545235637a2b3b0409b1bf67910716b525a97d1477883eab",
+          "DIMDN8.xml": "00e71609255a8f267f2f8347c4216f0a2cbf09b4de409e158b62d6b1eec2c13b",
+          "I_NCC_OUTPUT_UNITS.xml": "768c2d4c4c205bb36ba359bf65052d3b5383a9d62ee095931ca7fcbeeabacea4",
+          "DIMDD4.xml": "83bf5a070f4b680b8b170a0678e8a15505c6cce4639d16ba3c05c67140fcc7b4",
+          "DIMDD8.xml": "72a5a3af8be82e447c9c66516530454d484ed8518d57093816f0628aa26a6dc4",
+          "RELDN4.xml": "377f9f9f1d0f1e1762db12c5c12bb785e23c5a026a0959559e2d528f43a633b3",
+          "RELDN8.xml": "923ad76d2d86401facc50f48cdbd1068adfcbd3448a1a4955274e01750687844",
+          "RELDN12.xml": "0771af6c71d664429c3c27c1b5aa9d4b9323ab560e2be0cb6e9064dbb7ee89c8",
+          "RELDN4A.xml": "a5a723386a1f85d4304b6c21055c3bcd16abafe586ed4ebb03f8340502f863b3",
+          "RELDN8A.xml": "3d8c1db6a451da762e032dc636d217639abfb9f2d2ea7f315a118cd59032b336",
+          "RELDN16A.xml": "016c9635368dcbac98670a419f203db1f6e3e2df6b1bc2be09c734891338a28d"
+        },
+        "product_bound_file_count": 321,
+        "product_relative_binding_roster_sha256": "875aa9660057b21742264ac0ea4cd9c4da54dc3b01b8a773e83874e6b357ddc3",
+        "actual_import_module_count": 8,
+        "actual_import_roster_sha256": "888042d9a0ef24bbb4348aad69d95524cb48c194fa445e9aac547cd3b67eebc7",
+        "actual_import_module_sha256": {
+          "cbus_toolkit": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+          "cbus_toolkit.cgate": "fef71db3a4d98c1a175a8bf0287b5abcaea4689df835dea7b0c19413e206eb15",
+          "cbus_toolkit.unitspec": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+          "cbus_toolkit.conversion_mapping": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09",
+          "cbus_toolkit.native": "e72a5f5569c35b2de2e9802fa6e458343208216561632ea7a5aa3334aefcb36a",
+          "cbus_toolkit.programming": "d55effc91e0e8c0530a6886b717ba3ebf81827dbf814d608855100cce7c4a7bc",
+          "research.convertunit_pairs": "c80f00e0d9bd9af7c91ebd2e984d235ed77f9ab36f9079bd0b5812b86550c9cb",
+          "research.local_cgate": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+        },
+        "producer_sha256": "c80f00e0d9bd9af7c91ebd2e984d235ed77f9ab36f9079bd0b5812b86550c9cb",
+        "local_cgate_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+        "owned_access_policy": {
+          "content": "interface 127.0.0.1 Clipsal\n",
+          "sha256": "d6b62e8550eacbc52e5add1621f79d6772d61fd1f15076409d97db8931e2fbc8",
+          "scope": "fresh ephemeral loopback child only",
+          "required_role": "Clipsal",
+          "required_level": 7
+        }
+      },
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 61,
+        "all_observed_networks_closed": true,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": true,
+        "project_delete_200": true,
+        "project_cleanup_error_type": null,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "positive_cases": [
+        {
+          "id": "DIMDU4->DIMDN8/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN8",
+          "mode": 1,
+          "table_index": 6,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "9f04ace4274004e68dde4a904ea406136e2a7e6a0aab1d23fbe71b24798cb3d8",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "1a89374147a777e311fcdefa548a212b78ba0563e73a87e13a6719ed9f3395ba",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "d7c5cb6237f0118ffb503af4d4fd8d1504d4bdd3a0ffef8275b894f842e6e0d6",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "ef8650f79b4089fc20ce16413993bd526f0d36bee646ac486bbda6cc54d88745",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            6,
+            113
+          ],
+          "predicted_pp_sha256": "d7c5cb6237f0118ffb503af4d4fd8d1504d4bdd3a0ffef8275b894f842e6e0d6",
+          "observed_pp_sha256": "d7c5cb6237f0118ffb503af4d4fd8d1504d4bdd3a0ffef8275b894f842e6e0d6",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "9ab8070eb122745666f82ea7259544ed0c6229d3f3e7102f12b3da6c4f936bb1",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN8/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN8",
+          "mode": 2,
+          "table_index": 6,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "7006ec82a352aee9fa46be1a022cde6545dddf3998527622f87b1f203e82955c",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d222d20534238ed1af743e6b2a89005fff372ded2caec163c47a8fa228ee718b",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "6fb41c329abfd7b9dd957b0ddbc728f3bc44fbc93defe6ff42d6e21fff1f8e29",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "79b701a2532aeec11fa1100f110c0839e82bead6060f0bcb73742253316fc39b",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            113,
+            272
+          ],
+          "predicted_pp_sha256": "6fb41c329abfd7b9dd957b0ddbc728f3bc44fbc93defe6ff42d6e21fff1f8e29",
+          "observed_pp_sha256": "6fb41c329abfd7b9dd957b0ddbc728f3bc44fbc93defe6ff42d6e21fff1f8e29",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "f9b1ab5acbe1e92c7fc33f73242e82ffcd133fa9fe1b1e1caff0c379448b663a",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN8F",
+          "mode": 1,
+          "table_index": 7,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "176490ce57afef4bc3367d83f88f139012daed219a1c540c747b34f8e9d2fbf4",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "899f94d5ff67a81fc0864f678f29200236967fa1831d13952baf35433b689296",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "60754169dffa57cffabea27592be7b0ee62f3748b5c395ba2f2f8243f5ef132f",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "59bc1d771b5940fef2a0529fe4d66bc0be63b46ff16a1889d613c92ea4e611e1",
+            "scalar_identity": {
+              "UnitType": "DIMDN8F",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "SLC5508TD2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            272,
+            379
+          ],
+          "predicted_pp_sha256": "60754169dffa57cffabea27592be7b0ee62f3748b5c395ba2f2f8243f5ef132f",
+          "observed_pp_sha256": "60754169dffa57cffabea27592be7b0ee62f3748b5c395ba2f2f8243f5ef132f",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "6ded32ccdb66d311fd4ad87b7c127771ef6c1760ea08f06b5279c809f62c18a1",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN8F/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN8F",
+          "mode": 2,
+          "table_index": 7,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "22d4dc41c63df16602b92953c6b01ab480e8c18a8a5b60d61b3bbb49e1498193",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "c666fdbecb21a870678bc5cb01a53fb4824b23c1377a730dc3fdc9d785af8b57",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "7e16fd83e6f9734183eccf281235fd1d22c65a1a881fb2a03b29013c74e6ae98",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "55c8c1336266dec10b037858e0928e8463f7d5c7604daec1a23ab74c78b6c897",
+            "scalar_identity": {
+              "UnitType": "DIMDN8F",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "SLC5508TD2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            379,
+            538
+          ],
+          "predicted_pp_sha256": "7e16fd83e6f9734183eccf281235fd1d22c65a1a881fb2a03b29013c74e6ae98",
+          "observed_pp_sha256": "7e16fd83e6f9734183eccf281235fd1d22c65a1a881fb2a03b29013c74e6ae98",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "7ea8c653a1bdfc4845c6972da70514505c60b569429d3bda4fd86afea02895c5",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN4",
+          "mode": 1,
+          "table_index": 8,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "c7391271f650beaab8734ddd94a871230e1d3e9693de8c20eece61d06237e6bb",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "1e53b143da57803287dc4d134d4082a0599770eaa6f54386cd58f5027079e38d",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 22,
+            "ordered_pp_sha256": "ba6c3b82c9d49c8fa3cc4ad91c7fa99b41e274513dfc6702126ff494004a17d1",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "d0f338b130c8b6c3f7d166a9484a1bcaefc46e23e66fe2559fa3bda508263b53",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            538,
+            645
+          ],
+          "predicted_pp_sha256": "ba6c3b82c9d49c8fa3cc4ad91c7fa99b41e274513dfc6702126ff494004a17d1",
+          "observed_pp_sha256": "ba6c3b82c9d49c8fa3cc4ad91c7fa99b41e274513dfc6702126ff494004a17d1",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "8643bb61ef8c796914610ddd12968563572293d4ac995517204bc0495802861b",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN4/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN4",
+          "mode": 2,
+          "table_index": 8,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "52bf1e90e265acb68454a4a0cc9b238b785bd9d291207180603312723bbc223e",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "558108372fc08c0018ea77d4533bb8b948f4118e8c0854f55fb92d3f18f95b4c",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 22,
+            "ordered_pp_sha256": "d3c792e2df0b7825050a16cb1e3329e8fadc1352fb29c4be1e94706a535a8ee1",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "8b3f67814c6e4af3fbcdc59c9c4282ee2ca738dbdca5772002922952ebfc04de",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            645,
+            804
+          ],
+          "predicted_pp_sha256": "d3c792e2df0b7825050a16cb1e3329e8fadc1352fb29c4be1e94706a535a8ee1",
+          "observed_pp_sha256": "d3c792e2df0b7825050a16cb1e3329e8fadc1352fb29c4be1e94706a535a8ee1",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "f8564dfc9e7898807faf9360ebbd4728a363aeee5e9ad60f53a7c8e5ee673efc",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN4F",
+          "mode": 1,
+          "table_index": 9,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "670e19baa3c0655fa40df16f4d3d0dc0f899ea088969790c0b8047748c757cfc",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "dfadf26752def8b53120fba99e1d1a695f0959650a1faf125a19a3fd5a4e8d27",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 22,
+            "ordered_pp_sha256": "b17b7e816f6b439c9647d4e282c312780d51f520416ca8598931319be0ddb8e2",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "6a40661ad2105701ca243f9ea0a8e54ae0922a350b478f91be719a4939629826",
+            "scalar_identity": {
+              "UnitType": "DIMDN4F",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "LU5504TD4A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            804,
+            911
+          ],
+          "predicted_pp_sha256": "b17b7e816f6b439c9647d4e282c312780d51f520416ca8598931319be0ddb8e2",
+          "observed_pp_sha256": "b17b7e816f6b439c9647d4e282c312780d51f520416ca8598931319be0ddb8e2",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "2138e44ce7499b57f490fcdbf41c27ee010b718f4892e49d648c4227572d6db5",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDN4F/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDN4F",
+          "mode": 2,
+          "table_index": 9,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "85a6f7cb609b38546f12768bed8263b69830acfabb8be9788ba05fbe582af77e",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "1b611dc57fbd9f2af00e7ada4d6ad00770e1b3acb4f54ac8e32ce56184d24ebe",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 22,
+            "ordered_pp_sha256": "c730eb59499d449dbae743fdc6469b0fbfd54e1883a7a0276b4442156d3ee80c",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "5178b532ad39af947c39e57ab1950e9a3d2b52f5f71ca50621ec9ac9a9210097",
+            "scalar_identity": {
+              "UnitType": "DIMDN4F",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "LU5504TD4A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            911,
+            1070
+          ],
+          "predicted_pp_sha256": "c730eb59499d449dbae743fdc6469b0fbfd54e1883a7a0276b4442156d3ee80c",
+          "observed_pp_sha256": "c730eb59499d449dbae743fdc6469b0fbfd54e1883a7a0276b4442156d3ee80c",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 31,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "d0084b582970ce797ac4403ff37721701fa8f1722b7437cb47ae98579fc797b0",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode1",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDD4",
+          "mode": 1,
+          "table_index": 12,
+          "rules": [
+            "changePropertyName",
+            "channelProperties",
+            "convertDimChProfileData",
+            "convertDimChannelProfileSelection",
+            "convertErrorReportInterval",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "f862ac92b76f63fab67e45c765e35136ce208269311fa884d7a2441b9f82bfc1",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "c3bcf9a35ceca6dac79320a18c0c287b760cb374047245e4e3bce83409b60202",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "58b065aee3eddbbeaa9d82e12b7de1ba3add28c10124181f19e2d851eff7613a",
+            "non_oid_scalar_count": 11,
+            "non_oid_scalars_sha256": "f6c6d79eaff9eee6bac2a208cf0122fab50582eea841cfc733a95110e6ca1205",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            1070,
+            1146
+          ],
+          "predicted_pp_sha256": "58b065aee3eddbbeaa9d82e12b7de1ba3add28c10124181f19e2d851eff7613a",
+          "observed_pp_sha256": "58b065aee3eddbbeaa9d82e12b7de1ba3add28c10124181f19e2d851eff7613a",
+          "native_pp_load_terminal_code": 408,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 0,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDU4->DIMDD4/mode2",
+          "source_type": "DIMDU4",
+          "target_type": "DIMDD4",
+          "mode": 2,
+          "table_index": 12,
+          "rules": [
+            "changePropertyName",
+            "channelProperties",
+            "convertDimChProfileData",
+            "convertDimChannelProfileSelection",
+            "convertErrorReportInterval",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "09a561692bad1d86e56b767d0e96adcc85cbcbe65e1072086c38e9217cdd3947",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "abc1d72d15aa9bec94854654c82a615107df64d52c4a5fa5eb51d725a4201e98",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "571f8a94a2e806604adc2c0af85e14d412028d89975af957788525dd5270bc97",
+            "non_oid_scalar_count": 10,
+            "non_oid_scalars_sha256": "bcdee0ea6ee0d976b44beb4cc9764952f03d4c5007d9a47427519c9a69f4eb53",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            1146,
+            1644
+          ],
+          "predicted_pp_sha256": "571f8a94a2e806604adc2c0af85e14d412028d89975af957788525dd5270bc97",
+          "observed_pp_sha256": "571f8a94a2e806604adc2c0af85e14d412028d89975af957788525dd5270bc97",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 197,
+          "native_pp_get_408_parameters": [
+            "DimChProfile2StartupDurationCycles",
+            "DimChProfile4StartupDurationCycles"
+          ],
+          "native_pp_get_observation_sha256": "b56832d26c35444d8fa181ace176c481722a5b99f64f19b4aacc9f00b3800cc4",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode1",
+          "source_type": "DIMDN4F",
+          "target_type": "DIMDU4",
+          "mode": 1,
+          "table_index": 1,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "affbfaf33a238199883268ec7cfb9c914cf53e7fc6b257654a4783a2975a0aae",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "5c6d484f3e1be32dfe3815c2270ead87e713d1397b459fc5ee583afb7fee4515",
+            "scalar_identity": {
+              "UnitType": "DIMDN4F",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "LU5504TD4A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "1a2204aa1ae43b7de404bec81edf9cb0560f498d62040bea164d0f46427a84bd",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "f23fc00f8cf48611885cd9528e2cd8c8bc08c91f84b2ad44758a7624a393c305",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            1644,
+            1751
+          ],
+          "predicted_pp_sha256": "1a2204aa1ae43b7de404bec81edf9cb0560f498d62040bea164d0f46427a84bd",
+          "observed_pp_sha256": "1a2204aa1ae43b7de404bec81edf9cb0560f498d62040bea164d0f46427a84bd",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "bd489d36390112e3f38118401f630804fe2327715a58e5b42981068c25f54102",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4F->DIMDU4/mode2",
+          "source_type": "DIMDN4F",
+          "target_type": "DIMDU4",
+          "mode": 2,
+          "table_index": 1,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "cf5251b126be9b70864f966b5017d46515c873e1c0a440632eb6cee3ca709aae",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "2ea68bb328efe51c2e86baee5fb46fde7c44f4038483ac0ffcbc01f01d627dc7",
+            "scalar_identity": {
+              "UnitType": "DIMDN4F",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "LU5504TD4A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "9ab8b8061cead37b2c44d0f1509cba4948e4169dee49897ad34f9c9d726e2401",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "7ac97b0695d6062f485b46c71dadf9027c6b5f7261bb92548983fd8c5dabfc54",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            1751,
+            1919
+          ],
+          "predicted_pp_sha256": "9ab8b8061cead37b2c44d0f1509cba4948e4169dee49897ad34f9c9d726e2401",
+          "observed_pp_sha256": "9ab8b8061cead37b2c44d0f1509cba4948e4169dee49897ad34f9c9d726e2401",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "3e7a60ebafeedf79f017b7ad84d7ec9123acdb204466bddf52d20f41954e4678",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode1",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDU4",
+          "mode": 1,
+          "table_index": 4,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "07629b841e046e6180230f4726b9cd8ad5b59cf4c78dcb8332adba4c988cb4a2",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "a893875f4e40d89e79c85b14f1137cc76cf89034b82d0c23be4bfc596a153752",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "98bcb9239f97a29452989300629ef29bd8c7f37bc56ac45d2fbd175380aa62f3",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "5134a97beacfb62ca723c54f5e3f460c17a0f1b38081028ff0af1b0d219312d9",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            1919,
+            2026
+          ],
+          "predicted_pp_sha256": "98bcb9239f97a29452989300629ef29bd8c7f37bc56ac45d2fbd175380aa62f3",
+          "observed_pp_sha256": "98bcb9239f97a29452989300629ef29bd8c7f37bc56ac45d2fbd175380aa62f3",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "a521d7f87690f496a2ae7ffeb44a43ac26ba4c4ce3c2d9bb0a87c684234dc111",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDU4/mode2",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDU4",
+          "mode": 2,
+          "table_index": 4,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "19cd74b5ac0923fc0cb661f08f745bb5f9fdf8dc9d9c932aa4e49ca7bc4ceae2",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "f83fd1811fe01a74d3b8e9fa4ad29293b320ebb1b7382ff2d2b42fb4ea8626b8",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "d95dceac0c7849a90aa1e86247637c9843679bb3cbb78edb8605a51086ca4b4d",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "919ece21036cb0da0d2f57622d39ff2132806c2a5e3d29b79973cfc9240eb452",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            2026,
+            2194
+          ],
+          "predicted_pp_sha256": "d95dceac0c7849a90aa1e86247637c9843679bb3cbb78edb8605a51086ca4b4d",
+          "observed_pp_sha256": "d95dceac0c7849a90aa1e86247637c9843679bb3cbb78edb8605a51086ca4b4d",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "a8ed8db36682e516d2bd46a030cd72298144795dbfb71b214ab23b982708bae5",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode1",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDN8",
+          "mode": 1,
+          "table_index": null,
+          "rules": [],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "8e9d8736d31f9ed7609ec829c21996b37a98faa1340a2d6ef485f4cfb1c67416",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "148cff41a721d72c3c366b3b45dac45c03ec6edd91f9b70938aa4a54b48b795a",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "8e9d8736d31f9ed7609ec829c21996b37a98faa1340a2d6ef485f4cfb1c67416",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "3c9041883cd02ca0533bc528a8bdb0e620456db61ecf970f28b4286a5fa3eb92",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            2194,
+            2292
+          ],
+          "predicted_pp_sha256": "8e9d8736d31f9ed7609ec829c21996b37a98faa1340a2d6ef485f4cfb1c67416",
+          "observed_pp_sha256": "8e9d8736d31f9ed7609ec829c21996b37a98faa1340a2d6ef485f4cfb1c67416",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 22,
+          "native_pp_get_408_parameters": [
+            "LogicGA13Associations",
+            "LogicGA14Associations",
+            "LogicGA15Associations",
+            "LogicGA16Associations",
+            "RestrikeChannel",
+            "LogicFunction",
+            "PowerUpDelay",
+            "MinDimmingLevel",
+            "MaxDimmingLevel"
+          ],
+          "native_pp_get_observation_sha256": "a2a3193bed066dcbd3cc52f00b8be700f2d6de6460524e9bb895ad686ed4e03a",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDN8/mode2",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDN8",
+          "mode": 2,
+          "table_index": null,
+          "rules": [],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "9f67f870393756df5bb78ff4307c30f6c7d9a5101b3382f6905362056fcf4641",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "57f6362550876a59ebbe5373f5bfaa07a90634b3afa8ae07676653fe757c1806",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "9f67f870393756df5bb78ff4307c30f6c7d9a5101b3382f6905362056fcf4641",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d95454d9621ead8d233cd7584b198ab67b62f1e0082d785f0407f0643409bc66",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            2292,
+            2442
+          ],
+          "predicted_pp_sha256": "9f67f870393756df5bb78ff4307c30f6c7d9a5101b3382f6905362056fcf4641",
+          "observed_pp_sha256": "9f67f870393756df5bb78ff4307c30f6c7d9a5101b3382f6905362056fcf4641",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 22,
+          "native_pp_get_408_parameters": [
+            "LogicGA13Associations",
+            "LogicGA14Associations",
+            "LogicGA15Associations",
+            "LogicGA16Associations",
+            "RestrikeChannel",
+            "LogicFunction",
+            "PowerUpDelay",
+            "MinDimmingLevel",
+            "MaxDimmingLevel"
+          ],
+          "native_pp_get_observation_sha256": "5d98205a5a274ee2218ea2456e8df8bc61accec6e7441245db58fd4450c0ef69",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode1",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDD4",
+          "mode": 1,
+          "table_index": 11,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "8950ebf7e3ec6a03ac6575a87ff9b7f7eb5cf26bfa3f3ee8d36c0e9920ec6a04",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "f8e3117159a0de5103ade22a35c10f9663eeee61ad0f1a2908cf3b3cfe3addf3",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "6c6c032827efb8b635d5ac00ef82cac06989c649bfc3ea97e8288be641b084f6",
+            "non_oid_scalar_count": 11,
+            "non_oid_scalars_sha256": "092ad7d526067d216058dfb0f425aac197bfc95cb76450698daadbee39480c2c",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            2442,
+            2708
+          ],
+          "predicted_pp_sha256": "6c6c032827efb8b635d5ac00ef82cac06989c649bfc3ea97e8288be641b084f6",
+          "observed_pp_sha256": "6c6c032827efb8b635d5ac00ef82cac06989c649bfc3ea97e8288be641b084f6",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 199,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "5b6bf2951e59c4db1c2faef5ad6e0c4b6774a35d412283df89deeafc491aa52e",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN4->DIMDD4/mode2",
+          "source_type": "DIMDN4",
+          "target_type": "DIMDD4",
+          "mode": 2,
+          "table_index": 11,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "773dd6d24db13904833dfac8b0396c64a97682a15a5131af0a51bffe2a2c294b",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "ea433fe42e3be4f0170c2792f3b07a88da2bfbef438c6136075a1a9f0250c8b8",
+            "scalar_identity": {
+              "UnitType": "DIMDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 199,
+            "ordered_pp_sha256": "edd139ab6180e7a72001864a95197ba5a8d966b68a420bc039b0608fe516cf74",
+            "non_oid_scalar_count": 10,
+            "non_oid_scalars_sha256": "8be973c87eb572327a73d0517fe4acb5c9d2130469303a10da9e7a6635eeb51c",
+            "scalar_identity": {
+              "UnitType": "DIMDD4",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5504D2D"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            2708,
+            3197
+          ],
+          "predicted_pp_sha256": "edd139ab6180e7a72001864a95197ba5a8d966b68a420bc039b0608fe516cf74",
+          "observed_pp_sha256": "edd139ab6180e7a72001864a95197ba5a8d966b68a420bc039b0608fe516cf74",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 199,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "0522222dadfb2cba8018d8e002d95169d99d380f7b57301a7ef8640b591f390a",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode1",
+          "source_type": "DIMDN8F",
+          "target_type": "DIMDU4",
+          "mode": 1,
+          "table_index": 3,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "60b7cf475d8b92d60d761ddef6f35e50dbc541471b17e78f141d22404864fdd8",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "e72a0c3dc2da9b6bc2bf8e6f69e3c046cc2fd56beedc1b9ee3dd39dd22763108",
+            "scalar_identity": {
+              "UnitType": "DIMDN8F",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "SLC5508TD2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "3f2eff0ce4703107c7784d152ddc9ec424a6b6f294779657822e43d8ba6807b6",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "7a7307ec868ced3f25ac51a9826e734e59d7451258bd80bae9dfe11eb6e70d2f",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            3197,
+            3304
+          ],
+          "predicted_pp_sha256": "3f2eff0ce4703107c7784d152ddc9ec424a6b6f294779657822e43d8ba6807b6",
+          "observed_pp_sha256": "3f2eff0ce4703107c7784d152ddc9ec424a6b6f294779657822e43d8ba6807b6",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "abcbbd0252f9376974bb4670301833a62dda93e783c5ecba25e2e3816e9c2757",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8F->DIMDU4/mode2",
+          "source_type": "DIMDN8F",
+          "target_type": "DIMDU4",
+          "mode": 2,
+          "table_index": 3,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "16bbbb63e8a5735385a9fb57bd4da83eced0099a0a2e397d5a37487884297355",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "58f97372a0b8edd1f2f281b0a2265082db3130401c2dfc6abd3c7a5038df990f",
+            "scalar_identity": {
+              "UnitType": "DIMDN8F",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "SLC5508TD2A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "46f62c7aca594b031fe04a05e1b1c9bfcc874450904e423e4715fb9d1f51fc61",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "0a690a1f61c89b4abcf382c6bd7130711fc5a3b2fedf0786370ac970b869c4ef",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            3304,
+            3472
+          ],
+          "predicted_pp_sha256": "46f62c7aca594b031fe04a05e1b1c9bfcc874450904e423e4715fb9d1f51fc61",
+          "observed_pp_sha256": "46f62c7aca594b031fe04a05e1b1c9bfcc874450904e423e4715fb9d1f51fc61",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "b3702be7710e01c23a33ae95f86ea7121c39e768150777d109238558798a909c",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode1",
+          "source_type": "DIMDN8",
+          "target_type": "DIMDU4",
+          "mode": 1,
+          "table_index": 2,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "6e6b6ec9ea1cb20698ce807368c6fba2de0a0ef789c928d1cc9b1cd7d3a9cfc4",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "9d6a463eef20eef0cdaeb66616a6617e2acf64024232a19693500ced50c84421",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "505d9ec800d826974f4a642776237a114e0c3d567fb4548411d0992badd958bb",
+            "non_oid_scalar_count": 7,
+            "non_oid_scalars_sha256": "076b1d8fbbe053b8db9ff81800106af3bd01d0d363a336cc91d93da8da10a898",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            3472,
+            3579
+          ],
+          "predicted_pp_sha256": "505d9ec800d826974f4a642776237a114e0c3d567fb4548411d0992badd958bb",
+          "observed_pp_sha256": "505d9ec800d826974f4a642776237a114e0c3d567fb4548411d0992badd958bb",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "dc1b8c2a21de1bca9955a081fcfcf0fb32a127f7f724a8af3a350c3019dadac2",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8->DIMDU4/mode2",
+          "source_type": "DIMDN8",
+          "target_type": "DIMDU4",
+          "mode": 2,
+          "table_index": 2,
+          "rules": [
+            "channelProperties",
+            "resetToZero",
+            "setDefaultValue"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 0,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "50612a3ce6a5b32c7715a38c47adfc142ed16e5381bd263b17be96892fae6855",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "9a974c77f229cf05d772a243145735917b6d101e4c76905e6b37ecd0f9d08cc4",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "7d64f6e79b3dc5518545b6c781038ba44b74f9a539fa685c1670311e4f080424",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "a499301ac11455f6db4981817b1ddeccd46ee0ecfa42ac5ff6d0675f7ecc9f45",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "raw_event_span": [
+            3579,
+            3747
+          ],
+          "predicted_pp_sha256": "7d64f6e79b3dc5518545b6c781038ba44b74f9a539fa685c1670311e4f080424",
+          "observed_pp_sha256": "7d64f6e79b3dc5518545b6c781038ba44b74f9a539fa685c1670311e4f080424",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 40,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "580f739f95862dfa491ef4bf889d285b8835028ad151df4bc991dc557fcbea5a",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode1",
+          "source_type": "DIMDN8",
+          "target_type": "DIMDD8",
+          "mode": 1,
+          "table_index": 10,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 8,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "5555a9c1a608dd87ff4ecbbf7c96ffa79994d45a60b344a9679b731cac132cc3",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "9568a9b247ab57f63420ed4c1ef197f6bd27f040086156648026a4b415e37c7c",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 447,
+            "ordered_pp_sha256": "d4a3b515bb10cda391b2dcec0e411c4df1317ec412006bb3e166178e86d88851",
+            "non_oid_scalar_count": 15,
+            "non_oid_scalars_sha256": "a372c0ed81a193f941442129ef2dfb8b45ab2aa349a475d6013ab0c662ef1849",
+            "scalar_identity": {
+              "UnitType": "DIMDD8",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5508D1D"
+            },
+            "channel_scalar_count": 8,
+            "channel_scalars_sha256": "224b8677a0bf711517b53c3436f84ad9d58a4c16974491dfb12e8c3e79d6bf29"
+          },
+          "raw_event_span": [
+            3747,
+            4261
+          ],
+          "predicted_pp_sha256": "d4a3b515bb10cda391b2dcec0e411c4df1317ec412006bb3e166178e86d88851",
+          "observed_pp_sha256": "d4a3b515bb10cda391b2dcec0e411c4df1317ec412006bb3e166178e86d88851",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 447,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "f45834e2cd776db22320998d077ba580848717030c445223f9ecc8eb69ddadaa",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "DIMDN8->DIMDD8/mode2",
+          "source_type": "DIMDN8",
+          "target_type": "DIMDD8",
+          "mode": 2,
+          "table_index": 10,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 8,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "e849acc11ac5ff1039d69f7c8ec4acd5d99a21210f092b2ce6d55c6183584759",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "c618754b8e000e1a3a6356992c6f53bf28f0beeb3a7b42fc4a34262ff9aedad9",
+            "scalar_identity": {
+              "UnitType": "DIMDN8",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5508D1A"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 447,
+            "ordered_pp_sha256": "d7ec89d625646716f256337467aa033a4a52726dbcb228ec80e55b875bec0c6b",
+            "non_oid_scalar_count": 14,
+            "non_oid_scalars_sha256": "2d4bb8d2da85bee0d5b1c686623edf0bbc3af570f53d84f485eef737417e388e",
+            "scalar_identity": {
+              "UnitType": "DIMDD8",
+              "FirmwareVersion": "1.3.0",
+              "CatalogNumber": "5508D1D"
+            },
+            "channel_scalar_count": 8,
+            "channel_scalars_sha256": "224b8677a0bf711517b53c3436f84ad9d58a4c16974491dfb12e8c3e79d6bf29"
+          },
+          "raw_event_span": [
+            4261,
+            5246
+          ],
+          "predicted_pp_sha256": "d7ec89d625646716f256337467aa033a4a52726dbcb228ec80e55b875bec0c6b",
+          "observed_pp_sha256": "d7ec89d625646716f256337467aa033a4a52726dbcb228ec80e55b875bec0c6b",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 447,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "faee806910b6c2cb2b5c18b07a24794b14a28307c755019ab79a8444a2723176",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode1",
+          "source_type": "RELDN4",
+          "target_type": "RELDN4A",
+          "mode": 1,
+          "table_index": 13,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapInterlockMask",
+            "mapInterlockPriority",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "b1c4946607a73ef0a9d0c6fa1650007c6245e1b0c2e346b1f8a7381c0d16563a",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "2b41703709e8d8c9fcc1a24745b2f60eb9c73155a0bbe481a7d7dc14d8fa644d",
+            "scalar_identity": {
+              "UnitType": "RELDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504RVF16"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 179,
+            "ordered_pp_sha256": "64cc0c0ae2c1b7bc81d756c2e6ef67611964e92c6e46d0a6ae30fa424b4d1c4f",
+            "non_oid_scalar_count": 11,
+            "non_oid_scalars_sha256": "b0abfbb0848e07cba8957848e71c02b19ebde7c87a74939695b27c46cfe2623e",
+            "scalar_identity": {
+              "UnitType": "RELDN4A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5504RVF"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            5246,
+            5492
+          ],
+          "predicted_pp_sha256": "64cc0c0ae2c1b7bc81d756c2e6ef67611964e92c6e46d0a6ae30fa424b4d1c4f",
+          "observed_pp_sha256": "64cc0c0ae2c1b7bc81d756c2e6ef67611964e92c6e46d0a6ae30fa424b4d1c4f",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 179,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "b80455a6769401abfea35f21c5e8b0bfefa219ae1430f5e1fb0789a78369b9a3",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN4->RELDN4A/mode2",
+          "source_type": "RELDN4",
+          "target_type": "RELDN4A",
+          "mode": 2,
+          "table_index": 13,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapInterlockMask",
+            "mapInterlockPriority",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 4,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "93dcaddd27416021d67c1a45dff4eb2cbff497501b7eb1934bc0da0486e62ee1",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "b0ea90c3cb05437553f69cfa9db664099d2a28095d8cfe3b227383d76b7705e2",
+            "scalar_identity": {
+              "UnitType": "RELDN4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504RVF16"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 175,
+            "ordered_pp_sha256": "1f9d26bb1a45b84ffea654a63ef8f8ba20f22c6a34a23c47627050c245054ddb",
+            "non_oid_scalar_count": 10,
+            "non_oid_scalars_sha256": "bffbc5e998109fb6b8991bb18094c0683b572d2687e6612b537c4558f12f5048",
+            "scalar_identity": {
+              "UnitType": "RELDN4A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5504RVF"
+            },
+            "channel_scalar_count": 4,
+            "channel_scalars_sha256": "8b5d2a1be8e3d9f57c0e282e0406e65b68da48b8a29de182b3b5feb5d32f4dec"
+          },
+          "raw_event_span": [
+            5492,
+            5941
+          ],
+          "predicted_pp_sha256": "1f9d26bb1a45b84ffea654a63ef8f8ba20f22c6a34a23c47627050c245054ddb",
+          "observed_pp_sha256": "1f9d26bb1a45b84ffea654a63ef8f8ba20f22c6a34a23c47627050c245054ddb",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 177,
+          "native_pp_get_408_parameters": [
+            "Ch1RestrikeDelay",
+            "Ch3RestrikeDelay"
+          ],
+          "native_pp_get_observation_sha256": "61c198159218800690d982316a3deef5b099cc58229a7ca63ab321dab61e7219",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode1",
+          "source_type": "RELDN8",
+          "target_type": "RELDN8A",
+          "mode": 1,
+          "table_index": 14,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 8,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "6bba383cfeeee88a78ff5fd369b0db393e5e70c086a5714b6dee489a437e206c",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "79d01ace766845412570ca331425013972c8f35885e408d11060f7d3c89beb74",
+            "scalar_identity": {
+              "UnitType": "RELDN8",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "L5508RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 243,
+            "ordered_pp_sha256": "2ea1d35a20dccf289dddf0a060a06160003dbd6b046f1d126def30179ffcf8b4",
+            "non_oid_scalar_count": 15,
+            "non_oid_scalars_sha256": "38ab7faff1e94fbf4d857892da55638a5655c23be7973f8aa642bb705d58d423",
+            "scalar_identity": {
+              "UnitType": "RELDN8A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5508RVF"
+            },
+            "channel_scalar_count": 8,
+            "channel_scalars_sha256": "224b8677a0bf711517b53c3436f84ad9d58a4c16974491dfb12e8c3e79d6bf29"
+          },
+          "raw_event_span": [
+            5941,
+            6251
+          ],
+          "predicted_pp_sha256": "2ea1d35a20dccf289dddf0a060a06160003dbd6b046f1d126def30179ffcf8b4",
+          "observed_pp_sha256": "2ea1d35a20dccf289dddf0a060a06160003dbd6b046f1d126def30179ffcf8b4",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 243,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "5bbefcc9a1aad97f1999e044b0c216033696351e204d3b40ee0301c5ad20908f",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN8->RELDN8A/mode2",
+          "source_type": "RELDN8",
+          "target_type": "RELDN8A",
+          "mode": 2,
+          "table_index": 14,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 8,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "6bfb9b69d5dfeb324f5d4cc951ae0569d8b387bea1ed41a22f65024c5ae2f011",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "a4a145f1c7a8204b989ed6bfca1433eff1e7a75ed65ce75c8f837befd3e7cbc1",
+            "scalar_identity": {
+              "UnitType": "RELDN8",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "L5508RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 243,
+            "ordered_pp_sha256": "c21355ab983276f5ccbce73cd5aeaecc08b0902a2bc40448f0d185a38e2cbb68",
+            "non_oid_scalar_count": 14,
+            "non_oid_scalars_sha256": "8ed95ab2acd03cc62690fb9a1669b0a25d9ee3dbd4a0c3dbee4952025af5fc7d",
+            "scalar_identity": {
+              "UnitType": "RELDN8A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5508RVF"
+            },
+            "channel_scalar_count": 8,
+            "channel_scalars_sha256": "224b8677a0bf711517b53c3436f84ad9d58a4c16974491dfb12e8c3e79d6bf29"
+          },
+          "raw_event_span": [
+            6251,
+            6828
+          ],
+          "predicted_pp_sha256": "c21355ab983276f5ccbce73cd5aeaecc08b0902a2bc40448f0d185a38e2cbb68",
+          "observed_pp_sha256": "c21355ab983276f5ccbce73cd5aeaecc08b0902a2bc40448f0d185a38e2cbb68",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 239,
+          "native_pp_get_408_parameters": [
+            "Ch0RestrikeDelay",
+            "Ch2RestrikeDelay",
+            "Ch4RestrikeDelay",
+            "Ch6RestrikeDelay"
+          ],
+          "native_pp_get_observation_sha256": "b563e8e406e3bbe6496a502423445596aa733b53560c2927bb824b06267bcb78",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode1",
+          "source_type": "RELDN12",
+          "target_type": "RELDN16A",
+          "mode": 1,
+          "table_index": 15,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapInterlockMask",
+            "mapInterlockPriority",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 16,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "6ca626469eda4b631576f3eb2707b78a6a4a7ef6389cbe1cc928d1e186b6fd1b",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "123d1bee18fd06f5f4b2fceaaba43b986ef9a67862900b438ba657175a68b966",
+            "scalar_identity": {
+              "UnitType": "RELDN12",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "L5512RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 371,
+            "ordered_pp_sha256": "e5e544c5737331b5779f9aae5b485f47551f8ef3574746bc84804c9ff82d93a1",
+            "non_oid_scalar_count": 23,
+            "non_oid_scalars_sha256": "63c1c95a6d20df4c80a6c7407adbdeb8350beba0f4da3a56ecfa867cf9939943",
+            "scalar_identity": {
+              "UnitType": "RELDN16A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5516RVF"
+            },
+            "channel_scalar_count": 16,
+            "channel_scalars_sha256": "90c078e6264790d7d94fafef8709e4ea29afa275365028293fd74976b31950f7"
+          },
+          "raw_event_span": [
+            6828,
+            7266
+          ],
+          "predicted_pp_sha256": "e5e544c5737331b5779f9aae5b485f47551f8ef3574746bc84804c9ff82d93a1",
+          "observed_pp_sha256": "e5e544c5737331b5779f9aae5b485f47551f8ef3574746bc84804c9ff82d93a1",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 371,
+          "native_pp_get_408_parameters": [],
+          "native_pp_get_observation_sha256": "8a8ce91083e1e83714199319a3ac1510745f0476746c6f9ccf3e7e35ab85ba77",
+          "native_pp_get_parity_claimed": false
+        },
+        {
+          "id": "RELDN12->RELDN16A/mode2",
+          "source_type": "RELDN12",
+          "target_type": "RELDN16A",
+          "mode": 2,
+          "table_index": 15,
+          "rules": [
+            "channelProperties",
+            "extractByte",
+            "mapInterlockMask",
+            "mapInterlockPriority",
+            "mapRestrikeDelay",
+            "mapThreeParamToOne",
+            "mapTo2Byte",
+            "mapToIndex",
+            "mapTurnOnThreshold",
+            "oneBitToThreeBitAndInverse",
+            "toggleGlobalParam"
+          ],
+          "check_code": 200,
+          "convert_code": 200,
+          "passed": true,
+          "ordered_pp_matches_prediction": true,
+          "pp_set_matches_prediction": true,
+          "identity_matches": true,
+          "reload_matches": true,
+          "output_channels": 16,
+          "source_before": {
+            "ordered_pp_count": 31,
+            "ordered_pp_sha256": "396f53578b654c5fce99d3848ae97e5c1c4a3679dc3891571643b5e676f3e5cd",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "30af5faf72ddcdce8f9b2d55b2012b08f2716b3f4bb181f7233cc0531ad6dd08",
+            "scalar_identity": {
+              "UnitType": "RELDN12",
+              "FirmwareVersion": "1.6.00",
+              "CatalogNumber": "L5512RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "target_after": {
+            "ordered_pp_count": 361,
+            "ordered_pp_sha256": "826579809c680178e77b092211df75192d9946439ccef324a184d70f9193f581",
+            "non_oid_scalar_count": 22,
+            "non_oid_scalars_sha256": "7ca119dec279a6a4c528f64147b5bc92c234c867697cc86abb0ac935014dbd09",
+            "scalar_identity": {
+              "UnitType": "RELDN16A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5516RVF"
+            },
+            "channel_scalar_count": 16,
+            "channel_scalars_sha256": "90c078e6264790d7d94fafef8709e4ea29afa275365028293fd74976b31950f7"
+          },
+          "raw_event_span": [
+            7266,
+            8099
+          ],
+          "predicted_pp_sha256": "826579809c680178e77b092211df75192d9946439ccef324a184d70f9193f581",
+          "observed_pp_sha256": "826579809c680178e77b092211df75192d9946439ccef324a184d70f9193f581",
+          "native_pp_load_terminal_code": 200,
+          "native_pp_load_warning_codes": [],
+          "native_pp_get_315_count": 365,
+          "native_pp_get_408_parameters": [
+            "Ch1RestrikeDelay",
+            "Ch3RestrikeDelay",
+            "Ch5RestrikeDelay",
+            "Ch7RestrikeDelay",
+            "Ch9RestrikeDelay",
+            "Ch11RestrikeDelay"
+          ],
+          "native_pp_get_observation_sha256": "eee27e0df61ce687f0e12864f8ac487d08808cb723830387a617e82785dcee7b",
+          "native_pp_get_parity_claimed": false
+        }
+      ]
+    }
+  },
+  "counts": {
+    "targeted_positive": 2,
+    "pair_positive": 30,
+    "collision": 2,
+    "absent_declared_pp": 5,
+    "grammar": 12,
+    "negative": 15,
+    "bare_source": 1
+  },
+  "collisions": [
+    {
+      "target_type": "DIMDU4",
+      "dbsetxml_code": 301,
+      "declared_parameters": {
+        "UnitName": true,
+        "UnitAddress": true,
+        "SerialNumber": false,
+        "UnitType": false
+      },
+      "scalar_and_ordered_pp_preserved": true,
+      "passed": true,
+      "before": {
+        "ordered_pp_count": 40,
+        "ordered_pp_sha256": "051ffa50a0aa9f0cd0501ce46246240155b918aeda30d88a5c59acf97cdd4d17",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "bf90c9521db5ad54e3b593c599be8df3345cc49d17be1184c213cf8d8667ac22",
+        "scalar_identity": {
+          "UnitType": "DIMDU4",
+          "FirmwareVersion": "2.7.00",
+          "CatalogNumber": "L5504D2U"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "after": {
+        "ordered_pp_count": 40,
+        "ordered_pp_sha256": "051ffa50a0aa9f0cd0501ce46246240155b918aeda30d88a5c59acf97cdd4d17",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "bf90c9521db5ad54e3b593c599be8df3345cc49d17be1184c213cf8d8667ac22",
+        "scalar_identity": {
+          "UnitType": "DIMDU4",
+          "FirmwareVersion": "2.7.00",
+          "CatalogNumber": "L5504D2U"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "saved": {
+        "ordered_pp_count": 40,
+        "ordered_pp_sha256": "051ffa50a0aa9f0cd0501ce46246240155b918aeda30d88a5c59acf97cdd4d17",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "bf90c9521db5ad54e3b593c599be8df3345cc49d17be1184c213cf8d8667ac22",
+        "scalar_identity": {
+          "UnitType": "DIMDU4",
+          "FirmwareVersion": "2.7.00",
+          "CatalogNumber": "L5504D2U"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "absent_declared_pp": [
+        {
+          "parameter": "UnitName",
+          "dbsetxml_code": 301,
+          "load_code": 200,
+          "get_code": 315,
+          "get_observation_sha256": "06649588de900aa180946c52cbe8dfef798712b146e24e4605635980ddaa0e14",
+          "saved": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "685b72223f62aaaaa690095a060af03e530cf3e78e844befff801c2f8282ed02",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "bf90c9521db5ad54e3b593c599be8df3345cc49d17be1184c213cf8d8667ac22",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        {
+          "parameter": "UnitAddress",
+          "dbsetxml_code": 301,
+          "load_code": 200,
+          "get_code": 315,
+          "get_observation_sha256": "e3d307e2d2693c078d7f36815541b57bfe773b7bc2cf6628b48b2c40a45a17b1",
+          "saved": {
+            "ordered_pp_count": 40,
+            "ordered_pp_sha256": "fdb813bf1aad54d51a29cf561c7b0f80e44fcf4917b72a573e46becc5a184737",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "bf90c9521db5ad54e3b593c599be8df3345cc49d17be1184c213cf8d8667ac22",
+            "scalar_identity": {
+              "UnitType": "DIMDU4",
+              "FirmwareVersion": "2.7.00",
+              "CatalogNumber": "L5504D2U"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        }
+      ]
+    },
+    {
+      "target_type": "RELDN4A",
+      "dbsetxml_code": 301,
+      "declared_parameters": {
+        "UnitName": true,
+        "UnitAddress": true,
+        "SerialNumber": false,
+        "UnitType": true
+      },
+      "scalar_and_ordered_pp_preserved": true,
+      "passed": true,
+      "before": {
+        "ordered_pp_count": 179,
+        "ordered_pp_sha256": "48c7e2bec9d6d32c9374564f1544256227d6a19643425fea8cd743edafb93c54",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+        "scalar_identity": {
+          "UnitType": "RELDN4A",
+          "FirmwareVersion": "1.0.0",
+          "CatalogNumber": "5504RVF"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "after": {
+        "ordered_pp_count": 179,
+        "ordered_pp_sha256": "48c7e2bec9d6d32c9374564f1544256227d6a19643425fea8cd743edafb93c54",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+        "scalar_identity": {
+          "UnitType": "RELDN4A",
+          "FirmwareVersion": "1.0.0",
+          "CatalogNumber": "5504RVF"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "saved": {
+        "ordered_pp_count": 179,
+        "ordered_pp_sha256": "48c7e2bec9d6d32c9374564f1544256227d6a19643425fea8cd743edafb93c54",
+        "non_oid_scalar_count": 6,
+        "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+        "scalar_identity": {
+          "UnitType": "RELDN4A",
+          "FirmwareVersion": "1.0.0",
+          "CatalogNumber": "5504RVF"
+        },
+        "channel_scalar_count": 0,
+        "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "absent_declared_pp": [
+        {
+          "parameter": "UnitName",
+          "dbsetxml_code": 301,
+          "load_code": 200,
+          "get_code": 315,
+          "get_observation_sha256": "06649588de900aa180946c52cbe8dfef798712b146e24e4605635980ddaa0e14",
+          "saved": {
+            "ordered_pp_count": 179,
+            "ordered_pp_sha256": "a14dba026eff6471285229fa7e7e025eb829708947c48e9ff3685ef2617da714",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+            "scalar_identity": {
+              "UnitType": "RELDN4A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5504RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        {
+          "parameter": "UnitAddress",
+          "dbsetxml_code": 301,
+          "load_code": 200,
+          "get_code": 315,
+          "get_observation_sha256": "e3d307e2d2693c078d7f36815541b57bfe773b7bc2cf6628b48b2c40a45a17b1",
+          "saved": {
+            "ordered_pp_count": 179,
+            "ordered_pp_sha256": "1006e9ea9ee1772b3f2761f92b8886d236fe6d67171f42ebc010041548a5b359",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+            "scalar_identity": {
+              "UnitType": "RELDN4A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5504RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        },
+        {
+          "parameter": "UnitType",
+          "dbsetxml_code": 301,
+          "load_code": 200,
+          "get_code": 315,
+          "get_observation_sha256": "a76b9d3e549acaa74008b8d5604f855f3c3efde20b87ebb8846b43a98f7d90f4",
+          "saved": {
+            "ordered_pp_count": 179,
+            "ordered_pp_sha256": "24fa7265a137119642ff69f20a763008ec0d4a84869c95c09581567264532435",
+            "non_oid_scalar_count": 6,
+            "non_oid_scalars_sha256": "d5efee9cd6fcd25328ca30eab9d0957bf3ba4309bcd6d07be84faf8a5e67aad6",
+            "scalar_identity": {
+              "UnitType": "RELDN4A",
+              "FirmwareVersion": "1.0.0",
+              "CatalogNumber": "5504RVF"
+            },
+            "channel_scalar_count": 0,
+            "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        }
+      ]
+    }
+  ],
+  "application_grammar": {
+    "unit_type": "DIMDU4",
+    "parameter": "Application",
+    "both_bounds_declared": true,
+    "cases": [
+      {
+        "value": "",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 408,
+        "get_safe_response": "408 Operation failed: No valid or current value for parameter Application",
+        "raw_event_span": [
+          1009,
+          1016
+        ]
+      },
+      {
+        "value": "1",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 408,
+        "get_safe_response": "408 Operation failed: No valid or current value for parameter Application",
+        "raw_event_span": [
+          1016,
+          1023
+        ]
+      },
+      {
+        "value": "1 2",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x1 0x2",
+        "raw_event_span": [
+          1023,
+          1030
+        ]
+      },
+      {
+        "value": "1 2 bad",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x1 0x2",
+        "raw_event_span": [
+          1030,
+          1037
+        ]
+      },
+      {
+        "value": "-1 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [
+          "462-Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"
+        ],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x38 0xff",
+        "raw_event_span": [
+          1037,
+          1044
+        ]
+      },
+      {
+        "value": "+1 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x1 0x0",
+        "raw_event_span": [
+          1044,
+          1051
+        ]
+      },
+      {
+        "value": "$FF 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0xff 0x0",
+        "raw_event_span": [
+          1051,
+          1058
+        ]
+      },
+      {
+        "value": "0xFFFFFFFF 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 408,
+        "load_warning_text": [],
+        "get_code": null,
+        "get_safe_response": null,
+        "raw_event_span": [
+          1058,
+          1064
+        ]
+      },
+      {
+        "value": "0x80000000 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 408,
+        "load_warning_text": [],
+        "get_code": null,
+        "get_safe_response": null,
+        "raw_event_span": [
+          1064,
+          1070
+        ]
+      },
+      {
+        "value": "2147483648 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 408,
+        "load_warning_text": [],
+        "get_code": null,
+        "get_safe_response": null,
+        "raw_event_span": [
+          1070,
+          1076
+        ]
+      },
+      {
+        "value": "-1 0",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [
+          "462-Parameter 'Application' value '-1 0' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"
+        ],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x38 0xff",
+        "raw_event_span": [
+          1076,
+          1083
+        ]
+      },
+      {
+        "value": "256 255",
+        "dbsetxml_code": 301,
+        "load_terminal_code": 200,
+        "load_warning_text": [
+          "462-Parameter 'Application' value '256 255' was reset to default value '$38 $FF' as it is out of range '$00' to '$FF'"
+        ],
+        "get_code": 315,
+        "get_safe_response": "315 Application=0x38 0xff",
+        "raw_event_span": [
+          1083,
+          1090
+        ]
+      }
+    ]
+  },
+  "oid_shadow": {
+    "dbsetxml_code": 301,
+    "scalar_oid_unchanged": true,
+    "scalar_metadata_unchanged": true,
+    "accepted_pp_oid_shadow": true,
+    "before_non_oid": {
+      "ordered_pp_count": 40,
+      "ordered_pp_sha256": "418318ed92b0bfc0df77d973eb1612a655311ba118c4e81d6d53a3ad3559319d",
+      "non_oid_scalar_count": 6,
+      "non_oid_scalars_sha256": "1e53b143da57803287dc4d134d4082a0599770eaa6f54386cd58f5027079e38d",
+      "scalar_identity": {
+        "UnitType": "DIMDU4",
+        "FirmwareVersion": "2.7.00",
+        "CatalogNumber": "L5504D2U"
+      },
+      "channel_scalar_count": 0,
+      "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "after_non_oid": {
+      "ordered_pp_count": 41,
+      "ordered_pp_sha256": "c9b311210b14da308ec6bca6d47267a5d478f963a68446097aae1d3598cb2116",
+      "non_oid_scalar_count": 6,
+      "non_oid_scalars_sha256": "1e53b143da57803287dc4d134d4082a0599770eaa6f54386cd58f5027079e38d",
+      "scalar_identity": {
+        "UnitType": "DIMDU4",
+        "FirmwareVersion": "2.7.00",
+        "CatalogNumber": "L5504D2U"
+      },
+      "channel_scalar_count": 0,
+      "channel_scalars_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "qualification": "Scalar metadata OID equality and accepted PP Name=OID shadow are separate native observations."
+  },
+  "negative_cases": [
+    {
+      "id": "incompatible-type/CHECK",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8351,
+        8354
+      ]
+    },
+    {
+      "id": "reverse-not-admitted/CHECK",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8354,
+        8357
+      ]
+    },
+    {
+      "id": "missing-source/CHECK",
+      "code": 401,
+      "expected_code": 401,
+      "passed": true,
+      "raw_event_span": [
+        8357,
+        8358
+      ]
+    },
+    {
+      "id": "missing-destination/CHECK",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8358,
+        8361
+      ]
+    },
+    {
+      "id": "incompatible-destination/CHECK",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8361,
+        8364
+      ]
+    },
+    {
+      "id": "unknown-catalogue/CHECK",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8364,
+        8367
+      ]
+    },
+    {
+      "id": "incompatible-type/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8367,
+        8370
+      ]
+    },
+    {
+      "id": "reverse-not-admitted/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8370,
+        8373
+      ]
+    },
+    {
+      "id": "missing-source/CONVERT",
+      "code": 401,
+      "expected_code": 401,
+      "passed": true,
+      "raw_event_span": [
+        8373,
+        8374
+      ]
+    },
+    {
+      "id": "missing-destination/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8374,
+        8377
+      ]
+    },
+    {
+      "id": "incompatible-destination/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8377,
+        8380
+      ]
+    },
+    {
+      "id": "unknown-catalogue/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8380,
+        8383
+      ]
+    },
+    {
+      "id": "unchanged-identity/CHECK",
+      "code": 200,
+      "expected_code": 200,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8383,
+        8386
+      ]
+    },
+    {
+      "id": "unchanged-identity/CONVERT",
+      "code": 301,
+      "expected_code": 301,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8386,
+        8389
+      ]
+    },
+    {
+      "id": "mode-out-of-range",
+      "code": 400,
+      "expected_code": 400,
+      "unchanged": true,
+      "passed": true,
+      "raw_event_span": [
+        8389,
+        8392
+      ]
+    }
+  ],
+  "bare_source_cases": [
+    {
+      "id": "bare-source/DIMDN4->DIMDU4/mode1",
+      "code": 200,
+      "predicted_pp_count": 40,
+      "pp_set_matches": true,
+      "pp_mismatches": [],
+      "passed": true,
+      "raw_event_span": [
+        8392,
+        8400
+      ]
+    }
+  ],
+  "failed_history": [
+    {
+      "version": 1,
+      "outcome": "failed",
+      "helper_sha256": "6a4095d0fe063b15d984c25fde910d207ff4f39a8c4593bd88945b2e840608d3",
+      "receipt_sha256": "730feee5aa15d9a361221f0055973b0296dd2db5f0392969824504405e16e839",
+      "wire_sha256": "dd9c2ced81fc5e1ebdb4bb425b2a01f0625c432d9117c1545605c36e624613ad",
+      "error_type": "RuntimeError",
+      "reported_positive_case_count": 0,
+      "wire_convert_200_count": 0,
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 0,
+        "all_observed_networks_closed": false,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": true,
+        "project_delete_200": false,
+        "project_cleanup_error_type": "RuntimeError",
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "qualification": "Earlier wrappers could abort before assigning completed case facts to receipt; wire count is independently derived."
+    },
+    {
+      "version": 2,
+      "outcome": "failed",
+      "helper_sha256": "155808736963f2f5f402ce0efe4c0927631304e300854f0438f20a97961e22f3",
+      "receipt_sha256": "58290aa0685187edac5b8057934633e4b359c1c5e6f0b6bea710460b584f190d",
+      "wire_sha256": "0e63510a1de4b6561649152b9bd719db362a269468e7e5199ed78d8ae259aed0",
+      "error_type": "RuntimeError",
+      "reported_positive_case_count": 0,
+      "wire_convert_200_count": 0,
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 1,
+        "all_observed_networks_closed": false,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": true,
+        "project_delete_200": true,
+        "project_cleanup_error_type": null,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "qualification": "Earlier wrappers could abort before assigning completed case facts to receipt; wire count is independently derived."
+    },
+    {
+      "version": 3,
+      "outcome": "failed",
+      "helper_sha256": "ae6985ebe986877a807e2b829705a7956bd21fd12af989fcb6a23ffbb7409cc7",
+      "receipt_sha256": "d746cff8326ba67ea5eed92d4c852127c922a6b1c873e7513bcd4f63ebc00009",
+      "wire_sha256": "e4111d67de70ddc8230c2a175083912352e828c796647edb4df5b8e3ddb7547b",
+      "error_type": "RuntimeError",
+      "reported_positive_case_count": 0,
+      "wire_convert_200_count": 0,
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 2,
+        "all_observed_networks_closed": true,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": false,
+        "project_delete_200": false,
+        "project_cleanup_error_type": "RuntimeError",
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "qualification": "Earlier wrappers could abort before assigning completed case facts to receipt; wire count is independently derived."
+    },
+    {
+      "version": 4,
+      "outcome": "failed",
+      "helper_sha256": "82ad0a0530bbaf5b9db2b7393ff643f2ff6de2b14c96b05b10f2592ec29252b0",
+      "receipt_sha256": "d3a40a6f400a29d261c67ee7d2e48ec9faf8f4652204c52a66aef9c1db24977a",
+      "wire_sha256": "2610957ec958718d1f4559859ab90a6f1f4cb537ea377fd0ee02348e51305e31",
+      "error_type": "ProgrammingCommandError",
+      "reported_positive_case_count": 0,
+      "wire_convert_200_count": 2,
+      "lifecycle": {
+        "project_adopted": false,
+        "closed_network_checks": 7,
+        "all_observed_networks_closed": true,
+        "owned_loopback_listener_verified": true,
+        "project_close_200": true,
+        "project_delete_200": true,
+        "project_cleanup_error_type": null,
+        "process_exit_confirmed": true,
+        "work_removed": true,
+        "reserved_sockets_closed": true,
+        "log_closed": true,
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "cni_connections": 0,
+        "cni_monitor_terminal": true,
+        "cni_monitor_failure": null,
+        "bindings_stable": true
+      },
+      "qualification": "Earlier wrappers could abort before assigning completed case facts to receipt; wire count is independently derived."
+    }
+  ]
+}
