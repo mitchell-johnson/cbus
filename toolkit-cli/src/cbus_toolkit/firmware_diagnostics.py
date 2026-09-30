@@ -7,8 +7,10 @@ from dataclasses import dataclass
 import hashlib
 import math
 import ntpath
+import os
 from pathlib import Path
 import re
+import stat
 import sys
 import time
 from types import MappingProxyType
@@ -276,48 +278,79 @@ class SerialDiagnostics:
         return self._query('nv')
 
 
+MAX_PACKAGE_METADATA_SIZE = 512 * 1024 * 1024
+
+
+def _metadata_digest(source):
+    source.seek(0)
+    digest, total = hashlib.sha256(), 0
+    for block in iter(lambda: source.read(1024 * 1024), b''):
+        total += len(block)
+        if total > MAX_PACKAGE_METADATA_SIZE:
+            raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
+        digest.update(block)
+    source.seek(0)
+    return digest.hexdigest()
+
+
+def _metadata_stat_signature(value):
+    return (value.st_dev, value.st_ino, value.st_mode, value.st_size,
+            value.st_mtime_ns, value.st_ctime_ns)
+
+
 def inspect_package(path):
-    """Read only ZIP directory metadata and hash; never extract/decrypt data."""
+    """Read bounded ZIP metadata from one regular descriptor; never decrypt."""
     path = Path(path)
-    if path.stat().st_size > 512 * 1024 * 1024:
-        raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
-    digest = hashlib.sha256()
-    with path.open('rb') as source:
-        for block in iter(lambda: source.read(1024 * 1024), b''):
-            digest.update(block)
-    selections = {variant: [] for variant in VARIANTS[1:]}
-    fonts, entries, unknown, invalid = [], [], [], []
+    flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NONBLOCK', 0)
+    flags |= getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0)
     try:
-        archive = zipfile.ZipFile(path)
+        descriptor = os.open(path, flags)
+        with os.fdopen(descriptor, 'rb') as source:
+            before = os.fstat(source.fileno())
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError('Firmware package must be a regular file')
+            if before.st_size > MAX_PACKAGE_METADATA_SIZE:
+                raise ValueError('Firmware package exceeds 512 MiB metadata inspection limit')
+            digest = _metadata_digest(source)
+            with zipfile.ZipFile(source) as archive:
+                info = archive.infolist()
+            # Rehash the same descriptor and reject timestamps changing even
+            # when a concurrent writer has restored the original bytes.
+            after_digest = _metadata_digest(source)
+            after = os.fstat(source.fileno())
+            if digest != after_digest or _metadata_stat_signature(before) != _metadata_stat_signature(after):
+                raise ValueError('Firmware package changed during metadata inspection')
     except zipfile.BadZipFile as error:
         raise ValueError('Firmware package is not a valid ZIP archive') from error
-    with archive:
-        info = archive.infolist()
-        if len(info) > 1024:
-            raise ValueError('Firmware package exceeds 1024 directory entries')
-        for item in info:
-            name = item.filename
-            if len(name) > 4096:
-                raise ValueError('Firmware package entry name exceeds limit')
-            entries.append({'name': name, 'bytes': item.file_size, 'encrypted': bool(item.flag_bits & 1),
-                            'crc32': f'{item.CRC:08x}'})
-            if name.endswith(('/', '\\')) or item.create_system in (0, 10) and item.external_attr & 0x18:
-                invalid.append(name)
-                continue
-            # Original selection is case-sensitive and first matching branch
-            # wins for each entry. Later matching entries replace earlier ones.
-            if 'main' in name and 'hwv1' in name:
-                selections['StellarisPCI'].append(name)
-            elif 'main' in name and 'hwv2' in name:
-                selections['TivaPCI'].append(name)
-            elif 'main' in name and 'hwv3' in name:
-                selections['TivaNCC'].append(name)
-            elif 'font' in name:
-                fonts.append(name)
-            else:
-                unknown.append(name)
+    except OSError as error:
+        raise ValueError('Firmware package could not be opened as a regular file') from error
+    selections = {variant: [] for variant in VARIANTS[1:]}
+    fonts, entries, unknown, invalid = [], [], [], []
+    if len(info) > 1024:
+        raise ValueError('Firmware package exceeds 1024 directory entries')
+    for item in info:
+        name = item.filename
+        if len(name) > 4096:
+            raise ValueError('Firmware package entry name exceeds limit')
+        entries.append({'name': name, 'bytes': item.file_size, 'encrypted': bool(item.flag_bits & 1),
+                        'crc32': f'{item.CRC:08x}'})
+        if name.endswith(('/', '\\')) or item.create_system in (0, 10) and item.external_attr & 0x18:
+            invalid.append(name)
+            continue
+        # Original selection is case-sensitive and first matching branch
+        # wins for each entry. Later matching entries replace earlier ones.
+        if 'main' in name and 'hwv1' in name:
+            selections['StellarisPCI'].append(name)
+        elif 'main' in name and 'hwv2' in name:
+            selections['TivaPCI'].append(name)
+        elif 'main' in name and 'hwv3' in name:
+            selections['TivaNCC'].append(name)
+        elif 'font' in name:
+            fonts.append(name)
+        else:
+            unknown.append(name)
     return {'format': 'cbus-edlt-package-metadata-v1', 'name': path.name, 'version': package_version(path.name),
-            'sha256': digest.hexdigest(), 'entries': entries, 'image_candidates': selections,
+            'sha256': digest, 'entries': entries, 'image_candidates': selections,
             'font_candidates': fonts, 'unknown_entries': unknown, 'native_invalid_entries': invalid, 'read_only': True,
             'image_contents_verified': False, 'archive_extracted': False}
 

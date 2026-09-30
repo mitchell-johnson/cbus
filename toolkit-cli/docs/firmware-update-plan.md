@@ -74,6 +74,13 @@ that the original sends `id\r` after the main write and then times out. The
 remaining NCC sequence is static source evidence. An unconstructed WinForms
 `CheckBox` holds the force option because constructing one needs GDI+.
 
+The bounded Python [NCC transcript evaluator](firmware-ncc-transcripts.md)
+now makes that remaining static branch callable without a serial port. The
+restart predicate uses the **post-update** `nv` current version, and the
+original accepts three `nu` progress keys without requiring their order.
+Its modeled success is separate from independent transcript checks and never
+establishes execution or physical acceptance.
+
 To regenerate (vendor files and password stay private):
 
 ```sh
@@ -100,6 +107,51 @@ sent, and every write is read back, unlike the original. The first failed step
 stops execution. Tests use synthetic images only. This is development evidence:
 DETACH, reset, bootloader auto-erase, re-enumeration and the NCC serial path are
 unmodeled, and no physical device or vendor payload has been installed.
+
+## Bounded package and payload binding
+
+`load_selected_images` reproduces the selected package metadata, version,
+variant, font policy and original argv before decryption. It hashes the same
+open file descriptor before and after entry reads and checks it against the
+reviewed package digest. If a decrypted inspection is attached, selected entry
+sizes and SHA-256 values must match it. Duplicate ZIP names, missing selected
+entries, nonregular inputs, more than 1024 directory entries, inputs over
+512 MiB, entries over 64 MiB and selected plaintext totaling over 64 MiB are
+refused. The aggregate bound is an added software limit, not a vendor rule.
+
+The default loader used by `update-run`, `update-resume` and `update-simulate`
+accepts raw images only. Valid DFU containers and recognizable damaged
+containers are refused before a device opener can be constructed. The
+physical runner has no normalized-container contract; a valid suffix alone
+must not let it write the suffix as firmware. No CLI or physical transport
+capability is expanded by this change.
+
+For explicit offline analysis, use
+`firmware_payload.resolve_download_payload(data, address=..., external=...)`
+and `plan_download_payload(payload, flash_size=..., application_start=...)`.
+The receipt hashes the original input and effective payload separately. A
+valid suffix-only image strips its suffix; a TI-prefixed image strips both
+prefix and suffix and takes its address from the prefix. The original
+`dfuprog` wrapper at `0x402400` supplies no external-flash argument to
+`LMDFUDownload`, so a TI-prefixed font would select internal flash even with
+`-z`: that role is explicitly refused. VID/PID mismatches, unsupported suffix
+shapes and recognizable damaged-container raw fallback are also refused.
+These are bounded offline interpretations, not package authenticity or
+bootability checks; source hashes are included in each payload receipt.
+
+An offline caller may explicitly pass `allow_containers=True` to
+`load_selected_images` and supply those bytes to `simulate_plan`. The memory
+peer then receives normalized payload bytes at the effective address, and
+the returned region identifies both `matches_payload` and `matches_image`.
+TI prefix packet grouping is not reproduced; this tests resulting memory
+content only. The default loader continues to refuse these inputs.
+
+`describe_external_check_addresses(address=..., length=...)` exposes both
+original external CHECK encodings: standalone BlankCheck divides the address
+by 65536 while Erase's verification path divides it by 1024. Nonzero external
+execution remains unsupported; describing both headers does not resolve the
+device-side interpretation. Native `patchset.zip`, authenticity, physical
+payload acceptance and nonzero external device behavior remain open.
 
 The journaled, resumable execution over an explicit DFU device and its
 fault-injection matrix are described in

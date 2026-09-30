@@ -20,14 +20,18 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
+import stat
 import struct
 import zipfile
 import zlib
 
 from .dfu import MAX_IMAGE_SIZE, inspect_image
 from .firmware_diagnostics import classify_hardware, inspect_package
+from .firmware_payload import resolve_download_payload
 
 PASSWORD_FILE_ENV = 'CBUS_EDLT_PACKAGE_PASSWORD_FILE'
+MAX_PACKAGE_SIZE = 512 * 1024 * 1024
+MAX_PACKAGE_PLAINTEXT = MAX_IMAGE_SIZE
 # EDLTCommon.EdltFirmware.FontData1Versions (Toolkit 1.18 EDLTCommon.dll).
 FONT_DATA1_VERSIONS = ('1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0')
 # UpgradeFirmware passes these literal -a texts to dfuprog.
@@ -89,7 +93,7 @@ def _ncc_post_check(version):
          'check': 'Wait up to 60 s for the lines Updating NCC Firmware.., Update Started and Update Complete'},
         {'step': 'ncc-versions-after-update', 'when': 'update required', 'serial_request': 'nv\\r',
          'check': 'Versions are logged but not compared'},
-        {'step': 'restart', 'when': 'update required and current version is exactly 0.0.0', 'serial_request': 'rs\\r',
+        {'step': 'restart', 'when': 'update required and post-update current version is exactly 0.0.0', 'serial_request': 'rs\\r',
          'check': 'The write is not acknowledged and the port is left open'},
         {'step': 'identify-after-restart', 'when': 'restart sent', 'delay_before_ms': 10000, 'serial_request': 'id\\r',
          'check': 'A failed identification is reported as success with a manual C-Bus power-cycle instruction'},
@@ -201,10 +205,33 @@ def _encryption(info):
     return 'zipcrypto' if info.flag_bits & 1 else 'none'
 
 
-def read_package_entries(package, password, *, names=None):
+def _package_digest(source):
+    source.seek(0)
+    digest, total = hashlib.sha256(), 0
+    for block in iter(lambda: source.read(1024 * 1024), b''):
+        total += len(block)
+        if total > MAX_PACKAGE_SIZE:
+            raise FirmwarePackageError('Firmware package exceeds 512 MiB input limit')
+        digest.update(block)
+    source.seek(0)
+    return digest.hexdigest()
+
+
+def _package_stamp(source):
+    info = os.fstat(source.fileno())
+    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
+
+
+def read_package_entries(package, password, *, names=None, expected_sha256=None):
     """Return {entry name: bytes} decrypted in memory; never writes plaintext."""
     if not isinstance(password, bytes) or not password:
         raise FirmwarePackageError('A package password is required')
+    if names is not None and (not isinstance(names, (set, frozenset)) or
+                              any(not isinstance(name, str) for name in names)):
+        raise FirmwarePackageError('Selected entry names must be a set of strings')
+    if expected_sha256 is not None and (not isinstance(expected_sha256, str) or
+            len(expected_sha256) != 64 or any(c not in '0123456789abcdef' for c in expected_sha256)):
+        raise FirmwarePackageError('Expected package digest must be lowercase SHA-256')
     try:
         import pyzipper
     except ImportError:
@@ -212,22 +239,46 @@ def read_package_entries(package, password, *, names=None):
     opener = pyzipper.AESZipFile if pyzipper is not None else zipfile.ZipFile
     result = {}
     try:
-        with opener(package) as archive:
-            infos = archive.infolist()
-            if len(infos) > 1024:
-                raise FirmwarePackageError('Firmware package exceeds 1024 directory entries')
-            for info in infos:
-                if info.is_dir() or names is not None and info.filename not in names:
-                    continue
-                if info.file_size > MAX_IMAGE_SIZE:
-                    raise FirmwarePackageError(f'Entry {info.filename!r} exceeds the {MAX_IMAGE_SIZE}-byte image limit')
-                if _encryption(info) == 'aes' and pyzipper is None:
-                    raise FirmwarePackageError('AES-encrypted entries require the optional firmware extra (pyzipper)')
-                with archive.open(info, pwd=password) as stream:
-                    data = stream.read(MAX_IMAGE_SIZE + 1)
-                if len(data) != info.file_size:
-                    raise FirmwarePackageError(f'Entry {info.filename!r} size differs from its directory record')
-                result[info.filename] = data
+        # Nonblocking/no-follow admission prevents a special file from turning
+        # an offline package read into an unbounded stream. Hash and decrypt
+        # the same descriptor, then recheck it before releasing any plaintext.
+        flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NONBLOCK', 0)
+        flags |= getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_CLOEXEC', 0)
+        descriptor = os.open(package, flags)
+        with os.fdopen(descriptor, 'rb') as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise FirmwarePackageError('Firmware package must be a regular file')
+            stamp = _package_stamp(source)
+            if stamp[2] > MAX_PACKAGE_SIZE:
+                raise FirmwarePackageError('Firmware package exceeds 512 MiB input limit')
+            digest = _package_digest(source)
+            if expected_sha256 is not None and digest != expected_sha256:
+                raise FirmwarePackageError('Firmware package digest differs from the reviewed plan')
+            with opener(source) as archive:
+                infos = archive.infolist()
+                if len(infos) > 1024:
+                    raise FirmwarePackageError('Firmware package exceeds 1024 directory entries')
+                filenames = [info.filename for info in infos]
+                if len(set(filenames)) != len(filenames):
+                    raise FirmwarePackageError('Duplicate ZIP entry names are ambiguous')
+                selected = [info for info in infos if not info.is_dir() and
+                            (names is None or info.filename in names)]
+                if names is not None and names != {info.filename for info in selected}:
+                    raise FirmwarePackageError('Selected package entries are missing or are directories')
+                if any(info.file_size > MAX_IMAGE_SIZE for info in selected):
+                    raise FirmwarePackageError(f'Package entry exceeds the {MAX_IMAGE_SIZE}-byte image limit')
+                if sum(info.file_size for info in selected) > MAX_PACKAGE_PLAINTEXT:
+                    raise FirmwarePackageError('Selected package plaintext exceeds the aggregate byte limit')
+                for info in selected:
+                    if _encryption(info) == 'aes' and pyzipper is None:
+                        raise FirmwarePackageError('AES-encrypted entries require the optional firmware extra (pyzipper)')
+                    with archive.open(info, pwd=password) as stream:
+                        data = stream.read(MAX_IMAGE_SIZE + 1)
+                    if len(data) != info.file_size:
+                        raise FirmwarePackageError('Package entry size differs from its directory record')
+                    result[info.filename] = data
+            if _package_digest(source) != digest or _package_stamp(source) != stamp:
+                raise FirmwarePackageError('Firmware package changed during inspection')
     except FirmwarePackageError:
         raise
     except RuntimeError as error:
@@ -270,7 +321,7 @@ def inspect_package_images(package, password, *, password_source='file'):
     with zipfile.ZipFile(package) as archive:
         for info in archive.infolist():
             methods[info.filename] = _encryption(info)
-    data = read_package_entries(package, password)
+    data = read_package_entries(package, password, expected_sha256=metadata['sha256'])
     rows = []
     for entry in metadata['entries']:
         name = entry['name']
@@ -280,13 +331,17 @@ def inspect_package_images(package, password, *, password_source='file'):
         variant = role.get(name)
         address = int(MAIN_ADDRESS_TEXT[variant], 16) if variant in MAIN_ADDRESS_TEXT else None
         container = inspect_image(content).as_dict()
+        payload = (resolve_download_payload(content, address=address if address is not None else 0,
+                                            external=variant == 'Font') if variant is not None else None)
         rows.append({'name': name, 'role': variant or 'skipped', 'encryption': methods.get(name),
                      'bytes': len(content), 'sha256': hashlib.sha256(content).hexdigest(),
                      'integrity_verified': True,
                      'dfu_container': {key: container[key] for key in (
                          'valid', 'supported', 'issues', 'has_ti_prefix', 'crc_valid', 'address', 'payload_length')},
                      'native_download_path': _download_path(container),
-                     'cortex_m_vector_table': _vector_table(content, address)})
+                     'native_payload': payload.as_dict() if payload is not None else None,
+                     'cortex_m_vector_table': (_vector_table(payload.payload, payload.effective_address)
+                                               if variant in MAIN_ADDRESS_TEXT else None)})
     return {'format': 'cbus-edlt-firmware-package-images-v1', 'name': metadata['name'],
             'sha256': metadata['sha256'], 'version': metadata['version'], 'images': rows,
             'password_source': password_source, 'password_reported': False,
@@ -336,6 +391,16 @@ def simulate_plan(plan, images, *, flash_size=1024 * 1024, external_size=None):
     needed = {step['entry'] for step in plan['dfuprog_steps'] if 'entry' in step}
     if not needed <= images.keys():
         raise ValueError('Plan entries are missing from the supplied images')
+    _check_inspected_images(plan, images)
+    payloads = {}
+    for step in plan['dfuprog_steps']:
+        if 'entry' not in step:
+            continue
+        data = images[step['entry']]
+        if not isinstance(data, bytes) or len(data) != step['bytes']:
+            raise ValueError('Image bytes differ from the plan size')
+        payloads[step['entry']] = resolve_download_payload(data, address=step['address'],
+                                                         external=step['flash'] == 'external')
     erase = plan['font_erase']['length'] or 0
     if external_size is None:
         external_size = max(131072, erase)
@@ -361,7 +426,11 @@ def simulate_plan(plan, images, *, flash_size=1024 * 1024, external_size=None):
             if step['step'] == 'font-erase':
                 outcome = client.erase(address=0, length=step['length'])
             else:
-                outcome = client.program(images[step['entry']], address=step['address'])
+                payload = payloads[step['entry']]
+                row['payload'] = payload.as_dict()
+                if not payload.supported:
+                    raise ValueError('Unsupported firmware payload: ' + '; '.join(payload.issues))
+                outcome = client.program(payload.payload, address=payload.effective_address)
         except DFUOperationError as error:
             outcome = error.outcome
         except ValueError as error:
@@ -378,10 +447,13 @@ def simulate_plan(plan, images, *, flash_size=1024 * 1024, external_size=None):
     for step in plan['dfuprog_steps']:
         if 'entry' in step and complete:
             memory = peer.external if step['flash'] == 'external' else peer.internal
-            data = images[step['entry']]
-            actual = bytes(memory[step['address']:step['address'] + len(data)])
+            payload = payloads[step['entry']]
+            data = payload.payload
+            actual = bytes(memory[payload.effective_address:payload.effective_address + len(data)])
             regions[step['step']] = {'entry': step['entry'], 'sha256': hashlib.sha256(actual).hexdigest(),
-                                     'matches_image': actual == data}
+                                     'address': payload.effective_address, 'bytes': len(data),
+                                     'matches_payload': actual == data,
+                                     'matches_image': actual == images[step['entry']]}
     return {'format': 'cbus-edlt-firmware-update-simulation-v1', 'complete': complete,
             'steps': results, 'regions': regions, 'peer': peer.snapshot(),
             'post_check': 'not executed: the NCC serial path and version reads are outside the memory peer',
@@ -390,21 +462,97 @@ def simulate_plan(plan, images, *, flash_size=1024 * 1024, external_size=None):
             'scope': 'Memory-only DFU peer; mode switch, reset, bootloader auto-erase and re-enumeration are unmodeled'}
 
 
-def load_selected_images(package, plan, password):
+def load_selected_images(package, plan, password, *, allow_containers=False):
+    """Load exact reviewed entries; container opt-in is for offline models only."""
+    if not isinstance(allow_containers, bool):
+        raise FirmwarePackageError('allow_containers must be boolean')
+    if not isinstance(plan, dict) or plan.get('format') != 'cbus-edlt-firmware-update-plan-v1':
+        raise FirmwarePackageError('A firmware update plan is required')
+    if not plan.get('supported'):
+        raise FirmwarePackageError('Only a supported plan can load firmware images')
+    # Reproduce all native selection/argv fields from the current package,
+    # including its filename-derived version, before decrypting anything.
+    try:
+        fresh = update_plan(package, variant=plan['variant'], force_font=plan['font_install']['forced'])
+        keys = ('package', 'variant', 'selected_main_entry', 'selected_font_entry',
+                'main_address', 'font_install', 'font_erase', 'dfuprog_steps', 'post_check')
+        if not fresh['supported'] or any(plan.get(key) != fresh[key] for key in keys):
+            raise FirmwarePackageError('Firmware package or steps differ from the reviewed plan')
+    except (KeyError, TypeError) as error:
+        raise FirmwarePackageError('Firmware plan is incomplete') from error
     needed = sorted({step['entry'] for step in plan['dfuprog_steps'] if 'entry' in step})
-    return read_package_entries(Path(package), password, names=set(needed))
+    images = read_package_entries(Path(package), password, names=set(needed),
+                                  expected_sha256=plan['package']['sha256'])
+    if not allow_containers:
+        for step in plan['dfuprog_steps']:
+            if 'entry' not in step:
+                continue
+            payload = resolve_download_payload(images[step['entry']], address=step['address'],
+                                               external=step['flash'] == 'external')
+            if payload.container.valid:
+                raise FirmwarePackageError('DFU containers require the offline payload planner; update execution accepts raw images only')
+            if not payload.supported:
+                raise FirmwarePackageError('Unsupported firmware payload: ' + '; '.join(payload.issues))
+    _check_inspected_images(plan, images)
+    return images
+
+
+def _check_inspection_binding(plan, inspection):
+    if (not isinstance(inspection, dict) or inspection.get('format') != 'cbus-edlt-firmware-package-images-v1'
+            or any(inspection.get(key) != plan['package'].get(key) for key in ('name', 'sha256', 'version'))):
+        raise FirmwarePackageError('Image inspection does not bind the reviewed package')
+    rows = inspection.get('images')
+    if not isinstance(rows, list) or any(not isinstance(row, dict) or not isinstance(row.get('name'), str)
+                                         for row in rows):
+        raise FirmwarePackageError('Image inspection has invalid entries')
+    names = [row['name'] for row in rows]
+    if len(set(names)) != len(names):
+        raise FirmwarePackageError('Image inspection has duplicate entries')
+    expected = {row['name']: row['bytes'] for row in plan['package']['entries']}
+    if set(names) != set(expected):
+        raise FirmwarePackageError('Image inspection does not cover the package entries')
+    for row in rows:
+        digest = row.get('sha256')
+        if (type(row.get('bytes')) is not int or row['bytes'] != expected[row['name']]
+                or not isinstance(digest, str) or len(digest) != 64
+                or any(c not in '0123456789abcdef' for c in digest)):
+            raise FirmwarePackageError('Image inspection has invalid entry sizes or hashes')
+
+
+def _check_inspected_images(plan, images):
+    inspection = plan.get('image_inspection')
+    if inspection is None:
+        return
+    _check_inspection_binding(plan, inspection)
+    rows = {row['name']: row for row in inspection['images']}
+    for name, data in images.items():
+        row = rows.get(name)
+        if (not isinstance(data, bytes) or row is None or row['bytes'] != len(data)
+                or row['sha256'] != hashlib.sha256(data).hexdigest()):
+            raise FirmwarePackageError('Firmware payload differs from the reviewed inspection')
 
 
 def attach_image_inspection(plan, inspection):
     """Add decrypted-image facts to a plan and refuse images the plan cannot describe."""
+    _check_inspection_binding(plan, inspection)
     plan['image_inspection'] = inspection
     rows = {row['name']: row for row in inspection['images']}
+    selected = {step['entry'] for step in plan['dfuprog_steps'] if 'entry' in step}
+    for name in selected:
+        row = rows[name]
+        if row['dfu_container']['valid']:
+            plan['issues'].append('Selected DFU container requires the offline payload planner; update execution accepts raw images only')
+        payload = row.get('native_payload')
+        if payload is not None and not payload['supported']:
+            plan['issues'].extend(payload['issues'])
     main = rows.get(plan['selected_main_entry'])
     if main is not None:
         if main['native_download_path'].startswith('dfu-prefixed'):
             plan['issues'].append('The selected main image is DFU-prefixed; dfuprog would ignore the variant address')
         table = main['cortex_m_vector_table']
-        if table is not None and not table['reset_handler_in_image']:
+        if table is None:
+            plan['issues'].append('The selected main image has no complete Cortex-M vector table')
+        elif not table['reset_handler_in_image']:
             plan['issues'].append('The selected main image reset vector lies outside the image at the variant address')
     plan['supported'] = not plan['issues']
     return plan
