@@ -36,7 +36,7 @@ class EdltMeasurementCLITests(unittest.TestCase):
                     '--gain-value', '1,5', '--measurement-culture', 'de-DE')
         offline = build_parser().parse_args(('edlt', 'measurement-plan', 'snapshot.json', *settings))
         native = build_parser().parse_args(('cgate', 'unit', '--lock-address', '//TEST/254',
-                                            '--source', '/db//TEST/254/p/20', 'edlt-measurement', *settings))
+                                            '--source', '/db//TEST/254/p/20', 'edlt-measurement', '--no-first-open', *settings))
         self.assertEqual(_edlt_measurement_settings(offline)['measurement_culture'], 'de-DE')
         self.assertEqual(_edlt_measurement_settings(native)['measurement_culture'], 'de-DE')
 
@@ -62,33 +62,33 @@ class EdltMeasurementCLITests(unittest.TestCase):
                 original = self.cli(*args, 'show'); path = Path(directory) / 'values.json'; self.cli(*args, 'export', path)
                 plan = self.cli('edlt', 'measurement-plan', path, *settings, '--icon-index', 38)
                 self.assertEqual(plan['record_hex'].upper(), custom_icon)
-                preview = self.cli(*args, '--dry-run', 'edlt-measurement', *settings, '--icon-index', 38)
+                preview = self.cli(*args, '--dry-run', 'edlt-measurement', '--no-first-open', *settings, '--icon-index', 38)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes']); self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-measurement', *settings, '--icon-index', 38)
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', *settings, '--icon-index', 38)
                 self.assertTrue(result['saved']); self.assertEqual(result['record_hex'].upper(), custom_icon)
                 for icon in (0, 254):
-                    result = self.cli(*args, 'edlt-measurement', *settings, '--icon-index', icon)
+                    result = self.cli(*args, 'edlt-measurement', '--no-first-open', *settings, '--icon-index', icon)
                     self.assertEqual(result['icon_index'], icon); self.assertTrue(result['icon_editable'])
                     self.assertEqual(bytes.fromhex(result['record_hex'])[12], icon)
                 for invalid in (39, 255, -1, 256):
-                    self.assertIn('error', self.cli(*args, 'edlt-measurement', *settings, '--icon-index', invalid, status=1))
+                    self.assertIn('error', self.cli(*args, 'edlt-measurement', '--no-first-open', *settings, '--icon-index', invalid, status=1))
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 self.cli(*args, 'set', 'UseBigIcon', 0)
                 for raw in (39, 255):
                     self.cli(*args, 'set', 'Widget6WidgetByteValue12', raw)
-                    result = self.cli(*args, 'edlt-measurement', *settings)
+                    result = self.cli(*args, 'edlt-measurement', '--no-first-open', *settings)
                     self.assertEqual(result['icon_index'], raw); self.assertFalse(result['icon_editable'])
-                    rejected = self.cli(*args, 'edlt-measurement', *settings, '--icon-index', 135, status=1)
+                    rejected = self.cli(*args, 'edlt-measurement', '--no-first-open', *settings, '--icon-index', 135, status=1)
                     self.assertIn('UseBigIcon', rejected['error']); self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 self.cli(*args, 'set', 'UseBigIcon', 1)
                 for position, raw in ((1, 39), (5, 255)):
                     standby = ('--page', 0, '--position', position, '--device-id', 0, '--channel', 0)
-                    self.cli(*args, 'edlt-measurement', *standby)
+                    self.cli(*args, 'edlt-measurement', '--no-first-open', *standby)
                     self.cli(*args, 'set', f'Widget{position}WidgetByteValue12', raw)
-                    result = self.cli(*args, 'edlt-measurement', *standby)
+                    result = self.cli(*args, 'edlt-measurement', '--no-first-open', *standby)
                     self.assertEqual(result['icon_index'], raw); self.assertFalse(result['icon_editable'])
-                    rejected = self.cli(*args, 'edlt-measurement', *standby, '--icon-index', 135, status=1)
+                    rejected = self.cli(*args, 'edlt-measurement', '--no-first-open', *standby, '--icon-index', 135, status=1)
                     self.assertIn('functional', rejected['error']); self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
@@ -140,12 +140,12 @@ class EdltMeasurementCLITests(unittest.TestCase):
                 plan = self.cli('edlt', 'measurement-plan', path, *custom)
                 self.assertEqual(plan['record_hex'].upper(), CUSTOM)
                 self.assertEqual(plan['text_indices'], {'prefix': 18, 'suffix': 63, 'label': 62})
-                preview = self.cli(*args, '--dry-run', 'edlt-measurement', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-measurement', '--no-first-open', *custom)
                 self.assertTrue(preview['verified'])
                 self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes'])
                 self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-measurement', *custom)
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', *custom)
                 self.assertTrue(result['saved'])
                 self.assertFalse(result['physical_device_verified'])
                 self.assertEqual(result['record_hex'].upper(), CUSTOM)
@@ -153,19 +153,19 @@ class EdltMeasurementCLITests(unittest.TestCase):
                 for action in ('save', 'close', 'load'):
                     projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                unchanged = self.cli(*args, 'edlt-measurement', *location, *identity)
+                unchanged = self.cli(*args, 'edlt-measurement', '--no-first-open', *location, *identity)
                 self.assertEqual(unchanged['record_hex'].upper(), CUSTOM)
                 for sentinel in (64, 255):
-                    result = self.cli(*args, 'edlt-measurement', *location, *identity, '--label-index', sentinel)
+                    result = self.cli(*args, 'edlt-measurement', '--no-first-open', *location, *identity, '--label-index', sentinel)
                     self.assertEqual(result['text_indices']['label'], sentinel)
                     self.assertEqual(result['gain_value'], '1.25')
                     for action in ('save', 'close', 'load'):
                         projects.operation(action, project)
                     self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                result = self.cli(*args, 'edlt-measurement', *location, *identity,
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', *location, *identity,
                                   '--prefix-text', '', '--suffix-text', '', '--label-text', '')
                 self.assertEqual(result['text_indices'], {'prefix': 255, 'suffix': 255, 'label': 255})
-                result = self.cli(*args, 'edlt-measurement', *location, *identity,
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', *location, *identity,
                                   '--prefix-index', 18, '--suffix-index', 63, '--label-index', 62)
                 self.assertEqual(result['record_hex'].upper(), CUSTOM)
                 for invalid in (('--device-id', 255), ('--channel', 255), ('--decimal-places', 6),
@@ -173,11 +173,11 @@ class EdltMeasurementCLITests(unittest.TestCase):
                                 ('--offset-mantissa', 32768), ('--offset-exponent', -129),
                                 ('--prefix-index', 64), ('--suffix-index', 64), ('--label-index', 65),
                                 ('--prefix-text', 'X', '--prefix-index', 1), ('--page', -1)):
-                    rejected = self.cli(*args, 'edlt-measurement', *location, *identity, *invalid, status=1)
+                    rejected = self.cli(*args, 'edlt-measurement', '--no-first-open', *location, *identity, *invalid, status=1)
                     self.assertIn('error', rejected)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 rejected = self.cli(*args, '--destination', network + '/p/20',
-                                    'edlt-measurement', *location, *identity, status=1)
+                                    'edlt-measurement', '--no-first-open', *location, *identity, status=1)
                 self.assertIn('database destinations only', rejected['error'])
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 # Original type12 is also offered on all five standby slots.
@@ -188,12 +188,12 @@ class EdltMeasurementCLITests(unittest.TestCase):
                 plan = self.cli('edlt', 'measurement-plan', standby_path, *standby_args)
                 self.assertEqual(plan['record_hex'].upper(), DEFAULT)
                 self.assertIsNone(plan['restore_level'])
-                preview = self.cli(*args, '--dry-run', 'edlt-measurement', *standby_args)
+                preview = self.cli(*args, '--dry-run', 'edlt-measurement', '--no-first-open', *standby_args)
                 self.assertFalse(preview['saved']); self.assertTrue(preview['verified'])
                 self.assertEqual(self.cli(*args, 'show'), functional)
-                result = self.cli(*args, 'edlt-measurement', *standby_args)
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', *standby_args)
                 self.assertTrue(result['saved']); self.assertIsNone(result['restore_level'])
-                result = self.cli(*args, 'edlt-measurement', '--page', 0, '--position', 5, *identity,
+                result = self.cli(*args, 'edlt-measurement', '--no-first-open', '--page', 0, '--position', 5, *identity,
                                   '--decimal-places', 1, '--gain-mantissa', 125, '--gain-exponent', -2,
                                   '--offset-mantissa', -25, '--offset-exponent', -1,
                                   '--prefix-text', 'Temperature', '--suffix-text', 'C', '--label-index', 64)
@@ -205,10 +205,10 @@ class EdltMeasurementCLITests(unittest.TestCase):
                                  {k: v for k, v in functional.items() if k.startswith('Widget6')})
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                double = self.cli(*args, 'edlt-time-date', '--page', 0, '--position', 1, '--slices', 2, '--display', 'time-date')
-                rejected = self.cli(*args, 'edlt-measurement', '--page', 0, '--position', 2, *identity, status=1)
+                double = self.cli(*args, 'edlt-time-date', '--no-first-open', '--page', 0, '--position', 1, '--slices', 2, '--display', 'time-date')
+                rejected = self.cli(*args, 'edlt-measurement', '--no-first-open', '--page', 0, '--position', 2, *identity, status=1)
                 self.assertIn('covered', rejected['error'])
-                rejected = self.cli(*args, 'edlt-measurement', '--page', 0, '--position', 1, *identity, status=1)
+                rejected = self.cli(*args, 'edlt-measurement', '--no-first-open', '--page', 0, '--position', 1, *identity, status=1)
                 self.assertIn('another type', rejected['error'])
                 self.assertEqual(self.cli(*args, 'show'), double['parameters'])
                 self.assertTrue(any('state=new' in line for line in client.command('GET ' + network + ' state').lines))

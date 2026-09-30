@@ -70,7 +70,7 @@ class EdltDisplayCLITests(unittest.TestCase):
         session.set=fail;session.save_to_source=Mock(side_effect=AssertionError('No save after interrupt'))
         loader=Mock(return_value=nullcontext(session));programmer=SimpleNamespace(load=loader)
         args=('cgate','unit','--lock-address','//EDLTTEST/254','--source',session.source,
-              'edlt-display','--large-text','status')
+              'edlt-display','--no-first-open','--large-text','status')
         with patch('cbus_toolkit.cgate.CGateClient',return_value=nullcontext(SimpleNamespace())),\
                 patch('cbus_toolkit.programming.Programmer',return_value=programmer),\
                 patch.object(cli,'_edlt_display',return_value=editor):
@@ -115,10 +115,10 @@ class EdltDisplayCLITests(unittest.TestCase):
                 self.assertEqual(plan['mra_propagation']['source_widget'],6)
                 self.assertEqual(plan['mra_propagation']['changes'],
                     {'Widget7WidgetByteValue1':[0x6a],'Widget8WidgetByteValue1':[0x6b]})
-                preview=self.cli(*args,'--dry-run','edlt-display','--no-big-icons')
+                preview=self.cli(*args,'--dry-run','edlt-display', '--no-first-open','--no-big-icons')
                 self.assertTrue(preview['verified']);self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'],plan['changes']);self.assertEqual(self.cli(*args,'show'),original)
-                result=self.cli(*args,'edlt-display','--large-text','status','--big-icons','--no-timer-flash','--fan-level-wrap')
+                result=self.cli(*args,'edlt-display', '--no-first-open','--large-text','status','--big-icons','--no-timer-flash','--fan-level-wrap')
                 self.assertTrue(result['saved']);self.assertTrue(result['verified']);self.assertTrue(result['applies_to_whole_unit'])
                 self.assertFalse(result['physical_device_verified']);self.assertEqual(result['destination'],source)
                 fields=('FontStyle','UseBigIcon','EnableTimerFlash','EnableFanControlLevelWrap')
@@ -129,9 +129,9 @@ class EdltDisplayCLITests(unittest.TestCase):
                         self.assertEqual(result['parameters'][name],value)
                 for action in ('save','close','load'):projects.operation(action,project)
                 self.assertEqual(self.cli(*args,'show'),result['parameters'])
-                retained=self.cli(*args,'edlt-display','--large-text','label')
+                retained=self.cli(*args,'edlt-display', '--no-first-open','--large-text','label')
                 self.assertEqual([int(retained['parameters'][name],0) for name in fields],[1,1,0,1])
-                rejected=self.cli(*args,'--destination',network+'/p/20','edlt-display','--large-text','status',status=1)
+                rejected=self.cli(*args,'--destination',network+'/p/20','edlt-display', '--no-first-open','--large-text','status',status=1)
                 self.assertIn('database destinations only',rejected['error'])
                 self.assertEqual(self.cli(*args,'show'),retained['parameters'])
                 self.assertTrue(any('state=new' in line for line in client.command('GET '+network+' state').lines))

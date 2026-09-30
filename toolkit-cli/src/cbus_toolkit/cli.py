@@ -1007,6 +1007,10 @@ def _edlt_ordered_payload(error, args=None):
     state = getattr(args, "_ordered_control_state", None)
     if isinstance(state, dict) and isinstance(state.get("evidence"), dict):
         result.setdefault("edlt_" + state["kind"] + "_evidence", state["evidence"])
+    first_open = getattr(args, "_edlt_first_open", None)
+    if isinstance(first_open, dict) and "first_open" not in result:
+        # The staged first-open cycle is saved only together with the edit.
+        result["first_open"] = {**first_open, "saved": False}
     return result
 
 
@@ -1955,6 +1959,14 @@ def build_parser():
     )
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
+    from .edlt_first_open import DIRECT_ACTIONS as edlt_direct_actions
+    for action in edlt_direct_actions:
+        first_open = unops.choices[action].add_mutually_exclusive_group()
+        first_open.add_argument("--first-open-metadata", type=Path,
+                                help="Lifecycle cache for a never-opened unit (default: derive it from the network DBGETXML)")
+        first_open.add_argument("--no-first-open", action="store_true",
+                                help="Edit a never-opened unit without the original first-open initialization; "
+                                     "the saved result then differs from the Toolkit")
 
     convert = cgops.add_parser("conversion", help="Native database conversion; moves replace the destination and remove the source")
     convops = convert.add_subparsers(dest="remote_action", required=True)
@@ -3512,6 +3524,8 @@ def _programming(args, client):
     edlt_quick_status = _edlt_quick_status(args) if args.remote_action == "edlt-quick-status" else None
     edlt_activation = _edlt_activation(args) if args.remote_action == "edlt-activation" else None
     edlt_page_control = _edlt_page_control(args) if args.remote_action == "edlt-page-control" else None
+    first_open_metadata = (_edlt_lifecycle_metadata(args.first_open_metadata)
+                           if getattr(args, "first_open_metadata", None) is not None else None)
     edlt_lifecycle = _edlt_lifecycle(args) if args.remote_action == "edlt-lifecycle" else None
     lifecycle_metadata = _edlt_lifecycle_metadata(args.metadata) if edlt_lifecycle is not None else None
     edlt_restore_levels = _edlt_restore_levels(args) if args.remote_action == "edlt-restore-levels" else None
@@ -3546,7 +3560,18 @@ def _programming(args, client):
                            explicit_destination=bool(args.destination), dry_run=args.dry_run,
                            state=getattr(args, "_ordered_control_state", None))
     result = {}
+    first_open = None
     with context as session:
+        if hasattr(args, "no_first_open"):
+            from .edlt_first_open import prepare as first_open_prepare
+            direct_editor = next(editor for editor in (
+                edlt, edlt_enable, edlt_shutter, edlt_timer, edlt_fan, edlt_multilevel, edlt_room_courtesy,
+                edlt_measurement, edlt_time_date, edlt_hvac, edlt_display, edlt_mra, edlt_general, edlt_standby,
+                edlt_colours, edlt_quick_status, edlt_activation, edlt_page_control, edlt_navigation, edlt_scene,
+                edlt_scene_table) if editor is not None)
+            first_open = first_open_prepare(session, client, direct_editor.spec, unit=destination,
+                                            metadata=first_open_metadata, skip=args.no_first_open)
+            args._edlt_first_open = first_open
         if args.remote_action == "show":
             return session.values()
         if args.remote_action == "get":
@@ -3713,6 +3738,8 @@ def _programming(args, client):
                     if wrapped is not error:
                         raise wrapped from error
                 raise
+        if first_open is not None:
+            result = {**result, "first_open": first_open}
         return {**result, "parameters": values,
                 "saved": saved is not None, "destination": destination if saved else None}
 

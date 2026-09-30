@@ -108,6 +108,14 @@ class HarnessUnitTests(unittest.TestCase):
         self.assertEqual(receipt['original']['page_control_byte'], receipt['cli']['page_control_byte'])
         self.assertEqual(receipt['original']['final_raw_image_sha256'], receipt['cli']['final_raw_image_sha256'])
         self.assertTrue(receipt['cli_direct']['parameter_differences_from_original'])
+        self.assertEqual(receipt['cli_direct']['steps'][0]['options'], ['--no-first-open'])
+        # Page Control alone, without a separate lifecycle step, equals the original.
+        first_open = receipt['cli_first_open']
+        self.assertEqual(first_open['parameter_differences_from_original'], [])
+        self.assertEqual(first_open['final_raw_image_sha256'], receipt['original']['final_raw_image_sha256'])
+        self.assertEqual([step['command'] for step in first_open['steps']], ['edlt-page-control'])
+        self.assertTrue(first_open['steps'][0]['first_open']['applied'])
+        self.assertEqual(first_open['steps'][0]['first_open']['config_version'], [[255], [255]])
         text = RECEIPT.read_text()
         self.assertNotIn(capture.PROJECT, text)
         self.assertNotIn('<Param>', text)  # no unit-specification content, only hashes
@@ -132,6 +140,10 @@ class OriginalWorkflowCaptureTests(unittest.TestCase):
         self.assertIn('KeySetsEnableGroup', original['changed_parameters'])
         self.assertEqual(original['host_requests']['edit'], [])
         self.assertTrue(receipt['cli_direct']['parameter_differences_from_original'])
+        first_open = receipt['cli_first_open']
+        self.assertEqual(first_open['parameter_differences_from_original'], [])
+        self.assertEqual(first_open['final_raw_image_sha256'], original['final_raw_image_sha256'])
+        self.assertEqual(first_open['steps'][0]['first_open']['metadata_provenance'], 'native-database-network-xml')
         committed = json.loads(RECEIPT.read_text())
         # Reproducible fields; run-specific transcripts and harness revisions are excluded.
         for key in ('seed_sha256', 'seeded_database_sha256', 'initial_raw_image_sha256', 'initial_parameters_sha256',
@@ -141,8 +153,9 @@ class OriginalWorkflowCaptureTests(unittest.TestCase):
         for key in ('saved_parameters_sha256', 'crcs', 'final_raw_image_sha256', 'command_sequence_sha256',
                     'changed_parameters', 'save_stage_changes', 'database_differences_from_cli'):
             self.assertEqual(original[key], committed['original'][key], key)
-        for key in ('final_raw_image_sha256', 'command_sequence_sha256'):
-            self.assertEqual(receipt['cli'][key], committed['cli'][key], key)
+        for variant in ('cli', 'cli_first_open'):
+            for key in ('final_raw_image_sha256', 'command_sequence_sha256'):
+                self.assertEqual(receipt[variant][key], committed[variant][key], (variant, key))
         self.assertEqual(receipt['cli_direct']['parameter_differences_from_original'],
                          committed['cli_direct']['parameter_differences_from_original'])
 

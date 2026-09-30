@@ -1,6 +1,6 @@
 # eDLT database model lifecycle
 
-`EdltLifecycle` computes the original eDLT model's **AfterLoadPPData → BeforeSavePPData(database) → five configuration CRCs** for **KEYGL5 / 5055EDL / firmware 5.5.00**. It is a separate, explicit normalization workflow. Existing widget and global-setting helpers retain their documented direct-edit behavior.
+`EdltLifecycle` computes the original eDLT model's **AfterLoadPPData → BeforeSavePPData(database) → five configuration CRCs** for **KEYGL5 / 5055EDL / firmware 5.5.00**. It is available as a separate, explicit normalization workflow. The native CLI also stages it automatically before a direct widget or settings edit of a never-opened unit; see [First open in direct helpers](#first-open-in-direct-helpers).
 
 The plan exposes each phase and its changes before applying anything. It requires a complete PP snapshot and explicit caller-supplied cache facts. It does not construct the complete Toolkit dialog, create missing metadata, upload dynamic labels, or program a physical unit.
 
@@ -42,6 +42,25 @@ preserving the low status bits and all other record bytes. Public
 `prepare_save` behavior and issued-state validation are unchanged.
 
 Static-label diagnostics decode valid UTF-8 only. Invalid text bytes are retained unchanged; the new diagnostic API does not claim to evaluate the original replacement-decoded string. No text setter, application edit, control binding or Corridor editor is added by this split. Existing preflight guards remain in force, including early rejection of a missing scene output group with `original_stage='before_save'`.
+
+## First open in direct helpers
+
+The Toolkit never edits stored eDLT PP values directly: `FrmBaseUnit` opens the unit through `AfterLoadPPData`, and every save runs `BeforeSavePPData` and the CRCs. The direct helpers (`edlt-lighting`, `-enable`, `-shutter`, `-timer`, `-fan`, `-multilevel`, `-room-courtesy`, `-measurement`, `-time-date`, `-hvac`, `-display`, `-mra`, `-mra-globals`, `-general`, `-standby`, `-colours`, `-navigation`, `-quick-status`, `-activation`, `-page-control`, `-scene` and `-scenes`) reproduce the edit and its save-stage projection. They do not reproduce the load normalization. On a unit the eDLT model has never opened, a direct edit alone therefore differs from the original. In the [complete original workflow capture](original-workflow-capture.md), Page Control alone differed in 35 parameters: ConfigVersionMajor/Minor, 20 widget types (Widget6 already held `0xFF`), SceneCount, the eight scene start addresses, SceneBucket, WidgetsCRC, ScenesCheckSum and OverallCRC.
+
+`AfterLoadPPData` changes `ConfigVersionMajor`/`ConfigVersionMinor` from 255 to 1/0. Every later Toolkit save stores 1/0 (database) or the firmware version (network). The CLI therefore treats 255 in either byte as a never-opened unit. For those units, each direct native `cgate unit edlt-*` command:
+
+1. reads the unit's network with one `DBGETXML` and derives the lifecycle cache: application presence and group existence (each application object holds the virtual unused group 255);
+2. stages and verifies this lifecycle with that cache;
+3. applies the helper edit to the normalized state; and
+4. issues one database save (none with `--dry-run`).
+
+The result has a `first_open` object with the detected version, `metadata_provenance='native-database-network-xml'`, the cache, the lifecycle phases and its changes. The helper's own `changes` are relative to the normalized state. A failure after staging reports `first_open.saved=false`; nothing is saved.
+
+The database does not establish dynamic-image or scene-level facts. If the requirements need those facts or a required application is absent, the command refuses before any PP write. The error names the missing fact and directs you to `edlt lifecycle-requirements` with `--first-open-metadata CACHE`, or to `edlt-lifecycle`. The original host would instead create a missing application; the CLI does not create metadata. `--first-open-metadata` supplies the cache explicitly (`metadata_provenance='caller-supplied-cache'`, with no `DBGETXML`). `--no-first-open` keeps the previous direct edit and reports `first_open.skipped_by_request=true`; its saved result differs from the Toolkit. The existing component acceptance suites use it because they compare direct helper vectors.
+
+An already-opened unit issues no additional command, and the command output has no `first_open` key. Its PP writes are byte-identical to the previous behavior. Workflows that take lifecycle metadata, such as Blank, the parent form and transaction, Restore Levels, Applications, Corridor, Reset and Scene Manager, already load through this model and are unchanged. The Python helper classes are also unchanged. Callers that use the Python API directly should run `EdltLifecycle` first on a never-opened unit.
+
+Evidence: the original workflow capture requires Page Control alone to equal the original model on all 874 parameters, all five CRCs and the raw image. The offline suite `tests/test_edlt_first_open.py` checks Page Control, General and Standby against an offline lifecycle-then-helper composition. It also checks initialized units, refusal, caller metadata and dry run. The helpers other than Page Control have no original workflow capture of this composition.
 
 ## Cache facts
 

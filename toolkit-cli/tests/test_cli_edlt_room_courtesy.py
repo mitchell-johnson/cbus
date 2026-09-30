@@ -64,12 +64,12 @@ class EdltRoomCourtesyCLITests(unittest.TestCase):
                 plan = self.cli('edlt', 'room-courtesy-plan', snapshot, *custom)
                 self.assertEqual(plan['record_hex'].upper(), CUSTOM)
                 self.assertEqual((plan['static_allocation']['index'], plan['status_allocation']['index']), (63, 62))
-                preview = self.cli(*args, '--dry-run', 'edlt-room-courtesy', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-room-courtesy', '--no-first-open', *custom)
                 self.assertFalse(preview['saved'])
                 self.assertTrue(preview['verified'])
                 self.assertEqual(preview['changes'], plan['changes'])
                 self.assertEqual(self.cli(*args, 'show'), original)
-                applied = self.cli(*args, 'edlt-room-courtesy', *custom)
+                applied = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *custom)
                 self.assertTrue(applied['saved'])
                 self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['record_hex'].upper(), CUSTOM)
@@ -78,7 +78,7 @@ class EdltRoomCourtesyCLITests(unittest.TestCase):
                     projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), applied['parameters'])
                 for mode, code in (('bell-press', 25), ('unused', 255)):
-                    value = self.cli(*args, 'edlt-room-courtesy', *location,
+                    value = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location,
                                      '--application', 'secondary', '--mode', mode)
                     record = bytes.fromhex(value['record_hex'])
                     self.assertEqual(record[7], code)
@@ -92,36 +92,36 @@ class EdltRoomCourtesyCLITests(unittest.TestCase):
                      '0FA7848400002A19020002030000000000000000000000000000000000000000'),
                 )
                 for label_type, label_index, status_type, status_index, literal in dynamic_cases:
-                    value = self.cli(*args, 'edlt-room-courtesy', *location,
+                    value = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location,
                         '--application', 'secondary', '--mode', 'bell-press',
                         '--label-type', label_type, '--label-index', label_index,
                         '--status-type', status_type, '--status-index', status_index)
                     self.assertEqual(value['record_hex'].upper(), literal)
                 for flag, index in (('--label-index', 2), ('--status-index', 0)):
-                    result = self.cli(*args, 'edlt-room-courtesy', *location,
+                    result = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location,
                                      '--application', 'secondary', flag, index, status=1)
                     self.assertIn('explicit', result['error'])
                 self.assertEqual(self.cli(*args, 'show'), value['parameters'])
-                self.cli(*args, 'edlt-room-courtesy', *custom)
+                self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *custom)
                 for code, colour in enumerate(COLOURS):
-                    value = self.cli(*args, 'edlt-room-courtesy', *location,
+                    value = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location,
                                      '--application', 'secondary', '--off-colour', colour, '--on-colour', colour)
                     self.assertEqual(value['off_colour'], colour)
                     self.assertEqual(value['on_colour'], colour)
                     self.assertEqual(bytes.fromhex(value['record_hex'])[8:12], bytes((63, 62, code, code)))
                 for application in (127, 136):
                     self.cli(*args, 'set', 'SecondaryApplication', application)
-                    value = self.cli(*args, 'edlt-room-courtesy', *location, '--application', 'secondary')
+                    value = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location, '--application', 'secondary')
                     self.assertEqual(value['application'], application)
                     self.assertEqual(self.cli(*args, 'show'), value['parameters'])
                 for invalid in (('--group', 255), ('--label-index', 64), ('--status-index', 64),
                                 ('--label-text', 'X', '--label-index', 1),
                                 ('--status-text', 'X', '--status-index', 1)):
-                    result = self.cli(*args, 'edlt-room-courtesy', *location, *invalid, status=1)
+                    result = self.cli(*args, 'edlt-room-courtesy', '--no-first-open', *location, *invalid, status=1)
                     self.assertIn('error', result)
                 self.assertEqual(self.cli(*args, 'show'), value['parameters'])
                 result = self.cli(*args, '--destination', network + '/p/20',
-                                  'edlt-room-courtesy', *location, status=1)
+                                  'edlt-room-courtesy', '--no-first-open', *location, status=1)
                 self.assertIn('database destinations only', result['error'])
                 self.assertEqual(self.cli(*args, 'show'), value['parameters'])
                 for action in ('save', 'close', 'load'):

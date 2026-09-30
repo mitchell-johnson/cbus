@@ -48,7 +48,7 @@ class EdltShutterCLITests(unittest.TestCase):
                 snapshot = Path(folder) / 'before.json'
                 self.cli(*args, 'export', snapshot)
                 plan = self.cli('edlt', 'shutter-plan', snapshot, *options)
-                preview = self.cli(*args, '--dry-run', 'edlt-shutter', *options)
+                preview = self.cli(*args, '--dry-run', 'edlt-shutter', '--no-first-open', *options)
                 self.assertFalse(preview['saved'])
                 self.assertTrue(preview['verified'])
                 self.assertEqual(preview['changes'], plan['changes'])
@@ -61,7 +61,7 @@ class EdltShutterCLITests(unittest.TestCase):
                 self.assertTrue(plan['default_label_allocation']['reused'])
                 self.assertEqual(plan['static_allocation']['index'], 63)
                 self.assertEqual(plan['status_allocation']['index'], 62)
-                applied = self.cli(*args, 'edlt-shutter', *options)
+                applied = self.cli(*args, 'edlt-shutter', '--no-first-open', *options)
                 self.assertTrue(applied['saved'])
                 self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['parameters'], preview['parameters'])
@@ -72,15 +72,15 @@ class EdltShutterCLITests(unittest.TestCase):
                 for index, text in ((63, b'Shade'), (62, b'Ready')):
                     raw = bytes(int(v, 0) for v in applied['parameters']['StaticTextString' + str(index)].split())
                     self.assertEqual(raw, text + bytes(64 - len(text)))
-                plain = self.cli(*args, 'edlt-shutter', '--page', 1, '--position', 1, '--group', 42,
+                plain = self.cli(*args, 'edlt-shutter', '--no-first-open', '--page', 1, '--position', 1, '--group', 42,
                                  '--mode', 'two-key', '--status-type', 'percent')
                 self.assertEqual(bytes.fromhex(plain['record_hex'])[7:10], bytes((0, 6, 248)))
                 self.assertIsNone(plain['default_label_allocation'])
-                error = self.cli(*args, 'edlt-shutter', '--page', 1, '--position', 1, '--group', 42,
+                error = self.cli(*args, 'edlt-shutter', '--no-first-open', '--page', 1, '--position', 1, '--group', 42,
                                  '--mode', 'two-key-presets', '--preset-left', 5, status=1)
                 self.assertIn('error', error)
                 self.assertEqual(self.cli(*args, 'show'), plain['parameters'])
-                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-shutter', *options, status=1)
+                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-shutter', '--no-first-open', *options, status=1)
                 self.assertIn('database destinations only', physical['error'])
                 self.assertEqual(self.cli(*args, 'show'), plain['parameters'])
             finally:

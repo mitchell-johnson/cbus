@@ -55,7 +55,7 @@ class EdltTimerCLITests(unittest.TestCase):
                 self.assertEqual((default['duration_seconds'], default['target_level'],
                                   default['expiry_level'], default['ramp_seconds']), (60, 255, 0, 1020))
                 plan = self.cli('edlt', 'timer-plan', snapshot, *options)
-                preview = self.cli(*args, '--dry-run', 'edlt-timer', *options)
+                preview = self.cli(*args, '--dry-run', 'edlt-timer', '--no-first-open', *options)
                 self.assertFalse(preview['saved'])
                 self.assertTrue(preview['verified'])
                 self.assertEqual(preview['changes'], plan['changes'])
@@ -68,7 +68,7 @@ class EdltTimerCLITests(unittest.TestCase):
                 self.assertTrue(plan['default_label_allocation']['reused'])
                 self.assertEqual(plan['static_allocation']['index'], 63)
                 self.assertEqual(plan['status_allocation']['index'], 62)
-                applied = self.cli(*args, 'edlt-timer', *options)
+                applied = self.cli(*args, 'edlt-timer', '--no-first-open', *options)
                 self.assertTrue(applied['saved'])
                 self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['parameters'], preview['parameters'])
@@ -79,17 +79,17 @@ class EdltTimerCLITests(unittest.TestCase):
                 for index, text in ((63, b'Timer'), (62, b'Ready')):
                     raw = bytes(int(v, 0) for v in applied['parameters']['StaticTextString' + str(index)].split())
                     self.assertEqual(raw, text + bytes(64 - len(text)))
-                maximum = self.cli(*args, 'edlt-timer', *location, '--duration-seconds', 64800,
+                maximum = self.cli(*args, 'edlt-timer', '--no-first-open', *location, '--duration-seconds', 64800,
                                    '--target-level', 1, '--expiry-level', 255, '--ramp-seconds', 0,
                                    '--status-type', 'timer')
                 self.assertEqual(bytes.fromhex(maximum['record_hex'])[9:17], bytes.fromhex('01000020fdff0000'))
-                zero = self.cli(*args, 'edlt-timer', *location, '--duration-seconds', 0,
+                zero = self.cli(*args, 'edlt-timer', '--no-first-open', *location, '--duration-seconds', 0,
                                 '--target-level', 255, '--expiry-level', 0, '--ramp-seconds', 1020)
                 self.assertEqual(bytes.fromhex(zero['record_hex'])[9:17], bytes.fromhex('ff0000000000000f'))
                 for option, value in (('--duration-seconds', 64801), ('--target-level', 0), ('--ramp-seconds', 1)):
-                    self.assertIn('error', self.cli(*args, 'edlt-timer', *location, option, value, status=1))
+                    self.assertIn('error', self.cli(*args, 'edlt-timer', '--no-first-open', *location, option, value, status=1))
                 self.assertEqual(self.cli(*args, 'show'), zero['parameters'])
-                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-timer', *options, status=1)
+                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-timer', '--no-first-open', *options, status=1)
                 self.assertIn('database destinations only', physical['error'])
                 self.assertEqual(self.cli(*args, 'show'), zero['parameters'])
             finally:

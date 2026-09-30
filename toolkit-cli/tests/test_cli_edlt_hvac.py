@@ -58,48 +58,48 @@ class EdltHVACCLITests(unittest.TestCase):
                 self.assertEqual(plan['record_hex'].upper(), CUSTOM)
                 self.assertEqual((plan['application'], plan['group'], plan['zone'], plan['decimal_places'], plan['units']),
                                  (172, 42, 4, 2, 'fahrenheit'))
-                preview = self.cli(*args, '--dry-run', 'edlt-hvac', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-hvac', '--no-first-open', *custom)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes'])
                 self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-hvac', *custom)
+                result = self.cli(*args, 'edlt-hvac', '--no-first-open', *custom)
                 self.assertTrue(result['saved']); self.assertFalse(result['physical_device_verified'])
                 self.assertFalse(result['database_group_created']); self.assertFalse(result['hvac_control_sent'])
                 self.assertEqual(result['parameters'], preview['parameters'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                unchanged = self.cli(*args, 'edlt-hvac', *location, '--group', 42)
+                unchanged = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 42)
                 self.assertEqual(unchanged['record_hex'].upper(), CUSTOM)
                 for units, code in (('celsius', 0), ('fahrenheit', 1)):
-                    result = self.cli(*args, 'edlt-hvac', *location, '--group', 42, '--units', units)
+                    result = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 42, '--units', units)
                     self.assertEqual(bytes.fromhex(result['record_hex'])[4], code)
                 for icon in (0, 38, 135, 254):
-                    result = self.cli(*args, 'edlt-hvac', *location, '--group', 42, '--icon-index', icon)
+                    result = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 42, '--icon-index', icon)
                     self.assertEqual(result['icon_index'], icon); self.assertTrue(result['icon_editable'])
                 self.cli(*args, 'set', 'UseBigIcon', 0)
-                result = self.cli(*args, 'edlt-hvac', *location, '--group', 42)
+                result = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 42)
                 self.assertEqual(result['icon_index'], 254); self.assertFalse(result['icon_editable'])
-                rejected = self.cli(*args, 'edlt-hvac', *location, '--group', 42, '--icon-index', 38, status=1)
+                rejected = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 42, '--icon-index', 38, status=1)
                 self.assertIn('error', rejected); self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 self.cli(*args, 'set', 'UseBigIcon', 1)
                 for position in (1, 5):
-                    standby = self.cli(*args, 'edlt-hvac', '--page', 0, '--position', position,
+                    standby = self.cli(*args, 'edlt-hvac', '--no-first-open', '--page', 0, '--position', position,
                         '--group', 42, '--zone', 4, '--units', 'fahrenheit', '--decimal-places', 2, '--label-text', 'Room')
                     self.assertIsNone(standby['restore_level']); self.assertFalse(standby['icon_editable'])
                     self.assertEqual(standby['widget'], position)
                     self.assertEqual(bytes.fromhex(standby['record_hex'])[:7], bytes((13, 42, 4, 2, 1, 135, 63)))
-                    self.assertIn('error', self.cli(*args, 'edlt-hvac', '--page', 0, '--position', position,
+                    self.assertIn('error', self.cli(*args, 'edlt-hvac', '--no-first-open', '--page', 0, '--position', position,
                         '--group', 42, '--icon-index', 38, status=1))
                 # Group references alone never create or rename application metadata.
-                result = self.cli(*args, 'edlt-hvac', *location, '--group', 43, '--label-text', '')
+                result = self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 43, '--label-text', '')
                 self.assertEqual(result['label_index'], 255)
                 self.assertEqual(database.get(network + '/172', xml=True).lines, application_xml)
                 self.assertFalse(result['database_group_created'])
                 for invalid in (('--zone', 5), ('--decimal-places', 3), ('--icon-index', 39), ('--icon-index', 255),
                                 ('--label-index', 64), ('--label-text', 'X', '--label-index', 1)):
-                    self.assertIn('error', self.cli(*args, 'edlt-hvac', *location, '--group', 43, *invalid, status=1))
+                    self.assertIn('error', self.cli(*args, 'edlt-hvac', '--no-first-open', *location, '--group', 43, *invalid, status=1))
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-hvac', *location, '--group', 42, status=1)
+                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-hvac', '--no-first-open', *location, '--group', 42, status=1)
                 self.assertIn('database destinations only', rejected['error'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])

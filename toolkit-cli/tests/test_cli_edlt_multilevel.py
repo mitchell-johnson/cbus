@@ -53,27 +53,27 @@ class EdltMultiLevelCLITests(unittest.TestCase):
                 plan=self.cli('edlt','multilevel-plan',snapshot,*custom)
                 self.assertEqual(plan['record_hex'].upper(),
                     '10B5868600002AFDFE3F3E3D3C3B000000000000000000000000000000000000')
-                preview=self.cli(*args,'--dry-run','edlt-multilevel',*custom)
+                preview=self.cli(*args,'--dry-run','edlt-multilevel', '--no-first-open',*custom)
                 self.assertFalse(preview['saved']); self.assertTrue(preview['verified'])
                 self.assertEqual(preview['changes'],plan['changes']); self.assertEqual(self.cli(*args,'show'),original)
-                applied=self.cli(*args,'edlt-multilevel',*custom)
+                applied=self.cli(*args,'edlt-multilevel', '--no-first-open',*custom)
                 self.assertTrue(applied['saved']); self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['parameters'],preview['parameters'])
                 projects.operation('save',project); projects.operation('close',project); projects.operation('load',project)
                 self.assertEqual(self.cli(*args,'show'),applied['parameters'])
                 for levels,thresholds in ((1,b'\0\0'),(2,b'\x7f\x7f'),(3,b'\x54\xaa')):
-                    value=self.cli(*args,'edlt-multilevel',*location,'--application','secondary','--levels',levels)
+                    value=self.cli(*args,'edlt-multilevel', '--no-first-open',*location,'--application','secondary','--levels',levels)
                     self.assertEqual(bytes.fromhex(value['record_hex'])[7:9],thresholds)
                     self.assertEqual(bytes.fromhex(value['record_hex'])[10:14],bytes((62,61,60,59)))
                 for app in (96,127,136):
                     self.cli(*args,'set','SecondaryApplication',app)
-                    value=self.cli(*args,'edlt-multilevel',*location,'--application','secondary')
+                    value=self.cli(*args,'edlt-multilevel', '--no-first-open',*location,'--application','secondary')
                     self.assertEqual(value['application'],app)
                     self.assertEqual(self.cli(*args,'show'),value['parameters'])
                 for invalid in (('--low-threshold',0),('--high-threshold',84),('--levels',1,'--medium-text','Hidden')):
-                    self.assertIn('error',self.cli(*args,'edlt-multilevel',*location,*invalid,status=1))
+                    self.assertIn('error',self.cli(*args,'edlt-multilevel', '--no-first-open',*location,*invalid,status=1))
                 self.assertEqual(self.cli(*args,'show'),value['parameters'])
-                result=self.cli(*args,'--destination',network+'/p/20','edlt-multilevel',*location,status=1)
+                result=self.cli(*args,'--destination',network+'/p/20','edlt-multilevel', '--no-first-open',*location,status=1)
                 self.assertIn('database destinations only',result['error'])
                 self.assertEqual(self.cli(*args,'show'),value['parameters'])
             finally:

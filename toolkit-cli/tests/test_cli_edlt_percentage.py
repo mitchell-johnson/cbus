@@ -73,7 +73,7 @@ class PercentageCLITests(unittest.TestCase):
                 patch.object(cli, '_edlt_activation', return_value=EdltActivation(spec)), \
                 patch('cbus_toolkit.edlt_percentage.percentage_to_byte', wraps=percentage_to_byte) as convert:
             result = self.invoke(['cgate','unit','--lock-address','//EDLTTEST/254','--source',session.source,
-                                  'edlt-activation','--wake-mode','primary-event','--level-percent','50'])
+                                  'edlt-activation','--no-first-open','--wake-mode','primary-event','--level-percent','50'])
         convert.assert_called_once_with('50')
         self.assertEqual(result['raw_values']['ProximityLevel'], 127)
         self.assertEqual(session.current['ProximityLevel'], '127')
@@ -96,7 +96,7 @@ class PercentageCLITests(unittest.TestCase):
                     load=Mock(return_value=nullcontext(session)))), \
                 patch.object(cli, '_edlt_activation', return_value=EdltActivation(spec)):
             result = self.invoke(['cgate','unit','--lock-address','//EDLTTEST/254','--source',session.source,
-                                  'edlt-activation','--wake-mode','primary-event','--level-percent','50'],status=130)
+                                  'edlt-activation','--no-first-open','--wake-mode','primary-event','--level-percent','50'],status=130)
         evidence = result['edlt_activation_evidence']
         self.assertEqual(session.current['ProximityLevel'], '127')
         self.assertEqual(evidence['attempted_parameters'][-1], 'ProximityLevel')

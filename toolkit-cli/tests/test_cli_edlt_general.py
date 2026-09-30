@@ -57,7 +57,7 @@ class EdltGeneralCLITests(unittest.TestCase):
         session.set = fail; session.save_to_source = Mock(side_effect=AssertionError('No save after interrupt'))
         loader = Mock(return_value=nullcontext(session))
         args = ('cgate', 'unit', '--lock-address', '//EDLTTEST/254', '--source', session.source,
-                'edlt-general', '--long-press-ms', 1000)
+                'edlt-general', '--no-first-open', '--long-press-ms', 1000)
         with patch('cbus_toolkit.cgate.CGateClient', return_value=nullcontext(SimpleNamespace())), \
                 patch('cbus_toolkit.programming.Programmer', return_value=SimpleNamespace(load=loader)), \
                 patch.object(cli, '_edlt_general', return_value=editor):
@@ -87,21 +87,21 @@ class EdltGeneralCLITests(unittest.TestCase):
                 database.create_unit(network, 20, 'eDLT', 'KEYGL5', '5.5.00', catalog_number='5055EDL'); projects.operation('save', project)
                 original = self.cli(*args, 'show'); path = Path(directory) / 'original.json'; self.cli(*args, 'export', path)
                 plan = self.cli('edlt', 'general-plan', path, *custom)
-                preview = self.cli(*args, '--dry-run', 'edlt-general', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-general', '--no-first-open', *custom)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes']); self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-general', *custom)
+                result = self.cli(*args, 'edlt-general', '--no-first-open', *custom)
                 self.assertTrue(result['saved']); self.assertEqual(result['parameters'], preview['parameters'])
                 fields = ('LongPressTime', 'DebounceTime', 'StatusRequestInterval', 'ToolsPageLocked', 'EnableLevelStore')
                 self.assertEqual([int(result['parameters'][name], 0) for name in fields], [255, 0, 255, 1, 1])
                 previous_restores = {name: value for name, value in result['parameters'].items() if name.endswith('RestoreLevel')}
-                result = self.cli(*args, 'edlt-general', '--power-restore', 'preset', '--no-tools-page-locked')
+                result = self.cli(*args, 'edlt-general', '--no-first-open', '--power-restore', 'preset', '--no-tools-page-locked')
                 self.assertEqual([int(result['parameters'][name], 0) for name in fields], [255, 0, 255, 0, 0])
                 self.assertEqual({name: value for name, value in result['parameters'].items() if name.endswith('RestoreLevel')}, previous_restores)
                 for option in (('--long-press-ms', 0), ('--long-press-ms', 26), ('--debounce-ms', 6400),
                                ('--debounce-ms', -25), ('--status-report-seconds', 2), ('--status-report-seconds', 256)):
-                    self.assertIn('error', self.cli(*args, 'edlt-general', *option, status=1))
-                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-general', '--power-restore', 'previous', status=1)
+                    self.assertIn('error', self.cli(*args, 'edlt-general', '--no-first-open', *option, status=1))
+                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-general', '--no-first-open', '--power-restore', 'previous', status=1)
                 self.assertIn('database destinations only', rejected['error'])
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)

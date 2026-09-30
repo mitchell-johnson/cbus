@@ -51,7 +51,7 @@ The native unit workflow supports `--dry-run` for a staged, verified preview wit
 
 `apply` validates the exact identity/schema, reconstructs the canonical plan and checks the complete source snapshot before mutation. It requires complete PP readback. Ordinary failures attempt reverse rollback of attempted parameters while the connection remains synchronized. Disconnection stops recovery I/O, and no write is automatically retried.
 
-KeyboardInterrupt/SystemExit retain `edlt_page_control_evidence`, attempted parameters, uncertain PP state and `saved=false`. If rollback is interrupted, the original failure and preceding rollback errors are also retained. The helper does not execute the broader original `AfterLoadPPData` lifecycle or its metadata lookups and other load-time normalization.
+KeyboardInterrupt/SystemExit retain `edlt_page_control_evidence`, attempted parameters, uncertain PP state and `saved=false`. If rollback is interrupted, the original failure and preceding rollback errors are also retained. The `EdltPageControl` class does not execute the broader original `AfterLoadPPData` lifecycle or its metadata lookups and other load-time normalization. The native CLI applies it first on a never-opened unit (`ConfigVersionMajor`/`Minor` 255); see [first open](edlt-lifecycle.md#first-open-in-direct-helpers).
 
 ## Acceptance evidence
 
@@ -71,7 +71,7 @@ CBUS_EDLT_PAGE_CONTROL_REPORT=research/runtime/edlt-page-control-report.json \
 PYTHONPATH=src:tests python3 -m unittest tests.test_edlt_page_control tests.test_cli_edlt_page_control -v
 ```
 
-A [complete original workflow capture](original-workflow-capture.md) runs the original model's own open/edit/save/reopen C-Gate sequence for this control. On a never-opened unit, it matches the CLI only when `edlt-lifecycle` precedes this helper.
+A [complete original workflow capture](original-workflow-capture.md) runs the original model's own open/edit/save/reopen C-Gate sequence for this control. On a never-opened unit, `edlt-page-control` alone now matches it exactly, because the CLI first applies the original first-open cycle with a cache derived from the unit's network `DBGETXML`. With `--no-first-open`, 35 parameters differ.
 
 The core source mapping is `EDLTUnit.cs:1377`, `PPAttributeDataSourceLogic.PPAttributeValue`, `PPAttributeLogic.IsEnabled`, `ComboBoxAddEdit.SetUpDataBindings` and `FrmBaseUnit.cs:6461..6485`. The help documents describe physical behavior separately from the configuration schema and model.
 

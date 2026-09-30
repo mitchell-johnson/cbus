@@ -71,7 +71,7 @@ class EdltMRACLITests(unittest.TestCase):
         session.set = fail; session.save_to_source = Mock(side_effect=AssertionError('No save after interrupt'))
         loader = Mock(return_value=nullcontext(session))
         args = ('cgate', 'unit', '--lock-address', '//EDLTTEST/254', '--source', session.source,
-                'edlt-mra', '--page', 1, '--position', 1, '--kind', 'zone-control')
+                'edlt-mra', '--no-first-open', '--page', 1, '--position', 1, '--kind', 'zone-control')
         with patch('cbus_toolkit.cgate.CGateClient', return_value=nullcontext(SimpleNamespace())), \
                 patch('cbus_toolkit.programming.Programmer', return_value=SimpleNamespace(load=loader)), \
                 patch.object(cli, '_edlt_mra', return_value=editor):
@@ -114,39 +114,39 @@ class EdltMRACLITests(unittest.TestCase):
                 self.assertEqual(plan['label_allocation']['index'], 26)
                 self.assertTrue(plan['label_allocation']['reused'])
                 self.assertEqual(plan['status_allocation']['index'], 63)
-                preview = self.cli(*args, '--dry-run', 'edlt-mra', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-mra', '--no-first-open', *custom)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes']); self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-mra', *custom)
+                result = self.cli(*args, 'edlt-mra', '--no-first-open', *custom)
                 self.assertTrue(result['saved']); self.assertEqual(result['parameters'], preview['parameters'])
                 for kind, position in (('source-select', 2), ('source-control', 3)):
-                    result = self.cli(*args, 'edlt-mra', '--page', 1, '--position', position, '--kind', kind)
+                    result = self.cli(*args, 'edlt-mra', '--no-first-open', '--page', 1, '--position', position, '--kind', kind)
                     self.assertEqual(result['record_hex'].upper(), DEFAULTS[kind])
                 path = Path(directory) / 'three-widgets.json'
                 self.cli(*args, 'export', path)
                 globals_plan = self.cli('edlt', 'mra-globals-plan', path, '--multiplexer', 3, '--zone', 8)
                 self.assertEqual(globals_plan['globals']['changes'], {'Widget6WidgetByteValue1': [0xbd],
                     'Widget7WidgetByteValue1': [0xb8], 'Widget8WidgetByteValue1': [0xb8]})
-                globals_preview = self.cli(*args, '--dry-run', 'edlt-mra-globals', '--multiplexer', 3, '--zone', 8)
+                globals_preview = self.cli(*args, '--dry-run', 'edlt-mra-globals', '--no-first-open', '--multiplexer', 3, '--zone', 8)
                 self.assertEqual(globals_preview['changes'], globals_plan['changes'])
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
-                globals_result = self.cli(*args, 'edlt-mra-globals', '--multiplexer', 3, '--zone', 8)
+                globals_result = self.cli(*args, 'edlt-mra-globals', '--no-first-open', '--multiplexer', 3, '--zone', 8)
                 self.assertEqual(globals_result['parameters'], globals_preview['parameters'])
                 self.assertTrue(globals_result['saved']); self.assertFalse(globals_result['audio_control_sent'])
-                result = self.cli(*args, 'edlt-mra', '--page', 1, '--position', 2, '--kind', 'source-select',
+                result = self.cli(*args, 'edlt-mra', '--no-first-open', '--page', 1, '--position', 2, '--kind', 'source-select',
                     '--variant', 'two-absolute', '--source1', 1, '--source2', 7, '--label-text', 'Kitchen',
                     '--status-text', 'Audio', '--on-icon', 38)
                 self.assertEqual(bytes.fromhex(result['record_hex'])[:11], bytes((8, 0xb8, 38, 38, 0, 0, 2, 0, 6, 26, 63)))
                 self.assertEqual(result['source_bytes'], [0, 6])
                 self.assertEqual((result['globals']['multiplexer'], result['globals']['zone']), (3, 8))
-                result = self.cli(*args, 'edlt-mra', '--page', 1, '--position', 3, '--kind', 'source-control',
+                result = self.cli(*args, 'edlt-mra', '--no-first-open', '--page', 1, '--position', 3, '--kind', 'source-control',
                     '--variant', 'dynamic-1-and-2', '--on-icon', 254, '--label-text', '')
                 self.assertEqual(bytes.fromhex(result['record_hex'])[:8], bytes((9, 0xb8, 254, 254, 0, 0, 2, 255)))
                 for invalid in (('--multiplexer', 4), ('--zone', 0), ('--label-index', 64),
                     ('--label-text', 'X', '--label-index', 1), ('--variant', 'two-absolute'),
                     ('--key-mode', 'nudge', '--ramp-seconds', 4), ('--on-icon', 39), ('--source1', 1)):
-                    self.assertIn('error', self.cli(*args, 'edlt-mra', *location, *invalid, status=1))
-                self.assertIn('error', self.cli(*args, 'edlt-mra', '--page', 0, '--position', 1, '--kind', 'zone-control', status=1))
+                    self.assertIn('error', self.cli(*args, 'edlt-mra', '--no-first-open', *location, *invalid, status=1))
+                self.assertIn('error', self.cli(*args, 'edlt-mra', '--no-first-open', '--page', 0, '--position', 1, '--kind', 'zone-control', status=1))
                 for action in ('edlt-mra', 'edlt-mra-globals'):
                     options = location if action == 'edlt-mra' else ('--multiplexer', 2)
                     rejected = self.cli(*args, '--destination', network + '/p/20', action, *options, status=1)

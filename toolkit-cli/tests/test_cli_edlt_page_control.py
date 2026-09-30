@@ -61,7 +61,7 @@ class PageControlCLITests(unittest.TestCase):
                 patch('cbus_toolkit.programming.Programmer', return_value=SimpleNamespace(load=Mock(return_value=nullcontext(session)))), \
                 patch.object(cli, '_edlt_page_control', return_value=editor):
             result = self.invoke(('cgate', 'unit', '--lock-address', '//EDLTTEST/254', '--source', session.source,
-                                  'edlt-page-control', '--group', 42), status=130)
+                                  'edlt-page-control', '--no-first-open', '--group', 42), status=130)
         evidence = result['edlt_page_control_evidence']; self.assertEqual(len(calls), 1)
         self.assertEqual(evidence['attempted_parameters'], calls); self.assertTrue(evidence['pp_state_uncertain'])
         self.assertFalse(evidence['saved']); self.assertFalse(evidence['verified']); self.assertEqual(evidence['automatic_retries'], 0)
@@ -80,14 +80,14 @@ class PageControlCLITests(unittest.TestCase):
             try:
                 database.create_network(project, 254, 'Page_Control_CLI', 'Cni', '127.0.0.1:29999')
                 database.create_unit(network, 20, 'eDLT', 'KEYGL5', '5.5.00', catalog_number='5055EDL'); projects.operation('save', project)
-                self.cli(*args, 'edlt-standby', '--no-enabled')
+                self.cli(*args, 'edlt-standby', '--no-first-open', '--no-enabled')
                 original = self.cli(*args, 'show'); path = Path(directory) / 'original.json'; self.cli(*args, 'export', path)
                 plan = self.cli('edlt', 'page-control-plan', path, '--group', 42)
-                preview = self.cli(*args, '--dry-run', 'edlt-page-control', '--group', 42)
+                preview = self.cli(*args, '--dry-run', 'edlt-page-control', '--no-first-open', '--group', 42)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved']); self.assertEqual(preview['changes'], plan['changes'])
                 self.assertEqual(self.cli(*args, 'show'), original)
                 for group in (0, 1, 42, 254, 255):
-                    result = self.cli(*args, 'edlt-page-control', '--group', group)
+                    result = self.cli(*args, 'edlt-page-control', '--no-first-open', '--group', group)
                     self.assertTrue(result['saved']); self.assertEqual(int(result['parameters']['KeySetsEnableGroup'], 0), group)
                     self.assertEqual(result['enabled'], group != 255); self.assertEqual(result['application'], 203)
                     self.assertFalse(result['database_group_verified']); self.assertFalse(result['physical_page_control_verified'])
@@ -95,7 +95,7 @@ class PageControlCLITests(unittest.TestCase):
                     for name in ('BacklightActiveBrightnessControlGroup', 'CorridorLinkingLinkGroup'):
                         self.assertEqual(result['parameters'][name], original[name])
                 self.assertIn('database destinations only', self.cli(*args, '--destination', network + '/p/20',
-                    'edlt-page-control', '--group', 42, status=1)['error'])
+                    'edlt-page-control', '--no-first-open', '--group', 42, status=1)['error'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 self.assertTrue(any('state=new' in line for line in client.command('GET ' + network + ' state').lines))

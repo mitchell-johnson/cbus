@@ -48,13 +48,13 @@ class EdltSceneCLITests(unittest.TestCase):
                 snapshot = Path(folder) / "edlt.json"
                 self.cli(*args, "export", snapshot)
                 plan = self.cli("edlt", "scene-plan", snapshot, *options)
-                preview = self.cli(*args, "--dry-run", "edlt-scene", *options)
+                preview = self.cli(*args, "--dry-run", "edlt-scene", "--no-first-open", *options)
                 self.assertEqual(preview["changes"], plan["changes"])
                 self.assertEqual(preview["scene_reference"]["action_selector"], 88)
                 self.assertEqual(preview["scene_reference"]["item_count"], 0)
                 self.assertFalse(preview["saved"])
                 self.assertEqual(self.cli(*args, "show"), original)
-                saved = self.cli(*args, "edlt-scene", *options)
+                saved = self.cli(*args, "edlt-scene", "--no-first-open", *options)
                 self.assertTrue(saved["saved"])
                 self.assertFalse(saved["physical_device_verified"])
                 self.assertEqual(saved["record_hex"], "063526250000011a1b0000003fff000000000000000000000000000000000000")
@@ -65,10 +65,10 @@ class EdltSceneCLITests(unittest.TestCase):
                 for operation in ("save", "close", "load"):
                     projects.operation(operation, project)
                 self.assertEqual(self.cli(*args, "show"), saved["parameters"])
-                error = self.cli(*args, "edlt-scene", "--page", 1, "--position", 2, "--scene", 3, status=1)
+                error = self.cli(*args, "edlt-scene", "--no-first-open", "--page", 1, "--position", 2, "--scene", 3, status=1)
                 self.assertIn("not configured", error["error"])
                 self.assertEqual(self.cli(*args, "show"), saved["parameters"])
-                error = self.cli(*args, "--destination", network + "/p/20", "edlt-scene", *options, status=1)
+                error = self.cli(*args, "--destination", network + "/p/20", "edlt-scene", "--no-first-open", *options, status=1)
                 self.assertIn("database destinations only", error["error"])
                 for mode, settings, macros in (
                         ("ramp", ("--scene", 1, "--ramp-seconds", 30), (28, 29)),
@@ -80,7 +80,7 @@ class EdltSceneCLITests(unittest.TestCase):
                         self.cli(*args, "export", before)
                         settings = ("--page", 1, "--position", 1, "--mode", mode, *settings)
                         offline = self.cli("edlt", "scene-plan", before, *settings)
-                        configured = self.cli(*args, "edlt-scene", *settings)
+                        configured = self.cli(*args, "edlt-scene", "--no-first-open", *settings)
                         self.assertEqual(configured["changes"], offline["changes"])
                         record = bytes.fromhex(configured["record_hex"])
                         self.assertEqual(tuple(record[7:9]), macros)

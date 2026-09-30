@@ -75,7 +75,7 @@ class NavigationCLITests(unittest.TestCase):
             with patch('cbus_toolkit.cgate.CGateClient', return_value=nullcontext(SimpleNamespace())), \
                     patch('cbus_toolkit.programming.Programmer', return_value=SimpleNamespace(load=loader)):
                 self.invoke(('cgate', 'unit', '--lock-address', '//EDLTTEST/254', '--source', session.source,
-                             'edlt-navigation', '--metadata', meta), status=1)
+                             'edlt-navigation', '--no-first-open', '--metadata', meta), status=1)
             loader.return_value.__enter__.assert_not_called()
 
     def test_interrupt_retains_partial_attempt_without_save(self):
@@ -88,7 +88,7 @@ class NavigationCLITests(unittest.TestCase):
                 patch('cbus_toolkit.programming.Programmer', return_value=SimpleNamespace(load=Mock(return_value=nullcontext(session)))), \
                 patch.object(cli, '_edlt_navigation', return_value=editor):
             result = self.invoke(('cgate', 'unit', '--lock-address', '//EDLTTEST/254', '--source', session.source,
-                                  'edlt-navigation', *STATIC), status=130)
+                                  'edlt-navigation', '--no-first-open', *STATIC), status=130)
         evidence = result['edlt_navigation_evidence']; self.assertEqual(len(calls), 1)
         self.assertEqual(evidence['attempted_parameters'], calls); self.assertTrue(evidence['pp_state_uncertain'])
         self.assertFalse(evidence['saved']); self.assertFalse(evidence['verified']); self.assertEqual(evidence['automatic_retries'], 0)
@@ -109,38 +109,38 @@ class NavigationCLITests(unittest.TestCase):
                 database.create_unit(network, 20, 'eDLT', 'KEYGL5', '5.5.00', catalog_number='5055EDL'); projects.operation('save', project)
                 original = self.cli(*args, 'show'); path = Path(directory) / 'original.json'; self.cli(*args, 'export', path)
                 plan = self.cli('edlt', 'navigation-plan', path, *STATIC)
-                preview = self.cli(*args, '--dry-run', 'edlt-navigation', *STATIC)
+                preview = self.cli(*args, '--dry-run', 'edlt-navigation', '--no-first-open', *STATIC)
                 self.assertTrue(preview['verified']); self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes']); self.assertEqual(self.cli(*args, 'show'), original)
-                result = self.cli(*args, 'edlt-navigation', *STATIC)
+                result = self.cli(*args, 'edlt-navigation', '--no-first-open', *STATIC)
                 self.assertTrue(result['saved']); self.assertEqual(result['parameters'], preview['parameters'])
                 self.assertEqual(result['page_name_indices'], {'1': 63, '2': 62, '3': 255, '4': 62})
-                result = self.cli(*args, 'edlt-navigation', '--variant', 'page-names')
+                result = self.cli(*args, 'edlt-navigation', '--no-first-open', '--variant', 'page-names')
                 self.assertEqual(result['page_name_indices'], {'1': 63, '2': 62, '3': 255, '4': 62})
                 meta = Path(directory) / 'metadata.json'; meta.write_text(json.dumps(metadata()))
                 dynamic = ('--variant', 'dynamic-labels', '--dynamic-group', 42, '--page-name-index', 1, 3,
                            '--page-name-index', 2, 2, '--page-name-index', 3, 1, '--page-name-index', 4, 0)
-                self.assertIn('metadata', self.cli(*args, 'edlt-navigation', *dynamic, status=1)['error'])
-                result = self.cli(*args, 'edlt-navigation', *dynamic, '--metadata', meta)
+                self.assertIn('metadata', self.cli(*args, 'edlt-navigation', '--no-first-open', *dynamic, status=1)['error'])
+                result = self.cli(*args, 'edlt-navigation', '--no-first-open', *dynamic, '--metadata', meta)
                 self.assertEqual(result['page_name_indices'], {'1': 3, '2': 2, '3': 1, '4': 0})
                 self.assertEqual(result['dynamic_group_metadata']['status'], 'caller-cache-match')
                 self.assertFalse(result['physical_dynamic_labels_verified'])
-                result = self.cli(*args, 'edlt-navigation', '--variant', 'time-temperature', '--temperature-source', 'measurement',
+                result = self.cli(*args, 'edlt-navigation', '--no-first-open', '--variant', 'time-temperature', '--temperature-source', 'measurement',
                                   '--device-or-group', 255, '--channel-or-zone', 255)
                 self.assertEqual((result['device_or_group'], result['channel_or_zone']), (255, 255))
                 meta.write_text(json.dumps(metadata(application=172, group=42, variants=())))
-                result = self.cli(*args, 'edlt-navigation', '--variant', 'date-temperature', '--temperature-source', 'hvac',
+                result = self.cli(*args, 'edlt-navigation', '--no-first-open', '--variant', 'date-temperature', '--temperature-source', 'hvac',
                                   '--device-or-group', 42, '--channel-or-zone', 4, '--metadata', meta)
                 self.assertEqual(result['temperature_group_metadata']['status'], 'caller-cache-match')
                 self.assertEqual([int(result['parameters'][name], 0) for name in (
                     'NavWidgetType', 'NavWidgetVariant', 'TemperatureApplication', 'NavDevIDZoneGroup', 'NavChannelZoneNumber')], [1, 4, 1, 42, 4])
-                self.assertIn('error', self.cli(*args, 'edlt-navigation', '--channel-or-zone', 5, status=1))
-                before = result['parameters']; result = self.cli(*args, 'edlt-navigation', '--page-mode', 'single')
+                self.assertIn('error', self.cli(*args, 'edlt-navigation', '--no-first-open', '--channel-or-zone', 5, status=1))
+                before = result['parameters']; result = self.cli(*args, 'edlt-navigation', '--no-first-open', '--page-mode', 'single')
                 for name in ('NavWidgetVariant', 'TemperatureApplication', 'NavDevIDZoneGroup', 'NavChannelZoneNumber', 'PageNameIndex1'):
                     self.assertEqual(result['parameters'][name], before[name])
-                self.assertIn('multiple', self.cli(*args, 'edlt-navigation', '--variant', 'blank', status=1)['error'])
+                self.assertIn('multiple', self.cli(*args, 'edlt-navigation', '--no-first-open', '--variant', 'blank', status=1)['error'])
                 self.assertIn('database destinations only', self.cli(*args, '--destination', network + '/p/20',
-                    'edlt-navigation', '--page-mode', 'multiple', status=1)['error'])
+                    'edlt-navigation', '--no-first-open', '--page-mode', 'multiple', status=1)['error'])
                 for action in ('save', 'close', 'load'): projects.operation(action, project)
                 self.assertEqual(self.cli(*args, 'show'), result['parameters'])
                 self.assertTrue(any('state=new' in line for line in client.command('GET ' + network + ' state').lines))

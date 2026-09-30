@@ -62,13 +62,13 @@ class EdltFanCLITests(unittest.TestCase):
                 plan = self.cli('edlt', 'fan-plan', path, *custom)
                 self.assertEqual(plan['record_hex'].upper(),
                     '04B5040300002AFDFE3F3E3D3C3B000000000000000000000000000000000000')
-                preview = self.cli(*args, '--dry-run', 'edlt-fan', *custom)
+                preview = self.cli(*args, '--dry-run', 'edlt-fan', '--no-first-open', *custom)
                 self.assertTrue(preview['verified'])
                 self.assertFalse(preview['saved'])
                 self.assertEqual(preview['changes'], plan['changes'])
                 self.assertEqual(preview['record_hex'], plan['record_hex'])
                 self.assertEqual(self.cli(*args, 'show'), original)
-                applied = self.cli(*args, 'edlt-fan', *custom)
+                applied = self.cli(*args, 'edlt-fan', '--no-first-open', *custom)
                 self.assertTrue(applied['saved'])
                 self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['parameters'], preview['parameters'])
@@ -80,17 +80,17 @@ class EdltFanCLITests(unittest.TestCase):
                     raw = bytes(int(v, 0) for v in applied['parameters'][f'StaticTextString{index}'].split())
                     self.assertEqual(raw, text.ljust(64, b'\0'))
                 for speed, thresholds in ((1, b'\0\0'), (2, b'\x7f\x7f'), (3, b'\x54\xaa')):
-                    result = self.cli(*args, 'edlt-fan', *location, '--application', 'secondary', '--speeds', speed)
+                    result = self.cli(*args, 'edlt-fan', '--no-first-open', *location, '--application', 'secondary', '--speeds', speed)
                     self.assertEqual(bytes.fromhex(result['record_hex'])[7:9], thresholds)
                     self.assertEqual(bytes.fromhex(result['record_hex'])[10:14], bytes((62,61,60,59)))
-                explicit = self.cli(*args, 'edlt-fan', *location, '--application', 'secondary',
+                explicit = self.cli(*args, 'edlt-fan', '--no-first-open', *location, '--application', 'secondary',
                     '--off-index', 0, '--low-index', 63, '--medium-index', 0, '--high-index', 63)
                 self.assertEqual(bytes.fromhex(explicit['record_hex'])[10:14], bytes((0,63,0,63)))
                 for invalid in (('--low-threshold',0), ('--low-threshold',170), ('--high-threshold',84),
                                 ('--medium-index',64), ('--speeds',1,'--low-text','Hidden')):
-                    self.assertIn('error', self.cli(*args, 'edlt-fan', *location, *invalid, status=1))
+                    self.assertIn('error', self.cli(*args, 'edlt-fan', '--no-first-open', *location, *invalid, status=1))
                 self.assertEqual(self.cli(*args, 'show'), explicit['parameters'])
-                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-fan', *custom, status=1)
+                physical = self.cli(*args, '--destination', network + '/p/20', 'edlt-fan', '--no-first-open', *custom, status=1)
                 self.assertIn('database destinations only', physical['error'])
                 self.assertEqual(self.cli(*args, 'show'), explicit['parameters'])
             finally:

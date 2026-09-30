@@ -77,7 +77,7 @@ class RecordingRelay:
         self.records = []
         self._lock = threading.Lock()
         self._connections = 0
-        self._threads = []
+        self._threads, self._sockets = [], []
         self._server = socket.create_server(('127.0.0.1', 0))
         self.port = self._server.getsockname()[1]
         self._closed = False
@@ -94,6 +94,7 @@ class RecordingRelay:
             with self._lock:
                 self._connections += 1
                 number = self._connections
+                self._sockets += [client, upstream]
             for source, target, direction in ((client, upstream, '>'), (upstream, client, '<')):
                 thread = threading.Thread(target=self._pump, args=(number, source, target, direction), daemon=True)
                 self._threads.append(thread)
@@ -127,6 +128,9 @@ class RecordingRelay:
         self._server.close()
         for thread in self._threads:
             thread.join(timeout=10)
+        # Close relayed sockets deterministically; later GC warnings would reach other tests' stderr.
+        for peer in self._sockets:
+            peer.close()
 
 
 def transcript(records, start=0):
@@ -360,8 +364,9 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
 
     Variants run sequentially on the same project name, so the name-derived
     ``Project`` PP value is identical: ``original`` (unchanged Toolkit model),
-    ``cli`` (lifecycle then Page Control, the CLI equivalent of opening,
-    editing and saving in the Toolkit) and ``cli_direct`` (Page Control only).
+    ``cli`` (lifecycle then Page Control), ``cli_first_open`` (Page Control
+    alone; the CLI applies the original first open to the never-opened unit)
+    and ``cli_direct`` (Page Control with ``--no-first-open``).
     """
     from research.local_cgate import LocalCGate
     from cbus_toolkit.cgate import CGateClient
@@ -400,7 +405,7 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
                         projects.operation(action, project)
                     return result
 
-                for kind in ('original', 'cli', 'cli_direct'):
+                for kind in ('original', 'cli', 'cli_first_open', 'cli_direct'):
                     seed_project(client, project)
                     image, values = raw_image(client, network, source)
                     result = {'seeded_database': normalized_database(network_xml(client, network), project),
@@ -437,12 +442,27 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
                                       'changed_parameters': sorted(lifecycle.get('changes', {}))})
                         initial = work / f'{kind}-lifecycle.json'
                         run_cli(relay.port, *base, 'export', initial)
-                    plan = run_cli(relay.port, 'edlt', 'page-control-plan', initial, '--group', GROUP)
-                    before = snap(json.loads(initial.read_text())['parameters'])
-                    result['plan_after'] = {**before, **{k: tuple(v) if isinstance(v, list) else v for k, v in plan['changes'].items()}}
-                    applied = run_cli(relay.port, *base, 'edlt-page-control', '--group', GROUP)
-                    steps.append({'command': 'edlt-page-control', 'saved': applied.get('saved'),
-                                  'verified': applied.get('verified'), 'changed_parameters': sorted(plan['changes'])})
+                    if kind == 'cli_first_open':
+                        # One command: the CLI detects the never-opened unit, derives the
+                        # lifecycle cache from DBGETXML and stages first open before the edit.
+                        preview = run_cli(relay.port, *base, '--dry-run', 'edlt-page-control', '--group', GROUP)
+                        result['plan_after'] = preview['parameters']
+                        applied = run_cli(relay.port, *base, 'edlt-page-control', '--group', GROUP)
+                        first_open = applied.get('first_open') or {}
+                        steps.append({'command': 'edlt-page-control', 'saved': applied.get('saved'),
+                                      'verified': applied.get('verified'),
+                                      'first_open': {key: first_open.get(key) for key in (
+                                          'config_version', 'never_initialized', 'applied', 'metadata_provenance', 'metadata')},
+                                      'first_open_changed_parameters': sorted(first_open.get('lifecycle_changes', {})),
+                                      'changed_parameters': sorted(applied.get('changes', {}))})
+                    else:
+                        direct = ('--no-first-open',) if kind == 'cli_direct' else ()
+                        plan = run_cli(relay.port, 'edlt', 'page-control-plan', initial, '--group', GROUP)
+                        before = snap(json.loads(initial.read_text())['parameters'])
+                        result['plan_after'] = {**before, **{k: tuple(v) if isinstance(v, list) else v for k, v in plan['changes'].items()}}
+                        applied = run_cli(relay.port, *base, 'edlt-page-control', *direct, '--group', GROUP)
+                        steps.append({'command': 'edlt-page-control', 'options': list(direct), 'saved': applied.get('saved'),
+                                      'verified': applied.get('verified'), 'changed_parameters': sorted(plan['changes'])})
                     for action in ('save', 'close', 'load'):
                         projects.operation(action, project)
                     result['shown'] = run_cli(relay.port, *base, 'show')
@@ -452,6 +472,7 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
             relay.close()
 
     original, cli, direct = variants['original'], variants['cli'], variants['cli_direct']
+    first_open = variants['cli_first_open']
     edited, readback = original['edit'], original['reopen']
     saved = snap(edited['pp']['saved'])
 
@@ -462,6 +483,13 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
         return sorted(name for name in left if left[name] != right.get(name))
 
     original_commands = {entry['command'] for entry in command_summary(original['transcript'], project=project)}
+
+    def database_equal_except_null_writes(other):
+        # The original writes DB fields it read as C-Gate's "null" display back as literal
+        # "null" strings; any other database difference fails this comparison.
+        return all(values[0] == 'null' and values[1] is None and re.fullmatch(r'/Unit#1/(\w+)#1', path)
+                   and f'dbset //{{PROJECT}}/{NETWORK}/p/{UNIT}/{path.split("/")[2][:-2]} "null"' in original_commands
+                   for path, values in database_differences(original['database'], other['database']).items())
     stages = {
         'original_open': edited.get('load_result') == 'True',
         'original_edit_through_binding': edited.get('binding_after', '').startswith(f'{GROUP}:'),
@@ -469,6 +497,9 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
         'original_reopen_after_close': readback.get('load_result') == 'True' and readback.get('complete') == 'true',
         'original_reopened_page_control': readback.get('page_control') == str(GROUP),
         'cli_steps_saved_and_verified': all(step['saved'] and step['verified'] for step in cli['steps']),
+        'cli_first_open_detected_and_applied': all(step['saved'] and step['verified'] for step in first_open['steps'])
+            and first_open['steps'][0]['first_open'].get('applied') is True
+            and first_open['steps'][0]['first_open'].get('metadata_provenance') == 'native-database-network-xml',
     }
     comparisons = {
         'identical_seeded_inputs': all(v['seeded_database'] == original['seeded_database'] and v['initial_image'] == original['initial_image']
@@ -479,12 +510,14 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
         'cli_cgate_parameters_equal_original': snap(cli['values']) == snap(original['values']),
         'cli_crcs_equal_original': editor.crcs(snap(cli['values'])) == editor.crcs(saved),
         'raw_images_identical': cli['image'] == original['image'],
-        # The original writes DB fields it read as C-Gate's "null" display back as literal
-        # "null" strings; any other database difference fails this comparison.
-        'database_equal_except_original_literal_null_writes': all(
-            values[0] == 'null' and values[1] is None and re.fullmatch(r'/Unit#1/(\w+)#1', path)
-            and f'dbset //{{PROJECT}}/{NETWORK}/p/{UNIT}/{path.split("/")[2][:-2]} "null"' in original_commands
-            for path, values in database_differences(original['database'], cli['database']).items()),
+        'database_equal_except_original_literal_null_writes': database_equal_except_null_writes(cli),
+        # Page Control alone, without a separate lifecycle step, must equal the original.
+        'cli_first_open_preview_equals_original_saved_pp': snap(first_open['plan_after']) == saved,
+        'cli_first_open_readback_equals_original_readback': snap(first_open['shown']) == snap(original['values']),
+        'cli_first_open_cgate_parameters_equal_original': snap(first_open['values']) == snap(original['values']),
+        'cli_first_open_crcs_equal_original': editor.crcs(snap(first_open['values'])) == editor.crcs(saved),
+        'cli_first_open_raw_images_identical': first_open['image'] == original['image'],
+        'cli_first_open_database_equal_except_original_literal_null_writes': database_equal_except_null_writes(first_open),
         'network_never_opened': all(any('state=new' in line for line in v['state']) for v in variants.values()),
     }
     loaded = {name: location for name, location in edited['assemblies'].items()
@@ -529,6 +562,13 @@ def capture(*, mono_root, app, vendor, java, specs, runtime_report=None):
              'transcript': command_summary(cli['transcript'], project=project),
              'command_sequence_sha256': command_sequence_sha256(command_summary(cli['transcript'], project=project)),
              'transcript_sha256': sha256(canonical(cli['transcript']).replace(project, '{PROJECT}'))},
+        cli_first_open={'steps': first_open['steps'], 'page_control_byte': first_open['image'][0x131 * 2:0x132 * 2],
+                        'final_raw_image_sha256': sha256(first_open['image']),
+                        'final_database_sha256': sha256(first_open['database']),
+                        'parameter_differences_from_original': differences(saved, snap(first_open['values'])),
+                        'transcript': command_summary(first_open['transcript'], project=project),
+                        'command_sequence_sha256': command_sequence_sha256(command_summary(first_open['transcript'], project=project)),
+                        'transcript_sha256': sha256(canonical(first_open['transcript']).replace(project, '{PROJECT}'))},
         cli_direct={'steps': direct['steps'], 'final_raw_image_sha256': sha256(direct['image']),
                     'raw_images_identical_to_original': direct['image'] == original['image'],
                     'parameter_differences_from_original': differences(saved, snap(direct['values']))},

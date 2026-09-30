@@ -48,7 +48,7 @@ class EdltEnableCLITests(unittest.TestCase):
                 snapshot = Path(folder) / 'before.json'
                 self.cli(*args, 'export', snapshot)
                 plan = self.cli('edlt', 'enable-plan', snapshot, *options)
-                preview = self.cli(*args, '--dry-run', 'edlt-enable', *options)
+                preview = self.cli(*args, '--dry-run', 'edlt-enable', '--no-first-open', *options)
                 self.assertFalse(preview['saved'])
                 self.assertTrue(preview['verified'])
                 self.assertEqual(preview['changes'], plan['changes'])
@@ -58,7 +58,7 @@ class EdltEnableCLITests(unittest.TestCase):
                 self.assertEqual(record[:4], bytes((14, 0x35, 34, 33)))
                 self.assertEqual(record[6:10], bytes((42, 10, 23, 173)))
                 self.assertEqual(plan['static_allocation']['index'], plan['status_allocation']['index'])
-                applied = self.cli(*args, 'edlt-enable', *options)
+                applied = self.cli(*args, 'edlt-enable', '--no-first-open', *options)
                 self.assertTrue(applied['saved'])
                 self.assertFalse(applied['physical_device_verified'])
                 self.assertEqual(applied['parameters'], preview['parameters'])
@@ -66,21 +66,21 @@ class EdltEnableCLITests(unittest.TestCase):
                 projects.operation('close', project)
                 projects.operation('load', project)
                 self.assertEqual(self.cli(*args, 'show'), applied['parameters'])
-                self.cli(*args, 'edlt-enable', '--page', 1, '--position', 1, '--variable', 42,
+                self.cli(*args, 'edlt-enable', '--no-first-open', '--page', 1, '--position', 1, '--variable', 42,
                          '--level', 173, '--label-type', 'dynamic-text', '--label-index', 0)
                 before_rejection = self.cli(*args, 'show')
-                error = self.cli(*args, 'edlt-enable', '--page', 1, '--position', 1, '--variable', 43,
+                error = self.cli(*args, 'edlt-enable', '--no-first-open', '--page', 1, '--position', 1, '--variable', 43,
                                  '--level', 173, status=1)
                 self.assertIn('explicit label_type', error['error'])
                 self.assertEqual(self.cli(*args, 'show'), before_rejection)
-                self.cli(*args, 'edlt-lighting', '--page', 1, '--position', 2, '--group', 43,
+                self.cli(*args, 'edlt-lighting', '--no-first-open', '--page', 1, '--position', 2, '--group', 43,
                          '--mode', 'off-on', '--restore-level', 88)
-                restored = self.cli(*args, 'edlt-enable', '--page', 1, '--position', 1, '--variable', 43,
+                restored = self.cli(*args, 'edlt-enable', '--no-first-open', '--page', 1, '--position', 1, '--variable', 43,
                                     '--level', 174, '--label-type', 'dynamic-icon', '--label-index', 1)
                 self.assertEqual((restored['restore_level'], restored['restore_source_widget']), (88, 7))
                 self.assertEqual(restored['application'], 203)
                 self.assertEqual(self.cli(*args, 'show'), restored['parameters'])
-                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-enable', *options, status=1)
+                rejected = self.cli(*args, '--destination', network + '/p/20', 'edlt-enable', '--no-first-open', *options, status=1)
                 self.assertIn('database destinations only', rejected['error'])
                 self.assertEqual(self.cli(*args, 'show'), restored['parameters'])
             finally:
