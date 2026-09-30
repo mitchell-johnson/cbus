@@ -1847,6 +1847,8 @@ def build_parser():
     p = unops.add_parser("sensor-occupancy", help="Configure the tested SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL occupancy profile")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     _sensor_options(p)
+    from .sensor_dialog_cli import native_options as sensor_dialog_native_options
+    sensor_dialog_native_options(unops)
     p = unops.add_parser("din-settings", help="Show or edit DIN relay/dimmer Logic, Turn On, Recovery and Restrike settings (firmware 2.7.00)")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     p.add_argument("--show", action="store_true", help="Report the Toolkit tab view without editing")
@@ -2271,12 +2273,14 @@ def build_parser():
     _key_options(p, extended=True)
     from .key_options_cli import offline_options as key_offline_options
     key_offline_options(keyops)
-    sensors = commands.add_parser("sensors", help="Plan the tested ST7 occupancy settings without C-Gate")
+    sensors = commands.add_parser("sensors", help="Plan the tested ST7 SENPILL, PIR and SENLL sensor settings without C-Gate")
     sensors.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     sops = sensors.add_subparsers(dest="action", required=True)
     p = sops.add_parser("plan")
     p.add_argument("file", type=Path, help="SENPILL 2.0.01..2.3.9 / 5753PEIRL or SLC5753PEIRL PP export or parameter mapping")
     _sensor_options(p)
+    from .sensor_dialog_cli import offline_options as sensor_dialog_offline_options
+    sensor_dialog_offline_options(sops)
     din = commands.add_parser("din-settings", help="Show or plan DIN relay/dimmer tab settings without C-Gate")
     din.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     dops = din.add_subparsers(dest="action", required=True)
@@ -3395,6 +3399,8 @@ def _programming(args, client):
     from .key_options_cli import NATIVE_ACTIONS as key_option_actions
     mutable = mutable or args.remote_action in key_option_actions
     mutable = mutable or args.remote_action == "iope-settings"
+    from .sensor_dialog_cli import NATIVE_ACTIONS as sensor_dialog_actions
+    mutable = mutable or args.remote_action in sensor_dialog_actions
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -3654,6 +3660,10 @@ def _programming(args, client):
             values = session.values()
         elif args.remote_action == "sensor-occupancy":
             result = sensor.configure(session, **_sensor_settings(args))
+            values = session.values()
+        elif args.remote_action in sensor_dialog_actions:
+            from .sensor_dialog_cli import native as sensor_dialog_native
+            result = sensor_dialog_native(args, session)
             values = session.values()
         elif args.remote_action == "edlt-lighting":
             result = edlt.configure(session, **_edlt_settings(args))
@@ -4045,6 +4055,9 @@ def run(args):
         edits = {k: v for k, v in _din_settings(args).items() if v is not None}
         return editor.plan(values, identity=tuple(identity) or None, **edits).as_dict(), 0
     if args.area == "sensors":
+        from .sensor_dialog_cli import OFFLINE_ACTIONS, offline as sensor_dialog_offline
+        if args.action in OFFLINE_ACTIONS:
+            return sensor_dialog_offline(args)
         from .sensors import check_profile
         identity = []
         values = _parameter_snapshot(args.file, check_profile, identity=identity)
