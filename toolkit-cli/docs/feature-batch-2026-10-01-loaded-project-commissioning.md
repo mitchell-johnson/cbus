@@ -107,6 +107,11 @@ final acceptance was repeated with a fresh wheel. Earlier native-export refusal
 and exploratory producer failures remain historical, uncredited evidence.
 The two previous direct-journey fixtures are preserved byte-for-byte.
 
+Native Installation/Project/Network child ordering is treated as immaterial by
+the project digest. Arbitrary ordered extension siblings at those levels are
+outside this batch's accepted preservation scope; the receipt covers the exported
+native fixture model and keeps ordered data inside opaque nested nodes in scope.
+
 The broader compatibility ledger remains **18/42 (42.86%)**. That historical
 category count is not a functionality estimate: the functional denominator is
 incomplete and no obligation is fully accepted across its required software,

@@ -70,6 +70,10 @@ project, then compares its complete reopened content before recording `db_done`.
 Only database Unit Address and PP `UnitAddress` may change. Unit OIDs, references,
 metadata and other PP values remain bound to the original. It stages native `/db`
 PP values to obtain the encoding; it performs no physical PP SAVE/STORE.
+The project comparison treats native Installation/Project/Network child ordering
+as immaterial. Arbitrary ordered extension siblings at those levels are outside
+the accepted preservation scope; ordered data inside opaque nested nodes remains
+part of the comparison. The receipt covers the exported native fixture model.
 An additional SAVE is unnecessary. A new process running the same reconcile
 command returns `already_reconciled` after checking the whole project.
 For an independent operator readback, the typed command is:
