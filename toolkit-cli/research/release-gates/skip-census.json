@@ -50,16 +50,16 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 462,
-    "modules_without_skip_sites": 247,
-    "modules_with_skip_sites": 215,
+    "test_modules": 466,
+    "modules_without_skip_sites": 249,
+    "modules_with_skip_sites": 217,
     "modules_by_category": {
       "cgate_test_host": 122,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 6,
-      "native_cgate_local": 51,
+      "native_cgate_local": 53,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 65,
@@ -68,19 +68,19 @@
       "runtime_capability": 5,
       "rust_binaries": 7,
       "unclassified": 4,
-      "unit_specs": 112,
+      "unit_specs": 114,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 115,
+      "all": 117,
       "partial": 18,
       "none": 82
     },
-    "native_runnable_tests": 218,
-    "native_selected_required_tests": 218,
+    "native_runnable_tests": 222,
+    "native_selected_required_tests": 222,
     "native_excluded": 0,
-    "native_selection_selectors": 136
+    "native_selection_selectors": 138
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -6871,6 +6871,64 @@
         }
       ],
       "note": "Its separate CBUS_TEMPLATE_TRANSACTION_TEST_HOST gate targets a C-Gate-compatible service, not the original server. A 2026-09-30 trial against the owned native C-Gate 3.4.0.2001 failed with '425 Lock failed' and '408 Unable to delete file', so tests/conftest.py does not publish it."
+    },
+    "tests/test_thermostat_post_load_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_post_load_native.py::NativeThermostatPostLoadTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_JAVA') and os.environ.get('CBUS_LOCAL_CGATE_VENDOR') and SPEC_DIR",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat post-load",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_thermostat_settings_native.py": {
+      "categories": [
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 2,
+      "native_runnable_tests": 2,
+      "native_selected_tests": 2,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_JAVA') and os.environ.get('CBUS_LOCAL_CGATE_VENDOR') and SPEC_DIR",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
     },
     "tests/test_thermostat_temperature_original.py": {
       "categories": [
