@@ -35,6 +35,12 @@ no PP save.
 
 ## Edit and verify
 
+The new [classic DLT Indicators journey](classic-dlt-physical-workflow.md) adds
+`physical-pp dlt-indicators` for one exact supported profile. Its Python
+admission is implemented and fails closed on servers without loaded-session
+identity; integrated acceptance awaits the centrally reviewed Rust identity
+seam and rebuilt binary. Generic `apply` retains its existing behavior.
+
 ```sh
 cbus-toolkit cgate --host 127.0.0.1 --port 20023 \
   physical-pp apply //PROJECT/NETWORK/p/UNIT --method direct \

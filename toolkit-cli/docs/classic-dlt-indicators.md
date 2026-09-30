@@ -43,6 +43,12 @@ vendor specifications through `--spec-dir` or `CBUS_UNITSPEC_DIR`. Native edits
 retain the existing database-only destination guard. Indicator operations,
 display settings and label controls use separate invocations.
 
+The new [saved-project to physical Indicators journey](classic-dlt-physical-workflow.md)
+uses a separate `physical-pp dlt-indicators` command for KEYML5 `2.1.00` /
+`5055DL`. It requires the edited database and the original physical baseline
+separately. Exact physical identity admission currently awaits the centrally
+reviewed server contract and rebuilt binary; older servers fail closed.
+
 ## Original ordering and normalization
 
 Original load treats fallback and pressed brightness as disabled whenever the

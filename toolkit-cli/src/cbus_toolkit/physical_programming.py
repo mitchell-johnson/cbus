@@ -21,7 +21,7 @@ import json
 import os
 import re
 import xml.etree.ElementTree as ET
-from typing import Any, Iterable, Mapping, Protocol
+from typing import Any, Callable, Iterable, Mapping, Protocol
 from uuid import uuid4
 
 from .programming import (
@@ -768,7 +768,14 @@ class PhysicalProgramming:
         destination: str | None = None,
         dry_run: bool = False,
         journal: str | os.PathLike[str] | None = None,
+        validate_session: Callable[[Any, Mapping[str, PhysicalParameter], str, Mapping[str, Any]], Any] | None = None,
     ) -> dict[str, Any]:
+        """Apply once; an optional typed validator guards each session phase.
+
+        Validation runs before the first SET, after staging before the durable
+        journal/SAVE, and after a distinct fresh LOAD. Without the callback,
+        generic physical PP behavior and recovery remain unchanged.
+        """
         source_path = PhysicalUnitPath.parse(source)
         destination_path = (
             source_path
@@ -854,6 +861,9 @@ class PhysicalProgramming:
                 selected = self._selected_schema(
                     schema, method, (item.parameter for item in edit_rows)
                 )
+                if validate_session is not None:
+                    evidence.setdefault("typed_validation", {})["loaded"] = validate_session(
+                        session, schema, "loaded", capabilities)
                 before = {
                     item.name: session.values(item.name)[item.name] for item in selected
                 }
@@ -867,6 +877,9 @@ class PhysicalProgramming:
                 staged = {
                     item.name: session.values(item.name)[item.name] for item in selected
                 }
+                if validate_session is not None:
+                    evidence["typed_validation"]["staged"] = validate_session(
+                        session, schema, "staged", capabilities)
                 selected_by_name = {item.name: item for item in selected}
                 staged_mismatches = {
                     edit.parameter: {
@@ -989,6 +1002,9 @@ class PhysicalProgramming:
                     item.name: session.values(item.name)[item.name]
                     for item in verified_selection
                 }
+                if validate_session is not None:
+                    evidence["typed_validation"]["fresh"] = validate_session(
+                        session, verify_schema, "fresh", capabilities)
             evidence["verified"] = verified
             source_parameters = {item.name: item for item in selected}
             verified_parameters = {item.name: item for item in verified_selection}

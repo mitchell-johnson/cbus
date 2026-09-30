@@ -1,0 +1,74 @@
+{
+  "format": "cbus-classic-dlt-physical-workflow-python-v1",
+  "scope": "owned-synthetic-project-and-in-memory-services-only",
+  "profile": {
+    "unit_type": "KEYML5",
+    "firmware": "2.1.00",
+    "catalogue": "5055DL",
+    "catalogue_verification": "saved-project-database",
+    "physical_serial_verified": false
+  },
+  "new_public_command": "cbus-toolkit cgate physical-pp dlt-indicators //TEST/254/p/5 --plan plan.json --journal journals/attempt.json",
+  "proposed_loaded_identity_contract": "pp-info-loaded-identity-v1",
+  "server_contract_confirmed": false,
+  "updated_binary_journey_verified": false,
+  "workflow_complete": false,
+  "python_checks": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:tests python -m pytest tests/test_dlt_physical_programming.py tests/test_physical_programming.py tests/test_cli_physical_programming.py tests/test_dlt_indicators.py tests/test_cli_dlt_indicators.py -q -p no:cacheprovider -k 'not native'",
+    "exit_status": 0,
+    "passed": 85,
+    "subtests_passed": 52,
+    "native_deselected": 4,
+    "admission": [
+      "missing-duplicate-malformed-or-wrong-loaded-identity-refused-before-set",
+      "exact-case-sensitive-type-and-firmware",
+      "canonical-loaded-source-with-no-database-fallback",
+      "database-edited-state-distinct-from-physical-original-baseline",
+      "identity-rechecked-after-staging-before-journal-save",
+      "disconnect-and-generation-change-before-save-refused",
+      "fresh-identity-or-generation-failure-does-not-replay",
+      "complete-two-byte-memory-and-ten-field-verification",
+      "journal-create-and-save-sent-failure-or-interruption-send-no-save",
+      "lost-ack-restart-read-only-partial-recovery-does-not-replay",
+      "generic-physical-pp-existing-behavior-retained",
+      "database-catalogue-drift-before-physical-load-refused",
+      "unchanged-shared-field-rechecked-on-fresh-load",
+      "one-byte-change-still-journals-both-complete-bytes"
+    ]
+  },
+  "real_transport_missing_contract_negative": {
+    "test": "test_missing_loaded_identity_contract_real_cli_refuses_before_first_set",
+    "exit_status": 0,
+    "passed": 1,
+    "other_interop_cases_deselected": 9,
+    "production_cli_and_cmqttd_with_owned_scripted_pci": true,
+    "physical_info_identity_attributes_omitted_at_client_boundary": true,
+    "pp_set_or_save_sent": false,
+    "physical_memory_unchanged": true,
+    "cmqttd_binary_sha256": "f91570efcf15effda10e629be822a606917dba0533a8af9684f8dc86e477f1cb"
+  },
+  "retained_pre_identity_journey": {
+    "public_cli_through_real_cmqttd_and_independent_scripted_pci": true,
+    "database_all_pp_save_close_load_preserved": true,
+    "physical_bytes_before": "af8e",
+    "physical_bytes_after": "c5be",
+    "independent_128_byte_peer_memory_preserved_except_indicator_bytes": true,
+    "independent_fresh_cli_readback_of_all_ten_fields": true,
+    "single_save_command": true,
+    "lost_ack_restart_read_only_partial_recovery": true,
+    "exact_firmware_admission_verified": false
+  },
+  "retained_actual_failure": {
+    "test": "test_stale_physical_identity_or_baseline_refused_before_store[physical-firmware]",
+    "plan_firmware": "2.1.00",
+    "physical_firmware": "2.1.01",
+    "expected_cli_exit_status": 1,
+    "actual_cli_exit_status": 0,
+    "actual_saved": true,
+    "disposition": "red-pending-central-rust-loaded-session-identity-and-rebuilt-binary"
+  },
+  "physical_hardware_accessed": false,
+  "original_gui_executed": false,
+  "power_cycle_persistence_verified": false,
+  "loaded_pci_generation_binding_verified": false
+}

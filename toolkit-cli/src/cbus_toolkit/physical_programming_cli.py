@@ -71,8 +71,25 @@ def options(parser) -> None:
         help="Attempt journal written by physical-pp apply",
     )
 
+    indicators = actions.add_parser(
+        "dlt-indicators",
+        help="Deliver one saved classic DLT Indicators plan with a physical baseline guard",
+    )
+    indicators.add_argument("source", type=physical_unit_path)
+    indicators.add_argument("--plan", type=Path, required=True,
+                            help="Canonical identity-bound dlt indicators plan; save it to the database first")
+    indicators.add_argument("--dry-run", action="store_true",
+                            help="Verify database and physical baseline, then stage without SAVE")
+    indicators.add_argument("--journal", type=Path,
+                            help="New durable attempt journal, required unless --dry-run")
+
 
 def run(args, client):
+    if args.remote_action == "dlt-indicators":
+        from .dlt_cli import _read_json
+        from .dlt_physical_programming import DltPhysicalProgramming
+        return DltPhysicalProgramming(client).apply(
+            args.source, _read_json(args.plan), dry_run=args.dry_run, journal=args.journal), 0
     workflow = PhysicalProgramming(client)
     if args.remote_action == "inspect":
         return workflow.inspect(
