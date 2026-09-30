@@ -40,6 +40,9 @@ def options(commands):
                             help='Declare exclusive editing/reloading of the closed project; required')
         action.add_argument('--overlay-only', action='store_true',
                             help='Skip the replay of the original post-load model adjustments')
+        action.add_argument('--group-sort', choices=('address-ascending',),
+                            help='Declare original group sort context; requires an initially empty '
+                                 'output application and post-load replay')
         if name == 'apply':
             action.add_argument('--backup-project', help='New backup project name')
     settings = areas.add_parser('settings', help='Zone, plant, fan and interface settings editor')
@@ -49,6 +52,9 @@ def options(commands):
         action = edits.add_parser(name, help=text)
         action.add_argument('unit', help='Existing database thermostat: //PROJECT/network/p/unit')
         action.add_argument('--set', dest='edits', action='append', required=True, metavar='NAME=VALUE')
+        action.add_argument('--temperature-preference', choices=('celsius', 'fahrenheit'),
+                            help='Original Toolkit process preference for temperature load/save '
+                                 'normalization; separate from the thermostat TemperatureUnits setting')
         action.add_argument('--host', required=True)
         action.add_argument('--port', type=_port, default=20023)
         action.add_argument('--timeout', type=float, default=30.0)
@@ -78,11 +84,12 @@ def _settings(args, client_factory):
     if args.spec_dir is None:
         raise ValueError('Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications')
     edits = _edits(args.edits)
-    scope = ('PP-level thermostat settings checked against the unit specification and the recovered '
-             'original form save; dialog enable rules are not reproduced and no physical thermostat is programmed')
+    scope = ('PP-level thermostat settings checked against the unit specification and recovered form-save '
+             'fields; complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')
     with client_factory(args.host, args.port, timeout=args.timeout) as client:
         manager = NativeThermostatSettings(client, UnitSpecStore(args.spec_dir))
-        plan = manager.plan(args.unit, edits, exclusive_project=True)
+        plan = manager.plan(args.unit, edits, exclusive_project=True,
+                            temperature_preference=args.temperature_preference)
         if args.action == 'preview':
             return {**plan.as_dict(), 'scope': scope}, 0
         result = manager.apply(plan, backup_project=args.backup_project)
@@ -103,10 +110,12 @@ def run(args, client_factory):
             name: list(record['unit_types']) for name, record in FAMILIES.items()}, 'scope': scope}, 0
     if args.exclusive_project is not True:
         raise ValueError('Thermostat template preview/apply requires --exclusive-project')
+    if args.overlay_only and args.group_sort is not None:
+        raise ValueError('--group-sort requires post-load replay; omit --overlay-only')
     with client_factory(args.host, args.port, timeout=args.timeout) as client:
         manager = NativeThermostatTemplates(client, catalog)
         plan = manager.plan(args.unit, args.template_number, exclusive_project=True,
-                            post_load=not args.overlay_only)
+                            post_load=not args.overlay_only, group_sort=args.group_sort)
         if args.action == 'preview':
             return {**plan.as_dict(), 'scope': scope}, 0
         result = manager.apply(plan, backup_project=args.backup_project)

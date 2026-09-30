@@ -167,11 +167,12 @@ def inspect(exe: Path, map_path: Path):
     checks['brightness_literal_vectors'] = all(
         ((raw + 2) * 100 // 255) * 255 // 100 == expected for raw, expected in BRIGHTNESS_VECTORS)
     scalar_input = {'BeepEnable': 3, 'VariableFanCoilEnable': 2, 'TemperatureUnits': 9,
-                    'ControlledZones': 1, 'InternalPlantType': 11, 'TimerEnable': 3}
+                    'ControlledZones': 1, 'InstalledZones': 1, 'InternalPlantType': 11, 'TimerEnable': 3}
     checks['scalar_model_literal_vectors'] = all(
         form_save_scalars(scalar_input | dict.fromkeys(BRIGHTNESS, raw), 'basic')
         == dict.fromkeys(BRIGHTNESS, expected) | {'BeepEnable': 1, 'VariableFanCoilEnable': 1,
-            'TemperatureUnits': 0, 'EnableHVACRelayDrive': 0, 'InternalPlantType': 8, 'TimerEnable': 1}
+            'TemperatureUnits': 0, 'EnableHVACRelayDrive': 0, 'InternalPlantType': 8,
+            'ControlledZones': 1, 'TimerEnable': 1}
         for raw, expected in BRIGHTNESS_VECTORS)
     checks['virtual_plant_eleven_saves_as_eight'] = _sequence(
         methods[BASE + 'IntVirtualRestrictedPlantTypeToUnitPlantType'],

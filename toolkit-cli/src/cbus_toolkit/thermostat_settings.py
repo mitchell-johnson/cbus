@@ -20,7 +20,8 @@ from uuid import uuid4
 from .addressing import NetworkAddressing
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer
-from .thermostat_post_load import damper_modulation_save, form_save_fans, form_save_scalars, virtual_plant_type
+from .thermostat_post_load import (TEMPERATURE_SAVE_RULES, ThermostatPostLoadError, damper_modulation_save,
+                                    form_save_fans, form_save_scalars, form_save_temperatures, virtual_plant_type)
 from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
@@ -37,12 +38,11 @@ FANS = tuple(side + 'PlantFan' + field for side in ('Heating', 'Cooling')
              for field in ('SpeedControlEnable', 'Speeds', 'DefaultSpeed', 'OnDelay', 'OffDelay', 'Enable'))
 INTERFACE = ('DisplayBacklightIdleBrightness', 'DisplayBacklightActiveBrightness', 'KeyBacklightIdleBrightness',
              'KeyBacklightActiveBrightness', 'BacklightActiveTime', 'BacklightDimTime', 'BeepEnable',
-             'TemperatureUnits', 'ZoneTemperatureDisplay', 'HeatCoolIntegralFactor', 'HeatCoolDifferentialFactor',
-             'TemperatureOffset', 'TemperatureSendDifferential')
+             'TemperatureUnits', 'ZoneTemperatureDisplay', 'HeatCoolIntegralFactor', 'HeatCoolDifferentialFactor')
 FAMILY_SPECIFIC = {'programmable': ('TimeUnits', 'EvapProgramEnabled', 'NonEvapProgramEnabled', 'SendInterval',
                                     'ScheduleControlledZones'),
                    'basic': ('TimerEnable',)}
-COMMON = ZONES + PLANT + FANS + INTERFACE
+COMMON = ZONES + PLANT + FANS + INTERFACE + tuple(TEMPERATURE_SAVE_RULES)
 # Settings whose original AfterLoad normalises out-of-range values.
 AFTERLOAD_FLAGS = {'EvapProgramEnabled': (0, 1), 'NonEvapProgramEnabled': (0, 1)}
 
@@ -51,12 +51,19 @@ def admitted(family):
     return COMMON + FAMILY_SPECIFIC[family]
 
 
-def form_save(values: Mapping[str, int], family: str) -> dict[str, int]:
+def _temperature_preference(value):
+    if value is not None and (type(value) is not str or value not in ('celsius', 'fahrenheit')):
+        raise ThermostatTemplateError('Toolkit temperature preference must be celsius or fahrenheit')
+
+
+def form_save(values: Mapping[str, int], family: str, *, temperature_preference=None) -> dict[str, int]:
     """Values the original form save writes for the replayed dependent fields."""
     result = form_save_fans(values)
     result['DamperModulationEnable'] = damper_modulation_save(values['DamperModulationEnable'],
                                                               virtual_plant_type(values))
     result.update(form_save_scalars(values, family))
+    if temperature_preference is not None:
+        result.update(form_save_temperatures(values, temperature_preference=temperature_preference))
     return result
 
 
@@ -68,6 +75,7 @@ class SettingsPlan:
     edits: tuple[tuple[str, int], ...]
     dependent: tuple[tuple[str, int, int], ...]
     dialog_rules_json: str
+    temperature_preference: str | None = None
 
     @property
     def expected(self):
@@ -83,14 +91,21 @@ class SettingsPlan:
                 'expected': self.expected,
                 'dependent_form_save_changes': [{'name': n, 'after_edit': a, 'form_save': b}
                                                 for n, a, b in self.dependent],
-                'form_save_replay': 'recovered-context-independent-fields-one-save',
+                'form_save_replay': 'recovered-fields-one-save',
+                'temperature_normalization': {
+                    'reproduced': self.temperature_preference is not None,
+                    'toolkit_process_preference': self.temperature_preference,
+                    'parameters': list(TEMPERATURE_SAVE_RULES)
+                                  if self.temperature_preference is not None else [],
+                    'thermostat_temperature_units_used_as_preference': False},
                 'complete_form_lifecycle_reproduced': False,
                 'dialog_rule_subset': json.loads(self.dialog_rules_json),
                 'dialog_enable_rules_reproduced': False, 'physical_device_programmed': False}
 
 
 def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, str],
-                  edits: Mapping[str, object]) -> SettingsPlan:
+                  edits: Mapping[str, object], *, temperature_preference=None) -> SettingsPlan:
+    _temperature_preference(temperature_preference)
     family = family_for_unit_type(unit_type)
     if not isinstance(edits, Mapping) or not edits:
         raise ThermostatTemplateError('Supply at least one setting edit')
@@ -129,9 +144,11 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
     if missing:
         raise ThermostatTemplateError('Unit snapshot lacks one-byte setting: ' + ', '.join(missing))
     try:
-        saved = form_save(after, family)
+        saved = form_save(after, family, temperature_preference=temperature_preference)
     except KeyError as error:
         raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + str(error)) from error
+    except ThermostatPostLoadError as error:
+        raise ThermostatTemplateError(str(error)) from error
     missing = sorted(set(saved) - set(current))
     if missing:
         raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + ', '.join(missing))
@@ -150,6 +167,8 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         checked = parameter.validate_value(str(value))
         if not checked['valid']:
             raise ThermostatTemplateError(name + ' form save: ' + '; '.join(checked['errors']))
+        if not 0 <= value <= 255:
+            raise ThermostatTemplateError(name + ' form save is outside one unsigned byte: ' + str(value))
     try:
         dialog = {'available': True, **recovered_dialog_rules(after, family)}
     except (KeyError, ValueError) as error:
@@ -157,7 +176,7 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         # not the admission contract for raw PP edits or a replayed event loop.
         dialog = {'available': False, 'reason': str(error), 'dialog_enable_rules_reproduced': False}
     return SettingsPlan(family, unit_type, tuple(sorted(snapshot.items())), tuple(sorted(parsed.items())),
-                        dependent, json.dumps(dialog, sort_keys=True))
+                        dependent, json.dumps(dialog, sort_keys=True), temperature_preference)
 
 
 @dataclass(frozen=True)
@@ -196,9 +215,10 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         self.last_evidence['format'] = 'cbus-native-thermostat-settings-result-v1'
         del self.last_evidence['original_post_load_adjustments_replayed']
 
-    def plan(self, path, edits, *, exclusive_project=False):
+    def plan(self, path, edits, *, exclusive_project=False, temperature_preference=None):
         self._start('settings-plan')
         try:
+            _temperature_preference(temperature_preference)
             path, project, network_address, address = _path(path)
             network = '//' + project + '/' + str(network_address)
             if exclusive_project is not True:
@@ -208,7 +228,8 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             if network not in networks:
                 raise ThermostatTemplateError('Unit network is absent from the closed project inventory')
             text, identity, values = self._read(path, network, address)
-            settings = plan_settings(self.store, identity['UnitType'], values, edits)
+            settings = plan_settings(self.store, identity['UnitType'], values, edits,
+                                      temperature_preference=temperature_preference)
             plan = NativeSettingsPlan(path, project, network, settings, text,
                                       tuple(sorted(identity.items())), networks)
             self._plans[id(plan)] = repr(plan)

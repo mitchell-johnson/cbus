@@ -8,15 +8,15 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "rust_artifact": {
-    "path": "/private/tmp/cbus-rust-focused-20260930/debug/cgate-mock",
+    "path": "<OWNED_BUILD>/debug/cgate-mock",
     "sha256": "97dc1f19a6b633af7a11edb56522d2fe8d585eb822bbaa285a15056c012ad0c5",
     "provenance": "current-build"
   },
-  "source_revision": "abef8e824e580361f715f636f8b6040bde6c13c9",
+  "source_revision": "bc1f1d15405913b1d1266d672d48331375892440",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "098d4ad74d2ce6a8b396f18aaaed78032d9f8e0ae77003a2c1a00c49d0c7b359",
     "docs/cmqttd-cgate.md": "ee79b3b662092fca00d0419914c0d38954f625a5f837a9e385632dd0c64b5164",
-    "rust/Cargo.lock": "527b22140f959060246a54191e7e845bc3d33ff796da940164d3a826d40d2028",
+    "rust/Cargo.lock": "71929fef14582816d0ecbba8d78e9e05ee0889c155c64a1f0b6599c46f75bb63",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
     "rust/cbus-cgate/research/native_admin_authorization_probe.py": "83a8082602a9da5a3cbd0ff62d2bfd1677aa35dc4c5097ca584d95b12742cd18",
@@ -172,7 +172,7 @@
     "toolkit-cli/research/native_dali_commissioning.py": "436080b900560c30d36d4df4eb545cc6712ee46baa310c41a3b277e9bb72ba55",
     "toolkit-cli/src/cbus_toolkit/parity.py": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2",
     "toolkit-cli/tests/test_cgate_tagged_session_differential.py": "344e941940f3b6833b2768958534becfc256bbb004fecb7e48cb7924af344c15",
-    "toolkit-cli/tests/test_parity_register.py": "1656fc54e65ee3463f992dfe8dc6db048382c8265eae9be81920cff59d1f7bdb"
+    "toolkit-cli/tests/test_parity_register.py": "efa09cf20fa5b5273454db764e8e8c831b8741824dd54115fdb29b67b5a462ad"
   },
   "normalization": [
     "queried external cmdN identity",
@@ -185,8 +185,8 @@
     "b": "201 Service ready\r\n"
   },
   "peer_ports": {
-    "a": 51928,
-    "b": 51929
+    "a": 62389,
+    "b": 62390
   },
   "cases": [
     {
@@ -240,9 +240,9 @@
         "[502] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b>\r\n"
       ],
       "rust_wire_reply": [
-        "[502] 300-sessionID=cmd1 origin=internal from=20260930-203935 tag=Console\r\n",
-        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:51928 from=20260930-203935\r\n",
-        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:51929 from=20260930-203935\r\n"
+        "[502] 300-sessionID=cmd1 origin=internal from=20260930-220227 tag=Console\r\n",
+        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:62389 from=20260930-220227\r\n",
+        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:62390 from=20260930-220227\r\n"
       ],
       "result": "passed"
     },
@@ -297,9 +297,9 @@
         "[504] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[504] 300-sessionID=cmd1 origin=internal from=20260930-203935 tag=Console\r\n",
-        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:51928 from=20260930-203935 tag=native-a\r\n",
-        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:51929 from=20260930-203935 tag=native-b\r\n"
+        "[504] 300-sessionID=cmd1 origin=internal from=20260930-220227 tag=Console\r\n",
+        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:62389 from=20260930-220227 tag=native-a\r\n",
+        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:62390 from=20260930-220227 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -320,9 +320,9 @@
         "[603] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[603] 300-sessionID=cmd1 origin=internal from=20260930-203935 tag=Console\r\n",
-        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:51928 from=20260930-203935 tag=native-a\r\n",
-        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:51929 from=20260930-203935 tag=native-b\r\n"
+        "[603] 300-sessionID=cmd1 origin=internal from=20260930-220227 tag=Console\r\n",
+        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:62389 from=20260930-220227 tag=native-a\r\n",
+        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:62390 from=20260930-220227 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -360,9 +360,9 @@
         "[604] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[604] 300-sessionID=cmd1 origin=internal from=20260930-203935 tag=Console\r\n",
-        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:51928 from=20260930-203935 tag=native-a\r\n",
-        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:51929 from=20260930-203935 tag=native-b\r\n"
+        "[604] 300-sessionID=cmd1 origin=internal from=20260930-220227 tag=Console\r\n",
+        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:62389 from=20260930-220227 tag=native-a\r\n",
+        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:62390 from=20260930-220227 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -410,5 +410,11 @@
   "offline_provision": {
     "physical_networks_opened": false
   },
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /private/tmp/cbus-rust-focused-20260930/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-rust-focused-20260930/debug/cmqttd --output-dir research/runtime"
+  "command": ".venv/bin/python research/cgate_tagged_session_differential.py --mock-bin <OWNED_BUILD>/debug/cgate-mock --cmqttd-bin <OWNED_BUILD>/debug/cmqttd --output-dir research/runtime",
+  "publication_sanitization": {
+    "original_artifact_sha256": "384099bc202916d76c02a91f9a71093ff449b60c2142f7196b671d99e0f68a91",
+    "build_coordinates_normalized": true,
+    "test_results_source_fingerprints_and_binary_hashes_unchanged": true,
+    "note": "Actual fresh differential run; host-specific build coordinates replaced with OWNED_BUILD for publication. Raw receipt retained privately."
+  }
 }

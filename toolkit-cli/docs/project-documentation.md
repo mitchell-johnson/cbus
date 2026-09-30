@@ -32,8 +32,9 @@ always documents every network.
 
 The rules come from static disassembly of Toolkit 1.18.0.2754
 (`TProjectDocumentor`, `TDocumentorCommon`, the per-type documentors,
-`TfrmProjectDocumentor` and `TProjectNodeHelper.DocumentProject`). The
-original was not executed. See the
+`TfrmProjectDocumentor` and `TProjectNodeHelper.DocumentProject`). The complete
+original workflow has not been executed. Separate bounded instruction probes
+cover admitted action methods and trigger-group traversal. See the
 [research note](../research/experiments/2026-09-30/project-documentor-static.md)
 and its verified receipt.
 
@@ -87,11 +88,15 @@ and its verified receipt.
 | `TUnitTypeDocumentor` (base) | every unregistered type, including `PCI`, `CNI` and `KEYGL5` | Recovered |
 | `TClockDocumentor`, `TGeneralInputDocumentor`, `TCustomSceneKeyUnitDocumentor` | `CLK2`, `PC_GIM`, `KEYSCEN4` | Recovered (base body) |
 | `TOutputDocumentor` | `RELDN4`, `RELDN8`, `RELDN8B`, `RELDN12`, `DIMDN4`, `DIMDN4F`, `DIMDN8`, `DIMDN8F` | Recovered: channel/groups/logic-function table |
-| `TOutputDocumentor`, `TErrorReportOutputDocumentor` | the other 24 output types | Partial: base block, channel table marked |
+| `TOutputDocumentor` | `ANODN4`, `DIMDS8`, `DIMPR1/2/4`, `RELDB1`, `RELDC4` | Recovered table when the explicit firmware selects the pinned native class |
+| `TOutputDocumentor` | `DIMDH4`, `RELDN4A/8A/16A`; `DIMDD4/4F/8/8F` at firmware `1.3.0–9` | Recovered base-only body: native NCC classes fail this documentor's dimmer-class check |
+| `TOutputDocumentor`, `TErrorReportOutputDocumentor` | remaining output classes, including earlier `DIMDD` firmware | Partial: base block, channel table marked |
 | `TBridgeDocumentor` | `BRIDGE1N/1F/2N/2F`, `GATEWLS/N/F` | Recovered: adjacent network, application connections, adjacent/remote forwarding and destination |
 | `TClassicOutputDocumentor` | `RELAY1`, `RELAY2`, `RELAY4`, `DIMMER4`, `AN_OUT4` | Recovered: associated groups and logic function per channel |
 | `TDMXGatewayDocumentor` | `DMXDO12` | Recovered: groups and 512 DMX slots |
-| every other documentor | classic and Neo key inputs, PIR, light-level and ST7 sensors, multisensor, thermostat, SENTEMP, WHAA, DALI, fan, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways, DLT | Unrecovered: base block and a marker |
+| `TClassicKeyInputDocumentor` | `KEY1`, `KEY2`, `KEY4` | Recovered: timing, macro/micro functions, group controls, preset levels and timer expiry |
+| `TClassicKeyInputDocumentor` | other classic key types | Partial: base block and a marker |
+| every other documentor | Neo key inputs, PIR, light-level and ST7 sensors, multisensor, thermostat, SENTEMP, WHAA, DALI, fan, architectural and Bytecraft dimmers, remote controls, wireless inputs and gateways, DLT | Unrecovered: base block and a marker |
 
 The output table follows the original row format: `<tr><td>channel</td><td>groups</td>[<td>Max|Min|&nbsp;</td>]</tr>`.
 Channel groups come from `GroupAddress`. Logic groups 1–4 sit at
@@ -105,12 +110,34 @@ with more than one group. The original writes `Max`/`Min` for relays as well.
 All consumed PP arrays and displayed group records must be present. Missing
 logic programming cannot silently become disabled logic.
 
+The seven additional direct output profiles use the same pinned basic DIN
+loader and report methods, with their native channel counts and four logic
+groups. This only expands documentation and group usage; it does not admit
+new devices to the programming editor. Firmware identity is required for
+these additions. Native NCC units intentionally receive only the base body
+from `TOutputDocumentor`, while their group usage remains independently unknown.
+The [output receipt](../research/experiments/2026-09-30/project-documentor-outputs-static.json)
+binds factory classes, firmware boundaries, channel counts and PP mappings.
+
 Classic outputs consume six group slots and `LogicGA0..5Associations`; the low
 bit of `LogicFunctionAndPowerUpDelay` selects Min/Max. The original GA5 branch
 tests slot 5 but displays slot 0. Repeated groups remain repeated. The DMX
 body maps sixteen 32-slot `DMXSlotMapping` banks to twelve channel groups;
 shared groups produce duplicate rows. It preserves the original malformed
 `</td></tr>` prefix rather than silently correcting the source output.
+
+Classic `KEY1/2/4` bodies require complete consumed PP and resolved displayed
+groups. Timing labels use the native enums, including the stored ramp value
+255 becoming `4 secs`. Macro detection reproduces registered command vectors,
+application subsets and shutter aliases; custom functions retain the four
+micro-function columns. Repeated controls remain repeated. Their stored
+levels and timers come from the first unit block matching the group, even
+when that block is assigned to another key. Named presets resolve by Level
+Address, independently of Level Value. Other classic input models still need
+their own native interface and programming-state mappings. Block order models
+a freshly initialized native key collection loaded from ascending PP bits;
+association history in an existing GUI session is not present in a saved PP
+snapshot and is not reproduced.
 
 Bridge bodies use `Application[0..1]`, `ApplicationConnectEnabled`,
 `BridgeCount` and `BridgeAddress`. Their private application-255 names are
@@ -123,7 +150,7 @@ empty prefix displays the original `Unknown Network` text.
 ## Group usage and action selectors
 
 Input/Output/Other lists now reproduce the original unit-link/description
-layout for eight admitted DIN output types, five classic output types, and
+layout for fifteen admitted DIN output types, five classic output types, and
 nine classic key types (`KEY1/2/4`, `KEYIR1/4`, `KEYBC2/4`, `KEYAUX4`,
 `DINAUX4`). Input descriptions retain block-major key ordering, duplicate key
 uses and `Block (Unused)`. DIN output descriptions list channels then used or
@@ -139,6 +166,22 @@ Native Level Address and Value are retained separately. An action is reported
 unused only when every participating documentor has a known empty result.
 The bounded original instruction comparison uses synthetic object callbacks;
 it is not an original generated-page capture.
+
+Direct action usage also covers `RELDF1`, `SENTEMPB` and `SENTEMP4`. These
+references use application 202 and selector Address; an unused trigger group
+suppresses the reference. `SENTEMP4` preserves the native behavior in which a
+broadcast match replaces an earlier error-report match. Fan master input and
+digital-temperature enable/HVAC group descriptions are recovered separately.
+Eight original-method cases and 33 additional source checks support this
+extension; the [usage note](project-documentation-usage.md) lists exact fields
+and the remaining per-family gaps.
+
+Six additional original `InsertHTMLTriggerGroup` instruction cases match
+99 rendered lines and their exact unit/level callback order, including empty
+levels, empty units, unused selectors and interleaved multiple uses. These
+cases supply explicit action strings and getter results; they independently
+check the wrapper rather than complete native project loading or composition.
+See the [comparison note](../research/experiments/2026-09-30/project-documentor-trigger-original.md).
 
 ## Status interval and ordering
 
@@ -179,7 +222,7 @@ such section. The following are marked:
 - `Inputs:`, `Outputs:` and `Other:` usage outside the admitted families;
 - `Status Report Interval` when any potential participant lacks a known mapping
   or consumed PP;
-- `ActionSelectorUse` outside the base and admitted classic-key implementations;
+- `ActionSelectorUse` outside the base, classic-key and admitted fan/temperature implementations;
 - unrecovered per-type `DocumentHTML` bodies and the partial data listed above.
 
 Without `--catalog`, the three calculator lines read `not calculated`. With a
@@ -203,3 +246,9 @@ with each unit's `CatalogNumber`, `Burden` and
 - Base links to applications missing from the snapshot use the existing
   standard-title/address fallback; no complete native auto-creation is modeled.
 - Native SQL repositories and unsupported XML collection variants.
+
+The [original-page feasibility investigation](../research/experiments/2026-09-30/project-documentor-page-feasibility.md)
+records the required native storage, manager, modal form and serialization
+dependencies. Existing Windows-runner readiness could not be verified, and
+the isolated synthetic project/process route remains unproved. A normal
+Toolkit startup is therefore not used as a substitute for an isolated capture.

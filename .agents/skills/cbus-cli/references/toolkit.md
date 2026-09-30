@@ -477,7 +477,7 @@ uncertain.
 
 ## Compatibility and tests
 
-Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` derives its result from the packaged functional-obligation and evidence register and deliberately exits 1 until the census, implementation and acceptance requirements are complete. The provisional register currently accounts for 22,156 source records, including the sanitized 412-form, 10,102-control and 1,892-event executable census in `toolkit-cli/docs/toolkit-executable-surface.json`. Reproduce that census with `research/extract_toolkit_executable_surface.py` and explicit vendor EXE/MAP paths; never commit those vendor inputs. Functional percentages are unavailable while `denominator_ready` is false. The separately reported 39-row category percentage is not a functionality estimate. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.
+Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` derives its result from the packaged functional-obligation and evidence register and deliberately exits 1 until the census, implementation and acceptance requirements are complete. The provisional register currently accounts for 22,103 source records, including the sanitized 412-form, 10,102-control and 1,839-event executable census in `toolkit-cli/docs/toolkit-executable-surface.json`. Reproduce that census with `research/extract_toolkit_executable_surface.py` and explicit vendor EXE/MAP paths; never commit those vendor inputs. Functional percentages are unavailable while `denominator_ready` is false. The separately reported 42-row category percentage is not a functionality estimate. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.
 
 Read the repository's `toolkit-cli/docs/implementation-status.md` for supported functions/profiles and outstanding work, and `toolkit-cli/README.md` for detailed examples. Source is in `toolkit-cli/src/cbus_toolkit/`; tests and retained acceptance evidence are part of this application.
 
@@ -540,6 +540,42 @@ fan, slave-plant and relay-drive normalization. The result can differ on a later
 explicit save; do not add hidden saves to reach a fixed point. Raw PP values
 and network addressing are preserved where no admitted form rule applies.
 Quick-zone and dialog helpers remain bounded pure-model functions, separate
-from complete GUI lifecycle, preference-dependent conversions and physical
-acceptance. Read `toolkit-cli/docs/thermostat-settings.md` and
+from complete GUI lifecycle and physical acceptance. The explicit process
+`--temperature-preference celsius|fahrenheit` adds 15 recovered field-specific
+load/save pairs; it is independent of the device TemperatureUnits setting.
+Template 9 group allocation requires the documented initially empty application
+and explicit `--group-sort address-ascending`; other manager orders remain refused. Read `toolkit-cli/docs/thermostat-settings.md` and
 `toolkit-cli/docs/thermostat-templates.md`.
+
+
+## Conversion, classic DLT and firmware boundaries
+
+The separate Toolkit conversion Python API admits 108 of 292 registered
+source/target pairs, including seven RELDN directions and 93 classic-to-Neo
+directions. This is separate from typed C-Gate conversion. A RELDN4 short
+four-token baseline is refused before I/O; require the admitted complete source
+profile. Metadata/delete/readdress lifecycle and physical conversion remain open.
+Read `toolkit-cli/docs/toolkit-conversion-tweakers.md`.
+
+For `dlt indicators plan`, repeat `--indicator-control NAME=VALUE` in the
+intended order. Inspect initialization changes, enabled controls and save/reopen
+normalization. `dlt text-dialog` operates on a selected existing TEXT language
+and preserves the source-backed legacy flavour0/default representation. Its
+20-UTF-16-unit prefix and whole-input Unicode confirmation are separate rules;
+read `toolkit-cli/docs/classic-dlt-language-dialog.md` before applying.
+
+`dlt broadcast plan` and `assess` are offline: supply explicit label facts,
+prepared bitmap bytes and immutable command outcomes. An original cache mark
+is not an accepted response or verified device state. There is no transport
+executor or retry; see `toolkit-cli/docs/classic-dlt-broadcast.md`.
+
+Firmware completion requires `cleanup_complete` independently of
+`images_verified`. Inspect the stopped journal before explicit read-only resume;
+never silently reflash after a failed release or acquisition. See
+`toolkit-cli/docs/firmware-update-recovery.md`.
+
+Rust project-label extraction bounds both raw and expanded/decoded input,
+including lossy UTF-8 replacement expansion, before output. CBZ archive
+CRC/decompression/unsupported-codec failures are structured refusals. The
+class-specific OnColor proof changes the executable inventory only; it does
+not establish GUI or physical acceptance.

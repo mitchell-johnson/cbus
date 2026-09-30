@@ -1,0 +1,877 @@
+{
+  "format": "cbus-classic-dlt-language-dialog-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": {
+    "text_ok": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.btnOKClick",
+      "start": "0xc13ab8",
+      "stop": "0xc13f44",
+      "sha256": "301a5f06522b1436f0c7f44aee9e48af608dc55dc128b39b336531ba8658cbcf"
+    },
+    "unicode_predicate": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.ContainUnicode",
+      "start": "0xc13458",
+      "stop": "0xc134b4",
+      "sha256": "9cda73b5a431b443c4103cbf4134eabf137edaa40a73403ed8ad8f67888bda52"
+    },
+    "execute": {
+      "symbol": "CIS_TfrmEditDLTLabel.TfrmEditDLTLabel.Execute",
+      "start": "0xc12588",
+      "stop": "0xc12950",
+      "sha256": "a434a695fc094b617696692892193ba23474af8a950ccd17b2405d2f41f144ae"
+    },
+    "group_dialog": {
+      "symbol": "CIS_TCBusGroupGUIAgent.TCBusGroupGUIAgent.DynamicLabelDialog",
+      "start": "0xed88ac",
+      "stop": "0xed8dfc",
+      "sha256": "d38ae7d298d5161d652c9d4882639fe8a0d9f52d7ca47f19484ed4697cbdeeb9"
+    },
+    "group_editor": {
+      "symbol": "CIS_TCBusGroupGUIAgent.TCBusGroupGUIAgent.EditDLTTags",
+      "start": "0xed815c",
+      "stop": "0xed84b0",
+      "sha256": "645efce2b6043eb7a3781566b708f3ca7323970f2102deddd7a26c6917ca5a7d"
+    },
+    "group_initialise": {
+      "symbol": "CIS_TCommonCBus.TCBusGroup.InitialiseLanguages",
+      "start": "0xf2879c",
+      "stop": "0xf287d8",
+      "sha256": "f6bb4c85675229d43bd1e22c11d8543728f01189e58583dd1a017cc4af2005cd"
+    },
+    "level_initialise": {
+      "symbol": "CIS_TCommonCBus.TLevel.InitialiseLanguages",
+      "start": "0xf27058",
+      "stop": "0xf27098",
+      "sha256": "541bf0c52f32980272f8bd18e419b246b44fc8442166d3a9734c3366ebe02b92"
+    },
+    "group_finalise": {
+      "symbol": "CIS_TCommonCBus.TCBusGroup.FinaliseLanguage",
+      "start": "0xf287d8",
+      "stop": "0xf2880c",
+      "sha256": "1e0103828eb7a344050147644a32106e09302740a4970ab32478294014573503"
+    },
+    "level_finalise": {
+      "symbol": "CIS_TCommonCBus.TLevel.FinaliseLanguage",
+      "start": "0xf27098",
+      "stop": "0xf270cc",
+      "sha256": "ee97385601f253fa0c852f152d1bf7972fdc0e3cd1f5d741ce7e026fb169f0aa"
+    }
+  },
+  "rules": {
+    "text_action": "Set TagType TEXT; empty input becomes <Default>; otherwise copy first20 UTF16 code units",
+    "unicode_guard": "Scan entire original input for any UTF16 code unit greater than255 before truncating; a positive confirmation result1 is required",
+    "accept": "If not deferred, clear selected flavour broadcast flag and FinaliseLanguage for its language with no supplied language-model override",
+    "finalise_scope": "Whole selected language collection, not only edited flavour",
+    "initialise_call": "Native group/level callback invokes InitialiseLanguages(false)",
+    "editor_entry": "Group EditDLTTags initializes Network,Group(false),Network then creates managed label dialog; this receipt does not run that managed dialog",
+    "prerequisites": "Explicit current language cache and owner display string when default flavour1 is missing; XML alone does not prove user preferences or retained model cache"
+  },
+  "observations": [
+    {
+      "input": "",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "unicode_prompts": 0,
+        "copies": [],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "group",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "<Default>",
+        "unicode_prompts": 0,
+        "copies": [],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "Kitchen",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "group",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "Kitchen",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "Kitchen",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "012345678901234567890123",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "01234567890123456789",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "group",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "012345678901234567890123",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "01234567890123456789",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "Caf\u00e9",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "Caf\u00e9",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "group",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "Caf\u00e9",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "Caf\u00e9",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "\u6f22\u5b57",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": false,
+        "tag_type": 3,
+        "tag_value": "before",
+        "unicode_prompts": 1,
+        "copies": [],
+        "broadcast_marked": true,
+        "calls": []
+      }
+    },
+    {
+      "input": "\u6f22\u5b57",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "\u6f22\u5b57",
+        "unicode_prompts": 1,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "12345678901234567890\u6f22",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": false,
+        "tag_type": 3,
+        "tag_value": "before",
+        "unicode_prompts": 1,
+        "copies": [],
+        "broadcast_marked": true,
+        "calls": []
+      }
+    },
+    {
+      "input": "12345678901234567890\u6f22",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "12345678901234567890",
+        "unicode_prompts": 1,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "1234567890123456789\ud83d\ude00",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": false,
+      "result": {
+        "accepted": false,
+        "tag_type": 3,
+        "tag_value": "before",
+        "unicode_prompts": 1,
+        "copies": [],
+        "broadcast_marked": true,
+        "calls": []
+      }
+    },
+    {
+      "input": "1234567890123456789\ud83d\ude00",
+      "target": "level",
+      "confirm_non_latin1": true,
+      "deferred": false,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "1234567890123456789\ud83d",
+        "unicode_prompts": 1,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": false,
+        "calls": [
+          {
+            "operation": "FinaliseLanguage",
+            "target": "level",
+            "language": "selected flavour language",
+            "supplied_model": null
+          }
+        ]
+      }
+    },
+    {
+      "input": "Deferred",
+      "target": "group",
+      "confirm_non_latin1": false,
+      "deferred": true,
+      "result": {
+        "accepted": true,
+        "tag_type": 0,
+        "tag_value": "Deferred",
+        "unicode_prompts": 0,
+        "copies": [
+          {
+            "start": 1,
+            "utf16_count": 20
+          }
+        ],
+        "broadcast_marked": true,
+        "calls": []
+      }
+    }
+  ],
+  "collection": {
+    "format": "cbus-classic-dlt-language-dialog-source-v1",
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": [
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.InitialiseLanguages",
+        "start": "0xf37154",
+        "end": "0xf37474",
+        "sha256": "e5ea278559e75e931cd8eeb0ec3022f3b34bf0f05be071f32de6bc83c1a7d523"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.FinaliseLanguage",
+        "start": "0xf37474",
+        "end": "0xf376d0",
+        "sha256": "6b2be99a4402b52b36076b2e424404a37f55c0869ef909cf6c010f4cd210b00b"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.AddLanguageTypes",
+        "start": "0xf3707c",
+        "end": "0xf37154",
+        "sha256": "171811a6074cc1b60c0f063bf3e11e42c67615157f1940579b3b5deb92427da3"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageCollection.ItemByLanguageType",
+        "start": "0xf3701c",
+        "end": "0xf3707c",
+        "sha256": "661f78c7dcfd244b62a9b423ac6ff200ccfb33684faf0beb87fa6c25ce17ca43"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavourCollection.ItemByFlavour",
+        "start": "0xf36abc",
+        "end": "0xf36b1c",
+        "sha256": "944202e907dcdfddbeb786afe891755582a69dc9389a6d36414058f96f18af61"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLT.TGroupTagDLTCollection.ItemByLanguageAndFlavourID",
+        "start": "0x85a208",
+        "end": "0x85a9d0",
+        "sha256": "949cea9ae0d91506a430d04f38bae25c31305d08a0c8b5bef2ba1e98ec953767"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypeText",
+        "start": "0xf36db0",
+        "end": "0xf36dfc",
+        "sha256": "e0773c5121444b5593a63ffadd232575cabeb2830909ecb927e9bbbed89d391f"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.GetHasTagTypePredefined",
+        "start": "0xf36d74",
+        "end": "0xf36db0",
+        "sha256": "62461c1dd17213559090b4e46d43525ca518c1f382f4c11917a158fdb673c874"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguage.InternalCreate",
+        "start": "0xf36b1c",
+        "end": "0xf36c00",
+        "sha256": "ceb6bc798ea1da228f8673e5a7ba89e4f22f66db620dbd82c0ff2ee93a8fb239"
+      },
+      {
+        "symbol": "CIS_TGroupLanguage.TGroupLanguageFlavour.InternalCreate",
+        "start": "0xf3657c",
+        "end": "0xf366a0",
+        "sha256": "d9c9cb60d383eab2013f28ccacc60826c4d3dc91ecb88a3803649d4e5a279854"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.InternalCreate",
+        "start": "0x8583a4",
+        "end": "0x858484",
+        "sha256": "02b97c5acd97a9fb26668f326009255159ee77eff5c8e164b7a12cc2e47640a2"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.SetTagTypeAsCode",
+        "start": "0x858658",
+        "end": "0x8587cc",
+        "sha256": "27300dd550935fb94fecc49e7fba1de165f0eed81df2d2d6a9878ae478ec28e4"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.GetTagTypeAsCode",
+        "start": "0x858584",
+        "end": "0x858658",
+        "sha256": "81fb479843ad40c256412a0186f4079821ce5a33d60d7ad0d63670576b4a7ed3"
+      },
+      {
+        "symbol": "CIS_TLanguageTag.TLanguageTag.SetTagValue",
+        "start": "0x858528",
+        "end": "0x858584",
+        "sha256": "2552d12d3d4c932cfd36469988ae506695f1a8dd09ca577fad671cd42935a703"
+      },
+      {
+        "symbol": "CIS_TDLTGraphic.IsDLTFontTagValue",
+        "start": "0x856fbc",
+        "end": "0x856fe0",
+        "sha256": "02258e3a90b0f6a9251891223362eaf02fe218e9415a84330a6ee9cb50c25457"
+      },
+      {
+        "symbol": "CIS_jcl.StrLeft",
+        "start": "0x7b6c10",
+        "end": "0x7b6c38",
+        "sha256": "46d63e4aeeab6b246c4350843e3637f053eff68f97eae6b2d26a4627b22bb782"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusGroup.InitialiseLanguages",
+        "start": "0xf2879c",
+        "end": "0xf287d8",
+        "sha256": "f6bb4c85675229d43bd1e22c11d8543728f01189e58583dd1a017cc4af2005cd"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.InitialiseLanguages",
+        "start": "0xf27058",
+        "end": "0xf27098",
+        "sha256": "541bf0c52f32980272f8bd18e419b246b44fc8442166d3a9734c3366ebe02b92"
+      },
+      {
+        "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.GetAsString",
+        "start": "0x7ea47c",
+        "end": "0x7ea498",
+        "sha256": "585092057648a41980aebe9f38218af0280ac9ba8857bfeb748646509eeadc97"
+      },
+      {
+        "symbol": "CIS_TCustomFlashObject.TCustomFlashObject.InternalGetDefaultRepresentation",
+        "start": "0x7ea5f8",
+        "end": "0x7ea61c",
+        "sha256": "6b92ff276125abf1581fd305518e7063b90a7d05d09348ab47511df2af42b1e9"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusGroup.GetDefaultRepresentation",
+        "start": "0xf280f4",
+        "end": "0xf28134",
+        "sha256": "307af7008710c4f12197191efc7eb5c7452a5a0ca49266c86cb0654b239f3110"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.GetDefaultRepresentation",
+        "start": "0xf26d88",
+        "end": "0xf26da8",
+        "sha256": "2c18a0246743059c53b2fb09d650dd6990212740dd6f75934f3ea467c62bf556"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.GetExtendedTagName",
+        "start": "0xf47dc4",
+        "end": "0xf47e88",
+        "sha256": "171023bb642a824d593457c47891799b2e40dc7bced102aedd0d2e5098b0ace0"
+      },
+      {
+        "symbol": "CIS_TCBusObject.TCGateObject.InternalCreate",
+        "start": "0xf47718",
+        "end": "0xf47880",
+        "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.GetExtendedTagName",
+        "start": "0xf270cc",
+        "end": "0xf271a0",
+        "sha256": "561332ea951589ced3e77e410c591fe4500740d96edfe007d1c99c26025303f3"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TLevel.InternalCreate",
+        "start": "0xf26a48",
+        "end": "0xf26b98",
+        "sha256": "b76bd0c39d53eea017ae5c6017c7eb9ad25145240d700cf667cefdc771e841b0"
+      },
+      {
+        "symbol": "CIS_GlobalSoftwareParameters.UseAddressValueFormat",
+        "start": "0x85b3d8",
+        "end": "0x85b3ec",
+        "sha256": "e1f27ca9a514e3d84d404eb190dece2b3f7ec2873bfeed3e58a411dbfbc8c80f"
+      },
+      {
+        "symbol": "CIS_TLanguageType.Add",
+        "start": "0x8541ec",
+        "end": "0x854260",
+        "sha256": "f24056b4ae305e90410b7a61d921f384162bc070507f8e34859c237f2b68dcf8"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentSave",
+        "start": "0x1213388",
+        "end": "0x1213414",
+        "sha256": "6271e999de8989599e919091e8ed97cbd10c259feb48e483f4fc392579ba9623"
+      },
+      {
+        "symbol": "CIS_TGroupTagDLTCGateAgent.TGroupTagDLTCGateAgent.AgentDelete",
+        "start": "0x1213318",
+        "end": "0x1213374",
+        "sha256": "dccd3bfe8a4086c28f0aacbf2dc92bf67b1be01d914efd898c5b8d395b39d946"
+      }
+    ],
+    "arguments": {
+      "InitialiseLanguages": {
+        "eax": "model GroupLanguageCollection",
+        "edx": "LanguageTypeReferenceCollection",
+        "ecx": "saved GroupTagDLTCollection",
+        "stack_ebp_plus_8": "preserve missing alternate model flavours"
+      },
+      "FinaliseLanguage": {
+        "eax": "model GroupLanguageCollection",
+        "edx": "requested LanguageType object",
+        "ecx": "optional supplied GroupLanguage object; nil resolves requested object identity",
+        "stack_ebp_plus_8": "saved GroupTagDLTCollection"
+      }
+    },
+    "rules": {
+      "graph": "Group/Level owns saved TagsDLT and separate model GroupLanguages. Each model language references a LanguageType object and owns Flavours; each flavour owns DLTTag(type,value). New DLTTag is TEXT with empty value. New language gets flavour1 only.",
+      "language_reconciliation": "Initialise always calls AddLanguageTypes(types,true): remove missing language object references backward, preserve surviving order, append missing requested languages in supplied order. Numeric saved-tag lookup and object-identity model-language lookup are distinct.",
+      "iteration": "Initialise iterates model languages in current collection order and flavours1..4. Finalise operates one requested language and flavours1..4, with each mutation completed before the next flavour.",
+      "saved_lookup": "First exact requested languageID/flavour row wins. Only flavour1 falls back to legacy flavour0 when exact1 is absent. Finalise fallback uses selected model language ID; exact lookup/new row uses requested language ID.",
+      "legacy_identity": "Existing fallback flavour0 remains flavour0 on update. If both0 and1 exist, only1 is selected and0 survives. New nonempty rows always get requested languageID and flavour1..4.",
+      "existing_saved_initialisation": "Ensure matching model flavour. SetTagTypeAsCode first, then assign complete saved value for resulting type3/FONT or first20 UTF16 code units otherwise.",
+      "dynamic_type_order": "Case-insensitive TEXT=0,ICON=1,FONT=3; DYNAMIC becomesFONT iff current pre-assignment model value contains exactly9 commas, otherwise2; unknown code becomesTEXT. SetTagValue does not reclassify.",
+      "missing_first_flavour": "Ensure flavour1. Language ID not0/202 resets tag toTEXT and empty, then Group/Level owner.GetAsString left20 if present. ID202 setsICON without clearing existing value. ID0 leaves existing type/value unchanged.",
+      "missing_alternate_flavour": "Absent saved flavour2..4 removes existing model flavour iff stack Boolean isfalse; true preserves it. Neither path creates an absent alternate flavour.",
+      "finalise_create": "If selected saved row absent and model flavour exists with value !=empty, append saved object then set requested languageID and current flavourID. StorageSave later creates persistence.",
+      "finalise_delete": "If selected saved row exists and model flavour absent or its value exactlyempty, call StorageDelete, then Extract from saved collection, then Free. Whitespace is nonempty.",
+      "finalise_update": "For nonempty model flavour, compare saved type code and saved value against full model code/value BEFORE truncation. Only if different: set type code; set full FONT value or first20 UTF16 units; call StorageSave.",
+      "unknown_saved_rows": "Rows of other languageIDs, flavours outside0..4, and shadowed duplicates are not swept by Finalise. Init changes only model cache. A selected unknown type is interpreted asTEXT; it cannot be promised preserved by a TEXT-only API.",
+      "utf16": "StrLeft(value,20) calls Delphi System.@UStrCopy(value,start1,count20): count is UTF16 code units, not Unicode code points; a surrogate pair may be split.",
+      "owner_display": "Group non255 uses GetExtendedTagName: optional FormattedAddress(address,false)+space-hyphen-space prefix under UseAddressValueFormat. Group255 uses TagName directly. Level prefix additionally needs model byte+0xbc, whose constructor default istrue. TagName is object attribute+0x9c. Missing-flavour1 fallback requires exact owner display metadata, not an assumed XML TagName.",
+      "scope_admission": "TEXT-only fresh-model transactions avoid retained DYNAMIC classification state. Reject nonTEXT rows in normalized scope unless complete cache/image/type semantics are supplied; require owner display metadata if fallback flavour1 is absent."
+    },
+    "boundary": "Static source evidence only. No original model/GUI execution, storage transaction, language-object cache reconstruction, or hardware acceptance is implied."
+  },
+  "network": {
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": [
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.InternalCreate",
+        "start": "0xf299b0",
+        "end": "0xf2a070",
+        "sha256": "a36bfe4c44ea8cf2e3b6fbbdc60ba816885eea6547f19e6de22b8ba66a4f0912"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.InitialiseLanguages",
+        "start": "0xf2b864",
+        "end": "0xf2b9cc",
+        "sha256": "5830d42675b9561e8c93a52f523afcaa03ae6ebd328527359f568119803ea3e3"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.FinaliseLanguages",
+        "start": "0xf2b9cc",
+        "end": "0xf2bc60",
+        "sha256": "629eb334017a5bac4ed327cd5ec6fbd92824914f3c3ec089e66727eea7d4d764"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.GetLanguageTypeDefault",
+        "start": "0xf2b218",
+        "end": "0xf2b23c",
+        "sha256": "d0c75a6c7b943ade0436d88d9d56fa22a867bd5f7f123b98c4d71affd70440ab"
+      },
+      {
+        "symbol": "CIS_TCommonCBus.TCBusNetwork.SetLanguageTypeDefault",
+        "start": "0xf2b23c",
+        "end": "0xf2b260",
+        "sha256": "92ea391d15b4e25bc775ef3acfaa55e43a4e4c50113e720918481155857410f7"
+      },
+      {
+        "symbol": "CIS_TLanguageType.TLanguageTypeFactory.PopulateNetworkDefaults",
+        "start": "0x854260",
+        "end": "0x854314",
+        "sha256": "66ba3881e64d92353332aff2ef39dacfdb45a58232637b426fb563c1965113fb"
+      },
+      {
+        "symbol": "CIS_TLanguageType.TLanguageTypeFactory.GetDefaultLanguageType",
+        "start": "0x854314",
+        "end": "0x854334",
+        "sha256": "42bc8914959f99bcddcfc419566d4b89d862aae55c64510ea509571c93c6901d"
+      },
+      {
+        "symbol": "CIS_TLanguageType.Add",
+        "start": "0x8541ec",
+        "end": "0x854260",
+        "sha256": "f24056b4ae305e90410b7a61d921f384162bc070507f8e34859c237f2b68dcf8"
+      },
+      {
+        "symbol": "CIS_DLTPreferences.CIS_DLTPreferences",
+        "start": "0x136afb8",
+        "end": "0x136b178",
+        "sha256": "1f27d28d7eed85590b858e0e84337c3f654d348fc6cf24d9787c7010906d033b"
+      },
+      {
+        "symbol": "CIS_DLTPreferences.RegInt",
+        "start": "0x852720",
+        "end": "0x8527c4",
+        "sha256": "c8787db6c065be2e20abbe155dc7a5064b4243f73d566a769c5d27847dc8553f"
+      },
+      {
+        "symbol": "CIS_TLanguageType.TLanguageTypeReferenceCollection.ItemByIdentifier",
+        "start": "0x854084",
+        "end": "0x8540e4",
+        "sha256": "e4595efa3b6fed176e3129de5ad2fd95328b72c420234e0e6d201ad2dd224cfa"
+      },
+      {
+        "symbol": "CIS_TNetworkLanguageType.TNetworkLanguageTypeCollection.ItemByIdentifier",
+        "start": "0x8580f4",
+        "end": "0x858154",
+        "sha256": "694e861e28b977313adde4f51a9974492c99889514c026626c8ac80388d38429"
+      },
+      {
+        "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.AgentSave",
+        "start": "0x120fbc4",
+        "end": "0x120fd48",
+        "sha256": "69bb75b59719f0716045dab674511906bc96f5ccbe6c22fa9a31d31850182c9b"
+      },
+      {
+        "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.AgentDelete",
+        "start": "0x120fb40",
+        "end": "0x120fba0",
+        "sha256": "5b111aef5ec153aae75766785e7746345a95df9cca610e0edbd42ee5633a236a"
+      },
+      {
+        "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.CreateNetworkLanguageType",
+        "start": "0x120fd9c",
+        "end": "0x120fec0",
+        "sha256": "caab39122c583e0e70b094ba8b60dd5c2e4e323224ae0f38d1d1696d3a3b2222"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.EditNetworkLanguageTypes",
+        "start": "0xd8cf40",
+        "end": "0xd8d2b4",
+        "sha256": "93c25ee6375b130b4150beb2420f6fe222377ca79ee7062256ed9e675075dc1e"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.AddLanguage",
+        "start": "0xd8d5c4",
+        "end": "0xd8d76c",
+        "sha256": "0699cff5ee0bb80c6253c06b16ac2e28a4834c490fc7d0b21a1390e611a11735"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.SetDefaultLanguage",
+        "start": "0xd8d76c",
+        "end": "0xd8d8ac",
+        "sha256": "29fd18833335e061cfd0c26d6d70942db8db33600b84edb31e311ca777001064"
+      },
+      {
+        "symbol": "CIS_TCBusNetworkGUIAgent.IsDefaultLanguageValid",
+        "start": "0xd8d560",
+        "end": "0xd8d5c4",
+        "sha256": "da552b295a7fb2e7ba4d79df165e4cecfdd883b32936e34ee8b5e9eda6058948"
+      },
+      {
+        "symbol": "CIS_Handles.TFlashCollectionVariable.SaveToCollection",
+        "start": "0x8502dc",
+        "end": "0x85032c",
+        "sha256": "9031f35ed5d370a886b1b0377db103c553bb8715060b68ea40219029a4c107d9"
+      }
+    ],
+    "findings": {
+      "state": {
+        "network_xml_collection_offset": "0xF4",
+        "language_reference_cache_offset": "0xF8",
+        "selected_default_reference_offset": "0xFC"
+      },
+      "prerequisites": [
+        "Explicit fresh native network object, or complete ordered prior language cache and selected default reference; InitialiseLanguages clears neither.",
+        "Exact eight preference values, or explicitly selected original registered-default profile [1,-1,-1,-1,-1,-1,-1,-1]; do not infer user preferences from XML or host locale.",
+        "Pinned factory identifiers/descriptions from this executable, same workspace factory; positive preference IDs must resolve in that factory.",
+        "Preserve ordered complete Languages/Language rows and identities; their ID0/default semantics differ from managed CBusLogicModel.dll."
+      ],
+      "initialise": [
+        "Ensure global language factory exists and matches network workspace.",
+        "Walk existing XML rows forward. ID0: selected=factory.ItemByIdentifier(StrToIntDef(TagValue,0)); later ID0 overwrites earlier.",
+        "Nonzero row: if identifier absent from existing cache, append factory object when found; ignore unknown identifier. Existing cache entries remain. No eight-language cap applies to this XML loop.",
+        "Attempt PopulateNetworkDefaults in preference-slot order after XML imports.",
+        "If selected reference is nil, select factory identifier1. Identifier0 resolves to <None> and is not nil, so parsed0 suppresses this fallback."
+      ],
+      "preferences": {
+        "registered_defaults": [
+          1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "rule": "For each slot, choose positive preference value, else positive fallback (slot1=1;slots2..8=-1), else0. If candidate>0, cache count<8 and ID absent, append matching factory object.",
+        "order": "slot1 through slot8; additions follow already cached/imported entries in a fresh unsorted cache",
+        "unknown_positive_identifier": "Add helper does not check factory lookup for nil before Append; bounded transaction should reject unavailable preference identifiers"
+      },
+      "finalise": [
+        "Scan XML collection backward. Retain first encountered ID0 (last in original order), delete all earlier ID0 rows through StorageDelete then Extract/Free.",
+        "Delete nonzero XML rows whose identifier is absent from cache through StorageDelete then Extract/Free. Retain all matching nonzero rows, including duplicates and existing TagValue descriptions.",
+        "Walk cache forward. For each identifier missing from XML, append Language row, set ID and factory Description as TagValue, StorageSave(CreateNetworkLanguageType).",
+        "Append default marker if none retained; set ID0 and TagValue=decimal selected identifier, or factory default1 if selected reference nil; StorageSave marker."
+      ],
+      "xml_shape": "<Languages><Language><ID>0</ID><TagValue>selected language identifier</TagValue></Language><Language><ID>language identifier</ID><TagValue>description</TagValue></Language>...</Languages>",
+      "persistence": {
+        "new_row": "Set active project; create Languages if absent; add Language; update ID and TagValue; dispatch ProjectSave.",
+        "existing_marker": "Update ID and TagValue, then dispatch ProjectSave. Blank OID triggers row creation.",
+        "delete": "Inherited CGate AgentDelete followed by ProjectSave.",
+        "atomic": false
+      },
+      "add_language_callback": [
+        "EditNetworkLanguageTypes exposes factory choices excluding identifier0 and existing choices; limits selection to1..8; canceled dialog leaves original collection unchanged.",
+        "Accepted dialog replaces cache with selected collection order and returns string1; canceled returns string0.",
+        "After acceptance FinaliseLanguages runs once before validating selected default membership by object identity.",
+        "If selected default is absent and cache nonempty, select first cached object; dispatch SetNetworkLanguage if nonnil; FinaliseLanguages again."
+      ],
+      "set_default_callback": [
+        "Exact string0 becomes string1; otherwise parse with StrToIntDef(input,1); resolve factory object and replace selected reference.",
+        "Dispatch SetNetworkLanguage then FinaliseLanguages; no cache-membership validation or missing real-language addition occurs in this callback."
+      ],
+      "fresh_registered_default_examples": [
+        {
+          "xml": "empty",
+          "cache_ids": [
+            1
+          ],
+          "selected_id": 1
+        },
+        {
+          "xml": "ID0=2 only",
+          "cache_ids": [
+            1
+          ],
+          "selected_id": 2
+        },
+        {
+          "xml": "ID2 only",
+          "cache_ids": [
+            2,
+            1
+          ],
+          "selected_id": 1
+        },
+        {
+          "xml": "ID0=0 or unparsable; ID2",
+          "cache_ids": [
+            2,
+            1
+          ],
+          "selected_id": 0
+        },
+        {
+          "xml": "ID0=unknown positive; ID2",
+          "cache_ids": [
+            2,
+            1
+          ],
+          "selected_id": 1
+        }
+      ],
+      "managed_boundary": "These are native Delphi lifecycle rules. Managed CBusLogicModel.dll ReadXmlData/DefaultLanguage normalization and delegate invocation are separate; managed callback absence cannot establish native persistence.",
+      "limit": "Static source recovery only. No native GUI session, preferences readback, C-Gate mutation, original runtime execution or device action was performed."
+    }
+  },
+  "boundary": "Original TEXT button and Unicode predicate with synthetic VCL/string/tag/finalizer hooks; collection/network source extraction only. No full native or managed GUI, server persistence or physical labels."
+}

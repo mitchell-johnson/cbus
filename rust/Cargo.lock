@@ -175,6 +175,7 @@ dependencies = [
 name = "cbus-mqtt"
 version = "0.1.0"
 dependencies = [
+ "libc",
  "roxmltree",
  "serde_json",
  "thiserror 1.0.69",

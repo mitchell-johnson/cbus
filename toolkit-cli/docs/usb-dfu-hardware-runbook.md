@@ -17,7 +17,7 @@ are development evidence only.
 | Host | An owned macOS or Linux runner labelled `cbus-hardware`, with libusb 1.0 and `pyusb==1.3.1` (`usb` extra). No vendor driver is installed or changed by the tool. |
 | Package | An original `eDLTFirmware_<version>.zip` package and its password file, stored privately. They must never be committed. |
 | Power | A switchable supply for the unit, so power loss and a power cycle can be applied and observed. |
-| Isolation | The unit is powered from an isolated C-Bus segment or bench supply. Do not use the production CNI (192.168.1.21) or LAN discovery. |
+| Isolation | The unit is powered from an isolated C-Bus segment or bench supply. Do not use a production CNI or LAN discovery. |
 
 ## Private manifest
 

@@ -1,0 +1,645 @@
+{
+  "checks": {
+    "0x128b220_integer_vmt": true,
+    "0x850574_integer_vmt": true,
+    "0xf42b48_integer_vmt": true,
+    "CGate16thDegreeToQuarterDegreeTempOffset_global_preference": true,
+    "CGateTempToHalfDegreesTempOffset_global_preference": true,
+    "CGateTempToTempOffsetWithShift_global_preference": true,
+    "CGateTempToTempOffset_global_preference": true,
+    "CGateTempToUnitTemp_global_preference": true,
+    "CGateTempToWholeDegreesTemp_global_preference": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._load": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._pp_slot": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._save": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._load": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._pp_slot": true,
+    "EvapComfortStartTemp_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._save": true,
+    "EvapComfortStartTemp_plain_integer_model": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._load": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._pp_slot": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent._save": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._load": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._pp_slot": true,
+    "EvapComfortStepSize_CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent._save": true,
+    "EvapComfortStepSize_plain_integer_model": true,
+    "EvapStartProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "EvapStartProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "EvapStartProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "EvapStartProportionalTemperature_plain_integer_model": true,
+    "EvapStopProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "EvapStopProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "EvapStopProportionalTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "EvapStopProportionalTemperature_plain_integer_model": true,
+    "GuardLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardLowerTemperature_plain_integer_model": true,
+    "GuardMaximumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardMaximumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardMaximumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardMaximumLowerTemperature_plain_integer_model": true,
+    "GuardMaximumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardMaximumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardMaximumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardMaximumUpperTemperature_plain_integer_model": true,
+    "GuardMinimumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardMinimumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardMinimumLowerTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardMinimumLowerTemperature_plain_integer_model": true,
+    "GuardMinimumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardMinimumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardMinimumUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardMinimumUpperTemperature_plain_integer_model": true,
+    "GuardUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "GuardUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "GuardUpperTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "GuardUpperTemperature_plain_integer_model": true,
+    "HalfDegreesTempOffsetToCGateTemp_global_preference": true,
+    "MaximumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "MaximumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "MaximumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "MaximumSetTemperature_plain_integer_model": true,
+    "MinimumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "MinimumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "MinimumSetTemperature_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "MinimumSetTemperature_plain_integer_model": true,
+    "QuarterDegreesTempOffsetToCGateTemp_global_preference": true,
+    "SetbackLevel_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "SetbackLevel_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "SetbackLevel_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "SetbackLevel_plain_integer_model": true,
+    "SimpleCGateTempToUnitTemp_global_preference": true,
+    "SimpleUnitTempToCGateTemp_global_preference": true,
+    "TempOffsetToCGateTemp_global_preference": true,
+    "TempOffsetWithShiftToCGateTemp_global_preference": true,
+    "TemperatureOffset_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "TemperatureOffset_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "TemperatureOffset_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "TemperatureOffset_plain_integer_model": true,
+    "TemperatureSendDifferential_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._load": true,
+    "TemperatureSendDifferential_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._pp_slot": true,
+    "TemperatureSendDifferential_CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent._save": true,
+    "TemperatureSendDifferential_plain_integer_model": true,
+    "UnitTempToCGateTemp_global_preference": true,
+    "WholeDegreesTempToCGateTemp_global_preference": true,
+    "explicit_signed_byte_store": true,
+    "integer_bounds_disabled_when_equal": true,
+    "master_controlled_zones_uses_installed_zones": true,
+    "measurement_load_unhooks_before_temperature_setters": true
+  },
+  "field_count": 15,
+  "fields": {
+    "EvapComfortStartTemp": {
+      "model_attribute_offset": "0xa0",
+      "model_owner": "TUIService",
+      "pp_attribute_offset": "0x294",
+      "profile": "whole_unsigned",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent",
+          "load_conversion": "0x1297930",
+          "model_getter": "0x1297ed4",
+          "model_setter": "0x1297944",
+          "save_pp_slot_reference": "0x1297efb"
+        },
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent",
+          "load_conversion": "0x12996c6",
+          "model_getter": "0x1299da8",
+          "model_setter": "0x12996da",
+          "save_pp_slot_reference": "0x1299dcf"
+        }
+      ]
+    },
+    "EvapComfortStepSize": {
+      "model_attribute_offset": "0xa4",
+      "model_owner": "TUIService",
+      "pp_attribute_offset": "0x298",
+      "profile": "half_offset_unsigned",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent",
+          "load_conversion": "0x129795f",
+          "model_getter": "0x1297f13",
+          "model_setter": "0x1297973",
+          "save_pp_slot_reference": "0x1297f3a"
+        },
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent",
+          "load_conversion": "0x12996f5",
+          "model_getter": "0x1299de7",
+          "model_setter": "0x1299709",
+          "save_pp_slot_reference": "0x1299e0e"
+        }
+      ]
+    },
+    "EvapStartProportionalTemperature": {
+      "model_attribute_offset": "0xd8",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x160",
+      "profile": "offset_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128eae5",
+          "model_getter": "0x1294e7d",
+          "model_setter": "0x128eaf9",
+          "save_pp_slot_reference": "0x1294e91"
+        }
+      ]
+    },
+    "EvapStopProportionalTemperature": {
+      "model_attribute_offset": "0xdc",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x164",
+      "profile": "offset_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128eb12",
+          "model_getter": "0x1294ea9",
+          "model_setter": "0x128eb26",
+          "save_pp_slot_reference": "0x1294ebd"
+        }
+      ]
+    },
+    "GuardLowerTemperature": {
+      "model_attribute_offset": "0xbc",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x144",
+      "profile": "guard_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e895",
+          "model_getter": "0x1294cc0",
+          "model_setter": "0x128e8a9",
+          "save_pp_slot_reference": "0x1294cd4"
+        }
+      ]
+    },
+    "GuardMaximumLowerTemperature": {
+      "model_attribute_offset": "0xc0",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x148",
+      "profile": "guard_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e8c2",
+          "model_getter": "0x1294cec",
+          "model_setter": "0x128e8d6",
+          "save_pp_slot_reference": "0x1294d00"
+        }
+      ]
+    },
+    "GuardMaximumUpperTemperature": {
+      "model_attribute_offset": "0xb4",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x13c",
+      "profile": "guard_upper_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e83b",
+          "model_getter": "0x1294c4f",
+          "model_setter": "0x128e84f",
+          "save_pp_slot_reference": "0x1294c7c"
+        }
+      ]
+    },
+    "GuardMinimumLowerTemperature": {
+      "model_attribute_offset": "0xc4",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x14c",
+      "profile": "guard_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e8ef",
+          "model_getter": "0x1294d18",
+          "model_setter": "0x128e903",
+          "save_pp_slot_reference": "0x1294d2c"
+        }
+      ]
+    },
+    "GuardMinimumUpperTemperature": {
+      "model_attribute_offset": "0xb8",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x140",
+      "profile": "guard_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e868",
+          "model_getter": "0x1294c94",
+          "model_setter": "0x128e87c",
+          "save_pp_slot_reference": "0x1294ca8"
+        }
+      ]
+    },
+    "GuardUpperTemperature": {
+      "model_attribute_offset": "0xb0",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x138",
+      "profile": "guard_upper_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e80e",
+          "model_getter": "0x1294c0a",
+          "model_setter": "0x128e822",
+          "save_pp_slot_reference": "0x1294c37"
+        }
+      ]
+    },
+    "MaximumSetTemperature": {
+      "model_attribute_offset": "0x9c",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x12c",
+      "profile": "simple_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e70a",
+          "model_getter": "0x1294b43",
+          "model_setter": "0x128e71e",
+          "save_pp_slot_reference": "0x1294b57"
+        }
+      ]
+    },
+    "MinimumSetTemperature": {
+      "model_attribute_offset": "0xa0",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x130",
+      "profile": "simple_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128e737",
+          "model_getter": "0x1294b6f",
+          "model_setter": "0x128e74b",
+          "save_pp_slot_reference": "0x1294b83"
+        }
+      ]
+    },
+    "SetbackLevel": {
+      "model_attribute_offset": "0xd4",
+      "model_owner": "TZoneManagerService",
+      "pp_attribute_offset": "0x15c",
+      "profile": "shifted_offset_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128eab8",
+          "model_getter": "0x1294e51",
+          "model_setter": "0x128eacc",
+          "save_pp_slot_reference": "0x1294e65"
+        }
+      ]
+    },
+    "TemperatureOffset": {
+      "model_attribute_offset": "0x78",
+      "model_owner": "TTemperatureMeasurementService",
+      "pp_attribute_offset": "0x260",
+      "profile": "special_quarter_signed",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128f849",
+          "model_getter": "0x1296594",
+          "model_setter": "0x128f85d",
+          "save_pp_slot_reference": "0x12965a8"
+        }
+      ]
+    },
+    "TemperatureSendDifferential": {
+      "model_attribute_offset": "0x80",
+      "model_owner": "TTemperatureMeasurementService",
+      "pp_attribute_offset": "0x268",
+      "profile": "special_quarter_unsigned",
+      "sites": [
+        {
+          "agent": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent",
+          "load_conversion": "0x128f8d1",
+          "model_getter": "0x12965ff",
+          "model_setter": "0x128f8e5",
+          "save_pp_slot_reference": "0x1296626"
+        }
+      ]
+    }
+  },
+  "format": "cbus-thermostat-settings-temperature-static-v1",
+  "limits": [
+    "This pins fresh scalar AfterLoad/BeforeSave composition, not the complete original form or retained UI event lifecycle. Caller must supply one unchanged global temperature preference.",
+    "TemperatureUnits PP is a separate device UI setting and never selects these conversions.",
+    "IntegerCGateAttribute and SignedIntCGateAttribute plain setters preserve integer overflow; only explicit SetShortintValue encodes low8. A one-byte PP editor must refuse unrepresentable values.",
+    "The 4608 composed vectors reuse captured original arithmetic. No fresh original executable instructions or native project save were executed by this static verifier."
+  ],
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed_this_run": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_devices_accessed": false,
+  "production_conversion_oracle_used": false,
+  "profile_count": 9,
+  "roundtrip_vector_count": 4608,
+  "roundtrip_vector_sha256": "e9314238899efbdb8c6b071bf5541adf54dfba80ddfc2980b9d6a598a5062528",
+  "routines": {
+    "CIS_TCBusThermostatCGateAgent.GetControlledZones": {
+      "address": "0x12946cc",
+      "sha256": "50272209057ae4194321942c4df66730eae84612dd4b6c2f0a748ad917aeb394"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x1297738",
+      "sha256": "e9e5b47cc0d3ccda66271e5d888ffbffc0e213c94defa99a1718a813a7cea96e"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1297c98",
+      "sha256": "a5faac0e1ac58855344ea8bbff3f3a43846537028afbc6a0a747cb1c400d4d27"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.InternalCreate": {
+      "address": "0x12971f4",
+      "sha256": "17331e122a2494b90e7ac278d07b32226840bf18c39d505b84eb14dd3855515c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1299b98",
+      "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.InternalCreate": {
+      "address": "0x1298928",
+      "sha256": "374b666b51f9403ab31919d0e15d2fa731814a6ce8f18f390f1f83866cdcb8db"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x129471c",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGate16thDegreeToQuarterDegreeTempOffset": {
+      "address": "0x128fe90",
+      "sha256": "14aa347aafc597aedefb1842499d978dddff8446c8d066c554723791d3bdcc1d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToHalfDegreesTempOffset": {
+      "address": "0x128fde0",
+      "sha256": "270c51623214deb2aa1d5baadb2844de8184b37fe6ee57e502b8713ea0eb30b6"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffset": {
+      "address": "0x128fc90",
+      "sha256": "709ca9b0f6a2aec4a3a90f123a65b899e38c6a98b11d47c0bc6e3c20571f79c5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToTempOffsetWithShift": {
+      "address": "0x128fbc4",
+      "sha256": "4e3fbe4cf9fddeb94b1ea467a1cdfb59bd9c8262e4d0fc6ccd7affaa5d3373cd"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToUnitTemp": {
+      "address": "0x128fafc",
+      "sha256": "f64d599cac3d68b31882d53a1f06d51193a1ed1148bfb5319ad1e4248324c04d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CGateTempToWholeDegreesTemp": {
+      "address": "0x128fd40",
+      "sha256": "a98366cfb046c87b6262eaa26d3d67fde0f3b901994c1994671f227f85ac92b2"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.HalfDegreesTempOffsetToCGateTemp": {
+      "address": "0x128fe3c",
+      "sha256": "73b14fe0313d378a46984da2ff50eb4a5c736c3986e04acaf79e6fdc97a7618f"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "address": "0x128b948",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.QuarterDegreesTempOffsetToCGateTemp": {
+      "address": "0x128ff04",
+      "sha256": "9d3dd0e3fe8aad69478bd84937aaf13088b17f02d6706ecc56a33ca42a528025"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleCGateTempToUnitTemp": {
+      "address": "0x128fa7c",
+      "sha256": "89f723fe63b7023f72704bb0660ea579c16a0b8aacde237c6ffe794ec11a63c5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.SimpleUnitTempToCGateTemp": {
+      "address": "0x128fabc",
+      "sha256": "f6adfd130164164782b032f006a96b5eaa0e77ea9b9629608dcbc3bd18328ca8"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetToCGateTemp": {
+      "address": "0x128fcec",
+      "sha256": "c0c24e3f3612d5cdad37416ba572282c562fbb455a2fdb8a28921968c07ee7e4"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.TempOffsetWithShiftToCGateTemp": {
+      "address": "0x128fc34",
+      "sha256": "a2761d7b5fd93a7d87f65b42a1bfd0617e2312087abcd4e59639f39934e4320e"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.UnitTempToCGateTemp": {
+      "address": "0x128fb64",
+      "sha256": "ce38ef51e5266435e4a1e0d39d94f0d2c30540cdc7e977b6c09dca8242572816"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.WholeDegreesTempToCGateTemp": {
+      "address": "0x128fd94",
+      "sha256": "30e957f049bf6d079c1e1520b546fd0497daeb14a602561402dcad5d1b5a1980"
+    },
+    "CIS_TCBusThermostatCGateAgent.TSignedIntCGateAttribute.AsShortint": {
+      "address": "0x129a348",
+      "sha256": "2afbd00f85e0ececd2e368ddc6b58da7809d6925b11dfefcd7c207d2deb23bef"
+    },
+    "CIS_TCBusThermostatCGateAgent.TSignedIntCGateAttribute.SetShortintValue": {
+      "address": "0x129a368",
+      "sha256": "502ab50aefd6dc965501637e89033bb503e834542834971aa0cdfb08a9895e32"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate": {
+      "address": "0x850798",
+      "sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetValue": {
+      "address": "0x850ac4",
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.GetTemperatureOffset": {
+      "address": "0xfdc0c8",
+      "sha256": "f01e1879fbe94529c9bb09f0d85ebff3a867daa76474b94874ed3ad5b51703bf"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.GetTemperatureSendDifferential": {
+      "address": "0xfdc0ec",
+      "sha256": "bc642aaed9ab3fe434c457f76fe7260dceb151f015362465ece12a0b17df4efa"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.HookEvents": {
+      "address": "0xfdc018",
+      "sha256": "d3f1a83ff9ed9217a56360451a1033fed1c3f638cf751fcf27ac37f06a43e66a"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.InternalCreate": {
+      "address": "0xfdbdf8",
+      "sha256": "ee3779cebd7838ad6d7a83f9fca244f42eda5c8187d44a8dd43c164e9ba464ba"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.SetTemperatureOffset": {
+      "address": "0xfdc1a0",
+      "sha256": "1660f6a66876d000704a2228315d394742cc0422924b62bb2903cbe78c7686f1"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.SetTemperatureSendDifferential": {
+      "address": "0xfdc1fc",
+      "sha256": "12a61f2cdf685be2a1e6a608bae7944f573fec057aa19dd9ae9b3474d6781d68"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.UnHookEvents": {
+      "address": "0xfdc038",
+      "sha256": "4537ed85484a77ed54d1269f39bb9c11906a472e5f68f3a8e1b90f45647a7d64"
+    },
+    "CIS_TThermostat.TUIService.GetEvapComfortStartTemp": {
+      "address": "0xfdc96c",
+      "sha256": "a593e810ca297dc9a2ba8297c3e8c387e9f8bfae5e5a71794259f8f7d836f0a7"
+    },
+    "CIS_TThermostat.TUIService.GetEvapComfortStepSize": {
+      "address": "0xfdc990",
+      "sha256": "e8e53e61f5aeaa52f4152a343b3e736a75b2ff726f8199dd1b8a37edb9c8c218"
+    },
+    "CIS_TThermostat.TUIService.InternalCreate": {
+      "address": "0xfdc25c",
+      "sha256": "56e8fd72cc4094293b9e699def67d98155c40ee913e662ee2ba8827ab48b5b62"
+    },
+    "CIS_TThermostat.TUIService.SetEvapComfortStartTemp": {
+      "address": "0xfdccd0",
+      "sha256": "6e74e3dc7b13c78815ea5429e2be99a84bb851a692829cbbfae99e44014b25e6"
+    },
+    "CIS_TThermostat.TUIService.SetEvapComfortStepSize": {
+      "address": "0xfdcd30",
+      "sha256": "7b27b30a7dfbd9b846d26121d5b20b0394ca6ff01093a16e3a52481406d961c2"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetEvapStartProportionalTemperature": {
+      "address": "0xfde7f4",
+      "sha256": "acd9f37e1630e248896d39b98595b05c15f1a47df02d2d91727c6c3354308f31"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetEvapStopProportionalTemperature": {
+      "address": "0xfde818",
+      "sha256": "2aae92826aaae6e4b920ca51dfde6694a0d16566c995c05cb2ce4d5e9918b620"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardLowerTemperature": {
+      "address": "0xfde8f0",
+      "sha256": "4e1eb5718ad7f77d5fed40f4b360464c9d74f785c33a2cbafe20f0fee20c9721"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardMaximumLowerTemperature": {
+      "address": "0xfde914",
+      "sha256": "25c81253ea863aefd5072845932f6748a37684d5a90c69b7e6a87855f2027987"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardMaximumUpperTemperature": {
+      "address": "0xfde938",
+      "sha256": "bbc41b8078c32a1abf238898d031d99bfdd70f3f98c4a731181905bf6b65bfc7"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardMinimumLowerTemperature": {
+      "address": "0xfde95c",
+      "sha256": "0a5775194ade107a220cbbead4cbab3b492e05feee2d02ac6e5df8db51cac18d"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardMinimumUpperTemperature": {
+      "address": "0xfde980",
+      "sha256": "9d42f57743f8813f78726f16bf2e70ee05f18d06c34e988a0a032ae9c43959f3"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetGuardUpperTemperature": {
+      "address": "0xfde9a4",
+      "sha256": "ac9e1273333af77d8e306eeeedcca30135771d853834b75c46f49077d0647e8b"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetMaximumSetTemperature": {
+      "address": "0xfdea30",
+      "sha256": "1aaf94b2c18ef523abb93b19720a4b844ccb5d196e6808cff4571ffe445b9c09"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetMinimumSetTemperature": {
+      "address": "0xfdea54",
+      "sha256": "a593e810ca297dc9a2ba8297c3e8c387e9f8bfae5e5a71794259f8f7d836f0a7"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetSetbackLevel": {
+      "address": "0xfdeae4",
+      "sha256": "94bb1de2a0e6ddbc55dcee22190428f927dac1da55cf995d4c1cddc8bb653f6a"
+    },
+    "CIS_TThermostat.TZoneManagerService.InternalCreate": {
+      "address": "0xfdd338",
+      "sha256": "149e7f01f36dcbf1f51ccf1ed9244dd2449e63f07a02dadd4cf8caca7247d729"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetEvapStartProportionalTemperature": {
+      "address": "0xfdf80c",
+      "sha256": "989e343ddd3ec027117d3f54829c3d1b7771284765fe885089ea59b397ba10c8"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetEvapStopProportionalTemperature": {
+      "address": "0xfdf86c",
+      "sha256": "f8186dbef660abf2c7f3bfda0976e799a6d803854febf7744e843c4bc66f8322"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardLowerTemperature": {
+      "address": "0xfdf988",
+      "sha256": "d0c107732fa6aae0a73e696c2bb804d02dae8c2f4f4b757903c6f3e7a4fd83da"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardMaximumLowerTemperature": {
+      "address": "0xfdf9e8",
+      "sha256": "e650f595b8670633d4a579b6c90c2a7db73d3df9aa1ea8271f2b2c4747c65729"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardMaximumUpperTemperature": {
+      "address": "0xfdfa48",
+      "sha256": "bb09ee4a6f2e690a093430f2bef9d20b6fad7e9dff0c805a0ee8b4e7ab0690e7"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardMinimumLowerTemperature": {
+      "address": "0xfdfaa8",
+      "sha256": "ebf539c74c67290780bef5e3d14ead72403ee3cdb87783d8fd3bdcad7d0acfca"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardMinimumUpperTemperature": {
+      "address": "0xfdfb08",
+      "sha256": "91f122f1275b56c184d3227ea8e04fc6f5375cc9ef2487fe0a029fd49705b79d"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetGuardUpperTemperature": {
+      "address": "0xfdfb68",
+      "sha256": "76ca5580c30a0569cf5cb537bc7ee6404f05a2b27ac0358eb7ea3b1edca02485"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetMaximumSetTemperature": {
+      "address": "0xfdfd48",
+      "sha256": "9a4605bc6eb72de71182c2428fda953ff05dffc1e47e9dcadf6ca9360e9da574"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetMinimumSetTemperature": {
+      "address": "0xfdfda8",
+      "sha256": "e47175e8ce6078d9a7bbb01fe1ef3d516ff2eff576ed6fefe4af775932762613"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetSetbackLevel": {
+      "address": "0xfdfeb0",
+      "sha256": "8b81bb81819d941ee1fb84444021e17ecb4fdfa5d959cccb38fc9b3d60b0e810"
+    }
+  },
+  "source_fixture_sha256": "188050a51a4324b0039dba68383a66d528baabcfe88210b3634ba1f372fd31d0",
+  "unsigned_save_values_outside_byte": [
+    {
+      "fahrenheit": false,
+      "profile": "whole_unsigned",
+      "raw": 254,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "whole_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": true,
+      "profile": "whole_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "half_offset_unsigned",
+      "raw": 254,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "half_offset_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": true,
+      "profile": "half_offset_unsigned",
+      "raw": 255,
+      "saved": 256
+    }
+  ]
+}

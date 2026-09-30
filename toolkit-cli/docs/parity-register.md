@@ -23,8 +23,8 @@ identity outcomes; they do not complete the broader command paths:
 | cmqttd supplement paths | 11 |
 | Executable Delphi form resources | 412 |
 | Executable component/control instances | 10,102 |
-| Executable event bindings | 1,892 |
-| **Total provisional scope records** | **22,156** |
+| Executable event bindings | 1,839 |
+| **Total provisional scope records** | **22,103** |
 
 The same help topic can contribute a navigation record, headings, anchors,
 dialog membership and a macro leaf. These records are source accounting, not
@@ -82,7 +82,7 @@ changes no provisional source count, and supplies no physical cache readback.
   `not_applicable` decision for each narrow session function.
 - `docs/toolkit-executable-surface.json` is the sanitized Toolkit 1.18.0
   executable inventory. It records names and hashes for 412 parsed Delphi form
-  resources, 10,102 component/control instances and 1,892 event bindings.
+  resources, 10,102 component/control instances and 1,839 event bindings.
 - `research/extract_toolkit_executable_surface.py` reproduces that inventory
   from an explicitly supplied Toolkit executable and MAP. The inputs are
   identified by SHA-256 and remain outside Git.
@@ -462,7 +462,7 @@ nine-case payload comparison and the eleven-case exact numeric-tag wire
 comparison. The third marks their physical dimension not applicable to the
 owned loopback profile.
 The 487 records overlap and
-are not a deduplicated functional denominator. All 22,156 source records and
+are not a deduplicated functional denominator. All 22,103 source records and
 15 source domains remain unresolved. Executable forms, controls and event
 bindings are now counted. C-Gate paths have a deterministic per-axis contract
 inventory and a one-to-one obligation mapping, while the unresolved subaxes

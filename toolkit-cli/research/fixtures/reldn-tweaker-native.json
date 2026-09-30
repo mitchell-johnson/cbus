@@ -1,0 +1,260 @@
+{
+  "format": "cbus-toolkit-reldn-tweaker-native-v1",
+  "cases": [
+    {
+      "source_type": "RELDN8",
+      "target_type": "RELDN12",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "fec41f4f5dc648b1a0bf3ba625b8f0b953312883e7dc295c43220f8fcf569f95",
+      "status": "converted",
+      "plan_writes": 27,
+      "raw_expected": {
+        "GroupAddress": "0x0 0x1 0x7f 0xfe 0xff 0x20 0x40 0x80 0xff 0xff 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x1 0x0 0x1 0x1 0x0 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA14Associations": "0x1 0x0 0x0 0x1 0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x0",
+        "LogicGA15Associations": "0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "b8ee04a3fd64f6d13d6ab5c0217191aa098674c14c83067bbc45cccec16ce3d5",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELDN8",
+      "target_type": "RELDN4",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "74a6f12c81d9007a25054c3fe7d83c38d74ffb554a9a48d83eec635790a61cd1",
+      "status": "converted",
+      "plan_writes": 27,
+      "raw_expected": {
+        "GroupAddress": "0x0 0x1 0x7f 0xfe 0xff 0x20 0x40 0x80 0xff 0xff 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x1 0x0",
+        "LogicGA14Associations": "0x1 0x0 0x0 0x1",
+        "LogicGA15Associations": "0x1 0x1 0x1 0x1",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "f483cb11efe5a1cb7f6423b8733d91ef1373648d1532cf0635e734773ed4e9ac",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELDN8",
+      "target_type": "RELDN8B",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "c1bc073c58c9cf5810bd9c3bdcba51b14884e731cad064170b8b26cdcf0852c2",
+      "status": "converted",
+      "plan_writes": 27,
+      "raw_expected": {
+        "GroupAddress": "0x0 0x1 0x7f 0xfe 0xff 0x20 0x40 0x80 0xff 0xff 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x1 0x0 0x1 0x1 0x0 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA14Associations": "0x1 0x0 0x0 0x1 0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x0",
+        "LogicGA15Associations": "0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "81f4950c9b71a8bb908521c7c08f780c626d9bc62d024be2f100351cf8ad19ce",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELDN8",
+      "target_type": "RELSM8",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "1a8673632a9f07d7f843599b9bbcce63296763de4a8e507a6800f2abf2cbf200",
+      "status": "converted",
+      "plan_writes": 24,
+      "raw_expected": {
+        "GroupAddress": "0x0 0x1 0x7f 0xfe 0xff 0x20 0x40 0x80 0xff 0xff 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x1 0x0 0x1 0x1 0x0 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA14Associations": "0x1 0x0 0x0 0x1 0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x0",
+        "LogicGA15Associations": "0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x0 0x0 0x0 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "8121d180a77de60aa71a46018e66eb0424569173f7be8d64e3aceedb394b28f2",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 28,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELDN12",
+      "target_type": "RELDN8",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "0191974545e1815e4515e2ba890b68f8e0ad344acce4633bc7ffc848ea38d26b",
+      "status": "converted",
+      "plan_writes": 27,
+      "raw_expected": {
+        "GroupAddress": "0xff 0xff 0x0 0x1 0x7f 0xff 0xff 0xfe 0x11 0x12 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x0 0x1 0x1 0x0 0x0 0x0 0x1 0x0 0x1 0x0",
+        "LogicGA14Associations": "0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x1 0x0 0x1 0x0 0x0",
+        "LogicGA15Associations": "0x0 0x1 0x1 0x1 0x1 0x0 0x0 0x1 0x1 0x1 0x1 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "333cc34aa2e524d4be9e9102f755a53517ba4edf99a12bc52bb37175110a27bb",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELDN4",
+      "target_type": "RELDN8",
+      "source_logic_lengths": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "source_pp_sha256": "f1bd099812ba43a9f08afb748ca3f5b42bb5429b6fa31eebed3ef4fa1e22e528",
+      "refusal_reason": "native RELDN4 logic arrays have four elements, but the original reverse tweaker reads eight without padding; no defined safe conversion is established",
+      "status": "refused_short_original_source",
+      "refusal_before_io": true,
+      "source_preserved": true,
+      "source_logic_raw": {
+        "LogicGA13Associations": "0x1 0x0 0x1 0x1",
+        "LogicGA14Associations": "0x0 0x1 0x0 0x0",
+        "LogicGA15Associations": "0x1 0x1 0x1 0x1",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0"
+      }
+    },
+    {
+      "source_type": "RELDN8B",
+      "target_type": "RELDN8",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "ddf82bedbbdadef5cb216e231a4fc83fc2845bf66f299acfacf430422ce7c9f1",
+      "status": "converted",
+      "plan_writes": 27,
+      "raw_expected": {
+        "GroupAddress": "0xff 0xff 0x0 0x1 0x7f 0xff 0xff 0xfe 0x11 0x12 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x0 0x1 0x1 0x0 0x0 0x0 0x1 0x0 0x1 0x0",
+        "LogicGA14Associations": "0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x1 0x0 0x1 0x0 0x0",
+        "LogicGA15Associations": "0x0 0x1 0x1 0x1 0x1 0x0 0x0 0x1 0x1 0x1 0x1 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "0815ab985a219b3e2d0addfd8642495f33652f8c8044d4c5834ebbd633b7f786",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    },
+    {
+      "source_type": "RELSM8",
+      "target_type": "RELDN8",
+      "source_logic_lengths": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "source_pp_sha256": "fcdb82211237e0b79b5ca615e5551ebdf4fb11b088a5fa7bdd22321d0a309ad1",
+      "status": "converted",
+      "plan_writes": 24,
+      "raw_expected": {
+        "GroupAddress": "0xff 0xff 0x0 0x1 0x7f 0xff 0xff 0xfe 0x11 0x12 0xff 0xff 0x0 0xfe 0xff 0x49",
+        "LogicGA13Associations": "0x0 0x1 0x0 0x1 0x1 0x0 0x0 0x0 0x1 0x0 0x1 0x0",
+        "LogicGA14Associations": "0x0 0x0 0x1 0x0 0x0 0x0 0x0 0x1 0x0 0x1 0x0 0x0",
+        "LogicGA15Associations": "0x0 0x1 0x1 0x1 0x1 0x0 0x0 0x1 0x1 0x1 0x1 0x0",
+        "LogicGA16Associations": "0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0"
+      },
+      "raw_pp_sha256": "7bee5a8d61a45200f3f784eea00b9bb614aca0f3f0360e9ee19d48984313e056",
+      "source_preserved": true,
+      "repeated_plan_unchanged": true,
+      "noop_unchanged": true,
+      "verified_parameters": 31,
+      "failed_writes": {}
+    }
+  ],
+  "code_sha256": {
+    "research/reldn_tweaker_native.py": "464e6cc242ceeb73e02eec94d68885aaa9a6028b5f8f8a422446da61dc64ab2a",
+    "tests/test_reldn_tweaker_native.py": "840887be27fbff18945f14cafc3a28711c9ef59b84a685b4e7d57fa3b631a874",
+    "src/cbus_toolkit/toolkit_conversion_tweakers.py": "6de043305a08db185d57b0ec794cfcc3c6a893f2065655c8a464d5e4e909bc40",
+    "src/cbus_toolkit/toolkit_conversion_reldn.py": "d33c36c2e6218a7cdc83cb3132337ba7a37f1284b739270ed383bc8bf5560591"
+  },
+  "self_conversion_refused_before_io": [
+    "RELDN8",
+    "RELDN12",
+    "RELDN4",
+    "RELDN8B",
+    "RELSM8"
+  ],
+  "native_convertunit_used": false,
+  "hardware_contacted": false,
+  "original_toolkit_gui_executed": false,
+  "inputs": {
+    "cbusunits.xml": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "RELDN8.xml": "923ad76d2d86401facc50f48cdbd1068adfcbd3448a1a4955274e01750687844",
+    "RELDN12.xml": "0771af6c71d664429c3c27c1b5aa9d4b9323ab560e2be0cb6e9064dbb7ee89c8",
+    "RELDN4.xml": "377f9f9f1d0f1e1762db12c5c12bb785e23c5a026a0959559e2d528f43a633b3",
+    "RELSM8.xml": "05efbfb9ab6b9922ce9813e5b20eb3f15c28cefb8ae36ae8cbde730adea492d2"
+  },
+  "reload_materialized_scalar_defaults": {
+    "DeviceName": "NEWUNIT",
+    "GroupNumber": ""
+  },
+  "reload_verified_units": 15,
+  "native_commands": 1131,
+  "backend": {
+    "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "listener_ownership_verified": true,
+    "projects_adopted": false,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true
+  },
+  "summary": {
+    "directions": 8,
+    "converted": 7,
+    "refused_short_original_source": 1
+  },
+  "requested_directions_complete": false,
+  "blocked_directions": [
+    {
+      "source_type": "RELDN4",
+      "target_type": "RELDN8",
+      "reason": "Native source has four logic elements; original tweaker reads eight"
+    }
+  ],
+  "passed": true
+}

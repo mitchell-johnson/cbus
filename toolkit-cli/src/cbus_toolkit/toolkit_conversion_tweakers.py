@@ -1,4 +1,4 @@
-"""Toolkit client-side conversion tweakers for DIN dimmer DIMDN/DIMDU4 pairs.
+"""Toolkit client-side conversion tweakers for bounded DIN and key-input pairs.
 
 Toolkit 1.18 converts units without C-Gate CONVERTUNIT. It creates the
 replacement unit, copies every same-named writable agent attribute from the
@@ -7,8 +7,10 @@ pair and issues PP SET only for attributes that remain writable. The complete
 registry (292 registrations, 13 tweaker classes) and each class's recovered
 rules are recorded in ``research/fixtures/toolkit-conversion-tweaker-registry.json``.
 
-Only the two DIMDUx tweaker classes are admitted: their rules are fully
-recovered and neither agent has its own conversion hook. Every other
+The DIMDUx and RELDN tweaker rules are recovered; their agents inherit the
+empty base conversion hook. Classic-to-Neo conversion models the inherited
+Learn/CoreKey/NeoPro hooks only for the source-pinned fresh-target profile.
+Unsupported relay PP shapes are refused. Every other
 registered pair, and every unregistered pair, is refused before any I/O with
 the receipt's reason. Database metadata (tag, description, serial), source
 deletion, readdressing and project save are outside this module.
@@ -19,8 +21,14 @@ from dataclasses import dataclass
 import re
 from types import MappingProxyType
 
+from .cgate import CGateError
 from .native import NativeDatabase
-from .programming import Programmer
+from .programming import Programmer, ProgrammingCommandError
+from .toolkit_conversion_key_to_neo import (
+    CLASSIC_ATTRIBUTES, CLASSIC_TYPES, KEY_TWEAKER, NEO_TYPES, NEOPRO_ATTRIBUTES,
+    SOURCE_FIRMWARE, TARGET_FIRMWARE, apply_key_hooks, require_target_firmware, validate_key_spec,
+)
+from .toolkit_conversion_reldn import RELAY_FIELDS, RELAY_TWEAKERS, relay_assignments
 from .unitspec import UnitSpec
 
 
@@ -123,17 +131,22 @@ _HOOK_DLT = ('target TCBusDynamicLabelInputCGateAgent overrides BeforeUnitConver
 _HOOK_SENSOR = ('target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); '
                 'the hook depends on the Toolkit in-memory unit model and is not recovered')
 _NOT_NATIVE = 'rule recovered and target agent has no conversion hook, but no native acceptance exists yet'
-_UNRECOVERED = 'tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered'
 NO_TWEAKER = ('no Toolkit tweaker is registered for this pair; untweaked Toolkit alignment is outside '
               'the admitted scope')
 # Receipt refusal reason per class; None marks the natively accepted classes.
 REFUSALS = MappingProxyType({
-    'TTweakerInputUnit': _HOOK_KEY, 'TTweakerNeoToKey': _HOOK_KEY, 'TTweakerKeyToNeo': _HOOK_KEY,
+    'TTweakerInputUnit': _HOOK_KEY, 'TTweakerNeoToKey': _HOOK_KEY, 'TTweakerKeyToNeo': None,
     'TTweakerDLT': _HOOK_DLT, 'TTweakerKeyToDLT': _HOOK_DLT,
     'TTweakerSENPIR': _HOOK_SENSOR, 'TTweakerSENLL': _HOOK_SENSOR,
     'TTweakerPC_DAL2': _NOT_NATIVE, 'TTweakerPC_DAL2B': _NOT_NATIVE,
-    'TTweakerRELDN8_TO_X': _UNRECOVERED, 'TTweakerRELDNX_TO_8': _UNRECOVERED,
+    'TTweakerRELDN8_TO_X': None, 'TTweakerRELDNX_TO_8': None,
     'TTweakerDIMDN_TO_DIMDU4': None, 'TTweakerDIMDU4_TO_DIMDN': None,
+})
+PAIR_REFUSALS = MappingProxyType({
+    ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
+                          'reads eight without padding; no defined safe conversion is established'),
+    **{tuple(pair.split('>')): 'source is outside the admitted classic-key to fresh Neo model profile'
+       for pair in ('KEYBC2>BCN2B', 'KEYBC2>BCN4B', 'KEYBC4>BCN2B', 'KEYBC4>BCN4B', 'DINAUX4>BCI4A')},
 })
 
 
@@ -151,7 +164,7 @@ REGISTRY = _registry()
 
 _BASE = (('Application', True), ('FirmwareVersion', False), ('Project', True), ('SerialNo', False),
          ('State', False), ('UnitAddress', True), ('UnitName', True), ('UnitType', False))
-_DIN = tuple((name, True) for name in (
+_DIN = tuple((name, name != 'Burden') for name in (
     'CheckSum', 'Burden', 'LocalToggleEnable', 'ClockGenEnable', 'LearnMode', 'LearnAnyApplication', 'LearnedFlag',
     'AreaGroupAddress', 'PowerUpDelay', 'NetworkPriority', 'LightLevel', 'LogicGA13Associations',
     'LogicGA14Associations', 'LogicGA15Associations', 'LogicGA16Associations', 'LogicFunction', 'GroupAddress',
@@ -160,11 +173,18 @@ _DIN = tuple((name, True) for name in (
 _DIMDUX = tuple((name, True) for name in (
     'ErrorMode', 'ErrorRefreshTime', 'EnableErrorGroup', 'TriggerErrorGroup', 'TriggerErrorAcSel',
     'TriggerErrorClearAcSel', 'ErrorReportDeviceID', 'DimmingCurveBit1', 'DimmingCurveBit2'))
+# The basic relay constructor explicitly makes Burden immutable. The
+# bus-powered agent stops before the three full-DIN interlock/restrike fields;
+# the marshalling-box agent used by RELDN8 adds no attributes to full DIN.
 # Constructor-order agent attributes with their initial mutable flag:
 # TDinRailOutputCGateAgent for DIMDN types, TDIMDNUXCGateAgent for DIMDU4.
 AGENT_ATTRIBUTES = MappingProxyType({
     **{unit_type: _BASE + _DIN for unit_type in ('DIMDN4', 'DIMDN4F', 'DIMDN8', 'DIMDN8F')},
     'DIMDU4': _BASE + _DIN + _DIMDUX,
+    **{unit_type: _BASE + _DIN for unit_type in ('RELDN8', 'RELDN12', 'RELDN4', 'RELDN8B')},
+    'RELSM8': _BASE + _DIN[:-3],
+    **{unit_type: CLASSIC_ATTRIBUTES for unit_type in CLASSIC_TYPES},
+    **{unit_type: NEOPRO_ATTRIBUTES for unit_type in NEO_TYPES},
 })
 # Ordered TweakParameters rules: (target attribute, 'literal' | 'from', value or source attribute).
 ASSIGNMENTS = MappingProxyType({
@@ -185,6 +205,9 @@ def admitted(source_type, target_type):
     tweaker = lookup(source_type, target_type)
     if tweaker is None:
         raise TweakerRefused(source_type, target_type, None, NO_TWEAKER)
+    pair_reason = PAIR_REFUSALS.get((str(source_type).upper(), str(target_type).upper()))
+    if pair_reason is not None:
+        raise TweakerRefused(source_type, target_type, tweaker, pair_reason)
     if REFUSALS[tweaker] is not None:
         raise TweakerRefused(source_type, target_type, tweaker, REFUSALS[tweaker])
     return tweaker
@@ -197,23 +220,45 @@ class TweakPlan:
     tweaker_class: str
     writes: tuple
     not_written: MappingProxyType
+    model_context: MappingProxyType | None = None
 
     def as_dict(self):
-        return {'format': 'cbus-toolkit-conversion-tweak-plan-v1', 'source_type': self.source_type,
+        result = {'format': 'cbus-toolkit-conversion-tweak-plan-v1', 'source_type': self.source_type,
                 'target_type': self.target_type, 'tweaker_class': self.tweaker_class,
                 'writes': [{'parameter': name, 'value': value, 'origin': origin} for name, value, origin in self.writes],
                 'not_written': dict(self.not_written)}
+        if self.model_context is not None:
+            result['model_context'] = dict(self.model_context)
+        return result
 
 
-def plan_writes(source_type, target_type, source_values, target_parameters):
+def plan_writes(source_type, target_type, source_values, target_parameters, *, target_firmware=None):
     """Model AlignUnitNoSave + TweakParameters + the PP SET gate for an admitted pair.
 
     ``source_values`` are the source PP strings, as Toolkit loads them into
     its attributes. ``target_parameters`` names the target's native PP
     parameters; an agent attribute without one would fail PP SET, which
     Toolkit swallows, so it is reported and not written.
+
+    Classic-to-Neo plans require ``target_firmware='2.5.00'`` and describe a
+    fresh model converted from source firmware 1.2.67. They must not be applied
+    to an existing edited target; ``ToolkitTweakerConversion.apply`` enforces
+    the runtime source firmware and creates the fresh replacement.
     """
     tweaker = admitted(source_type, target_type)
+    model_context = None
+    if tweaker == KEY_TWEAKER:
+        try:
+            require_target_firmware(target_firmware)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
+        model_context = MappingProxyType({
+            'profile': 'classic-1.2.67-to-fresh-neo-2.5.00',
+            'source_firmware': SOURCE_FIRMWARE, 'target_firmware': TARGET_FIRMWARE,
+            'fresh_target_model': True, 'target_learned_flag': False, 'target_learned_flag_original': False,
+            'source_has_application2': False, 'indicator_brightness_property_enabled': True,
+            'target_programming_loaded_before_hook': False,
+        })
     source_attributes = {name for name, _ in AGENT_ATTRIBUTES[source_type.upper()]}
     target = AGENT_ATTRIBUTES[target_type.upper()]
     values, mutable, origin, not_written = {}, {}, {}, {}
@@ -229,7 +274,21 @@ def plan_writes(source_type, target_type, source_values, target_parameters):
                 not_written[name] = 'empty source value clears the mutable flag'
         else:
             not_written[name] = 'no source agent attribute; freshly created target value retained'
-    for name, kind, operand in ASSIGNMENTS[tweaker]:
+    if tweaker in RELAY_TWEAKERS:
+        try:
+            assignments = relay_assignments(tweaker, values)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
+        for name, value, value_origin in assignments:
+            values[name], origin[name] = value, value_origin
+            if mutable[name]:
+                not_written.pop(name, None)
+    if tweaker == KEY_TWEAKER:
+        try:
+            apply_key_hooks(values, mutable, origin, not_written)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
+    for name, kind, operand in ASSIGNMENTS.get(tweaker, ()):
         if kind == 'from':
             if origin.get(operand) != 'copied' or values[operand] == '':
                 raise TweakerConversionError('Tweaker source attribute was not aligned: ' + operand)
@@ -247,7 +306,7 @@ def plan_writes(source_type, target_type, source_values, target_parameters):
             continue
         writes.append((name, values[name], origin[name]))
     return TweakPlan(source_type.upper(), target_type.upper(), tweaker, tuple(writes),
-                     MappingProxyType(dict(sorted(not_written.items()))))
+                     MappingProxyType(dict(sorted(not_written.items()))), model_context)
 
 
 def _numbers(value):
@@ -303,39 +362,85 @@ class ToolkitTweakerConversion:
     def __init__(self, client, source_type, source_spec: UnitSpec, target_type, target_spec: UnitSpec):
         self.tweaker = admitted(source_type, target_type)
         self.source_type, self.target_type = source_type.upper(), target_type.upper()
+        if self.tweaker in RELAY_TWEAKERS:
+            self._relay_spec(self.source_type, source_spec, source=True)
+            self._relay_spec(self.target_type, target_spec, source=False)
+        if self.tweaker == KEY_TWEAKER:
+            try:
+                validate_key_spec(self.source_type, source_spec, source=True)
+                validate_key_spec(self.target_type, target_spec, source=False)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         self.client, self.source_spec, self.target_spec = client, source_spec, target_spec
         self.database, self.programmer = NativeDatabase(client), Programmer(client)
+
+    @staticmethod
+    def _relay_spec(unit_type, spec, *, source):
+        # RELDN8B is the catalogue's explicit alias of the RELDN8 PP schema.
+        expected_type = 'RELDN8' if unit_type == 'RELDN8B' else unit_type
+        if not isinstance(spec, UnitSpec) or spec.unit_type.upper() != expected_type:
+            raise TweakerConversionError('RELDN conversion requires the matching source and target specifications')
+        for name in RELAY_FIELDS:
+            parameter = spec.parameters.get(name)
+            size = 16 if name == 'GroupAddress' else (4 if unit_type == 'RELDN4' else 12)
+            width = 8 if name == 'GroupAddress' else 1
+            if parameter is None or (parameter.type, parameter.array_size, parameter.bit_size) != ('int', size, width):
+                raise TweakerConversionError(f'Unsupported {unit_type} relay PP shape for {name}')
+            if source and size == 4:
+                raise TweakerConversionError('RELDN4 source logic has four elements; the original reverse tweaker '
+                                             'reads eight and no safe padding rule is established')
 
     def _unit_type(self, path):
         reply = self.client.command('DBGET ' + path + '/UnitType')
         found = [line.split('=', 1)[1].strip() for line in reply.lines if 'UnitType=' in line]
         return found[-1] if found else ''
 
+    def _unit_firmware(self, path):
+        reply = self.client.command('DBGET ' + path + '/FirmwareVersion')
+        found = [line.split('=', 1)[1].strip() for line in reply.lines if 'FirmwareVersion=' in line]
+        return found[-1] if found else ''
+
     def apply(self, source, target_address, *, target_firmware, target_catalog, tag_name=None):
         match = _UNIT.fullmatch(str(source))
         if match is None or int(match[2]) > 255 or int(match[3]) > 255:
             raise ValueError('Use a database unit path such as //PROJECT/254/p/20')
-        if not isinstance(target_address, int) or not 0 <= target_address <= 255 or target_address == int(match[3]):
+        if type(target_address) is not int or not 0 <= target_address <= 255 or target_address == int(match[3]):
             raise ValueError('Target address must be a different unit address 0..255')
+        if self.tweaker in RELAY_TWEAKERS and not self.target_spec.supports_version(target_firmware):
+            raise TweakerConversionError('Target firmware is outside the supplied relay specification')
+        if self.tweaker == KEY_TWEAKER:
+            try:
+                require_target_firmware(target_firmware)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         network = source.rsplit('/p/', 1)[0]
         target = f'{network}/p/{target_address}'
         if self._unit_type(source).upper() != self.source_type:
             raise TweakerConversionError('Source database unit type differs from the requested source type')
+        if self.tweaker == KEY_TWEAKER and self._unit_firmware(source) != SOURCE_FIRMWARE:
+            raise TweakerConversionError('Classic-to-Neo conversion requires source firmware 1.2.67')
         with self.programmer.load(network, '/db' + source) as session:
             source_values = session.values()
+        # Validate and transform the complete source before creating a target.
+        # RELDN routines contain unchecked native array accesses; a short or
+        # malformed image must never leave a partially created replacement.
+        preflight = plan_writes(self.source_type, self.target_type, source_values, set(self.target_spec.parameters),
+                                target_firmware=target_firmware)
         self.database.create_unit(network, target_address, tag_name or f'Tweaked{target_address}',
                                   self.target_type, target_firmware, catalog_number=target_catalog)
         details = {'target': target}
         with self.programmer.load(network, '/db' + target) as session:
             defaults = session.values()
-            plan = plan_writes(self.source_type, self.target_type, source_values, set(defaults))
+            plan = preflight if set(defaults) == set(self.target_spec.parameters) else plan_writes(
+                self.source_type, self.target_type, source_values, set(defaults), target_firmware=target_firmware)
             expected = expected_values(self.target_spec, defaults, plan)
             failed = {}
             for name, value, _ in plan.writes:
                 try:
                     session.set(name, value)
-                except (RuntimeError, OSError) as error:
-                    # ParameterProgrammingSetSingle catches and ignores PP SET failures.
+                except (CGateError, ProgrammingCommandError) as error:
+                    # Match ignored, complete PP SET rejection replies. A lost
+                    # transport is uncertain: stop without further writes/save.
                     failed[name] = str(error)
                     expected[name] = normalized(self.target_spec.parameters[name], defaults[name])
             session.save_to_source()

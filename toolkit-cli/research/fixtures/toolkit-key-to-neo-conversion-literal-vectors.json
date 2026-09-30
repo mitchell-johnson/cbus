@@ -1,0 +1,68 @@
+{
+  "format": "cbus-toolkit-key-to-neo-conversion-literal-vectors-v1",
+  "source_proof": "toolkit-key-to-neo-conversion-source-proof.json",
+  "original_code_executed": false,
+  "method": "Expected strings independently written from original instruction operands and reviewed against original loop bounds, substitutions, constant 255 insertions, IntToHex width and string-concatenation order; no production converter invoked to produce expected results.",
+  "admitted_shape_examples": [
+    {
+      "name": "zero_byte_boundaries_and_area_slot",
+      "source_group_address": "0 1 254 255 77 8 9 10",
+      "source_indicator_function": "0 1 2 3",
+      "expected_group_address": "0x00 0x01 0xFE 0xFF 0xFF 0xFF 0xFF 0xFF 0x4D",
+      "expected_indicator_function": "0 2 2 1 ",
+      "indicator_setter_sequence": ["", "0 ", "0 2 ", "0 2 2 ", "0 2 2 1 "],
+      "expected_value_assignment_order": ["IndicatorFunction", "GroupAddress"]
+    },
+    {
+      "name": "all_groups_unset_and_repeated_indicator_remap",
+      "source_group_address": "255 255 255 255 255 255 255 255",
+      "source_indicator_function": "3 3 1 1",
+      "expected_group_address": "0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF",
+      "expected_indicator_function": "1 1 2 2 ",
+      "indicator_setter_sequence": ["", "1 ", "1 1 ", "1 1 2 ", "1 1 2 2 "],
+      "expected_value_assignment_order": ["IndicatorFunction", "GroupAddress"]
+    },
+    {
+      "name": "nondefault_hex_format_and_discarded_source_tail",
+      "source_group_address": "17 42 63 128 254 19 20 21",
+      "source_indicator_function": "2 0 2 0",
+      "expected_group_address": "0x11 0x2A 0x3F 0x80 0xFF 0xFF 0xFF 0xFF 0xFE",
+      "expected_indicator_function": "2 0 2 0 ",
+      "indicator_setter_sequence": ["", "2 ", "2 0 ", "2 0 2 ", "2 0 2 0 "],
+      "expected_value_assignment_order": ["IndicatorFunction", "GroupAddress"]
+    }
+  ],
+  "algorithm_only_examples_outside_admitted_pp_shape": [
+    {
+      "name": "original_group_default_helper_is_bounds_checked",
+      "source_group_address": "5 6",
+      "expected_original_algorithm_group_address": "0x05 0x06 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF",
+      "portable_profile_admitted": false,
+      "reason": "The original helper supplies 255 for absent indices, but the selected classic source PP profile still requires eight group tokens."
+    },
+    {
+      "name": "original_indicator_unlisted_values_are_unchanged",
+      "source_indicator_function": "0 1 2 3 4 255",
+      "expected_original_algorithm_indicator_function": "0 2 2 1 4 255 ",
+      "portable_profile_admitted": false,
+      "reason": "Original substitution only changes 1 and 3; the selected PP profile requires four two-bit indicator entries, so these six entries and values above 3 remain refused."
+    }
+  ],
+  "preservation_obligations": [
+    "PP SET enumeration retains target agent constructor order, distinct from the IndicatorFunction-then-GroupAddress algorithm assignment order.",
+    "Fresh target LearnedFlag and LearnedFlagOriginal model values are both false before target PP hydration. LearnedFlag becomes immutable; a later target PP value must not be substituted for that fresh-model decision.",
+    "Target IRBank has no same-named classic source attribute because the constructor renamed InfraRedBank. The InfraRedBank tweaker lookup cannot clear an absent attribute's flag.",
+    "Target-only NightlightColour is initially mutable and is not explicitly suppressed by these tweaker or hook routines; same-name alignment, available PP values and changed-value checks still govern whether a write exists.",
+    "Suppressed target values retain their target baseline; copying a differently named or unsupported classic PP field would violate the original attribute graph.",
+    "Unchanged source or target fields, metadata and unknown PP entries must retain their established conversion-workflow preservation rules."
+  ],
+  "profile_refusal_examples": [
+    "source firmware other than the admitted 1.2.67 lifecycle",
+    "target firmware other than the admitted 2.5.00 lifecycle",
+    "reused target model or editor-learned-state history",
+    "unregistered source/target pair even when both names appear elsewhere in this family",
+    "the five coupler/DINAUX4 KeyToNeo registrations and every NeoToKey direction",
+    "missing or wrong-shaped admitted source GroupAddress or IndicatorFunction strings",
+    "source group tokens outside 0..255 or indicator tokens outside 0..3"
+  ]
+}

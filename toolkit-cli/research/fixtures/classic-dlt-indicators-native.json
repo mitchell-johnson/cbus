@@ -1,0 +1,588 @@
+{
+  "format": "cbus-classic-dlt-indicators-native-v1",
+  "passed": true,
+  "scope": "Owned original C-Gate synthetic database units only",
+  "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+  "physical_hardware_verified": false,
+  "original_full_form_executed": false,
+  "specs": {
+    "KEYL4.xml": "8d045edada38377378d01c76d5c48c7a84126aea7e3e1a1973dac312f26fd995",
+    "KEYL5.xml": "c3f29166c59b03a76c4545ca3dd79de89b277fe5f0a3188b5bd686a3795a8095",
+    "I_DLT.xml": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133",
+    "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7"
+  },
+  "cases": [
+    {
+      "unit_type": "KEYBL5",
+      "firmware": "2.1.00",
+      "catalog_number": "5085DL",
+      "steps": [
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "f0ff",
+          "raw_after_hex": "ff86",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 6
+            },
+            {
+              "control": "nightlight_keys",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "ff86",
+          "raw_after_hex": "6ffe",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6ffe",
+          "raw_after_hex": "6f82",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            },
+            {
+              "control": "pressed_enabled",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6f82",
+          "raw_after_hex": "6082",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            },
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 0
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "6082",
+          "raw_after_hex": "02de",
+          "all_unowned_pp_preserved": true
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "2.0.00",
+      "catalog_number": "5055DL",
+      "steps": [
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "f0ff",
+          "raw_after_hex": "ff86",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 6
+            },
+            {
+              "control": "nightlight_keys",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "ff86",
+          "raw_after_hex": "6ffe",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6ffe",
+          "raw_after_hex": "6f82",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            },
+            {
+              "control": "pressed_enabled",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6f82",
+          "raw_after_hex": "6082",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            },
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 0
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "6082",
+          "raw_after_hex": "02de",
+          "all_unowned_pp_preserved": true
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYML5",
+      "firmware": "3.0.99",
+      "catalog_number": "5055DL",
+      "steps": [
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "f0ff",
+          "raw_after_hex": "ff86",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 6
+            },
+            {
+              "control": "nightlight_keys",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "ff86",
+          "raw_after_hex": "6ffe",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6ffe",
+          "raw_after_hex": "6f82",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            },
+            {
+              "control": "pressed_enabled",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6f82",
+          "raw_after_hex": "6082",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            },
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 0
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "6082",
+          "raw_after_hex": "02de",
+          "all_unowned_pp_preserved": true
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "3.0.00",
+      "catalog_number": "E5084DL",
+      "steps": [
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "f0ff",
+          "raw_after_hex": "ff86",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 6
+            },
+            {
+              "control": "nightlight_keys",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "ff86",
+          "raw_after_hex": "6ffe",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6ffe",
+          "raw_after_hex": "6f82",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            },
+            {
+              "control": "pressed_enabled",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6f82",
+          "raw_after_hex": "6082",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            },
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 0
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "6082",
+          "raw_after_hex": "02de",
+          "all_unowned_pp_preserved": true
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYDL4",
+      "firmware": "2.1.00",
+      "catalog_number": "E5054DL",
+      "steps": [
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "f0ff",
+          "raw_after_hex": "ff86",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 6
+            },
+            {
+              "control": "nightlight_keys",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "ff86",
+          "raw_after_hex": "6ffe",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6ffe",
+          "raw_after_hex": "6f82",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "page_fallback",
+              "value": false
+            },
+            {
+              "control": "pressed_enabled",
+              "value": false
+            }
+          ],
+          "raw_before_hex": "6f82",
+          "raw_after_hex": "6082",
+          "all_unowned_pp_preserved": true
+        },
+        {
+          "operations": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            },
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "pressed_level",
+              "value": 0
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": true
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ],
+          "raw_before_hex": "6082",
+          "raw_after_hex": "02de",
+          "all_unowned_pp_preserved": true
+        }
+      ]
+    }
+  ],
+  "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+  "all_pp_and_raw_bytes_save_close_reload_passed": true
+}

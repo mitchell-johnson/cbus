@@ -1,0 +1,532 @@
+{
+  "check_count": 37,
+  "checks": {
+    "Plant_zone1_checkbox_class": true,
+    "Plant_zone1_expression": true,
+    "Plant_zone1_has_no_dfm_event": true,
+    "Plant_zone1_has_no_runtime_value_callback": true,
+    "TempControl_zone1_checkbox_class": true,
+    "TempControl_zone1_expression": true,
+    "TempControl_zone1_has_no_dfm_event": true,
+    "TempControl_zone1_has_no_runtime_value_callback": true,
+    "UI_zone1_checkbox_class": true,
+    "UI_zone1_expression": true,
+    "UI_zone1_has_no_dfm_event": true,
+    "UI_zone1_has_no_runtime_value_callback": true,
+    "base_apply_clears_pending_dirty": true,
+    "boolean_apply_refuses_locked_writeback": true,
+    "checkbox_checked_setter_vmt": true,
+    "checkbox_optional_value_callback_retained": true,
+    "checkbox_setstate_respects_click_flag": true,
+    "checkbox_update_disables_clicks": true,
+    "checkbox_update_restores_click_flag": true,
+    "combo_enabled_setter_vmt": true,
+    "combo_enabled_update_only_reads_acceptance": true,
+    "combo_list_change_marks_deferred_dirty": true,
+    "combo_list_change_only_updates_enabled": true,
+    "combo_list_root_change_marks_deferred_dirty": true,
+    "combo_list_root_change_only_updates_enabled": true,
+    "element_apply_refuses_locked_writeback": true,
+    "enum_collection_root_still_emits_list_event": true,
+    "lock_is_nesting_counter": true,
+    "plant_type_form_callback_posts_message": true,
+    "plant_type_form_message_has_external_callback": true,
+    "quick_refresh_guard_still_present": true,
+    "refresh_locks_before_callbacks": true,
+    "refresh_unlocks_after_callbacks": true,
+    "same_current_leaf_skips_value_event": true,
+    "same_tracked_root_returns": true,
+    "string_apply_refuses_locked_writeback": true,
+    "update_lock_reads_counter": true
+  },
+  "dfm_resources": {
+    "TFRMTHERMOSTATPLANT": {
+      "event_bindings": [
+        {
+          "component_path": "frmThermostatPlant/cmbInternalPlantType",
+          "handler": "cmbInternalPlantTypeChange",
+          "property": "OnChange"
+        }
+      ],
+      "sha256": "a5e27c916fd893329c2e47f28064b4862ae10d20e00550cfbb513aabae682a2c"
+    },
+    "TFRMTHERMOSTATTEMPCONTROL": {
+      "event_bindings": [],
+      "sha256": "3292ccd52bdac22a13a8c85d74dd79398fc25344616d09dc6a837342d2aeef99"
+    },
+    "TFRMTHERMOSTATUI": {
+      "event_bindings": [],
+      "sha256": "f5c0d6be1ba8926be5fdb62f10a859bebd6bf08468f97aa4597fbf36606fa758"
+    }
+  },
+  "format": "cbus-thermostat-quick-zone-callback-static-v1",
+  "full_gui_feedback_closed": false,
+  "method_count": 44,
+  "method_spans": {
+    "CIS_FlashGUI.PrepareFlashCheckbox": {
+      "bytes": 204,
+      "sha256": "5f393b85cba762ab7d5e7cb128e7f2733576c5b09a570225a5fa27bc2b013bc9",
+      "start": "0xc0fc64"
+    },
+    "CIS_Handles.TFlashBooleanController.Apply": {
+      "bytes": 224,
+      "sha256": "d1ab4978774ddbcca6c73143fb3d4d2719e5641feab1f568beb10f7020606b5b",
+      "start": "0x84f0c4"
+    },
+    "CIS_Handles.TFlashElementController.Apply": {
+      "bytes": 128,
+      "sha256": "485c1e1be4392491bb05156026e168e5c269f8f84c87575008a641f88c0a25db",
+      "start": "0x84f484"
+    },
+    "CIS_Handles.TFlashExpression.RootElementChanged": {
+      "bytes": 24,
+      "sha256": "2a548f988428e39627a1b2f2ea550bd51b23b893cd4b990f2399d84f2a737829",
+      "start": "0x84ce20"
+    },
+    "CIS_Handles.TFlashExpressionController.Apply": {
+      "bytes": 20,
+      "sha256": "2b20a0e320b7c22e3ec0a96c53c0ce12108420c22bd7c12117a6c1e7757f11f4",
+      "start": "0x84d7d0"
+    },
+    "CIS_Handles.TFlashExpressionController.Changed": {
+      "bytes": 160,
+      "sha256": "58e08f90ef77c3b2cb390bb40b29a6bcbd333e6da9bd7c6d849884ccf0aa8638",
+      "start": "0x84d824"
+    },
+    "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged": {
+      "bytes": 420,
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e",
+      "start": "0x84d8c4"
+    },
+    "CIS_Handles.TFlashExpressionController.ExpressionElementChanged": {
+      "bytes": 220,
+      "sha256": "77d85563d9723d7dfe71ebbc71e5fd29afcbb21b464a7cd7e25d32c0788d7ea4",
+      "start": "0x84da84"
+    },
+    "CIS_Handles.TFlashExpressionController.GetUpdateLocked": {
+      "bytes": 28,
+      "sha256": "a011fa54e9af0a8bf558d116ffd0cbe9d3a39331c84bbf3132bd314582041d24",
+      "start": "0x84dd1c"
+    },
+    "CIS_Handles.TFlashExpressionController.LockUpdate": {
+      "bytes": 16,
+      "sha256": "6e254474c069516e5aa1810bbc314befede5a078b97fbb48da90fcd886b7bc0e",
+      "start": "0x84dd64"
+    },
+    "CIS_Handles.TFlashExpressionController.SetActive": {
+      "bytes": 100,
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf",
+      "start": "0x84de00"
+    },
+    "CIS_Handles.TFlashExpressionController.UnlockUpdate": {
+      "bytes": 36,
+      "sha256": "119432cbcb5199057bcd82a1c35a14a784099d2dde6eefa6eb296c4e5e7d72e3",
+      "start": "0x84e008"
+    },
+    "CIS_Handles.TFlashStringController.Apply": {
+      "bytes": 148,
+      "sha256": "73c4dec8995337520e7f986b675c71e86e5d26cc18beb943a0ebbffd584967f8",
+      "start": "0x84f2f8"
+    },
+    "CIS_Handles.TFlashStringController.SetAsString": {
+      "bytes": 80,
+      "sha256": "ed46f66e4a5f03d891e45d26f185b4cfdb8ed73700fb145f0b2495334df5392b",
+      "start": "0x84f3e0"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Changed": {
+      "bytes": 20,
+      "sha256": "6124be6a2726b0993a2894a777de2c38874dcd7da52494eb3e92c0cc9c6313bd",
+      "start": "0x84e57c"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoListChanged": {
+      "bytes": 92,
+      "sha256": "246247e77dca961d5cbf27214baafc17c4d00321a8a7690d32e879c0950d1deb",
+      "start": "0x84e6f0"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoRootElementChanged": {
+      "bytes": 84,
+      "sha256": "2863558d737c18291c1a917233ae216a1ab643174f5cf046a526bedf98fe641e",
+      "start": "0x84e7b0"
+    },
+    "CIS_Handles.TFlashTrackedHandle.SetRootElement": {
+      "bytes": 120,
+      "sha256": "77f983ddc462d965cdc08ea0ab6b15f4e38d41a34e5da04870e0f4db7ccaa987",
+      "start": "0x84ed10"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Update": {
+      "bytes": 440,
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce",
+      "start": "0x84ed88"
+    },
+    "CIS_TFlashCheckBox.TFlashCheckBox.ActiveStateChanged": {
+      "bytes": 148,
+      "sha256": "ad6dfd9a42b38ffc902bbbe909b3fc59d369e713f4a0beef8d7c455c99e6a1f5",
+      "start": "0xae808c"
+    },
+    "CIS_TFlashCheckBox.TFlashCheckBox.CMChanged": {
+      "bytes": 96,
+      "sha256": "e167f6335bb26ebba294e4facda4b27ebf8baf31acecc9d8d98cb148f9def71e",
+      "start": "0xae8278"
+    },
+    "CIS_TFlashCheckBox.TFlashCheckBox.Change": {
+      "bytes": 48,
+      "sha256": "e28f5e895c982ffe9a92d3fcedcbdbfafe88cb195d32758769d9ef645a7b258c",
+      "start": "0xae8248"
+    },
+    "CIS_TFlashCheckBox.TFlashCheckBox.ControllerValueChange": {
+      "bytes": 228,
+      "sha256": "a88dbece0e574e8fc0e537c3c3398a5a296ebc8104eafd7180eccea9a36ea7d8",
+      "start": "0xae8120"
+    },
+    "CIS_TFlashCheckBox.TFlashCheckBox.Create": {
+      "bytes": 164,
+      "sha256": "440a48110f19b98c695fcbf784cf42a9a829b380394298a2bb2d8019f37985e3",
+      "start": "0xae7fa8"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.DoIndexChange": {
+      "bytes": 152,
+      "sha256": "2945efdca9fe8b026ac32f6c68da67057257fbc69196e23d2fcfc72f61f0a95d",
+      "start": "0xae6a14"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.DoMouseWheelDown": {
+      "bytes": 268,
+      "sha256": "aa55c816843914611530244a00596bf5e56973040d378fb69c01b938848800db",
+      "start": "0xae680c"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.DoMouseWheelUp": {
+      "bytes": 252,
+      "sha256": "44e1a133b004b3f8c726cae7278e04a2967f7f24a460742ca37205115a6b6743",
+      "start": "0xae6918"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.DropDown": {
+      "bytes": 52,
+      "sha256": "142f619bedf9637131b53958c2306c890bec19b20205ecbf955f16d56fc34975",
+      "start": "0xae5f70"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.FlashHandleListChanged": {
+      "bytes": 36,
+      "sha256": "1cf2f34aeb04fcd1d0e9b07eb91b8e67fcce4d6fb4a0840f8e20a45a465c8d1d",
+      "start": "0xae61a0"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.FlashHandleListRootChanged": {
+      "bytes": 36,
+      "sha256": "5d836b7cfeb7987bd5b56043f1ad8ea532491cad8d7f18a061870ec0405f20f7",
+      "start": "0xae61c4"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.KeyDown": {
+      "bytes": 336,
+      "sha256": "4e3b50c30e8570049f2d1d573feec61cbd5fc081b4dd9dd98fa026743aa77c75",
+      "start": "0xae6ac0"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.PopulateList": {
+      "bytes": 508,
+      "sha256": "34c4c66770cd51563b4ebff61ea294480ba60afdff7f876edd210590a2df6572",
+      "start": "0xae5fa4"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.RenderDisplay": {
+      "bytes": 168,
+      "sha256": "477e9b3541f2d5c0025183e6ff62957bd222697d8c13a3117c4c74701b4f281f",
+      "start": "0xae64b4"
+    },
+    "CIS_TFlashComboBox.TFlashComboBox.UpdateEnableState": {
+      "bytes": 56,
+      "sha256": "26469be67b52fa37472707446ec5d232b92a93e6b069af2d89695f0e24c44a0e",
+      "start": "0xae6244"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupFlashComponents": {
+      "bytes": 2988,
+      "sha256": "bfc4bd26f3a1f1d42513a6f8fa29b769498d01f03c290d677da7c09ddcf24cea",
+      "start": "0x1127424"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetupFlashComponents": {
+      "bytes": 2540,
+      "sha256": "5bb86ec184fcc686a46dbf25f05e0a33fc1941a897df7d11748e8df307b31bf9",
+      "start": "0x112dca4"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange": {
+      "bytes": 24,
+      "sha256": "89c7732f572ab3f5030fa6860db128f07e33cfedf662489c0bdc947981f1b1c2",
+      "start": "0x111df48"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions": {
+      "bytes": 384,
+      "sha256": "70e7b90e0184574cc18f6d5d35a76b2e87ae1cd535631bf93781d352fdf29b18",
+      "start": "0x111e97c"
+    },
+    "CIS_TcdThermostatUI.TcdThermostatUI.SetupFlashComponents": {
+      "bytes": 1868,
+      "sha256": "45eb84a6d2bebfffa0c4eb3c703433f87746a00e0348c1918b704a66bbf23515",
+      "start": "0x112106c"
+    },
+    "CIS_TfrmThermostatPlant.TfrmThermostatPlant.HandlePlantTypeChange": {
+      "bytes": 52,
+      "sha256": "52605b2d5e07f1d720d50ab4081176c900e542518ed03f8855a675e7394f8017",
+      "start": "0x11221c8"
+    },
+    "CIS_TfrmThermostatPlant.TfrmThermostatPlant.cmbInternalPlantTypeChange": {
+      "bytes": 40,
+      "sha256": "b510951c0464feb7f903f17dd0af95793c4b9a8061f1cd07e3d434bf3318fc62",
+      "start": "0x11221fc"
+    },
+    "StdCtrls.TCustomCheckBox.Click": {
+      "bytes": 20,
+      "sha256": "cdcd75df2b80a426ba6b2e136e55da578d4b1189465b557b330e8a33cb303ae9",
+      "start": "0x68a004"
+    },
+    "StdCtrls.TCustomCheckBox.SetChecked": {
+      "bytes": 20,
+      "sha256": "2dd31e6946c58a2a3cd5150def186274c93e31f806a070df082774617c91a12a",
+      "start": "0x68a038"
+    },
+    "StdCtrls.TCustomCheckBox.SetState": {
+      "bytes": 80,
+      "sha256": "89423b148559fdc63f522fafc0aa8a1c1484599b151e92e9f1e81e129507f046",
+      "start": "0x68a04c"
+    }
+  },
+  "open_boundary": [
+    "Enum/collection root refresh can still issue DoListChanged even for an unchanged current pointer.",
+    "Further combo input/list population, native notification and posted parent message ordering remain outside this proof.",
+    "Direct model setters in custom callbacks bypass same-controller Apply; the lock is not a global model lock.",
+    "Initial project graph, complete initialized form and native GUI action/save/reload are not reproduced."
+  ],
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "panel_setup_bindings": {
+    "Plant": {
+      "checkbox_bindings": {
+        "chbEnableHVACRelayDrive": {
+          "at": "0x11279bb",
+          "expression": "EnableHVACRelayDrive"
+        },
+        "chbPlantModeCool": {
+          "at": "0x11275d9",
+          "expression": "InternalPlantModes.Cool"
+        },
+        "chbPlantModeHeat": {
+          "at": "0x1127595",
+          "expression": "InternalPlantModes.Heat"
+        },
+        "chbPlantModeHeatCool": {
+          "at": "0x112761d",
+          "expression": "InternalPlantModes.HeatCool"
+        },
+        "chbPlantModeVent": {
+          "at": "0x1127661",
+          "expression": "InternalPlantModes.Vent"
+        },
+        "chbPlantUnswitchedZone": {
+          "at": "0x11274bd",
+          "expression": "InternalPlantZones.UnswitchedZone"
+        },
+        "chbPlantZone1": {
+          "at": "0x1127501",
+          "expression": "InternalPlantZones.Zone1"
+        },
+        "chbPlantZone2": {
+          "at": "0x1127526",
+          "expression": "InternalPlantZones.Zone2"
+        },
+        "chbPlantZone3": {
+          "at": "0x112754b",
+          "expression": "InternalPlantZones.Zone3"
+        },
+        "chbPlantZone4": {
+          "at": "0x1127570",
+          "expression": "InternalPlantZones.Zone4"
+        }
+      },
+      "component_callback_assignments": [
+        {
+          "at": "0x112747a",
+          "component": "cmbInternalPlantType",
+          "slot": "0x328",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleInternalPlantTypeBeforeChange"
+        },
+        {
+          "at": "0x11274d7",
+          "component": "chbPlantUnswitchedZone",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantUnswitchedZoneClick"
+        },
+        {
+          "at": "0x11275af",
+          "component": "chbPlantModeHeat",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatClick"
+        },
+        {
+          "at": "0x11275f3",
+          "component": "chbPlantModeCool",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeCoolClick"
+        },
+        {
+          "at": "0x1127637",
+          "component": "chbPlantModeHeatCool",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatCoolClick"
+        },
+        {
+          "at": "0x112767b",
+          "component": "chbPlantModeVent",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeVentClick"
+        },
+        {
+          "at": "0x11276d4",
+          "component": "cmbVentPlantType",
+          "slot": "0x338",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleVentPlantTypeIncludeItem"
+        },
+        {
+          "at": "0x1127733",
+          "component": "cmbPlantMinimumOnTime",
+          "slot": "0x288",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantMinimumTimeChange"
+        },
+        {
+          "at": "0x1127792",
+          "component": "cmbPlantMinimumOffTime",
+          "slot": "0x288",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantMinimumTimeChange"
+        },
+        {
+          "at": "0x11277f1",
+          "component": "cmbPlantCycleTime",
+          "slot": "0x288",
+          "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantCycleTimeChange"
+        }
+      ]
+    },
+    "TempControl": {
+      "checkbox_bindings": {
+        "chbEnableGuard": {
+          "at": "0x112dcde",
+          "expression": "GuardEnable"
+        },
+        "chbEnableTemperatureSensor": {
+          "at": "0x112e2b3",
+          "expression": "EnableTemperatureSensor"
+        },
+        "chbMeasuredUnswitchedZone": {
+          "at": "0x112dfa7",
+          "expression": "MeasuredZones.UnswitchedZone"
+        },
+        "chbMeasuredZone1": {
+          "at": "0x112dfeb",
+          "expression": "MeasuredZones.Zone1"
+        },
+        "chbMeasuredZone2": {
+          "at": "0x112e02f",
+          "expression": "MeasuredZones.Zone2"
+        },
+        "chbMeasuredZone3": {
+          "at": "0x112e073",
+          "expression": "MeasuredZones.Zone3"
+        },
+        "chbMeasuredZone4": {
+          "at": "0x112e0b7",
+          "expression": "MeasuredZones.Zone4"
+        }
+      },
+      "component_callback_assignments": [
+        {
+          "at": "0x112dfc1",
+          "component": "chbMeasuredUnswitchedZone",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.HandleChbMeasuredUnswitchedZoneClick"
+        },
+        {
+          "at": "0x112e005",
+          "component": "chbMeasuredZone1",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.HandleMeasuredZoneClick"
+        },
+        {
+          "at": "0x112e049",
+          "component": "chbMeasuredZone2",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.HandleMeasuredZoneClick"
+        },
+        {
+          "at": "0x112e08d",
+          "component": "chbMeasuredZone3",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.HandleMeasuredZoneClick"
+        },
+        {
+          "at": "0x112e0d1",
+          "component": "chbMeasuredZone4",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.HandleMeasuredZoneClick"
+        }
+      ]
+    },
+    "UI": {
+      "checkbox_bindings": {
+        "chbBeepEnable": {
+          "at": "0x112116f",
+          "expression": "BeepEnable"
+        },
+        "chbEnableUserControlledZone": {
+          "at": "0x1121314",
+          "expression": "EnableUserControlledZone"
+        },
+        "chbTimerEnable": {
+          "at": "0x11212ef",
+          "expression": "TimerEnable"
+        },
+        "chbUnswitchedZone": {
+          "at": "0x1121194",
+          "expression": "UIAllocatedZones.UnswitchedZone"
+        },
+        "chbZone1": {
+          "at": "0x11211d8",
+          "expression": "UIAllocatedZones.Zone1"
+        },
+        "chbZone2": {
+          "at": "0x11211fd",
+          "expression": "UIAllocatedZones.Zone2"
+        },
+        "chbZone3": {
+          "at": "0x1121222",
+          "expression": "UIAllocatedZones.Zone3"
+        },
+        "chbZone4": {
+          "at": "0x1121247",
+          "expression": "UIAllocatedZones.Zone4"
+        }
+      },
+      "component_callback_assignments": [
+        {
+          "at": "0x1121126",
+          "component": "cmbZoneTemperatureDisplay",
+          "slot": "0x288",
+          "target": "CIS_TcdThermostatUI.TcdThermostatUI.HandleZoneTemperatureDisplayChange"
+        },
+        {
+          "at": "0x1121145",
+          "component": "cmbZoneTemperatureDisplay",
+          "slot": "0x338",
+          "target": "CIS_TcdThermostatUI.TcdThermostatUI.HandleZoneTemperatureDisplayIncludeItem"
+        },
+        {
+          "at": "0x11211ae",
+          "component": "chbUnswitchedZone",
+          "slot": "0x110",
+          "target": "CIS_TcdThermostatUI.TcdThermostatUI.HandleChbUnswitchedZoneClick"
+        }
+      ]
+    }
+  },
+  "proven_scope": [
+    "The three changed zone1 checkbox bindings have no optional value callback in DFM/setup.",
+    "Their programmatic checked-state update suppresses Click and ordinary model writeback.",
+    "Same-controller Boolean/String/Element Apply refuses writes under notification lock and clears dirty state.",
+    "Stable scalar leaf handles skip value events when the current element pointer is unchanged.",
+    "FlashComboBox list callbacks only mark deferred dirty state and update Enabled; they do not PopulateList."
+  ],
+  "public_quick_zone_action_ready": false
+}

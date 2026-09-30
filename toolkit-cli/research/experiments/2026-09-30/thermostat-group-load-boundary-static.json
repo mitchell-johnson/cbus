@@ -1,0 +1,420 @@
+{
+  "accepted_source_facts": [
+    "Composite cached loading dispatches AddSessionID, which appends a state-2 reference without sorting.",
+    "Successful resolution of state 1 or 2 sets state 3 but skips the referenced-object-change callback.",
+    "GetItem resolves references and obtains an item; it contains no unconditional sort.",
+    "GetCount calls ResolveChange, which can clear the dirty flag before ResolveAllReferences runs.",
+    "OID AddReference calls SetAsString and its change callback before appending the new reference; that pre-append sort does not establish final ordering.",
+    "Group/application FinishedLoading dispatches their inherited empty AfterLoad method.",
+    "LoadAndSort explicitly iterates items and calls DoFullSort; AddNetworkChildNodes contains a direct group-manager call.",
+    "Thermostat AfterLoad reads the ApplicationNumber PP attribute at agent offset 0xf8, calls SetApplicationNumber, then rereads that same PP attribute for ApplicationByAddress(create=true) and SetApplicationObject.",
+    "All three thermostat class VMTs use the inherited unit GetApplicationObject at slot 0xb0; its attribute at unit offset 0xbc is the same attribute written by SetApplicationObject.",
+    "Plant GetUnusedGroup, GetGroup and GetNewGroup obtain their output application through that slot, so their AfterLoad route is ApplicationNumber, not a generic Application first-byte assumption."
+  ],
+  "arbitrary_preloaded_inventory_admitted": false,
+  "check_count": 108,
+  "checks": {
+    "0x128b9ef": true,
+    "0x128ba02": true,
+    "0x128ba07": true,
+    "0x128ba0f": true,
+    "0x128e4bc": true,
+    "0x128e4c4": true,
+    "0x128e4d3": true,
+    "0x128e4d9": true,
+    "0x128e4f3": true,
+    "0x128e4fb": true,
+    "0x128e50a": true,
+    "0x128e50f": true,
+    "0x128e515": true,
+    "0x128e517": true,
+    "0x128e518": true,
+    "0x128e527": true,
+    "0x76a457": true,
+    "0x7e308c": true,
+    "0x7e327c": true,
+    "0x7e37f6": true,
+    "0x7e3846": true,
+    "0x7e3896": true,
+    "0x7e8458": true,
+    "0x7e8475": true,
+    "0x7e8483": true,
+    "0x7e8f5e": true,
+    "0x7e8f67": true,
+    "0x7e8f83": true,
+    "0x7e8f91": true,
+    "0x7e8f96": true,
+    "0x7e924c": true,
+    "0x7e9250": true,
+    "0x7e9272": true,
+    "0x7e9277": true,
+    "0x7e9285": true,
+    "0x7e9296": true,
+    "0x7e92aa": true,
+    "0x7e99ba": true,
+    "0x7e99be": true,
+    "0x7e99c3": true,
+    "0x7e99e5": true,
+    "0x7e9b7f": true,
+    "0x7e9b88": true,
+    "0x7e9f89": true,
+    "0x7e9fb4": true,
+    "0x7e9fc2": true,
+    "0x7ed3ac": true,
+    "0x7ed43c": true,
+    "0x7ed468": true,
+    "0x7ed472": true,
+    "0x7ed497": true,
+    "0x7ed4e8": true,
+    "0x7ed4fe": true,
+    "0x7ed6b2": true,
+    "0x7ed6c9": true,
+    "0x7ed7fb": true,
+    "0x7ed7ff": true,
+    "0x7ed804": true,
+    "0x7ed808": true,
+    "0x7ed80d": true,
+    "0x7ed814": true,
+    "0x7ed824": true,
+    "0x7ed82a": true,
+    "0x7ede11": true,
+    "0x7efa94": true,
+    "0xf0eb9c": true,
+    "0xf0ebda": true,
+    "0xf0ec30": true,
+    "0xf28966": true,
+    "0xf2ebcc": true,
+    "0xf2ebd4": true,
+    "0xf30026": true,
+    "0xf3002e": true,
+    "0xf487a6": true,
+    "0xf487c1": true,
+    "0xf487d4": true,
+    "0xfdbbae": true,
+    "0xfdbbb6": true,
+    "0xfe2f97": true,
+    "0xfe2fc3": true,
+    "0xfe3032": true,
+    "0xfe3062": true,
+    "0xfe30e3": true,
+    "0xfe314c": true,
+    "0xfe317c": true,
+    "0xfe31fd": true,
+    "0xfe3318": true,
+    "0xfe334a": true,
+    "0xfe33c2": true,
+    "0xfe6014": true,
+    "0xfe601c": true,
+    "0xfe6022": true,
+    "0xfe6028": true,
+    "0xfe602a": true,
+    "0xfe602f": true,
+    "TBasicThermostat_application_getter": true,
+    "TCBUSApplication_base_resolve_and_after_load": true,
+    "TCBusGroup_base_resolve_and_after_load": true,
+    "TProgrammableThermostat_application_getter": true,
+    "TThermostat_application_getter": true,
+    "agent_f8_attribute_name": true,
+    "base_after_load_no_calls": true,
+    "collection_resolve_change_only_inherited_and_entity_calls": true,
+    "first_getitem_no_sorted_invariant": true,
+    "getcount_can_skip_eager_resolution": true,
+    "group_manager_vmt_loading_and_getters": true,
+    "managed_resolve_change_has_no_calls": true,
+    "set_source_no_change_callback": true
+  },
+  "complete_original_gui_lifecycle_reproduced": false,
+  "counterexample_assumptions": [
+    "The resolver successfully returns stable objects for the synthetic addresses.",
+    "No external callback changes manager membership or requests a separate sort during reference resolution.",
+    "This is a source-derived local control-flow counterexample, not a native GUI project-load execution."
+  ],
+  "group_and_application_completion_vmt": {
+    "TCBUSApplication": {
+      "0x24": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "0x74": "CIS_TCustomFlashObject.TFlashObject.AfterLoad"
+    },
+    "TCBusGroup": {
+      "0x24": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "0x74": "CIS_TCustomFlashObject.TFlashObject.AfterLoad"
+    }
+  },
+  "group_manager_vmt": {
+    "0x24": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveChange",
+    "0x58": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetCount",
+    "0x5c": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem",
+    "0x98": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.AddReference",
+    "0xb0": "CIS_TCustomFlashObject.TFlashObjectCollection.AddSessionID"
+  },
+  "methods": {
+    "CIS_TCBusObject.TCGateObjectManager.LoadAndSort": {
+      "end_exclusive": "0xf487e0",
+      "sha256": "07225b4cb7f3f8f3f8905956c308890e60e23db28645329d5498521dba60d536",
+      "start": "0xf48798"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end_exclusive": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "end_exclusive": "0x128dc7c",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8",
+      "start": "0x128b948"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject": {
+      "end_exclusive": "0xf2ebf0",
+      "sha256": "6a6bb9724a27eecef89d082873a9f4b393c5d184bf5621cba22ed752517949e4",
+      "start": "0xf2ebc0"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.SetApplicationObject": {
+      "end_exclusive": "0xf30038",
+      "sha256": "0a9132483c74b0032962e851f09f39d6e3e9341080b464452901a0e02f085da5",
+      "start": "0xf30014"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetItem": {
+      "end_exclusive": "0xf28978",
+      "sha256": "cb04c68ad43b24ea371ad092f28ce43b62d51c34a402763b0dbe5471d7e2a8da",
+      "start": "0xf28954"
+    },
+    "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange": {
+      "end_exclusive": "0x7ee134",
+      "sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df",
+      "start": "0x7ee114"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.AfterLoad": {
+      "end_exclusive": "0x7efa88",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "start": "0x7efa7c"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.FinishedLoading": {
+      "end_exclusive": "0x7efa9c",
+      "sha256": "7d2a8c254a39c2349e9a053ca2a49ae592c9d9c904d759d9f7d7b3360b5fae63",
+      "start": "0x7efa88"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.AddSessionID": {
+      "end_exclusive": "0x7e9fd0",
+      "sha256": "8ad22431263e67e95a7d91941161f2593bd73c4b23bfcddd444e1ec8712dd757",
+      "start": "0x7e9f3c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.GetFlashObject": {
+      "end_exclusive": "0x7ed3c4",
+      "sha256": "234e65154b3c0261e17dd00f2163f8f5f852b89419cfb1aab3e2198742095d22",
+      "start": "0x7ed3a0"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ResolveReference": {
+      "end_exclusive": "0x7ed68c",
+      "sha256": "fb0c76794fcaaf8c758111beb938ca33aba43d4f07bf4b74de29132c5abc56e7",
+      "start": "0x7ed41c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetAsString": {
+      "end_exclusive": "0x7ed6d4",
+      "sha256": "5f6a92dfd8c2a50e39ee0d0f01ead6a776d7b1703ce14befae6e0d0847843d6d",
+      "start": "0x7ed68c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": {
+      "end_exclusive": "0x7ed85c",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740",
+      "start": "0x7ed6d4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObjectSource": {
+      "end_exclusive": "0x7ee05c",
+      "sha256": "414bb5ad102e40decaed61b30c55f451461cb2d0200a7e84fc30e21de92595c5",
+      "start": "0x7edd70"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.AddReference": {
+      "end_exclusive": "0x7e84ac",
+      "sha256": "e5974bb44a1d6a747aae079613ec7646ed1fdeed400132fd80858b1ec08cb779",
+      "start": "0x7e83f8"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.DoFullSort": {
+      "end_exclusive": "0x7e9a0c",
+      "sha256": "6c2cc44d19cfe400712a90e2803485da54462d225ea13e23f73393acd50164f6",
+      "start": "0x7e99b0"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetCount": {
+      "end_exclusive": "0x7e8f74",
+      "sha256": "3bed5d6086da786370d0de930b1ffde4624dac8888ef6941defc4987f85acf88",
+      "start": "0x7e8f50"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem": {
+      "end_exclusive": "0x7e8fa8",
+      "sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c",
+      "start": "0x7e8f74"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange": {
+      "end_exclusive": "0x7e9b94",
+      "sha256": "109f4964f42a44dc31e9acdc162af532ee25f7a904266ced3ff8f936cae5b565",
+      "start": "0x7e9b70"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveAllReferences": {
+      "end_exclusive": "0x7e928c",
+      "sha256": "f859c3279c335507b4e3b49844a4a22e97a6b0a8b79ee67e5de282319e39b3d3",
+      "start": "0x7e9240"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveChange": {
+      "end_exclusive": "0x7e92b4",
+      "sha256": "a0309351f85cc2e82996204d8679a80451c17aa3ae7e401ecc397c52a62dfd99",
+      "start": "0x7e928c"
+    },
+    "CIS_TFlashCxTreeViewDataProvider.AddNetworkChildNodes": {
+      "end_exclusive": "0xf0ed24",
+      "sha256": "27896dad5d14840429b29e9ce6efe610d86b22fdd364fe320b82ad7da1dd313c",
+      "start": "0xf0eb80"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange": {
+      "end_exclusive": "0x76a460",
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b",
+      "start": "0x76a444"
+    },
+    "CIS_TThermostat.GetNewGroup": {
+      "end_exclusive": "0xfe32bc",
+      "sha256": "4e5c5dbcade62497ebdd019e8e681d3ba2d7e157b07d0e7d3cee669c5562cc34",
+      "start": "0xfe2f3c"
+    },
+    "CIS_TThermostat.TCBusParameters.SetApplicationNumber": {
+      "end_exclusive": "0xfdbbdc",
+      "sha256": "f4c72dfe156c71120b80ca99db0a10bdcfa5d8fabc6b9dd6bd25414fbc3f4921",
+      "start": "0xfdbb7c"
+    },
+    "CIS_TThermostat.TPlantControlService.GetGroup": {
+      "end_exclusive": "0xfe35d0",
+      "sha256": "316f10ba72f693f6a9e1996b3155bde04dc4743f2f44707d37f23a602a05f49f",
+      "start": "0xfe32bc"
+    },
+    "CIS_TThermostat.TPlantControlService.GetUnusedGroup": {
+      "end_exclusive": "0xfe6040",
+      "sha256": "99ef8533c86765e5a12d5b8017b2cb61036283a1c5c51ede7359a9ba39d14944",
+      "start": "0xfe6008"
+    },
+    "CIS_XMLLoader.SetAggregateCollectionItem": {
+      "end_exclusive": "0x7e316c",
+      "sha256": "a17e5f576c25ffa881ac9514f707142f192cfd1f5f9d94b3bd533af06203f842",
+      "start": "0x7e2fec"
+    },
+    "CIS_XMLLoader.SetCompositeCollectionItem": {
+      "end_exclusive": "0x7e36b4",
+      "sha256": "3563004c03fd40410d1306088584757035387dcfbb4bb1e27c95ee8f0d1d0437",
+      "start": "0x7e316c"
+    },
+    "CIS_XMLLoader.TFlashCachedObject.LoadIntoFlashObject": {
+      "end_exclusive": "0x7e3ab8",
+      "sha256": "b90fedf22394c3a2b82b32cd4712c7455c39c1b4556a3ff5a7cec484155f5249",
+      "start": "0x7e36b4"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_vendor_code_executed": false,
+  "production_allocator_enabled": false,
+  "reference_resolution_counterexamples": [
+    {
+      "final_addresses": [
+        5,
+        1,
+        7,
+        3
+      ],
+      "final_reference_states": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "get_count_first": false,
+      "initial_addresses": [
+        5,
+        1,
+        7,
+        3
+      ],
+      "initial_reference_states": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "referenced_object_change_callbacks": 0,
+      "resolved_indices": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "sorted_by_address": false
+    },
+    {
+      "final_addresses": [
+        5,
+        1,
+        7,
+        3
+      ],
+      "final_reference_states": [
+        3,
+        2,
+        2,
+        2
+      ],
+      "get_count_first": true,
+      "initial_addresses": [
+        5,
+        1,
+        7,
+        3
+      ],
+      "initial_reference_states": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "referenced_object_change_callbacks": 0,
+      "resolved_indices": [
+        0
+      ],
+      "sorted_by_address": false
+    }
+  ],
+  "remaining_requirements": [
+    "Prove a completed LoadAndSort or equivalent sort for the target manager before the first allocator call in the actual thermostat lifecycle.",
+    "Bind the process sort preference and any relevant pending timer or later address/tag mutations.",
+    "Tag-name sorting also requires the original Windows user-locale collation and equal-key behavior."
+  ],
+  "schema": "cbus-thermostat-group-load-boundary-static-v1",
+  "thermostat_output_application_route": {
+    "after_load_application_lookup": "0x128e518",
+    "after_load_application_lookup_create": true,
+    "after_load_unit_application_assignment": "0x128e527",
+    "complete_application_side_effect_lifecycle_proved": false,
+    "generic_application_first_byte_is_authoritative_here": false,
+    "pp_attribute": "ApplicationNumber",
+    "pp_attribute_agent_offset": "0xf8",
+    "route_only_limitations": [
+      "Earlier AfterLoad AC ZoneGroup creation can affect the same manager when ApplicationNumber is 172.",
+      "Remote setback application 203 may overlap the selected output application.",
+      "The route proof does not establish an empty manager or replay those overlapping lifecycle side effects."
+    ],
+    "thermostat_vmt_slots": {
+      "TBasicThermostat": {
+        "method": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "slot": "0xb0",
+        "target": "0xf2ebc0",
+        "vmt": "0xfd9918"
+      },
+      "TProgrammableThermostat": {
+        "method": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "slot": "0xb0",
+        "target": "0xf2ebc0",
+        "vmt": "0xfd9b3c"
+      },
+      "TThermostat": {
+        "method": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "slot": "0xb0",
+        "target": "0xf2ebc0",
+        "vmt": "0xfd9700"
+      }
+    },
+    "unit_application_object_offset": "0xbc"
+  }
+}

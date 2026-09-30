@@ -22,7 +22,7 @@ cbus-toolkit firmware update-resume eDLTFirmware_1.8.0.zip --journal private/upd
 ```
 
 The selectors are synthetic. The exit status is 0 only when every stage has
-been verified by readback.
+been verified by readback and every USB session has completed cleanup.
 
 ## Stages and safe boundaries
 
@@ -44,6 +44,13 @@ Every operation uses a fresh enumeration, claim and DFU session, like each
 original `dfuprog` process. Each session repeats the client's descriptor,
 extension and INFO geometry checks. The client does not retry a mutation, and
 the runner never repeats an operation.
+
+Cleanup must finish before another operation starts. `cleanup_complete`,
+`cleanup_error` and `releases` include cleanup performed after a failed USB
+acquisition as well as release after a DFU operation. Acquisition failure
+remains the primary error; a failed release or handle close is retained
+separately, with no second cleanup or claim attempt. A successful transfer
+with failed cleanup stops the run and preserves its verified stage.
 
 ## Pre-inspection and variant binding
 
@@ -91,9 +98,15 @@ sequence continuity, as in `recovery_journal.py`. The status is `in-progress`,
 A failed run stops at the first failed operation and reports `failed_stage`,
 `failed_phase`, `stage_states`, every operation summary (including the DFU
 client stage and `outcome_known`), each USB release outcome, `retried=false`
-and `resume_required`. A simulated host process death (`BaseException`) is not
-handled. The journal keeps the last durable phase with status `in-progress`,
-which is the state a real crash leaves.
+and `resume_required`. `images_verified` distinguishes completed image
+readback from successful cleanup. If all images are verified but final release
+fails, the journal remains `interrupted` with those stages `verified`.
+
+A simulated host process death during a transfer leaves the last durable
+phase with status `in-progress`, which is the state a real crash leaves. A
+cleanup interruption after successful readback instead preserves that
+completed phase and records `interrupted` when the journal can be written.
+The original interruption is re-raised with transfer and release evidence.
 
 ## Resume
 
@@ -115,6 +128,11 @@ package, variant or images differ from the binding. After recording
    It records `stage-restart` with the prior phase. A partial write is never
    continued, and a readback that was interrupted is never trusted, even if
    flash already holds the image.
+
+After final-release failure with every stage verified, a resume only performs
+fresh inspection and readback when the images still match. It sends no erase
+or program request. A failed acquisition cleanup or re-verification release
+stops that resume and retains the stage states and cleanup evidence.
 
 Resume does not prove that an earlier process has exited. The USB claim fails
 with BUSY when another process still owns the interface. Do not run resume
@@ -152,6 +170,13 @@ device memory, the tool report and journal, and command counts for each case:
 | Real PyUSB: disconnect, re-enumeration at a new address, then a different serial | Release failure reported; nothing sent while absent | `No such device` | Different serial is refused; same serial at the new address completes |
 | CLI `update-run` then `update-resume` through fake PyUSB | Installed images | Exit 1, then 0 | Font restarted |
 
+`tests/test_firmware_update_release.py` adds 14 tests for release failures at
+each operation, initial and later acquisition cleanup, resume and read-only
+verification cleanup, primary-error preservation, interruption receipts and
+the CLI's nonzero exit after final release failure. They assert exact claim,
+release and close counts alongside memory and journal state. These tests use
+real PyUSB with the same mandatory fake backend and synthetic memory peer.
+
 Run the matrix with:
 
 ```sh
@@ -159,6 +184,12 @@ PYTHONPATH=src:tests:. .venv/bin/python -m pytest -q tests/test_firmware_update_
 ```
 
 ## Limits
+
+Package inspection and selected-image loading currently open the package
+separately. A same-size replacement between those reads can supply different
+bytes without matching the inspected plan's digest/CRC. Immutable-snapshot
+binding and pre-USB identity checks remain a separate outstanding fix. The
+cleanup tests in this document do not validate that package-loading boundary.
 
 This is development evidence. The fault points follow the memory peer's
 request model, not a measured bootloader. Real erase and program timing,

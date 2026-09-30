@@ -14,6 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / 'research/fixtures/toolkit-conversion-tweaker-registry.json'
 ADMITTED = [('DIMDN8', 'DIMDU4'), ('DIMDN8F', 'DIMDU4'), ('DIMDN4', 'DIMDU4'), ('DIMDN4F', 'DIMDU4'),
             ('DIMDU4', 'DIMDN8'), ('DIMDU4', 'DIMDN8F'), ('DIMDU4', 'DIMDN4'), ('DIMDU4', 'DIMDN4F')]
+RELAY_ADMITTED = [('RELDN8', target) for target in ('RELDN12', 'RELDN4', 'RELDN8B', 'RELSM8')] + [
+    (source, 'RELDN8') for source in ('RELDN12', 'RELDN8B', 'RELSM8')]
+KEY_ADMITTED = [(source, target) for source in ('KEY1', 'KEY2', 'KEY4', 'KEYIR1', 'KEYIR4')
+                for target in ('KEYB2', 'KEYB4', 'KEYB6', 'KEYH1', 'KEYH2', 'KEYH3', 'KEYH4',
+                               'KEYM2', 'KEYM4', 'KEYM8', 'KEYA1', 'KEYA3', 'KEYA6', 'KEYA8', 'KEYAV2', 'KEYAV4')]
+KEY_ADMITTED += [(source, target) for source in ('KEY1', 'KEY2', 'KEY4') for target in ('KEYC1', 'KEYC2', 'KEYC4')]
+KEY_ADMITTED += [(source, target) for source in ('KEYIR1', 'KEYIR4') for target in ('KEYCIR1', 'KEYCIR4')]
 
 
 def receipt():
@@ -53,7 +60,7 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(REFUSALS[name], spec['refusal'], name)
         self.assertEqual(set(REFUSALS), set(data['classes']))
         admitted_rows = {(row['source'], row['target']) for row in data['registrations'] if row['decision'] == 'admitted'}
-        self.assertEqual(admitted_rows, set(ADMITTED))
+        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED))
         for name, rules in ASSIGNMENTS.items():
             recorded = [(rule['target'], 'literal' if 'literal' in rule else 'from', rule.get('literal', rule.get('from')))
                         for rule in data['classes'][name]['assignments']]
@@ -186,7 +193,7 @@ class NativeToolkitTweakerTests(unittest.TestCase):
                         self.assertEqual(session.values(), after)
                 report['project_reload_cases'] = len(results)
                 with self.assertRaises(TweakerRefused):
-                    ToolkitTweakerConversion(client, 'RELDN8', None, 'RELDN4', None)
+                    ToolkitTweakerConversion(client, 'RELDN4', None, 'RELDN8', None)
             finally:
                 runner.close()
         report['passed'] = len(report['cases']) == len(ADMITTED)

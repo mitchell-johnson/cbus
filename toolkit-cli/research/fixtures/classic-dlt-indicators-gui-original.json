@@ -1,0 +1,5064 @@
+{
+  "format": "cbus-classic-dlt-indicators-gui-original-v1",
+  "source": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "gui_bindings": {
+    "source_sha256": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "methods": {
+      "setup_flash": {
+        "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.SetupFlashComponents",
+        "start": "0xffad64",
+        "stop": "0xffb214",
+        "sha256": "23a8bd8d8c183a5281a18ae215106476c6ac463f115755b4970cc35a2df0204e"
+      },
+      "setup_events": {
+        "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.SetupNonFlashComponents",
+        "start": "0xffb214",
+        "stop": "0xffb3e8",
+        "sha256": "c19287b9bafb8f70896e5aaf29b82492704e543285cf5ae5040ebcf38e4b5d9e"
+      },
+      "update_nightlight": {
+        "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.UpdateNightlightEnabled",
+        "start": "0xffba74",
+        "stop": "0xffbb50",
+        "sha256": "98731545c308f17373c240beea632f0130e2bd2be395e55dc2271cda1174fa93"
+      },
+      "nightlight_change": {
+        "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleNightlightEnableCheckboxChange",
+        "start": "0xffba5c",
+        "stop": "0xffba74",
+        "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa"
+      },
+      "nightlight_gate": {
+        "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.NightlightPropertyEnabled",
+        "start": "0xd087c4",
+        "stop": "0xd087d8",
+        "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+      },
+      "prepare_checkbox": {
+        "symbol": "CIS_FlashGUI.PrepareFlashCheckbox",
+        "start": "0xc0fc64",
+        "stop": "0xc0fd30",
+        "sha256": "5f393b85cba762ab7d5e7cb128e7f2733576c5b09a570225a5fa27bc2b013bc9"
+      },
+      "prepare_slider": {
+        "symbol": "CIS_FlashGUI.PrepareFlashCxTrackBar",
+        "start": "0xc10bc8",
+        "stop": "0xc10c94",
+        "sha256": "e209ae626f1e8a3114ac1211404bd1dbfc3f75a92981fb25fd44af8f6bea67cd"
+      },
+      "slider_constructor": {
+        "symbol": "cxTrackBar.TcxCustomTrackBarProperties.Create",
+        "start": "0xc07444",
+        "stop": "0xc075b0",
+        "sha256": "d20ce93b848a5927d53607d0b9022c5be555845dca280491c56b8ec9a5cfa055"
+      },
+      "slider_set_min": {
+        "symbol": "cxTrackBar.TcxCustomTrackBarProperties.SetMin",
+        "start": "0xc07c7c",
+        "stop": "0xc07cd4",
+        "sha256": "4d85863417d0f004b3ff304bc053f14774e178e54bd3bb2d46682fb2c1228f42"
+      },
+      "slider_visual_change": {
+        "symbol": "CIS_TfrmDLTInputIndicators8.TfrmDLTInputIndicators8.trkKeyPressBrightnessPropertiesChange",
+        "start": "0xffa5f4",
+        "stop": "0xffa680",
+        "sha256": "27f004593b28992ee0e723061355ec8ae0c03896f7ba3b2de2c9679c5afb1a11"
+      },
+      "set_visible": {
+        "symbol": "Controls.TControl.SetVisible",
+        "start": "0x6f61c0",
+        "stop": "0x6f61f8",
+        "sha256": "1f2908d7acf09506d7c6dfd875bc0dd96241aba714483e0f3ef8297e51d38482"
+      },
+      "set_enabled": {
+        "symbol": "Controls.TControl.SetEnabled",
+        "start": "0x6f61f8",
+        "stop": "0x6f6210",
+        "sha256": "00186d1f17dc36dbb4f66aac90bb3d9ba49303704e50bf83c6de451baf9a0eb6"
+      },
+      "control_constructor": {
+        "symbol": "Controls.TControl.Create",
+        "start": "0x6f4f00",
+        "stop": "0x6f5048",
+        "sha256": "5569dc902fb62906471a8581e71555284410bbc1d864c85b16010d4d03ab61cd"
+      },
+      "setup_form_for_unit": {
+        "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.SetupFormForUnit",
+        "start": "0xffad58",
+        "stop": "0xffad64",
+        "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+      },
+      "set_checked": {
+        "symbol": "StdCtrls.TCustomCheckBox.SetChecked",
+        "start": "0x68a038",
+        "stop": "0x68a04c",
+        "sha256": "2dd31e6946c58a2a3cd5150def186274c93e31f806a070df082774617c91a12a"
+      },
+      "set_state": {
+        "symbol": "StdCtrls.TCustomCheckBox.SetState",
+        "start": "0x68a04c",
+        "stop": "0x68a09c",
+        "sha256": "89423b148559fdc63f522fafc0aa8a1c1484599b151e92e9f1e81e129507f046"
+      },
+      "checkbox_click": {
+        "symbol": "StdCtrls.TCustomCheckBox.Click",
+        "start": "0x68a004",
+        "stop": "0x68a018",
+        "sha256": "cdcd75df2b80a426ba6b2e136e55da578d4b1189465b557b330e8a33cb303ae9"
+      },
+      "changed": {
+        "symbol": "Controls.TControl.Changed",
+        "start": "0x6f5e98",
+        "stop": "0x6f5ea8",
+        "sha256": "25527f712dbb7ea9559cc8e90940d2cc223f42f2e43663d537d4836ad67ef064"
+      },
+      "click": {
+        "symbol": "Controls.TControl.Click",
+        "start": "0x6f7f98",
+        "stop": "0x6f8010",
+        "sha256": "290d92b14469eb7ab76209891c6c8d7d4010b4a97bbc42869f3e6e98dc280d1b"
+      },
+      "flash_changed": {
+        "symbol": "CIS_TFlashCheckBox.TFlashCheckBox.CMChanged",
+        "start": "0xae8278",
+        "stop": "0xae82d8",
+        "sha256": "e167f6335bb26ebba294e4facda4b27ebf8baf31acecc9d8d98cb148f9def71e"
+      },
+      "flash_change": {
+        "symbol": "CIS_TFlashCheckBox.TFlashCheckBox.Change",
+        "start": "0xae8248",
+        "stop": "0xae8278",
+        "sha256": "e28f5e895c982ffe9a92d3fcedcbdbfafe88cb195d32758769d9ef645a7b258c"
+      },
+      "set_as_boolean": {
+        "symbol": "CIS_Handles.TFlashBooleanController.SetAsBoolean",
+        "start": "0x84f1f8",
+        "stop": "0x84f234",
+        "sha256": "66cdf6c7a2b116225703cf46bf53f4fc38f6207619e068e1d979bca5ac8731fc"
+      },
+      "boolean_apply": {
+        "symbol": "CIS_Handles.TFlashBooleanController.Apply",
+        "start": "0x84f0c4",
+        "stop": "0x84f1a4",
+        "sha256": "d1ab4978774ddbcca6c73143fb3d4d2719e5641feab1f568beb10f7020606b5b"
+      },
+      "agent_load": {
+        "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadProgrammingInformation",
+        "start": "0x121bf40",
+        "stop": "0x121c1dc",
+        "sha256": "0675ebd5984c0f3097bc63025c7fe0102c1727b0ccbf649e6aa5003408a4d1cd"
+      },
+      "agent_save": {
+        "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeSaveProgrammingInformation",
+        "start": "0x121d16c",
+        "stop": "0x121d4f4",
+        "sha256": "1ffc2d2eea2fb8e5bec8b783efd4fee1773b74d1e382a0c55d720047a6192b62"
+      }
+    },
+    "form_resource": {
+      "name": "TFRMDLTINPUTINDICATORS8",
+      "size": 8315,
+      "sha256": "0c09953f2b9b332e59804fb3e8721302fd93de3df92f0a89b0c364f6b2d07fcc"
+    },
+    "controls": {
+      "0x2cc": {
+        "offset": "0x2cc",
+        "path": "frmDLTInputIndicators8/GroupBox1/chkKeyPressBrightness",
+        "class": "TFlashCheckBox",
+        "name": "chkKeyPressBrightness",
+        "expression": "EnableIndicatorPressed",
+        "dfm_properties": {
+          "Enabled": false,
+          "FlashController.UpdateMode": "umChange"
+        },
+        "immediate": true,
+        "binding_address": "0xffaf66",
+        "event": {
+          "slot": "0x110",
+          "handler": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleKeyPressBrightnessCheckboxChange",
+          "binding_address": "0xffb245"
+        }
+      },
+      "0x2d4": {
+        "offset": "0x2d4",
+        "path": "frmDLTInputIndicators8/GroupBox1/chkPageFallback",
+        "class": "TFlashCheckBox",
+        "name": "chkPageFallback",
+        "expression": "EnablePageFallback",
+        "dfm_properties": {
+          "Enabled": false,
+          "FlashController.UpdateMode": "umChange"
+        },
+        "immediate": true,
+        "binding_address": "0xffaf41",
+        "event": {
+          "slot": "0x110",
+          "handler": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandlePageFallbackCheckboxChange",
+          "binding_address": "0xffb3ba"
+        }
+      },
+      "0x308": {
+        "offset": "0x308",
+        "path": "frmDLTInputIndicators8/GroupBox1/cmbKeyPressBrightnessDuration",
+        "class": "TComboBox",
+        "name": "cmbKeyPressBrightnessDuration",
+        "expression": null,
+        "dfm_properties": {},
+        "event": {
+          "slot": "0x288",
+          "handler": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleKeyPressBrightnessComboChange",
+          "binding_address": "0xffb2a3"
+        }
+      },
+      "0x2e0": {
+        "offset": "0x2e0",
+        "path": "frmDLTInputIndicators8/GroupBox1/cbNightLightEnabled",
+        "class": "TFlashCheckBox",
+        "name": "cbNightLightEnabled",
+        "expression": "EnableNightLightOnKeys",
+        "dfm_properties": {
+          "Enabled": false,
+          "FlashController.UpdateMode": "umChange"
+        },
+        "immediate": true,
+        "binding_address": "0xffae88",
+        "event": {
+          "slot": "0x110",
+          "handler": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleNightlightEnableCheckboxChange",
+          "binding_address": "0xffb31f"
+        }
+      },
+      "0x2e8": {
+        "offset": "0x2e8",
+        "path": "frmDLTInputIndicators8/GroupBox1/chkToggleNightlightEnabled",
+        "class": "TFlashCheckBox",
+        "name": "chkToggleNightlightEnabled",
+        "expression": "EnableNightlightOnToggle",
+        "dfm_properties": {
+          "Enabled": false,
+          "FlashController.UpdateMode": "umChange"
+        },
+        "immediate": true,
+        "binding_address": "0xffaead",
+        "event": {
+          "slot": "0x110",
+          "handler": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleNightlightEnableCheckboxChange",
+          "binding_address": "0xffb33e"
+        }
+      },
+      "0x2e4": {
+        "offset": "0x2e4",
+        "path": "frmDLTInputIndicators8/GroupBox1/cbFirstKeyThrowaway",
+        "class": "TFlashCheckBox",
+        "name": "cbFirstKeyThrowaway",
+        "expression": "FirstKeyThrowaway",
+        "dfm_properties": {
+          "Enabled": false,
+          "FlashController.UpdateMode": "umChange"
+        },
+        "immediate": true,
+        "binding_address": "0xffae63"
+      },
+      "0x300": {
+        "offset": "0x300",
+        "path": "frmDLTInputIndicators8/GroupBox1/trkKeyPressBrightness",
+        "class": "TFlashCxTrackBar",
+        "name": "trkKeyPressBrightness",
+        "expression": "KeyPressBrightnessLevel",
+        "dfm_properties": {
+          "Position": 15,
+          "Properties.Frequency": 3,
+          "Properties.Max": 15,
+          "Properties.OnChange": "trkKeyPressBrightnessPropertiesChange",
+          "FlashController.UpdateMode": "umExit",
+          "UseRawValues": true
+        },
+        "immediate": true,
+        "binding_address": "0xffae02"
+      },
+      "0x2d0": {
+        "offset": "0x2d0",
+        "path": "frmDLTInputIndicators8/GroupBox1/lblKeyPressPercent",
+        "class": "TLabel",
+        "name": "lblKeyPressPercent",
+        "expression": null,
+        "dfm_properties": {}
+      },
+      "0x30c": {
+        "offset": "0x30c",
+        "path": "frmDLTInputIndicators8/GroupBox1/lblNightlightNote",
+        "class": "TLabel",
+        "name": "lblNightlightNote",
+        "expression": null,
+        "dfm_properties": {}
+      }
+    },
+    "dispatch": {
+      "click": {
+        "class": "TCustomCheckBox",
+        "dispatch_id": "0xffec",
+        "target": "StdCtrls.TCustomCheckBox.Click",
+        "target_address": "0x68a004"
+      },
+      "changed": {
+        "class": "TFlashCheckBox",
+        "dispatch_id": "0xb037",
+        "target": "CIS_TFlashCheckBox.TFlashCheckBox.CMChanged",
+        "target_address": "0xae8278"
+      }
+    },
+    "nightlight": {
+      "unit_gate": "TCBusDynamicLabelInputUnit VMT+0x1ec inherits NightlightPropertyEnabled=true",
+      "enabled": "(nightKeys.Visible and nightKeys.Checked) or (nightToggle.Visible and nightToggle.Checked)",
+      "condition_uses_visibility_not_enabled": {
+        "visible_field": "control+0x59",
+        "enabled_field": "control+0x5a"
+      },
+      "initial_visibility": "Both checkboxes inherit Visible=true from TControl.Create; neither DFM overrides Visible and SetupFormForUnit is empty",
+      "when_disabled": "If FirstKeyThrowaway checkbox is checked, SetChecked(false) before setting its Enabled=false",
+      "final_enabled_targets": [
+        "FirstKeyThrowaway checkbox",
+        "lblNightlightNote"
+      ],
+      "flags_not_cleared": [
+        "EnableNightlightOnKeys",
+        "EnableNightlightOnToggle"
+      ],
+      "pp_mapping": {
+        "EnableNightlightOnKeys": "EnableNightlightOnUserKeys",
+        "EnableNightlightOnToggle": "EnableNightlightOnToggleKey"
+      },
+      "pp_polarity": "Both flags load and save directly without inversion"
+    },
+    "checkbox_contract": {
+      "unchanged_state": "No property write and no click callback",
+      "changed_state_order": [
+        "store Checked",
+        "update native window if allocated",
+        "unless ClicksDisabled: Changed/CMChanged",
+        "Flash Change writes bound Boolean before UpdateEnableState",
+        "Control Click invokes assigned OnClick"
+      ],
+      "admitted_controller_state": "Initialized active immediate binding, unlocked controller, no update/reentry guard or action override",
+      "write_guards": [
+        "control ClicksDisabled=0",
+        "control CMChanged reentry guard=0",
+        "controller updating=false",
+        "controller active=true",
+        "controller update-locked=false"
+      ],
+      "programmatic_set_ignores_enabled": true,
+      "set_enabled_direct_operation": "Store Enabled at control+0x5a and emit CM_ENABLEDCHANGED; no direct Checked/property write"
+    },
+    "pressed_brightness_slider": {
+      "minimum": 0,
+      "maximum": 15,
+      "use_raw_values": true,
+      "minimum_basis": "Inherited properties constructor initializes Min field+0xa4 to zero; DFM does not override it",
+      "maximum_basis": "DFM Properties.Max=15",
+      "update_mode": "SetupFlashComponents passes immediate=1 to PrepareFlashCxTrackBar, overriding initial DFM umExit",
+      "visual_change": "Properties.OnChange displays KeyPressBrightnessToPercent(Position) plus percent sign on form+0x2d0"
+    },
+    "boundary": "Static original-code and DFM/RTTI evidence. Normal active unlocked Flash callbacks are a caller-controlled emulation boundary; no complete Windows GUI execution, PP save or physical acceptance."
+  },
+  "methods": {
+    "setup": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.SetupNonFlashComponents",
+      "start": "0xffb214",
+      "stop": "0xffb3e8",
+      "sha256": "c19287b9bafb8f70896e5aaf29b82492704e543285cf5ae5040ebcf38e4b5d9e"
+    },
+    "populate": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.PopulateNonFlashComponents_Other",
+      "start": "0xffb3e8",
+      "stop": "0xffb5ac",
+      "sha256": "fc4da1bc10f69af037ef732ba93640daf46dbb07d678168c04c257f207149582"
+    },
+    "page_change": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandlePageFallbackCheckboxChange",
+      "start": "0xffb5cc",
+      "stop": "0xffb5e4",
+      "sha256": "588064bbe829f2c50c1974c2e26e3600f387f72cab831ba8686b8d76eec5c95a"
+    },
+    "pressed_change": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleKeyPressBrightnessCheckboxChange",
+      "start": "0xffb640",
+      "stop": "0xffb6b0",
+      "sha256": "89988c53ed4cbfd8d5fe9dca0269ecbc042f8df160cd56dbb233619ca923bcf3"
+    },
+    "duration_change": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleKeyPressBrightnessComboChange",
+      "start": "0xffb6b0",
+      "stop": "0xffb6c8",
+      "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa"
+    },
+    "store_duration": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.StoreKeyPressBrightness",
+      "start": "0xffb6c8",
+      "stop": "0xffb77c",
+      "sha256": "0bd800009120685e8c576e1ae89a9fda8bd40db367803c19e509c816e82e56e4"
+    },
+    "fallback": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.UpdateFallbackEnabled",
+      "start": "0xffb888",
+      "stop": "0xffba3c",
+      "sha256": "ebf5473ca32febf450f7fae4676c71e9720be83c84fa44fa0a2827ed49bc6240"
+    },
+    "nightlight_change": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.HandleNightlightEnableCheckboxChange",
+      "start": "0xffba5c",
+      "stop": "0xffba74",
+      "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa"
+    },
+    "nightlight": {
+      "symbol": "CIS_TcdDLTInputIndicators8.TcdDLTInputIndicators8.UpdateNightlightEnabled",
+      "start": "0xffba74",
+      "stop": "0xffbb50",
+      "sha256": "98731545c308f17373c240beea632f0130e2bd2be395e55dc2271cda1174fa93"
+    }
+  },
+  "fragments": {
+    "populate_duration": {
+      "start": "0xffb4cf",
+      "stop": "0xffb589",
+      "sha256": "f4f47fe9cc754b66669f963feb5cfdd0e5b56575e9d9c8f90aeeba9848358893"
+    }
+  },
+  "duration_items": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "duration_index_to_seconds": "index + 2 (indices 0..13)",
+  "initialization": "Populate duration selection, pressed checkbox handler, UpdateFallbackEnabled",
+  "original_load_prelude": "Page fallback and pressed-enabled model values each equal raw flag AND raw duration > 0",
+  "save_boundary": "Observations end after original component event dispatch; agent save is a separate source probe",
+  "observations": [
+    {
+      "name": "initialize-0-0-0",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": false,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "initialize-0-0-1",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "initialize-0-1-0",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": false,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "initialize-0-1-1",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "initialize-1-0-0",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": false,
+        "duration_seconds": 1,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 1,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "initialize-1-0-1",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": true,
+        "duration_seconds": 1,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 1,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 348
+    },
+    {
+      "name": "initialize-1-1-0",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": false,
+        "duration_seconds": 1,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 1,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 616
+    },
+    {
+      "name": "initialize-1-1-1",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 1,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 1,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 358
+    },
+    {
+      "name": "initialize-2-0-0",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": false,
+        "duration_seconds": 2,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 617
+    },
+    {
+      "name": "initialize-2-0-1",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": true,
+        "duration_seconds": 2,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 377
+    },
+    {
+      "name": "initialize-2-1-0",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": false,
+        "duration_seconds": 2,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 645
+    },
+    {
+      "name": "initialize-2-1-1",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 2,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 387
+    },
+    {
+      "name": "initialize-15-0-0",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": false,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 864
+    },
+    {
+      "name": "initialize-15-0-1",
+      "input": {
+        "page_fallback": false,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 624
+    },
+    {
+      "name": "initialize-15-1-0",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": false,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 892
+    },
+    {
+      "name": "initialize-15-1-1",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 634
+    },
+    {
+      "name": "disable-pressed-then-page",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "pressed_enabled",
+          "value": false
+        },
+        {
+          "control": "page_fallback",
+          "value": false
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "pressed_enabled",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": false,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 433,
+          "writes": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "nightlight_keys",
+              "value": false
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": false
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": false
+            },
+            {
+              "control": "duration_seconds",
+              "value": 15
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "page_fallback",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": false,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 174,
+          "writes": [
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 1241
+    },
+    {
+      "name": "disable-page-then-pressed",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "page_fallback",
+          "value": false
+        },
+        {
+          "control": "pressed_enabled",
+          "value": false
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "page_fallback",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 132,
+          "writes": [
+            {
+              "control": "page_fallback",
+              "value": false
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "pressed_enabled",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 409,
+          "writes": [
+            {
+              "control": "pressed_enabled",
+              "value": false
+            },
+            {
+              "control": "nightlight_keys",
+              "value": false
+            },
+            {
+              "control": "nightlight_toggle",
+              "value": false
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": false
+            },
+            {
+              "control": "duration_seconds",
+              "value": 0
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 1175
+    },
+    {
+      "name": "page-enable-from-zero",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "page_fallback",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "page_fallback",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": false,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 261,
+          "writes": [
+            {
+              "control": "page_fallback",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 15
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": false,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 849
+    },
+    {
+      "name": "pressed-enable-from-zero",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "pressed_enabled",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "pressed_enabled",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 231,
+          "writes": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 819
+    },
+    {
+      "name": "page-enable-after-pressed",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "pressed_enabled",
+          "value": true
+        },
+        {
+          "control": "page_fallback",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "pressed_enabled",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 231,
+          "writes": [
+            {
+              "control": "pressed_enabled",
+              "value": true
+            },
+            {
+              "control": "duration_seconds",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "page_fallback",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 157,
+          "writes": [
+            {
+              "control": "page_fallback",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 2,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 976
+    },
+    {
+      "name": "duration-min-max",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        },
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "duration_seconds",
+            "value": 2
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 67,
+          "writes": [
+            {
+              "control": "duration_seconds",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "duration_seconds",
+            "value": 15
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 2,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 67,
+          "writes": [
+            {
+              "control": "duration_seconds",
+              "value": 15
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 768
+    },
+    {
+      "name": "nightlight-disable-keys-then-toggle",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "nightlight_keys",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 75,
+          "writes": [
+            {
+              "control": "nightlight_keys",
+              "value": false
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "nightlight_toggle",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 89,
+          "writes": [
+            {
+              "control": "nightlight_toggle",
+              "value": false
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 798
+    },
+    {
+      "name": "nightlight-disable-toggle-then-keys",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "nightlight_keys",
+          "value": false
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "nightlight_toggle",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": false,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 63,
+          "writes": [
+            {
+              "control": "nightlight_toggle",
+              "value": false
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "nightlight_keys",
+            "value": false
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": false,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 89,
+          "writes": [
+            {
+              "control": "nightlight_keys",
+              "value": false
+            },
+            {
+              "control": "first_key_throwaway",
+              "value": false
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 786
+    },
+    {
+      "name": "nightlight-enable-then-first",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": false,
+        "nightlight_toggle": false,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "nightlight_keys",
+          "value": true
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "nightlight_keys",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 63,
+          "writes": [
+            {
+              "control": "nightlight_keys",
+              "value": true
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "first_key_throwaway",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": false,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 0,
+          "writes": [
+            {
+              "control": "first_key_throwaway",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": false,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 743
+    },
+    {
+      "name": "pressed-level-min-max",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "pressed_level",
+          "value": 0
+        },
+        {
+          "control": "pressed_level",
+          "value": 15
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "pressed_level",
+            "value": 0
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 0,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 0,
+          "writes": [
+            {
+              "control": "pressed_level",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "operation": {
+            "control": "pressed_level",
+            "value": 15
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 0,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 0,
+          "writes": [
+            {
+              "control": "pressed_level",
+              "value": 15
+            }
+          ]
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 634
+    },
+    {
+      "name": "unchanged-checkbox-no-callback",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 15,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "page_fallback",
+          "value": true
+        },
+        {
+          "control": "pressed_enabled",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "duration_seconds",
+          "value": 15
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "page_fallback",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 0,
+          "writes": []
+        },
+        {
+          "operation": {
+            "control": "pressed_enabled",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": 15,
+              "pressed_level": 15,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            },
+            "duration_item_index": 13,
+            "duration_item_seconds": 15,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": true,
+              "pressed_level": true,
+              "nightlight_keys": true,
+              "nightlight_toggle": true,
+              "first_key_throwaway": true
+            }
+          },
+          "refused": null,
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": 15,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 13,
+        "duration_item_seconds": 15,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "original_instruction_count": 634
+    },
+    {
+      "name": "disabled-duration_seconds",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "duration_seconds",
+          "value": 2
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "duration_seconds",
+            "value": 2
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": "original GUI control disabled",
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "disabled-pressed_level",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "pressed_level",
+          "value": 2
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "pressed_level",
+            "value": 2
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": "original GUI control disabled",
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "disabled-nightlight_keys",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "nightlight_keys",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "nightlight_keys",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": "original GUI control disabled",
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "disabled-nightlight_toggle",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "nightlight_toggle",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "nightlight_toggle",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": "original GUI control disabled",
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    },
+    {
+      "name": "disabled-first_key_throwaway",
+      "input": {
+        "page_fallback": true,
+        "pressed_enabled": true,
+        "duration_seconds": 0,
+        "pressed_level": 15,
+        "nightlight_keys": true,
+        "nightlight_toggle": true,
+        "first_key_throwaway": true
+      },
+      "operations": [
+        {
+          "control": "first_key_throwaway",
+          "value": true
+        }
+      ],
+      "loaded": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": true,
+          "pressed_level": true,
+          "nightlight_keys": true,
+          "nightlight_toggle": true,
+          "first_key_throwaway": true
+        }
+      },
+      "initialized": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "initialization_writes": [
+        {
+          "control": "nightlight_keys",
+          "value": false
+        },
+        {
+          "control": "nightlight_toggle",
+          "value": false
+        },
+        {
+          "control": "first_key_throwaway",
+          "value": false
+        },
+        {
+          "control": "duration_seconds",
+          "value": 0
+        }
+      ],
+      "transitions": [
+        {
+          "operation": {
+            "control": "first_key_throwaway",
+            "value": true
+          },
+          "before": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "after": {
+            "controls": {
+              "page_fallback": false,
+              "pressed_enabled": false,
+              "duration_seconds": 0,
+              "pressed_level": 15,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            },
+            "duration_item_index": 0,
+            "duration_item_seconds": 2,
+            "enabled": {
+              "page_fallback": true,
+              "pressed_enabled": true,
+              "duration_seconds": false,
+              "pressed_level": false,
+              "nightlight_keys": false,
+              "nightlight_toggle": false,
+              "first_key_throwaway": false
+            }
+          },
+          "refused": "original GUI control disabled",
+          "original_instruction_count": 0,
+          "writes": []
+        }
+      ],
+      "output": {
+        "controls": {
+          "page_fallback": false,
+          "pressed_enabled": false,
+          "duration_seconds": 0,
+          "pressed_level": 15,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        },
+        "duration_item_index": 0,
+        "duration_item_seconds": 2,
+        "enabled": {
+          "page_fallback": true,
+          "pressed_enabled": true,
+          "duration_seconds": false,
+          "pressed_level": false,
+          "nightlight_keys": false,
+          "nightlight_toggle": false,
+          "first_key_throwaway": false
+        }
+      },
+      "original_instruction_count": 588
+    }
+  ],
+  "script_sha256": "811dd9b2f843f50ce726da7d63986be7639a9e1192770d4ff3e2272167d69756",
+  "bindings_script_sha256": "ae811dd089465993f22d02256ddf0553511b878a519a5c5ea51a0f571362c373",
+  "passed": true,
+  "original_full_form_executed": false,
+  "physical_hardware_verified": false,
+  "boundary": "Original x86 component population fragment and complete event/helper methods; synthetic GUI/storage/string primitives and source-checked immediate Flash binding; no full dialog, database save, display rendering, or hardware acceptance."
+}

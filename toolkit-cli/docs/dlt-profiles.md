@@ -52,7 +52,7 @@ receives `None` or an explicit reason.
 | `edlt-label-clear` | type, exact firmware | KEYGL5 / 5.5.00 | `cgate edlt-label-clear` plan and live guard |
 | `edlt-physical-labels` | type, physical firmware | KEYGL5 / 5.5.00 | `cgate edlt-labels`, label audit selection |
 | `serial-population` | type | KEYGL5 (with the non-DLT KEYE1 and PC_CNIED) | `cgate serials populate` |
-| `classic-dlt-label-variants` | type, exact firmware, optional catalogue | KEYBL5/KEYML5 2.0.00, 2.1.00, 3.0.00..3.0.99; KEYDL4 2.1.00, 3.0.00..3.0.99 | `dlt labels`, `dlt display`, `cgate unit ... dlt-labels` |
+| `classic-dlt-label-variants` | type, exact firmware, optional catalogue | KEYBL5/KEYML5 2.0.00, 2.1.00, 3.0.00..3.0.99; KEYDL4 2.1.00, 3.0.00..3.0.99 | `dlt labels`, `dlt display`, `dlt indicators`, `cgate unit ... dlt-labels` |
 
 Physical IDENTIFY firmware accepts one- or two-digit components and is
 canonicalized to `M.m.pp` (for example `05.05.00` → `5.5.00`). An exhaustive
@@ -277,7 +277,8 @@ PYTHONPATH=src:tests:. .venv/bin/python -m pytest tests/test_dlt_labels.py -k na
   display rendering and power-cycle persistence are unverified.
 - [Classic display controls](classic-dlt-display.md) now support the three
   independent indicator-mode, inversion and clock-visibility settings.
-  Coupled page-fallback/brightness/nightlight behavior remains unimplemented;
+  [Ordered Indicators controls](classic-dlt-indicators.md) now cover coupled
+  page-fallback/pressed-brightness/nightlight behavior;
   unnamed bit 7 at `0x35` is preserved while staged but not by native database
   save/reload.
 - Firmware 1.4.00 and internal revisions are refused rather than extrapolated.

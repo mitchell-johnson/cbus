@@ -12,14 +12,14 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/private/tmp/cbus-rust-focused-20260930/debug/cgate-mock",
+    "path": "<OWNED_BUILD>/debug/cgate-mock",
     "sha256": "97dc1f19a6b633af7a11edb56522d2fe8d585eb822bbaa285a15056c012ad0c5"
   },
-  "source_revision": "abef8e824e580361f715f636f8b6040bde6c13c9",
+  "source_revision": "bc1f1d15405913b1d1266d672d48331375892440",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "098d4ad74d2ce6a8b396f18aaaed78032d9f8e0ae77003a2c1a00c49d0c7b359",
     "docs/cmqttd-cgate.md": "ee79b3b662092fca00d0419914c0d38954f625a5f837a9e385632dd0c64b5164",
-    "rust/Cargo.lock": "527b22140f959060246a54191e7e845bc3d33ff796da940164d3a826d40d2028",
+    "rust/Cargo.lock": "71929fef14582816d0ecbba8d78e9e05ee0889c155c64a1f0b6599c46f75bb63",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
     "rust/cbus-cgate/research/native_admin_authorization_probe.py": "83a8082602a9da5a3cbd0ff62d2bfd1677aa35dc4c5097ca584d95b12742cd18",
@@ -586,5 +586,11 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/tmp/cbus-rust-focused-20260930/debug/cgate-mock --cmqttd-bin /private/tmp/cbus-rust-focused-20260930/debug/cmqttd --output-dir research/fixtures"
+  "command": ".venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin <OWNED_BUILD>/debug/cgate-mock --cmqttd-bin <OWNED_BUILD>/debug/cmqttd --output-dir research/fixtures",
+  "publication_sanitization": {
+    "original_artifact_sha256": "8582410d25487cbdadb5936512106d5c415f5b4acb37e1d99dfca1bf75e0fa88",
+    "build_coordinates_normalized": true,
+    "test_results_source_fingerprints_and_binary_hashes_unchanged": true,
+    "note": "Actual fresh differential run; host-specific build coordinates replaced with OWNED_BUILD for publication. Raw receipt retained privately."
+  }
 }

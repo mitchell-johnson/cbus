@@ -74,8 +74,8 @@ described in [classic label controls](classic-dlt-label-controls.md).
 `CBUS_DLT_DISPLAY_REPORT` writes a fresh native receipt. The original probe
 requires `CBUS_TOOLKIT_EXE` and its adjacent `.map` (or `CBUS_TOOLKIT_MAP`).
 
-Page fallback, pressed-brightness duration and nightlight controls have
-coupled original GUI behavior and remain outside this editor. Physical key
+Page fallback, pressed-brightness duration and nightlight controls have a
+separate [ordered Indicators workflow](classic-dlt-indicators.md). Physical key
 and page mapping, rendering, label delivery and power-cycle persistence
 remain unverified. The separately retained
 [original delivery sequence](classic-dlt-delivery-original.md) explains why

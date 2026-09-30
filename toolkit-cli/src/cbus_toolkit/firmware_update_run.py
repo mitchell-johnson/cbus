@@ -20,6 +20,11 @@ requires the journal's exact identity and geometry, re-reads every stage the
 journal records as verified, and restarts the first unverified stage from its
 erase. It never continues a partial write.
 
+Every session must also release successfully before another operation starts.
+A failed release stops the lifecycle without discarding successful readback:
+if all images are verified, explicit resume only re-inspects and re-verifies
+them unless that fresh readback finds a mismatch.
+
 The mode switch, target reset and NCC serial post-check are not sent. The
 device must already be in DFU mode. Memory-peer and fake-backend runs are
 development evidence; physical acceptance needs the hardware gate runbook.
@@ -131,20 +136,39 @@ class USBDeviceOpener:
             raise DeviceUnavailable(str(error), error.details) from error
         try:
             lease = session.endpoint()
-        except BaseException:
-            session.release(); raise
+        except BaseException as primary:
+            try:
+                session.release()
+            except BaseException as cleanup:
+                primary.usb_release = (session.last_release.as_dict() if session.last_release else
+                                       {'complete': False, 'error': str(cleanup) or type(cleanup).__name__,
+                                        'state_after_release_unknown': True})
+            else:
+                primary.usb_release = session.last_release.as_dict()
+            raise
 
         def release():
             try:
                 return session.release().as_dict()
-            except Exception as error:
-                return {'complete': False, 'error': str(error) or type(error).__name__}
+            except BaseException as error:
+                error.usb_release = (session.last_release.as_dict() if session.last_release else
+                                     {'complete': False, 'error': str(error) or type(error).__name__,
+                                      'state_after_release_unknown': True})
+                raise
         return DeviceSession(lease, self.descriptor,
                              descriptor_identity(self.descriptor, session.acquisition.serial), release)
 
 
 def _canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False)
+
+
+def _release_error(release):
+    if release is None or release.get('complete') is True:
+        return None
+    errors = [release[key] for key in ('error', 'release_error', 'close_error', 'timing_error')
+              if release.get(key)]
+    return '; '.join(errors) or 'USB session release did not complete'
 
 
 def plan_stages(plan, images, *, flash_size, external_size):
@@ -209,8 +233,16 @@ class _Update:
     def operation(self, kind, stage=None, *, external=False):
         """One fresh session and one DFU operation. Never repeated here."""
         external = stage['external'] if stage is not None else external
-        session = self.opener.open()
-        outcome = None
+        try:
+            session = self.opener.open()
+        except DeviceUnavailable as error:
+            # Failed acquisition already performed its one cleanup attempt.
+            # Retain that receipt without releasing or opening again.
+            release = error.details.get('release') if isinstance(error.details, dict) else None
+            if isinstance(release, dict):
+                self.releases.append(release)
+            raise
+        outcome = client = primary = cleanup_interruption = release = None
         try:
             client = DFUClient(session.endpoint, session.descriptor,
                                flash_size=self.external_size if external else self.flash_size,
@@ -228,14 +260,38 @@ class _Update:
                     outcome = client.verify(self.images[stage['entry']], address=stage['address'])
             except DFUOperationError as error:
                 outcome = error.outcome
+        except BaseException as error:
+            primary = error
+            outcome = client.last_outcome if client is not None else None
         finally:
-            release = session.release()
+            try:
+                release = session.release()
+            except BaseException as error:
+                release = getattr(error, 'usb_release', None) or {
+                    'complete': False, 'error': str(error) or type(error).__name__,
+                    'state_after_release_unknown': True}
+                if not isinstance(error, Exception):
+                    cleanup_interruption = error
             if release is not None:
                 self.releases.append(release)
+        if primary is not None or cleanup_interruption is not None:
+            error = primary if primary is not None else cleanup_interruption
+            error.firmware_update_evidence = {
+                'operation': kind, 'stage': stage['name'] if stage else None,
+                'transfer': _outcome(outcome) if outcome is not None else None, 'release': release}
+            raise error.with_traceback(error.__traceback__)
+        cleanup_error = _release_error(release)
         summary = {**_outcome(outcome), 'operation': kind, 'stage': stage['name'] if stage else None,
-                   'dfu_stage': outcome.stage, 'outcome_known': outcome.outcome_known, 'info': outcome.info}
+                   'dfu_stage': outcome.stage, 'outcome_known': outcome.outcome_known, 'info': outcome.info,
+                   'release_complete': cleanup_error is None, 'cleanup_error': cleanup_error,
+                   'error': outcome.error or cleanup_error}
         self.operations.append(summary)
         return outcome, summary, session.identity
+
+    def cleanup_result(self):
+        errors = [error for release in self.releases if (error := _release_error(release))]
+        return {'cleanup_complete': not errors, 'cleanup_error': '; '.join(errors) or None,
+                'releases': self.releases}
 
     def inspect_device(self):
         identity = None; geometry = {}
@@ -257,6 +313,8 @@ class _Update:
                         {'reported': info})
                 raise _Refusal('inspection-failed', outcome.error or 'Device inspection failed',
                                {'reported': info, 'stage': outcome.stage})
+            if not summary['release_complete']:
+                raise _Refusal('release-failed', summary['cleanup_error'], {'operation': 'inspect'})
             geometry['external' if external else 'internal'] = outcome.info
         geometry.setdefault('external', None)
         return identity, geometry
@@ -277,7 +335,8 @@ class _Update:
     def stop(self, stage, summary, *, known):
         self.doc['status'] = 'failed' if known else 'interrupted'
         self.event('run-stopped', stage['name'], phase=self.doc['stages'][stage['name']],
-                   error=summary.get('error'), outcome_known=known)
+                   error=summary.get('error'), outcome_known=known,
+                   cleanup_error=summary.get('cleanup_error'))
         self.persist()
 
     def execute(self):
@@ -291,18 +350,38 @@ class _Update:
                     outcome, summary, _ = self.operation(kind, stage)
                 except DeviceUnavailable as error:
                     summary = {'operation': kind, 'stage': stage['name'], 'error': str(error),
-                               'device_unavailable': error.details}
+                               'device_unavailable': error.details,
+                               'cleanup_error': self.cleanup_result()['cleanup_error']}
                     self.operations.append(summary)
                     self.stop(stage, summary, known=False)
                     return stage, summary
+                except BaseException as error:
+                    evidence = getattr(error, 'firmware_update_evidence', None)
+                    if evidence and evidence['transfer'] and evidence['transfer']['complete']:
+                        # A cleanup interruption after successful readback must
+                        # not turn a verified image into a reflash requirement.
+                        cleanup_error = _release_error(evidence['release'])
+                        try:
+                            self.phase(stage, done, done)
+                            self.stop(stage, {'error': cleanup_error or str(error),
+                                              'cleanup_error': cleanup_error}, known=False)
+                        except BaseException as journal_error:
+                            evidence['journal_error'] = str(journal_error) or type(journal_error).__name__
+                    raise
                 self.event('erase-result' if kind == 'erase' else 'write-result', stage['name'],
                            complete=outcome.complete, error=outcome.error, outcome_known=outcome.outcome_known,
                            payload_transferred=outcome.payload_transferred,
-                           readback_bytes=outcome.readback_bytes, first_mismatch=outcome.first_mismatch)
+                           readback_bytes=outcome.readback_bytes, first_mismatch=outcome.first_mismatch,
+                           release_complete=summary['release_complete'], cleanup_error=summary['cleanup_error'])
                 if not outcome.complete:
                     self.stop(stage, summary, known=outcome.outcome_known)
                     return stage, summary
                 self.phase(stage, done, done)
+                if not summary['release_complete']:
+                    # The transfer is known, but release may have changed the
+                    # interface. Keep its readback evidence; never send more here.
+                    self.stop(stage, summary, known=False)
+                    return stage, summary
         self.doc['status'] = 'complete'
         self.event('run-complete')
         self.persist()
@@ -311,9 +390,12 @@ class _Update:
     def result(self, operation, *, refused=None, failed=None, created=False, extra=None):
         failed_stage, summary = failed or (None, None)
         doc = self.doc
-        complete = doc is not None and doc['status'] == 'complete' and refused is None
+        cleanup = self.cleanup_result()
+        complete = (doc is not None and doc['status'] == 'complete' and refused is None
+                    and cleanup['cleanup_complete'])
         stages = dict(doc['stages']) if doc else {stage['name']: 'pending' for stage in self.stages}
-        error = refused.args[0] if refused is not None else (summary or {}).get('error')
+        images_verified = bool(stages) and all(phase == 'verified' for phase in stages.values())
+        error = (refused.args[0] if refused is not None else (summary or {}).get('error')) or cleanup['cleanup_error']
         resumable = doc is not None and doc['status'] != 'complete'
         return {'format': RESULT_FORMAT, 'operation': operation, 'complete': complete,
                 'refused': refused is not None, 'refusal_kind': refused.kind if refused else None,
@@ -324,10 +406,12 @@ class _Update:
                 'failed_stage': failed_stage['name'] if failed_stage else None,
                 'failed_phase': stages[failed_stage['name']] if failed_stage else None,
                 'stages': stages, 'stage_states': {name: STAGE_STATES[phase] for name, phase in stages.items()},
-                'operations': self.operations, 'releases': self.releases, **(extra or {}),
+                'operations': self.operations, **cleanup, 'images_verified': images_verified, **(extra or {}),
                 'retried': False, 'resume_required': resumable,
                 'next_action': ('cbus-toolkit firmware update-resume --journal <journal> '
-                                '(fresh re-inspection; restarts the first unverified stage from erase)')
+                                + ('(fresh re-inspection and readback; no erase/program if images still match)'
+                                   if images_verified else
+                                   '(fresh re-inspection; restarts the first unverified stage from erase)'))
                                if resumable else None,
                 'mode_switch': 'not sent: the device must already be in DFU mode',
                 'target_reset': 'not sent', 'post_check': 'not executed',
@@ -451,7 +535,8 @@ def resume_update(journal_path, plan, images, *, opener, timeout=30, poll_limit=
     update.persist()
 
     def refuse(refusal):
-        update.event('resume-refused', kind=refusal.kind, error=refusal.args[0])
+        update.event('resume-refused', kind=refusal.kind, error=refusal.args[0],
+                     cleanup_error=update.cleanup_result()['cleanup_error'])
         update.persist()
         return update.result('resume', refused=refusal)
     try:
@@ -474,12 +559,16 @@ def resume_update(journal_path, plan, images, *, opener, timeout=30, poll_limit=
             return refuse(_Refusal('device-unavailable', str(error)))
         reverify.append({'stage': stage['name'], 'complete': outcome.complete, 'first_mismatch': outcome.first_mismatch})
         update.event('reverify-result', stage['name'], complete=outcome.complete, error=outcome.error,
-                     first_mismatch=outcome.first_mismatch)
+                     first_mismatch=outcome.first_mismatch, release_complete=summary['release_complete'],
+                     cleanup_error=summary['cleanup_error'])
+        if not outcome.complete and outcome.first_mismatch is None:
+            return refuse(_Refusal('reverify-failed', outcome.error or 'Re-verification did not complete'))
         if not outcome.complete:
-            if outcome.first_mismatch is None:
-                return refuse(_Refusal('reverify-failed', outcome.error or 'Re-verification did not complete'))
             doc['stages'][stage['name']] = 'pending'
             update.event('stage-restart', stage['name'], from_phase='verified', reason='readback mismatch')
+        if not summary['release_complete']:
+            return refuse(_Refusal('release-failed', summary['error'],
+                                   {'operation': 'verify', 'stage': stage['name']}))
     restarted = None
     for stage in update.stages:
         phase = doc['stages'][stage['name']]
@@ -508,16 +597,23 @@ def verify_device(plan, images, *, opener, flash_size, external_size=None, timeo
     try:
         identity, geometry = update.inspect_device()
     except _Refusal as refusal:
-        return {'complete': False, 'refusal_kind': refusal.kind, 'error': refusal.args[0], 'stages': []}
+        return {'complete': False, 'refusal_kind': refusal.kind, 'error': refusal.args[0], 'stages': [],
+                'operations': update.operations, **update.cleanup_result(),
+                'read_only': True, 'physical_device_verified': False}
     rows = []
     for stage in stages:
         try:
-            outcome, _, _ = update.operation('verify', stage)
+            outcome, summary, _ = update.operation('verify', stage)
         except DeviceUnavailable as error:
             rows.append({'stage': stage['name'], 'complete': False, 'error': str(error), 'first_mismatch': None})
             break
-        rows.append({'stage': stage['name'], 'complete': outcome.complete, 'error': outcome.error,
+        rows.append({'stage': stage['name'], 'complete': outcome.complete, 'error': summary['error'],
                      'first_mismatch': outcome.first_mismatch, 'readback_sha256': outcome.readback_sha256})
-    return {'complete': len(rows) == len(stages) and all(row['complete'] for row in rows),
+        if not summary['release_complete']:
+            break
+    cleanup = update.cleanup_result()
+    images_verified = len(rows) == len(stages) and all(row['complete'] for row in rows)
+    return {'complete': images_verified and cleanup['cleanup_complete'], 'images_verified': images_verified,
+            'error': next((row['error'] for row in rows if row['error']), None), **cleanup,
             'identity': identity, 'geometry': geometry, 'stages': rows, 'operations': update.operations,
             'read_only': True, 'physical_device_verified': False}

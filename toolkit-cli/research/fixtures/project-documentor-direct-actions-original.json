@@ -1,0 +1,130 @@
+{
+  "format": "cbus-project-documentor-action-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "boundary": "original method instructions with synthetic getters/string/collection stubs; no original page",
+  "cases": [
+    {
+      "name": "FanController:0",
+      "documentor": "FanController",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusFanControllerUnit.GetFanActionSelector": false
+      },
+      "html": ""
+    },
+    {
+      "name": "FanController:1",
+      "documentor": "FanController",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusFanControllerUnit.GetFanActionSelector": true
+      },
+      "html": "<li />Fan Speed Cycle"
+    },
+    {
+      "name": "SENTEMPPro:0",
+      "documentor": "SENTEMPPro",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TSENTEMPPro.GetBroadcastActionSelector": false
+      },
+      "html": ""
+    },
+    {
+      "name": "SENTEMPPro:1",
+      "documentor": "SENTEMPPro",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TSENTEMPPro.GetBroadcastActionSelector": true
+      },
+      "html": "<li />Trigger Temperature Broadcast"
+    },
+    {
+      "name": "DigitalTemperatureSensor:0",
+      "documentor": "DigitalTemperatureSensor",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector": false,
+        "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector": false
+      },
+      "html": ""
+    },
+    {
+      "name": "DigitalTemperatureSensor:1",
+      "documentor": "DigitalTemperatureSensor",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector": true,
+        "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector": false
+      },
+      "html": "<li />Trigger Error Report"
+    },
+    {
+      "name": "DigitalTemperatureSensor:2",
+      "documentor": "DigitalTemperatureSensor",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector": false,
+        "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector": true
+      },
+      "html": "<li />Trigger Temperature Report"
+    },
+    {
+      "name": "DigitalTemperatureSensor:3",
+      "documentor": "DigitalTemperatureSensor",
+      "group": 8,
+      "address": 11,
+      "value": 22,
+      "blocks": [],
+      "keys": [],
+      "matches": {
+        "TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector": true,
+        "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector": true
+      },
+      "html": "<li />Trigger Temperature Report"
+    }
+  ],
+  "methods": {
+    "FanController": {
+      "symbol": "CIS_TFanControllerDocumentor.TFanControllerDocumentor.ActionSelectorUse",
+      "sha256": "433480c0a29eaedbf5f4e3c14253e4028e296f62b27dc58750dbea9239bb49ef"
+    },
+    "SENTEMPPro": {
+      "symbol": "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.ActionSelectorUse",
+      "sha256": "337af2eedf98307a282408c5f9ffeed699fb3ef1436f9a643884737261a01dd6"
+    },
+    "DigitalTemperatureSensor": {
+      "symbol": "CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.ActionSelectorUse",
+      "sha256": "33f94261cba38e3a01af2e53b5b8f2c93d5995e1a1bc92611e6b1ac7732424cd"
+    }
+  }
+}

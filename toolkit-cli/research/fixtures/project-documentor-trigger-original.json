@@ -1,0 +1,593 @@
+{
+  "format": "cbus-project-documentor-trigger-original-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "method": "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLTriggerGroup",
+  "method_sha256": "809b055f49b8c13d976f1360bf639b1cd63a020ab33a41893a3080937f9e573a",
+  "method_start": "0xf07d60",
+  "method_end": "0xf083b4",
+  "original_wrapper_instructions_executed": true,
+  "original_factory_or_action_methods_executed": false,
+  "original_generated_page_compared": false,
+  "boundary": "Only InsertHTMLTriggerGroup instructions; all called routines intercepted with explicit synthetic getters, factory/action outputs, HTML/string and collection leaves. No original loader, GUI, project, network, or hardware.",
+  "cases": [
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [],
+      "units": [
+        {
+          "address": 9,
+          "type": "KEY1",
+          "firmware": "1.2.67",
+          "tag": "Nine"
+        },
+        {
+          "address": 2,
+          "type": "KEY2",
+          "firmware": "1.2.67",
+          "tag": "Two"
+        },
+        {
+          "address": 15,
+          "type": "KEY4",
+          "firmware": "1.2.67",
+          "tag": "Fifteen"
+        }
+      ],
+      "action_html": {},
+      "name": "no-levels",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />"
+        ],
+        "factory_calls": [],
+        "action_calls": []
+      }
+    },
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [
+        {
+          "address": 22,
+          "value": 11,
+          "tag": "Second"
+        },
+        {
+          "address": 11,
+          "value": 22,
+          "tag": "First<raw>"
+        }
+      ],
+      "units": [],
+      "action_html": {},
+      "name": "no-units",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />",
+          "Action Selectors: ",
+          "<ul>",
+          "<li /><a name=\"254_202_8_22\">Second</a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "<li /><a name=\"254_202_8_11\">First<raw></a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "</ul>"
+        ],
+        "factory_calls": [],
+        "action_calls": []
+      }
+    },
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [
+        {
+          "address": 22,
+          "value": 11,
+          "tag": "Second"
+        },
+        {
+          "address": 11,
+          "value": 22,
+          "tag": "First<raw>"
+        }
+      ],
+      "units": [
+        {
+          "address": 9,
+          "type": "KEY1",
+          "firmware": "1.2.67",
+          "tag": "Nine"
+        },
+        {
+          "address": 2,
+          "type": "KEY2",
+          "firmware": "1.2.67",
+          "tag": "Two"
+        },
+        {
+          "address": 15,
+          "type": "KEY4",
+          "firmware": "1.2.67",
+          "tag": "Fifteen"
+        }
+      ],
+      "action_html": {},
+      "name": "all-empty",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />",
+          "Action Selectors: ",
+          "<ul>",
+          "<li /><a name=\"254_202_8_22\">Second</a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "<li /><a name=\"254_202_8_11\">First<raw></a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "</ul>"
+        ],
+        "factory_calls": [
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          }
+        ],
+        "action_calls": [
+          {
+            "unit": 9,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 2,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 15,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 9,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 2,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 15,
+            "address": 11,
+            "value": 22
+          }
+        ]
+      }
+    },
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [
+        {
+          "address": 22,
+          "value": 11,
+          "tag": "Second"
+        },
+        {
+          "address": 11,
+          "value": 22,
+          "tag": "First<raw>"
+        }
+      ],
+      "units": [
+        {
+          "address": 9,
+          "type": "KEY1",
+          "firmware": "1.2.67",
+          "tag": "Nine"
+        },
+        {
+          "address": 2,
+          "type": "KEY2",
+          "firmware": "1.2.67",
+          "tag": "Two"
+        },
+        {
+          "address": 15,
+          "type": "KEY4",
+          "firmware": "1.2.67",
+          "tag": "Fifteen"
+        }
+      ],
+      "action_html": {
+        "22/9": "Key 1"
+      },
+      "name": "one-used",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />",
+          "Action Selectors: ",
+          "<ul>",
+          "<li /><a name=\"254_202_8_22\">Second</a>",
+          "<ul>",
+          "<a href=\"#254_unit_9\">Nine - KEY1</a>",
+          "<ul>",
+          "Key 1",
+          "</ul>",
+          "</ul>",
+          "<li /><a name=\"254_202_8_11\">First<raw></a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "</ul>"
+        ],
+        "factory_calls": [
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          }
+        ],
+        "action_calls": [
+          {
+            "unit": 9,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 2,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 15,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 9,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 2,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 15,
+            "address": 11,
+            "value": 22
+          }
+        ]
+      }
+    },
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [
+        {
+          "address": 22,
+          "value": 11,
+          "tag": "Second"
+        },
+        {
+          "address": 11,
+          "value": 22,
+          "tag": "First<raw>"
+        }
+      ],
+      "units": [
+        {
+          "address": 9,
+          "type": "KEY1",
+          "firmware": "1.2.67",
+          "tag": "Nine"
+        },
+        {
+          "address": 2,
+          "type": "KEY2",
+          "firmware": "1.2.67",
+          "tag": "Two"
+        },
+        {
+          "address": 15,
+          "type": "KEY4",
+          "firmware": "1.2.67",
+          "tag": "Fifteen"
+        }
+      ],
+      "action_html": {
+        "22/2": "Key 2",
+        "22/15": "Key 1<br/>Key 1",
+        "11/9": "Key 1",
+        "11/15": "Key 4"
+      },
+      "name": "interleaved-multi-unit",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />",
+          "Action Selectors: ",
+          "<ul>",
+          "<li /><a name=\"254_202_8_22\">Second</a>",
+          "<ul>",
+          "<a href=\"#254_unit_2\">Two - KEY2</a>",
+          "<ul>",
+          "Key 2",
+          "</ul>",
+          "<a href=\"#254_unit_15\">Fifteen - KEY4</a>",
+          "<ul>",
+          "Key 1<br/>Key 1",
+          "</ul>",
+          "</ul>",
+          "<li /><a name=\"254_202_8_11\">First<raw></a>",
+          "<ul>",
+          "<a href=\"#254_unit_9\">Nine - KEY1</a>",
+          "<ul>",
+          "Key 1",
+          "</ul>",
+          "<a href=\"#254_unit_15\">Fifteen - KEY4</a>",
+          "<ul>",
+          "Key 4",
+          "</ul>",
+          "</ul>",
+          "</ul>"
+        ],
+        "factory_calls": [
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          }
+        ],
+        "action_calls": [
+          {
+            "unit": 9,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 2,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 15,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 9,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 2,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 15,
+            "address": 11,
+            "value": 22
+          }
+        ]
+      }
+    },
+    {
+      "network": 254,
+      "group": 8,
+      "tag": "Trigger<raw>",
+      "description": "A < B > C & D",
+      "levels": [
+        {
+          "address": 22,
+          "value": 11,
+          "tag": "Second"
+        },
+        {
+          "address": 11,
+          "value": 22,
+          "tag": "First<raw>"
+        }
+      ],
+      "units": [
+        {
+          "address": 9,
+          "type": "KEY1",
+          "firmware": "1.2.67",
+          "tag": "Nine"
+        },
+        {
+          "address": 2,
+          "type": "KEY2",
+          "firmware": "1.2.67",
+          "tag": "Two"
+        },
+        {
+          "address": 15,
+          "type": "KEY4",
+          "firmware": "1.2.67",
+          "tag": "Fifteen"
+        }
+      ],
+      "action_html": {
+        "11/2": "<li />Scene 1<br/>Scene 2"
+      },
+      "name": "nonempty-markup-leaf",
+      "result": {
+        "lines": [
+          "<h3><a name=\"254_202_8\">Trigger<raw></a> [ <a href=\"#contents\">top</a> ]</h3>",
+          "Address: 8 ($08) <br />",
+          "Description: A &#60; B &#62; C & D<br /><br />",
+          "Events:<br />",
+          "Action Selectors: ",
+          "<ul>",
+          "<li /><a name=\"254_202_8_22\">Second</a>",
+          "<ul>",
+          "<li />Action Selector is not used",
+          "</ul>",
+          "<li /><a name=\"254_202_8_11\">First<raw></a>",
+          "<ul>",
+          "<a href=\"#254_unit_2\">Two - KEY2</a>",
+          "<ul>",
+          "<li />Scene 1<br/>Scene 2",
+          "</ul>",
+          "</ul>",
+          "</ul>"
+        ],
+        "factory_calls": [
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY1",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY2",
+            "firmware": "1.2.67"
+          },
+          {
+            "type": "KEY4",
+            "firmware": "1.2.67"
+          }
+        ],
+        "action_calls": [
+          {
+            "unit": 9,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 2,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 15,
+            "address": 22,
+            "value": 11
+          },
+          {
+            "unit": 9,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 2,
+            "address": 11,
+            "value": 22
+          },
+          {
+            "unit": 15,
+            "address": 11,
+            "value": 22
+          }
+        ]
+      }
+    }
+  ]
+}

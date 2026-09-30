@@ -1,0 +1,677 @@
+{
+  "format": "cbus-classic-dlt-brightness-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "specification_sha256": {
+      "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7",
+      "I_DLT.xml": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133"
+    }
+  },
+  "methods": {
+    "core_constructor": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate",
+      "start": "0xcc9d04",
+      "stop": "0xcca140",
+      "sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    "neo_constructor": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate",
+      "start": "0xd06f30",
+      "stop": "0xd075cc",
+      "sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4"
+    },
+    "dlt_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.InternalCreate",
+      "start": "0xce4670",
+      "stop": "0xce4b18",
+      "sha256": "07f5297b24563205181efe9994b34992da1f9646f193f989d2683a89998e1d67"
+    },
+    "agent_constructor": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.InternalCreate",
+      "start": "0x121b6ec",
+      "stop": "0x121bd3c",
+      "sha256": "6ddd6f4fec1ab6a78939f92fc2673bc1371db8ca71af23278aeb035f1d62da91"
+    },
+    "core_load": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0xccb180",
+      "stop": "0xccb450",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    "core_save": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0xccc358",
+      "stop": "0xccc7c8",
+      "sha256": "eff8a563f079b594dc956b6a0692cb9facd2a52ef8d67ed184208fd05ab782d1"
+    },
+    "dlt_load": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0x121bf40",
+      "stop": "0x121c1dc",
+      "sha256": "0675ebd5984c0f3097bc63025c7fe0102c1727b0ccbf649e6aa5003408a4d1cd"
+    },
+    "dlt_save": {
+      "symbol": "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0x121d16c",
+      "stop": "0x121d4f4",
+      "sha256": "1ffc2d2eea2fb8e5bec8b783efd4fee1773b74d1e382a0c55d720047a6192b62"
+    },
+    "GetKeyPressBrightnessDuration": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetKeyPressBrightnessDuration",
+      "start": "0xd07d20",
+      "stop": "0xd07d44",
+      "sha256": "bc42d2d7404c67b8b3d18278cd4cc05e3afbf5575fcc9fb76d4c8841b8b0182a"
+    },
+    "SetKeyPressBrightnessDuration": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetKeyPressBrightnessDuration",
+      "start": "0xd07f90",
+      "stop": "0xd07ff0",
+      "sha256": "296fca6bbb7b40169a484778de71907c6cecccb234bbf530715de38e16c72594"
+    },
+    "GetKeyPressBrightnessLevel": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetKeyPressBrightnessLevel",
+      "start": "0xd07d44",
+      "stop": "0xd07d68",
+      "sha256": "471dd1b333c0056e31edc1e4d997af70cfdc0b598309abad9d741e058fcd1528"
+    },
+    "SetKeyPressBrightnessLevel": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetKeyPressBrightnessLevel",
+      "start": "0xd07ff0",
+      "stop": "0xd08050",
+      "sha256": "4913e23b5096e702f060b69d21a523f81c0282b9291278f41fe1fa503e328c52"
+    },
+    "GetNightlightEnabled": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetNightlightEnabled",
+      "start": "0xd07d80",
+      "stop": "0xd07da4",
+      "sha256": "58101c02846dce5961bac83bb22a2fb1db189dcbe77900900d6f67d32ce84be0"
+    },
+    "SetNightlightEnabled": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetNightlightEnabled",
+      "start": "0xd08050",
+      "stop": "0xd080ac",
+      "sha256": "9aa45152245b269476027397697d5f995a59424ce285150db9d90b467ad8cdfb"
+    },
+    "SetNightlightForced": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetNightlightForced",
+      "start": "0xd080ac",
+      "stop": "0xd08108",
+      "sha256": "956903d4cb4869792f884a404b5b407fb58eac8ce97ca7d9d2a8b1b9f843bebf"
+    },
+    "GetEnableNightlightControl": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetEnableNightlightControl",
+      "start": "0xd07da4",
+      "stop": "0xd07dc8",
+      "sha256": "38e34040a38c12c5695a50c443e9b6a0ce0de3273740878ec17c46f8172572ae"
+    },
+    "SetEnableNightlightControl": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetEnableNightlightControl",
+      "start": "0xd08108",
+      "stop": "0xd08164",
+      "sha256": "ce776016b9c9e301635c522e198693c6e4d662ba1fc3f3351833ce25ca6a634a"
+    },
+    "GetEnablePageFallback": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetEnablePageFallback",
+      "start": "0xce4d38",
+      "stop": "0xce4d5c",
+      "sha256": "1614824a49f1cd0c7972be37b9fa69c63c4cfea1a6d63343c3c189a440bdf285"
+    },
+    "SetEnablePageFallback": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetEnablePageFallback",
+      "start": "0xce4db8",
+      "stop": "0xce4e14",
+      "sha256": "39b926d7db6dfb58a52628e2c692b8adf72424123085952729a27121343251d4"
+    },
+    "GetEnableIndicatorPressed": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetEnableIndicatorPressed",
+      "start": "0xce4d14",
+      "stop": "0xce4d38",
+      "sha256": "75482f0daf88467f23b52a6a37cc75457efe34aee64fa705690c3366ed1d79de"
+    },
+    "SetEnableIndicatorPressed": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetEnableIndicatorPressed",
+      "start": "0xce4d5c",
+      "stop": "0xce4db8",
+      "sha256": "f95dffce49401eb50b4c9ac7f4c7848235c70b95eadbcb24d06c2d66ecc3f0c7"
+    },
+    "GetEnableNightlightOnToggle": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetEnableNightlightOnToggle",
+      "start": "0xce4b3c",
+      "stop": "0xce4b60",
+      "sha256": "9d9c12fbfdaf5d84e2f6bb9c3aac83f2454b83253b66fb2eb24f3fcca4602419"
+    },
+    "SetEnableNightlightOnToggle": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetEnableNightlightOnToggle",
+      "start": "0xce4fe0",
+      "stop": "0xce503c",
+      "sha256": "8ee7d0582ed1610a9f1f2fbecfa8b81ccb1ca23b922c0ad7958598b8ca35542d"
+    },
+    "GetEnableNightlightOnKeys": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetEnableNightlightOnKeys",
+      "start": "0xce4b60",
+      "stop": "0xce4b84",
+      "sha256": "d395bd1156b18fe12d80e918bdbb829e7d1537a4e21e56eb5a50f801543b4d9c"
+    },
+    "SetEnableNightlightOnKeys": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.SetEnableNightlightOnKeys",
+      "start": "0xce503c",
+      "stop": "0xce5098",
+      "sha256": "1c2a1b267f92bd6080913a8b5835dc9180189f023389a26b60e1b8ab8d595c90"
+    }
+  },
+  "fragments": {
+    "core_load": {
+      "start": "0xccb251",
+      "stop": "0xccb2f9",
+      "sha256": "f1eb62c3744297491364f078508275b269aa4f61d58debd2dc0c428484460a08"
+    },
+    "core_save": {
+      "start": "0xccc53b",
+      "stop": "0xccc6b7",
+      "sha256": "ef4af57b50579037612ba165df3733aec691adf788c52057db6c3c7a0748df01"
+    },
+    "dlt_load": {
+      "start": "0x121bf65",
+      "stop": "0x121c05d",
+      "sha256": "a19ba4ad65cfb7ce47d6d1c6b575990b876c032a3b5a4781d402c348a7491515"
+    },
+    "dlt_save": {
+      "start": "0x121d195",
+      "stop": "0x121d292",
+      "sha256": "aa68a0dbca160e6cb0733de99f70472c5c36a506a9c75811b1db9b7ec37282d9"
+    }
+  },
+  "family_slots": {
+    "0x1f4": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoClassic",
+      "start": "0xd08b04",
+      "stop": "0xd08b18",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "0x20c": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoMultisensor",
+      "start": "0xd08294",
+      "stop": "0xd082a8",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "0x210": {
+      "symbol": "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.IsNeoDLT",
+      "start": "0xce562c",
+      "stop": "0xce5640",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    }
+  },
+  "parameter_layouts": {
+    "TimerDuration": {
+      "Type": "int",
+      "Address": "$33",
+      "BitAddress": "0",
+      "BitSize": "4",
+      "MinValue": "$00",
+      "MaxValue": "$0F",
+      "DefaultValue": "$0F",
+      "Protection": "checksum"
+    },
+    "IndicatorPressedLevel": {
+      "Type": "int",
+      "Address": "$33",
+      "BitAddress": "4",
+      "BitSize": "4",
+      "MinValue": "$00",
+      "MaxValue": "$0F",
+      "DefaultValue": "$0F",
+      "Protection": "checksum"
+    },
+    "EnableNightlight": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "0",
+      "DefaultValue": "0",
+      "Protection": "checksum"
+    },
+    "FirstKeyThrowAway": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "4",
+      "DefaultValue": "0",
+      "Protection": "checksum"
+    },
+    "EnableNightlightControl": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "7",
+      "DefaultValue": "0",
+      "Protection": "checksum"
+    },
+    "EnablePageFallback": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "2",
+      "DefaultValue": "1",
+      "Protection": "checksum"
+    },
+    "EnableIndicatorPressedLevel": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "3",
+      "DefaultValue": "1",
+      "Protection": "checksum"
+    },
+    "EnableNightlightOnUserKeys": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "5",
+      "DefaultValue": "0",
+      "Protection": "checksum"
+    },
+    "EnableNightlightOnToggleKey": {
+      "Type": "bit",
+      "Address": "$34",
+      "BitAddress": "6",
+      "DefaultValue": "0",
+      "Protection": "checksum"
+    }
+  },
+  "agent_fields": {
+    "EnableNightlight": "0x164",
+    "EnableNightlightControl": "0x168",
+    "FirstKeyThrowAway": "0x170",
+    "IndicatorPressedLevel": "0x174",
+    "TimerDuration": "0x178",
+    "EnablePageFallback": "0x1d8",
+    "EnableIndicatorPressedLevel": "0x1dc",
+    "EnableNightlightOnToggleKey": "0x1e0",
+    "EnableNightlightOnUserKeys": "0x1e4"
+  },
+  "model_fields": {
+    "EnableNightlightControl": "0x21c",
+    "FirstKeyThrowAway": "0x220",
+    "KeyPressBrightnessDuration": "0x228",
+    "KeyPressBrightnessLevel": "0x22c",
+    "NightlightEnabled": "0x238",
+    "NightlightForced": "0x23c",
+    "EnablePageFallback": "0x2b8",
+    "EnableIndicatorPressed": "0x2bc",
+    "EnableNightlightOnToggle": "0x2c0",
+    "EnableNightlightOnKeys": "0x2c4"
+  },
+  "rules": {
+    "duration_and_pressed_level": "Raw low/high nibbles copy directly to model integers and back; no arithmetic or clipping in these accessors",
+    "load_fallback_and_pressed": "Each PP flag AND KeyPressBrightnessDuration > 0",
+    "load_nightlight": "NightlightEnabled=true; NightlightForced=not EnableNightlight; control, user keys and toggle key flags copy directly",
+    "save_nightlight": "EnableNightlight is explicitly programmable and forced false; control and both key flags copy current model values unconditionally",
+    "first_key": "FirstKeyThrowAway copies directly both ways for DLT; GUI availability/clearing is separate",
+    "save_model_flags": "Current page fallback and pressed-enable model booleans copy directly without a duration gate at save",
+    "boundary": "These agent fragments do not initialize or run GUI checkbox events; GUI canonicalization is a separate receipt"
+  },
+  "observations": {
+    "cases": 1280,
+    "cases_sha256": "2c06cb6a806dab0903a805c6396283fcb6ac70149d2949f35c979f8f3f09728b",
+    "numeric_cases": 256,
+    "flag_cases": 1024,
+    "selected": [
+      {
+        "byte33": 240,
+        "byte34": 0,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 0,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 240,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 240,
+        "byte34": 1,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 0,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 240,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 240,
+        "byte34": 252,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 0,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 240,
+        "saved_byte34": 240
+      },
+      {
+        "byte33": 240,
+        "byte34": 253,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 0,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 240,
+        "saved_byte34": 240
+      },
+      {
+        "byte33": 240,
+        "byte34": 255,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 0,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 240,
+        "saved_byte34": 242
+      },
+      {
+        "byte33": 241,
+        "byte34": 0,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 1,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 241,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 241,
+        "byte34": 1,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 1,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 241,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 241,
+        "byte34": 252,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 1,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 241,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 241,
+        "byte34": 253,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 1,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 241,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 241,
+        "byte34": 255,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 1,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 241,
+        "saved_byte34": 254
+      },
+      {
+        "byte33": 242,
+        "byte34": 0,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 2,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 242,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 242,
+        "byte34": 1,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 2,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 242,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 242,
+        "byte34": 252,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 2,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 242,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 242,
+        "byte34": 253,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 2,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 242,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 242,
+        "byte34": 255,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 2,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 242,
+        "saved_byte34": 254
+      },
+      {
+        "byte33": 255,
+        "byte34": 0,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 15,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 255,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 255,
+        "byte34": 1,
+        "loaded": {
+          "EnableNightlightControl": 0,
+          "FirstKeyThrowAway": 0,
+          "KeyPressBrightnessDuration": 15,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 0,
+          "EnableIndicatorPressed": 0,
+          "EnableNightlightOnToggle": 0,
+          "EnableNightlightOnKeys": 0
+        },
+        "saved_byte33": 255,
+        "saved_byte34": 0
+      },
+      {
+        "byte33": 255,
+        "byte34": 252,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 15,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 1,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 255,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 255,
+        "byte34": 253,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 15,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 255,
+        "saved_byte34": 252
+      },
+      {
+        "byte33": 255,
+        "byte34": 255,
+        "loaded": {
+          "EnableNightlightControl": 1,
+          "FirstKeyThrowAway": 1,
+          "KeyPressBrightnessDuration": 15,
+          "KeyPressBrightnessLevel": 15,
+          "NightlightEnabled": 1,
+          "NightlightForced": 0,
+          "EnablePageFallback": 1,
+          "EnableIndicatorPressed": 1,
+          "EnableNightlightOnToggle": 1,
+          "EnableNightlightOnKeys": 1
+        },
+        "saved_byte33": 255,
+        "saved_byte34": 254
+      }
+    ]
+  },
+  "boundary": "Original bounded agent and model instructions with synthetic attributes and Variant helpers; no full GUI, native C-Gate, project persistence or hardware acceptance."
+}

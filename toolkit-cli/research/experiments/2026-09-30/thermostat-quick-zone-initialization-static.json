@@ -1,0 +1,487 @@
+{
+  "candidate_zone_context": {
+    "ControlledZones": 3,
+    "CoolingPlantType": 0,
+    "HeatingPlantType": 0,
+    "InstalledZones": 3,
+    "VentingPlantType": 0,
+    "action": "IncludeZone1 (bit1); original click and nested notification evidence are separate",
+    "seven_used_source_masks": {
+      "CoolingPlantInstalledZones": 1,
+      "HeatingPlantInstalledZones": 1,
+      "InternalPlantZones": 1,
+      "MeasuredZones": 1,
+      "ScheduleControlledZones": 1,
+      "UIAllocatedZones": 1,
+      "VentingPlantInstalledZones": 1
+    }
+  },
+  "celsius_temperature_fixed_point_seed": {
+    "GuardLowerTemperature": {
+      "loaded_model_integer": 5,
+      "raw_pp_byte": 196,
+      "saved_pp_byte": 196
+    },
+    "GuardMaximumLowerTemperature": {
+      "loaded_model_integer": 10,
+      "raw_pp_byte": 216,
+      "saved_pp_byte": 216
+    },
+    "GuardMaximumUpperTemperature": {
+      "loaded_model_integer": 45,
+      "raw_pp_byte": 100,
+      "saved_pp_byte": 100
+    },
+    "GuardMinimumLowerTemperature": {
+      "loaded_model_integer": 0,
+      "raw_pp_byte": 176,
+      "saved_pp_byte": 176
+    },
+    "GuardMinimumUpperTemperature": {
+      "loaded_model_integer": 33,
+      "raw_pp_byte": 52,
+      "saved_pp_byte": 52
+    },
+    "GuardUpperTemperature": {
+      "loaded_model_integer": 40,
+      "raw_pp_byte": 80,
+      "saved_pp_byte": 80
+    },
+    "MaximumSetTemperature": {
+      "loaded_model_integer": 32,
+      "raw_pp_byte": 32,
+      "saved_pp_byte": 32
+    },
+    "MinimumSetTemperature": {
+      "loaded_model_integer": 15,
+      "raw_pp_byte": 15,
+      "saved_pp_byte": 15
+    },
+    "SetbackLevel": {
+      "loaded_model_integer": 5,
+      "raw_pp_byte": 196,
+      "saved_pp_byte": 196
+    },
+    "TemperatureSendDifferential": {
+      "loaded_model_integer": 8,
+      "raw_pp_byte": 32,
+      "saved_pp_byte": 32
+    }
+  },
+  "check_count": 96,
+  "checks": {
+    "0x112daf4": true,
+    "0x112db1b": true,
+    "0x112e8f9": true,
+    "0x112e96a": true,
+    "0x128dfca": true,
+    "0x128dfdb": true,
+    "0x128e03b": true,
+    "0x128e1d0": true,
+    "0x128e1dc": true,
+    "0x128e2d9": true,
+    "0x128e34f": true,
+    "0x128e35b": true,
+    "0x128e458": true,
+    "0x128e942": true,
+    "0x128e9ec": true,
+    "0x128ea89": true,
+    "0x128ea9d": true,
+    "0x128ebca": true,
+    "0x128ec36": true,
+    "0x128f654": true,
+    "0x128fa6b": true,
+    "0x1292e37": true,
+    "0x129367d": true,
+    "0x1294d80": true,
+    "0x1294dfe": true,
+    "0x1294e24": true,
+    "0x1294ffc": true,
+    "0x1299912": true,
+    "0x1299a07": true,
+    "0x1299a3f": true,
+    "0x1299a77": true,
+    "0x1299fea": true,
+    "0x129a0cf": true,
+    "0x129a0f2": true,
+    "0x129a118": true,
+    "0x129a13e": true,
+    "0xf2657b": true,
+    "0xf28ba8": true,
+    "0xf2b13d": true,
+    "0xfe6028": true,
+    "0xfe602a": true,
+    "0xff192e": true,
+    "0xff1935": true,
+    "0xff194e": true,
+    "0xff19d7": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroup_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroup_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroup_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroup_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupForPlantType_255_short_circuit": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupForPlantType_255_short_circuit": true,
+    "GuardLowerTemperature_captured_fixed_point": true,
+    "GuardMaximumLowerTemperature_captured_fixed_point": true,
+    "GuardMaximumUpperTemperature_captured_fixed_point": true,
+    "GuardMinimumLowerTemperature_captured_fixed_point": true,
+    "GuardMinimumUpperTemperature_captured_fixed_point": true,
+    "GuardUpperTemperature_captured_fixed_point": true,
+    "MaximumSetTemperature_captured_fixed_point": true,
+    "MinimumSetTemperature_captured_fixed_point": true,
+    "SetbackLevel_captured_fixed_point": true,
+    "TemperatureSendDifferential_captured_fixed_point": true,
+    "actuator_tag_resources": true,
+    "cmbPlantCycleTime_index_offset": true,
+    "cmbPlantMinimumOffTime_index_offset": true,
+    "cmbPlantMinimumOnTime_index_offset": true,
+    "custom_installation_resource": true,
+    "disabled_schedule_resolves_three_unused_objects_without_add": true,
+    "eighteen_output_and_damper_getters": true,
+    "empty_guard_mask_literal": true,
+    "find_or_create_application_uses_existing_address_lookup": true,
+    "guard_enable_pp_name": true,
+    "legacy_actuator_tag_literals": true,
+    "master_sentinel_slots": true,
+    "programmable_initializes_scheduling_after_base": true,
+    "trkGuardLowerTemp_dfm_bounds": true,
+    "trkGuardMaximumLowerTemp_dfm_bounds": true,
+    "trkGuardMaximumUpperTemp_dfm_bounds": true,
+    "trkGuardMinimumLowerTemp_dfm_bounds": true,
+    "trkGuardMinimumUpperTemp_dfm_bounds": true,
+    "trkGuardUpperTemp_dfm_bounds": true,
+    "trkHeartbeatTime_dfm_bounds": true,
+    "trkMaximumSetTemp_dfm_bounds": true,
+    "trkMinimumSetTemp_dfm_bounds": true,
+    "trkSystemRefreshTime_dfm_bounds": true
+  },
+  "complete_initialization_closed": false,
+  "conservative_additional_scalar_seed": {
+    "BeepEnable": 0,
+    "CoolingPlantStages": 0,
+    "EnableHVACRelayDrive": 0,
+    "FanOperationMode": 0,
+    "HeartbeatTime": 3,
+    "HeatingPlantStages": 0,
+    "PlantCycleTime": 5,
+    "PlantMinimumOffTime": 1,
+    "PlantMinimumOnTime": 1,
+    "SystemRefreshTime": 3,
+    "TemperatureUnits": 0,
+    "TimeUnits": 0
+  },
+  "format": "cbus-thermostat-quick-zone-initialization-static-v1",
+  "graph_seed": {
+    "EvapProgramEnabled": 0,
+    "GuardEnable": 0,
+    "InstallationCode": 0,
+    "MasterAddress": 255,
+    "MasterNetworkAddress": "N (the existing current network address)",
+    "NonEvapProgramEnabled": 0,
+    "RemoteScheduleEnable": 0,
+    "RemoteScheduleOffGroup": 33,
+    "RemoteScheduleOnGroup": 32,
+    "RemoteScheduleOverrideGroup": 34,
+    "RemoteSetbackControlSource": 0,
+    "RemoteSetbackOffGroup": 31,
+    "RemoteSetbackOnGroup": 30,
+    "all_14_plant_outputs_4_dampers_5_relays": 255,
+    "applications": {
+      "115": "existing, tag must not be bare 115",
+      "116": "existing, tag must not be bare 116",
+      "172": "existing; preserve its tag",
+      "203": "existing Enable application",
+      "A": "existing application selected by ApplicationNumber"
+    },
+    "groups": [
+      "172/ZoneGroup (255 in candidate)",
+      "203/255",
+      "A/255"
+    ],
+    "inventory": "One database-only network containing only this programmable thermostat; fresh model/cache.",
+    "no_address_duplicates": true,
+    "toolkit_process_temperature_preference": "celsius"
+  },
+  "hardware_accessed": false,
+  "limits": [
+    "Existing graph lookup paths and selected initialization guards are pinned, not full form execution.",
+    "The numeric graph seed excludes application/group allocation and special actuator rename branches.",
+    "Temperature seed uses unchanged Celsius preference and prior original arithmetic captures, not production output.",
+    "Controller refresh locking, checkbox callbacks, complete model notifications, inherited unit initialization, installation callbacks and all non-temperature control bounds need their separately scoped evidence.",
+    "Do not apply absent-guard or retained-session generalizations; fresh caches and one accepted action are essential."
+  ],
+  "method_count": 59,
+  "methods": {
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1299b98",
+      "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x129471c",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications": {
+      "address": "0x128df98",
+      "sha256": "f21b9894f221e436e1de49647f32143983671319ea168fd7d4f82666aea6b43a"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.GetMasterUnitNetwork": {
+      "address": "0x128fa44",
+      "sha256": "aa8b6d9808a6b3b2fb185622eca75ab2a62dff6375ab8bd3c4709c16dee74249"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "address": "0x128b948",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.LoadThermostatInstallations": {
+      "address": "0x1292de4",
+      "sha256": "1850b34b1602349f1e4d3806f7c3d1ddc4fb72030af7aeed4edb24899d2d20ad"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress": {
+      "address": "0xf264fc",
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.CheckAndCreate": {
+      "address": "0xf264b8",
+      "sha256": "6aa8a446059c35fcb30a9e520c50e05cedffd4c5bd6f7ce5a2d5fd374d65cc34"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.FindApplicationByAddress": {
+      "address": "0xf264d8",
+      "sha256": "a31cb4dfbcea72630bc37a9ab2b0f385a8ba8fad49eb212dab5f9e1092909e51"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "address": "0xf28b68",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.FindOrCreateApplicationByAddress": {
+      "address": "0xf2b0a0",
+      "sha256": "24edc2caecf56d02ce3d9be02386b266d7bbef46ea4018c2333efd1cd5df7f5f"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetEnableControlApplication": {
+      "address": "0xf2b134",
+      "sha256": "b436ebe5252ce9f2a7050d3bfbc8a9b71eac08faa3353f9d5463702f1ff172b2"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupForPlantType": {
+      "address": "0xfe6140",
+      "sha256": "9866f8385c317c5fdb46bf12b64d41f012db60c37b9399d7e350190644b06b51"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupForPlantType": {
+      "address": "0xfe790c",
+      "sha256": "58fc0e7cac0f897fb0d01ea3dab6d4ae3d4c19cbcfa44ae7caf581a3b724a303"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupForPlantType": {
+      "address": "0xfe70fc",
+      "sha256": "d34b23f47acbd944baa5c601f970316a639091892a4a5ae1316a5ae913459ac7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupForPlantType": {
+      "address": "0xfe7534",
+      "sha256": "d50f6550acc39b753041447adf8ac7094a40da106e322b1620463b0ecdf22caf"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType": {
+      "address": "0xfe6520",
+      "sha256": "2ead3d4b4cb76a3ca55fa37a5216dcea76019a20f1bff4520ffba148f68b7129"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupForPlantType": {
+      "address": "0xfe69c4",
+      "sha256": "060233ce3c7e7f0d4d0b56d62f545ec92cae327f252b41da27ffd00b40c1479a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType": {
+      "address": "0xfe6d88",
+      "sha256": "cee4ff157a9d086126e88dcab78c45f5dcb6e8e0c09296e1a23ad0f41754c301"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroup": {
+      "address": "0xfe959c",
+      "sha256": "a4e8574ee3921c9ff414097ad5e3472513b3042ab755d0684afb160484c51f54"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroup": {
+      "address": "0xfe969c",
+      "sha256": "2f6b9f28b0d6052b46b8b727b532b7fd12edeb8987a0edf5e8cb627432fcc4fc"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroup": {
+      "address": "0xfe979c",
+      "sha256": "e9bd284126c85ba72f192f3d50ba76aa4778ec1c51262f60255628a1e873aac2"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroup": {
+      "address": "0xfe989c",
+      "sha256": "fd809a6d184173a929e5406b7a40a3cc4d87ab918ff24d4443ac2b86a609f2a3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupForPlantType": {
+      "address": "0xfe7c44",
+      "sha256": "96cb1179b4aae74c8152a8adf1f1788fb6b931b49ddf8bc08d665460034d06ae"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupForPlantType": {
+      "address": "0xfe9330",
+      "sha256": "40810c3c21622548df61a21b180929f53ed1fb3f58b349e026a42a7ad3d7cea7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupForPlantType": {
+      "address": "0xfe8b8c",
+      "sha256": "7f43b07391c0e2702b8ab91d72590100ae8c5488e7408f64da88f9e016ad19ff"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupForPlantType": {
+      "address": "0xfe8f84",
+      "sha256": "aff39149d4a7d67388697233cca4ea96b4925ab0cffc4d4d28cf50ee74bf0c87"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupForPlantType": {
+      "address": "0xfe8024",
+      "sha256": "a73ff34eea5b6c3ca34ab760fd4d40f6cb124f58ce3810ed5e745b9ed49f5c8a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupForPlantType": {
+      "address": "0xfe84c0",
+      "sha256": "b7ec5ccacdb0c3f588cb1de13dc73f5edf2340ccd6e21d1a43061627cb17c82a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupForPlantType": {
+      "address": "0xfe8858",
+      "sha256": "3fa178d0a9447097ded770e4aa9bc265dbd276a0e7afc0a7ab4d5d8d9904e0a3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetUnusedGroup": {
+      "address": "0xfe6008",
+      "sha256": "99ef8533c86765e5a12d5b8017b2cb61036283a1c5c51ede7359a9ba39d14944"
+    },
+    "CIS_TcdThermostatCBus.TcdThermostatCBus.HandleHeartbeatTimeChange": {
+      "address": "0x111f434",
+      "sha256": "41a88caecd4f42be08f85456420c9810dcf381acbc0c8383c76b104cbeca7226"
+    },
+    "CIS_TcdThermostatCBus.TcdThermostatCBus.HandleSystemRefreshTimeChange": {
+      "address": "0x111f5a0",
+      "sha256": "20e87e8fee68d0a78f5fb1925ce85a20be172ebc6a06f80f7092e05acfa3afcf"
+    },
+    "CIS_TcdThermostatCBus.TcdThermostatCBus.Initialise": {
+      "address": "0x111f28c",
+      "sha256": "35dec927db5d063cd158f2d95554f7636aab158ac1f50bc49db3430b14e71bfa"
+    },
+    "CIS_TcdThermostatCBus.TcdThermostatCBus.SetupFlashComponents": {
+      "address": "0x111f7fc",
+      "sha256": "58a693103be773d774698660f7a01b3099c8bf6190ff289c721bd53d2f23e914"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantCycleTimeChange": {
+      "address": "0x11287d4",
+      "sha256": "acd7860ec2e8a3f3cbb78ade1c18a0e6813a3766eda41666efcf9cfaed37bbed"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantMinimumTimeChange": {
+      "address": "0x11282fc",
+      "sha256": "abdfd4613b38d1f747cb73d3f276576cde379d5effd69bbff1e96dd79d6d29fd"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Initialise": {
+      "address": "0x112725c",
+      "sha256": "f1a9648cf2991a79b234c3013d09783af54c5594d9b2839ab3c3514ad652bc5d"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupFlashComponents": {
+      "address": "0x1127424",
+      "sha256": "bfc4bd26f3a1f1d42513a6f8fa29b769498d01f03c290d677da7c09ddcf24cea"
+    },
+    "CIS_TcdThermostatScheduling.TcdThermostatScheduling.Initialise": {
+      "address": "0x112fb98",
+      "sha256": "d18b0b19701bacfa40ecb27debc92c84261ce2b289818eeea04759ef68363b3f"
+    },
+    "CIS_TcdThermostatScheduling.TcdThermostatScheduling.SetupFlashComponents": {
+      "address": "0x112fd84",
+      "sha256": "5ca83e6f30d6a3c04fcd849ec608165cef8103919a86dcdeb6e3a77c42de5998"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.Initialise": {
+      "address": "0x112d964",
+      "sha256": "5ed3a7cc305f8bf6549859cc4d9a4610d6022716fda4ac2fd0fb0f1e0b354bd2"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetGuardTemperatureLimits": {
+      "address": "0x112e9b4",
+      "sha256": "4a25dcfe77149597da83e7ec2e903e86bccfa5b665c3813a8e189c9de103a45b"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetMinMaxTemperatureLimits_GuardEnabled": {
+      "address": "0x112e888",
+      "sha256": "c4ef12e7d057d71e48f255ef01b5a3c193923704cea77b11a496b5632dccc42b"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.SetupFlashComponents": {
+      "address": "0x112dca4",
+      "sha256": "5bb86ec184fcc686a46dbf25f05e0a33fc1941a897df7d11748e8df307b31bf9"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.UpdateSliderTemperatureUnit": {
+      "address": "0x112e7f4",
+      "sha256": "e6eb265c38298412428a0f4b9825ec3dfd22975bab6d3e9c19ab54a77ae73e2b"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.Initialise": {
+      "address": "0x111df60",
+      "sha256": "893f59464291150d433d290e06cae56c517b3ba59d0d7b8e359d6b71049dfaf6"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupFlashComponents": {
+      "address": "0x111e114",
+      "sha256": "f43bcb56af360e527f2b8929c03e4954711940b971ab355e6c6adeaec1be11ec"
+    },
+    "CIS_TcdThermostatUI.TcdThermostatUI.Initialise": {
+      "address": "0x1120eb4",
+      "sha256": "2cad746a32adc3e204cee45f152b1344fd860aea75f1eb224e979e3c5393c858"
+    },
+    "CIS_TcdThermostatUI.TcdThermostatUI.SetupFlashComponents": {
+      "address": "0x112106c",
+      "sha256": "45eb84a6d2bebfffa0c4eb3c703433f87746a00e0348c1918b704a66bbf23515"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.Initialise": {
+      "address": "0xfee518",
+      "sha256": "2f719f835e2ef98f627afa69c7a0b2c3f573f01cb3bb126ef7232f3128ee5fe1"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.LoadMasterUnitNetworks": {
+      "address": "0xff00fc",
+      "sha256": "4e1f4158bb500ec5899f3e1f8dfe41df0fc870143b6c69ca8ce4c72e23153528"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.LoadMasterUnits": {
+      "address": "0xff18d8",
+      "sha256": "97bbdb614b82ac393c2a9da51405de30ed19a12c5bebce5d7a1b1665a87d7f71"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.SetupFlashComponents": {
+      "address": "0xfeeadc",
+      "sha256": "f2f81c6b293e5556e85728ca2d6e47ea620fb693ec85ed03fb35ea1f388673d5"
+    },
+    "CIS_TddThermostat.TddProgrammableThermostat.InitialiseSubForms": {
+      "address": "0x11332cc",
+      "sha256": "a2f3ccea887b7f24dbb2fddeac902c98dd6a8ef6925c124403dd55c921d6ce5e"
+    },
+    "CIS_TddThermostat.TddThermostat.InitialiseSubForms": {
+      "address": "0x1132a24",
+      "sha256": "185a180194e3779da70e14cedb824c65541a8fcceafed27e5858eb80e55e8702"
+    },
+    "CIS_TddThermostat.TddThermostat.UpdateZoneCheckboxes": {
+      "address": "0x1132c74",
+      "sha256": "22ab9e21f939ed028ee119f842f2ef6c710ecb5996ec91b469ef825d10b219af"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "public_action_admission": false,
+  "resources": {
+    "TFRMTHERMOSTATCBUS": {
+      "bytes": 4820,
+      "sha256": "82c8ff67146aac7cd3c204e8becfdb3fe3b2e4d662a07736edd60d78e829f944"
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "bytes": 11312,
+      "sha256": "a5e27c916fd893329c2e47f28064b4862ae10d20e00550cfbb513aabae682a2c"
+    },
+    "TFRMTHERMOSTATTEMPCONTROL": {
+      "bytes": 131664,
+      "sha256": "3292ccd52bdac22a13a8c85d74dd79398fc25344616d09dc6a837342d2aeef99"
+    }
+  },
+  "save_normalization_traps": {
+    "MasterNetworkAddress255": "Load resolves current network object; save writes its actual network address.",
+    "disabled_remote_schedule": "Load resolves Enable/255; save writes enable0 and raw groups32/33/34.",
+    "disabled_remote_setback": "Load resolves nil; save writes raw group bytes 30 and 31."
+  }
+}

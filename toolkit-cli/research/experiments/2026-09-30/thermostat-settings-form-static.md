@@ -90,6 +90,11 @@ The basic thermostat additionally hides the Damper Groups button.
 
 ## Limits
 
+The subsequent [quick-zone event recovery](thermostat-quick-zone-events-static.md)
+pins initialization and click guards, nested plant-type/damper effects and
+retained-master save behavior. It explains why the explicit-mask helper alone
+is insufficient for a public complete-form action.
+
 `recovered_dialog_rules` reports this method subset, and
 `quick_zone_transition` computes the separate accepted quick-zone action.
 Neither admits or rejects a raw settings edit. Both complete-dialog and

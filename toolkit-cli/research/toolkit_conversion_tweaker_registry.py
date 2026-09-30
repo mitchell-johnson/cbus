@@ -59,7 +59,12 @@ CLASSES = {
         'recovered': True, 'inherits': 'TTweakerInputUnit', 'renames': {},
         'immutable': INPUT_UNIT_IMMUTABLE + KEY_TO_NEO_IMMUTABLE, 'assignments': [], 'element_remap': INDICATOR_REMAP,
         'summary': 'TTweakerInputUnit rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1',
-        'refusal': HOOK_KEY},
+        'refusal': None,
+        'profile': 'classic-1.2.67-to-fresh-neo-2.5.00',
+        'source_firmware': '1.2.67', 'target_firmware': '2.5.00',
+        'hook_summary': ('fresh target Learn hook enables LearnMode/LearnAnyApp and disables LearnedFlag; '
+                         'CoreKey moves group index4 to index8 and enables IndicatorBrightness; '
+                         'NeoPro suppresses 13 fields for a non-NeoPro source')},
     'TTweakerDLT': {
         'recovered': True, 'renames': {}, 'immutable': DLT_IMMUTABLE,
         'assignments': [{'target': 'LabelFlavourLSB', 'literal': '0'}, {'target': 'LabelFlavourMSB', 'literal': '0'}],
@@ -104,19 +109,25 @@ CLASSES = {
         'application_swap': 'Application becomes decimal element 1, one space, decimal element 0',
         'summary': 'swaps the two Application values', 'refusal': NOT_NATIVE},
     'TTweakerRELDN8_TO_X': {
-        'recovered': False, 'touched': ['GroupAddress', 'LogicGA13Associations', 'LogicGA14Associations',
+        'recovered': True, 'touched': ['GroupAddress', 'LogicGA13Associations', 'LogicGA14Associations',
                                         'LogicGA15Associations', 'LogicGA16Associations'],
-        'summary': 'repacks GroupAddress and LogicGA13-16 arrays; element rule not recovered',
-        'refusal': 'tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered'},
+        'summary': 'Group=s[1:5]+s[7:11]+[255]*4+s[12:16]; each logic=s[1:5]+s[7:11]+[0]*4',
+        'refusal': None},
     'TTweakerRELDNX_TO_8': {
-        'recovered': False, 'touched': ['GroupAddress', 'LogicGA13Associations', 'LogicGA14Associations',
+        'recovered': True, 'touched': ['GroupAddress', 'LogicGA13Associations', 'LogicGA14Associations',
                                         'LogicGA15Associations', 'LogicGA16Associations'],
-        'summary': 'repacks GroupAddress and LogicGA13-16 arrays; element rule not recovered',
-        'refusal': 'tweaker value rule for GroupAddress/LogicGA13-16 repacking is not recovered'},
+        'summary': 'Group=[255]+s[0:4]+[255]*2+s[4:8]+[255]+s[12:16]; each logic=[0]+s[0:4]+[0]*2+s[4:8]+[0]',
+        'refusal': None},
+}
+PAIR_REFUSALS = {
+    ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
+                          'reads eight without padding; no defined safe conversion is established'),
+    **{tuple(pair.split('>')): 'source is outside the admitted classic-key to fresh Neo model profile'
+       for pair in ('KEYBC2>BCN2B', 'KEYBC2>BCN4B', 'KEYBC4>BCN2B', 'KEYBC4>BCN4B', 'DINAUX4>BCI4A')},
 }
 _BASE = [('Application', True), ('FirmwareVersion', False), ('Project', True), ('SerialNo', False),
          ('State', False), ('UnitAddress', True), ('UnitName', True), ('UnitType', False)]
-_DIN = [(name, True) for name in (
+_DIN = [(name, name != 'Burden') for name in (
     'CheckSum', 'Burden', 'LocalToggleEnable', 'ClockGenEnable', 'LearnMode', 'LearnAnyApplication', 'LearnedFlag',
     'AreaGroupAddress', 'PowerUpDelay', 'NetworkPriority', 'LightLevel', 'LogicGA13Associations',
     'LogicGA14Associations', 'LogicGA15Associations', 'LogicGA16Associations', 'LogicFunction', 'GroupAddress',
@@ -127,13 +138,146 @@ _DIMDUX = [(name, True) for name in (
     'TriggerErrorClearAcSel', 'ErrorReportDeviceID', 'DimmingCurveBit1', 'DimmingCurveBit2')]
 # Constructor order and initial mutable flag of the agents used by admitted pairs.
 AGENTS = {
-    'TDinRailOutputCGateAgent': {'unit_types': ['DIMDN4', 'DIMDN4F', 'DIMDN8', 'DIMDN8F'],
+    'TDinRailOutputCGateAgent': {'unit_types': ['DIMDN4', 'DIMDN4F', 'DIMDN8', 'DIMDN8F', 'RELDN12', 'RELDN4', 'RELDN8B'],
                                  'overrides_before_unit_conversion_save': False,
                                  'attributes': [[n, m] for n, m in _BASE + _DIN]},
     'TDIMDNUXCGateAgent': {'unit_types': ['DIMDU4'], 'overrides_before_unit_conversion_save': False,
                            'attributes': [[n, m] for n, m in _BASE + _DIN + _DIMDUX]},
+    'TMarshallingBoxCGateAgent': {'unit_types': ['RELDN8'], 'overrides_before_unit_conversion_save': False,
+                                  'attributes': [[n, m] for n, m in _BASE + _DIN]},
+    'TBusPoweredDinRailOutputCGateAgent': {'unit_types': ['RELSM8'], 'overrides_before_unit_conversion_save': False,
+                                          'attributes': [[n, m] for n, m in _BASE + _DIN[:-3]]},
 }
-NATIVE_ACCEPTED = ('TTweakerDIMDN_TO_DIMDU4', 'TTweakerDIMDU4_TO_DIMDN')
+# Source-pinned modern key profile; these are constructor flags, before hooks.
+AGENTS.update({'TCBusKeyInputCGateAgent': {'unit_types': ['KEY1', 'KEY2', 'KEY4', 'KEYIR1', 'KEYIR4'],
+                             'overrides_before_unit_conversion_save': True,
+                             'conversion_role': 'source_only',
+                             'source_firmware': '1.2.67',
+                             'attributes': [['Application', True],
+                                            ['FirmwareVersion', False],
+                                            ['Project', True],
+                                            ['SerialNo', False],
+                                            ['State', False],
+                                            ['UnitAddress', True],
+                                            ['UnitName', True],
+                                            ['UnitType', False],
+                                            ['LearnAnyApp', True],
+                                            ['LearnMode', True],
+                                            ['LearnedFlag', True],
+                                            ['AreaGroupAddress', True],
+                                            ['StatusReportInterval', True],
+                                            ['GroupAddress', True],
+                                            ['DebounceTime', True],
+                                            ['IndicatorBrightness', False],
+                                            ['LongPressTime', True],
+                                            ['EEPROMLevelStore', True],
+                                            ['LightIndex', True],
+                                            ['LightLevel', True],
+                                            ['LightLevelStore1', True],
+                                            ['LightLevelStore2', True],
+                                            ['RampRate', True],
+                                            ['InfraRedBank', True],
+                                            ['JPCommand', True],
+                                            ['SRCommand', True],
+                                            ['LPCommand', True],
+                                            ['LRCommand', True],
+                                            ['BlockAllocation', True],
+                                            ['IndicatorBlockAssignment', True],
+                                            ['IndicatorFunction', True],
+                                            ['TimerHighByte', True],
+                                            ['TimerLowByte', True],
+                                            ['TimerExpiryCommand', True],
+                                            ['GAVBroadcastFlag', False]]},
+ 'TCBusNeoProInputCGateAgent': {'unit_types': ['KEYB2',
+                                               'KEYB4',
+                                               'KEYB6',
+                                               'KEYH1',
+                                               'KEYH2',
+                                               'KEYH3',
+                                               'KEYH4',
+                                               'KEYM2',
+                                               'KEYM4',
+                                               'KEYM8',
+                                               'KEYA1',
+                                               'KEYA3',
+                                               'KEYA6',
+                                               'KEYA8',
+                                               'KEYAV2',
+                                               'KEYAV4',
+                                               'KEYC1',
+                                               'KEYC2',
+                                               'KEYC4',
+                                               'KEYCIR1',
+                                               'KEYCIR4'],
+                                'overrides_before_unit_conversion_save': True,
+                                'conversion_hook_profile': 'classic-1.2.67-to-fresh-neo-2.5.00',
+                                'target_firmware': '2.5.00',
+                                'attributes': [['Application', True],
+                                               ['FirmwareVersion', False],
+                                               ['Project', True],
+                                               ['SerialNo', False],
+                                               ['State', False],
+                                               ['UnitAddress', True],
+                                               ['UnitName', True],
+                                               ['UnitType', False],
+                                               ['LearnAnyApp', True],
+                                               ['LearnMode', True],
+                                               ['LearnedFlag', True],
+                                               ['AreaGroupAddress', True],
+                                               ['StatusReportInterval', True],
+                                               ['GroupAddress', True],
+                                               ['DebounceTime', True],
+                                               ['IndicatorBrightness', False],
+                                               ['LongPressTime', True],
+                                               ['EEPROMLevelStore', True],
+                                               ['LightIndex', True],
+                                               ['LightLevel', True],
+                                               ['LightLevelStore1', True],
+                                               ['LightLevelStore2', True],
+                                               ['RampRate', True],
+                                               ['IRBank', True],
+                                               ['JPCommand', True],
+                                               ['SRCommand', True],
+                                               ['LPCommand', True],
+                                               ['LRCommand', True],
+                                               ['BlockAllocation', True],
+                                               ['IndicatorBlockAssignment', True],
+                                               ['IndicatorFunction', True],
+                                               ['TimerHighByte', True],
+                                               ['TimerLowByte', True],
+                                               ['TimerExpiryCommand', True],
+                                               ['ControlAppGroupAddress', True],
+                                               ['EnableNightlight', True],
+                                               ['EnableNightlightControl', True],
+                                               ['DisableTimerFlash', True],
+                                               ['FirstKeyThrowAway', True],
+                                               ['IndicatorPressedLevel', True],
+                                               ['TimerDuration', True],
+                                               ['PatchEnable', True],
+                                               ['SceneKeySelector', True],
+                                               ['SceneTable', True],
+                                               ['SceneTablePointer', True],
+                                               ['DisableIR', True],
+                                               ['IDBacklightIllumination', True],
+                                               ['EnableNightlightOnPCx', True],
+                                               ['EnableNightlightOnPA6', True],
+                                               ['PrimaryColour', True],
+                                               ['DisableIRNEC', True],
+                                               ['KeyDisableGroup', True],
+                                               ['KeyDisableGroupInvert', True],
+                                               ['CorridorLinkEnable', True],
+                                               ['CorridorMasterGroup', True],
+                                               ['CorridorGroupBlock', True],
+                                               ['CorridorOfficeGroupBlock', True],
+                                               ['JoinPrimaryApplication', True],
+                                               ['JoinSecondaryApplication', True],
+                                               ['DualJoinPrimaryApplication', True],
+                                               ['DualJoinSecondaryApplication', True],
+                                               ['SecondApplicationBlocks', True],
+                                               ['NightlightColour', True]]}})
+
+NATIVE_ACCEPTED = ('TTweakerDIMDN_TO_DIMDU4', 'TTweakerDIMDU4_TO_DIMDN', 'TTweakerRELDN8_TO_X', 'TTweakerRELDNX_TO_8',
+                   'TTweakerKeyToNeo')
 TOOLKIT_SEMANTICS = {
     'uses_cgate_convertunit': False,
     'lookup': 'case-insensitive (source type, target type); first registration wins',
@@ -147,8 +291,13 @@ TOOLKIT_SEMANTICS = {
 }
 LIMITS = ('Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata '
           '(tag, description, serial, readdress, source deletion and project save) is outside this receipt. '
-          'Only the DIMDUx classes are admitted, with native C-Gate PP acceptance; every other registered or '
-          'unregistered pair is refused with the reason recorded here.')
+          'The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: '
+          'its four-element source logic would cause undefined original array reads. '
+          'Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh '
+          'target model at 2.5.00; its five coupler/auxiliary registrations remain refused. '
+          'Every other registered or unregistered pair is refused with the reason recorded here. '
+          'Static evidence is separate from native C-Gate execution and does not establish original '
+          'Toolkit GUI or physical acceptance.')
 
 
 def build(tsv: Path) -> dict:
@@ -158,10 +307,11 @@ def build(tsv: Path) -> dict:
             continue
         call_va, source, target, tweaker = line.split('\t')
         spec = CLASSES[tweaker]
-        admitted = tweaker in NATIVE_ACCEPTED
+        reason = PAIR_REFUSALS.get((source.upper(), target.upper()), spec['refusal'])
+        admitted = tweaker in NATIVE_ACCEPTED and reason is None
         rows.append({'source': source, 'target': target, 'tweaker_class': tweaker, 'call_va': call_va,
                      'decision': 'admitted' if admitted else 'refused',
-                     'refusal_reason': None if admitted else spec['refusal']})
+                     'refusal_reason': reason})
     counts = Counter(row['tweaker_class'] for row in rows)
     return {
         'format': FORMAT, 'original_exe_sha256': EXE_SHA256, 'original_map_sha256': MAP_SHA256,
@@ -169,6 +319,7 @@ def build(tsv: Path) -> dict:
         'class_counts': dict(sorted(counts.items())), 'toolkit_semantics': TOOLKIT_SEMANTICS,
         'classes': {name: {**CLASSES[name], 'call_sites': counts[name]} for name in sorted(CLASSES)},
         'agents': AGENTS, 'native_accepted_classes': list(NATIVE_ACCEPTED),
+        'pair_refusals': [{'source': s, 'target': t, 'reason': reason} for (s, t), reason in PAIR_REFUSALS.items()],
         'registrations': rows, 'limits': LIMITS,
     }
 
@@ -197,11 +348,14 @@ def validate(receipt: dict) -> list[str]:
         check(admitted <= bool(spec.get('recovered')), 'admitted class must be recovered: ' + name)
         for rule in spec.get('assignments', []):
             check(('literal' in rule) != ('from' in rule), 'assignment shape for ' + name)
+    pair_refusals = {(item['source'], item['target']): item['reason'] for item in receipt.get('pair_refusals', [])}
+    check(pair_refusals == PAIR_REFUSALS, 'pair-specific refusals')
     for row in rows:
         spec = classes.get(row['tweaker_class'], {})
-        admitted = row['tweaker_class'] in receipt.get('native_accepted_classes', [])
+        reason = pair_refusals.get((row['source'], row['target']), spec.get('refusal'))
+        admitted = row['tweaker_class'] in receipt.get('native_accepted_classes', []) and reason is None
         check(row['decision'] == ('admitted' if admitted else 'refused'), 'decision ' + repr(row))
-        check(row['refusal_reason'] == spec.get('refusal'), 'reason ' + repr(row))
+        check(row['refusal_reason'] == reason, 'reason ' + repr(row))
     agents = receipt.get('agents', {})
     covered = {unit for agent in agents.values() for unit in agent['unit_types']}
     for row in rows:
@@ -210,7 +364,13 @@ def validate(receipt: dict) -> list[str]:
     for name, agent in agents.items():
         names = [attribute[0] for attribute in agent['attributes']]
         check(len(set(names)) == len(names), 'duplicate agent attribute in ' + name)
-        check(not agent['overrides_before_unit_conversion_save'], 'admitted agent hook in ' + name)
+        source_only = agent.get('conversion_role') == 'source_only'
+        if source_only:
+            check(not any(row['target'] in agent['unit_types'] and row['decision'] == 'admitted' for row in rows),
+                  'source-only agent used as an admitted target in ' + name)
+        check(not agent['overrides_before_unit_conversion_save'] or source_only
+              or agent.get('conversion_hook_profile') == 'classic-1.2.67-to-fresh-neo-2.5.00',
+              'admitted agent hook in ' + name)
     text = json.dumps(receipt)
     for marker in ('<Param', 'DefaultValue', '<Address>'):
         check(marker not in text, 'unsanitized marker ' + marker)

@@ -20,7 +20,7 @@ from cbus_toolkit.thermostat_templates import ThermostatTemplateError
 from cbus_toolkit.unitspec import UnitSpecStore
 
 SPEC_DIR = os.environ.get('CBUS_UNITSPEC_DIR')
-COMMON = {'InstalledZones': 31, 'ControlledZones': 7, 'HeatingPlantInstalledZones': 3,
+COMMON = {'InstalledZones': 31, 'ControlledZones': 31, 'HeatingPlantInstalledZones': 3,
           'CoolingPlantInstalledZones': 0, 'MeasuredZones': 1, 'UIAllocatedZones': 5,
           'HeatingPlantType': 1, 'CoolingPlantType': 9, 'HeatingPlantStages': 2, 'CoolingPlantStages': 3,
           'PlantCycleTime': 20, 'CoolingPlantFanOnDelay': 12, 'KeyBacklightIdleBrightness': 255,
@@ -120,7 +120,7 @@ class NativeThermostatSettingsTests(unittest.TestCase):
     def test_untouched_fields_normalize_once_per_save_for_all_four_unit_types(self):
         # Expectations are literal translations of the pinned load/save blocks,
         # including the one-save heating-before-cooling fan read ordering.
-        seed = {'InternalPlantModes': 20, 'VentPlantType': 0, 'ControlledZones': 1,
+        seed = {'InternalPlantModes': 20, 'VentPlantType': 0, 'ControlledZones': 1, 'InstalledZones': 1,
                 'InternalPlantType': 2, 'DamperModulationEnable': 1,
                 'HeatingPlantFanSpeeds': 0, 'CoolingPlantFanSpeeds': 0,
                 'HeatingPlantFanSpeedControlEnable': 0, 'CoolingPlantFanSpeedControlEnable': 0,
@@ -193,6 +193,67 @@ class NativeThermostatSettingsTests(unittest.TestCase):
             refusals.append({'path': path, 'edits': edits, 'error': str(caught.exception.cause)})
         self.assertEqual(xml_text(self.database.get('//' + self.project, xml=True)), before)
         self.evidence['refusals'] = refusals
+
+    def test_temperature_preferences_and_controlled_mask_save_through_public_cli(self):
+        from cbus_toolkit.cli import build_parser
+        from cbus_toolkit.thermostat_templates_cli import run
+        fields = ('MaximumSetTemperature', 'MinimumSetTemperature', 'GuardUpperTemperature',
+                  'GuardMaximumUpperTemperature', 'GuardMinimumUpperTemperature', 'GuardLowerTemperature',
+                  'GuardMaximumLowerTemperature', 'GuardMinimumLowerTemperature', 'SetbackLevel',
+                  'EvapStartProportionalTemperature', 'EvapStopProportionalTemperature',
+                  'TemperatureOffset', 'TemperatureSendDifferential', 'EvapComfortStartTemp',
+                  'EvapComfortStepSize')
+        self.evidence['temperature_cases'] = []
+        for index, unit_type in enumerate(('PC_TSA', 'PC_TSA5', 'PC_TSB', 'PC_TSB5')):
+            for offset, preference in enumerate(('celsius', 'fahrenheit')):
+                address = 100 + index * 2 + offset
+                path = self.network + '/p/' + str(address)
+                self.database.create_unit(self.network, address, 'Temperature' + str(address), unit_type, '5.4.01',
+                                          catalog_number=FAMILY[unit_type.removesuffix('5')][1])
+                # Original fixture-derived one-save values for raw3: simple
+                # setpoint limits stay3; quarter conversions become4C/2F;
+                # measurement offsets use their distinct helper:4C/5F.
+                seed = dict.fromkeys(fields, 3) | {'ControlledZones': 1, 'InstalledZones': 21,
+                                                  'TemperatureUnits': offset ^ 1}
+                with Programmer(self.client).load(self.network, '/db' + path) as session:
+                    for name, value in seed.items():
+                        session.set(name, str(value))
+                    session.save_to_source()
+                for action in ('save', 'close', 'load'):
+                    self.projects.operation(action, self.project)
+                before = self.values(path)
+                argv = ['thermostat', 'settings', 'preview', path, '--host', '127.0.0.1',
+                        '--port', str(self.service.port), '--spec-dir', SPEC_DIR, '--exclusive-project',
+                        '--set', 'PlantCycleTime=' + before['PlantCycleTime'],
+                        '--temperature-preference', preference]
+                preview, status = run(build_parser().parse_args(argv), CGateClient)
+                self.assertEqual(status, 0)
+                expected_temperature = dict.fromkeys(fields, 4 if preference == 'celsius' else 2)
+                expected_temperature.update(MaximumSetTemperature=3, MinimumSetTemperature=3)
+                if preference == 'fahrenheit':
+                    expected_temperature.update(TemperatureOffset=5, TemperatureSendDifferential=5)
+                # Preview owns only changed temperature writes. The two simple
+                # limits are untouched and checked by preservation below.
+                for name, expected in expected_temperature.items():
+                    self.assertEqual(preview['expected'].get(name, int(before[name], 0)), expected)
+                self.assertEqual(preview['expected']['ControlledZones'], 21)
+                self.assertEqual(self.values(path), before)
+                argv[2] = 'apply'
+                result, status = run(build_parser().parse_args(argv), CGateClient)
+                self.assertEqual(status, 0)
+                self.assertEqual(result['state'], 'verified_saved')
+                after = self.values(path)
+                self.assertEqual({n: int(after[n], 0) for n in fields}, expected_temperature)
+                self.assertEqual(int(after['ControlledZones'], 0), 21)
+                expected = result['plan']['expected']
+                self.assertEqual({n: v for n, v in after.items() if n not in expected},
+                                 {n: v for n, v in before.items() if n not in expected})
+                self.assertTrue(result['unit_record_preserved'])
+                self.evidence['temperature_cases'].append({
+                    'unit_type': unit_type, 'preference': preference, 'seed': seed,
+                    'temperature_expected': expected_temperature, 'controlled_zones_expected': 21,
+                    'preview_did_not_write': True, 'state': result['state'],
+                    'unit_record_preserved': result['unit_record_preserved']})
 
     def test_hidden_stored_parameter_change_after_reload_fails_verification(self):
         path = self.unit(90, 'PC_TSA')

@@ -400,7 +400,8 @@ def test_committed_static_receipt_matches_the_model():
     assert receipt["supporting_module_sha256"] == {
         name: hashlib.sha256(Path(doc.__file__).with_name(name + ".py").read_bytes()).hexdigest()
         for name in ("project_documentation_devices", "project_documentation_native",
-                     "project_documentation_status", "project_documentation_usage")}
+                     "project_documentation_status", "project_documentation_usage",
+                     "project_documentation_outputs")}
     statuses = {row["body_status"] for row in receipt["documentor_classes"].values()}
     assert statuses == {"recovered", "partial", "unrecovered"}
 

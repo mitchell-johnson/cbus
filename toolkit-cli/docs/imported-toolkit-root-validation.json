@@ -1,0 +1,184 @@
+{
+  "format": "cbus-imported-feature-root-validation-v1",
+  "publication_base": "9d399be55b90e2f6db03a08a5f452669b3392a05",
+  "local_imports": [
+    {
+      "source_commit": "8be8077cabc63217ef892c688f1522cb1bb0ff58",
+      "local_integration_commit": "f250f74f",
+      "scope": "CBZ bounds"
+    },
+    {
+      "source_commit": "bc0d804955154503bcb8faabc8b470f0317abddf",
+      "local_integration_commit": "ecb0ba3f",
+      "scope": "OnColor census"
+    },
+    {
+      "source_commit": "43fd4e86f99b3023e0ba0ec0d6face48a8e9df95",
+      "local_integration_commit": "631b27b3",
+      "scope": "Project documentation"
+    },
+    {
+      "source_commit": "fc9fa08dc770898a92bbf2205c254bfd8190d3a1",
+      "local_integration_commit": "3115fc06",
+      "scope": "Thermostat temperature"
+    },
+    {
+      "source_commit": "6ef7b0ee008882158f76847d91db43956c0eb3e4",
+      "local_integration_commit": "bad8bb89",
+      "scope": "Thermostat allocation"
+    },
+    {
+      "source_commit": "096ea48e29a3227e9e44cf14319136b2e8edfda5",
+      "local_integration_commit": "2b3d5a9a",
+      "scope": "Thermostat callback evidence"
+    },
+    {
+      "source_commit": "2e2ef069caaa9feabe5d0e4e39df33d993ee15ef",
+      "local_integration_commit": "a024a6d7",
+      "scope": "DLT indicators"
+    },
+    {
+      "source_commit": "ae36e3110b08e569c96dfff291cfa0f2c8400554",
+      "local_integration_commit": "8b10ebaa",
+      "scope": "DLT TEXT dialog"
+    },
+    {
+      "source_commit": "3d0945a07576158994d693a56641fe0935247377",
+      "local_integration_commit": "3288dd96",
+      "scope": "DLT broadcast"
+    },
+    {
+      "source_commit": "b6b3112d0d7ec9b4fe40cdc5991af2b904f82e29",
+      "local_integration_commit": "b6fb8762",
+      "scope": "RELDN conversion"
+    },
+    {
+      "source_commit": "2e0abde4d1ec7031769a3d133ba13bb14e229492",
+      "local_integration_commit": "46fe1925",
+      "scope": "Classic-to-Neo conversion"
+    },
+    {
+      "source_commit": "711da3d18522d8dc86533c972d13061350c73572",
+      "local_integration_commit": "bc1f1d15",
+      "scope": "Firmware lifecycle"
+    }
+  ],
+  "publication_history": "Unpublished integration commits squashed before publication to exclude private runtime coordinates from pushed history. Source-commit provenance retained; no published history rewritten.",
+  "source_sha256": {
+    "rust/Cargo.lock": "71929fef14582816d0ecbba8d78e9e05ee0889c155c64a1f0b6599c46f75bb63",
+    "rust/cbus-mqtt/Cargo.toml": "e2ed518eae7e5e7afe29df72b10d1fed354de185735c3b5c94a2c774bdb83931",
+    "rust/cbus-mqtt/src/cbz.rs": "f29329c243c63e2e0dafd1964173f59febb630623537e895f10d9be0288af332",
+    "rust/cbus-mqtt/tests/cbz_input_safety.rs": "a0e58fbca1def54905d7b2f07c40bad2c18b81e4e3cbdcf9872889c4e2af98c3",
+    "toolkit-cli/src/cbus_toolkit/firmware_update_run.py": "9c718b654b076eebb28495b38e5675ab95f78f4f3e7ca601b93fc93bd2e766bc",
+    "toolkit-cli/tests/test_firmware_update_release.py": "805fbd0690ee4aebbd15ba5599088d2558453eb6154c74e49f7d77bc05359a2e",
+    "toolkit-cli/tests/test_parity_register.py": "efa09cf20fa5b5273454db764e8e8c831b8741824dd54115fdb29b67b5a462ad",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "5d6d2fdaef3638d643e1eba47d8da9352ef724169695f1067709556e8dfd1987",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "5b829326dc919c2f340203b40d942e233bd330ff57e411a63627e1f91a41121f"
+  },
+  "binary_sha256": {
+    "debug/cmqttd": "41a3f41eab7a1b0ad6b33ea5c7497283cea72ae344bef81dc1f46c1c97e20241",
+    "debug/cgate-mock": "97dc1f19a6b633af7a11edb56522d2fe8d585eb822bbaa285a15056c012ad0c5",
+    "release/cmqttd": "4c3a88a233cf35736bb9fd01031ed9959a0a273501e43bf42ad251ec01dd5497",
+    "release/cgate-mock": "d250139e888ada6c3f76dae9c4c4eb8a9b632fab93d69491bbbfb5d0b2c3f139"
+  },
+  "rust_checks": [
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo build --release --workspace --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test -p cbus-mqtt cbz:: --offline",
+      "exit_code": 0,
+      "passed": 11,
+      "ignored": 0
+    },
+    {
+      "command": "cargo test -p cbus-mqtt --test cbz_input_safety --offline",
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0
+    }
+  ],
+  "python_checks": [
+    {
+      "scope": [
+        "test_firmware_update_release.py",
+        "test_firmware_update_faults.py",
+        "test_usb_dfu.py"
+      ],
+      "passed": 55,
+      "subtests_passed": 20,
+      "skipped": 0,
+      "junit_sha256": "008cdd8ffee8f55584b47e7f3cca2aca8ef04b2fb936bd724927837666aabb2b"
+    },
+    {
+      "scope": [
+        "test_executable_surface.py",
+        "test_dialog_map.py",
+        "test_skip_census.py",
+        "test_parity_register.py"
+      ],
+      "passed": 97,
+      "subtests_passed": 835,
+      "skipped": 0,
+      "junit_sha256": "25c8a39e99d9bd7b204590ab5d9b5522b5a53a5602680f235e8ea28b8f667d4f"
+    }
+  ],
+  "fresh_loopback_differentials": {
+    "products": [
+      "cgate-mock",
+      "cmqttd"
+    ],
+    "per_product": {
+      "session_id": 9,
+      "numeric_tag_session": 11,
+      "dbsetxml_unit": 12,
+      "combined_network": 2
+    },
+    "all_passed": true,
+    "physical_applicability_decisions": 3
+  },
+  "generated_checks": {
+    "contract_inventory": "current",
+    "parity_register": "current",
+    "dialog_map": "valid",
+    "skip_census": "current",
+    "test_modules": 517,
+    "native_runnable_tests": 244,
+    "native_selected_required_tests": 244,
+    "denominator_version": "provisional-2026-09-30.2",
+    "scope_items": 22103,
+    "obligations": 487,
+    "workflows": 28,
+    "functional_denominator_ready": false
+  },
+  "review_sha256": "947efe871c15958726052f40ba800da8fe3b4def505c4ad50f44437ad977643f",
+  "privacy": {
+    "five_imported_receipts_sanitized": true,
+    "six_current_differential_coordinates_normalized": true,
+    "raw_originals_retained_privately": true,
+    "result_and_source_binary_hashes_unchanged_by_sanitization": true,
+    "new_diff_private_coordinate_scan": "passed"
+  },
+  "limits": {
+    "full_suite_run": false,
+    "physical_network_tests": false,
+    "physical_usb_tests": false,
+    "full_toolkit_compatibility": false,
+    "full_cgate_compatibility": false,
+    "completion_gate_exit_code": 1
+  },
+  "documentation_correction": {
+    "source_commit": "56d9a5a5038f1d614b18e5fe53e35c11e4b9255e",
+    "local_integration_commit": "e86df9ed",
+    "scope": "New technical findings index, docs navigation and generic hardware-runbook redaction; domain source and executable evidence unchanged"
+  }
+}

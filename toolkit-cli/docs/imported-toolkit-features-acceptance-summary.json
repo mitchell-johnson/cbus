@@ -1,0 +1,535 @@
+{
+  "format": "cbus-imported-toolkit-features-focused-acceptance-v1",
+  "result": "focused_acceptance_passed_after_four_targeted_followups",
+  "publication_base": "9d399be55b90e2f6db03a08a5f452669b3392a05",
+  "scope": "Imported project documentation, thermostat settings/allocation, classic DLT indicators/TEXT dialog/broadcasts, RELDN and classic-to-Neo conversions, firmware cleanup receipts, executable/dialog/census/parity guards. No full suite.",
+  "implementation_provenance": [
+    {
+      "source_commit": "8be8077cabc63217ef892c688f1522cb1bb0ff58",
+      "local_integration_commit": "f250f74f",
+      "scope": "CBZ bounds"
+    },
+    {
+      "source_commit": "bc0d804955154503bcb8faabc8b470f0317abddf",
+      "local_integration_commit": "ecb0ba3f",
+      "scope": "OnColor census"
+    },
+    {
+      "source_commit": "43fd4e86f99b3023e0ba0ec0d6face48a8e9df95",
+      "local_integration_commit": "631b27b3",
+      "scope": "Project documentation"
+    },
+    {
+      "source_commit": "fc9fa08dc770898a92bbf2205c254bfd8190d3a1",
+      "local_integration_commit": "3115fc06",
+      "scope": "Thermostat temperature"
+    },
+    {
+      "source_commit": "6ef7b0ee008882158f76847d91db43956c0eb3e4",
+      "local_integration_commit": "bad8bb89",
+      "scope": "Thermostat allocation"
+    },
+    {
+      "source_commit": "096ea48e29a3227e9e44cf14319136b2e8edfda5",
+      "local_integration_commit": "2b3d5a9a",
+      "scope": "Thermostat callback evidence"
+    },
+    {
+      "source_commit": "2e2ef069caaa9feabe5d0e4e39df33d993ee15ef",
+      "local_integration_commit": "a024a6d7",
+      "scope": "DLT indicators"
+    },
+    {
+      "source_commit": "ae36e3110b08e569c96dfff291cfa0f2c8400554",
+      "local_integration_commit": "8b10ebaa",
+      "scope": "DLT TEXT dialog"
+    },
+    {
+      "source_commit": "3d0945a07576158994d693a56641fe0935247377",
+      "local_integration_commit": "3288dd96",
+      "scope": "DLT broadcast"
+    },
+    {
+      "source_commit": "b6b3112d0d7ec9b4fe40cdc5991af2b904f82e29",
+      "local_integration_commit": "b6fb8762",
+      "scope": "RELDN conversion"
+    },
+    {
+      "source_commit": "2e0abde4d1ec7031769a3d133ba13bb14e229492",
+      "local_integration_commit": "46fe1925",
+      "scope": "Classic-to-Neo conversion"
+    },
+    {
+      "source_commit": "711da3d18522d8dc86533c972d13061350c73572",
+      "local_integration_commit": "bc1f1d15",
+      "scope": "Firmware lifecycle"
+    }
+  ],
+  "root_validation_receipt": {
+    "path": "toolkit-cli/docs/imported-toolkit-root-validation.json",
+    "sha256": "5102b9e10f4ec31e3952d65837ed9d511b59a2aa926f1d03ff0361b5a874f0e7",
+    "executed_by": "root and focused implementation owner",
+    "fresh_root_checks_are_distinct_from_wheel_tests": true
+  },
+  "source_acceptance": {
+    "modules": [
+      "test_project_documentation.py",
+      "test_project_documentation_bridge.py",
+      "test_project_documentation_devices.py",
+      "test_project_documentation_native.py",
+      "test_project_documentation_status.py",
+      "test_project_documentation_usage.py",
+      "test_project_documentation_classic_key.py",
+      "test_project_documentation_classic_macro_source.py",
+      "test_project_documentation_outputs.py",
+      "test_project_documentation_trigger_original.py",
+      "test_thermostat_settings.py",
+      "test_thermostat_settings_guard.py",
+      "test_thermostat_settings_dialog_rules.py",
+      "test_thermostat_settings_native.py",
+      "test_thermostat_settings_temperature_vectors.py",
+      "test_thermostat_post_load.py",
+      "test_thermostat_post_load_native.py",
+      "test_thermostat_templates.py",
+      "test_thermostat_templates_native.py",
+      "test_classic_dlt_brightness_original.py",
+      "test_classic_dlt_indicators_gui_original.py",
+      "test_cli_dlt_indicators.py",
+      "test_dlt_indicators.py",
+      "test_dlt_indicators_native.py",
+      "test_classic_dlt_language_dialog_original.py",
+      "test_cli_dlt_language_dialog.py",
+      "test_dlt_language_dialog.py",
+      "test_dlt_language_dialog_native.py",
+      "test_dlt_language_dialog_review.py",
+      "test_classic_dlt_broadcast_original.py",
+      "test_classic_dlt_broadcast_results_original.py",
+      "test_cli_dlt_broadcast.py",
+      "test_dlt_broadcast.py",
+      "test_dlt_broadcast_native.py",
+      "test_dlt_broadcast_review.py",
+      "test_cli_dlt_controls.py",
+      "test_dlt_project_cli.py",
+      "test_cli_dlt_display.py",
+      "test_reldn_tweaker_native.py",
+      "test_toolkit_conversion_reldn.py",
+      "test_toolkit_conversion_tweakers.py",
+      "test_keytweaker_native.py",
+      "test_toolkit_conversion_key_to_neo.py"
+    ],
+    "test_modules": 43,
+    "actual_initial_run": {
+      "normal_passed": 809,
+      "subtests_passed": 1339,
+      "failed": 0,
+      "skipped": 0
+    },
+    "accepted_non_instruction_cases": 802,
+    "incorrectly_scoped_instruction_replay_cases": 7,
+    "selection_correction": "Absolute deselection arguments did not match relative pytest node IDs. All seven replay cases actually ran under unrestricted require_escalated, contrary to the required network-denied replay contract. This receipt gives those cases no fresh original-instruction acceptance credit; the raw report/JUnit and explicit correction remain preserved.",
+    "recorded_scoped_source_stable_during_run": true,
+    "source_subtests_not_added_to_wheel_totals": true,
+    "firmware_source": {
+      "normal_passed": 55,
+      "subtests_passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "new_release_cases": 14,
+      "cleanup_red_history": "Five failing outcomes over four focused acquisition-cleanup regressions were preserved before the implementation fix."
+    },
+    "root_guard_source": {
+      "normal_passed": 97,
+      "subtests_passed": 835,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "installed_wheel": {
+    "filename": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "sha256": "77565da62a9291b3bf0e4cbfae7912c7c9f20a270749d7205c741d25cc9e7896",
+    "package_files": 275,
+    "python": "3.13.14",
+    "installed_extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "dependencies": {
+      "cbus-toolkit-cli": "0.1.0",
+      "pytest": "9.1.1",
+      "cryptography": "50.0.1",
+      "pefile": "2024.8.26",
+      "unicorn": "2.1.4",
+      "capstone": "5.0.7",
+      "pyzipper": "0.3.6",
+      "pyserial": "3.5",
+      "pyusb": "1.3.1"
+    },
+    "offline_build_and_install": true,
+    "source_import_allowed": false,
+    "all_cbus_toolkit_imports_under_isolated_venv": true,
+    "module_path_shape": "venv/lib/python3.13/site-packages/cbus_toolkit/",
+    "every_wheel_package_file_matches_final_source_snapshot": true,
+    "every_final_package_source_file_still_matches_tested_snapshot": true,
+    "selected_modules": [
+      "test_project_documentation.py",
+      "test_project_documentation_bridge.py",
+      "test_project_documentation_devices.py",
+      "test_project_documentation_native.py",
+      "test_project_documentation_status.py",
+      "test_project_documentation_usage.py",
+      "test_project_documentation_classic_key.py",
+      "test_project_documentation_classic_macro_source.py",
+      "test_project_documentation_outputs.py",
+      "test_project_documentation_trigger_original.py",
+      "test_thermostat_settings.py",
+      "test_thermostat_settings_guard.py",
+      "test_thermostat_settings_dialog_rules.py",
+      "test_thermostat_settings_native.py",
+      "test_thermostat_settings_temperature_vectors.py",
+      "test_thermostat_post_load.py",
+      "test_thermostat_post_load_native.py",
+      "test_thermostat_templates.py",
+      "test_thermostat_templates_native.py",
+      "test_classic_dlt_brightness_original.py",
+      "test_classic_dlt_indicators_gui_original.py",
+      "test_cli_dlt_indicators.py",
+      "test_dlt_indicators.py",
+      "test_dlt_indicators_native.py",
+      "test_classic_dlt_language_dialog_original.py",
+      "test_cli_dlt_language_dialog.py",
+      "test_dlt_language_dialog.py",
+      "test_dlt_language_dialog_native.py",
+      "test_dlt_language_dialog_review.py",
+      "test_classic_dlt_broadcast_original.py",
+      "test_classic_dlt_broadcast_results_original.py",
+      "test_cli_dlt_broadcast.py",
+      "test_dlt_broadcast.py",
+      "test_dlt_broadcast_native.py",
+      "test_dlt_broadcast_review.py",
+      "test_cli_dlt_controls.py",
+      "test_dlt_project_cli.py",
+      "test_cli_dlt_display.py",
+      "test_reldn_tweaker_native.py",
+      "test_toolkit_conversion_reldn.py",
+      "test_toolkit_conversion_tweakers.py",
+      "test_keytweaker_native.py",
+      "test_toolkit_conversion_key_to_neo.py",
+      "test_firmware_update_release.py",
+      "test_firmware_update_faults.py",
+      "test_usb_dfu.py",
+      "test_executable_surface.py",
+      "test_dialog_map.py",
+      "test_skip_census.py",
+      "test_parity_register.py"
+    ],
+    "additional_guard_nodes": [
+      "test_coverage_require_complete.py::CoverageRequireCompleteTests::test_evidence_root_verifies_artifacts_without_claiming_full_parity"
+    ],
+    "initial_full_selected_run": {
+      "collected": 955,
+      "normal_passed": 951,
+      "normal_failed": 4,
+      "subtests_passed": 2191,
+      "skipped": 0,
+      "deselected": 7
+    },
+    "collection_gate": {
+      "exactly_seven_replay_nodes_removed_before_any_test_execution": true,
+      "deselected_nodes": [
+        "tests/test_project_documentation_usage.py::test_original_vectors_reproduce_in_opt_in_subprocess",
+        "tests/test_project_documentation_trigger_original.py::test_trigger_original_capture_reproduces_when_configured",
+        "tests/test_classic_dlt_brightness_original.py::BrightnessOriginalReplayTests::test_original_fragments_reproduce_retained_receipt",
+        "tests/test_classic_dlt_indicators_gui_original.py::test_fresh_original_component_replay_matches_retained_receipt",
+        "tests/test_classic_dlt_language_dialog_original.py::LanguageDialogOriginalReplayTests::test_fresh_source_and_original_button_match_receipt",
+        "tests/test_classic_dlt_broadcast_original.py::BroadcastOriginalReplayTests::test_fresh_original_broadcast_matches_receipt",
+        "tests/test_classic_dlt_broadcast_results_original.py::BroadcastResultsReplayTests::test_fresh_original_parser_matches_retained_receipt"
+      ],
+      "reason": "Original instruction replay requires an independently approved network-denied JIT harness; no such blanket DLT/documentation harness is approved for this batch. Static guards and owned Java/C-Gate evidence remain in scope."
+    },
+    "targeted_followups": [
+      {
+        "scope": [
+          "test_parity_register.py::ParityRegisterTests::test_closure_receipt_artifact_and_fingerprint_bind_closure",
+          "test_parity_register.py::ParityRegisterTests::test_packaged_invalidation_rules_match_their_reports_and_checkout",
+          "test_parity_register.py::ParityRegisterTests::test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts"
+        ],
+        "normal_passed": 3,
+        "subtests_passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "correction": "Stage exact current tracked .agents/.github/root reference closure. These are reference artifacts only; no src import path was added. Wheel, production and test bytes stayed unchanged."
+      },
+      {
+        "scope": [
+          "test_dlt_broadcast_native.py::NativeDltBroadcastTests::test_compiled_commands_reach_owned_independent_receiver"
+        ],
+        "normal_passed": 1,
+        "subtests_passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "elapsed_seconds": 6.52,
+        "correction": "Run the same native receiver test in isolation and retain read-only owned-child logs. Initial network initialization stayed state=new until the20s deadline; isolated rerun passed using the identical source/wheel and original20s deadline. No material code change was needed; deterministic native startup is not claimed."
+      }
+    ],
+    "aggregate": {
+      "unique_selected_cases_with_a_pass": 955,
+      "remaining_failed_selected_cases": 0,
+      "subtests_passed": 2194,
+      "subtest_accounting": "Initial four failed cases had zero successful subtests, verified against the original JUnit. Only three new follow-up subtest passes were added. Source subtests are counted separately.",
+      "skips": 0,
+      "intentional_original_replay_deselections": 7,
+      "single_clean_full_selected_repeat_claimed": false
+    },
+    "dlt_independent_receiver": {
+      "original_cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "compiled_receiver_cases": 9,
+      "no_command_dispositions": 3,
+      "network_state_before_commands": "sync",
+      "full_network_discovery_verified": false,
+      "synthetic_receiver_reload_equal": true,
+      "project_cleanup_errors": [],
+      "physical_display_or_image_cache_verified": false
+    },
+    "package_delta_from_scene_sentinel_wheel": {
+      "prior_wheel_sha256": "471f25e3dae4f6e7578ef01e6083e0f273dcefa9c998236534eb2b53b11f85b4",
+      "added_files": [
+        "dlt_broadcast.py",
+        "dlt_broadcast_cli.py",
+        "dlt_indicators.py",
+        "dlt_language_dialog.py",
+        "dlt_language_dialog_cli.py",
+        "project_documentation_outputs.py",
+        "toolkit_conversion_key_to_neo.py",
+        "toolkit_conversion_reldn.py"
+      ],
+      "changed_files": [
+        "capabilities.json",
+        "dlt_cli.py",
+        "firmware_update_run.py",
+        "parity-evidence.json",
+        "parity-obligations.json",
+        "project_documentation.py",
+        "project_documentation_devices.py",
+        "project_documentation_usage.py",
+        "thermostat_post_load.py",
+        "thermostat_settings.py",
+        "thermostat_templates.py",
+        "thermostat_templates_cli.py",
+        "toolkit_conversion_tweakers.py"
+      ],
+      "removed_files": [],
+      "unchanged_files": 254,
+      "source_sha256_for_added_changed_package_files": {
+        "dlt_broadcast.py": "704deded0ccb1d6dc23a4976fc9ed09bbde10c7dd77e8d93b59f39f5251eb46f",
+        "dlt_broadcast_cli.py": "c5fdbebcb941fd97584f4588f818cf503d3362d29b7f0040b792b83883f35778",
+        "dlt_indicators.py": "3aee9c5a3ac6c7b8c4461ace0b0b0dc101097a109a877618217b0f2c61d0b08c",
+        "dlt_language_dialog.py": "eeb2e0351f489a0316337590abf9a9dd4d11e103a339b6d931470b1f116b164a",
+        "dlt_language_dialog_cli.py": "aacf2dc9a1ec7467e5818752b102e074d27e0738e725ac617e9e2ca9945a7afa",
+        "project_documentation_outputs.py": "0a9df54eab639a742c3a1039aa0885734427e65465f94526221f58bfea53357f",
+        "toolkit_conversion_key_to_neo.py": "051831486d1aa0d49fd109484de5b9d84f7e983f777105f7b22f12cd134511c9",
+        "toolkit_conversion_reldn.py": "d33c36c2e6218a7cdc83cb3132337ba7a37f1284b739270ed383bc8bf5560591",
+        "capabilities.json": "2f2db33ca3602a8eb50c08393873d447463b1ea804683208c624c07c0051aed5",
+        "dlt_cli.py": "e1c5d1dda08a9835de351d220d38ba1e1ce377c263b1e12892932caf5999dee4",
+        "firmware_update_run.py": "9c718b654b076eebb28495b38e5675ab95f78f4f3e7ca601b93fc93bd2e766bc",
+        "parity-evidence.json": "5b829326dc919c2f340203b40d942e233bd330ff57e411a63627e1f91a41121f",
+        "parity-obligations.json": "5d6d2fdaef3638d643e1eba47d8da9352ef724169695f1067709556e8dfd1987",
+        "project_documentation.py": "f6fe27e1ba4709566e1caeb25b5729439ca84b71bf419d0e35db24db1403cb4c",
+        "project_documentation_devices.py": "527f496d7ddebede23eeaf7262409ea57a6c4bcd662360bc9007ba65f3561fc7",
+        "project_documentation_usage.py": "1bf1aa61899702b131c15794d2b4284f4a8a2a61d617c54ad12f1111adbf8005",
+        "thermostat_post_load.py": "27d2a9dd1fb06ff1795a8a2ba767fa1cf5a77a462fb2dd8654e63007bd0af0b0",
+        "thermostat_settings.py": "87c9a333ec184ec2c85cfe30306973e59b5e6408e63a32e3603915a1a1e0da8f",
+        "thermostat_templates.py": "2b5492d84d0cb46916059c5e96b126a9b550f8cebaed7d04f84e88ca3a333738",
+        "thermostat_templates_cli.py": "45b6ee299af1766797298feeeeb7219caae1110acbfead9131857d947b89e5b5",
+        "toolkit_conversion_tweakers.py": "efd67679c18184b99ab856552dfde9fa0a5477f5a4005823d07de0ef6f32539a"
+      }
+    }
+  },
+  "prior_evidence_carry_forward": {
+    "scene_sentinel_receipt": {
+      "path": "toolkit-cli/docs/dali-scene-level-acceptance-summary.json",
+      "sha256": "9b1b69c5786997d4ccdd7b180d9e2ecb0959d0e9dc025f2347f6fda2e6b0f7a8",
+      "installed_wheel_cases": 37,
+      "installed_wheel_subtests": 312
+    },
+    "prior_broad_dali_senll_receipt": {
+      "path": "toolkit-cli/docs/dali-senll-merged-acceptance-summary.json",
+      "sha256": "c7aaa387ebafe8dcbe470adc90328138e5a12f41c9497ef1aec91e871629fc4e"
+    },
+    "exact_unchanged_runtime_source_sha256": {
+      "dali_commissioning.py": "ba025c212ac399f67becd7a9891b3d7737949f328b49686e6e2010c37d1e99e4",
+      "dali_commissioning_cli.py": "e567b41f7d87f55a0d7672daeaef83b9f8276cf91a06aecb1411d5de0fd9f89c",
+      "light_level_sensors.py": "d6d33ebd0d91161022e162ceed2acc956afdc67bc359d402cb880981a3d07319",
+      "pir_sensors.py": "f4c7723f055daedd4a9363a4c95eba88f4b24286307af18d7103463003ea7adf",
+      "sensor_dialog_cli.py": "9878126b8672cd223a4ddbff7a9be7b96bd7e39a098e05a9371d23b157292c29",
+      "cli.py": "4557eeba0294b373d13d3ecab27470192084ed664e2fddfcd4cdb295ed495f67"
+    },
+    "exact_unchanged_rust_dali_source_sha256": {
+      "rust/cbus-cgate/src/service.rs": "00878bbed7eb3e2a073d4fdd4e16e64dd1f20a1cfa06c7c892d90dfc833b7592",
+      "rust/cbus-cgate/src/service/dali_specialized.rs": "837d8cde5029710d5ca4e38b9835b16aa43073c2a5757d60c914c1133508077d",
+      "rust/cbus-cgate/src/service/dali_proxy.rs": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7",
+      "rust/cbus-cgate/src/service/dali_proxy_lines.rs": "59981214582ee2ce0eb1d346d782132171b4a6f5b939a3188526b156f17ca331",
+      "rust/cbus-cgate/src/service/dali_journal.rs": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6"
+    },
+    "historical_broad_acceptance_relabelled_as_new_execution": false,
+    "new_cmqttd_dali_wire_or_sensor_acceptance_claimed": false
+  },
+  "artifact_hashes": {
+    "source/initial-report.json": {
+      "sha256": "e47f9ae26401fe605bcef013349412ea85559629fa094b8535a7fef11b13e6fd",
+      "bytes": 70239,
+      "retained_outside_git": true
+    },
+    "source/initial-junit.xml": {
+      "sha256": "b8c52ac141f974f018509404d28f8d29290c751d613d51304896bc4d0c9533ea",
+      "bytes": 142473,
+      "retained_outside_git": true
+    },
+    "source/initial-log.txt": {
+      "sha256": "5956e2ab7ddad4057a693ea4f7cd08aa5380c01537a0c6944e64049f6d6d7049",
+      "bytes": 1406,
+      "retained_outside_git": true
+    },
+    "source/selection-correction.json": {
+      "sha256": "f241866a8a0e4c194b4f3c01467d81b67a79c9d981e8dd2ee43d68ea1bc470f5",
+      "bytes": 3765,
+      "retained_outside_git": true
+    },
+    "source/scoped-inputs.json": {
+      "sha256": "edc8d65d52d6912971bc20febeeadfb71cfe26474e6714a1675a61432657f6f6",
+      "bytes": 23148,
+      "retained_outside_git": true
+    },
+    "source/runner.py": {
+      "sha256": "78d6f2c8570ed48a1302165cb57ba05283a5b541b9df30b64ffe8878a5192f63",
+      "bytes": 5785,
+      "retained_outside_git": true
+    },
+    "wheel/final-wheel.whl": {
+      "sha256": "77565da62a9291b3bf0e4cbfae7912c7c9f20a270749d7205c741d25cc9e7896",
+      "bytes": 2447579,
+      "retained_outside_git": true
+    },
+    "wheel/initial-report.json": {
+      "sha256": "8d89a70c6e73d804c7ffb02f7e02eaf74d52c4495b349c7a6fa832401ef15c52",
+      "bytes": 400253,
+      "retained_outside_git": true
+    },
+    "wheel/initial-junit.xml": {
+      "sha256": "3556578b6eb64e467e820589fd22a0417b060c4a5626ad1f1f796a6495a57e9a",
+      "bytes": 170806,
+      "retained_outside_git": true
+    },
+    "wheel/initial-log.txt": {
+      "sha256": "a40ab212e5de341c558977d0877d8cbca2c0bd698009e28afb964d9d7e766919",
+      "bytes": 8139,
+      "retained_outside_git": true
+    },
+    "wheel/preexecution-collection-gate.json": {
+      "sha256": "de7f39e7e859ed9d07463c2a42a3087d86e514f0d4c251af92e547586a4f511c",
+      "bytes": 2175,
+      "retained_outside_git": true
+    },
+    "wheel/input-manifest.json": {
+      "sha256": "bf489761bacfaf9945d01237f17c7a6f8d27bc1ecaeb201af08ee87e05c7da3a",
+      "bytes": 341485,
+      "retained_outside_git": true
+    },
+    "wheel/reference-closure-correction.json": {
+      "sha256": "67e574c27f04bf1f27275c26b86336c37adca6e0b7b602a9784731012fe11e37",
+      "bytes": 346146,
+      "retained_outside_git": true
+    },
+    "wheel/package-equality.json": {
+      "sha256": "2bbb34ac7bacd3ef80a60eabb283cfd5384c24cf2d034c67568e3a201ed94fcb",
+      "bytes": 2516,
+      "retained_outside_git": true
+    },
+    "wheel/runner.py": {
+      "sha256": "516b1a031c573da98668ac24fe4ee8af380edbf307c8752b6d1a69d0c747ed0a",
+      "bytes": 7201,
+      "retained_outside_git": true
+    },
+    "wheel/targeted-recheck-runner.py": {
+      "sha256": "98ca677a031bbe04d9c1c0ed9bb9ba8d74737dbad15d4ea970f9dd7167715a89",
+      "bytes": 6230,
+      "retained_outside_git": true
+    },
+    "wheel/three-guard-recheck-report.json": {
+      "sha256": "0b671fd2d1bec9614d86ec63160d55e106a015340b517f6cfa70792e2de811a4",
+      "bytes": 1960,
+      "retained_outside_git": true
+    },
+    "wheel/three-guard-recheck-junit.xml": {
+      "sha256": "6fdec43961635c4801eb19b75ca986c4499e9b3b83996de2be7b74c45e077997",
+      "bytes": 711,
+      "retained_outside_git": true
+    },
+    "wheel/three-guard-recheck-log.txt": {
+      "sha256": "1aaac8dfba9aeb0c7d8e89cb9dcefc1a959502ae0a776834191f6a06714a272b",
+      "bytes": 528,
+      "retained_outside_git": true
+    },
+    "wheel/dlt-recheck-report.json": {
+      "sha256": "018ee0ccd6a39f3b0383632be163b4682d947c196ad3f7f4d67cbba1c9384723",
+      "bytes": 4386,
+      "retained_outside_git": true
+    },
+    "wheel/dlt-recheck-junit.xml": {
+      "sha256": "1b159f9e9dcd938e51d8f7422b14cddc7a6239dabdff0a1f34004b682a327bad",
+      "bytes": 397,
+      "retained_outside_git": true
+    },
+    "wheel/dlt-recheck-log.txt": {
+      "sha256": "bfdb61fb78d8c2a097491c65d63404f769b9b5f6601f57c666157ad2a13d4490",
+      "bytes": 515,
+      "retained_outside_git": true
+    },
+    "wheel/dlt-owned-child-logs.json": {
+      "sha256": "2b314f13fb3cf3af1413076481601896dc17b0fd9eb1edac122c75cbe64050a1",
+      "bytes": 284,
+      "retained_outside_git": true
+    },
+    "wheel/dlt-independent-receiver-report.json": {
+      "sha256": "521e47ae2245f713afa01977b4e4e397c634ab7429da4cdf88ba4aaf4b891b7f",
+      "bytes": 25834,
+      "retained_outside_git": true
+    },
+    "firmware/source-red-junit.xml": {
+      "sha256": "39acef3ea6d697e137117fa85a76e4fbe14ded931aff625c37fd1474f453644c",
+      "bytes": 5872,
+      "retained_outside_git": true
+    },
+    "firmware/source-green-junit.xml": {
+      "sha256": "008cdd8ffee8f55584b47e7f3cca2aca8ef04b2fb936bd724927837666aabb2b",
+      "bytes": 8801,
+      "retained_outside_git": true
+    },
+    "firmware/owner-source-validation.json": {
+      "sha256": "de87b50efd39b35d045a06aeedfee73f9143cb2888a63018f360e8e75ff4196d",
+      "bytes": 3161,
+      "retained_outside_git": true
+    },
+    "preparation/abandoned-snapshot.json": {
+      "sha256": "eee1c6037639034916c06266c630194201be645f2e3289f50b0431f1411bb49a",
+      "bytes": 477,
+      "retained_outside_git": true
+    }
+  },
+  "limits": {
+    "full_suite_run": false,
+    "new_original_instruction_replay_acceptance": false,
+    "original_full_toolkit_gui_executed": false,
+    "household_or_site_endpoint_used": false,
+    "physical_cbus_devices_verified": false,
+    "physical_usb_enumeration_or_update": false,
+    "vendor_firmware_payload_installed": false,
+    "physical_rendering_flash_or_power_cycle_persistence_verified": false,
+    "firmware_package_cross_read_identity_binding": "Outstanding: inspection and selected-image loading reopen the package separately; same-size replacement is not cross-checked against the inspected plan digest/CRC. Immutable snapshot and pre-USB identity binding require a separate fix. This cleanup-receipt acceptance does not cover that boundary.",
+    "source_full_gui_and_physical_acceptance_unresolved": true,
+    "full_toolkit_or_cgate_feature_parity_claimed": false,
+    "functional_denominator_ready": false,
+    "coverage_require_complete_expected_exit_code": 1
+  }
+}

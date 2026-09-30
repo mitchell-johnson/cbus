@@ -31,7 +31,7 @@ class PostLoadReplayTests(unittest.TestCase):
     def test_scalar_brightness_uses_original_two_integer_divisions(self):
         # Literal source-derived vectors in thermostat-settings-save-static.json.
         inputs = {'BeepEnable': 1, 'VariableFanCoilEnable': 0, 'TemperatureUnits': 0,
-                  'ControlledZones': 1, 'InternalPlantType': 3, 'TimerEnable': 1}
+                  'ControlledZones': 1, 'InstalledZones': 1, 'InternalPlantType': 3, 'TimerEnable': 1}
         fields = ('DisplayBacklightIdleBrightness', 'DisplayBacklightActiveBrightness',
                   'KeyBacklightIdleBrightness', 'KeyBacklightActiveBrightness')
         for raw, expected in ((0, 0), (1, 2), (2, 2), (3, 2), (4, 5), (5, 5), (6, 7),
@@ -133,6 +133,31 @@ class PostLoadReplayTests(unittest.TestCase):
                     self.assertEqual([replay.expected[f'InternalRelay{n}GroupNumber'] for n in range(1, 6)],
                                      [1, 2, 3, 4, 255])
                     self.assertTrue(set(stale.values()).isdisjoint(op.address for op in replay.group_operations))
+
+    def test_two_stage_allocation_requires_explicit_empty_address_order(self):
+        # Original comparator/insertion/GetNewGroup receipt: the fresh manager
+        # contains [255,2,3,5,6] before W2; reverse-prefix search chooses 7.
+        loaded = values(InternalPlantType=9, CoolStage1Output=5, CoolStage2Output=2,
+                        CoolFanLowOutput=3, HeatStage1Output=6, HeatStage2Output=5)
+        for family in ('basic', 'programmable'):
+            with self.subTest(family=family):
+                with self.assertRaisesRegex(ThermostatPostLoadError, 'GetNewGroup'):
+                    replay_post_load(loaded, family, 9, {})
+                replay = replay_post_load(loaded, family, 9, {}, group_sort='address-ascending')
+                self.assertEqual([replay.expected[f'InternalRelay{n}GroupNumber'] for n in range(1, 6)],
+                                 [5, 2, 3, 6, 7])
+                self.assertEqual({op.address: op.tag for op in replay.group_operations},
+                                 {255: '<Unused>', 5: '[CG01] Y (cool)', 2: '[CG01] Y2 (cool)',
+                                  3: '[CG01] G (fan)', 6: '[CG01] W (heat)', 7: '[CG01] W2 (heat)'})
+                self.assertEqual(replay.as_dict()['group_sort'], 'address-ascending')
+        for inventory in ({255: '<Unused>'}, {4: 'Spare'}, {7: '[CG01] Old'}):
+            with self.assertRaisesRegex(ThermostatPostLoadError, 'initially empty'):
+                replay_post_load(loaded, 'basic', 9, inventory, group_sort='address-ascending')
+        class SortText(str):
+            pass
+        for invalid in (True, 0, 'tag', 'address-descending', SortText('address-ascending')):
+            with self.assertRaisesRegex(ThermostatPostLoadError, 'Group sort'):
+                replay_post_load(loaded, 'basic', 9, {}, group_sort=invalid)
 
     def test_form_save_fan_rules(self):
         # Heating-only plant without vent mode on a master: speed control and speeds are zeroed.

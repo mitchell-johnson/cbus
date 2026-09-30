@@ -69,7 +69,7 @@ From `rust/`, run `cargo fmt --check`,
 `cargo build --release --workspace`. The focused Rust filters and exact
 Python selections are retained with the acceptance receipts.
 
-From `toolkit-cli/`, use the native setup in [testing](testing.md), set
+From `toolkit-cli/`, use the native setup in [testing](../../docs/testing.md), set
 `CBUS_CMQTTD_BIN` to the freshly built daemon and run the modules listed in
 the feature contracts. Installed-wheel checks must run outside the source
 checkout and verify import paths. Native services and private vendor inputs

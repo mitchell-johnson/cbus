@@ -1,7 +1,7 @@
 {
   "counts": {
     "components": 10102,
-    "event_bindings": 1892,
+    "event_bindings": 1839,
     "map_bound_forms": 412,
     "opaque_rcdata_resources": 4,
     "parse_errors": 0,
@@ -14643,46 +14643,6 @@
       ],
       "event_bindings": [
         {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbLocalToggle/ledLocalToggleActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOnActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOffActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledBurdenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledRestrikeTimingActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledClockGenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledLearnModeActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbVoltage/ledMainsPresent",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
           "component_path": "frmCBusUnitStatus/ActionList1/actUpdateStatus",
           "handler": "actUpdateStatusExecute",
           "property": "OnExecute"
@@ -17627,31 +17587,6 @@
           "component_path": "frmDIMARXChannelStatus/grdChannelStatus/tvChannelStatus",
           "handler": "tvChannelStatusCustomDrawCell",
           "property": "OnCustomDrawCell"
-        },
-        {
-          "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic1Active",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic2Active",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic3Active",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMARXChannelStatus/GroupBox1/ledLoadShedActive",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMARXChannelStatus/GroupBox1/ledHalogenActive",
-          "handler": "clRed",
-          "property": "OnColor"
         }
       ],
       "map_bound": true,
@@ -18077,66 +18012,6 @@
           "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/lblChannelStatus9",
           "handler": "chkDIMDUChannelStatus1MouseMove",
           "property": "OnMouseMove"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus1",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus2",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus3",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus4",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus8",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus7",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus6",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus5",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus12",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus11",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus10",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus9",
-          "handler": "clRed",
-          "property": "OnColor"
         }
       ],
       "map_bound": true,
@@ -20312,53 +20187,7 @@
           "path": "frmDSIChannelStatus/ChannelsLink"
         }
       ],
-      "event_bindings": [
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus1",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus3",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus5",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus7",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus2",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus4",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus6",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus8",
-          "handler": "clRed",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmDSIChannelStatus/gbPowerStatus/ledDSIPower",
-          "handler": "clLime",
-          "property": "OnColor"
-        }
-      ],
+      "event_bindings": [],
       "map_bound": true,
       "resource_name": "TFRMDSICHANNELSTATUS",
       "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
@@ -29506,56 +29335,6 @@
         }
       ],
       "event_bindings": [
-        {
-          "component_path": "frmIOPEStatus/gbVoltage/ledMainsPresent",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbGlobalStatus/ledBurdenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbGlobalStatus/ledRestrikeTimingActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbGlobalStatus/ledClockGenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbRemote/ledRemoteOnActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbRemote/ledRemoteOffActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbSensorState/ledSensor1Active",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbSensorState/ledSensor2Active",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbRelayStatus/ledRelay1FailSafe",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmIOPEStatus/gbRelayStatus/ledRelay2FailSafe",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
         {
           "component_path": "frmIOPEStatus/ActionList/actUpdateStatus",
           "handler": "actUpdateStatusExecute",
@@ -53734,46 +53513,6 @@
           "property": "OnClick"
         },
         {
-          "component_path": "frmStatus/gbVoltage/ledMainsPresent",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbGlobalStatus/ledBurdenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbGlobalStatus/ledRestrikeTimingActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbGlobalStatus/ledClockGenActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbGlobalStatus/ledLearnModeActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbRemote/ledRemoteOnActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbRemote/ledRemoteOffActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
-          "component_path": "frmStatus/gbLocalToggle/ledLocalToggleActive",
-          "handler": "clLime",
-          "property": "OnColor"
-        },
-        {
           "component_path": "frmStatus/ActionList/actSupport",
           "handler": "actSupportExecute",
           "property": "OnExecute"
@@ -53908,13 +53647,7 @@
           "path": "frmStatusVoltage/gbVoltage/vpVoltageDisplay"
         }
       ],
-      "event_bindings": [
-        {
-          "component_path": "frmStatusVoltage/gbVoltage/ledMainsPresent",
-          "handler": "clLime",
-          "property": "OnColor"
-        }
-      ],
+      "event_bindings": [],
       "map_bound": true,
       "resource_name": "TFRMSTATUSVOLTAGE",
       "resource_sha256": "24f1c9b7e340ca636814b3833f35e02112e878d5b827c088d869c87b23e0dcb1",

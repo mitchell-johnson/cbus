@@ -13,26 +13,29 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 | Product | Compatibility measure | Current state |
 | --- | --- | --- |
-| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The evidence register has **22,156 provisional source records**, a scoped original-differential receipt and three source-bound physical-applicability decisions for `SESSION_ID`, and **zero fully accepted obligations**. Its functional denominator is incomplete, so the functionality percentage is unavailable. The 42-area ledger records 18 implemented, 22 in progress and 2 pending; **18/42 = 42.86%** measures only those broad rows. |
+| `cbus-toolkit` | Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001 workflow parity | The evidence register has **22,103 provisional source records**, a scoped original-differential receipt and three source-bound physical-applicability decisions for `SESSION_ID`, and **zero fully accepted obligations**. Its functional denominator is incomplete, so the functionality percentage is unavailable. The 42-area ledger records 18 implemented, 22 in progress and 2 pending; **18/42 = 42.86%** measures only those broad rows. |
 | `cmqttd --cgate-bind` | Primary routing for the maintained C-Gate command inventory | **431 paths: 230 physical, 199 local/session, 0 blanket fail-closed 502, and 2 native-obsolete.** All **429/429 non-obsolete** primary paths are routed (100% command-path routing) and `full_cgate_command_path_coverage` is `true`. `full_cgate_compatibility` remains `false` because selector-specific, vendor-format, device/topology/timing, and physical-acceptance boundaries remain. |
 | `cgate-mock` | In-memory C-Gate command surface | All **431** maintained paths parse and dispatch with deterministic protocol-shaped behavior. It does not provide persistent vendor storage, physical C-Bus effects, or device timing. |
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
-The [30 September feature batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
-details the latest DALI, SENLL, classic DLT, thermostat and project-documentation
-changes, their validation and remaining work.
+The latest [conversion, DLT and temperature batch](toolkit-cli/docs/feature-batch-2026-09-30-conversions-dlt-temperature.md)
+documents the new conversion profiles, ordered DLT controls, thermostat rules,
+project reports and input/cleanup fixes, with their validation and remaining work.
+The earlier [DALI/SENLL batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
+retains its separate source-bound acceptance record.
 
 ## Which program do I need?
 
 | I want to… | Use |
 | --- | --- |
 | Create, inspect, edit, validate, or export Toolkit XML/CBZ projects | `cbus-toolkit project` |
-| Generate project HTML from saved XML/CBZ or a native XML snapshot | `cbus-toolkit project document` ([scope](toolkit-cli/docs/project-documentation.md)) |
-| Edit classic DLT labels, database dynamic-update blocking, indicator/display/clock controls, or saved project label text | `cbus-toolkit dlt labels`, `dlt display`, `dlt text`, and `cgate unit ... dlt-labels` ([labels](toolkit-cli/docs/classic-dlt-label-controls.md), [display](toolkit-cli/docs/classic-dlt-display.md)) |
+| Generate project HTML with supported device tables, key macros and group/action usage from saved XML/CBZ or native XML | `cbus-toolkit project document` ([profiles and limits](toolkit-cli/docs/project-documentation.md)) |
+| Edit classic DLT label/display settings, ordered indicator controls, or existing-language project TEXT | `cbus-toolkit dlt labels`, `display`, `indicators`, `text`, `text-dialog` and `cgate unit ... dlt-labels` ([indicators](toolkit-cli/docs/classic-dlt-indicators.md), [TEXT dialog](toolkit-cli/docs/classic-dlt-language-dialog.md)) |
+| Compile one classic DLT label broadcast and assess supplied outcomes offline | `cbus-toolkit dlt broadcast plan` / `assess` ([command and evidence boundary](toolkit-cli/docs/classic-dlt-broadcast.md)) |
 | Plan or save SENLL groups, broadcast interval, power-up state and Global status interval | `cbus-toolkit sensors light-level-plan` and `cgate unit ... sensor-light-level` ([profiles and limits](toolkit-cli/docs/sensors.md)) |
 | Extract or deploy supported DALI device and gateway settings | `cbus-toolkit cgate dali` through cmqttd, including its 133 advertised global gateway fields ([workflow](toolkit-cli/docs/dali-commissioning.md)) |
-| Preview or save supported database thermostat settings and templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [templates](toolkit-cli/docs/thermostat-templates.md)) |
+| Preview or save database thermostat settings, explicit Celsius/Fahrenheit form normalization and supported templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [template allocation](toolkit-cli/docs/thermostat-templates.md)) |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
@@ -87,14 +90,48 @@ cbus-toolkit dlt text plan --project-xml saved-dbgetxml.xml --target //PROJECT/2
 cbus-toolkit dlt text apply --project-xml saved-dbgetxml.xml --plan text-plan.json --output labelled.xml
 ```
 
-These write new local files. Project HTML marks unrecovered device bodies and
-usage; original-page byte/visual parity is unassessed. Classic DLT text edits
-use explicit numeric language and variant IDs, preserve unrelated metadata,
-and do not transfer or render labels on a device. Supported thermostat
-settings instead use a closed database unit, explicit exclusive project
-ownership and separately supplied specifications; preview shows requested
-and dependent form-save changes before one verified save/reload. See the
-linked workflow contracts for admission and remaining GUI/physical limits.
+These write new local files. Project HTML includes recovered output tables,
+KEY1/2/4 macros and supported group/action usage, with explicit markers for
+remaining bodies. Original full-page byte/visual parity is unassessed.
+
+The separate classic TEXT dialog reproduces its selected existing language,
+default-text and finalization rules. Ordered indicator controls operate on a
+supported unit PP snapshot and require its separately supplied specification:
+
+```sh
+cbus-toolkit dlt text-dialog plan --project-xml saved-dbgetxml.xml \
+  --target //PROJECT/254/56/20 --language 1 --variant 1 --text Kitchen > dialog-plan.json
+cbus-toolkit dlt text-dialog apply --project-xml saved-dbgetxml.xml \
+  --plan dialog-plan.json --output dialog-labelled.xml
+cbus-toolkit dlt --spec-dir private/decoded/unitspec indicators plan \
+  --project-xml saved-dbgetxml.xml --unit //PROJECT/254/p/1 \
+  --indicator-control page_fallback=yes --indicator-control duration_seconds=5 > indicator-plan.json
+```
+
+Use a snapshot containing the selected admitted unit, language and group.
+Indicator order matters; inspect enabled controls, initialization changes and
+save/reopen normalization in the plan. These local workflows do not transfer
+or render labels. The separate `dlt broadcast plan/assess` compiles supplied
+label/bitmap facts and assesses supplied command outcomes; it sends no traffic
+and provides no automatic retry.
+
+Supported thermostat settings use a closed database unit, explicit exclusive
+project ownership and separately supplied specifications. Preview shows
+requested and dependent changes before one verified save/reload. Pass
+`--temperature-preference celsius` or `fahrenheit` explicitly to include
+the 15 recovered form temperature fields; this process preference is
+independent of the device's `TemperatureUnits` setting. Template 9 allocation
+requires its documented initially empty application and explicit
+`--group-sort address-ascending` profile.
+
+The separate [Toolkit conversion API](toolkit-cli/docs/toolkit-conversion-tweakers.md)
+admits 108 registered source/target pairs with native database evidence,
+including seven relay directions and 93 classic-to-Neo directions. Its
+source-preservation and refusal rules are documented independently of the
+typed C-Gate conversion command. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
+also separates image verification from USB cleanup and explains explicit
+resume after a release failure. Full GUI and physical acceptance remain open
+for these workflows.
 
 ### Connect to C-Gate
 
@@ -202,8 +239,8 @@ The second form checks every recorded evidence artifact against a trusted
 Toolkit source checkout; the first reports packaged declarations and cannot
 pass the final gate without that byte verification.
 Completion is now derived from the packaged [functional parity register](toolkit-cli/docs/parity-register.md),
-which accounts for 22,156 committed source-surface records, including 412
-parsed Toolkit forms, 10,102 executable controls and 1,892 event bindings, but
+which accounts for 22,103 committed source-surface records, including 412
+parsed Toolkit forms, 10,102 executable controls and 1,839 event bindings, but
 keeps functional percentages unavailable until they are resolved into a
 complete denominator. Its generated C-Gate contract inventory maps all 431
 primary and 11 supplement paths across selector, session, target,

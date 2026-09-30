@@ -1,0 +1,306 @@
+{
+  "checks": {
+    "0x7e83f0": true,
+    "0x7e8483": true,
+    "0x7e859e": true,
+    "0x7e85aa": true,
+    "0x7e85be": true,
+    "0x7e85ce": true,
+    "0x7e8f83": true,
+    "0x7e8f91": true,
+    "0x7e9910": true,
+    "0x7e9930": true,
+    "0x7e998a": true,
+    "0x7e99a5": true,
+    "0x7e9a99": true,
+    "0x7e9abb": true,
+    "0x7e9ad5": true,
+    "0x7e9af6": true,
+    "0x7e9b1f": true,
+    "0x7e9b59": true,
+    "0x7e9b88": true,
+    "0x7e9ff2": true,
+    "0x85b42c": true,
+    "0xf257ad": true,
+    "0xf257b4": true,
+    "0xf257bf": true,
+    "0xf257d0": true,
+    "0xf482a7": true,
+    "0xf482b1": true,
+    "0xf482b6": true,
+    "0xf48307": true,
+    "0xf48311": true,
+    "0xf48355": true,
+    "0xf4835f": true,
+    "0xf48510": true,
+    "0xf4875b": true,
+    "0xf487d4": true,
+    "0xf4880f": true,
+    "0xf4881d": true,
+    "0xf48860": true,
+    "0xf48867": true,
+    "0xf4886c": true,
+    "0xf48884": true,
+    "0xf4888b": true,
+    "0xfe2935": true,
+    "0xfe293d": true,
+    "0xfe2976": true,
+    "0xfe297e": true,
+    "0xfe299f": true,
+    "0xfe3382": true,
+    "0xfe338a": true,
+    "0xfe33ac": true,
+    "0xfe33b4": true,
+    "0xfe33d3": true,
+    "fresh_template9_address_sort": true,
+    "fresh_template9_allocates7": true,
+    "group_manager_vmt_insert_chain": true,
+    "unsorted_initial_list_is_not_repaired_by_insert": true
+  },
+  "format": "cbus-toolkit-thermostat-group-order-static-v1",
+  "general_existing_manager_blockers": [
+    "TFlashObjectReferenceCollection.AddReference (0x7e83f8) directly TList.Adds at 0x7e8483, without the sorted insertion path.",
+    "TCGateObjectManager.LoadAndSort (0xf48798) explicitly resolves objects and then sorts; the full cached/native application-load path to that completion is not established here.",
+    "Address/tag changes can schedule a 1ms sort through SetAfterChangeTimerEnabled (0xf487e0) and HandleAfterChangeTimerTrigger (0xf48708); pending GUI event state is absent from a PP snapshot and DBGETXML.",
+    "OnReferencedObjectChange (0x7e9b70) can synchronously sort, but this does not prove every initial reference has completed its loading/change notifications.",
+    "Known sort preference alone is insufficient for arbitrary existing manager load state; new sorted insertions do not generally repair an unsorted initial collection."
+  ],
+  "group_manager_vmt": {
+    "0x58": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetCount",
+    "0x5c": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem",
+    "0x64": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.AddObject",
+    "0x68": "CIS_TCustomFlashObject.TFlashObjectCollection.Append"
+  },
+  "limit": "Static source evidence and independent branch projections only. No original GUI, native application-load ordering, or physical thermostat execution occurred.",
+  "method_spans": {
+    "CIS_GlobalSoftwareParameters.SortModeGroupsUseAddress": {
+      "end": "0x85b43c",
+      "sha256": "29c9ec42994f8ce7dcf3c3f863c01fc292d7f4514b05ef912f42da2e178fd236",
+      "start": "0x85b428"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.CustomSortAddressAsc": {
+      "end": "0xf48488",
+      "sha256": "b5bd0358ec5d6c19a91107df4a3969458b4a7ad4f03bf43c61e1bf1508aec565",
+      "start": "0xf4825c"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.CustomSortTagNameAsc": {
+      "end": "0xf48708",
+      "sha256": "d6005d0f610c5d92df7c4846c76a355e0823fee802d849e43020e395458e1bda",
+      "start": "0xf48488"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.HandleAfterChangeTimerTrigger": {
+      "end": "0xf48764",
+      "sha256": "00e42c5ff7d77f4a8cff15b6cb93a027a3bfc24d31d76f169980de62729632b4",
+      "start": "0xf48708"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.LoadAndSort": {
+      "end": "0xf487e0",
+      "sha256": "07225b4cb7f3f8f3f8905956c308890e60e23db28645329d5498521dba60d536",
+      "start": "0xf48798"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetAfterChangeTimerEnabled": {
+      "end": "0xf48850",
+      "sha256": "49801b500170370f219c0d2c41c82a7f6b32f49842b545587916a4f80909bc02",
+      "start": "0xf487e0"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomAddressAsc": {
+      "end": "0xf48874",
+      "sha256": "3330851a47529c9fc524358e61092edb4ad19601c69bfc38f4c7dc810b7d406b",
+      "start": "0xf48850"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomTagNameAsc": {
+      "end": "0xf48898",
+      "sha256": "01ee4000697615582739b0f2728059b078837628a14a59defd18822492bd2896",
+      "start": "0xf48874"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.InternalCreate": {
+      "end": "0xf25858",
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a",
+      "start": "0xf25704"
+    },
+    "CIS_TCommonCBus.TCBusInstallation.SortAll": {
+      "end": "0xf33430",
+      "sha256": "efa408665292c36e15f7f35d378c5b2f78827e905b6563cf58de1053a37d7195",
+      "start": "0xf33190"
+    },
+    "CIS_TCustomFlashObject.QuickInsert": {
+      "end": "0x7e9b30",
+      "sha256": "e4143c93209136ddd59564fa205e46041e67770b0e99a8aa7a3de2c4248c6651",
+      "start": "0x7e9a84"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.Append": {
+      "end": "0x7ea004",
+      "sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45",
+      "start": "0x7e9fd0"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.AddObject": {
+      "end": "0x7e83f8",
+      "sha256": "3d0c5af822faa39ae53d3e055112388cb20cbecaba8726d4e13ce46086bfdfa1",
+      "start": "0x7e83dc"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.AddReference": {
+      "end": "0x7e84ac",
+      "sha256": "e5974bb44a1d6a747aae079613ec7646ed1fdeed400132fd80858b1ec08cb779",
+      "start": "0x7e83f8"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": {
+      "end": "0x7e8730",
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3",
+      "start": "0x7e84ac"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Compare": {
+      "end": "0x7e9978",
+      "sha256": "4010c8b23fb9138f5051c5f4ae0948b9369c812f32f92e1226988b7015e539ef",
+      "start": "0x7e98f8"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem": {
+      "end": "0x7e8fa8",
+      "sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c",
+      "start": "0x7e8f74"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetSortedInsertLocation": {
+      "end": "0x7e9b70",
+      "sha256": "7603adf73bc8371cedfabafb1463fa7963bf1bc923ba242978d4b76b2fd41ed7",
+      "start": "0x7e9b30"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange": {
+      "end": "0x7e9b94",
+      "sha256": "109f4964f42a44dc31e9acdc162af532ee25f7a904266ced3ff8f936cae5b565",
+      "start": "0x7e9b70"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveAllReferences": {
+      "end": "0x7e928c",
+      "sha256": "f859c3279c335507b4e3b49844a4a22e97a6b0a8b79ee67e5de282319e39b3d3",
+      "start": "0x7e9240"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetSortStyle": {
+      "end": "0x7e99b0",
+      "sha256": "db6638575da006b04c97fb19c7dd4bf8e108c5a6a60bd4ee1751a41ae457d19d",
+      "start": "0x7e9978"
+    },
+    "CIS_TThermostat.GetNewGroup": {
+      "end": "0xfe32bc",
+      "sha256": "4e5c5dbcade62497ebdd019e8e681d3ba2d7e157b07d0e7d3cee669c5562cc34",
+      "start": "0xfe2f3c"
+    },
+    "CIS_TThermostat.TPlantControlService.CreateAndRenameGroup": {
+      "end": "0xfe2a74",
+      "sha256": "e1932a6126eda2f6405fc5677e8fb6adff09dd659d29d17134f023912ebb9c7b",
+      "start": "0xfe2830"
+    },
+    "CIS_TThermostat.TPlantControlService.GetGroup": {
+      "end": "0xfe35d0",
+      "sha256": "316f10ba72f693f6a9e1996b3155bde04dc4743f2f44707d37f23a602a05f49f",
+      "start": "0xfe32bc"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "production_allocator_enabled": false,
+  "proposed_optional_slice": {
+    "implementation_status": "Evidence only; no production path or admission added.",
+    "required_context": [
+      "explicit address-ascending original preference",
+      "initial output application group inventory is empty"
+    ],
+    "template9_W2_address": 7,
+    "template9_final_relay_addresses": [
+      5,
+      2,
+      3,
+      6,
+      7
+    ],
+    "template9_insertion_trace": [
+      {
+        "created_address": 255,
+        "insert_position": 0,
+        "resulting_addresses": [
+          255
+        ]
+      },
+      {
+        "created_address": 5,
+        "insert_position": 1,
+        "resulting_addresses": [
+          255,
+          5
+        ]
+      },
+      {
+        "created_address": 3,
+        "insert_position": 1,
+        "resulting_addresses": [
+          255,
+          3,
+          5
+        ]
+      },
+      {
+        "created_address": 6,
+        "insert_position": 3,
+        "resulting_addresses": [
+          255,
+          3,
+          5,
+          6
+        ]
+      },
+      {
+        "created_address": 2,
+        "insert_position": 1,
+        "resulting_addresses": [
+          255,
+          2,
+          3,
+          5,
+          6
+        ]
+      }
+    ],
+    "unchanged_refusals": [
+      "omitted or other sort context when GetNewGroup is needed",
+      "initially nonempty application when GetNewGroup is needed",
+      "preexisting thermostat-prefix groups"
+    ]
+  },
+  "source_rules": {
+    "address_compare": "Numeric address difference for ordinary groups; address255 sorts first.",
+    "initialization": "Application InternalCreate reads the process group sort preference; it installs custom address-ascending or tag-name-ascending sortstyle3.",
+    "insertion": "AddObject dispatches through GroupManager VMT to collection Append, which uses QuickInsert plus TList.Insert while sorted. It does not append at the end.",
+    "scope": "An initially empty manager is trivially sorted. Under an explicitly selected address sort, sorted insertion preserves exact numeric order for newly created unique-address groups. This proves the fresh application slice without using database XML child order.",
+    "tag_compare": "SysUtils.AnsiCompareText, with address255 first; locale-sensitive comparison is not projected by this receipt."
+  },
+  "supporting_receipts": [
+    "thermostat-post-load-static.json",
+    "thermostat-group-allocation-static.json"
+  ],
+  "unsorted_initial_counterexample": {
+    "initial": [
+      5,
+      1,
+      7,
+      3
+    ],
+    "inserted": [
+      6,
+      4,
+      2
+    ],
+    "inserted_subsequence": [
+      4,
+      2,
+      6
+    ],
+    "result": [
+      4,
+      5,
+      1,
+      2,
+      6,
+      7,
+      3
+    ]
+  }
+}

@@ -11,8 +11,18 @@ from typing import Protocol
 
 from .din_output_settings import PROFILES
 from .macros import STAGES, SUPPORTED_UNITS
+from .project_documentation_outputs import output_profile
 
 CLASSIC_OUTPUT_CHANNELS = {"RELAY1": 1, "RELAY2": 2, "RELAY4": 4, "DIMMER4": 4, "AN_OUT4": 4}
+DIRECT_ACTIONS = {
+    "FanController": ("RELDF1", "FanTriggerGroup", "FanActionSelector", "Fan Speed Cycle"),
+    "SENTEMPPro": ("SENTEMPB", "BroadcastTriggerGroup", "BroadcastTriggerLevel", "Trigger Temperature Broadcast"),
+}
+DIGITAL_ACTIONS = (
+    ("ErrorReportingTriggerGroup", "ErrorReportingActionSelector", "Trigger Error Report"),
+    ("BroadcastTriggerGroup", "BroadcastActionSelector", "Trigger Temperature Report"),
+)
+DIGITAL_CHANNEL_COUNT = 4
 NO_INDICATOR_BRIGHTNESS = frozenset({"KEYBC2", "KEYBC4", "KEYAUX4", "DINAUX4"})
 GROUP_LABELS = ("Channel %d", "Logic Group", "Logic Group (Unused)", "Key %d", "Block (Unused)",
                 "Area Group", "Indicator Brightness Group")
@@ -59,8 +69,28 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
     if kind not in {"input", "output", "other"}:
         raise ValueError("Group usage kind must be input, output or other")
     typ = unit.unit_type.upper()
+    if typ == "SENTEMP4":
+        return _digital_group_usage(unit, application, group, kind)
+    if typ == "RELDF1":
+        if kind == "other":
+            return Usage()  # TCBusDimmerUnit's base-only override.
+        if kind == "input":
+            trigger = _array(unit, "FanTriggerGroup", 1)
+            if trigger is None:
+                return _missing("FanTriggerGroup")
+            if trigger[0] == 255:
+                return Usage()
+            primary = _application(unit)
+            if primary is None:
+                return _missing("Application")
+            if primary != application:
+                return Usage()
+            groups = _array(unit, "GroupAddress", 1)
+            return (_missing("GroupAddress") if groups is None else
+                    Usage("Fan Speed Cycle" if groups[0] == group else ""))
     classic = typ in CLASSIC_OUTPUT_CHANNELS
-    din = typ in PROFILES
+    profile = output_profile(unit)
+    din = profile is not None
     keys = typ in SUPPORTED_UNITS
     if not (classic or din or keys):
         return _missing("unit group dependency implementation")
@@ -107,7 +137,7 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
                        if masks[key] & (1 << block) and any(stage[key] for stage in stages)]
             descriptions.extend(matches or ["Block (Unused)"])
         return _joined(descriptions)
-    indices = tuple(range(CLASSIC_OUTPUT_CHANNELS[typ])) if classic else PROFILES[typ].indices
+    indices = tuple(range(CLASSIC_OUTPUT_CHANNELS[typ])) if classic else profile.indices
     groups = _array(unit, "GroupAddress", 6 if classic else 16)
     logic_start, logic_count = (0, 6) if classic else (12, 4)
     if groups is None:
@@ -129,12 +159,65 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
     return Usage("<br/>".join(descriptions), "partial" if missing else "recovered", tuple(missing))
 
 
+def _digital_group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> Usage:
+    if kind != "other" or application not in (172, 203):
+        return Usage()
+    if application == 203:
+        enable = _array(unit, "ErrorReportingEnableGroup", 1)
+        return (_missing("ErrorReportingEnableGroup") if enable is None else
+                Usage("Error Report Enable Group" if enable[0] == group else ""))
+    descriptions, missing = [], []
+    for channel in range(1, DIGITAL_CHANNEL_COUNT + 1):
+        prefix = f"Channel{channel}"
+        mode = _array(unit, prefix + "ChannelMode", 1)
+        if mode is None:
+            missing.append(prefix + "ChannelMode")
+        elif mode[0] == 172:
+            communication = _array(unit, prefix + "HVACCommunicationGroup", 1)
+            if communication is None:
+                missing.append(prefix + "HVACCommunicationGroup")
+            elif communication[0] == group:
+                descriptions.append(f"Communication Group Channel {channel}")
+        # Other channel modes load the AC application's unused (255) group.
+        elif group == 255:
+            descriptions.append(f"Communication Group Channel {channel}")
+    return Usage("<br/>".join(descriptions), "partial" if missing else "recovered", tuple(missing))
+
+
+def _selector_match(unit: UnitSnapshot, application: int, group: int, address: int,
+                    group_parameter: str, selector_parameter: str) -> tuple[bool | None, tuple[str, ...]]:
+    if application != 202:
+        return False, ()
+    trigger = _array(unit, group_parameter, 1)
+    if trigger is None:
+        return None, (group_parameter,)
+    if trigger[0] == 255 or trigger[0] != group:
+        return False, ()
+    selector = _array(unit, selector_parameter, 1)
+    return (None, (selector_parameter,)) if selector is None else (selector[0] == address, ())
+
+
 def action_selector_usage(unit: UnitSnapshot, action_documentor: str, application: int, group: int,
                           address: int, value: int) -> Usage:
-    """Reproduce base/classic-key ActionSelectorUse, including its nested recall2 check."""
+    """Reproduce admitted ActionSelectorUse methods, retaining their native quirks."""
     if action_documentor == "UnitType":
         return Usage()
     typ = unit.unit_type.upper()
+    if action_documentor in DIRECT_ACTIONS and typ == DIRECT_ACTIONS[action_documentor][0]:
+        _, group_parameter, selector_parameter, label = DIRECT_ACTIONS[action_documentor]
+        matches, missing = _selector_match(unit, application, group, address, group_parameter, selector_parameter)
+        return _missing(*missing) if missing else Usage("<li />" + label if matches else "")
+    if action_documentor == "DigitalTemperatureSensor" and typ == "SENTEMP4":
+        matches = [_selector_match(unit, application, group, address, group_parameter, selector_parameter)
+                   for group_parameter, selector_parameter, _ in DIGITAL_ACTIONS]
+        # Native UStrCat3 replaces the result in both branches. A known broadcast
+        # match determines the final output even when the earlier error use is unknown.
+        if matches[1][0]:
+            return Usage("<li />" + DIGITAL_ACTIONS[1][2])
+        missing = tuple(name for _, names in matches for name in names)
+        if missing:
+            return _missing(*missing)
+        return Usage("<li />" + DIGITAL_ACTIONS[0][2] if matches[0][0] else "")
     if action_documentor != "ClassicKeyInput" or typ not in SUPPORTED_UNITS:
         return _missing("ActionSelectorUse implementation")
     primary = _application(unit)

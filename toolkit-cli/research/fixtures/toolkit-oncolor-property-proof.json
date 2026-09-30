@@ -1,0 +1,733 @@
+{
+  "schema": "cbus-fresh-oncolor-census-proof-v1",
+  "provenance": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "classification": "OnColor is a scalar color property, not a method event",
+  "published_event_count": 1892,
+  "false_records": 53,
+  "remaining_event_candidates": 1839,
+  "counts_by_resource": {
+    "TFRMCBUSUNITSTATUS": 8,
+    "TFRMDIMARXCHANNELSTATUS": 5,
+    "TFRMDIMDUCHANNELSTATUS": 12,
+    "TFRMDSICHANNELSTATUS": 9,
+    "TFRMIOPESTATUS": 10,
+    "TFRMSTATUS": 8,
+    "TFRMSTATUSVOLTAGE": 1
+  },
+  "native_method_proof": [
+    {
+      "symbol": "CIS_TLEDStatusindicator.TLEDStatusIndicator.GetOnColor",
+      "start": "0xc0f038",
+      "end": "0xc0f054",
+      "sha256": "9709a253cb650d700c4609715bbf701368fd16b313b92d85de29d30c586cbf80",
+      "bytes": 28,
+      "decoded_bytes": 28,
+      "calls": [],
+      "file": "00c0f038-CIS_TLEDStatusindicator.TLEDStatusIndicator.GetOnColor.txt"
+    },
+    {
+      "symbol": "CIS_TLEDStatusindicator.TLEDStatusIndicator.SetOnColor",
+      "start": "0xc0f0c0",
+      "end": "0xc0f0e4",
+      "sha256": "ec9cfc53d8275543e030728f7defa2a60d31d2914b997be4e7f2a6b2d262cff1",
+      "bytes": 36,
+      "decoded_bytes": 36,
+      "calls": [
+        {
+          "at": "0xc0f0db",
+          "op": "call",
+          "target": "0xc0f0e4",
+          "symbols": [
+            "CIS_TLEDStatusindicator.TLEDStatusIndicator.UpdateUI"
+          ]
+        }
+      ],
+      "file": "00c0f0c0-CIS_TLEDStatusindicator.TLEDStatusIndicator.SetOnColor.txt"
+    }
+  ],
+  "native_behavior": "Get reads a 32-bit scalar at self+0x29c; Set stores EDX there then calls UpdateUI.",
+  "affected_records": [
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbLocalToggle/ledLocalToggleActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x358",
+      "va": "0x16d7a20"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOnActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x43f",
+      "va": "0x16d7b07"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOffActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x4cf",
+      "va": "0x16d7b97"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledBurdenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x62d",
+      "va": "0x16d7cf5"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledRestrikeTimingActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x6c7",
+      "va": "0x16d7d8f"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledClockGenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x755",
+      "va": "0x16d7e1d"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledLearnModeActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x7e5",
+      "va": "0x16d7ead"
+    },
+    {
+      "resource": "TFRMCBUSUNITSTATUS",
+      "resource_sha256": "440cd05c540beecd5b1c17a2b1a25ad98228da2d3cbd7f71af09c72fd1ab858c",
+      "resource_rva": "0x10d76c8",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbVoltage/ledMainsPresent",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x912",
+      "va": "0x16d7fda"
+    },
+    {
+      "resource": "TFRMDIMARXCHANNELSTATUS",
+      "resource_sha256": "c8eabf1107e72c5b74af3156fe38ee515f6f025d36a1e47c32b96c41018c2742",
+      "resource_rva": "0x111124c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic1Active",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0xa14",
+      "va": "0x1711c60"
+    },
+    {
+      "resource": "TFRMDIMARXCHANNELSTATUS",
+      "resource_sha256": "c8eabf1107e72c5b74af3156fe38ee515f6f025d36a1e47c32b96c41018c2742",
+      "resource_rva": "0x111124c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic2Active",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0xa8f",
+      "va": "0x1711cdb"
+    },
+    {
+      "resource": "TFRMDIMARXCHANNELSTATUS",
+      "resource_sha256": "c8eabf1107e72c5b74af3156fe38ee515f6f025d36a1e47c32b96c41018c2742",
+      "resource_rva": "0x111124c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMARXChannelStatus/GroupBox1/ledPanic3Active",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0xb0a",
+      "va": "0x1711d56"
+    },
+    {
+      "resource": "TFRMDIMARXCHANNELSTATUS",
+      "resource_sha256": "c8eabf1107e72c5b74af3156fe38ee515f6f025d36a1e47c32b96c41018c2742",
+      "resource_rva": "0x111124c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMARXChannelStatus/GroupBox1/ledLoadShedActive",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0xb88",
+      "va": "0x1711dd4"
+    },
+    {
+      "resource": "TFRMDIMARXCHANNELSTATUS",
+      "resource_sha256": "c8eabf1107e72c5b74af3156fe38ee515f6f025d36a1e47c32b96c41018c2742",
+      "resource_rva": "0x111124c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMARXChannelStatus/GroupBox1/ledHalogenActive",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0xc05",
+      "va": "0x1711e51"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus1",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x10e6",
+      "va": "0x1713e0e"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus2",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1168",
+      "va": "0x1713e90"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus3",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x11ea",
+      "va": "0x1713f12"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus4",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x126c",
+      "va": "0x1713f94"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus8",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x12ef",
+      "va": "0x1714017"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus7",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1372",
+      "va": "0x171409a"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus6",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x13f5",
+      "va": "0x171411d"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus5",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1478",
+      "va": "0x17141a0"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus12",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x14fc",
+      "va": "0x1714224"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus11",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1580",
+      "va": "0x17142a8"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus10",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1604",
+      "va": "0x171432c"
+    },
+    {
+      "resource": "TFRMDIMDUCHANNELSTATUS",
+      "resource_sha256": "6a1dbddce914298a1eb27932e0db7c636b76996f1d96b37f901850a45304330f",
+      "resource_rva": "0x1112d28",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus9",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x1687",
+      "va": "0x17143af"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus1",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x4dd",
+      "va": "0x1736d19"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus3",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x55d",
+      "va": "0x1736d99"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus5",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x5dd",
+      "va": "0x1736e19"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus7",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x65d",
+      "va": "0x1736e99"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus2",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x6dd",
+      "va": "0x1736f19"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus4",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x75d",
+      "va": "0x1736f99"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus6",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x7dd",
+      "va": "0x1737019"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus8",
+      "property": "OnColor",
+      "value": "clRed",
+      "value_type": 7,
+      "resource_offset": "0x85d",
+      "va": "0x1737099"
+    },
+    {
+      "resource": "TFRMDSICHANNELSTATUS",
+      "resource_sha256": "b64deff908b4127d38e1419418bdf42594caac1edadeeb1506fccb675445fa97",
+      "resource_rva": "0x113683c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmDSIChannelStatus/gbPowerStatus/ledDSIPower",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x93b",
+      "va": "0x1737177"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbVoltage/ledMainsPresent",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x32d",
+      "va": "0x17b3f65"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbGlobalStatus/ledBurdenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x654",
+      "va": "0x17b428c"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbGlobalStatus/ledRestrikeTimingActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x756",
+      "va": "0x17b438e"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbGlobalStatus/ledClockGenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x84c",
+      "va": "0x17b4484"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbRemote/ledRemoteOnActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x99b",
+      "va": "0x17b45d3"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbRemote/ledRemoteOffActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0xa93",
+      "va": "0x17b46cb"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbSensorState/ledSensor1Active",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0xbe0",
+      "va": "0x17b4818"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbSensorState/ledSensor2Active",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0xcd3",
+      "va": "0x17b490b"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbRelayStatus/ledRelay1FailSafe",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x10b7",
+      "va": "0x17b4cef"
+    },
+    {
+      "resource": "TFRMIOPESTATUS",
+      "resource_sha256": "f795ebe060f7c5aeba24936f24f5a4c5bb4b9a2e03668cad2fb414dda814fdfd",
+      "resource_rva": "0x11b3c38",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmIOPEStatus/gbRelayStatus/ledRelay2FailSafe",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x11ae",
+      "va": "0x17b4de6"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbVoltage/ledMainsPresent",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x4ab",
+      "va": "0x1937927"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbGlobalStatus/ledBurdenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x609",
+      "va": "0x1937a85"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbGlobalStatus/ledRestrikeTimingActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x6a3",
+      "va": "0x1937b1f"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbGlobalStatus/ledClockGenActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x731",
+      "va": "0x1937bad"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbGlobalStatus/ledLearnModeActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x7c1",
+      "va": "0x1937c3d"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbRemote/ledRemoteOnActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x8a8",
+      "va": "0x1937d24"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbRemote/ledRemoteOffActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x938",
+      "va": "0x1937db4"
+    },
+    {
+      "resource": "TFRMSTATUS",
+      "resource_sha256": "e20780752abefb823349962ef1e58d41b4b110ff8bd895eb615e9acabf8ba918",
+      "resource_rva": "0x133747c",
+      "component_class": "TLEDStatusIndicator",
+      "component_path": "frmStatus/gbLocalToggle/ledLocalToggleActive",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0xa30",
+      "va": "0x1937eac"
+    },
+    {
+      "resource": "TFRMSTATUSVOLTAGE",
+      "resource_sha256": "24f1c9b7e340ca636814b3833f35e02112e878d5b827c088d869c87b23e0dcb1",
+      "resource_rva": "0x13387dc",
+      "component_class": "TFlashLEDStatusIndicator",
+      "component_path": "frmStatusVoltage/gbVoltage/ledMainsPresent",
+      "property": "OnColor",
+      "value": "clLime",
+      "value_type": 7,
+      "resource_offset": "0x236",
+      "va": "0x1938a12"
+    }
+  ],
+  "synthetic_regression": {
+    "raw_hex": "545046300554466f726d0d53796e746865746963466f726d064f6e53686f770708466f726d53686f770013544c4544537461747573496e64696361746f720c53796e7468657469634c4544074f6e436f6c6f720706636c4c696d65074f6e436c69636b0705636c526564000000",
+    "sha256": "d6dab41b9c1b9641c316397e1e74b23f4354e4d0cb44944387c76c17670dfc39",
+    "current_events": [
+      {
+        "component_path": "SyntheticForm",
+        "property": "OnShow",
+        "handler": "FormShow"
+      },
+      {
+        "component_path": "SyntheticForm/SyntheticLED",
+        "property": "OnColor",
+        "handler": "clLime"
+      },
+      {
+        "component_path": "SyntheticForm/SyntheticLED",
+        "property": "OnClick",
+        "handler": "clRed"
+      }
+    ],
+    "expected_events": [
+      {
+        "component_path": "SyntheticForm",
+        "property": "OnShow",
+        "handler": "FormShow"
+      },
+      {
+        "component_path": "SyntheticForm/SyntheticLED",
+        "property": "OnClick",
+        "handler": "clRed"
+      }
+    ],
+    "rationale": "OnColor=clLime must not be an event. OnShow and OnClick survive; OnClick deliberately uses clRed to prevent incorrectly filtering handler values."
+  },
+  "recommended_change": "Exclude source-proven non-event OnColor from event classification; longer-term use published property type. Do not filter handler strings by cl prefix.",
+  "suggested_updates": [
+    "research/extract_toolkit_executable_surface.py:parse_binary_dfm",
+    "tests/test_executable_surface.py",
+    "docs/toolkit-executable-surface.json",
+    "research/build_parity_register.py generated executable_event scope records",
+    "src/cbus_toolkit/parity-obligations.json and dependent documented census counts"
+  ],
+  "scope": "Fresh static original-resource/method proof; does not close census or establish functional completeness."
+}

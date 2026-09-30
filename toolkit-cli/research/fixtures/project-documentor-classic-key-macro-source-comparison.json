@@ -1,0 +1,1496 @@
+{
+  "format": "cbus-project-documentor-classic-key-macro-source-comparison-v1",
+  "acceptance": "independent_original_source_table_comparison",
+  "native_execution": false,
+  "original_generated_page_captured": false,
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checked_vectors_and_contexts": 1769472,
+  "equal": true,
+  "scenario_results": [
+    {
+      "application": 56,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "a7ae2b97d33d8946c48c397d51302525e1501a58103d4ed32982fe6c00c4d06e",
+      "runtime_result_sha256": "a7ae2b97d33d8946c48c397d51302525e1501a58103d4ed32982fe6c00c4d06e"
+    },
+    {
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "a7ae2b97d33d8946c48c397d51302525e1501a58103d4ed32982fe6c00c4d06e",
+      "runtime_result_sha256": "a7ae2b97d33d8946c48c397d51302525e1501a58103d4ed32982fe6c00c4d06e"
+    },
+    {
+      "application": 56,
+      "stored1": 249,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "110de3b9c037e8313864b3dced6bc8ae0bdc57e6569e3d175fa626b4d84db557",
+      "runtime_result_sha256": "110de3b9c037e8313864b3dced6bc8ae0bdc57e6569e3d175fa626b4d84db557"
+    },
+    {
+      "application": 56,
+      "stored1": 252,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "40e03ef9bfe330d8337533a46c5689354f9503360b0c337392791065dcb27295",
+      "runtime_result_sha256": "40e03ef9bfe330d8337533a46c5689354f9503360b0c337392791065dcb27295"
+    },
+    {
+      "application": 56,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "f1f33848d163ea99dccafdd9af8d99ca9e440ac04962ca34c28947ea571b9b78",
+      "runtime_result_sha256": "f1f33848d163ea99dccafdd9af8d99ca9e440ac04962ca34c28947ea571b9b78"
+    },
+    {
+      "application": 56,
+      "stored1": 0,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "f60d2d52de65aba80f3a81cfe877403450c442b575d5916a5bbe02a68c59dea8",
+      "runtime_result_sha256": "f60d2d52de65aba80f3a81cfe877403450c442b575d5916a5bbe02a68c59dea8"
+    },
+    {
+      "application": 56,
+      "stored1": 0,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "74c90826f84763e5c3dd32ac39635b9b4e618c8d0ecb51f403bf30b65392c1f3",
+      "runtime_result_sha256": "74c90826f84763e5c3dd32ac39635b9b4e618c8d0ecb51f403bf30b65392c1f3"
+    },
+    {
+      "application": 56,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "ddf85c76155f936dde8ce5ee8b5a722a629a99bb3a6865c89bff835a50d6b70a",
+      "runtime_result_sha256": "ddf85c76155f936dde8ce5ee8b5a722a629a99bb3a6865c89bff835a50d6b70a"
+    },
+    {
+      "application": 56,
+      "stored1": 255,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "f89cd58812c632c1a224d7db7a4b0ceac74e8e231ed00ec717c14320f9a2a621",
+      "runtime_result_sha256": "f89cd58812c632c1a224d7db7a4b0ceac74e8e231ed00ec717c14320f9a2a621"
+    },
+    {
+      "application": 202,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 249,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 252,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 0,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 0,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 202,
+      "stored1": 255,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32",
+      "runtime_result_sha256": "c80b7f1b02ef2c6997ffeb6ad2d5b8f23d0cb49e6ce248936d06801aae4bbb32"
+    },
+    {
+      "application": 255,
+      "stored1": null,
+      "stored2": null,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 0,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 249,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 252,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 255,
+      "stored2": 0,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 0,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 0,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 249,
+      "stored2": 2,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    },
+    {
+      "application": 255,
+      "stored1": 255,
+      "stored2": 5,
+      "vectors": 65536,
+      "mismatches": 0,
+      "source_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a",
+      "runtime_result_sha256": "63807ebff09328f8667b53adb0441739bad5fd769635e3ac22f3f55cebc03a0a"
+    }
+  ],
+  "mismatch_samples": [],
+  "cases": [
+    {
+      "commands": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        16,
+        "Unused"
+      ]
+    },
+    {
+      "commands": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        0,
+        "On"
+      ]
+    },
+    {
+      "commands": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        1,
+        "Off"
+      ]
+    },
+    {
+      "commands": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        2,
+        "On/Off"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        3,
+        "Dimmer"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        3,
+        "Dimmer"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        4,
+        "On Up"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        5,
+        "Off Down"
+      ]
+    },
+    {
+      "commands": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        6,
+        "Timer"
+      ]
+    },
+    {
+      "commands": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        6,
+        "Timer"
+      ]
+    },
+    {
+      "commands": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        6,
+        "Timer"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        6,
+        "Timer"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        6,
+        "Timer"
+      ]
+    },
+    {
+      "commands": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        7,
+        "Bell Press"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        8,
+        "Dimmer Up"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        9,
+        "Dimmer Down"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        10,
+        "Soft Up"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        11,
+        "Soft Down"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        12,
+        "Preset 1"
+      ]
+    },
+    {
+      "commands": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        13,
+        "Preset 2"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        21,
+        "Shutter Close"
+      ]
+    },
+    {
+      "commands": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        17,
+        "Shutter Toggle"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        18,
+        "Shutter Open Toggle"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        20,
+        "Shutter Open"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        17,
+        "Shutter Toggle"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        20,
+        "Shutter Open"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        14,
+        "Trigger 1"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        19,
+        "Shutter Close Toggle"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        22,
+        "Shutter Stop"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        19,
+        "Shutter Close Toggle"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 56,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        22,
+        "Shutter Stop"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 202,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        15,
+        "Trigger 2"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": null,
+      "stored2": null,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 249,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 252,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 255,
+      "stored2": 0,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 2,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 0,
+      "stored2": 5,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 249,
+      "stored2": 2,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "application": 255,
+      "stored1": 255,
+      "stored2": 5,
+      "expected": [
+        26,
+        "<Custom>"
+      ]
+    }
+  ],
+  "template_labels": {
+    "0": "On",
+    "1": "Off",
+    "2": "On/Off",
+    "3": "Dimmer",
+    "4": "On Up",
+    "5": "Off Down",
+    "6": "Timer",
+    "7": "Bell Press",
+    "8": "Dimmer Up",
+    "9": "Dimmer Down",
+    "10": "Soft Up",
+    "11": "Soft Down",
+    "12": "Preset 1",
+    "13": "Preset 2",
+    "14": "Trigger 1",
+    "15": "Trigger 2",
+    "16": "Unused",
+    "17": "Shutter Toggle",
+    "18": "Shutter Open Toggle",
+    "19": "Shutter Close Toggle",
+    "20": "Shutter Open",
+    "21": "Shutter Close",
+    "22": "Shutter Stop",
+    "26": "<Custom>"
+  },
+  "methods": {
+    "CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory": {
+      "address": "0xc95b84",
+      "sha256": "9a20b298d7aedb678c24327cd64dc933d7733d872a3d1025a8b3b8bbcd843432"
+    },
+    "CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory": {
+      "address": "0xc912c0",
+      "sha256": "da7e1a9ec728553d8f9eb8feb1644d8eb3f01c12aed2e4dd57d31471f3d0d128"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.RefreshFromMicroFunctions": {
+      "address": "0xc974ac",
+      "sha256": "b8eb7e1b0b43faf34b9554c9cd8fea8e67da54913c11360b9a076e9538ca90fb"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup": {
+      "address": "0xc97940",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb"
+    },
+    "CIS_TInputKey.TInputKey.MacroFunctionRefresh": {
+      "address": "0xd11a18",
+      "sha256": "9359947b91ecd3e3ee96b08ae77933ed57c97044a50bb0477f71f537a09498ee"
+    },
+    "CIS_TInputKey.TInputKey.IdenticalMacroFunctionRefresh": {
+      "address": "0xd10b20",
+      "sha256": "32a9b311c0e6a6597721855cb4b7dd25c125b54c0b56fe263f5eba6c83c5a997"
+    },
+    "CIS_TInputKey.TInputKey.RefreshTemplateFromMacroFunction": {
+      "address": "0xd11a5c",
+      "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7"
+    },
+    "CIS_TKeyMacrofunctionSubset.TKeyMacroFunctionSubsetFactory.CheckKeyMacroFunctionSubset": {
+      "address": "0xc950c8",
+      "sha256": "81a943cfa8812f6e6e04f9bd9b6c339e0b728088293112570be23e73dbe7a946"
+    },
+    "CIS_TKeyMacrofunctionSubset.TKeyMacroFunctionSubsetFactory.GetKeyMacroFunctionSubset": {
+      "address": "0xc94de4",
+      "sha256": "4665f2b1e58094a982a2e36ed77c25fd42ab270c941b75aa5cb3291c68f82cc0"
+    },
+    "CIS_TKeyInputCGateAgent.GetKeyValues": {
+      "address": "0x1215da4",
+      "sha256": "9aeea2bdf2e31a8b73828eb22238bca2d14fb4951216e1e6ffd6a402e234c61c"
+    }
+  }
+}

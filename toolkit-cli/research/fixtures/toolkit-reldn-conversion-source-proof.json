@@ -1,0 +1,1502 @@
+{
+  "format": "cbus-toolkit-reldn-conversion-source-proof-v1",
+  "review_date": "2026-09-30",
+  "original_code_executed": false,
+  "source": {
+    "file_version": "1.18.0.2754",
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "image_base": "0x600000",
+    "code_map_va_bias": "0x601000"
+  },
+  "method": "Independent fresh PE-byte disassembly and Delphi VMT pointer inspection; no production mapping or previous derived vectors imported. Literal fixtures are reviewed against extracted instruction operands.",
+  "registration_calls": [
+    {
+      "source": "RELDN8",
+      "target": "RELDN12",
+      "call_va": "0x139c534"
+    },
+    {
+      "source": "RELDN8",
+      "target": "RELDN4",
+      "call_va": "0x139c550"
+    },
+    {
+      "source": "RELDN8",
+      "target": "RELDN8B",
+      "call_va": "0x139c56c"
+    },
+    {
+      "source": "RELDN8",
+      "target": "RELSM8",
+      "call_va": "0x139c588"
+    },
+    {
+      "source": "RELDN12",
+      "target": "RELDN8",
+      "call_va": "0x139c5a4"
+    },
+    {
+      "source": "RELDN4",
+      "target": "RELDN8",
+      "call_va": "0x139c5c0"
+    },
+    {
+      "source": "RELDN8B",
+      "target": "RELDN8",
+      "call_va": "0x139c5dc"
+    },
+    {
+      "source": "RELSM8",
+      "target": "RELDN8",
+      "call_va": "0x139c5f8"
+    }
+  ],
+  "unit_agents": {
+    "RELDN8": {
+      "agent": "TMarshallingBoxCGateAgent",
+      "registration_call_va": "0x1398bec"
+    },
+    "RELDN12": {
+      "agent": "TDinRailOutputCGateAgent",
+      "registration_call_va": "0x1398908"
+    },
+    "RELDN4": {
+      "agent": "TDinRailOutputCGateAgent",
+      "registration_call_va": "0x13988d8"
+    },
+    "RELDN8B": {
+      "agent": "TDinRailOutputCGateAgent",
+      "registration_call_va": "0x13988f0"
+    },
+    "RELSM8": {
+      "agent": "TBusPoweredDinRailOutputCGateAgent",
+      "registration_call_va": "0x1398950"
+    }
+  },
+  "agents": {
+    "TDinRailOutputCGateAgent": {
+      "class_reference": "0x122c6a4",
+      "vmt": "0x122c6fc",
+      "parent_chain": [
+        "TDinRailOutputCGateAgent",
+        "TBasicDinRailOutputCGateAgent",
+        "TCBusUnitCGateAgent",
+        "TCGateAgent",
+        "TFlashAgent",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "internal_create": "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.InternalCreate",
+      "before_unit_conversion_save": "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave",
+      "attributes": [
+        {
+          "name": "Application",
+          "initially_mutable": true
+        },
+        {
+          "name": "FirmwareVersion",
+          "initially_mutable": false
+        },
+        {
+          "name": "Project",
+          "initially_mutable": true
+        },
+        {
+          "name": "SerialNo",
+          "initially_mutable": false
+        },
+        {
+          "name": "State",
+          "initially_mutable": false
+        },
+        {
+          "name": "UnitAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitName",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitType",
+          "initially_mutable": false
+        },
+        {
+          "name": "CheckSum",
+          "initially_mutable": true
+        },
+        {
+          "name": "Burden",
+          "initially_mutable": false
+        },
+        {
+          "name": "LocalToggleEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "ClockGenEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnMode",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnAnyApplication",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnedFlag",
+          "initially_mutable": true
+        },
+        {
+          "name": "AreaGroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "PowerUpDelay",
+          "initially_mutable": true
+        },
+        {
+          "name": "NetworkPriority",
+          "initially_mutable": true
+        },
+        {
+          "name": "LightLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA13Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA14Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA15Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA16Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicFunction",
+          "initially_mutable": true
+        },
+        {
+          "name": "GroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "MinDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "MaxDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LevelStoreEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicLevelStoreEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "InterLockingChannel",
+          "initially_mutable": true
+        },
+        {
+          "name": "RestrikeChannel",
+          "initially_mutable": true
+        },
+        {
+          "name": "RestrikeDelay",
+          "initially_mutable": true
+        }
+      ]
+    },
+    "TBusPoweredDinRailOutputCGateAgent": {
+      "class_reference": "0x122c87c",
+      "vmt": "0x122c8d4",
+      "parent_chain": [
+        "TBusPoweredDinRailOutputCGateAgent",
+        "TBasicDinRailOutputCGateAgent",
+        "TCBusUnitCGateAgent",
+        "TCGateAgent",
+        "TFlashAgent",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "internal_create": "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.InternalCreate",
+      "before_unit_conversion_save": "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave",
+      "attributes": [
+        {
+          "name": "Application",
+          "initially_mutable": true
+        },
+        {
+          "name": "FirmwareVersion",
+          "initially_mutable": false
+        },
+        {
+          "name": "Project",
+          "initially_mutable": true
+        },
+        {
+          "name": "SerialNo",
+          "initially_mutable": false
+        },
+        {
+          "name": "State",
+          "initially_mutable": false
+        },
+        {
+          "name": "UnitAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitName",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitType",
+          "initially_mutable": false
+        },
+        {
+          "name": "CheckSum",
+          "initially_mutable": true
+        },
+        {
+          "name": "Burden",
+          "initially_mutable": false
+        },
+        {
+          "name": "LocalToggleEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "ClockGenEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnMode",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnAnyApplication",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnedFlag",
+          "initially_mutable": true
+        },
+        {
+          "name": "AreaGroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "PowerUpDelay",
+          "initially_mutable": true
+        },
+        {
+          "name": "NetworkPriority",
+          "initially_mutable": true
+        },
+        {
+          "name": "LightLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA13Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA14Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA15Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA16Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicFunction",
+          "initially_mutable": true
+        },
+        {
+          "name": "GroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "MinDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "MaxDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LevelStoreEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicLevelStoreEnable",
+          "initially_mutable": true
+        }
+      ]
+    },
+    "TMarshallingBoxCGateAgent": {
+      "class_reference": "0x12430cc",
+      "vmt": "0x1243124",
+      "parent_chain": [
+        "TMarshallingBoxCGateAgent",
+        "TDinRailOutputCGateAgent",
+        "TBasicDinRailOutputCGateAgent",
+        "TCBusUnitCGateAgent",
+        "TCGateAgent",
+        "TFlashAgent",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "internal_create": "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.InternalCreate",
+      "before_unit_conversion_save": "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave",
+      "attributes": [
+        {
+          "name": "Application",
+          "initially_mutable": true
+        },
+        {
+          "name": "FirmwareVersion",
+          "initially_mutable": false
+        },
+        {
+          "name": "Project",
+          "initially_mutable": true
+        },
+        {
+          "name": "SerialNo",
+          "initially_mutable": false
+        },
+        {
+          "name": "State",
+          "initially_mutable": false
+        },
+        {
+          "name": "UnitAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitName",
+          "initially_mutable": true
+        },
+        {
+          "name": "UnitType",
+          "initially_mutable": false
+        },
+        {
+          "name": "CheckSum",
+          "initially_mutable": true
+        },
+        {
+          "name": "Burden",
+          "initially_mutable": false
+        },
+        {
+          "name": "LocalToggleEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "ClockGenEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnMode",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnAnyApplication",
+          "initially_mutable": true
+        },
+        {
+          "name": "LearnedFlag",
+          "initially_mutable": true
+        },
+        {
+          "name": "AreaGroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "PowerUpDelay",
+          "initially_mutable": true
+        },
+        {
+          "name": "NetworkPriority",
+          "initially_mutable": true
+        },
+        {
+          "name": "LightLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA13Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA14Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA15Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicGA16Associations",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicFunction",
+          "initially_mutable": true
+        },
+        {
+          "name": "GroupAddress",
+          "initially_mutable": true
+        },
+        {
+          "name": "MinDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "MaxDimmingLevel",
+          "initially_mutable": true
+        },
+        {
+          "name": "LevelStoreEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "LogicLevelStoreEnable",
+          "initially_mutable": true
+        },
+        {
+          "name": "InterLockingChannel",
+          "initially_mutable": true
+        },
+        {
+          "name": "RestrikeChannel",
+          "initially_mutable": true
+        },
+        {
+          "name": "RestrikeDelay",
+          "initially_mutable": true
+        }
+      ]
+    }
+  },
+  "rules": {
+    "TTweakerRELDN8_TO_X": {
+      "va": "0x12ede28",
+      "map_offset": "0xcece28",
+      "end_va": "0x12ef138",
+      "map_interval_length": 4880,
+      "map_interval_sha256": "511f8d5e9d33c7e749d4a448a2869004f6dd748cacf7c1571ff9fd3af9d48f2a",
+      "fields": [
+        {
+          "attribute": "GroupAddress",
+          "setter_va": "0x12ee104",
+          "pieces": [
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ede7f"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ede87"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12edeb0"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edeb8"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12edee1"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edee9"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12edf12"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edf1a"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12edf43"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edf4b"
+            },
+            {
+              "source_index": 8,
+              "int_to_str_va": "0x12edf74"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edf7c"
+            },
+            {
+              "source_index": 9,
+              "int_to_str_va": "0x12edfa5"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edfad"
+            },
+            {
+              "source_index": 10,
+              "int_to_str_va": "0x12edfd6"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12edfde"
+            },
+            {
+              "literal": "255 255 255 255 ",
+              "literal_push_va": "0x12edfe3"
+            },
+            {
+              "source_index": 12,
+              "int_to_str_va": "0x12ee01b"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee026"
+            },
+            {
+              "source_index": 13,
+              "int_to_str_va": "0x12ee05e"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee069"
+            },
+            {
+              "source_index": 14,
+              "int_to_str_va": "0x12ee0a1"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee0ac"
+            },
+            {
+              "source_index": 15,
+              "int_to_str_va": "0x12ee0e4"
+            }
+          ],
+          "direct_read_minimum": 16
+        },
+        {
+          "attribute": "LogicGA13Associations",
+          "setter_va": "0x12ee34a",
+          "pieces": [
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ee14a"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee155"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ee18d"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee198"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ee1d0"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee1db"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ee213"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee21e"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ee256"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee261"
+            },
+            {
+              "source_index": 8,
+              "int_to_str_va": "0x12ee299"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee2a4"
+            },
+            {
+              "source_index": 9,
+              "int_to_str_va": "0x12ee2dc"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee2e7"
+            },
+            {
+              "source_index": 10,
+              "int_to_str_va": "0x12ee31f"
+            },
+            {
+              "literal": " 0 0 0 0",
+              "literal_push_va": "0x12ee32a"
+            }
+          ],
+          "direct_read_minimum": 11
+        },
+        {
+          "attribute": "LogicGA14Associations",
+          "setter_va": "0x12ee590",
+          "pieces": [
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ee390"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee39b"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ee3d3"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee3de"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ee416"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee421"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ee459"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee464"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ee49c"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee4a7"
+            },
+            {
+              "source_index": 8,
+              "int_to_str_va": "0x12ee4df"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee4ea"
+            },
+            {
+              "source_index": 9,
+              "int_to_str_va": "0x12ee522"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee52d"
+            },
+            {
+              "source_index": 10,
+              "int_to_str_va": "0x12ee565"
+            },
+            {
+              "literal": " 0 0 0 0",
+              "literal_push_va": "0x12ee570"
+            }
+          ],
+          "direct_read_minimum": 11
+        },
+        {
+          "attribute": "LogicGA15Associations",
+          "setter_va": "0x12ee7d6",
+          "pieces": [
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ee5d6"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee5e1"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ee619"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee624"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ee65c"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee667"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ee69f"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee6aa"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ee6e2"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee6ed"
+            },
+            {
+              "source_index": 8,
+              "int_to_str_va": "0x12ee725"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee730"
+            },
+            {
+              "source_index": 9,
+              "int_to_str_va": "0x12ee768"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee773"
+            },
+            {
+              "source_index": 10,
+              "int_to_str_va": "0x12ee7ab"
+            },
+            {
+              "literal": " 0 0 0 0",
+              "literal_push_va": "0x12ee7b6"
+            }
+          ],
+          "direct_read_minimum": 11
+        },
+        {
+          "attribute": "LogicGA16Associations",
+          "setter_va": "0x12eea1c",
+          "pieces": [
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ee81c"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee827"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ee85f"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee86a"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ee8a2"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee8ad"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ee8e5"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee8f0"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ee928"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee933"
+            },
+            {
+              "source_index": 8,
+              "int_to_str_va": "0x12ee96b"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee976"
+            },
+            {
+              "source_index": 9,
+              "int_to_str_va": "0x12ee9ae"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ee9b9"
+            },
+            {
+              "source_index": 10,
+              "int_to_str_va": "0x12ee9f1"
+            },
+            {
+              "literal": " 0 0 0 0",
+              "literal_push_va": "0x12ee9fc"
+            }
+          ],
+          "direct_read_minimum": 11
+        }
+      ]
+    },
+    "TTweakerRELDNX_TO_8": {
+      "va": "0x12ef138",
+      "map_offset": "0xcee138",
+      "end_va": "0x12f0488",
+      "map_interval_length": 4944,
+      "map_interval_sha256": "8ff66825d3c3dbee288885495ef8f79520ab4d131929cf328fe3ad7af5c18cd1",
+      "fields": [
+        {
+          "attribute": "GroupAddress",
+          "setter_va": "0x12ef41d",
+          "pieces": [
+            {
+              "literal": "255 ",
+              "literal_push_va": "0x12ef16b"
+            },
+            {
+              "source_index": 0,
+              "int_to_str_va": "0x12ef193"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef19b"
+            },
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ef1c4"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef1cc"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ef1f5"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef1fd"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ef226"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef22e"
+            },
+            {
+              "literal": "255 255 ",
+              "literal_push_va": "0x12ef233"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ef25c"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef264"
+            },
+            {
+              "source_index": 5,
+              "int_to_str_va": "0x12ef28d"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef295"
+            },
+            {
+              "source_index": 6,
+              "int_to_str_va": "0x12ef2be"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef2c6"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ef2ef"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef2f7"
+            },
+            {
+              "literal": "255 ",
+              "literal_push_va": "0x12ef2fc"
+            },
+            {
+              "source_index": 12,
+              "int_to_str_va": "0x12ef334"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef33f"
+            },
+            {
+              "source_index": 13,
+              "int_to_str_va": "0x12ef377"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef382"
+            },
+            {
+              "source_index": 14,
+              "int_to_str_va": "0x12ef3ba"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef3c5"
+            },
+            {
+              "source_index": 15,
+              "int_to_str_va": "0x12ef3fd"
+            }
+          ],
+          "direct_read_minimum": 16
+        },
+        {
+          "attribute": "LogicGA13Associations",
+          "setter_va": "0x12ef667",
+          "pieces": [
+            {
+              "literal": "0 ",
+              "literal_push_va": "0x12ef430"
+            },
+            {
+              "source_index": 0,
+              "int_to_str_va": "0x12ef467"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef472"
+            },
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ef4aa"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef4b5"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ef4ed"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef4f8"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ef530"
+            },
+            {
+              "literal": " 0 0 ",
+              "literal_push_va": "0x12ef53b"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ef573"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef57e"
+            },
+            {
+              "source_index": 5,
+              "int_to_str_va": "0x12ef5b6"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef5c1"
+            },
+            {
+              "source_index": 6,
+              "int_to_str_va": "0x12ef5f9"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef604"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ef63c"
+            },
+            {
+              "literal": " 0",
+              "literal_push_va": "0x12ef647"
+            }
+          ],
+          "direct_read_minimum": 8
+        },
+        {
+          "attribute": "LogicGA14Associations",
+          "setter_va": "0x12ef8b1",
+          "pieces": [
+            {
+              "literal": "0 ",
+              "literal_push_va": "0x12ef67a"
+            },
+            {
+              "source_index": 0,
+              "int_to_str_va": "0x12ef6b1"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef6bc"
+            },
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ef6f4"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef6ff"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ef737"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef742"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ef77a"
+            },
+            {
+              "literal": " 0 0 ",
+              "literal_push_va": "0x12ef785"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12ef7bd"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef7c8"
+            },
+            {
+              "source_index": 5,
+              "int_to_str_va": "0x12ef800"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef80b"
+            },
+            {
+              "source_index": 6,
+              "int_to_str_va": "0x12ef843"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef84e"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12ef886"
+            },
+            {
+              "literal": " 0",
+              "literal_push_va": "0x12ef891"
+            }
+          ],
+          "direct_read_minimum": 8
+        },
+        {
+          "attribute": "LogicGA15Associations",
+          "setter_va": "0x12efafb",
+          "pieces": [
+            {
+              "literal": "0 ",
+              "literal_push_va": "0x12ef8c4"
+            },
+            {
+              "source_index": 0,
+              "int_to_str_va": "0x12ef8fb"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef906"
+            },
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12ef93e"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef949"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12ef981"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12ef98c"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12ef9c4"
+            },
+            {
+              "literal": " 0 0 ",
+              "literal_push_va": "0x12ef9cf"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12efa07"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efa12"
+            },
+            {
+              "source_index": 5,
+              "int_to_str_va": "0x12efa4a"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efa55"
+            },
+            {
+              "source_index": 6,
+              "int_to_str_va": "0x12efa8d"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efa98"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12efad0"
+            },
+            {
+              "literal": " 0",
+              "literal_push_va": "0x12efadb"
+            }
+          ],
+          "direct_read_minimum": 8
+        },
+        {
+          "attribute": "LogicGA16Associations",
+          "setter_va": "0x12efd45",
+          "pieces": [
+            {
+              "literal": "0 ",
+              "literal_push_va": "0x12efb0e"
+            },
+            {
+              "source_index": 0,
+              "int_to_str_va": "0x12efb45"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efb50"
+            },
+            {
+              "source_index": 1,
+              "int_to_str_va": "0x12efb88"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efb93"
+            },
+            {
+              "source_index": 2,
+              "int_to_str_va": "0x12efbcb"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efbd6"
+            },
+            {
+              "source_index": 3,
+              "int_to_str_va": "0x12efc0e"
+            },
+            {
+              "literal": " 0 0 ",
+              "literal_push_va": "0x12efc19"
+            },
+            {
+              "source_index": 4,
+              "int_to_str_va": "0x12efc51"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efc5c"
+            },
+            {
+              "source_index": 5,
+              "int_to_str_va": "0x12efc94"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efc9f"
+            },
+            {
+              "source_index": 6,
+              "int_to_str_va": "0x12efcd7"
+            },
+            {
+              "literal": " ",
+              "literal_push_va": "0x12efce2"
+            },
+            {
+              "source_index": 7,
+              "int_to_str_va": "0x12efd1a"
+            },
+            {
+              "literal": " 0",
+              "literal_push_va": "0x12efd25"
+            }
+          ],
+          "direct_read_minimum": 8
+        }
+      ]
+    }
+  },
+  "lifecycle_facts": {
+    "initial_burden_mutability_clear_va": "0x122cc7c",
+    "constructor_mutable_argument_store_va": "0x7ec576",
+    "alignment_source_get_va": "0xcc05c7",
+    "alignment_target_set_va": "0xcc05d2",
+    "empty_source_clears_mutable_va": "0xcc05e9",
+    "tweaker_dispatch_va": "0xcc067c",
+    "conversion_hook_dispatch_va": "0xcc0684",
+    "conversion_hook_method_va": "0xcac4f8",
+    "conversion_hook_noop": true,
+    "pp_set_mutability_gate_va": "0xcbb696",
+    "pp_set_changed_gate_va": "0xcbb6a3",
+    "pp_string_setter_va": "0xcbeb36",
+    "string_storage_write_va": "0x7f38e3",
+    "source_or_alignment_array_padding": false,
+    "before_save_programming_information_called_by_align_unit": false,
+    "alignment_before_target_pp_load": true
+  },
+  "method_intervals": {
+    "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave": {
+      "va": "0xcac4f8",
+      "map": "0x6ab4f8",
+      "end": "0xcac504",
+      "length": 12,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate": {
+      "va": "0xcb524c",
+      "map": "0x6b424c",
+      "end": "0xcb5614",
+      "length": 968,
+      "sha256": "ca6224f18662e8133b0420a1a878288ae003869946a91993b15622293b83b39c"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AlignUnitNoSave": {
+      "va": "0xcc04a4",
+      "map": "0x6bf4a4",
+      "end": "0xcc08c8",
+      "length": 1060,
+      "sha256": "9ad1fdaf6f5c387a1ba25fa63664241b50a13d55f4a77d2f1959096262d77157"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.InternalCreate": {
+      "va": "0x122cc18",
+      "map": "0xc2bc18",
+      "end": "0x122d300",
+      "length": 1768,
+      "sha256": "12b3391e6d83c21f64b0652a72e388d5be490a96fb7360bcf1a1e6d623c80b65"
+    },
+    "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.InternalCreate": {
+      "va": "0x122f418",
+      "map": "0xc2e418",
+      "end": "0x122f524",
+      "length": 268,
+      "sha256": "7eeb1380e440686efba6bc12cb7624cf58bc8a7c4a99f633e30251b1680b4a24"
+    },
+    "CIS_TDinRailOutputCGateAgent.CIS_TDinRailOutputCGateAgent": {
+      "va": "0x13987e0",
+      "map": "0xd977e0",
+      "end": "0x1398958",
+      "length": 376,
+      "sha256": "16e7ebf3ebfa9712a63c3e7007a1ac74bc8de763a91c05b4285d359dda3b247a"
+    },
+    "CIS_TMarshallingBoxCGateAgent.CIS_TMarshallingBoxCGateAgent": {
+      "va": "0x1398b88",
+      "map": "0xd97b88",
+      "end": "0x1398c0c",
+      "length": 132,
+      "sha256": "c1f73a2569fef156505413a279f9d5093a1ab6a2015b3d5e785eb3633a4351d6"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "va": "0x7ec504",
+      "map": "0x1eb504",
+      "end": "0x7ec5d0",
+      "length": 204,
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.InternalCreate": {
+      "va": "0x7ef7f4",
+      "map": "0x1ee7f4",
+      "end": "0x7ef820",
+      "length": 44,
+      "sha256": "a8de65e36b107ad2bfe976cc2169ce1ee4ff1e81206e34293bed9430625a97f1"
+    },
+    "CIS_TCGateAttribute.TBooleanCGateAttribute.Create": {
+      "va": "0xf430ac",
+      "map": "0x9420ac",
+      "end": "0xf43188",
+      "length": 220,
+      "sha256": "927943cf4360fae74ec7740a6f08375cbf30447b6c2da541f0a728eb0d1274a6"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AlignUnit": {
+      "va": "0xcc02f0",
+      "map": "0x6bf2f0",
+      "end": "0xcc04a4",
+      "length": 436,
+      "sha256": "bc782eb57f452488535dfd70145327df3b6309cce40f90acef98601fe8449a40"
+    },
+    "CIS_TStringAttribute.TStringAttribute.GetAsString": {
+      "va": "0x7f375c",
+      "map": "0x1f275c",
+      "end": "0x7f3784",
+      "length": 40,
+      "sha256": "5fce961a49cc56dba225d5b82c1521f01d29461524b5613c84d9ea9d5426585b"
+    },
+    "CIS_TStringAttribute.TStringAttribute.InternalCreate": {
+      "va": "0x7f37ac",
+      "map": "0x1f27ac",
+      "end": "0x7f37d4",
+      "length": 40,
+      "sha256": "b2fc88b81327f8e2c960c8bff3d9364e68678d8ce9ba7fb9ceaf069993c8f4e4"
+    },
+    "CIS_TStringAttribute.TStringAttribute.SetAsString": {
+      "va": "0x7f3b28",
+      "map": "0x1f2b28",
+      "end": "0x7f3b44",
+      "length": 28,
+      "sha256": "777856caf320242bbfb37ea187954b5968fc8bb4ab0a7d1269c134c85d55776b"
+    },
+    "CIS_TStringAttribute.TStringAttribute.InternalSetAsString": {
+      "va": "0x7f37d4",
+      "map": "0x1f27d4",
+      "end": "0x7f39a0",
+      "length": 460,
+      "sha256": "330257dc83aadc5bdb317bdeaba91e23b789bae49704cf85edf625fc04127c2a"
+    },
+    "CIS_TcgcPPGet.TcgcPPGet.ExtractNameAndValueFromParameter": {
+      "va": "0xcb2404",
+      "map": "0x6b1404",
+      "end": "0xcb25b4",
+      "length": 432,
+      "sha256": "7d51fceed7d5b4a37ada38fa25c330877ccd79eaca4b63893c6b99627f144e23"
+    },
+    "CIS_TcgcPPGet.TcgcPPGet.ProcessParameter": {
+      "va": "0xcb25b4",
+      "map": "0x6b15b4",
+      "end": "0xcb2850",
+      "length": 668,
+      "sha256": "a900ce388ab0c0963b7ff447be041f599758fc47820064314ffe395e47e2339e"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetSingle": {
+      "va": "0xcbb5f8",
+      "map": "0x6ba5f8",
+      "end": "0xcbb7d0",
+      "length": 472,
+      "sha256": "f43f1bff2e8120c902a37e03802780742fc6ff11ec80bc4c5ea06dfe78312654"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetParameter": {
+      "va": "0xcbea94",
+      "map": "0x6bda94",
+      "end": "0xcbeb78",
+      "length": 228,
+      "sha256": "5b313928e97cfb01c3e05a30d444339585ba5d113eb84391ea2ec07008277379"
+    },
+    "CIS_TTweakerRELDNx.CIS_TTweakerRELDNx": {
+      "va": "0x139c510",
+      "map": "0xd9b510",
+      "end": "0x139c68c",
+      "length": 380,
+      "sha256": "fb7213e2e33779dbd2f5fc5522176035b865b77c0eb0ec01fd3cef5ae3c69176"
+    }
+  },
+  "limitations": [
+    "Static source facts and literal vectors do not execute original Toolkit code, its GUI, or hardware.",
+    "Direct read minima are not PP schema admission; no short input is padded. A four-token reverse logic field would be read out of bounds by the original routine.",
+    "Malformed tokenization and vendor parameter admission require separate evidence. Logic byte examples do not widen one-bit vendor schemas.",
+    "Complete MAP intervals may include embedded literals and padding. No original instruction bytes, disassembly, vendor specifications or site data are included."
+  ]
+}

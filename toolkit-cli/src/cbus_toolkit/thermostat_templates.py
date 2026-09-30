@@ -30,7 +30,8 @@ from .addressing import NetworkAddressing, _container
 from .classic_replacement import _document, _path
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, xml_text
-from .thermostat_post_load import PostLoadReplay, ThermostatPostLoadError, replay_post_load
+from .thermostat_post_load import (PostLoadReplay, ThermostatPostLoadError, replay_post_load,
+                                   validate_group_sort)
 from .unitspec import UnitSpecError, UnitSpecStore, _integer, version_matches
 
 
@@ -262,6 +263,10 @@ class TemplateOverlay:
             return {}
         return {n: v for n, v in self.post_load.expected.items() if overlay.get(n) != v}
 
+    @property
+    def would_mutate(self) -> bool:
+        return bool(self.changes or (self.post_load is not None and self.post_load.group_operations))
+
     def as_dict(self):
         template_names = set(self.expected)
         result = {'template': self.template.as_dict(), 'unit_type': self.unit_type, 'firmware': self.firmware,
@@ -280,12 +285,19 @@ class TemplateOverlay:
 
 def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
                  snapshot: Mapping[str, str], *, groups: Mapping[int, str] | None = None,
-                 application: int | None = None) -> TemplateOverlay:
+                 application: int | None = None, group_sort: str | None = None) -> TemplateOverlay:
     """Plan the byte overlay of one template onto a complete PP snapshot.
 
     With ``groups`` (the output application's address -> tag inventory) the
     original post-load pipeline and form save are replayed as well.
     """
+    try:
+        validate_group_sort(group_sort, post_load=groups is not None)
+    except ThermostatPostLoadError as error:
+        raise ThermostatTemplateError(str(error)) from error
+    if group_sort is not None and application in (172, 203):
+        raise ThermostatTemplateError('Explicit group sort excludes zone/remote applications 172 and 203; '
+                                      'their other form-load group effects are not replayed')
     if family_for_unit_type(unit_type) != template.family:
         raise ThermostatTemplateError(template.filename + ' is not compatible with unit type ' + unit_type)
     if type(firmware) is not str or not firmware.strip():
@@ -308,7 +320,7 @@ def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
         loaded.update(template.values)
         try:
             replay = replay_post_load({n: v for n, v in loaded.items() if v is not None},
-                                      template.family, template.number, groups)
+                                      template.family, template.number, groups, group_sort=group_sort)
         except (ThermostatPostLoadError, KeyError) as error:
             raise ThermostatTemplateError('Original post-load replay is outside its precondition: '
                                           + str(error)) from error
@@ -403,7 +415,7 @@ class NativeTemplatePlan:
         return {'format': 'cbus-native-thermostat-template-plan-v1', 'path': self.path,
                 'identity': dict(self.identity), 'unit_xml_sha256': _sha(self.unit_xml.encode('utf-8')),
                 **self.overlay.as_dict(), 'closed_networks': list(self.networks),
-                'apply_would_mutate': bool(self.overlay.changes),
+                'apply_would_mutate': self.overlay.would_mutate,
                 'native_load_command': 'PP LOAD_FROM_FILE <session> ' + self.overlay.template.filename,
                 'caller_exclusive_project_required': True, 'server_edit_lock_acquired': False,
                 'physical_device_programmed': False, 'original_ui_workflow_executed': False}
@@ -500,16 +512,16 @@ class NativeThermostatTemplates:
         return text, identity, values
 
     def _output_groups(self, network, values):
-        tokens = values.get('Application', '').split()
-        application = _safe_int(tokens[0]) if tokens else None
-        if application is None or application == 255:
-            raise ThermostatTemplateError('Post-load replay needs the unit Application byte to name its '
-                                          'output application; use post_load=False for the pure overlay')
+        # Thermostat AfterLoad sets TCBUSUnit.ApplicationObject from the scalar
+        # ApplicationNumber. The plant getters use that object through VMT
+        # +0xb0; the generic Application array does not select these groups.
+        application = _native_integer(values.get('ApplicationNumber'), 'ApplicationNumber')
         text = self._xml(network)
         root = _container(text, 'Network').documentElement
         matches = [node for node in _children(root, 'Application') if _field(node, 'Address') == str(application)]
         if len(matches) != 1:
-            raise ThermostatTemplateError('Output application ' + str(application) + ' is absent from the network')
+            raise ThermostatTemplateError('Output ApplicationNumber ' + str(application)
+                                          + ' is absent from the network')
         groups = {}
         for node in _children(matches[0], 'Group'):
             address = int(_field(node, 'Address'))
@@ -518,9 +530,13 @@ class NativeThermostatTemplates:
             groups[address] = _field(node, 'TagName')
         return application, groups
 
-    def plan(self, path, number, *, exclusive_project=False, post_load=True):
+    def plan(self, path, number, *, exclusive_project=False, post_load=True, group_sort=None):
         self._start('plan')
         try:
+            try:
+                validate_group_sort(group_sort, post_load=post_load)
+            except ThermostatPostLoadError as error:
+                raise ThermostatTemplateError(str(error)) from error
             path, project, network_address, address = _path(path)
             network = '//' + project + '/' + str(network_address)
             if exclusive_project is not True:
@@ -537,7 +553,7 @@ class NativeThermostatTemplates:
             if post_load:
                 application, groups = self._output_groups(network, values)
             overlay = plan_overlay(template, identity['UnitType'], identity['FirmwareVersion'], values,
-                                   groups=groups, application=application)
+                                   groups=groups, application=application, group_sort=group_sort)
             plan = NativeTemplatePlan(path, project, network, overlay, text,
                                       tuple(sorted(identity.items())), networks)
             self._plans[id(plan)] = repr(plan)
@@ -576,7 +592,7 @@ class NativeThermostatTemplates:
                                       changed_parameters=[n for n, _a, _b in overlay.changes])
             self._operation('use', plan.project)
             self._fresh(plan)
-            if not overlay.changes:
+            if not overlay.would_mutate:
                 self.last_evidence.update(state='already_applied', complete=True, backup_project=None)
                 return self.last_evidence
             self.last_evidence['state'] = 'backup'

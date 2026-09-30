@@ -1,0 +1,863 @@
+{
+  "afterload_project_graph_lookup_sites": [
+    {
+      "at": "0x128e098",
+      "target": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications"
+    },
+    {
+      "at": "0x128e0ff",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128e1d5",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e1fc",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e229",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByTagName"
+    },
+    {
+      "at": "0x128e27d",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e28f",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128e2b3",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e300",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByTagName"
+    },
+    {
+      "at": "0x128e354",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e37b",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e3a8",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByTagName"
+    },
+    {
+      "at": "0x128e3fc",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e40e",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128e432",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e47f",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByTagName"
+    },
+    {
+      "at": "0x128e518",
+      "target": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress"
+    },
+    {
+      "at": "0x128e975",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128e9bb",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128ea1d",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128ea61",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f11f",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f15a",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f195",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f1d0",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f20b",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f246",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f281",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f2bc",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f2f7",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f332",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f36d",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f3a8",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f3e3",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f41e",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupForPlantType"
+    },
+    {
+      "at": "0x128f474",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroup"
+    },
+    {
+      "at": "0x128f4af",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroup"
+    },
+    {
+      "at": "0x128f4ea",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroup"
+    },
+    {
+      "at": "0x128f525",
+      "target": "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroup"
+    },
+    {
+      "at": "0x128f560",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f596",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f5cc",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f602",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f685",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f6c9",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f70d",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f751",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    },
+    {
+      "at": "0x128f795",
+      "target": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress"
+    }
+  ],
+  "candidate_phase": "fresh initialized programmable master; one accepted quick-zone click; no plant/type edits",
+  "candidate_preconditions_not_yet_admission": [
+    "Retain loaded master/slave enum rather than recomputing it after zone edits.",
+    "Every nonzero Heating/Cooling/VentingPlantType has nonempty installed zones initially and after the action.",
+    "Every surviving installed switched zone already has a resolved non-255 damper object.",
+    "Attest all consumed initial applications/groups, exact tags, unused sentinel and fresh cache state.",
+    "Close generic attribute dispatch and initial control binding ordering before declaring action acceptance."
+  ],
+  "check_count": 26,
+  "checks": {
+    "afterload_sets_master_slave": true,
+    "basic_quick_zone_group_hidden": true,
+    "basic_quick_zone_group_named": true,
+    "boolean_set_compares_old_value_before_change": true,
+    "click_guard_spans_action": true,
+    "click_has_no_direct_post_action_quick_refresh": true,
+    "common_save_uses_nested_controlled_getter": true,
+    "damper_method_contains_search_and_creation": true,
+    "exclude_order": true,
+    "include_order": true,
+    "installed_zone_handler_updates_dampers": true,
+    "master_save_reads_installed_not_manager_controlled": true,
+    "model_zone_handler_has_reentry_guard": true,
+    "parent_enable_callback_order": true,
+    "parent_enable_callback_vmt_slot": true,
+    "plant_initial_vent_fallback_guard": true,
+    "quick_refresh_checks_action_guard": true,
+    "quick_refresh_checks_initial_flash_guard": true,
+    "selected_zone_handlers_do_not_set_master_slave": true,
+    "subforms_created_in_original_order": true,
+    "templates_bind_parent_enable_slot": true,
+    "templates_initial_flash_guard": true,
+    "templates_initial_reentry_guard": true,
+    "unit_zone_handler_only_refreshes_quick_options": true,
+    "zone_empty_constant_is_zero": true,
+    "zone_empty_types_cleared_in_order": true
+  },
+  "complete_event_graph_reproduced": false,
+  "format": "cbus-thermostat-quick-zone-events-static-v1",
+  "limits": [
+    "Selected direct edges and branch guards are pinned; indirect dispatch and all subscribers are not fully closed.",
+    "Pure quick_zone_transition only models explicit mask writes, not nested model callbacks or project effects.",
+    "No unconditional UpdateFlashZoneVariables or Vent fallback may be added to this click route.",
+    "Raw PP cannot prove project object existence, tags, application identity, sentinel or retained damper cache state.",
+    "A fresh synthetic project graph can support future bounded acceptance when all reachable effects are modeled or excluded."
+  ],
+  "method_count": 44,
+  "method_spans": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "bytes": 88,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "start": "0x7f45e0"
+    },
+    "CIS_TCBusThermostatCGateAgent.GetControlledZones": {
+      "bytes": 80,
+      "sha256": "50272209057ae4194321942c4df66730eae84612dd4b6c2f0a748ad917aeb394",
+      "start": "0x12946cc"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "bytes": 6452,
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "bytes": 8160,
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82",
+      "start": "0x129471c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications": {
+      "bytes": 212,
+      "sha256": "f21b9894f221e436e1de49647f32143983671319ea168fd7d4f82666aea6b43a",
+      "start": "0x128df98"
+    },
+    "CIS_TThermostat.TCBusParameters.HandleInstalledZonesAfterChange": {
+      "bytes": 60,
+      "sha256": "54b11c8448ed2c92936348c3a59acddb43abede8189d47e9e8d09f9429da00df",
+      "start": "0xfdbb0c"
+    },
+    "CIS_TThermostat.TCBusParameters.HookEvents": {
+      "bytes": 32,
+      "sha256": "9f6b1b05234f96622b709ddfad37f9611d64077d00999fb7ed8cfab6932a0b73",
+      "start": "0xfdb9d0"
+    },
+    "CIS_TThermostat.TPlantControlService.HandleVentPlantTypeChange": {
+      "bytes": 196,
+      "sha256": "a06a22e068daa2e6c185bd1b849a9984465fe0c9c5dad7fb0e37cdf831877473",
+      "start": "0xfe1d20"
+    },
+    "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange": {
+      "bytes": 104,
+      "sha256": "65974198aa6ac8e08ddeebf5c9a81f130a52d128debdfab709994bfdc0e0213c",
+      "start": "0xfe1de4"
+    },
+    "CIS_TThermostat.TPlantControlService.UpdateDamperGroups": {
+      "bytes": 1672,
+      "sha256": "4703c966524f4883edae7620ec813a9fc0f13cbbb61d9a14ef5eaa88e2642e7d",
+      "start": "0xfe5318"
+    },
+    "CIS_TThermostat.TScheduleService.HandleZoneAfterChange": {
+      "bytes": 52,
+      "sha256": "77ad1c1e6204e19f9f90ce46612b0f57fcf672e05353202c1f6a06825708cfbb",
+      "start": "0xfea100"
+    },
+    "CIS_TThermostat.TTemperatureMeasurementService.HandleZoneAfterChange": {
+      "bytes": 52,
+      "sha256": "5bf355654ba387126f2d46311eb7f345e51543fd2357057493022a756fa15d04",
+      "start": "0xfdc110"
+    },
+    "CIS_TThermostat.TThermostat.HandleInstalledZonesChange": {
+      "bytes": 32,
+      "sha256": "61c2162d83605324346c6964a3ef3037cba1c8637ed2a848c339682a30cc2713",
+      "start": "0xfea824"
+    },
+    "CIS_TThermostat.TThermostat.HandleZoneChange": {
+      "bytes": 116,
+      "sha256": "5bf14ee60d75152f3b73782929a01ac5b9d984d2d6f432cf5ea98264e3f879aa",
+      "start": "0xfea7b0"
+    },
+    "CIS_TThermostat.TThermostat.HandleZoneManagerPlantTypeChange": {
+      "bytes": 268,
+      "sha256": "3e3e15fddb1cfd7d57f338b2b3f0d66b45d27b08f797d9501fb1f0dd00179054",
+      "start": "0xfecd3c"
+    },
+    "CIS_TThermostat.TUIService.HandleZoneAfterChange": {
+      "bytes": 52,
+      "sha256": "1b034ed7d6898f4bf931f0c53a293efb77372c8f24f51ddc3e81e1765d9031b7",
+      "start": "0xfdca60"
+    },
+    "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave": {
+      "bytes": 36,
+      "sha256": "d56dfd09655ee7ce4c856bae0bea33665058e7a888e80ecf5caa1fdf3e3f14e3",
+      "start": "0xfdeb50"
+    },
+    "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange": {
+      "bytes": 260,
+      "sha256": "648bb7ca96004bc29ee7a2d388d62e58063e96e53a11e7d226ed42f11aeb1c95",
+      "start": "0xfde684"
+    },
+    "CIS_TThermostat.TZoneManagerService.HookEvents": {
+      "bytes": 204,
+      "sha256": "63fc3915c2d7bb031382adb58082fc796d75843bf4d2599d230f15208c7018e2",
+      "start": "0xfde088"
+    },
+    "CIS_TThermostat.TZoneManagerService.SetZoneManagerMasterSlave": {
+      "bytes": 100,
+      "sha256": "c43bba334b07bc720817e6dcb2a2a620d4773838a4533aa8a2bbb74c5e60806a",
+      "start": "0xfdff70"
+    },
+    "CIS_TThermostatCommon.TZones.SetZones": {
+      "bytes": 236,
+      "sha256": "9fc997fad8e34ab94145e94e354033d017b439710f61ca59497ea9c4e2d2a8d6",
+      "start": "0xca55e8"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes": {
+      "bytes": 608,
+      "sha256": "298c3696b04ff794331398eafe4edd5b2994e30ff920879d1c068af82e164f56",
+      "start": "0x1128ef4"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone": {
+      "bytes": 228,
+      "sha256": "f25c6f4819ad68bd93b9f3a93acb3156aa4c540b06635df9a5fdbe20ac2508a1",
+      "start": "0x1126f1c"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Initialise": {
+      "bytes": 308,
+      "sha256": "f1a9648cf2991a79b234c3013d09783af54c5594d9b2839ab3c3514ad652bc5d",
+      "start": "0x112725c"
+    },
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.EnableDisableZone": {
+      "bytes": 176,
+      "sha256": "68e092276f10610476a9fc8ddd1188ebdf902b62108c7afae16ec38013eb7368",
+      "start": "0x112dbf4"
+    },
+    "CIS_TcdThermostatTemplates.AllZonesUnticked": {
+      "bytes": 140,
+      "sha256": "bffa640bd32d9dc72946fc9bdb0c7bd963b3648d7bd70f052e650f736dfe3fa0",
+      "start": "0x111dad8"
+    },
+    "CIS_TcdThermostatTemplates.CheckBoxStateForZone": {
+      "bytes": 80,
+      "sha256": "4f51195fd2739142a294205029853dd05109b4e469b06a87affaf62504fb2867",
+      "start": "0x111e788"
+    },
+    "CIS_TcdThermostatTemplates.ExcludeZone": {
+      "bytes": 332,
+      "sha256": "93acec83c47062a921acf00fdbe2563f3ee9864fb5db984d0b74cc038db1b497",
+      "start": "0x111d98c"
+    },
+    "CIS_TcdThermostatTemplates.IncludeZone": {
+      "bytes": 448,
+      "sha256": "a1b459d1fd020791af52d6916e58740587faf194e7c4b542e87836abddabd7ee",
+      "start": "0x111d7cc"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleChbUsedZoneClick": {
+      "bytes": 520,
+      "sha256": "9943c710d58834b438a6a0e16d5e0693a94c25665581981df7eb64182561a358",
+      "start": "0x111db64"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange": {
+      "bytes": 24,
+      "sha256": "89c7732f572ab3f5030fa6860db128f07e33cfedf662489c0bdc947981f1b1c2",
+      "start": "0x111df48"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.Initialise": {
+      "bytes": 364,
+      "sha256": "893f59464291150d433d290e06cae56c517b3ba59d0d7b8e359d6b71049dfaf6",
+      "start": "0x111df60"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupComponents": {
+      "bytes": 280,
+      "sha256": "166bbb81384cfb3dde6765dc20e7108dbf5a4cd3575a5209e68603f84f3d6f08",
+      "start": "0x111e220"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupQuickOptions": {
+      "bytes": 168,
+      "sha256": "8ffc1558463cb2c5d20d28149c39c3978fba2ea5b7fe4c41396ececced805b1e",
+      "start": "0x111e418"
+    },
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions": {
+      "bytes": 384,
+      "sha256": "70e7b90e0184574cc18f6d5d35a76b2e87ae1cd535631bf93781d352fdf29b18",
+      "start": "0x111e97c"
+    },
+    "CIS_TcdThermostatTemplates.UpdateFlashZoneVariables": {
+      "bytes": 420,
+      "sha256": "d92ae488da5f4d633e146ccae3bff7579d20767ac120c9aac47808f1e073e454",
+      "start": "0x111e7d8"
+    },
+    "CIS_TcdThermostatTemplates.ZoneFullyOn": {
+      "bytes": 356,
+      "sha256": "0152a6839513c1408057b8ed6341262e5e1cd333c8bd0b61aa5523cc55e1e3bc",
+      "start": "0x111e624"
+    },
+    "CIS_TcdThermostatTemplates.ZonePartiallyOn": {
+      "bytes": 356,
+      "sha256": "3ea3a8566151a355516d1a4a23e1254af65b0294b76d7a109268c87f6cdfd058",
+      "start": "0x111e4c0"
+    },
+    "CIS_TcdThermostatUI.TcdThermostatUI.EnableDisableZone": {
+      "bytes": 168,
+      "sha256": "c9ecee076f9e893a780613f28bc50d9d695a479e7c3d0cf566719722661a00ae",
+      "start": "0x1120fc4"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.EnableDisableZone": {
+      "bytes": 848,
+      "sha256": "d2e954e5d14d2241ae384fec3bd4d297f915c969a17df0b27cb0f347d275e7cb",
+      "start": "0xfee6e0"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleEnableDisableZone": {
+      "bytes": 88,
+      "sha256": "f3457a5271fc0f68c92f9a3a266cd0c76d222dfc172583ffb13da5998c52f2c2",
+      "start": "0x1132d1c"
+    },
+    "CIS_TddThermostat.TddThermostat.Initialise": {
+      "bytes": 600,
+      "sha256": "d7af809c3aab325a2581cc051b05ddecc98ae71f30215b8720a6119ec3fc57da",
+      "start": "0x1131054"
+    },
+    "CIS_TddThermostat.TddThermostat.InitialiseSubForms": {
+      "bytes": 592,
+      "sha256": "185a180194e3779da70e14cedb824c65541a8fcceafed27e5858eb80e55e8702",
+      "start": "0x1132a24"
+    },
+    "CIS_TddThermostat.TddThermostat.UpdateZoneCheckboxes": {
+      "bytes": 144,
+      "sha256": "22ab9e21f939ed028ee119f842f2ef6c710ecb5996ec91b469ef825d10b219af",
+      "start": "0x1132c74"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "public_quick_zone_action_ready": false,
+  "raw_pp_only_action_admissible": false,
+  "selected_direct_edges": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": [],
+    "CIS_TCBusThermostatCGateAgent.GetControlledZones": [
+      {
+        "at": "0x12946e0",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": [
+      {
+        "at": "0x128e098",
+        "target": "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications"
+      },
+      {
+        "at": "0x128e142",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128e4eb",
+        "target": "CIS_TThermostat.TCBusParameters.HookEvents"
+      },
+      {
+        "at": "0x128e568",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128e5c9",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128e62d",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128e6c6",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128e77a",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128eb99",
+        "target": "CIS_TThermostat.TZoneManagerService.SetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x128ebaf",
+        "target": "CIS_TThermostat.TZoneManagerService.SetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x128ec8c",
+        "target": "CIS_TThermostat.TZoneManagerService.HookEvents"
+      },
+      {
+        "at": "0x128edd1",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x128f88c",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      }
+    ],
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": [
+      {
+        "at": "0x12948d0",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x12948da",
+        "target": "CIS_TCBusThermostatCGateAgent.GetControlledZones"
+      },
+      {
+        "at": "0x1295148",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1295297",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x129545b",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x12956ba",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x129587e",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x129605b",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x12960e9",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1296177",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1296205",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications": [],
+    "CIS_TThermostat.TCBusParameters.HandleInstalledZonesAfterChange": [],
+    "CIS_TThermostat.TCBusParameters.HookEvents": [],
+    "CIS_TThermostat.TPlantControlService.HandleVentPlantTypeChange": [],
+    "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange": [],
+    "CIS_TThermostat.TPlantControlService.UpdateDamperGroups": [
+      {
+        "at": "0xfe53f5",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0xfe5585",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0xfe5715",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0xfe58a5",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TThermostat.TScheduleService.HandleZoneAfterChange": [],
+    "CIS_TThermostat.TTemperatureMeasurementService.HandleZoneAfterChange": [],
+    "CIS_TThermostat.TThermostat.HandleInstalledZonesChange": [
+      {
+        "at": "0xfea838",
+        "target": "CIS_TThermostat.TPlantControlService.UpdateDamperGroups"
+      }
+    ],
+    "CIS_TThermostat.TThermostat.HandleZoneChange": [],
+    "CIS_TThermostat.TThermostat.HandleZoneManagerPlantTypeChange": [],
+    "CIS_TThermostat.TUIService.HandleZoneAfterChange": [],
+    "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave": [],
+    "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange": [],
+    "CIS_TThermostat.TZoneManagerService.HookEvents": [],
+    "CIS_TThermostat.TZoneManagerService.SetZoneManagerMasterSlave": [],
+    "CIS_TThermostatCommon.TZones.SetZones": [],
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes": [
+      {
+        "at": "0x1128f20",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1128f65",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1128faa",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1128fef",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x112906d",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x11290d1",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x1129136",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone": [
+      {
+        "at": "0x1126f36",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Initialise": [
+      {
+        "at": "0x112735d",
+        "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes"
+      }
+    ],
+    "CIS_TcdThermostatTempControl.TcdThermostatTempControl.EnableDisableZone": [],
+    "CIS_TcdThermostatTemplates.AllZonesUnticked": [],
+    "CIS_TcdThermostatTemplates.CheckBoxStateForZone": [
+      {
+        "at": "0x111e796",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111e7a6",
+        "target": "CIS_TcdThermostatTemplates.ZoneFullyOn"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.ExcludeZone": [],
+    "CIS_TcdThermostatTemplates.IncludeZone": [
+      {
+        "at": "0x111d813",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      },
+      {
+        "at": "0x111d878",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleChbUsedZoneClick": [
+      {
+        "at": "0x111dbb9",
+        "target": "CIS_TcdThermostatTemplates.IncludeZone"
+      },
+      {
+        "at": "0x111dbd3",
+        "target": "CIS_TcdThermostatTemplates.IncludeZone"
+      },
+      {
+        "at": "0x111dbf2",
+        "target": "CIS_TcdThermostatTemplates.IncludeZone"
+      },
+      {
+        "at": "0x111dc11",
+        "target": "CIS_TcdThermostatTemplates.IncludeZone"
+      },
+      {
+        "at": "0x111dc34",
+        "target": "CIS_TcdThermostatTemplates.IncludeZone"
+      },
+      {
+        "at": "0x111dc40",
+        "target": "CIS_TcdThermostatTemplates.AllZonesUnticked"
+      },
+      {
+        "at": "0x111dca8",
+        "target": "CIS_TcdThermostatTemplates.ExcludeZone"
+      },
+      {
+        "at": "0x111dcda",
+        "target": "CIS_TcdThermostatTemplates.ExcludeZone"
+      },
+      {
+        "at": "0x111dcf6",
+        "target": "CIS_TcdThermostatTemplates.ExcludeZone"
+      },
+      {
+        "at": "0x111dd12",
+        "target": "CIS_TcdThermostatTemplates.ExcludeZone"
+      },
+      {
+        "at": "0x111dd2e",
+        "target": "CIS_TcdThermostatTemplates.ExcludeZone"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.HandleUnitZoneChange": [
+      {
+        "at": "0x111df57",
+        "target": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.Initialise": [
+      {
+        "at": "0x111e0ba",
+        "target": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupComponents"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupComponents": [
+      {
+        "at": "0x111e284",
+        "target": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupQuickOptions"
+      },
+      {
+        "at": "0x111e28c",
+        "target": "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.SetupQuickOptions": [],
+    "CIS_TcdThermostatTemplates.TcdThermostatTemplates.UpdateQuickOptions": [
+      {
+        "at": "0x111e9a8",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111e9c7",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111e9e6",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111ea05",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111ea24",
+        "target": "CIS_TcdThermostatTemplates.ZonePartiallyOn"
+      },
+      {
+        "at": "0x111ea43",
+        "target": "CIS_TcdThermostatTemplates.CheckBoxStateForZone"
+      },
+      {
+        "at": "0x111ea5f",
+        "target": "CIS_TcdThermostatTemplates.CheckBoxStateForZone"
+      },
+      {
+        "at": "0x111ea7b",
+        "target": "CIS_TcdThermostatTemplates.CheckBoxStateForZone"
+      },
+      {
+        "at": "0x111ea97",
+        "target": "CIS_TcdThermostatTemplates.CheckBoxStateForZone"
+      },
+      {
+        "at": "0x111eab3",
+        "target": "CIS_TcdThermostatTemplates.CheckBoxStateForZone"
+      },
+      {
+        "at": "0x111ead6",
+        "target": "CIS_TcdThermostatTemplates.UpdateFlashZoneVariables"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.UpdateFlashZoneVariables": [
+      {
+        "at": "0x111e7ef",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      },
+      {
+        "at": "0x111e80d",
+        "target": "CIS_TThermostatCommon.TZones.SetZones"
+      }
+    ],
+    "CIS_TcdThermostatTemplates.ZoneFullyOn": [],
+    "CIS_TcdThermostatTemplates.ZonePartiallyOn": [],
+    "CIS_TcdThermostatUI.TcdThermostatUI.EnableDisableZone": [],
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.EnableDisableZone": [
+      {
+        "at": "0xfee6fa",
+        "target": "CIS_TThermostat.TZoneManagerService.GetZoneManagerMasterSlave"
+      }
+    ],
+    "CIS_TddThermostat.TddThermostat.HandleEnableDisableZone": [
+      {
+        "at": "0x1132d37",
+        "target": "CIS_TcdThermostatUI.TcdThermostatUI.EnableDisableZone"
+      },
+      {
+        "at": "0x1132d48",
+        "target": "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.EnableDisableZone"
+      },
+      {
+        "at": "0x1132d59",
+        "target": "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone"
+      },
+      {
+        "at": "0x1132d6a",
+        "target": "CIS_TcdThermostatTempControl.TcdThermostatTempControl.EnableDisableZone"
+      }
+    ],
+    "CIS_TddThermostat.TddThermostat.Initialise": [
+      {
+        "at": "0x113124d",
+        "target": "CIS_TddThermostat.TddThermostat.UpdateZoneCheckboxes"
+      }
+    ],
+    "CIS_TddThermostat.TddThermostat.InitialiseSubForms": [],
+    "CIS_TddThermostat.TddThermostat.UpdateZoneCheckboxes": []
+  },
+  "selected_no_master_set_methods": [
+    "CIS_TcdThermostatTemplates.IncludeZone",
+    "CIS_TcdThermostatTemplates.ExcludeZone",
+    "CIS_TThermostat.TZoneManagerService.HandleZoneAfterChange",
+    "CIS_TThermostat.TThermostat.HandleZoneChange",
+    "CIS_TThermostat.TThermostat.HandleInstalledZonesChange",
+    "CIS_TThermostat.TPlantControlService.HandleZoneAfterChange"
+  ],
+  "zone_target_order": [
+    "UsedZones",
+    "UIAllocatedZones",
+    "InternalPlantZones",
+    "MeasuredZones",
+    "ScheduleControlledZones",
+    "InstalledZones",
+    "ControlledZones",
+    "HeatingPlantInstalledZones",
+    "CoolingPlantInstalledZones",
+    "VentingPlantInstalledZones"
+  ]
+}

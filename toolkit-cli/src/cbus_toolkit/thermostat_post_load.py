@@ -12,8 +12,9 @@ inventory.  The tables are pinned against the original EXE by
 
 The replay is exact only inside a stated precondition and fails closed
 outside it: no group of the output application may already carry this
-thermostat's ``[CGnn]`` prefix, and no group-selection step may reach the
-original's order-dependent ``GetNewGroup`` search.  Generic AfterLoad and
+thermostat's ``[CGnn]`` prefix. The order-dependent ``GetNewGroup`` search
+requires an explicitly address-ascending, initially empty group manager.
+Generic AfterLoad and
 BeforeSave normalization of fields the pipeline does not touch is not
 replayed.  See docs/thermostat-templates.md.
 """
@@ -528,6 +529,9 @@ def form_save_scalars(values, family):
     result.update({name: int(values[name] > 0) for name in ('BeepEnable', 'VariableFanCoilEnable')})
     result['TemperatureUnits'] = values['TemperatureUnits'] if values['TemperatureUnits'] <= 1 else 0
     result['EnableHVACRelayDrive'] = 0
+    # GetControlledZones returns the CBusParameters installed mask for a
+    # loaded master; the zone manager's mutable mask is not the saved value.
+    result['ControlledZones'] = values['InstalledZones'] if values['ControlledZones'] > 0 else 0
     if values['ControlledZones'] == 0:
         result.update(InternalPlantType=0, InternalPlantZones=0)
     elif values['InternalPlantType'] == 11:
@@ -540,6 +544,51 @@ def form_save_scalars(values, family):
         result['TimerEnable'] = int(values['TimerEnable'] > 0)
     else:
         raise ThermostatPostLoadError('Unknown thermostat family')
+    return result
+
+
+# name: (AfterLoad conversion, BeforeSave conversion, signed byte, upper clamp)
+# Pinned in research/thermostat_settings_temperature_static.py.  Only the two
+# upper guard fields receive the additional 127 clamp in BeforeSave.
+TEMPERATURE_SAVE_RULES = {
+    **{name: ('SimpleCGateTempToUnitTemp', 'SimpleUnitTempToCGateTemp', True, None)
+       for name in ('MaximumSetTemperature', 'MinimumSetTemperature')},
+    **{name: ('CGateTempToUnitTemp', 'UnitTempToCGateTemp', True, 127 if name in
+             ('GuardUpperTemperature', 'GuardMaximumUpperTemperature') else None)
+       for name in ('GuardUpperTemperature', 'GuardMaximumUpperTemperature', 'GuardMinimumUpperTemperature',
+                    'GuardLowerTemperature', 'GuardMaximumLowerTemperature', 'GuardMinimumLowerTemperature')},
+    'SetbackLevel': ('CGateTempToTempOffsetWithShift', 'TempOffsetWithShiftToCGateTemp', True, None),
+    **{name: ('CGateTempToTempOffset', 'TempOffsetToCGateTemp', True, None)
+       for name in ('EvapStartProportionalTemperature', 'EvapStopProportionalTemperature')},
+    'TemperatureOffset': ('CGate16thDegreeToQuarterDegreeTempOffset',
+                          'QuarterDegreesTempOffsetToCGateTemp', True, None),
+    'TemperatureSendDifferential': ('CGate16thDegreeToQuarterDegreeTempOffset',
+                                    'QuarterDegreesTempOffsetToCGateTemp', False, None),
+    'EvapComfortStartTemp': ('CGateTempToWholeDegreesTemp', 'WholeDegreesTempToCGateTemp', False, None),
+    'EvapComfortStepSize': ('CGateTempToHalfDegreesTempOffset', 'HalfDegreesTempOffsetToCGateTemp', False, None),
+}
+
+
+def form_save_temperatures(values, *, temperature_preference):
+    """One original temperature-model round trip with explicit process units.
+
+    The Toolkit preference is independent of the thermostat's TemperatureUnits
+    PP setting. Signed fields save through SetShortintValue; plain integer
+    setters have no implicit byte wrap. Callers must validate their saved range.
+    """
+    from .thermostat_temperature import convert_temperature
+
+    result = {}
+    for name, (load_method, save_method, signed, upper_clamp) in TEMPERATURE_SAVE_RULES.items():
+        raw = values[name]
+        if type(raw) is not int or not 0 <= raw <= 255:
+            raise ThermostatPostLoadError(name + ' must be a one-byte integer')
+        loaded = raw - 256 if signed and raw >= 128 else raw
+        model = convert_temperature(load_method, loaded, units=temperature_preference)
+        saved = convert_temperature(save_method, model, units=temperature_preference)
+        if upper_clamp is not None:
+            saved = min(saved, upper_clamp)
+        result[name] = saved & 255 if signed else saved
     return result
 
 
@@ -564,6 +613,7 @@ class PostLoadReplay:
     master: bool
     parameters: tuple[tuple[str, int], ...]
     group_operations: tuple[GroupOperation, ...]
+    group_sort: str | None = None
 
     @property
     def expected(self):
@@ -573,7 +623,8 @@ class PostLoadReplay:
         return {'installation': self.installation, 'installation_name': self.installation_name,
                 'virtual_plant_type': self.virtual_plant_type, 'group_prefix': self.prefix,
                 'zone_manager_master': self.master, 'parameters': dict(self.parameters),
-                'group_operations': [op.as_dict() for op in self.group_operations]}
+                'group_operations': [op.as_dict() for op in self.group_operations],
+                'group_sort': self.group_sort}
 
 
 class _Groups:
@@ -606,14 +657,41 @@ class _Groups:
     def prefixed(self, address):
         return self.tags[address].startswith(self.prefix)
 
+    def new_address_ascending(self):
+        # Original GetNewGroup walks the resolved manager backwards. An empty
+        # manager under explicit AddressAsc inserts each newly created group
+        # in ascending address order (reserved 255 sorts first). Only same-
+        # prefix entries participate; <Unused> therefore cannot affect this.
+        for address in sorted(self.tags, reverse=True):
+            if self.prefixed(address):
+                for candidate in range(address + 1, 255):
+                    if candidate not in self.tags:
+                        return candidate
+        for candidate in range(255):
+            if candidate not in self.tags:
+                return candidate
+        raise ThermostatPostLoadError('No free output group address in 0..254')
+
+
+def validate_group_sort(group_sort, *, post_load=True):
+    if group_sort is not None and (type(group_sort) is not str or group_sort != 'address-ascending'):
+        raise ThermostatPostLoadError('Group sort must be address-ascending or omitted')
+    if group_sort is not None and not post_load:
+        raise ThermostatPostLoadError('Group sort requires post-load replay')
+
 
 def replay_post_load(values: Mapping[str, int], family: str, installation: int,
-                     groups: Mapping[int, str]) -> PostLoadReplay:
+                     groups: Mapping[int, str], *, group_sort: str | None = None) -> PostLoadReplay:
     """Replay the original post-load pipeline for one loaded template.
 
     ``values`` is the complete post-overlay PP state as integers and
     ``groups`` maps each existing output-application group address to its tag.
+    Explicit ``group_sort='address-ascending'`` admits GetNewGroup only when
+    this initial inventory is empty; it declares original process context.
     """
+    validate_group_sort(group_sort)
+    if group_sort is not None and groups:
+        raise ThermostatPostLoadError('Explicit group sort requires an initially empty output application')
     if family not in ('programmable', 'basic'):
         raise ThermostatPostLoadError('Unknown thermostat family')
     if installation not in INSTALLATION_NAMES:
@@ -689,6 +767,8 @@ def replay_post_load(values: Mapping[str, int], family: str, installation: int,
             if state.tags[address].lower() != tag.lower():
                 state.rename(address, tag)
             return address
+        if group_sort == 'address-ascending':
+            return state.create(state.new_address_ascending(), tag)
         raise ThermostatPostLoadError('Group ' + str(address) + ' is taken; the original GetNewGroup'
                                       ' search order is not replayed')
 
@@ -738,4 +818,4 @@ def replay_post_load(values: Mapping[str, int], family: str, installation: int,
         nonevap = 1 if values['NonEvapProgramEnabled'] > 1 else values['NonEvapProgramEnabled']
         result['NonEvapProgramEnabled'] = 0 if plant in (0, 2) else nonevap
     return PostLoadReplay(installation, name, plant, prefix, master, tuple(sorted(result.items())),
-                          tuple(state.operations))
+                          tuple(state.operations), group_sort)

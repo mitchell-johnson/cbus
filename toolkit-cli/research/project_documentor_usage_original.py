@@ -1,6 +1,6 @@
-"""Execute pinned ClassicKeyInput.ActionSelectorUse against synthetic object accessors.
+"""Execute pinned ActionSelectorUse methods against synthetic object accessors.
 
-Only the original method's instructions run. Every called Delphi string routine,
+Only the selected original method's instructions run. Every called Delphi string routine,
 collection accessor and unit getter is intercepted; no GUI, project, network or
 hardware code executes. This is independent branch/order evidence, not a complete
 original page or PP-loader capture. Receipts contain synthetic cases and hashes,
@@ -28,12 +28,12 @@ COUNT_HOOK, APPLICATION_HOOK = 0x20002000, 0x20002010
 
 
 class OriginalActionSelectorProbe:
-    def __init__(self, executable: Path, map_file: Path):
+    def __init__(self, executable: Path, map_file: Path, method_name: str = METHOD):
         raw, symbols = executable.read_bytes(), map_file.read_bytes()
         if hashlib.sha256(raw).hexdigest() != EXE_SHA256 or hashlib.sha256(symbols).hexdigest() != MAP_SHA256:
             raise ValueError("Original Toolkit EXE/MAP hash mismatch")
         self.toolkit = _Toolkit(raw, symbols)
-        self.method = self.toolkit.method(METHOD)
+        self.method = self.toolkit.method(method_name)
         self.image = self.toolkit.pe.get_memory_mapped_image()
 
     def run(self, case: dict) -> str:
@@ -118,6 +118,13 @@ class OriginalActionSelectorProbe:
         bind("SysUtils.IntToStr", lambda a, d, c: (write_string(d, str(a)), finish()))
         bind("System.@UStrCat", lambda a, d, c: (write_string(a, read_string(get(a)) + read_string(d)), finish()))
         bind("System.@UStrArrayClr", lambda a, d, c: finish())
+        bind("System.@UStrClr", lambda a, d, c: finish())
+        bind("System.@UStrCat3", lambda a, d, c: (write_string(a, read_string(d) + read_string(c)), finish()))
+        bind("System.LoadResString", lambda a, d, c: (write_string(d, t.resource(a)), finish()))
+        for getter in ("TCBusFanControllerUnit.GetFanActionSelector", "TSENTEMPPro.GetBroadcastActionSelector",
+                       "TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector",
+                       "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector"):
+            bind(getter, lambda a, d, c, name=getter: finish(LEVEL if case.get("matches", {}).get(name, False) else 0))
 
         def concatenate(a, count, c):
             stack = u.reg_read(UC_X86_REG_ESP)
@@ -167,19 +174,49 @@ def cases():
     return rows
 
 
+DIRECT_METHODS = {
+    "FanController": ("CIS_TFanControllerDocumentor.TFanControllerDocumentor.ActionSelectorUse",
+                      ("TCBusFanControllerUnit.GetFanActionSelector",)),
+    "SENTEMPPro": ("CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.ActionSelectorUse",
+                   ("TSENTEMPPro.GetBroadcastActionSelector",)),
+    "DigitalTemperatureSensor": ("CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.ActionSelectorUse",
+                                 ("TCBusDigitalTemperatureSensor.GetErrorReportingActionSelector",
+                                  "TCBusDigitalTemperatureSensor.GetTriggerBroadcastActionSelector")),
+}
+
+
+def direct_cases():
+    for documentor, (_, getters) in DIRECT_METHODS.items():
+        for mask in range(1 << len(getters)):
+            yield {"name": documentor + ":" + str(mask), "documentor": documentor,
+                   "group": 8, "address": 11, "value": 22, "blocks": [], "keys": [],
+                   "matches": {getter: bool(mask & (1 << index)) for index, getter in enumerate(getters)}}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", type=Path, required=True)
     parser.add_argument("--map-file", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--direct-actions", action="store_true")
     args = parser.parse_args()
     probe = OriginalActionSelectorProbe(args.executable, args.map_file)
-    rows = [{**case, "html": probe.run(case)} for case in cases()]
+    if args.direct_actions:
+        probes = {name: OriginalActionSelectorProbe(args.executable, args.map_file, method)
+                  for name, (method, _) in DIRECT_METHODS.items()}
+        rows = [{**case, "html": probes[case["documentor"]].run(case)} for case in direct_cases()]
+    else:
+        rows = [{**case, "html": probe.run(case)} for case in cases()]
     result = {"format": "cbus-project-documentor-action-original-v1", "exe_sha256": EXE_SHA256,
               "map_sha256": MAP_SHA256, "method": METHOD, "method_sha256": probe.method["sha256"],
               "boundary": "original method instructions with synthetic getters/string/collection stubs; no original page", "cases": rows}
+    if args.direct_actions:
+        result.pop("method")
+        result.pop("method_sha256")
+        result["methods"] = {name: {"symbol": DIRECT_METHODS[name][0], "sha256": item.method["sha256"]}
+                             for name, item in probes.items()}
     args.output.write_text(json.dumps(result, indent=2) + "\n")
-    print(json.dumps({"cases": len(rows), "method_sha256": result["method_sha256"], "output": str(args.output)}))
+    print(json.dumps({"cases": len(rows), "methods": result.get("methods", result.get("method_sha256")), "output": str(args.output)}))
 
 
 if __name__ == "__main__":

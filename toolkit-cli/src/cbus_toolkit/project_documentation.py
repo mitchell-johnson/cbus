@@ -281,10 +281,11 @@ _BASE_ONLY_BODIES = frozenset({"UnitType", "CustomSceneKeyUnit"})
 RECOVERED_BODIES = {
     "UnitType": "recovered",
     "CustomSceneKeyUnit": "recovered",
-    "Output": "partial",    # DIN profiles only; other output classes lack a data mapping.
+    "Output": "partial",    # Known DIN PP mappings and NCC base-only; other agents remain open.
     "Bridge": "recovered",  # Requires the stored application/forwarding PP fields.
     "ClassicOutput": "recovered",
     "DMXGateway": "recovered",
+    "ClassicKeyInput": "partial",  # KEY1/2/4 only; other interface/PP state remains open.
 }
 PARITY = {
     "model_basis": "static_disassembly_of_original_toolkit",
@@ -619,8 +620,8 @@ def document_base(out: _Writer, network: Network, unit: Unit) -> None:
 
 
 def _din_profile(unit: Unit):
-    from .din_output_settings import PROFILES
-    return PROFILES.get(unit.unit_type.upper())
+    from .project_documentation_outputs import output_profile
+    return output_profile(unit)
 
 
 def _group_link(network: Network, application: int | None, address: int) -> str:
@@ -632,8 +633,11 @@ def _group_link(network: Network, application: int | None, address: int) -> str:
 
 
 def document_output(out: _Writer, network: Network, unit: Unit) -> str:
-    """TOutputDocumentor.DocumentHTML for the admitted TCBusDimmerUnit DIN profiles."""
+    """TOutputDocumentor.DocumentHTML for recovered native class/PP mappings."""
+    from .project_documentation_outputs import output_base_only
     document_base(out, network, unit)
+    if output_base_only(unit):
+        return "recovered"
     profile = _din_profile(unit)
     groups = unit.array("GroupAddress")
     if profile is None or groups is None:

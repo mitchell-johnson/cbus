@@ -1,0 +1,120 @@
+{
+  "format": "cbus-fresh-oncolor-rtti-proof-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "classes": [
+    {
+      "symbol_va": "0xc0eab0",
+      "vmt_va": "0xc0eb08",
+      "vmt_parent_slot_va": "0xc0ead8",
+      "vmt_parent_pointer": "0x6925d0",
+      "parent_vmt": "0x692628",
+      "typeinfo": {
+        "va": "0xc0ec10",
+        "kind": 7,
+        "name": "TLEDStatusIndicator"
+      },
+      "rtti_parent_pointer": "0x692900",
+      "parent_typeinfo": "0x692904",
+      "total_properties": 19,
+      "own_published_property_count": 4,
+      "own_published_properties": [
+        {
+          "va": "0xc0ec49",
+          "name": "Caption",
+          "type_pointer": "0x601280",
+          "type": {
+            "va": "0x601284",
+            "kind": 18,
+            "name": "string"
+          },
+          "getter": "0xc0efdc",
+          "setter": "0xc0f054",
+          "record_bytes": 34,
+          "record_sha256": "6efefb4c91be053ed6b365d592380d1d662ad3f6cfe66bf0791524397999120e"
+        },
+        {
+          "va": "0xc0ec6b",
+          "name": "Checked",
+          "type_pointer": "0x601000",
+          "type": {
+            "va": "0x601004",
+            "kind": 3,
+            "name": "Boolean"
+          },
+          "getter": "0xc0f000",
+          "setter": "0xc0f078",
+          "record_bytes": 34,
+          "record_sha256": "2f5725bc1751b7290d874bc1d0b7c08f6db02e02f370c843d1df00764cfd00fe"
+        },
+        {
+          "va": "0xc0ec8d",
+          "name": "OnColor",
+          "type_pointer": "0x6634d4",
+          "type": {
+            "va": "0x6634d8",
+            "kind": 1,
+            "name": "TColor"
+          },
+          "getter": "0xc0f038",
+          "setter": "0xc0f0c0",
+          "record_bytes": 34,
+          "record_sha256": "c764755188913c1712c740bc845d87e29ddcbbc402e8e96fd08a07cf97d38e4a"
+        },
+        {
+          "va": "0xc0ecaf",
+          "name": "OffColor",
+          "type_pointer": "0x6634d4",
+          "type": {
+            "va": "0x6634d8",
+            "kind": 1,
+            "name": "TColor"
+          },
+          "getter": "0xc0f01c",
+          "setter": "0xc0f09c",
+          "record_bytes": 35,
+          "record_sha256": "9686ba943d78063766fb626860f54d717bc6b898f687d438876ffd0872344def"
+        }
+      ],
+      "rtti_span_length": 194,
+      "rtti_span_sha256": "8d6a8fc143ac3fe668090affa8db456d38c7ef0ffe187b75885c991a695123f1",
+      "vmt_header_sha256": "8720c6696e7a4eb072e3c8e70b77d5f188995029b74cb5b2753f50610d0f1be2"
+    },
+    {
+      "symbol_va": "0xc0f14c",
+      "vmt_va": "0xc0f1a4",
+      "vmt_parent_slot_va": "0xc0f174",
+      "vmt_parent_pointer": "0xc0eab0",
+      "parent_vmt": "0xc0eb08",
+      "typeinfo": {
+        "va": "0xc0f2cc",
+        "kind": 7,
+        "name": "TFlashLEDStatusIndicator"
+      },
+      "rtti_parent_pointer": "0xc0ec0c",
+      "parent_typeinfo": "0xc0ec10",
+      "total_properties": 20,
+      "own_published_property_count": 1,
+      "own_published_properties": [
+        {
+          "va": "0xc0f30f",
+          "name": "FlashController",
+          "type_pointer": "0x84c560",
+          "type": {
+            "va": "0x84c564",
+            "kind": 7,
+            "name": "TFlashBooleanController"
+          },
+          "getter": "0xff0002a8",
+          "setter": "0xc0f5c4",
+          "record_bytes": 42,
+          "record_sha256": "b3afb86f93f02c68fe2b3f3d9c67730755f18c35ad1a185d22b56358e604bad4"
+        }
+      ],
+      "rtti_span_length": 109,
+      "rtti_span_sha256": "c091668e8013efcabe863713771e186a0b5120932657870fe74c4877bbc06fa1",
+      "vmt_header_sha256": "952007082feb73a7ece6802328464f3891b4c4af3d1dbbf7886a59186c4821e1"
+    }
+  ],
+  "verdict": "TFlashLEDStatusIndicator inherits TLEDStatusIndicator; its only own published property is FlashController. Inherited OnColor is TColor, kind 1 (integer), with getter0xC0F038/setter0xC0F0C0, not a method property.",
+  "scope": "42 TLEDStatusIndicator plus 11 TFlashLEDStatusIndicator OnColor records; no claim about other classes."
+}

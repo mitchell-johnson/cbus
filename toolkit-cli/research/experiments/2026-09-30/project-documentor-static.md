@@ -135,7 +135,7 @@ Every one of these parity dimensions remains `unassessed` or `not implemented`.
 The renderer now integrates the separately pinned bridge, classic-output, DMX,
 group-usage, action-use and status-report evidence. See
 [`project-documentation.md`](../../../docs/project-documentation.md) for current
-supported families and gaps. The core static receipt now binds all four
+supported families and gaps. The core static receipt now binds all five
 supporting runtime modules as well as the main renderer.
 
 - `project-documentor-bridge-static.json`: forwarding PP bindings, route-prefix
@@ -158,3 +158,24 @@ original C-Gate readback comparisons, but it does not read SQL repositories or
 initialize missing programming. NetVar and unsupported typed collections are
 refused. No original generated HTML page has been captured; byte/visual parity,
 printing, progress/cancellation and the remaining per-device bodies stay open.
+
+## Second bounded recovery slice
+
+The next separate implementation adds classic KEY1/2/4 device bodies, seven
+direct DIN output profiles and the native NCC base-only report path. The
+classic body has independent source-table comparison across every four-nibble
+micro-function vector in 27 application/stored-level contexts (1,769,472
+comparisons). This checks macro labels against independently extracted
+registrations; it is not original method or page execution.
+
+Fan/temperature action and group mappings add 33 source checks and eight
+bounded original ActionSelectorUse execution cases. Six separate original
+InsertHTMLTriggerGroup cases produce 99 matching lines and callback traces,
+with explicit getter/factory/action/string providers. The new receipts retain
+their distinct source-only and original-instruction acceptance boundaries.
+
+See `project-documentor-page-feasibility.md` for the original entry-chain
+dependencies and concrete capture prerequisites. The existing Windows guest
+readiness could not be verified, and private process/preferences/C-Gate
+isolation and the synthetic-project invocation route remain unproved. No
+normal Toolkit launch or complete generated-page claim was substituted.

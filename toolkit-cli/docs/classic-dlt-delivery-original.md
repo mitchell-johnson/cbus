@@ -5,6 +5,10 @@ executes 58 original branch cases with synthetic state. The receipt is
 `research/fixtures/classic-dlt-delivery-original.json`. This research adds no
 physical programming API.
 
+The separate [broadcast compiler and assessment](classic-dlt-broadcast.md)
+implements the bounded per-flavour command/cache sequence with prepared bitmap
+inputs. It performs no I/O and does not implement the whole-unit save below.
+
 The ordinary Toolkit save has this order:
 
 1. Save unit programming with dynamic labels temporarily enabled.

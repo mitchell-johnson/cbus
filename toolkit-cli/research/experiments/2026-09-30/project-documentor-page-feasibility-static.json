@@ -1,0 +1,238 @@
+{
+  "format": "cbus-project-documentor-page-feasibility-static-v1",
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "probe_sha256": "15fe330c23b5a568239877027c46da010b37c63e1c61ed7d698016a000d3cc49",
+  "execution": {
+    "vendor_instructions_executed": false,
+    "guest_job_submitted": false,
+    "project_opened": false,
+    "network_io_performed": false,
+    "original_page_captured": false
+  },
+  "pe": {
+    "machine": "0x14c",
+    "subsystem": 2,
+    "clr_runtime_header_rva": 0
+  },
+  "methods": {
+    "CIS_TProjectNodeHelper.TProjectNodeHelper.DocumentProject": {
+      "start": "0xf09f7c",
+      "end": "0xf0a234",
+      "sha256": "31d38dbd76884fbb313e354c82d57b760807ebfd1e95afa004b677e1d700eea1",
+      "direct_calls_in_order": [
+        "CIS_TBaseObject.TBASEObject.Create",
+        "Classes.TStringList.Create",
+        "Forms.TCustomForm.Create",
+        "CIS_TProjectDocumentor.TProjectDocumentor.SetProject",
+        "CIS_TApplicationManager.TApplicationManager.AddHourGlass",
+        "CIS_TApplicationManager.TApplicationManager.DelayFinished",
+        "CIS_TApplicationManager.TApplicationManager.RemoveHourGlass",
+        "CIS_TfrmProjectDocumentor.TfrmProjectDocumentor.WasCancelRequested",
+        "System.@UStrCat3",
+        "CIS_Files.GetAppPath",
+        "System.@UStrCatN",
+        "SysUtils.TEncoding.GetUTF8",
+        "System.@UStrToPWChar",
+        "ShellAPI.ShellExecute",
+        "CIS_Dialogs.TErrorManager.CISError",
+        "System.@DoneExcept",
+        "System.TObject.Free",
+        "System.TObject.Free",
+        "System.TObject.Free",
+        "System.@UStrArrayClr",
+        "System.@UStrClr",
+        "System.@UStrClr"
+      ],
+      "indirect_call_sites": 3
+    },
+    "CIS_TfrmProjectDocumentor.TfrmProjectDocumentor.TimerStartTimer": {
+      "start": "0xf09558",
+      "end": "0xf095d8",
+      "sha256": "50871b8b0b393aa7e06185dcc0e18113152f54ce49286efe47d94f31a8918651",
+      "direct_calls_in_order": [
+        "ExtCtrls.TTimer.SetEnabled",
+        "CIS_TProjectDocumentor.TProjectDocumentor.OnDocumentHTMLnew",
+        "Forms.TCustomForm.Close"
+      ],
+      "indirect_call_sites": 0
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.SetProject": {
+      "start": "0xf05bec",
+      "end": "0xf05c08",
+      "sha256": "9ec99e656408f248120d125d8e32162885b5ebc234165abf8e53c13839dd38c2",
+      "direct_calls_in_order": [],
+      "indirect_call_sites": 0
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.OnDocumentHTMLnew": {
+      "start": "0xf06498",
+      "end": "0xf06b1c",
+      "sha256": "82a2d74a2adbc30166737fd2a5a1cff5f2e67158d8be3c877bc2180cb9898a35",
+      "direct_calls_in_order": [
+        "System.@IntfAddRef",
+        "CIS_TProjectDocumentor.TProjectDocumentor.GetAllProjectInfo",
+        "System.@UStrCat3",
+        "System.@UStrCatN",
+        "System.LoadResString",
+        "SysUtils.Now",
+        "SysUtils.DateTimeToString",
+        "System.@UStrCatN",
+        "SysUtils.IntToStr",
+        "System.@UStrCatN",
+        "CIS_TProjectDocumentor.TProjectDocumentor.ProjectNumberUnits",
+        "SysUtils.IntToStr",
+        "System.@UStrCat3",
+        "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLContents",
+        "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLNetworksNEW",
+        "CIS_Dialogs.TErrorManager.CISError",
+        "System.@UStrArrayClr",
+        "System.@IntfClear"
+      ],
+      "indirect_call_sites": 27
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.GetAllProjectInfo": {
+      "start": "0xf05920",
+      "end": "0xf05bec",
+      "sha256": "d8da3d725f2eece852d7a46684ab3072b73fdc6e63e0010ff50893fcd454967e",
+      "direct_calls_in_order": [
+        "System.@IntfAddRef",
+        "CIS_TCBusObject.TCGateObjectManager.LoadAndSort",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TProjectDocumentor.TProjectDocumentor.GetAllUnitProgramming",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TProjectDocumentor.TProjectDocumentor.EnsureUnitsApplicationsGroupsLoaded",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCBusObject.TCGateObjectManager.LoadAndSort",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCommonCBus.TCBUSApplicationManager.GetItem",
+        "CIS_TCBusObject.TCGateObjectManager.LoadAndSort",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCommonCBus.TCBUSApplicationManager.GetItem",
+        "CIS_TCommonCBus.TCBusNetworkManager.GetItem",
+        "CIS_TCommonCBus.TCBUSApplicationManager.GetItem",
+        "CIS_TCommonCBus.TCBusGroupManager.GetItem",
+        "CIS_TCBusObject.TCGateObjectManager.LoadAndSort",
+        "System.@IntfClear"
+      ],
+      "indirect_call_sites": 12
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.GetAllUnitProgramming": {
+      "start": "0xf05508",
+      "end": "0xf05920",
+      "sha256": "80ec6f35b53e9d6680f1a9d6fac83f92712cd4490e4251edf629b775cb58cda3",
+      "direct_calls_in_order": [
+        "System.@IntfAddRef",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "CIS_TCommonCBus.TCBUSUnit.GetUnitType",
+        "JclStrings.StrIsOneOf",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "CIS_TProjectDocumentor.TProjectDocumentor.GetUnitProgramming"
+      ],
+      "indirect_call_sites": 1
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.GetUnitProgramming": {
+      "start": "0xf053a0",
+      "end": "0xf05508",
+      "sha256": "68a641e68125dbb176dc438da85c2a27fc59a610d7f236000a6577d151395040",
+      "direct_calls_in_order": [],
+      "indirect_call_sites": 3
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.EnsureUnitsApplicationsGroupsLoaded": {
+      "start": "0xf05280",
+      "end": "0xf053a0",
+      "sha256": "dd61a3c861cf6d85f0de83151659602209125fa9239577bd7e24615a9bcd53a7",
+      "direct_calls_in_order": [
+        "System.@IntfAddRef",
+        "CIS_TCustomFlashObject.TCustomFlashObject.GetWorkSpace",
+        "CIS_TCustomFlashObject.TCustomFlashObject.CreateInWorkSpace",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.LoadAllUnitApplications",
+        "System.TObject.Free",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "System.@IntfClear"
+      ],
+      "indirect_call_sites": 4
+    },
+    "CIS_TCBusObject.TCGateObjectManager.LoadAndSort": {
+      "start": "0xf48798",
+      "end": "0xf487e0",
+      "sha256": "07225b4cb7f3f8f3f8905956c308890e60e23db28645329d5498521dba60d536",
+      "direct_calls_in_order": [
+        "CIS_TCustomFlashObject.TFlashObject.GetFlashObject",
+        "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.DoFullSort"
+      ],
+      "indirect_call_sites": 2
+    },
+    "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.LoadAllUnitApplications": {
+      "start": "0xd865ec",
+      "end": "0xd86900",
+      "sha256": "cf75aa7ec8c2dc0a7eb609bf93121f518e7bd8b1da62a1631238e7eab4cc8b0a",
+      "direct_calls_in_order": [
+        "CIS_TCGateAgent.TCGateAgent.CGate",
+        "CIS_TCGateCommand.TCGateCommand.Create",
+        "System.@UStrAsg",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetCBusNetwork",
+        "CIS_TCBusObject.TCGateObject.GetAddressAsString",
+        "System.@UStrCatN",
+        "CIS_TCGateCommand.TCGateCommand.CommandExecute",
+        "System.Pos",
+        "JclStrings.StrNPos",
+        "System.@UStrCopy",
+        "System.Pos",
+        "System.@UStrCopy",
+        "SysUtils.Trim",
+        "System.Pos",
+        "System.@UStrCopy",
+        "SysUtils.Trim",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetCBusNetwork",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetCBusNetwork",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "CIS_TCBusObject.TCGateAddressAttribute.GetSimpleDecimalAddress",
+        "SysUtils.IntToStr",
+        "System.@UStrEqual",
+        "SysUtils.StrToInt",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetCBusNetwork",
+        "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress",
+        "CIS_TCBusNetworkCGateAgent.TCBusNetworkCGateAgent.GetCBusNetwork",
+        "CIS_TCommonCBus.TCBUSUnitManager.GetItem",
+        "CIS_TCommonCBus.TCBUSUnit.SetApplicationObject",
+        "System.TObject.Free",
+        "System.@UStrArrayClr",
+        "System.@UStrArrayClr"
+      ],
+      "indirect_call_sites": 6
+    }
+  },
+  "resolved_vmt_slots": [
+    {
+      "class": "Classes..TStringList",
+      "slot": "0x80",
+      "target": "Classes.TStrings.SaveToFile"
+    },
+    {
+      "class": "CIS_TfrmProjectDocumentor..TfrmProjectDocumentor",
+      "slot": "0x110",
+      "target": "Forms.TCustomForm.ShowModal"
+    },
+    {
+      "class": "CIS_TCommonCBus..TCBUSUnit",
+      "slot": "0x88",
+      "target": "CIS_TIdentifiableObject.TPersistableObject.StorageLoad"
+    }
+  ],
+  "unit_programming_storage_literals_in_order": [
+    "UnitAttributes",
+    "Database",
+    "ProgrammingParameters",
+    "Database",
+    "ProgrammingUnlock",
+    "Database"
+  ],
+  "acceptance": {
+    "original_generated_page": "not_captured",
+    "byte_parity": "unassessed",
+    "visual_parity": "unassessed"
+  }
+}

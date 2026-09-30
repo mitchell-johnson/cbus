@@ -1,0 +1,214 @@
+{
+  "format": "cbus-project-documentor-direct-usage-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "checks": {
+    "Fan:pp_bindings": true,
+    "Fan:loader_consumes_attributes": true,
+    "Fan:trigger_application": true,
+    "Pro:pp_bindings": true,
+    "Pro:loader_consumes_attributes": true,
+    "Pro:trigger_application": true,
+    "Digital:pp_bindings": true,
+    "Digital:loader_consumes_attributes": true,
+    "Digital:trigger_application": true,
+    "FanController:labels": true,
+    "FanController:concatenation": true,
+    "FanController:li_literal": true,
+    "SENTEMPPro:labels": true,
+    "SENTEMPPro:concatenation": true,
+    "SENTEMPPro:li_literal": true,
+    "DigitalTemperatureSensor:labels": true,
+    "DigitalTemperatureSensor:concatenation": true,
+    "DigitalTemperatureSensor:li_literal": true,
+    "production_action_labels": true,
+    "fan_master_nonunused_group": true,
+    "fan_group_description": true,
+    "fan_first_channel": true,
+    "digital_four_channels": true,
+    "digital_channel_pp_names": true,
+    "digital_channel_mode_172": true,
+    "digital_other_modes_group_255": true,
+    "digital_other_labels": true,
+    "digital_ac_application_172": true,
+    "digital_enable_application_203": true,
+    "SENTEMPB:group_vmt": true,
+    "RELDF1:group_vmt": true,
+    "SENTEMP4:group_vmt": true,
+    "all_registered": true
+  },
+  "attribute_bindings": {
+    "Fan": {
+      "FanTriggerGroup": "0x174",
+      "FanActionSelector": "0x178"
+    },
+    "Pro": {
+      "BroadcastTriggerGroup": "0x100",
+      "BroadcastTriggerLevel": "0x104"
+    },
+    "Digital": {
+      "BroadcastTriggerGroup": "0xec",
+      "BroadcastActionSelector": "0xf0",
+      "ErrorReportingTriggerGroup": "0xf8",
+      "ErrorReportingActionSelector": "0xfc",
+      "ErrorReportingEnableGroup": "0x108"
+    }
+  },
+  "registrations": [
+    {
+      "unit_type": "SENTEMPB",
+      "class": "CIS_TSENTEMPPro..TSENTEMPPro",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TSENTEMPPro",
+        "TCBUSUnit",
+        "TSENTEMPPro"
+      ]
+    },
+    {
+      "unit_type": "RELDF1",
+      "class": "CIS_TRELDF1..TRELDF1",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBusFanControllerUnit",
+        "TCBusDimmerUnit",
+        "TCBusDimmerUnit"
+      ]
+    },
+    {
+      "unit_type": "SENTEMP4",
+      "class": "CIS_TPC_RDTS..TPC_RDTS",
+      "firmware": [
+        "0",
+        "9"
+      ],
+      "group_method_owners": [
+        "TCBUSUnit",
+        "TCBUSUnit",
+        "TCBusDigitalTemperatureSensor"
+      ]
+    }
+  ],
+  "methods": {
+    "CIS_TFanControllerDocumentor.TFanControllerDocumentor.ActionSelectorUse": {
+      "start": "0x122f9a0",
+      "end": "0x122fa64",
+      "sha256": "433480c0a29eaedbf5f4e3c14253e4028e296f62b27dc58750dbea9239bb49ef",
+      "resources": [
+        "Fan Speed Cycle"
+      ]
+    },
+    "CIS_TSENTEMPProDocumentor.TSENTEMPProDocumentor.ActionSelectorUse": {
+      "start": "0xfd29f8",
+      "end": "0xfd2ab0",
+      "sha256": "337af2eedf98307a282408c5f9ffeed699fb3ef1436f9a643884737261a01dd6",
+      "resources": [
+        "Trigger Temperature Broadcast"
+      ]
+    },
+    "CIS_TDigitalTemperatureSensorDocumentor.TDigitalTemperatureSensorDocumentor.ActionSelectorUse": {
+      "start": "0x12ea46c",
+      "end": "0x12ea558",
+      "sha256": "33f94261cba38e3a01af2e53b5b8f2c93d5995e1a1bc92611e6b1ac7732424cd",
+      "resources": [
+        "Trigger Error Report",
+        "Trigger Temperature Report"
+      ]
+    },
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xdbcea8",
+      "end": "0xdbcf48",
+      "sha256": "07b170f1bc8a39ab4c3b5450f874f01d84d4d71a18ffd5635fbb07eb53dac0a3",
+      "resources": []
+    },
+    "CIS_TCBusFanControllerUnit.TCBusFanControllerUnit.CheckIfMasterUnit": {
+      "start": "0xdbce6c",
+      "end": "0xdbcea8",
+      "sha256": "29759b7c5e5491d73331aefae1f4cac6894a173fe05df70bbb6f73ae002319b4",
+      "resources": []
+    },
+    "CIS_TCBusDigitalTemperatureSensor.TCBusDigitalTemperatureSensor.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0x11c271c",
+      "end": "0x11c2844",
+      "sha256": "9b9b420d186ef0537052bc583b64227fe9ddd51d4590b95a828be4b278e09585",
+      "resources": [
+        "Error Report Enable Group",
+        "Communication Group Channel %d"
+      ]
+    },
+    "CIS_TCBusDigitalTemperatureSensor.TCBusDigitalTemperatureSensor.GetMaxChannels": {
+      "start": "0x11c2920",
+      "end": "0x11c2938",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82",
+      "resources": []
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorChannelParameters.Create": {
+      "start": "0x12ed57c",
+      "end": "0x12ed8d0",
+      "sha256": "ed16321b5eb8bdf8d7e1e7a752816a1bf5c6cfdf3496f4ffebc0bf52d312a344",
+      "resources": []
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorChannelParameters.AfterLoadProgrammingInformation": {
+      "start": "0x12ecb64",
+      "end": "0x12ecfa8",
+      "sha256": "d0235d1ce4465324cc882d75dfbc4f9c451dd7ddcb152d430483e4d1bbf4e705",
+      "resources": []
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FindTriggerGroupBySimpleAddress": {
+      "start": "0x12316f4",
+      "end": "0x12318b8",
+      "sha256": "461c6325090da191cb80561fefa99f385a54df4ad41a0de740e1e82328360355",
+      "resources": []
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.FindActionSelectorBySimpleAddress": {
+      "start": "0x1231560",
+      "end": "0x12316f4",
+      "sha256": "3b992190a2f2e9ca10a3fe9e8a58b7633727df313ba43fed38150ed0e85196cd",
+      "resources": []
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.InternalCreate": {
+      "start": "0x1231940",
+      "end": "0x1231efc",
+      "sha256": "109d91ec240f7867baebd77533e604d56a7dd3ce52e6ef47ea23c751faaa7423",
+      "resources": []
+    },
+    "CIS_TCBusFanControllerCGateAgent.TCBusFanControllerCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1230590",
+      "end": "0x1230a9c",
+      "sha256": "7f818e4474f96181372be80b581a6a87a36d9d8cd9ae68ce50c87e0d8a7bf808",
+      "resources": []
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.InternalCreate": {
+      "start": "0x12238f8",
+      "end": "0x1223d74",
+      "sha256": "dcb24c9868993c3ff1136bad444b238f2696171f6e8f8275939d8b7fe4649a01",
+      "resources": []
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1224b08",
+      "end": "0x12255d8",
+      "sha256": "cc3188648af1fc5b684477f49fefed84e47d54df944c7478b60b5364cfc16d48",
+      "resources": []
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorCGateAgent.InternalCreate": {
+      "start": "0x12ec5c0",
+      "end": "0x12eca68",
+      "sha256": "3085f5a2b99d4441f9f9378a8e4e14c5ea5a88b5e632b23cfc53b1b01cdfef1a",
+      "resources": []
+    },
+    "CIS_TCBusDigitalTemperatureSensorCGateAgent.TCBusDigitalTemperatureSensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x12eb170",
+      "end": "0x12eb738",
+      "sha256": "645c4da4f4524466a81e47c7369cf5b884cbd084c4441dd90381036d40b10a23",
+      "resources": []
+    }
+  },
+  "original_generated_page": "unassessed",
+  "original_loader_execution": "not executed"
+}

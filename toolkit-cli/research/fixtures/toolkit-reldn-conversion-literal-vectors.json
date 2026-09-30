@@ -1,0 +1,103 @@
+{
+  "format": "cbus-toolkit-reldn-conversion-literal-vectors-v1",
+  "original_code_executed": false,
+  "oracle": "Literal expected strings independently reviewed against original instruction indices and immediate string fragments in toolkit-reldn-conversion-source-proof.json; not derived from production mapping code or native runtime execution.",
+  "setter_order": ["GroupAddress", "LogicGA13Associations", "LogicGA14Associations", "LogicGA15Associations", "LogicGA16Associations"],
+  "cases": [
+    {
+      "name": "forward_nondefault_byte_boundaries_and_independent_logic_fields",
+      "tweaker": "TTweakerRELDN8_TO_X",
+      "source_values": {
+        "GroupAddress": "0 255 1 254 42 88 99 17 200 128 2 77 254 255 0 63",
+        "LogicGA13Associations": "1 0 1 0 1 1 1 0 0 1 1 1",
+        "LogicGA14Associations": "0 1 0 1 0 1 0 1 1 0 0 1",
+        "LogicGA15Associations": "1 1 1 0 0 1 0 0 1 0 1 0",
+        "LogicGA16Associations": "0 0 0 1 1 1 1 1 0 1 0 1"
+      },
+      "expected_values": {
+        "GroupAddress": "255 1 254 42 17 200 128 2 255 255 255 255 254 255 0 63",
+        "LogicGA13Associations": "0 1 0 1 0 0 1 1 0 0 0 0",
+        "LogicGA14Associations": "1 0 1 0 1 1 0 0 0 0 0 0",
+        "LogicGA15Associations": "1 1 0 0 0 1 0 1 0 0 0 0",
+        "LogicGA16Associations": "0 0 1 1 1 0 1 0 0 0 0 0"
+      }
+    },
+    {
+      "name": "reverse_nondefault_byte_boundaries_and_independent_logic_fields",
+      "tweaker": "TTweakerRELDNX_TO_8",
+      "source_values": {
+        "GroupAddress": "0 255 1 254 42 88 99 17 200 128 2 77 254 255 0 63",
+        "LogicGA13Associations": "1 0 1 0 1 1 1 0 0 1 1 1",
+        "LogicGA14Associations": "0 1 0 1 0 1 0 1 1 0 0 1",
+        "LogicGA15Associations": "1 1 1 0 0 1 0 0 1 0 1 0",
+        "LogicGA16Associations": "0 0 0 1 1 1 1 1 0 1 0 1"
+      },
+      "expected_values": {
+        "GroupAddress": "255 0 255 1 254 255 255 42 88 99 17 255 254 255 0 63",
+        "LogicGA13Associations": "0 1 0 1 0 0 0 1 1 1 0 0",
+        "LogicGA14Associations": "0 0 1 0 1 0 0 0 1 0 1 0",
+        "LogicGA15Associations": "0 1 1 1 0 0 0 0 1 0 0 0",
+        "LogicGA16Associations": "0 0 0 0 1 0 0 1 1 1 1 0"
+      }
+    },
+    {
+      "name": "forward_all_sentinel_groups_and_all_enabled_logic",
+      "tweaker": "TTweakerRELDN8_TO_X",
+      "source_values": {
+        "GroupAddress": "255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255",
+        "LogicGA13Associations": "1 1 1 1 1 1 1 1 1 1 1 1",
+        "LogicGA14Associations": "1 1 1 1 1 1 1 1 1 1 1 1",
+        "LogicGA15Associations": "1 1 1 1 1 1 1 1 1 1 1 1",
+        "LogicGA16Associations": "1 1 1 1 1 1 1 1 1 1 1 1"
+      },
+      "expected_values": {
+        "GroupAddress": "255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255",
+        "LogicGA13Associations": "1 1 1 1 1 1 1 1 0 0 0 0",
+        "LogicGA14Associations": "1 1 1 1 1 1 1 1 0 0 0 0",
+        "LogicGA15Associations": "1 1 1 1 1 1 1 1 0 0 0 0",
+        "LogicGA16Associations": "1 1 1 1 1 1 1 1 0 0 0 0"
+      }
+    },
+    {
+      "name": "reverse_zero_groups_and_minimum_eight_enabled_logic_tokens",
+      "tweaker": "TTweakerRELDNX_TO_8",
+      "source_values": {
+        "GroupAddress": "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+        "LogicGA13Associations": "1 1 1 1 1 1 1 1",
+        "LogicGA14Associations": "1 1 1 1 1 1 1 1",
+        "LogicGA15Associations": "1 1 1 1 1 1 1 1",
+        "LogicGA16Associations": "1 1 1 1 1 1 1 1"
+      },
+      "expected_values": {
+        "GroupAddress": "255 0 0 0 0 255 255 0 0 0 0 255 0 0 0 0",
+        "LogicGA13Associations": "0 1 1 1 1 0 0 1 1 1 1 0",
+        "LogicGA14Associations": "0 1 1 1 1 0 0 1 1 1 1 0",
+        "LogicGA15Associations": "0 1 1 1 1 0 0 1 1 1 1 0",
+        "LogicGA16Associations": "0 1 1 1 1 0 0 1 1 1 1 0"
+      }
+    }
+  ],
+  "preservation_cases": [
+    {
+      "name": "unrelated_attributes_and_target_identity",
+      "source_values": {"Application": "56", "UnitName": "RELAY01", "AreaGroupAddress": "243", "NetworkPriority": "1", "Burden": "1", "FirmwareVersion": "2.7.00", "SerialNo": "12345678", "State": "1", "UnitType": "RELDN8"},
+      "expected_copies": {"Application": "56", "UnitName": "RELAY01", "AreaGroupAddress": "243", "NetworkPriority": "1"},
+      "target_values_retained": ["Burden", "FirmwareVersion", "SerialNo", "State", "UnitType"],
+      "explanation": "The tweaker writes only its five arrays. Burden is explicitly immutable in the basic DIN constructor; the other four listed target identity attributes are constructed immutable."
+    },
+    {
+      "name": "relsm8_lacks_din_extra_attributes",
+      "source_type": "RELSM8",
+      "target_type": "RELDN8",
+      "target_values_retained": ["InterLockingChannel", "RestrikeChannel", "RestrikeDelay"],
+      "explanation": "The BusPowered agent uses the basic DIN constructor; these three attributes exist only in the full DIN constructor. No relay tweaker assigns them."
+    }
+  ],
+  "refusal_boundaries": [
+    {"case": "short_group_in_either_direction", "source_count": 15, "direct_read_minimum": 16},
+    {"case": "short_forward_logic", "source_count": 10, "direct_read_minimum": 11},
+    {"case": "short_reverse_logic", "source_count": 7, "direct_read_minimum": 8},
+    {"case": "standard_reldn4_reverse_logic", "source_count": 4, "direct_read_minimum": 8, "explanation": "No padding exists in the original string load/alignment path. Refuse instead of synthesizing indices 4 through 7."}
+  ],
+  "limitations": ["Instruction-read bounds alone do not admit a vendor specification.", "Expected strings precede native PP truncation to each target schema.", "These fixtures are static source evidence, not original GUI or physical acceptance."]
+}

@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from cbus_toolkit import cli
 from cbus_toolkit.thermostat_templates import (FAMILIES, PROGRAMMABLE_ONLY, ThermostatTemplateCatalog,
+                                               NativeThermostatTemplates, NativeThermostatTemplateError,
                                                ThermostatTemplateError, compare_overlay,
                                                family_for_unit_type, plan_overlay)
 
@@ -139,6 +140,29 @@ class ThermostatTemplateTests(unittest.TestCase):
                              '--host', '127.0.0.1', '--spec-dir', str(self.root)])
         self.assertEqual(code, 1)
         self.assertIn('--exclusive-project', json.loads(stderr.getvalue())['error'])
+
+    def test_group_sort_requires_post_load_before_network_access(self):
+        template = self.catalog.load('programmable', 1)
+        with self.assertRaisesRegex(ThermostatTemplateError, 'requires post-load'):
+            plan_overlay(template, 'PC_TSA', '5.4.01', {}, group_sort='address-ascending')
+        for application in (172, 203):
+            with self.assertRaisesRegex(ThermostatTemplateError, 'zone/remote applications'):
+                plan_overlay(template, 'PC_TSA', '5.4.01', {}, groups={}, application=application,
+                             group_sort='address-ascending')
+        manager = NativeThermostatTemplates(object(), self.catalog)
+        for options in ({'group_sort': True}, {'group_sort': 'tag'},
+                        {'group_sort': 'address-ascending', 'post_load': False}):
+            with self.assertRaises(NativeThermostatTemplateError) as caught:
+                manager.plan('//P/254/p/4', 1, exclusive_project=True, **options)
+            self.assertIsInstance(caught.exception.cause, ThermostatTemplateError)
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr), \
+                patch('socket.create_connection', side_effect=AssertionError('Unexpected network')):
+            code = cli.main(['thermostat', 'template', 'preview', '//P/254/p/4', '--template', '9',
+                             '--host', '127.0.0.1', '--spec-dir', str(self.root), '--exclusive-project',
+                             '--overlay-only', '--group-sort', 'address-ascending'])
+        self.assertEqual(code, 1)
+        self.assertIn('requires post-load', json.loads(stderr.getvalue())['error'])
 
 
 if __name__ == '__main__':

@@ -1,0 +1,1096 @@
+{
+  "baseline_commit": "84b8ffeb754af2bf6f796b1977b26c8988d4b40f",
+  "format": "thermostat-temperature-focused-acceptance-v1",
+  "full_test_suite_run": false,
+  "independent_original_arithmetic": {
+    "field_byte_preference_comparisons": 7680,
+    "new_fixture_sha256": "e9314238899efbdb8c6b071bf5541adf54dfba80ddfc2980b9d6a598a5062528",
+    "production_expected_oracle_used": false,
+    "profile_compositions": 4608
+  },
+  "installed_wheel": {
+    "installed_module_path": "<INSTALLED_VENV>/lib/python3.13/site-packages/cbus_toolkit",
+    "native_receipt": {
+      "cases": [
+        {
+          "dependent": [
+            {
+              "after_edit": 200,
+              "form_save": 201,
+              "name": "DisplayBacklightActiveBrightness"
+            },
+            {
+              "after_edit": 200,
+              "form_save": 201,
+              "name": "KeyBacklightActiveBrightness"
+            }
+          ],
+          "edits": {
+            "BacklightDimTime": 0,
+            "ControlledZones": 31,
+            "CoolingPlantFanOnDelay": 12,
+            "CoolingPlantInstalledZones": 0,
+            "CoolingPlantStages": 3,
+            "CoolingPlantType": 9,
+            "EvapProgramEnabled": 1,
+            "HeatCoolIntegralFactor": 150,
+            "HeatingPlantInstalledZones": 3,
+            "HeatingPlantStages": 2,
+            "HeatingPlantType": 1,
+            "InstalledZones": 31,
+            "KeyBacklightIdleBrightness": 255,
+            "MeasuredZones": 1,
+            "NonEvapProgramEnabled": 1,
+            "PlantCycleTime": 20,
+            "ScheduleControlledZones": 3,
+            "SendInterval": 6,
+            "TemperatureOffset": 254,
+            "TimeUnits": 1,
+            "UIAllocatedZones": 5
+          },
+          "state": "verified_saved",
+          "unit_type": "PC_TSA"
+        },
+        {
+          "dependent": [
+            {
+              "after_edit": 200,
+              "form_save": 201,
+              "name": "DisplayBacklightActiveBrightness"
+            },
+            {
+              "after_edit": 200,
+              "form_save": 201,
+              "name": "KeyBacklightActiveBrightness"
+            }
+          ],
+          "edits": {
+            "BacklightDimTime": 0,
+            "ControlledZones": 31,
+            "CoolingPlantFanOnDelay": 12,
+            "CoolingPlantInstalledZones": 0,
+            "CoolingPlantStages": 3,
+            "CoolingPlantType": 9,
+            "HeatCoolIntegralFactor": 150,
+            "HeatingPlantInstalledZones": 3,
+            "HeatingPlantStages": 2,
+            "HeatingPlantType": 1,
+            "InstalledZones": 31,
+            "KeyBacklightIdleBrightness": 255,
+            "MeasuredZones": 1,
+            "PlantCycleTime": 20,
+            "TemperatureOffset": 254,
+            "TimerEnable": 0,
+            "UIAllocatedZones": 5
+          },
+          "state": "verified_saved",
+          "unit_type": "PC_TSB"
+        },
+        {
+          "first_expected": {
+            "BeepEnable": 1,
+            "CoolingPlantFanOffDelay": 24,
+            "CoolingPlantFanSpeeds": 1,
+            "DamperModulationEnable": 2,
+            "DisplayBacklightActiveBrightness": 127,
+            "DisplayBacklightIdleBrightness": 2,
+            "EnableHVACRelayDrive": 0,
+            "EvapProgramEnabled": 0,
+            "HeatingPlantFanOnDelay": 12,
+            "KeyBacklightIdleBrightness": 255,
+            "NonEvapProgramEnabled": 1,
+            "PlantCycleTime": 15,
+            "SendInterval": 2,
+            "TemperatureUnits": 0,
+            "TimeUnits": 0,
+            "VariableFanCoilEnable": 1
+          },
+          "first_state": "verified_saved",
+          "second_expected": {
+            "HeatingPlantFanSpeeds": 1,
+            "PlantCycleTime": 15
+          },
+          "seed": {
+            "BeepEnable": 3,
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanOffDelay": 21,
+            "CoolingPlantFanSpeedControlEnable": 0,
+            "CoolingPlantFanSpeeds": 0,
+            "DamperModulationEnable": 1,
+            "DisplayBacklightActiveBrightness": 128,
+            "DisplayBacklightIdleBrightness": 1,
+            "EnableHVACRelayDrive": 1,
+            "EvapProgramEnabled": 3,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanOnDelay": 15,
+            "HeatingPlantFanSpeedControlEnable": 0,
+            "HeatingPlantFanSpeeds": 0,
+            "InstalledZones": 1,
+            "InternalPlantModes": 20,
+            "InternalPlantType": 2,
+            "KeyBacklightActiveBrightness": 0,
+            "KeyBacklightIdleBrightness": 254,
+            "NonEvapProgramEnabled": 3,
+            "SendInterval": 7,
+            "TemperatureUnits": 3,
+            "TimeUnits": 3,
+            "VariableFanCoilEnable": 3,
+            "VentPlantType": 0
+          },
+          "third_state": "already_applied",
+          "unit_type": "PC_TSA",
+          "unrelated_parameters_preserved": true
+        },
+        {
+          "first_expected": {
+            "BeepEnable": 1,
+            "CoolingPlantFanOffDelay": 24,
+            "CoolingPlantFanSpeeds": 1,
+            "DamperModulationEnable": 2,
+            "DisplayBacklightActiveBrightness": 127,
+            "DisplayBacklightIdleBrightness": 2,
+            "EnableHVACRelayDrive": 0,
+            "EvapProgramEnabled": 0,
+            "HeatingPlantFanOnDelay": 12,
+            "KeyBacklightIdleBrightness": 255,
+            "NonEvapProgramEnabled": 1,
+            "PlantCycleTime": 15,
+            "SendInterval": 2,
+            "TemperatureUnits": 0,
+            "TimeUnits": 0,
+            "VariableFanCoilEnable": 1
+          },
+          "first_state": "verified_saved",
+          "second_expected": {
+            "HeatingPlantFanSpeeds": 1,
+            "PlantCycleTime": 15
+          },
+          "seed": {
+            "BeepEnable": 3,
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanOffDelay": 21,
+            "CoolingPlantFanSpeedControlEnable": 0,
+            "CoolingPlantFanSpeeds": 0,
+            "DamperModulationEnable": 1,
+            "DisplayBacklightActiveBrightness": 128,
+            "DisplayBacklightIdleBrightness": 1,
+            "EnableHVACRelayDrive": 1,
+            "EvapProgramEnabled": 3,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanOnDelay": 15,
+            "HeatingPlantFanSpeedControlEnable": 0,
+            "HeatingPlantFanSpeeds": 0,
+            "InstalledZones": 1,
+            "InternalPlantModes": 20,
+            "InternalPlantType": 2,
+            "KeyBacklightActiveBrightness": 0,
+            "KeyBacklightIdleBrightness": 254,
+            "NonEvapProgramEnabled": 3,
+            "SendInterval": 7,
+            "TemperatureUnits": 3,
+            "TimeUnits": 3,
+            "VariableFanCoilEnable": 3,
+            "VentPlantType": 0
+          },
+          "third_state": "already_applied",
+          "unit_type": "PC_TSA5",
+          "unrelated_parameters_preserved": true
+        },
+        {
+          "first_expected": {
+            "BeepEnable": 1,
+            "CoolingPlantFanOffDelay": 24,
+            "CoolingPlantFanSpeeds": 1,
+            "DamperModulationEnable": 2,
+            "DisplayBacklightActiveBrightness": 127,
+            "DisplayBacklightIdleBrightness": 2,
+            "EnableHVACRelayDrive": 0,
+            "HeatingPlantFanOnDelay": 12,
+            "KeyBacklightIdleBrightness": 255,
+            "PlantCycleTime": 15,
+            "TemperatureUnits": 0,
+            "TimerEnable": 1,
+            "VariableFanCoilEnable": 1
+          },
+          "first_state": "verified_saved",
+          "second_expected": {
+            "HeatingPlantFanSpeeds": 1,
+            "PlantCycleTime": 15
+          },
+          "seed": {
+            "BeepEnable": 3,
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanOffDelay": 21,
+            "CoolingPlantFanSpeedControlEnable": 0,
+            "CoolingPlantFanSpeeds": 0,
+            "DamperModulationEnable": 1,
+            "DisplayBacklightActiveBrightness": 128,
+            "DisplayBacklightIdleBrightness": 1,
+            "EnableHVACRelayDrive": 1,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanOnDelay": 15,
+            "HeatingPlantFanSpeedControlEnable": 0,
+            "HeatingPlantFanSpeeds": 0,
+            "InstalledZones": 1,
+            "InternalPlantModes": 20,
+            "InternalPlantType": 2,
+            "KeyBacklightActiveBrightness": 0,
+            "KeyBacklightIdleBrightness": 254,
+            "TemperatureUnits": 3,
+            "TimerEnable": 3,
+            "VariableFanCoilEnable": 3,
+            "VentPlantType": 0
+          },
+          "third_state": "already_applied",
+          "unit_type": "PC_TSB",
+          "unrelated_parameters_preserved": true
+        },
+        {
+          "first_expected": {
+            "BeepEnable": 1,
+            "CoolingPlantFanOffDelay": 24,
+            "CoolingPlantFanSpeeds": 1,
+            "DamperModulationEnable": 2,
+            "DisplayBacklightActiveBrightness": 127,
+            "DisplayBacklightIdleBrightness": 2,
+            "EnableHVACRelayDrive": 0,
+            "HeatingPlantFanOnDelay": 12,
+            "KeyBacklightIdleBrightness": 255,
+            "PlantCycleTime": 15,
+            "TemperatureUnits": 0,
+            "TimerEnable": 1,
+            "VariableFanCoilEnable": 1
+          },
+          "first_state": "verified_saved",
+          "second_expected": {
+            "HeatingPlantFanSpeeds": 1,
+            "PlantCycleTime": 15
+          },
+          "seed": {
+            "BeepEnable": 3,
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanOffDelay": 21,
+            "CoolingPlantFanSpeedControlEnable": 0,
+            "CoolingPlantFanSpeeds": 0,
+            "DamperModulationEnable": 1,
+            "DisplayBacklightActiveBrightness": 128,
+            "DisplayBacklightIdleBrightness": 1,
+            "EnableHVACRelayDrive": 1,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanOnDelay": 15,
+            "HeatingPlantFanSpeedControlEnable": 0,
+            "HeatingPlantFanSpeeds": 0,
+            "InstalledZones": 1,
+            "InternalPlantModes": 20,
+            "InternalPlantType": 2,
+            "KeyBacklightActiveBrightness": 0,
+            "KeyBacklightIdleBrightness": 254,
+            "TemperatureUnits": 3,
+            "TimerEnable": 3,
+            "VariableFanCoilEnable": 3,
+            "VentPlantType": 0
+          },
+          "third_state": "already_applied",
+          "unit_type": "PC_TSB5",
+          "unrelated_parameters_preserved": true
+        }
+      ],
+      "cni_connections": [],
+      "format": "native-thermostat-settings-integration-v1",
+      "physical_devices_accessed": false,
+      "raw_record_fault_injection": {
+        "hidden_pp_change_rejected": true,
+        "injected_only_into_readback": true,
+        "native_save_and_reload_completed": true,
+        "persistence_verified": false
+      },
+      "refusals": [
+        {
+          "edits": {
+            "InstalledZones": "32"
+          },
+          "error": "InstalledZones: Value 0 must be between 0 and 31",
+          "path": "//TBB52ABE/254/p/30"
+        },
+        {
+          "edits": {
+            "TimerEnable": "1"
+          },
+          "error": "Setting is not admitted for PC_TSA: TimerEnable",
+          "path": "//TBB52ABE/254/p/30"
+        },
+        {
+          "edits": {
+            "SendInterval": "1"
+          },
+          "error": "Setting is not admitted for PC_TSB: SendInterval",
+          "path": "//TBB52ABE/254/p/31"
+        },
+        {
+          "edits": {
+            "HeatingPlantFanOnDelay": "13"
+          },
+          "error": "The original form save would rewrite HeatingPlantFanOnDelay=12; choose values that survive it",
+          "path": "//TBB52ABE/254/p/30"
+        },
+        {
+          "edits": {
+            "EvapProgramEnabled": "2"
+          },
+          "error": "EvapProgramEnabled must be 0 or 1; the original load normalises other values",
+          "path": "//TBB52ABE/254/p/30"
+        },
+        {
+          "edits": {
+            "CoolStage1Output": "4"
+          },
+          "error": "Setting is not admitted for PC_TSB: CoolStage1Output",
+          "path": "//TBB52ABE/254/p/31"
+        }
+      ],
+      "service": {
+        "argv": [
+          "<OWNED_JAVA>/bin/java",
+          "-Djava.net.preferIPv4Stack=true",
+          "-Djava.io.tmpdir=<OWNED_NATIVE_WORKDIR>/tmp",
+          "-Xms64M",
+          "-Xmx512M",
+          "-jar",
+          "<OWNED_VENDOR>/cgate.jar"
+        ],
+        "backend": "local",
+        "cleanup_complete": true,
+        "cleanup_errors": [],
+        "configured_ports": [
+          51477,
+          51478,
+          51479,
+          51480,
+          51481,
+          51482
+        ],
+        "exit_code": 143,
+        "java": "<OWNED_JAVA>/bin/java",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+        "listener_ownership_verified": true,
+        "listeners": [
+          "127.0.0.1:51477",
+          "127.0.0.1:51478",
+          "127.0.0.1:51479",
+          "127.0.0.1:51480",
+          "127.0.0.1:51481",
+          "127.0.0.1:51482"
+        ],
+        "log_closed": true,
+        "pid": 11180,
+        "process_exit_confirmed": true,
+        "projects_adopted": false,
+        "reserved_sockets_closed": true,
+        "server_log_bytes": 240,
+        "server_log_hashed_bytes": 240,
+        "server_log_sha256": "4a8be96b7c381a3f65449d5ac2283a743fba75506b677a8edd7a9d1131609194",
+        "server_log_tail": [
+          "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+          "C-Gate is running."
+        ],
+        "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "work_directory": "<OWNED_NATIVE_WORKDIR>",
+        "work_removed": true
+      },
+      "temperature_cases": [
+        {
+          "controlled_zones_expected": 21,
+          "preference": "celsius",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 1
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 4,
+            "EvapComfortStepSize": 4,
+            "EvapStartProportionalTemperature": 4,
+            "EvapStopProportionalTemperature": 4,
+            "GuardLowerTemperature": 4,
+            "GuardMaximumLowerTemperature": 4,
+            "GuardMaximumUpperTemperature": 4,
+            "GuardMinimumLowerTemperature": 4,
+            "GuardMinimumUpperTemperature": 4,
+            "GuardUpperTemperature": 4,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 4,
+            "TemperatureOffset": 4,
+            "TemperatureSendDifferential": 4
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSA"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "fahrenheit",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 0
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 2,
+            "EvapComfortStepSize": 2,
+            "EvapStartProportionalTemperature": 2,
+            "EvapStopProportionalTemperature": 2,
+            "GuardLowerTemperature": 2,
+            "GuardMaximumLowerTemperature": 2,
+            "GuardMaximumUpperTemperature": 2,
+            "GuardMinimumLowerTemperature": 2,
+            "GuardMinimumUpperTemperature": 2,
+            "GuardUpperTemperature": 2,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 2,
+            "TemperatureOffset": 5,
+            "TemperatureSendDifferential": 5
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSA"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "celsius",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 1
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 4,
+            "EvapComfortStepSize": 4,
+            "EvapStartProportionalTemperature": 4,
+            "EvapStopProportionalTemperature": 4,
+            "GuardLowerTemperature": 4,
+            "GuardMaximumLowerTemperature": 4,
+            "GuardMaximumUpperTemperature": 4,
+            "GuardMinimumLowerTemperature": 4,
+            "GuardMinimumUpperTemperature": 4,
+            "GuardUpperTemperature": 4,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 4,
+            "TemperatureOffset": 4,
+            "TemperatureSendDifferential": 4
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSA5"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "fahrenheit",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 0
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 2,
+            "EvapComfortStepSize": 2,
+            "EvapStartProportionalTemperature": 2,
+            "EvapStopProportionalTemperature": 2,
+            "GuardLowerTemperature": 2,
+            "GuardMaximumLowerTemperature": 2,
+            "GuardMaximumUpperTemperature": 2,
+            "GuardMinimumLowerTemperature": 2,
+            "GuardMinimumUpperTemperature": 2,
+            "GuardUpperTemperature": 2,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 2,
+            "TemperatureOffset": 5,
+            "TemperatureSendDifferential": 5
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSA5"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "celsius",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 1
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 4,
+            "EvapComfortStepSize": 4,
+            "EvapStartProportionalTemperature": 4,
+            "EvapStopProportionalTemperature": 4,
+            "GuardLowerTemperature": 4,
+            "GuardMaximumLowerTemperature": 4,
+            "GuardMaximumUpperTemperature": 4,
+            "GuardMinimumLowerTemperature": 4,
+            "GuardMinimumUpperTemperature": 4,
+            "GuardUpperTemperature": 4,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 4,
+            "TemperatureOffset": 4,
+            "TemperatureSendDifferential": 4
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSB"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "fahrenheit",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 0
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 2,
+            "EvapComfortStepSize": 2,
+            "EvapStartProportionalTemperature": 2,
+            "EvapStopProportionalTemperature": 2,
+            "GuardLowerTemperature": 2,
+            "GuardMaximumLowerTemperature": 2,
+            "GuardMaximumUpperTemperature": 2,
+            "GuardMinimumLowerTemperature": 2,
+            "GuardMinimumUpperTemperature": 2,
+            "GuardUpperTemperature": 2,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 2,
+            "TemperatureOffset": 5,
+            "TemperatureSendDifferential": 5
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSB"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "celsius",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 1
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 4,
+            "EvapComfortStepSize": 4,
+            "EvapStartProportionalTemperature": 4,
+            "EvapStopProportionalTemperature": 4,
+            "GuardLowerTemperature": 4,
+            "GuardMaximumLowerTemperature": 4,
+            "GuardMaximumUpperTemperature": 4,
+            "GuardMinimumLowerTemperature": 4,
+            "GuardMinimumUpperTemperature": 4,
+            "GuardUpperTemperature": 4,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 4,
+            "TemperatureOffset": 4,
+            "TemperatureSendDifferential": 4
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSB5"
+        },
+        {
+          "controlled_zones_expected": 21,
+          "preference": "fahrenheit",
+          "preview_did_not_write": true,
+          "seed": {
+            "ControlledZones": 1,
+            "EvapComfortStartTemp": 3,
+            "EvapComfortStepSize": 3,
+            "EvapStartProportionalTemperature": 3,
+            "EvapStopProportionalTemperature": 3,
+            "GuardLowerTemperature": 3,
+            "GuardMaximumLowerTemperature": 3,
+            "GuardMaximumUpperTemperature": 3,
+            "GuardMinimumLowerTemperature": 3,
+            "GuardMinimumUpperTemperature": 3,
+            "GuardUpperTemperature": 3,
+            "InstalledZones": 21,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 3,
+            "TemperatureOffset": 3,
+            "TemperatureSendDifferential": 3,
+            "TemperatureUnits": 0
+          },
+          "state": "verified_saved",
+          "temperature_expected": {
+            "EvapComfortStartTemp": 2,
+            "EvapComfortStepSize": 2,
+            "EvapStartProportionalTemperature": 2,
+            "EvapStopProportionalTemperature": 2,
+            "GuardLowerTemperature": 2,
+            "GuardMaximumLowerTemperature": 2,
+            "GuardMaximumUpperTemperature": 2,
+            "GuardMinimumLowerTemperature": 2,
+            "GuardMinimumUpperTemperature": 2,
+            "GuardUpperTemperature": 2,
+            "MaximumSetTemperature": 3,
+            "MinimumSetTemperature": 3,
+            "SetbackLevel": 2,
+            "TemperatureOffset": 5,
+            "TemperatureSendDifferential": 5
+          },
+          "unit_record_preserved": true,
+          "unit_type": "PC_TSB5"
+        }
+      ]
+    },
+    "native_tests_passed": 5,
+    "offline_tests_passed": 45,
+    "package_files_match_source_and_install": 258,
+    "path": "/tmp/cbus-thermostat-temperature-wheel-20260930/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "sha256": "d1d80f7107e5f76bd88a08a7c2dd37930739f148daa128f2a0e07a363c45b64e",
+    "tests_skipped": 0
+  },
+  "module_sha256": {
+    "thermostat_post_load.py": "59b2839e916d62c3b0af07ef465ba36205b7ce5aa1ec36f198daea069c32e941",
+    "thermostat_settings.py": "87c9a333ec184ec2c85cfe30306973e59b5e6408e63a32e3603915a1a1e0da8f",
+    "thermostat_temperature.py": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae",
+    "thermostat_templates_cli.py": "d68d1ea500b3b671b9438852d9e39b7c92e65cf02d08de047c486504411ec10a"
+  },
+  "native_source": {
+    "cleanup_complete": true,
+    "cni_connections": [],
+    "receipt": "research/experiments/2026-09-30/thermostat-settings-temperature-native.json",
+    "receipt_sha256": "182b097a38a9bd1dc4f65bb9f3faa847360b1261f8a3b8cee6aabfe60eae9944",
+    "temperature_cases": 8,
+    "tests_passed": 5,
+    "tests_skipped": 0,
+    "raw_receipt_sha256": "b6308e070932ee2192c4fbce58c9afc4ee43ddc468d0e71d1dabb8b4307e0703",
+    "receipt_publication_form": "sanitized-derivative"
+  },
+  "origin_main_changes_overlap_this_slice": false,
+  "origin_main_rechecked": "8f1608b9",
+  "original_toolkit_form_executed": false,
+  "physical_devices_accessed": false,
+  "prior_scalar_checker_rerun": {
+    "checks_passed": 26,
+    "output_sha256": "af5d214eb3ea7fb8a3bd07816ef8a54a4c57cb24f39ab693172c4db7793f390d",
+    "receipt": {
+      "brightness_formula_for_bytes": "(((raw + 2) * 100) // 255 * 255) // 100",
+      "brightness_parameters": [
+        "DisplayBacklightIdleBrightness",
+        "DisplayBacklightActiveBrightness",
+        "KeyBacklightIdleBrightness",
+        "KeyBacklightActiveBrightness"
+      ],
+      "brightness_vectors": [
+        {
+          "raw": 0,
+          "saved": 0
+        },
+        {
+          "raw": 1,
+          "saved": 2
+        },
+        {
+          "raw": 2,
+          "saved": 2
+        },
+        {
+          "raw": 3,
+          "saved": 2
+        },
+        {
+          "raw": 4,
+          "saved": 5
+        },
+        {
+          "raw": 5,
+          "saved": 5
+        },
+        {
+          "raw": 6,
+          "saved": 7
+        },
+        {
+          "raw": 63,
+          "saved": 63
+        },
+        {
+          "raw": 64,
+          "saved": 63
+        },
+        {
+          "raw": 127,
+          "saved": 127
+        },
+        {
+          "raw": 128,
+          "saved": 127
+        },
+        {
+          "raw": 129,
+          "saved": 130
+        },
+        {
+          "raw": 252,
+          "saved": 252
+        },
+        {
+          "raw": 253,
+          "saved": 255
+        },
+        {
+          "raw": 254,
+          "saved": 255
+        },
+        {
+          "raw": 255,
+          "saved": 255
+        }
+      ],
+      "checks": {
+        "basic_beep_boolean": true,
+        "basic_brightness_roundtrip": true,
+        "basic_inherits_common_lifecycle": true,
+        "basic_temperature_units_clamp": true,
+        "basic_timer_clamp": true,
+        "brightness_literal_vectors": true,
+        "evap_program_clamp": true,
+        "fan_delay_load_divide_six_round": true,
+        "fan_delay_save_times_six": true,
+        "fan_single_pass_0x12": true,
+        "fan_single_pass_0x14": true,
+        "level_to_percent_integer_arithmetic": true,
+        "nonevap_program_clamp": true,
+        "percent_to_level_integer_arithmetic": true,
+        "programmable_beep_boolean": true,
+        "programmable_brightness_roundtrip": true,
+        "programmable_inherits_common_lifecycle": true,
+        "programmable_temperature_units_clamp": true,
+        "relay_drive_always_zero": true,
+        "routine_hashes": true,
+        "scalar_model_literal_vectors": true,
+        "send_interval_above_six_becomes_two": true,
+        "slave_internal_plant_and_zones_zero": true,
+        "time_units_clamp": true,
+        "variable_fan_coil_boolean": true,
+        "virtual_plant_eleven_saves_as_eight": true
+      },
+      "fan_single_pass_vectors": [
+        {
+          "first_save_expected": {
+            "CoolingPlantFanSpeeds": 1,
+            "HeatingPlantFanSpeeds": 0
+          },
+          "input": {
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanEnable": 1,
+            "CoolingPlantFanOffDelay": 0,
+            "CoolingPlantFanOnDelay": 0,
+            "CoolingPlantFanSpeedControlEnable": 1,
+            "CoolingPlantFanSpeeds": 0,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanEnable": 1,
+            "HeatingPlantFanOffDelay": 0,
+            "HeatingPlantFanOnDelay": 0,
+            "HeatingPlantFanSpeedControlEnable": 1,
+            "HeatingPlantFanSpeeds": 0,
+            "InternalPlantModes": 20,
+            "VentPlantType": 0
+          },
+          "second_save_expected": {
+            "CoolingPlantFanSpeeds": 1,
+            "HeatingPlantFanSpeeds": 1
+          }
+        },
+        {
+          "first_save_expected": {
+            "CoolingPlantFanSpeeds": 0,
+            "HeatingPlantFanSpeeds": 1
+          },
+          "input": {
+            "ControlledZones": 1,
+            "CoolingPlantFanDefaultSpeed": 1,
+            "CoolingPlantFanEnable": 1,
+            "CoolingPlantFanOffDelay": 0,
+            "CoolingPlantFanOnDelay": 0,
+            "CoolingPlantFanSpeedControlEnable": 1,
+            "CoolingPlantFanSpeeds": 0,
+            "HeatingPlantFanDefaultSpeed": 1,
+            "HeatingPlantFanEnable": 1,
+            "HeatingPlantFanOffDelay": 0,
+            "HeatingPlantFanOnDelay": 0,
+            "HeatingPlantFanSpeedControlEnable": 1,
+            "HeatingPlantFanSpeeds": 0,
+            "InternalPlantModes": 18,
+            "VentPlantType": 0
+          },
+          "second_save_expected": {
+            "CoolingPlantFanSpeeds": 1,
+            "HeatingPlantFanSpeeds": 1
+          }
+        }
+      ],
+      "format": "cbus-thermostat-settings-save-static-v1",
+      "limits": [
+        "Static source evidence and independent scalar vectors; the original object model/form was not run.",
+        "Fan save is deliberately one pass: copying a zero source speed can require another later form save.",
+        "TemperatureOffset/TemperatureSendDifferential and other temperature fields consume the global Toolkit TemperatureUnit preference, not the thermostat TemperatureUnits PP setting.",
+        "No complete event-driven cross-control lifecycle, project-group creation, remote schedule, guard or remaining non-scalar normalization is established by this receipt."
+      ],
+      "model_module_sha256": "59b2839e916d62c3b0af07ef465ba36205b7ce5aa1ec36f198daea069c32e941",
+      "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "original_executed": false,
+      "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+      "physical_devices_accessed": false,
+      "routines": {
+        "CIS_CBus.LevelToPercent": {
+          "address": "0x7f2ac8",
+          "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+        },
+        "CIS_CBus.PercentToLevel": {
+          "address": "0x7f2aa0",
+          "sha256": "0559d6a4df3728a3ffe7a30d05fcfd41db35239df09d1aeef951295c694d0795"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation": {
+          "address": "0x1297738",
+          "sha256": "e9e5b47cc0d3ccda66271e5d888ffbffc0e213c94defa99a1718a813a7cea96e"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+          "address": "0x1297c98",
+          "sha256": "a5faac0e1ac58855344ea8bbff3f3a43846537028afbc6a0a747cb1c400d4d27"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+          "address": "0x12994d0",
+          "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+          "address": "0x1299b98",
+          "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+          "address": "0x128e06c",
+          "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+          "address": "0x129471c",
+          "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+        },
+        "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.IntVirtualRestrictedPlantTypeToUnitPlantType": {
+          "address": "0x128df70",
+          "sha256": "9a742c38d2a7e04b84a44fab7bcf09d0512916295af28a465b204c0306a5abf8"
+        },
+        "CIS_TThermostat.TThermostat.CoolingFanControlEnabled": {
+          "address": "0xfea844",
+          "sha256": "89f4815316889fb531e9a15559fab027333e6ce505859334b58ade6edc269c62"
+        },
+        "CIS_TThermostat.TThermostat.HeatingFanControlEnabled": {
+          "address": "0xfeb358",
+          "sha256": "11a56b7dbea131e97b4c5234ec67c744f2ec5a49ddffc0b4e85133f1bb75f38a"
+        },
+        "CIS_TThermostatCommon.IntegerToZones": {
+          "address": "0xca56d4",
+          "sha256": "a2978f441b20a2a672a2dca0315e068fc3f8e9b80343df3be5570703b5026b03"
+        },
+        "CIS_TThermostatCommon.ZonesToInteger": {
+          "address": "0xca573c",
+          "sha256": "aed1d5cc9f6014cc8c10b0daf016ec38642a5fe7e68a2da4169f7c93eaca05d4"
+        }
+      },
+      "rules": {
+        "basic": {
+          "TimerEnable": "int(raw > 0)"
+        },
+        "both_families": {
+          "BeepEnable": "int(raw > 0)",
+          "EnableHVACRelayDrive": 0,
+          "TemperatureUnits_above_1": 0,
+          "VariableFanCoilEnable": "int(raw > 0)",
+          "master_InternalPlantType_11": 8,
+          "slave_InternalPlantType": 0,
+          "slave_InternalPlantZones": 0
+        },
+        "programmable": {
+          "EvapProgramEnabled_above_1": 0,
+          "NonEvapProgramEnabled_above_1": 1,
+          "SendInterval_above_6": 2,
+          "TimeUnits_above_1": 0
+        }
+      }
+    }
+  },
+  "remaining": [
+    "No complete original form lifecycle or exposed quick-zone save; 48 AfterLoad graph lookup sites and generic event dispatch require closure.",
+    "Generic group allocation remains refused; empty AddressAsc manager ordering is source evidence only.",
+    "Omitted process preference retains raw temperature PP semantics; unsigned saved integer outside byte/spec range is refused.",
+    "Toolkit callbacks, initialized project/group objects, retained caches and continuing-form state are not inferred from PP."
+  ],
+  "scope": "15-field temperature one-save normalization with explicit process preference; master ControlledZones save; source-only next workflow boundaries",
+  "source": {
+    "runner": "pytest",
+    "subtests_passed": 598,
+    "test_files": [
+      "test_thermostat_settings.py",
+      "test_thermostat_settings_guard.py",
+      "test_thermostat_settings_dialog_rules.py",
+      "test_thermostat_post_load.py",
+      "test_thermostat_templates.py",
+      "test_thermostat_settings_temperature_vectors.py"
+    ],
+    "tests_passed": 45,
+    "tests_skipped": 0
+  },
+  "static_receipts": {
+    "thermostat-group-order-static.json": {
+      "checks_passed": 56,
+      "sha256": "111b3bd697ee34e068fede54a1d4a41e669e3e6d3636e68deb98143af8ed49cc"
+    },
+    "thermostat-quick-zone-events-static.json": {
+      "checks_passed": 26,
+      "sha256": "b371edecca9de317c0713f0d6030834153742e4a431d53473ba3ab7b6bc8375d"
+    },
+    "thermostat-settings-temperature-static.json": {
+      "checks_passed": 87,
+      "sha256": "73b0cd96f23872695f1cd4b291b4d4c3f7360925d90185595d0520a382b831c4"
+    }
+  },
+  "test_sha256": {
+    "test_thermostat_post_load.py": "69f8dfeb269921a07de8a10dcae37512e4d3434784b98502633fc32ff8043534",
+    "test_thermostat_settings.py": "5705c2235254c75a12355d67f2280c68863c58fca754c389a1a06b1b8640e111",
+    "test_thermostat_settings_dialog_rules.py": "d80481596d4935da051a7a253c74ae0d9021e842c4591e42c1353295b05ec331",
+    "test_thermostat_settings_guard.py": "7615eeefd9e71870d644baefeebe641e0a0287d59ad623c1d88f18e3c8be6a0f",
+    "test_thermostat_settings_native.py": "450288e542b5bd47a2e5ec48f2df24002674f975b783952ce0e49c971ad7aa62",
+    "test_thermostat_settings_temperature_vectors.py": "5cfc8615e1e91d0ae098873f368f55ca9cd26219c7c5f75e5ea6f790d6c861d0",
+    "test_thermostat_templates.py": "bfb639d50f5a761066828b7ba8b6786ec2d7fb0bacaeb885c114a7dc9f017d76"
+  },
+  "publication_sanitization": {
+    "original_artifact_sha256": "62c6f132f00c21b5f806a03fcc93e0e8ac771aaba8fb4cd4d91c52f6a6cdf967",
+    "host_paths_normalized": true,
+    "synthetic_snapshot_host_metadata_and_generated_oids_anonymized": false,
+    "test_results_and_source_binary_hashes_unchanged": true,
+    "note": "Published sanitized derivative; raw original retained privately. No native test rerun is claimed by sanitization."
+  }
+}

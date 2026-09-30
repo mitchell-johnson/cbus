@@ -22,6 +22,18 @@ TARGET_PRODUCT_VERSION = "1.18.0"
 MAX_DEPTH = 128
 MAX_VALUE_BYTES = 32 * 1024 * 1024
 
+# Pinned original RTTI and GetOnColor/SetOnColor methods identify scalar TColor;
+# the Flash class inherits it without overriding the property.
+# DFM vaIdent also encodes method names, so neither the value type nor a
+# handler's spelling (for example clRed) distinguishes an event. Keep this
+# correction scoped to the proven component/property pairs; unknown classes
+# and unresolved handlers remain candidates. See the fixtures
+# toolkit-oncolor-property-proof.json and toolkit-oncolor-rtti-proof.json.
+_SCALAR_EVENT_LIKE_PROPERTIES = frozenset({
+    ("tledstatusindicator", "oncolor"),
+    ("tflashledstatusindicator", "oncolor"),
+})
+
 
 class DfmFormatError(ValueError):
     """Raised when a binary Delphi form is malformed or unsupported."""
@@ -192,6 +204,16 @@ def _read_component_header(cursor: Cursor, *, version: int) -> tuple[str, str]:
     return class_name, component_name
 
 
+def _is_event_candidate(class_name: str, property_name: str, value: Any) -> bool:
+    return (
+        property_name.casefold().startswith("on")
+        and isinstance(value, str)
+        and bool(value)
+        and (class_name.casefold(), property_name.casefold())
+        not in _SCALAR_EVENT_LIKE_PROPERTIES
+    )
+
+
 def parse_binary_dfm(raw: bytes) -> dict[str, Any]:
     """Parse one TPF0/TPF1 stream into a sanitized component inventory."""
     if raw[:4] not in (b"TPF0", b"TPF1"):
@@ -222,7 +244,7 @@ def parse_binary_dfm(raw: bytes) -> dict[str, Any]:
             if not property_name:
                 raise DfmFormatError("empty property name")
             value = _read_value(cursor, depth=depth + 1)
-            if property_name.casefold().startswith("on") and isinstance(value, str) and value:
+            if _is_event_candidate(class_name, property_name, value):
                 events.append(
                     {
                         "component_path": component_path,

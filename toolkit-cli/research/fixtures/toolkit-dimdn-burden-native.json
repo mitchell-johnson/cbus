@@ -1,0 +1,76 @@
+{
+  "format": "cbus-toolkit-conversion-tweaker-native-v1",
+  "cases": [
+    {
+      "source_type": "DIMDN8",
+      "target_type": "DIMDU4",
+      "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+      "writes": 27,
+      "verified_parameters": 40,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDN8F",
+      "target_type": "DIMDU4",
+      "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+      "writes": 27,
+      "verified_parameters": 40,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDN4",
+      "target_type": "DIMDU4",
+      "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+      "writes": 27,
+      "verified_parameters": 40,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDN4F",
+      "target_type": "DIMDU4",
+      "tweaker_class": "TTweakerDIMDN_TO_DIMDU4",
+      "writes": 27,
+      "verified_parameters": 40,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDU4",
+      "target_type": "DIMDN8",
+      "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+      "writes": 27,
+      "verified_parameters": 31,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDU4",
+      "target_type": "DIMDN8F",
+      "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+      "writes": 27,
+      "verified_parameters": 31,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDU4",
+      "target_type": "DIMDN4",
+      "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+      "writes": 27,
+      "verified_parameters": 31,
+      "passed": true
+    },
+    {
+      "source_type": "DIMDU4",
+      "target_type": "DIMDN4F",
+      "tweaker_class": "TTweakerDIMDU4_TO_DIMDN",
+      "writes": 27,
+      "verified_parameters": 31,
+      "passed": true
+    }
+  ],
+  "backend": {
+    "backend": "native",
+    "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "project_reload_cases": 8,
+  "passed": true
+}

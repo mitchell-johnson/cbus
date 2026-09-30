@@ -1,0 +1,728 @@
+{
+  "format": "cbus-toolkit-key-conversion-learning-source-proof-v1",
+  "review_date": "2026-09-30",
+  "original_code_executed": false,
+  "original_toolkit_gui_executed": false,
+  "method": "Fresh PE-byte disassembly, direct call ordering and concrete target VMT inspection. No PP snapshot is treated as evidence of prior UI history.",
+  "source": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "imagebase": "0x600000",
+    "file_version": "1.18.0.2754"
+  },
+  "scope": {
+    "source_types": [
+      "KEY1",
+      "KEY2",
+      "KEY4",
+      "KEYIR1",
+      "KEYIR4"
+    ],
+    "source_firmware": "1.2.67",
+    "target_types": [
+      "KEYA1",
+      "KEYA3",
+      "KEYA6",
+      "KEYA8",
+      "KEYAV2",
+      "KEYAV4",
+      "KEYB2",
+      "KEYB4",
+      "KEYB6",
+      "KEYC1",
+      "KEYC2",
+      "KEYC4",
+      "KEYCIR1",
+      "KEYCIR4",
+      "KEYH1",
+      "KEYH2",
+      "KEYH3",
+      "KEYH4",
+      "KEYM2",
+      "KEYM4",
+      "KEYM8"
+    ],
+    "target_firmware": "2.5.00",
+    "lifecycle": "Fresh target returned by the original unit factory during TCBusUnitConversion.Convert; no intervening caller edit or prior target ProgrammingParameters load.",
+    "registration_and_agent_selection": "The separate key conversion inventory establishes which classic-to-Neo registrations select these concrete modern target classes."
+  },
+  "learning_model_fields": [
+    {
+      "name": "LearnedFlag",
+      "unit_field_offset": "0x1a0",
+      "allocated_at": "0xede25f",
+      "stored_at": "0xede267",
+      "initial_boolean": false,
+      "getter": "0xede39c"
+    },
+    {
+      "name": "LearnedFlagOriginal",
+      "unit_field_offset": "0x1a4",
+      "allocated_at": "0xede285",
+      "stored_at": "0xede28d",
+      "initial_boolean": false,
+      "getter": "0xede3c0"
+    }
+  ],
+  "boolean_default": {
+    "constructor": "0x7f44d8",
+    "write_at": "0x7f4511",
+    "value_field_offset": "0x70",
+    "value": false
+  },
+  "constructor_chain": [
+    {
+      "name": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.InternalCreate",
+      "va": "0xca0600",
+      "end": "0xca0668",
+      "length": 104,
+      "sha256": "8fc4d7465358648f7e05fdebf305bb645445177b6805fc0226c9b0302bd60710"
+    },
+    {
+      "name": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.InternalCreate",
+      "va": "0xd05d20",
+      "end": "0xd06130",
+      "length": 1040,
+      "sha256": "741eff4762028fb8040c1c78ac798b01daf2cdf1dee6d8a62be162b65eb91421"
+    },
+    {
+      "name": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate",
+      "va": "0xd06f30",
+      "end": "0xd075cc",
+      "length": 1692,
+      "sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4"
+    },
+    {
+      "name": "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.InternalCreate",
+      "va": "0xca0044",
+      "end": "0xca0058",
+      "length": 20,
+      "sha256": "438cf181a6601ec093729d7d6f4b6705a346437f62662daed40fbd8141af75a4"
+    },
+    {
+      "name": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate",
+      "va": "0xc9dcc0",
+      "end": "0xc9dfb0",
+      "length": 752,
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9"
+    },
+    {
+      "name": "CIS_TCustomKeyInputUnit.TCustomKeyInputUnit.InternalCreate",
+      "va": "0xd0d378",
+      "end": "0xd0d580",
+      "length": 520,
+      "sha256": "c13d99e17e46f456d9ce0d48e455d414fb1843f3cde6eba1777df81015b582e1"
+    },
+    {
+      "name": "CIS_TCBusInputUnit.TCBusInputUnit.InternalCreate",
+      "va": "0xc9d1a4",
+      "end": "0xc9d25c",
+      "length": 184,
+      "sha256": "2ba74cf9888a4e1502382fee7d0a4cabf53eed188a8411e01924aaf3abb33f14"
+    },
+    {
+      "name": "CIS_TCBusLearnUnit.TCBusLearnUnit.InternalCreate",
+      "va": "0xede1c0",
+      "end": "0xede344",
+      "length": 388,
+      "sha256": "49302c276c01719a6c72db506ff1c340829eb47aa3db9b2e826b282ba7d6947f"
+    }
+  ],
+  "concrete_models": {
+    "KEYA1": {
+      "class_reference": "0xcce0dc",
+      "vmt": "0xcce134",
+      "constructor": {
+        "name": "CIS_TKEYA1.TKEYA1.InternalCreate",
+        "va": "0xcce40c",
+        "end": "0xcce420",
+        "length": 20,
+        "sha256": "4ce18febc27f20741046a51e97704183d25346e310074a0c465f2beb6d5c4417"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYA3": {
+      "class_reference": "0xcced58",
+      "vmt": "0xccedb0",
+      "constructor": {
+        "name": "CIS_TKEYA3.TKEYA3.InternalCreate",
+        "va": "0xccf088",
+        "end": "0xccf09c",
+        "length": 20,
+        "sha256": "432840f215cce766883a705be4ac97d4c52a38193494939e87512c99343fa2c9"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYA6": {
+      "class_reference": "0xccf9d4",
+      "vmt": "0xccfa2c",
+      "constructor": {
+        "name": "CIS_TKEYA6.TKEYA6.InternalCreate",
+        "va": "0xccfd04",
+        "end": "0xccfd18",
+        "length": 20,
+        "sha256": "22fa4473c773bfabe1118575f4be67e2e209018fb556a66d7b15e825083f9592"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYA8": {
+      "class_reference": "0xcd0010",
+      "vmt": "0xcd0068",
+      "constructor": {
+        "name": "CIS_TKEYA8.TKEYA8.InternalCreate",
+        "va": "0xcd0340",
+        "end": "0xcd0354",
+        "length": 20,
+        "sha256": "8d472ff406d28a9f443724096070129ce866ddbbabbadee392c52509f738d181"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYAV2": {
+      "class_reference": "0xcce718",
+      "vmt": "0xcce770",
+      "constructor": {
+        "name": "CIS_TKEYAV2.TKEYAV2.InternalCreate",
+        "va": "0xccea4c",
+        "end": "0xccea60",
+        "length": 20,
+        "sha256": "fe1a6d4c4c540d3c6010cc6aac181ed026a60ebf3d3c5f9a6ee2cb8b15883275"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYAV4": {
+      "class_reference": "0xccf394",
+      "vmt": "0xccf3ec",
+      "constructor": {
+        "name": "CIS_TKEYAV4.TKEYAV4.InternalCreate",
+        "va": "0xccf6c8",
+        "end": "0xccf6dc",
+        "length": 20,
+        "sha256": "eb24e6c135c085a18c6162bdc841eb2eb9efa3272079919acaf9e45f7fa5a5bc"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYB2": {
+      "class_reference": "0xcd0d04",
+      "vmt": "0xcd0d5c",
+      "constructor": {
+        "name": "CIS_TKEYB2.TKEYB2.InternalCreate",
+        "va": "0xcd1034",
+        "end": "0xcd1048",
+        "length": 20,
+        "sha256": "768fac6815ca36daca54ccbe28a1c714e74ef93027874bbb2bf8a7dfb2f807cc"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYB4": {
+      "class_reference": "0xcd1340",
+      "vmt": "0xcd1398",
+      "constructor": {
+        "name": "CIS_TKEYB4.TKEYB4.InternalCreate",
+        "va": "0xcd1670",
+        "end": "0xcd1684",
+        "length": 20,
+        "sha256": "e058454bf6cb0c9953ac0e6797e31898370c8a019d943c5e1d245a01272b5fc9"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYB6": {
+      "class_reference": "0xcd197c",
+      "vmt": "0xcd19d4",
+      "constructor": {
+        "name": "CIS_TKEYB6.TKEYB6.InternalCreate",
+        "va": "0xcd1cac",
+        "end": "0xcd1cc0",
+        "length": 20,
+        "sha256": "5a9b8bfb5b606b79bb07d46a0529e9fdcee2c77fc11c1592fd3b582579a6d7de"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYC1": {
+      "class_reference": "0xf9cd74",
+      "vmt": "0xf9cdcc",
+      "constructor": {
+        "name": "CIS_TKEYC1.TKEYC1.InternalCreate",
+        "va": "0xf9d078",
+        "end": "0xf9d08c",
+        "length": 20,
+        "sha256": "b18736d92224db9e06953ddc20906b0773da93d17ad06e516cd78a326ecffe9d"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYC2": {
+      "class_reference": "0xf9d1bc",
+      "vmt": "0xf9d214",
+      "constructor": {
+        "name": "CIS_TKEYC2.TKEYC2.InternalCreate",
+        "va": "0xf9d4c0",
+        "end": "0xf9d4d4",
+        "length": 20,
+        "sha256": "50c5cd54471f0c032a5aeeb273e7b5f75ed24ed0714e9f2a44fe6c73b54b8541"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYC4": {
+      "class_reference": "0xf9d604",
+      "vmt": "0xf9d65c",
+      "constructor": {
+        "name": "CIS_TKEYC4.TKEYC4.InternalCreate",
+        "va": "0xf9d908",
+        "end": "0xf9d91c",
+        "length": 20,
+        "sha256": "d88af470778a7e950f4271263747a71b26ce3742606dfb78ea082d5f5c773c02"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYCIR1": {
+      "class_reference": "0xf64a94",
+      "vmt": "0xf64aec",
+      "constructor": {
+        "name": "CIS_TKEYCIR1.TKEYCIR1.InternalCreate",
+        "va": "0xf64da0",
+        "end": "0xf64db4",
+        "length": 20,
+        "sha256": "9ae70efaccb2800e5ba235e0e03ecfa4e944ea79b4486f8b95cd975ca2a1d922"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYCIR4": {
+      "class_reference": "0xf9da4c",
+      "vmt": "0xf9daa4",
+      "constructor": {
+        "name": "CIS_TKEYCIR4.TKEYCIR4.InternalCreate",
+        "va": "0xf9dd58",
+        "end": "0xf9dd6c",
+        "length": 20,
+        "sha256": "a1359855928ce5b4bc2b797da5e8b3ff02c2a73abeb383a743e8f57e0781e6f4"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYH1": {
+      "class_reference": "0xcd1fb8",
+      "vmt": "0xcd2010",
+      "constructor": {
+        "name": "CIS_TKEYH1.TKEYH1.InternalCreate",
+        "va": "0xcd22e8",
+        "end": "0xcd22fc",
+        "length": 20,
+        "sha256": "a9c26f6491f422ebb56b43ce38f2bf9a4820344b329bddb3a27e41eec191eb67"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYH2": {
+      "class_reference": "0xcd25f4",
+      "vmt": "0xcd264c",
+      "constructor": {
+        "name": "CIS_TKEYH2.TKEYH2.InternalCreate",
+        "va": "0xcd2924",
+        "end": "0xcd2938",
+        "length": 20,
+        "sha256": "5a7efd7eaa278d0918bfd12b0b9bf5ba0cfea90d97a83266e150b159b2d32200"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYH3": {
+      "class_reference": "0xcd2c30",
+      "vmt": "0xcd2c88",
+      "constructor": {
+        "name": "CIS_TKEYH3.TKEYH3.InternalCreate",
+        "va": "0xcd2f60",
+        "end": "0xcd2f74",
+        "length": 20,
+        "sha256": "02712c5c99da6072060c24b66df055abffeb857593d639b627f98341cfb086aa"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYH4": {
+      "class_reference": "0xcd326c",
+      "vmt": "0xcd32c4",
+      "constructor": {
+        "name": "CIS_TKEYH4.TKEYH4.InternalCreate",
+        "va": "0xcd359c",
+        "end": "0xcd35b0",
+        "length": 20,
+        "sha256": "4ecb09f649fb569852815aff3186fcf5ccd0378e782125fe567fc5ffe46494f0"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYM2": {
+      "class_reference": "0xcea89c",
+      "vmt": "0xcea8f4",
+      "constructor": {
+        "name": "CIS_TKEYM2.TKEYM2.InternalCreate",
+        "va": "0xceabcc",
+        "end": "0xceabe0",
+        "length": 20,
+        "sha256": "ac8202f45173733e587fd9c0f1a43d57027b72458285e1aceb7a27133c68f4f7"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYM4": {
+      "class_reference": "0xceaed8",
+      "vmt": "0xceaf30",
+      "constructor": {
+        "name": "CIS_TKEYM4.TKEYM4.InternalCreate",
+        "va": "0xceb208",
+        "end": "0xceb21c",
+        "length": 20,
+        "sha256": "d70a709b5e60c26ad0c1968a08a036a97717377ea56224c2c70c5a8634ded3f9"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    },
+    "KEYM8": {
+      "class_reference": "0xceb514",
+      "vmt": "0xceb56c",
+      "constructor": {
+        "name": "CIS_TKEYM8.TKEYM8.InternalCreate",
+        "va": "0xceb844",
+        "end": "0xceb858",
+        "length": 20,
+        "sha256": "394aa7ed776bdc2da71920a3874b8db3b10e3cd1eeebb54bc0575d1e356f2333"
+      },
+      "resolve_change": "0x76a444",
+      "learn_mode_properties_enabled": "0xc9e014",
+      "constructor_changes_learning_attributes": false
+    }
+  },
+  "conversion_order": [
+    {
+      "at": "0xcaeb7f",
+      "operation": "Factory GetUnit creates a fresh target instance; factory calls its CreateInWorkSpace constructor at 0xc1a877."
+    },
+    {
+      "at": "0xcaebbb",
+      "operation": "Set target UnitType."
+    },
+    {
+      "at": "0xcaebc9",
+      "operation": "Set target FirmwareVersion."
+    },
+    {
+      "at": "0xcaee7e",
+      "operation": "Store source model pointer at target offset 0x158. This does not copy source model learning attributes."
+    },
+    {
+      "at": "0xcaeec6",
+      "operation": "Load source UnitAttributes, Database, LiveAgentMode."
+    },
+    {
+      "at": "0xcaeef5",
+      "operation": "Load source ProgrammingParameters, Database. Learning-state hydration here belongs to the source instance."
+    },
+    {
+      "at": "0xcaef36",
+      "operation": "Store selected tweaker at target offset 0x15c."
+    },
+    {
+      "at": "0xcaef65",
+      "operation": "Save target UnitCreate, Database; AgentSave creates database identity and scalar attributes, not programming parameters."
+    },
+    {
+      "at": "0xcaef94",
+      "operation": "Load target UnitAttributes, Database; dispatch uses LoadDatabaseUnitAttributes at 0xcb8c44."
+    },
+    {
+      "at": "0xcaefb5",
+      "operation": "Save target AlignUnit; AlignUnit first calls AlignUnitNoSave at 0xcc02fd."
+    },
+    {
+      "at": "0xcc067c",
+      "operation": "AlignUnitNoSave calls tweaker after same-name agent string alignment."
+    },
+    {
+      "at": "0xcc0684",
+      "operation": "AlignUnitNoSave dispatches BeforeUnitConversionSave, including the learning hook."
+    },
+    {
+      "at": "0xcc0312",
+      "operation": "Only after the hook returns, AlignUnit sets up target programming information."
+    },
+    {
+      "at": "0xcc032e",
+      "operation": "Target PP load occurs after the learning hook; it is not an earlier source of target model history."
+    },
+    {
+      "at": "0xcc0338",
+      "operation": "PP SET sequence uses final writable flags."
+    },
+    {
+      "at": "0xcc03a1",
+      "operation": "Later AlignUnit flow reloads target ProgrammingParameters after its save; this cannot retroactively affect the hook."
+    }
+  ],
+  "unit_attributes_load": {
+    "method": "0xcb8c44",
+    "loaded_fields": [
+      "TagName",
+      "UnitName",
+      "Description",
+      "SerialNumber",
+      "CatalogNumber"
+    ],
+    "loads_programming_parameters": false,
+    "loads_learning_attributes": false
+  },
+  "learning_hydration": {
+    "method": "0xcc5d20",
+    "operation": "AfterLoadProgrammingInformation sets current LearnedFlag and LearnedFlagOriginal from the negated Boolean CGate LearnedFlag attribute. In the conversion pre-hook path, ProgrammingParameters hydration occurs on the source only.",
+    "learned_original_store_at": "0xcc5df4"
+  },
+  "deferred_reads": {
+    "boolean_read": "0x7f43d8",
+    "attribute_resolve": "0x7ecd00",
+    "manager_resolve": "0x7ee114",
+    "target_resolve": "0x76a444",
+    "effect": "Clears the change marker at offset 0x1d only; no lazy programming load or change to Boolean value offset 0x70."
+  },
+  "hook": {
+    "method": "0xcc5f70",
+    "learn_mode_enabled_method": "0xc9e014",
+    "firmware_comparison": "Delphi Unicode lexical comparison >= literal 1.2.63; not numeric-component version ordering.",
+    "flag_writes": [
+      {
+        "at": "0xcc5f98",
+        "agent_attribute": "LearnMode",
+        "mutable": "enabled"
+      },
+      {
+        "at": "0xcc5fb4",
+        "agent_attribute": "LearnAnyApp",
+        "mutable": "enabled"
+      },
+      {
+        "at": "0xcc5ffc",
+        "agent_attribute": "LearnedFlag",
+        "mutable": "enabled and not target.LearnedFlag and target.LearnedFlagOriginal"
+      }
+    ],
+    "fresh_target_inputs": {
+      "firmware": "2.5.00",
+      "enabled": true,
+      "LearnedFlag": false,
+      "LearnedFlagOriginal": false
+    },
+    "fresh_target_result": {
+      "LearnMode": true,
+      "LearnAnyApp": true,
+      "LearnedFlag": false
+    },
+    "copies_source_learned_history": false
+  },
+  "conclusion": "Within the recovered fresh-target conversion path and the declared modern profile, the learning hook does not require a caller-supplied history snapshot: both target learning flags remain their constructor false values before the hook. The aligned source LearnedFlag PP string must not be used as the target model history.",
+  "limitations": [
+    "Static source proof only; original GUI execution and physical acceptance are not claimed.",
+    "A retained or previously edited target model is outside this lifecycle. Its LearnedFlagOriginal cannot be inferred from raw PP strings.",
+    "The lexical firmware predicate and concrete target VMT selection are essential; this receipt does not admit other firmware or classes.",
+    "The fresh-target conclusion excludes an intervening caller edit or earlier target ProgrammingParameters hydration."
+  ],
+  "methods": [
+    {
+      "name": "CIS_TCBusUnitConversion.TCBusUnitConversion.Convert",
+      "va": "0xcaeaf0",
+      "end": "0xcaf4ec",
+      "length": 2556,
+      "sha256": "2161e9fb86f6781a52e117b2c1822f2cedd64f07cbaccbdad5a6221bbd07d9a4"
+    },
+    {
+      "name": "CIS_TCISUnitFactory.TUnitTypeFactory.GetUnit",
+      "va": "0xc1a7b0",
+      "end": "0xc1a9ec",
+      "length": 572,
+      "sha256": "c1880a392aa24f74c6d71b3bf261c0b3319485000598a41fadbdae3eb9ab0095"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TCustomFlashObject.CreateInWorkSpace",
+      "va": "0x7ea6ac",
+      "end": "0x7ea708",
+      "length": 92,
+      "sha256": "1df68a1522c9278cd4e37130bb722b5c23edc3635f7cacea3b3776542659591a"
+    },
+    {
+      "name": "CIS_TCBusLearnUnit.TCBusLearnUnit.InternalCreate",
+      "va": "0xede1c0",
+      "end": "0xede344",
+      "length": 388,
+      "sha256": "49302c276c01719a6c72db506ff1c340829eb47aa3db9b2e826b282ba7d6947f"
+    },
+    {
+      "name": "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate",
+      "va": "0x7f44d8",
+      "end": "0x7f4548",
+      "length": 112,
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    {
+      "name": "CIS_TCBusLearnUnit.TCBusLearnUnit.GetLearnedFlag",
+      "va": "0xede39c",
+      "end": "0xede3c0",
+      "length": 36,
+      "sha256": "510af58c7cb27e4156d84de1725aca410f7c52c4df84b4d78dad6757b8e3f969"
+    },
+    {
+      "name": "CIS_TCBusLearnUnit.TCBusLearnUnit.GetLearnedFlagOriginal",
+      "va": "0xede3c0",
+      "end": "0xede3e4",
+      "length": 36,
+      "sha256": "3fbdb477a0d748b226674048e73a45f1f2939b421eb02da255e1f1887c17060c"
+    },
+    {
+      "name": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.LearnModePropertiesEnabled",
+      "va": "0xc9e014",
+      "end": "0xc9e08c",
+      "length": 120,
+      "sha256": "6364220fcea1e5c8fac893b210f4cd54c9902eaa46db422a2a174192bc6ef158"
+    },
+    {
+      "name": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.InternalCreate",
+      "va": "0xcc5aa0",
+      "end": "0xcc5b8c",
+      "length": 236,
+      "sha256": "3fd90721ff749222122e8538368745c6c127fd2e9b84dd0bc4e7c423e9b55135"
+    },
+    {
+      "name": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.BeforeUnitConversionSave",
+      "va": "0xcc5f70",
+      "end": "0xcc6004",
+      "length": 148,
+      "sha256": "82e5dd24b953ea29ae8871107a8909e92700ab63085f12799c5129b6da5a76dc"
+    },
+    {
+      "name": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.AfterLoadProgrammingInformation",
+      "va": "0xcc5d20",
+      "end": "0xcc5e18",
+      "length": 248,
+      "sha256": "c689e0b038d458fd0cf18c68d0d508e2abd4c5e02e4790d6f65635aa26792411"
+    },
+    {
+      "name": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentSave",
+      "va": "0xcb72bc",
+      "end": "0xcb8010",
+      "length": 3412,
+      "sha256": "ed80928aac4ac6caca38a15d0005eb2d547bb83b70b12ae6e171975518aa056b"
+    },
+    {
+      "name": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad",
+      "va": "0xcb5d0c",
+      "end": "0xcb72bc",
+      "length": 5552,
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5"
+    },
+    {
+      "name": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadDatabaseUnitAttributes",
+      "va": "0xcb8c44",
+      "end": "0xcb8ef8",
+      "length": 692,
+      "sha256": "6c9e30860c47a2e242c6a7e47e817556bac84b1c2764bc80984f481f363c41c6"
+    },
+    {
+      "name": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AlignUnit",
+      "va": "0xcc02f0",
+      "end": "0xcc04a4",
+      "length": 436,
+      "sha256": "bc782eb57f452488535dfd70145327df3b6309cce40f90acef98601fe8449a40"
+    },
+    {
+      "name": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AlignUnitNoSave",
+      "va": "0xcc04a4",
+      "end": "0xcc08c8",
+      "length": 1060,
+      "sha256": "9ad1fdaf6f5c387a1ba25fa63664241b50a13d55f4a77d2f1959096262d77157"
+    },
+    {
+      "name": "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean",
+      "va": "0x7f43d8",
+      "end": "0x7f43fc",
+      "length": 36,
+      "sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange",
+      "va": "0x7ecd00",
+      "end": "0x7ecd28",
+      "length": 40,
+      "sha256": "c45096cc2a19b8d46a39798914dd615f1109b0a0a7f09bd9ca781a917c35902a"
+    },
+    {
+      "name": "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange",
+      "va": "0x7ee114",
+      "end": "0x7ee134",
+      "length": 32,
+      "sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df"
+    },
+    {
+      "name": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "va": "0x76a444",
+      "end": "0x76a460",
+      "length": 28,
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b"
+    },
+    {
+      "name": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AgentLoad",
+      "va": "0xcc9a10",
+      "end": "0xcc9a34",
+      "length": 36,
+      "sha256": "cdbaa3a2da97ac5e22b7be758e92e2b468cd20da825bd38a5e9418b70f8bc014"
+    },
+    {
+      "name": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AgentSave",
+      "va": "0xcc9a34",
+      "end": "0xcc9b18",
+      "length": 228,
+      "sha256": "9c0414ed0c690952a79bfad9983c1dbdbbf39474d5e5213cd2ddace5e1156226"
+    },
+    {
+      "name": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AgentLoad",
+      "va": "0xcca2d8",
+      "end": "0xcca350",
+      "length": 120,
+      "sha256": "24e4dbbc6bcd4d2671fb53ab9bd5bcbd33be5e49e31e894b4acc388b109c689c"
+    },
+    {
+      "name": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AgentLoad",
+      "va": "0xcebbe4",
+      "end": "0xcebc08",
+      "length": 36,
+      "sha256": "fef6e4759e63a2ec8ae37192293a71e967c8e25df732737058e98196981badbb"
+    }
+  ]
+}

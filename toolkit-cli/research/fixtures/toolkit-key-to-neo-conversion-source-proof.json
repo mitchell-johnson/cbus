@@ -1,0 +1,2585 @@
+{
+  "format": "cbus-toolkit-key-to-neo-conversion-source-proof-v1",
+  "review_date": "2026-09-30",
+  "original_code_executed": false,
+  "source": {
+    "file_version": "1.18.0.2754",
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "image_base": "0x600000",
+    "code_map_va_bias": "0x601000"
+  },
+  "method": "Fresh PE-byte disassembly and Delphi VMT reads. Original literal operands, constructor push arguments, helper call order and flag store offsets checked independently from production conversion code. Earlier registry data used only to locate class/agent call sites, then all operands rechecked.",
+  "profile": {
+    "source_firmware": "1.2.67",
+    "target_firmware": "2.5.00",
+    "lifecycle": "fresh target created by original Convert, before target programming parameter hydration",
+    "source_types": [
+      "KEY1",
+      "KEY2",
+      "KEY4",
+      "KEYIR1",
+      "KEYIR4"
+    ],
+    "target_types": [
+      "KEYB2",
+      "KEYB4",
+      "KEYB6",
+      "KEYH1",
+      "KEYH2",
+      "KEYH3",
+      "KEYH4",
+      "KEYM2",
+      "KEYM4",
+      "KEYM8",
+      "KEYA1",
+      "KEYA3",
+      "KEYA6",
+      "KEYA8",
+      "KEYAV2",
+      "KEYAV4",
+      "KEYC1",
+      "KEYC2",
+      "KEYC4",
+      "KEYCIR1",
+      "KEYCIR4"
+    ],
+    "registered_directions": 93,
+    "other_historical_firmware_admitted": false,
+    "learning_proof": "toolkit-key-conversion-learning-source-proof.json"
+  },
+  "registration_calls": [
+    {
+      "source": "KEY1",
+      "target": "KEYB2",
+      "call_va": "0x139dccc"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYB2",
+      "call_va": "0x139dce8"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYB2",
+      "call_va": "0x139dd04"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYB2",
+      "call_va": "0x139dd20"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYB2",
+      "call_va": "0x139dd3c"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYB4",
+      "call_va": "0x139dd58"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYB4",
+      "call_va": "0x139dd74"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYB4",
+      "call_va": "0x139dd90"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYB4",
+      "call_va": "0x139ddac"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYB4",
+      "call_va": "0x139ddc8"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYB6",
+      "call_va": "0x139dde4"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYB6",
+      "call_va": "0x139de00"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYB6",
+      "call_va": "0x139de1c"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYB6",
+      "call_va": "0x139de38"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYB6",
+      "call_va": "0x139de54"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYH1",
+      "call_va": "0x139de70"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYH1",
+      "call_va": "0x139de8c"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYH1",
+      "call_va": "0x139dea8"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYH1",
+      "call_va": "0x139dec4"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYH1",
+      "call_va": "0x139dee0"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYH2",
+      "call_va": "0x139defc"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYH2",
+      "call_va": "0x139df18"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYH2",
+      "call_va": "0x139df34"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYH2",
+      "call_va": "0x139df50"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYH2",
+      "call_va": "0x139df6c"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYH3",
+      "call_va": "0x139df88"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYH3",
+      "call_va": "0x139dfa4"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYH3",
+      "call_va": "0x139dfc0"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYH3",
+      "call_va": "0x139dfdc"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYH3",
+      "call_va": "0x139dff8"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYH4",
+      "call_va": "0x139e014"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYH4",
+      "call_va": "0x139e030"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYH4",
+      "call_va": "0x139e04c"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYH4",
+      "call_va": "0x139e068"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYH4",
+      "call_va": "0x139e084"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYM2",
+      "call_va": "0x139e0a0"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYM2",
+      "call_va": "0x139e0bc"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYM2",
+      "call_va": "0x139e0d8"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYM2",
+      "call_va": "0x139e0f4"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYM2",
+      "call_va": "0x139e110"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYM4",
+      "call_va": "0x139e12c"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYM4",
+      "call_va": "0x139e148"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYM4",
+      "call_va": "0x139e164"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYM4",
+      "call_va": "0x139e180"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYM4",
+      "call_va": "0x139e19c"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYM8",
+      "call_va": "0x139e1b8"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYM8",
+      "call_va": "0x139e1d4"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYM8",
+      "call_va": "0x139e1f0"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYM8",
+      "call_va": "0x139e20c"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYM8",
+      "call_va": "0x139e228"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYA1",
+      "call_va": "0x139e244"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYA1",
+      "call_va": "0x139e260"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYA1",
+      "call_va": "0x139e27c"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYA1",
+      "call_va": "0x139e298"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYA1",
+      "call_va": "0x139e2b4"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYA3",
+      "call_va": "0x139e2d0"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYA3",
+      "call_va": "0x139e2ec"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYA3",
+      "call_va": "0x139e308"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYA3",
+      "call_va": "0x139e324"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYA3",
+      "call_va": "0x139e340"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYA6",
+      "call_va": "0x139e35c"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYA6",
+      "call_va": "0x139e378"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYA6",
+      "call_va": "0x139e394"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYA6",
+      "call_va": "0x139e3b0"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYA6",
+      "call_va": "0x139e3cc"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYA8",
+      "call_va": "0x139e3e8"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYA8",
+      "call_va": "0x139e404"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYA8",
+      "call_va": "0x139e420"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYA8",
+      "call_va": "0x139e43c"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYA8",
+      "call_va": "0x139e458"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYAV2",
+      "call_va": "0x139e474"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYAV2",
+      "call_va": "0x139e490"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYAV2",
+      "call_va": "0x139e4ac"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYAV2",
+      "call_va": "0x139e4c8"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYAV2",
+      "call_va": "0x139e4e4"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYAV4",
+      "call_va": "0x139e500"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYAV4",
+      "call_va": "0x139e51c"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYAV4",
+      "call_va": "0x139e538"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYAV4",
+      "call_va": "0x139e554"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYAV4",
+      "call_va": "0x139e570"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYC1",
+      "call_va": "0x139e58c"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYC2",
+      "call_va": "0x139e5a8"
+    },
+    {
+      "source": "KEY1",
+      "target": "KEYC4",
+      "call_va": "0x139e5c4"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYC1",
+      "call_va": "0x139e5e0"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYC2",
+      "call_va": "0x139e5fc"
+    },
+    {
+      "source": "KEY2",
+      "target": "KEYC4",
+      "call_va": "0x139e618"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYC1",
+      "call_va": "0x139e634"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYC2",
+      "call_va": "0x139e650"
+    },
+    {
+      "source": "KEY4",
+      "target": "KEYC4",
+      "call_va": "0x139e66c"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYCIR1",
+      "call_va": "0x139e688"
+    },
+    {
+      "source": "KEYIR1",
+      "target": "KEYCIR4",
+      "call_va": "0x139e6a4"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYCIR1",
+      "call_va": "0x139e6c0"
+    },
+    {
+      "source": "KEYIR4",
+      "target": "KEYCIR4",
+      "call_va": "0x139e6dc"
+    }
+  ],
+  "unit_class_and_agent_facts": [
+    {
+      "unit_type": "KEY1",
+      "class": "TKey1",
+      "agent": "TCBusKeyInputCGateAgent",
+      "class_registration": "0x138e13f",
+      "agent_registration": "0x1397528",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "admitted_firmware": "1.2.67",
+      "class_reference": "0xf70560",
+      "source_has_application2": false,
+      "inherits_neo": false,
+      "internal_create_va": "0x1215b0c",
+      "before_conversion_save_va": "0xcc9180"
+    },
+    {
+      "unit_type": "KEY2",
+      "class": "TKey2",
+      "agent": "TCBusKeyInputCGateAgent",
+      "class_registration": "0x138e1cf",
+      "agent_registration": "0x1397540",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "admitted_firmware": "1.2.67",
+      "class_reference": "0xf70d74",
+      "source_has_application2": false,
+      "inherits_neo": false,
+      "internal_create_va": "0x1215b0c",
+      "before_conversion_save_va": "0xcc9180"
+    },
+    {
+      "unit_type": "KEY4",
+      "class": "TKey4",
+      "agent": "TCBusKeyInputCGateAgent",
+      "class_registration": "0x138e25f",
+      "agent_registration": "0x1397558",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "admitted_firmware": "1.2.67",
+      "class_reference": "0xf71588",
+      "source_has_application2": false,
+      "inherits_neo": false,
+      "internal_create_va": "0x1215b0c",
+      "before_conversion_save_va": "0xcc9180"
+    },
+    {
+      "unit_type": "KEYIR1",
+      "class": "TKEYIR1",
+      "agent": "TCBusKeyInputCGateAgent",
+      "class_registration": "0x138e2ef",
+      "agent_registration": "0x1397570",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "admitted_firmware": "1.2.67",
+      "class_reference": "0xf71d88",
+      "source_has_application2": false,
+      "inherits_neo": false,
+      "internal_create_va": "0x1215b0c",
+      "before_conversion_save_va": "0xcc9180"
+    },
+    {
+      "unit_type": "KEYIR4",
+      "class": "TKEYIR4",
+      "agent": "TCBusKeyInputCGateAgent",
+      "class_registration": "0x138e383",
+      "agent_registration": "0x1397588",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "admitted_firmware": "1.2.67",
+      "class_reference": "0xf7256c",
+      "source_has_application2": false,
+      "inherits_neo": false,
+      "internal_create_va": "0x1215b0c",
+      "before_conversion_save_va": "0xcc9180"
+    },
+    {
+      "unit_type": "KEYB2",
+      "class": "TKEYB2",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383f3c",
+      "agent_registration": "0x13976b8",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd0d04",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYB4",
+      "class": "TKEYB4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1384060",
+      "agent_registration": "0x13976d0",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd1340",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYB6",
+      "class": "TKEYB6",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1384184",
+      "agent_registration": "0x13976e8",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd197c",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYH1",
+      "class": "TKEYH1",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x13842a8",
+      "agent_registration": "0x1397700",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd1fb8",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYH2",
+      "class": "TKEYH2",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x13843cc",
+      "agent_registration": "0x1397718",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd25f4",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYH3",
+      "class": "TKEYH3",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x13844f0",
+      "agent_registration": "0x1397730",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd2c30",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYH4",
+      "class": "TKEYH4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1384614",
+      "agent_registration": "0x1397748",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd326c",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYM2",
+      "class": "TKEYM2",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1384de8",
+      "agent_registration": "0x13977f0",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcea89c",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYM4",
+      "class": "TKEYM4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1384f0c",
+      "agent_registration": "0x1397808",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xceaed8",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYM8",
+      "class": "TKEYM8",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1385030",
+      "agent_registration": "0x1397820",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xceb514",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYA1",
+      "class": "TKEYA1",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138385c",
+      "agent_registration": "0x1397628",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcce0dc",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYA3",
+      "class": "TKEYA3",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383aa8",
+      "agent_registration": "0x1397658",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcced58",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYA6",
+      "class": "TKEYA6",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383cf4",
+      "agent_registration": "0x1397688",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xccf9d4",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYA8",
+      "class": "TKEYA8",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383e18",
+      "agent_registration": "0x13976a0",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcd0010",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYAV2",
+      "class": "TKEYAV2",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383980",
+      "agent_registration": "0x1397640",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xcce718",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYAV4",
+      "class": "TKEYAV4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x1383bcc",
+      "agent_registration": "0x1397670",
+      "firmware_min": "1.5.03",
+      "firmware_max": "2.9.99",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xccf394",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYC1",
+      "class": "TKEYC1",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138f067",
+      "agent_registration": "0x1397838",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xf9cd74",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYC2",
+      "class": "TKEYC2",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138f113",
+      "agent_registration": "0x1397850",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xf9d1bc",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYC4",
+      "class": "TKEYC4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138f1bf",
+      "agent_registration": "0x1397868",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xf9d604",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYCIR1",
+      "class": "TKEYCIR1",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138e08f",
+      "agent_registration": "0x1397880",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xf64a94",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    },
+    {
+      "unit_type": "KEYCIR4",
+      "class": "TKEYCIR4",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "class_registration": "0x138f26b",
+      "agent_registration": "0x1397898",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "admitted_firmware": "2.5.00",
+      "class_reference": "0xf9da4c",
+      "source_has_application2": null,
+      "inherits_neo": true,
+      "internal_create_va": "0x12168a4",
+      "before_conversion_save_va": "0xcedc88"
+    }
+  ],
+  "constructor_inventory": {
+    "source_classic": [
+      {
+        "name": "Application",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb52b5",
+        "literal_name_va": "0xcb529d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x88"
+      },
+      {
+        "name": "FirmwareVersion",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb52f6",
+        "literal_name_va": "0xcb52de",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0x8c"
+      },
+      {
+        "name": "Project",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb531c",
+        "literal_name_va": "0xcb5304",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0x90"
+      },
+      {
+        "name": "SerialNo",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5342",
+        "literal_name_va": "0xcb532a",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          0
+        ],
+        "agent_field_offset": "0x94"
+      },
+      {
+        "name": "State",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5368",
+        "literal_name_va": "0xcb5350",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          0
+        ],
+        "agent_field_offset": "0x98"
+      },
+      {
+        "name": "UnitAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb538e",
+        "literal_name_va": "0xcb5376",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0x9c"
+      },
+      {
+        "name": "UnitName",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb53b4",
+        "literal_name_va": "0xcb539c",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xa0"
+      },
+      {
+        "name": "UnitType",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5400",
+        "literal_name_va": "0xcb53e8",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0xa4"
+      },
+      {
+        "name": "LearnAnyApp",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5ac7",
+        "literal_name_va": "0xcc5aaf",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xe4"
+      },
+      {
+        "name": "LearnMode",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5aed",
+        "literal_name_va": "0xcc5ad5",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xe0"
+      },
+      {
+        "name": "LearnedFlag",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5b13",
+        "literal_name_va": "0xcc5afb",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0xe8"
+      },
+      {
+        "name": "AreaGroupAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6470",
+        "attribute_create_va": "0xcc6491",
+        "literal_name_va": "0xcc6479",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xf0"
+      },
+      {
+        "name": "StatusReportInterval",
+        "initially_mutable": true,
+        "constructor_va": "0xcc64d0",
+        "attribute_create_va": "0xcc64f1",
+        "literal_name_va": "0xcc64d9",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xf4"
+      },
+      {
+        "name": "GroupAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6d3f",
+        "literal_name_va": "0xcc6d27",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x100"
+      },
+      {
+        "name": "DebounceTime",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6d65",
+        "literal_name_va": "0xcc6d4d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x104"
+      },
+      {
+        "name": "IndicatorBrightness",
+        "initially_mutable": false,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6da1",
+        "literal_name_va": "0xcc6d89",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0x108"
+      },
+      {
+        "name": "LongPressTime",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6dc7",
+        "literal_name_va": "0xcc6daf",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x10c"
+      },
+      {
+        "name": "EEPROMLevelStore",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72af",
+        "literal_name_va": "0xcc7297",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x110"
+      },
+      {
+        "name": "LightIndex",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72d5",
+        "literal_name_va": "0xcc72bd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x138"
+      },
+      {
+        "name": "LightLevel",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72fb",
+        "literal_name_va": "0xcc72e3",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x13c"
+      },
+      {
+        "name": "LightLevelStore1",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc7321",
+        "literal_name_va": "0xcc7309",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x140"
+      },
+      {
+        "name": "LightLevelStore2",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc7347",
+        "literal_name_va": "0xcc732f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x144"
+      },
+      {
+        "name": "RampRate",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6df5",
+        "literal_name_va": "0xcc6ddd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x114"
+      },
+      {
+        "name": "InfraRedBank",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e1b",
+        "literal_name_va": "0xcc6e03",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x118"
+      },
+      {
+        "name": "JPCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e41",
+        "literal_name_va": "0xcc6e29",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x11c"
+      },
+      {
+        "name": "SRCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e67",
+        "literal_name_va": "0xcc6e4f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x120"
+      },
+      {
+        "name": "LPCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e8d",
+        "literal_name_va": "0xcc6e75",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x124"
+      },
+      {
+        "name": "LRCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6eb3",
+        "literal_name_va": "0xcc6e9b",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x128"
+      },
+      {
+        "name": "BlockAllocation",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6ed9",
+        "literal_name_va": "0xcc6ec1",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x12c"
+      },
+      {
+        "name": "IndicatorBlockAssignment",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6eff",
+        "literal_name_va": "0xcc6ee7",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x130"
+      },
+      {
+        "name": "IndicatorFunction",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6f25",
+        "literal_name_va": "0xcc6f0d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x134"
+      },
+      {
+        "name": "TimerHighByte",
+        "initially_mutable": true,
+        "constructor_va": "0xcc717c",
+        "attribute_create_va": "0xcc719d",
+        "literal_name_va": "0xcc7185",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x148"
+      },
+      {
+        "name": "TimerLowByte",
+        "initially_mutable": true,
+        "constructor_va": "0xcc71d4",
+        "attribute_create_va": "0xcc71f5",
+        "literal_name_va": "0xcc71dd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x14c"
+      },
+      {
+        "name": "TimerExpiryCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc722c",
+        "attribute_create_va": "0xcc724d",
+        "literal_name_va": "0xcc7235",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x150"
+      },
+      {
+        "name": "GAVBroadcastFlag",
+        "initially_mutable": false,
+        "constructor_va": "0x1215b0c",
+        "attribute_create_va": "0x1215b33",
+        "literal_name_va": "0x1215b1b",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0x160"
+      }
+    ],
+    "target_neo_pro": [
+      {
+        "name": "Application",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb52b5",
+        "literal_name_va": "0xcb529d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x88"
+      },
+      {
+        "name": "FirmwareVersion",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb52f6",
+        "literal_name_va": "0xcb52de",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0x8c"
+      },
+      {
+        "name": "Project",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb531c",
+        "literal_name_va": "0xcb5304",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0x90"
+      },
+      {
+        "name": "SerialNo",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5342",
+        "literal_name_va": "0xcb532a",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          0
+        ],
+        "agent_field_offset": "0x94"
+      },
+      {
+        "name": "State",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5368",
+        "literal_name_va": "0xcb5350",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          0
+        ],
+        "agent_field_offset": "0x98"
+      },
+      {
+        "name": "UnitAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb538e",
+        "literal_name_va": "0xcb5376",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0x9c"
+      },
+      {
+        "name": "UnitName",
+        "initially_mutable": true,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb53b4",
+        "literal_name_va": "0xcb539c",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xa0"
+      },
+      {
+        "name": "UnitType",
+        "initially_mutable": false,
+        "constructor_va": "0xcb524c",
+        "attribute_create_va": "0xcb5400",
+        "literal_name_va": "0xcb53e8",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0xa4"
+      },
+      {
+        "name": "LearnAnyApp",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5ac7",
+        "literal_name_va": "0xcc5aaf",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xe4"
+      },
+      {
+        "name": "LearnMode",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5aed",
+        "literal_name_va": "0xcc5ad5",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xe0"
+      },
+      {
+        "name": "LearnedFlag",
+        "initially_mutable": true,
+        "constructor_va": "0xcc5aa0",
+        "attribute_create_va": "0xcc5b13",
+        "literal_name_va": "0xcc5afb",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          0
+        ],
+        "agent_field_offset": "0xe8"
+      },
+      {
+        "name": "AreaGroupAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6470",
+        "attribute_create_va": "0xcc6491",
+        "literal_name_va": "0xcc6479",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xf0"
+      },
+      {
+        "name": "StatusReportInterval",
+        "initially_mutable": true,
+        "constructor_va": "0xcc64d0",
+        "attribute_create_va": "0xcc64f1",
+        "literal_name_va": "0xcc64d9",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0xf4"
+      },
+      {
+        "name": "GroupAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6d3f",
+        "literal_name_va": "0xcc6d27",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x100"
+      },
+      {
+        "name": "DebounceTime",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6d65",
+        "literal_name_va": "0xcc6d4d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x104"
+      },
+      {
+        "name": "IndicatorBrightness",
+        "initially_mutable": false,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6da1",
+        "literal_name_va": "0xcc6d89",
+        "stack_flags_in_push_order": [
+          0,
+          0,
+          1
+        ],
+        "agent_field_offset": "0x108"
+      },
+      {
+        "name": "LongPressTime",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6dc7",
+        "literal_name_va": "0xcc6daf",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x10c"
+      },
+      {
+        "name": "EEPROMLevelStore",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72af",
+        "literal_name_va": "0xcc7297",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x110"
+      },
+      {
+        "name": "LightIndex",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72d5",
+        "literal_name_va": "0xcc72bd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x138"
+      },
+      {
+        "name": "LightLevel",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc72fb",
+        "literal_name_va": "0xcc72e3",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x13c"
+      },
+      {
+        "name": "LightLevelStore1",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc7321",
+        "literal_name_va": "0xcc7309",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x140"
+      },
+      {
+        "name": "LightLevelStore2",
+        "initially_mutable": true,
+        "constructor_va": "0xcc7290",
+        "attribute_create_va": "0xcc7347",
+        "literal_name_va": "0xcc732f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x144"
+      },
+      {
+        "name": "RampRate",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6df5",
+        "literal_name_va": "0xcc6ddd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x114"
+      },
+      {
+        "name": "IRBank",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e1b",
+        "literal_name_va": "0xcc6e03",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x118",
+        "original_name": "InfraRedBank",
+        "renamed_va": "0xcc9ee9"
+      },
+      {
+        "name": "JPCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e41",
+        "literal_name_va": "0xcc6e29",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x11c"
+      },
+      {
+        "name": "SRCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e67",
+        "literal_name_va": "0xcc6e4f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x120"
+      },
+      {
+        "name": "LPCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6e8d",
+        "literal_name_va": "0xcc6e75",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x124"
+      },
+      {
+        "name": "LRCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6eb3",
+        "literal_name_va": "0xcc6e9b",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x128"
+      },
+      {
+        "name": "BlockAllocation",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6ed9",
+        "literal_name_va": "0xcc6ec1",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x12c"
+      },
+      {
+        "name": "IndicatorBlockAssignment",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6eff",
+        "literal_name_va": "0xcc6ee7",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x130"
+      },
+      {
+        "name": "IndicatorFunction",
+        "initially_mutable": true,
+        "constructor_va": "0xcc6d18",
+        "attribute_create_va": "0xcc6f25",
+        "literal_name_va": "0xcc6f0d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x134"
+      },
+      {
+        "name": "TimerHighByte",
+        "initially_mutable": true,
+        "constructor_va": "0xcc717c",
+        "attribute_create_va": "0xcc719d",
+        "literal_name_va": "0xcc7185",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x148"
+      },
+      {
+        "name": "TimerLowByte",
+        "initially_mutable": true,
+        "constructor_va": "0xcc71d4",
+        "attribute_create_va": "0xcc71f5",
+        "literal_name_va": "0xcc71dd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x14c"
+      },
+      {
+        "name": "TimerExpiryCommand",
+        "initially_mutable": true,
+        "constructor_va": "0xcc722c",
+        "attribute_create_va": "0xcc724d",
+        "literal_name_va": "0xcc7235",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x150"
+      },
+      {
+        "name": "ControlAppGroupAddress",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9d2b",
+        "literal_name_va": "0xcc9d13",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x160"
+      },
+      {
+        "name": "EnableNightlight",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9d51",
+        "literal_name_va": "0xcc9d39",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x164"
+      },
+      {
+        "name": "EnableNightlightControl",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9d77",
+        "literal_name_va": "0xcc9d5f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x168"
+      },
+      {
+        "name": "DisableTimerFlash",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9d9d",
+        "literal_name_va": "0xcc9d85",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x16c"
+      },
+      {
+        "name": "FirstKeyThrowAway",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9dc3",
+        "literal_name_va": "0xcc9dab",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x170"
+      },
+      {
+        "name": "IndicatorPressedLevel",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9de9",
+        "literal_name_va": "0xcc9dd1",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x174"
+      },
+      {
+        "name": "TimerDuration",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9e0f",
+        "literal_name_va": "0xcc9df7",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x178"
+      },
+      {
+        "name": "PatchEnable",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9e35",
+        "literal_name_va": "0xcc9e1d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x17c"
+      },
+      {
+        "name": "SceneKeySelector",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9e5b",
+        "literal_name_va": "0xcc9e43",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x180"
+      },
+      {
+        "name": "SceneTable",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9e81",
+        "literal_name_va": "0xcc9e69",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x184"
+      },
+      {
+        "name": "SceneTablePointer",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9ea7",
+        "literal_name_va": "0xcc9e8f",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x188"
+      },
+      {
+        "name": "DisableIR",
+        "initially_mutable": true,
+        "constructor_va": "0xcc9d04",
+        "attribute_create_va": "0xcc9ecd",
+        "literal_name_va": "0xcc9eb5",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x18c"
+      },
+      {
+        "name": "IDBacklightIllumination",
+        "initially_mutable": true,
+        "constructor_va": "0xceba64",
+        "attribute_create_va": "0xceba8b",
+        "literal_name_va": "0xceba73",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x190"
+      },
+      {
+        "name": "EnableNightlightOnPCx",
+        "initially_mutable": true,
+        "constructor_va": "0xceba64",
+        "attribute_create_va": "0xcebab1",
+        "literal_name_va": "0xceba99",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x194"
+      },
+      {
+        "name": "EnableNightlightOnPA6",
+        "initially_mutable": true,
+        "constructor_va": "0xceba64",
+        "attribute_create_va": "0xcebad7",
+        "literal_name_va": "0xcebabf",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x198"
+      },
+      {
+        "name": "PrimaryColour",
+        "initially_mutable": true,
+        "constructor_va": "0xceba64",
+        "attribute_create_va": "0xcebafd",
+        "literal_name_va": "0xcebae5",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x19c"
+      },
+      {
+        "name": "DisableIRNEC",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec66f",
+        "literal_name_va": "0xcec657",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1a0"
+      },
+      {
+        "name": "KeyDisableGroup",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec695",
+        "literal_name_va": "0xcec67d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1a4"
+      },
+      {
+        "name": "KeyDisableGroupInvert",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec6bb",
+        "literal_name_va": "0xcec6a3",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1a8"
+      },
+      {
+        "name": "CorridorLinkEnable",
+        "initially_mutable": true,
+        "constructor_va": "0xcec964",
+        "attribute_create_va": "0xcec983",
+        "literal_name_va": "0xcec96b",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1ac"
+      },
+      {
+        "name": "CorridorMasterGroup",
+        "initially_mutable": true,
+        "constructor_va": "0xcec964",
+        "attribute_create_va": "0xcec9a9",
+        "literal_name_va": "0xcec991",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1b0"
+      },
+      {
+        "name": "CorridorGroupBlock",
+        "initially_mutable": true,
+        "constructor_va": "0xcec964",
+        "attribute_create_va": "0xcec9cf",
+        "literal_name_va": "0xcec9b7",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1b4"
+      },
+      {
+        "name": "CorridorOfficeGroupBlock",
+        "initially_mutable": true,
+        "constructor_va": "0xcec964",
+        "attribute_create_va": "0xcec9f5",
+        "literal_name_va": "0xcec9dd",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1b8"
+      },
+      {
+        "name": "JoinPrimaryApplication",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec6e9",
+        "literal_name_va": "0xcec6d1",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1bc"
+      },
+      {
+        "name": "JoinSecondaryApplication",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec70f",
+        "literal_name_va": "0xcec6f7",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1c0"
+      },
+      {
+        "name": "DualJoinPrimaryApplication",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec735",
+        "literal_name_va": "0xcec71d",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1c4"
+      },
+      {
+        "name": "DualJoinSecondaryApplication",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec75b",
+        "literal_name_va": "0xcec743",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1c8"
+      },
+      {
+        "name": "SecondApplicationBlocks",
+        "initially_mutable": true,
+        "constructor_va": "0xcec648",
+        "attribute_create_va": "0xcec781",
+        "literal_name_va": "0xcec769",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1cc"
+      },
+      {
+        "name": "NightlightColour",
+        "initially_mutable": true,
+        "constructor_va": "0x12168a4",
+        "attribute_create_va": "0x12168cb",
+        "literal_name_va": "0x12168b3",
+        "stack_flags_in_push_order": [
+          0,
+          1,
+          1
+        ],
+        "agent_field_offset": "0x1d8"
+      }
+    ]
+  },
+  "tweaker_phases": {
+    "inherited_false_flags": [
+      {
+        "name": "InfraRedBank",
+        "call_va": "0x12f135e"
+      },
+      {
+        "name": "EnableNightlight",
+        "call_va": "0x12f136a"
+      },
+      {
+        "name": "EnableNightlightControl",
+        "call_va": "0x12f1376"
+      },
+      {
+        "name": "DisableTimerFlash",
+        "call_va": "0x12f1382"
+      },
+      {
+        "name": "FirstKeyThrowAway",
+        "call_va": "0x12f138e"
+      },
+      {
+        "name": "IndicatorPressedLevel",
+        "call_va": "0x12f139a"
+      },
+      {
+        "name": "TimerDuration",
+        "call_va": "0x12f13a6"
+      },
+      {
+        "name": "IDBacklightIllumination",
+        "call_va": "0x12f13b2"
+      },
+      {
+        "name": "PrimaryColour",
+        "call_va": "0x12f13be"
+      },
+      {
+        "name": "EnableNightlightOnPCx",
+        "call_va": "0x12f13ca"
+      },
+      {
+        "name": "EnableNightlightOnPA6",
+        "call_va": "0x12f13d6"
+      },
+      {
+        "name": "DisableIR",
+        "call_va": "0x12f13e2"
+      },
+      {
+        "name": "DisableIRNEC",
+        "call_va": "0x12f13ee"
+      }
+    ],
+    "derived_false_flags": [
+      {
+        "name": "ControlAppGroupAddress",
+        "call_va": "0x12f1704"
+      },
+      {
+        "name": "PatchEnable",
+        "call_va": "0x12f1710"
+      },
+      {
+        "name": "SceneKeySelector",
+        "call_va": "0x12f171c"
+      },
+      {
+        "name": "SceneTable",
+        "call_va": "0x12f1728"
+      },
+      {
+        "name": "SceneTablePointer",
+        "call_va": "0x12f1734"
+      }
+    ],
+    "missing_attribute_flag_helper_noop": true,
+    "indicator_function": {
+      "lookup_va": "0x12f1742",
+      "parse_va": "0x12f176a",
+      "map": {
+        "1": 2,
+        "3": 1
+      },
+      "unlisted_values": "unchanged",
+      "initial_empty_setter_va": "0x12f17bc",
+      "per_token_setter_va": "0x12f180e",
+      "format": "signed decimal token followed by one space, including last token",
+      "setter_count": "one plus parsed token count",
+      "missing_attribute": "skip"
+    }
+  },
+  "core_key_hook": {
+    "inherited_learn_hook_call_va": "0xcc91a5",
+    "dual_application_source_branch_active": false,
+    "reason": "Every admitted classic source resolves HasApplication2 to original constant false method at 0xf344fc.",
+    "group_address": {
+      "source_neo": false,
+      "target_neo": true,
+      "source_indices": [
+        0,
+        1,
+        2,
+        3,
+        null,
+        null,
+        null,
+        null,
+        4
+      ],
+      "inserted_value": 255,
+      "missing_source_index_default": 255,
+      "default_helper_va": "0x7f0f30",
+      "saved_index_read_va": "0xcc942e",
+      "first_four_read_va": "0xcc946e",
+      "setter_va": "0xcc9577",
+      "format": "0x-prefixed uppercase hexadecimal, minimum two digits, one space between tokens, no trailing space",
+      "source_indices_after_four": "discarded"
+    },
+    "brightness": {
+      "hook_dispatch_va": "0xcc97b6",
+      "mutable_store_va": "0xcc97c5",
+      "resolved_method_va": "0xc9e124",
+      "result": true,
+      "firmware_comparison_in_resolved_method": false
+    }
+  },
+  "neo_pro_tail": {
+    "inherited_core_key_call_va": "0xcedc92",
+    "source_exists": true,
+    "source_inherits_core_neo_pro": false,
+    "false_flags_in_order": [
+      {
+        "name": "DisableIR",
+        "store_va": "0xcedcd8"
+      },
+      {
+        "name": "DisableIRNEC",
+        "store_va": "0xcedce5"
+      },
+      {
+        "name": "KeyDisableGroup",
+        "store_va": "0xcedcf2"
+      },
+      {
+        "name": "KeyDisableGroupInvert",
+        "store_va": "0xcedcff"
+      },
+      {
+        "name": "CorridorLinkEnable",
+        "store_va": "0xcedd0c"
+      },
+      {
+        "name": "CorridorMasterGroup",
+        "store_va": "0xcedd19"
+      },
+      {
+        "name": "CorridorGroupBlock",
+        "store_va": "0xcedd26"
+      },
+      {
+        "name": "CorridorOfficeGroupBlock",
+        "store_va": "0xcedd33"
+      },
+      {
+        "name": "JoinPrimaryApplication",
+        "store_va": "0xcedd40"
+      },
+      {
+        "name": "DualJoinPrimaryApplication",
+        "store_va": "0xcedd4d"
+      },
+      {
+        "name": "JoinSecondaryApplication",
+        "store_va": "0xcedd5a"
+      },
+      {
+        "name": "DualJoinSecondaryApplication",
+        "store_va": "0xcedd67"
+      },
+      {
+        "name": "SecondApplicationBlocks",
+        "store_va": "0xcedd74"
+      }
+    ]
+  },
+  "constructor_notes": {
+    "source_attribute_count": 35,
+    "target_attribute_count": 63,
+    "mutable_argument": "Second of the three immediate Boolean pushes after the attribute name; constructor stores it at attribute+0x58.",
+    "renamed_attribute": {
+      "from": "InfraRedBank",
+      "to": "IRBank",
+      "setter_va": "0xcc9ee9",
+      "same_name_alignment_from_classic": false
+    },
+    "learned_flag_initial_mutable": true,
+    "brightness_initial_mutable": false,
+    "nightlight_colour_initial_mutable": true,
+    "nightlight_colour_suppressed_by_reviewed_tweaker_or_tail": false
+  },
+  "method_intervals": {
+    "CIS_Maths.IntArrayElementWithDefault@0x7f0f30": {
+      "va": "0x7f0f30",
+      "map": "0x1eff30",
+      "end": "0x7f1078",
+      "length": 328,
+      "sha256": "7453a5f695e7c71197288a8d846dc044641fa95e17a06894242510cab403abf1"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled@0xc9e124": {
+      "va": "0xc9e124",
+      "map": "0x69d124",
+      "end": "0xc9e138",
+      "length": 20,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate@0xcb524c": {
+      "va": "0xcb524c",
+      "map": "0x6b424c",
+      "end": "0xcb5614",
+      "length": 968,
+      "sha256": "ca6224f18662e8133b0420a1a878288ae003869946a91993b15622293b83b39c"
+    },
+    "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.InternalCreate@0xcc5aa0": {
+      "va": "0xcc5aa0",
+      "map": "0x6c4aa0",
+      "end": "0xcc5b8c",
+      "length": 236,
+      "sha256": "3fd90721ff749222122e8538368745c6c127fd2e9b84dd0bc4e7c423e9b55135"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.InternalCreate@0xcc643c": {
+      "va": "0xcc643c",
+      "map": "0x6c543c",
+      "end": "0xcc6470",
+      "length": 52,
+      "sha256": "bfcf84f9085c80687985a2ab002ee80982d28f8eabbe9e092f9a116a3d5375d8"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeAreaGroupAddress@0xcc6470": {
+      "va": "0xcc6470",
+      "map": "0x6c5470",
+      "end": "0xcc64d0",
+      "length": 96,
+      "sha256": "152255d9b2c4bcf4e20d614707712af633a3b89c413edef67293ed37dfa92427"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeStatusReportInterval@0xcc64d0": {
+      "va": "0xcc64d0",
+      "map": "0x6c54d0",
+      "end": "0xcc6538",
+      "length": 104,
+      "sha256": "c51c28f9f1b654cad66f255008ec40781d34fcd77510090fa631186d8212c892"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate@0xcc6d18": {
+      "va": "0xcc6d18",
+      "map": "0x6c5d18",
+      "end": "0xcc717c",
+      "length": 1124,
+      "sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerHighByte@0xcc717c": {
+      "va": "0xcc717c",
+      "map": "0x6c617c",
+      "end": "0xcc71d4",
+      "length": 88,
+      "sha256": "d140abca9b5b7c46da0895b951b72140be5a6432b8315b36bef80a425b9282df"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerLowByte@0xcc71d4": {
+      "va": "0xcc71d4",
+      "map": "0x6c61d4",
+      "end": "0xcc722c",
+      "length": 88,
+      "sha256": "500b1c8cfa9e7deaba3eebc3cc2c29bac7a0befd85bcbd9fdcedd4e9a22cb3e5"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerExpiryCommand@0xcc722c": {
+      "va": "0xcc722c",
+      "map": "0x6c622c",
+      "end": "0xcc7290",
+      "length": 100,
+      "sha256": "654d5ff0fabdbdd52ec51e10a06c9d8420e6e7fcad2bcaf9d9cd272c17130c32"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes@0xcc7290": {
+      "va": "0xcc7290",
+      "map": "0x6c6290",
+      "end": "0xcc7430",
+      "length": 416,
+      "sha256": "1eeb568a802f8c8127f1aadf2af706ac9dc6d268fe27ea7b93c4ae0eedd977ba"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeUnitConversionSave@0xcc9180": {
+      "va": "0xcc9180",
+      "map": "0x6c8180",
+      "end": "0xcc9930",
+      "length": 1968,
+      "sha256": "f95507698b15f7429b538ffc8fc130f25690b48f449fb8869f93d3fed9d48f58"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate@0xcc9d04": {
+      "va": "0xcc9d04",
+      "map": "0x6c8d04",
+      "end": "0xcca140",
+      "length": 1084,
+      "sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.InternalCreate@0xceba64": {
+      "va": "0xceba64",
+      "map": "0x6eaa64",
+      "end": "0xcebbe4",
+      "length": 384,
+      "sha256": "a6d839d57579b2568dfd699e453deadb0aff9faba2af0e78abfcbe146a182e9e"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.InternalCreate@0xcec648": {
+      "va": "0xcec648",
+      "map": "0x6eb648",
+      "end": "0xcec964",
+      "length": 796,
+      "sha256": "ead8ff3a29e6d39d99ae2bde53fc5600824c2505aeefc6a8d3715b7a57f819cc"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.CreateCorridorLinkAttributes@0xcec964": {
+      "va": "0xcec964",
+      "map": "0x6eb964",
+      "end": "0xcecae4",
+      "length": 384,
+      "sha256": "0c91c1f176bf5dcc62b7f754c9c7f4f4c800b913661d5adb4a51c13be25b4085"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeUnitConversionSave@0xcedc88": {
+      "va": "0xcedc88",
+      "map": "0x6ecc88",
+      "end": "0xcedd7c",
+      "length": 244,
+      "sha256": "b319b6f25fdc74fbdb34175d1e00acb4f7d5bb1308a483549503bb2d4a64c18b"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.HasApplication2@0xf344fc": {
+      "va": "0xf344fc",
+      "map": "0x9334fc",
+      "end": "0xf34510",
+      "length": 20,
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TKeyInputCGateAgent.TCBusKeyInputCGateAgent.InternalCreate@0x1215b0c": {
+      "va": "0x1215b0c",
+      "map": "0xc14b0c",
+      "end": "0x1215b74",
+      "length": 104,
+      "sha256": "57b3df1b0b9ecd18c7104bc34afe81a39083281c91c91ece1125fc4bda1c4d4c"
+    },
+    "CIS_TCBusNeoProInputCGateAgent.TCBusNeoProInputCGateAgent.InternalCreate@0x12168a4": {
+      "va": "0x12168a4",
+      "map": "0xc158a4",
+      "end": "0x121690c",
+      "length": 104,
+      "sha256": "3ac4ade91891339d3d94652d820eceed7cc16805629a3b34fde7876d4bd790c5"
+    },
+    "CIS_TTweakerInputUnit.SetMutableFalse@0x12f12a4": {
+      "va": "0x12f12a4",
+      "map": "0xcf02a4",
+      "end": "0x12f134c",
+      "length": 168,
+      "sha256": "2291abb49c09620c268ae8681efdc85b8e5d159a74e4af1c0fe57f2aa204c8ac"
+    },
+    "CIS_TTweakerInputUnit.TTweakerInputUnit.TweakParameters@0x12f134c": {
+      "va": "0x12f134c",
+      "map": "0xcf034c",
+      "end": "0x12f1668",
+      "length": 796,
+      "sha256": "0392573f3a74d70c644036da33e0436d24859928c375417ec306a8974dc8f857"
+    },
+    "CIS_TTweakerInputUnit.SetMutableFalse@0x12f1668": {
+      "va": "0x12f1668",
+      "map": "0xcf0668",
+      "end": "0x12f16c8",
+      "length": 96,
+      "sha256": "a75d10e74ac93ddc354331bdc5254d15f2b24cc6dd4fd48c4d3eda2cc608912a"
+    },
+    "CIS_TTweakerInputUnit.TTweakerKeyToNeo.TweakParameters@0x12f16c8": {
+      "va": "0x12f16c8",
+      "map": "0xcf06c8",
+      "end": "0x12f1974",
+      "length": 684,
+      "sha256": "dce29cc9a6b2e4a2dca8e613f7e769691672f3263d97079a65c7765a84ef2d8f"
+    },
+    "CIS_TTweakerInputUnit.CIS_TTweakerInputUnit@0x139dae8": {
+      "va": "0x139dae8",
+      "map": "0xd9cae8",
+      "end": "0x139ebc8",
+      "length": 4320,
+      "sha256": "8582a5f08f645eb49da14d2835b208defaf087c8bf0e20e90f58080f8c821928"
+    }
+  },
+  "limitations": [
+    "This receipt proves static source facts, not original GUI execution, C-Gate persistence, or physical programming.",
+    "Only the fresh source 1.2.67 to target 2.5.00 lifecycle is proposed for admission; constructor registry ranges do not widen it.",
+    "The five coupler/DINAUX4 KeyToNeo registrations, TTweakerInputUnit family and reverse NeoToKey remain outside this profile.",
+    "Literal algorithm vectors do not override source or target PP schema widths, bounds, metadata, or lifecycle admission.",
+    "No original bytes, disassembly, vendor unit specifications, or site data are included."
+  ]
+}

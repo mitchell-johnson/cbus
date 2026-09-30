@@ -72,6 +72,16 @@
       },
       "digest": "626d16c43308095f45b19db1284f573de44f23c85e835659ea8d34ba6d0841dd",
       "reason": "Allocated every obligation to one of 28 workflows (26 Toolkit help families, the C-Gate command service and a placeholder for four cross-workflow umbrella rows). Obligation and scope membership are unchanged from provisional-2026-09-29.2."
+    },
+    {
+      "version": "provisional-2026-09-30.2",
+      "counts": {
+        "obligations": 487,
+        "scope_items": 22103,
+        "workflows": 28
+      },
+      "digest": "35e1617bc4a2b234df06b719b53126cf339f2d1fdfbc53730f6fc549c50c5590",
+      "reason": "Regenerated pinned EXE/MAP census excludes exactly 53 scalar OnColor properties on the two proven LED classes, retaining unknown-class and genuine event candidates. Event count changes from 1892 to 1839; no functional obligation is removed or accepted by this inventory correction."
     }
   ]
 }

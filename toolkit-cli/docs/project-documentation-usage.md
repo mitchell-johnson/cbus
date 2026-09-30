@@ -42,7 +42,7 @@ and enclosing lists. Classic key action text has no additional `<li />` prefix.
 ## Evidence and focused verification
 
 `research/project_documentor_usage_static.py` checks 65 facts against the pinned
-original EXE/MAP: effective group-method VMT dispatch for all admitted families,
+original EXE/MAP: effective group-method VMT dispatch for the initial DIN and classic families,
 key and virtual-key counts, indicator-brightness capability, native resource
 labels, section wrapper literals, and the four-block/unused-macro constants. Its
 receipt also inventories hashes and addresses for the consumed native loader
@@ -74,3 +74,45 @@ reject any source hash other than the pinned original pair. No live C-Gate,
 network, GUI or household hardware is used. Remaining gaps include other device
 families' group usage, non-classic ActionSelectorUse implementations, and an
 original generated-page capture.
+
+## Fan and temperature usage extension
+
+The report-only `project_documentation_outputs.output_profile` also admits
+ANODN4, DIMDS8, DIMPR1, DIMPR2, DIMPR4, RELDB1 and RELDC4 when the stored firmware
+selects their pinned native DIN loader. Their usage descriptions follow the same
+channel-then-logic rule. This does not admit programming edits for these types.
+NCC output usage remains unresolved.
+
+RELDF1 Input reports `Fan Speed Cycle` for its first channel's group only when a
+non-unused FanTriggerGroup makes the unit a master. Other is the inherited empty
+method; RELDF1 Output remains unresolved. SENTEMP4 Input and Output are inherited
+empty methods. Its Other section reports the error enable group in application
+203, then communication groups in channel order within application 172. A
+channel uses its stored HVAC communication group only when its
+`ChannelNChannelMode` is 172; other modes point at the unused group.
+
+Three additional action methods are supported:
+
+| Unit | Trigger group PP | Selector PP | Description |
+| --- | --- | --- | --- |
+| RELDF1 | FanTriggerGroup | FanActionSelector | Fan Speed Cycle |
+| SENTEMPB | BroadcastTriggerGroup | BroadcastTriggerLevel | Trigger Temperature Broadcast |
+| SENTEMP4 | ErrorReportingTriggerGroup | ErrorReportingActionSelector | Trigger Error Report |
+| SENTEMP4 | BroadcastTriggerGroup | BroadcastActionSelector | Trigger Temperature Report |
+
+These references use Trigger Control application 202 and the selector's Address,
+regardless of its stored Value or the unit's primary application. Trigger group
+255 suppresses the reference. SENTEMP4's broadcast match replaces an earlier
+error-report match, as the native method assigns rather than appends its string.
+The helper preserves that behavior. SENTEMPB group dependencies remain unresolved.
+
+The extension's `project_documentor_direct_usage_static.py` records 33 additional
+source checks, including PP field bindings, loader constants, VMT methods,
+resource strings and assignment versus append calls. Its receipt is
+`research/fixtures/project-documentor-direct-usage-static.json`. Running
+`project_documentor_usage_original.py --direct-actions` executes eight synthetic
+cases across the three original action methods, including both SENTEMP4 uses
+matching together. The fixture is
+`research/fixtures/project-documentor-direct-actions-original.json`. The same
+strict original-method-only execution and stubbed-dependency boundary applies;
+these cases do not execute PP loaders or capture original generated pages.

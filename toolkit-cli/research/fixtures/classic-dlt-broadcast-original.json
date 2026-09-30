@@ -1,0 +1,2365 @@
+{
+  "format": "cbus-classic-dlt-broadcast-original-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": {
+    "broadcast": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.BroadcastDLTLabel",
+      "start": "0x121214c",
+      "stop": "0x1212864",
+      "sha256": "b0022ae77ad0c338c3e5a5f9ede65c90a5740e571d4105bf3f201d3cb9edace9"
+    },
+    "text": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetTextDataString",
+      "start": "0x12120c8",
+      "stop": "0x12120f0",
+      "sha256": "7b0ff86e6bd98a6d1b43b912bc4ff121c2eac19f50f99e89fd11a0065756d1fd"
+    },
+    "dynamic": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetDynamicDataString",
+      "start": "0x1211f04",
+      "stop": "0x1211fe0",
+      "sha256": "9f5f3f4892e9664e4896f253c5a8995e2651dd8ae3313daa916546c0b64c8f4c"
+    },
+    "font": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.GetFontDynamicDataString",
+      "start": "0x1211fe0",
+      "stop": "0x12120c8",
+      "sha256": "deeef5f139232d23f5a81122bfc540b9e8851186e05f29266a8b8a1e3e9c4522"
+    },
+    "unicode": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.ContainUnicode",
+      "start": "0x12120f0",
+      "stop": "0x121214c",
+      "sha256": "9cda73b5a431b443c4103cbf4134eabf137edaa40a73403ed8ad8f67888bda52"
+    },
+    "font_predicate": {
+      "symbol": "CIS_TDLTGraphic.IsDLTFontTagValue",
+      "start": "0x856fbc",
+      "stop": "0x856fe0",
+      "sha256": "02258e3a90b0f6a9251891223362eaf02fe218e9415a84330a6ee9cb50c25457"
+    },
+    "font_image_id": {
+      "symbol": "CIS_TDLTGraphic.GetImageIDFromFontTagValue",
+      "start": "0x856fe0",
+      "stop": "0x857024",
+      "sha256": "7a0d6a79800f093874a20f8a77a8e4180bdd1d0d0fbc7cc7b1b8ff7b8823bd07"
+    },
+    "comma_count": {
+      "symbol": "CIS_Strings.CountCharsInString",
+      "start": "0x7b8f1c",
+      "stop": "0x7b8f7c",
+      "sha256": "130f8fd130f26481572f6f33d8cc8940a8c3390578b1b8f091e2ccd61351cc68"
+    }
+  },
+  "boundary": {
+    "original_instructions_executed": [
+      "broadcast",
+      "text",
+      "dynamic",
+      "font",
+      "unicode",
+      "font_predicate",
+      "font_image_id",
+      "comma_count"
+    ],
+    "synthetic_hooks": [
+      "object getters and explicit object identities",
+      "Delphi string primitive operations and integer formatting",
+      "CommandApplicationLabel argument capture"
+    ],
+    "failure_injection": "Stop at selected CommandApplicationLabel entry; does not execute Delphi exception unwinding",
+    "command_builder_executed": false,
+    "native_cgate_executed": false,
+    "full_original_dialog_executed": false,
+    "physical_io": false
+  },
+  "observations": [
+    {
+      "input": {
+        "value": "",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 218
+      }
+    },
+    {
+      "input": {
+        "value": "<Default>",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 227
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "4B69746368656E",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 428
+      }
+    },
+    {
+      "input": {
+        "value": "Caf\u00e9",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "436166E9",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 371
+      }
+    },
+    {
+      "input": {
+        "value": "\u00ff",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "FF",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 314
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123456789",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "3031323334353637383930313233",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 603
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123\u6f22",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 528
+      }
+    },
+    {
+      "input": {
+        "value": "\ud83d\ude00",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 286
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 1,
+        "language": 202,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "202",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 217
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 394
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "101",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 653
+      }
+    },
+    {
+      "input": {
+        "value": "",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 218
+      }
+    },
+    {
+      "input": {
+        "value": "<Default>",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 227
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "00",
+            "data": "4B69746368656E",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 428
+      }
+    },
+    {
+      "input": {
+        "value": "Caf\u00e9",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "00",
+            "data": "436166E9",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 371
+      }
+    },
+    {
+      "input": {
+        "value": "\u00ff",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "00",
+            "data": "FF",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 314
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123456789",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "00",
+            "data": "3031323334353637383930313233",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 603
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123\u6f22",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 528
+      }
+    },
+    {
+      "input": {
+        "value": "\ud83d\ude00",
+        "tag_type": 0,
+        "variant": 2,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 286
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 2,
+        "language": 202,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "202",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "ICON",
+            "data": "5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 217
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 2,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 394
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 2,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F1",
+            "type": "ICON",
+            "data": "101",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 653
+      }
+    },
+    {
+      "input": {
+        "value": "",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 218
+      }
+    },
+    {
+      "input": {
+        "value": "<Default>",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 227
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "00",
+            "data": "4B69746368656E",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 428
+      }
+    },
+    {
+      "input": {
+        "value": "Caf\u00e9",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "00",
+            "data": "436166E9",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 371
+      }
+    },
+    {
+      "input": {
+        "value": "\u00ff",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "00",
+            "data": "FF",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 314
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123456789",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "00",
+            "data": "3031323334353637383930313233",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 603
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123\u6f22",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 528
+      }
+    },
+    {
+      "input": {
+        "value": "\ud83d\ude00",
+        "tag_type": 0,
+        "variant": 3,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 286
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 3,
+        "language": 202,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "202",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "ICON",
+            "data": "5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 217
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 3,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 394
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 3,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F2",
+            "type": "ICON",
+            "data": "101",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 653
+      }
+    },
+    {
+      "input": {
+        "value": "",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 218
+      }
+    },
+    {
+      "input": {
+        "value": "<Default>",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "0",
+            "data": "10",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 227
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "00",
+            "data": "4B69746368656E",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 428
+      }
+    },
+    {
+      "input": {
+        "value": "Caf\u00e9",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "00",
+            "data": "436166E9",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 371
+      }
+    },
+    {
+      "input": {
+        "value": "\u00ff",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "00",
+            "data": "FF",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 314
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123456789",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "00",
+            "data": "3031323334353637383930313233",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 603
+      }
+    },
+    {
+      "input": {
+        "value": "01234567890123\u6f22",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 528
+      }
+    },
+    {
+      "input": {
+        "value": "\ud83d\ude00",
+        "tag_type": 0,
+        "variant": 4,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 286
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 4,
+        "language": 202,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "202",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "ICON",
+            "data": "5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 217
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 4,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 394
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 4,
+        "language": 64,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "64",
+            "group": "20",
+            "level": "-",
+            "variant": "F3",
+            "type": "ICON",
+            "data": "101",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 653
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": true,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 105
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": false,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 110
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 1
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "4B69746368656E",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 401
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": true,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 105
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": false,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 110
+      }
+    },
+    {
+      "input": {
+        "value": "5",
+        "tag_type": 1,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 1
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 191
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": true,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 105
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": false,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 110
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 1
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 255
+      }
+    },
+    {
+      "input": {
+        "value": "100",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 2
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "100 64 16 10 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 375
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": true,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 105
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": false,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 110
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 1
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 282
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12,0,0,0,0,0,0,Text",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 2
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5A5",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "101",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": false,
+        "stopped_at_command_failure": true,
+        "assertion": null,
+        "original_instructions": 634
+      }
+    },
+    {
+      "input": {
+        "value": "Trigger",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 2,
+        "group": 7,
+        "level": 42,
+        "application_type": "TRIGGER",
+        "application_id": "!1234",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "TRIGGER",
+            "application_id": "!1234",
+            "language": "2",
+            "group": "7",
+            "level": "42",
+            "variant": "F0",
+            "type": "00",
+            "data": "54726967676572",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 428
+      }
+    },
+    {
+      "input": {
+        "value": "Enable",
+        "tag_type": 0,
+        "variant": 1,
+        "language": 3,
+        "group": 8,
+        "level": null,
+        "application_type": "ENABLE",
+        "application_id": "254/203",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "ENABLE",
+            "application_id": "254/203",
+            "language": "3",
+            "group": "8",
+            "level": "-",
+            "variant": "F0",
+            "type": "00",
+            "data": "456E61626C65",
+            "broadcast_marked_at_entry": false
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 409
+      }
+    },
+    {
+      "input": {
+        "value": "100,a,b,c,d,e,f,g,h,i",
+        "tag_type": 2,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "5555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "100,a,b,c,d,e,f,g,h,i 64 16 10 5555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "100",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 570
+      }
+    },
+    {
+      "input": {
+        "value": "101,Face,12",
+        "tag_type": 3,
+        "variant": 1,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "DYNAMIC",
+            "data": "101 64 16 10 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "broadcast_marked_at_entry": false
+          },
+          {
+            "application_type": "LIGHTING",
+            "application_id": "254/56",
+            "language": "1",
+            "group": "20",
+            "level": "-",
+            "variant": "F0",
+            "type": "ICON",
+            "data": "101,Face,12",
+            "broadcast_marked_at_entry": true
+          }
+        ],
+        "broadcast_marked": true,
+        "completed_routine": true,
+        "stopped_at_command_failure": false,
+        "assertion": null,
+        "original_instructions": 487
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 0,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": false,
+        "assertion": "Invalid Flavour value",
+        "original_instructions": 137
+      }
+    },
+    {
+      "input": {
+        "value": "Kitchen",
+        "tag_type": 0,
+        "variant": 5,
+        "language": 1,
+        "group": 20,
+        "level": null,
+        "application_type": "LIGHTING",
+        "application_id": "254/56",
+        "dynamic_data": "",
+        "image_size": 64,
+        "already_broadcast": false,
+        "group_present": true,
+        "fail_command": 0
+      },
+      "result": {
+        "commands": [],
+        "broadcast_marked": false,
+        "completed_routine": false,
+        "stopped_at_command_failure": false,
+        "assertion": "Invalid Flavour value",
+        "original_instructions": 142
+      }
+    }
+  ]
+}

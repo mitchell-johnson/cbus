@@ -1,0 +1,613 @@
+{
+  "format": "cbus-classic-dlt-broadcast-results-original-v1",
+  "source_sha256": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": {
+    "parser": {
+      "symbol": "CIS_TcgcApplicationLabel.TcgcApplicationLabel.OnProcessResults",
+      "start": "0x120d9e0",
+      "end": "0x120dda4",
+      "sha256": "aeb3580f9ed18436ed6b57b52d67cb4ef1be6e67cf65d4cfdefef561c75e83a9"
+    },
+    "base_parser": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.OnProcessResults",
+      "start": "0x843c74",
+      "end": "0x843cd4",
+      "sha256": "d5a032fdb2abd67482638abebc71f99466aa1124110142a997e280295389a0e9"
+    },
+    "has_response": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.HasResponse",
+      "start": "0x843cec",
+      "end": "0x843d84",
+      "sha256": "bc16a06c0129162f09ea493c7fadf7fd61482b1482458cc150e2e3c04a9a2d42"
+    },
+    "contains_all": {
+      "symbol": "CIS_Strings.StringContainsAll",
+      "start": "0x7b78f4",
+      "end": "0x7b7958",
+      "sha256": "b98381720a1b8e4e0c22564c4493030e3d268fb3ff239b71321454ef337a0a78"
+    },
+    "complete": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.SetCompleted",
+      "start": "0x843de4",
+      "end": "0x843e0c",
+      "sha256": "e5425e89c582bf086db41c07769de2be3137b0d395c59248014c23d8d2aa9e8d"
+    },
+    "exception": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.SetRealExceptionToRaise",
+      "start": "0x843e5c",
+      "end": "0x843fc4",
+      "sha256": "6dd2c141ee98450899ba406d43421d731991c033f72933a517ec39b587a10402"
+    },
+    "generator": {
+      "symbol": "CIS_TcgcApplicationLabel.TcgcApplicationLabel.GenerateCommandText",
+      "start": "0x120d868",
+      "end": "0x120d9e0",
+      "sha256": "e3fc56f009fc812e96fc47e3ef7c623bc50e5479f37f3694325a46599af54f6f"
+    },
+    "flavour_adapter": {
+      "symbol": "CIS_TGroupLanguageFlavourCGateAgent.TGroupLanguageFlavourCGateAgent.CommandApplicationLabel",
+      "start": "0x1211bdc",
+      "end": "0x1211db0",
+      "sha256": "c6e0e4c275a705253668fbb56b7fa0fd4ef84cd3eecfcfb9e55ca8d605eca179"
+    },
+    "generic_adapter": {
+      "symbol": "CIS_TCGateDLTAgent.TCGateDLTAgent.CommandApplicationLabel",
+      "start": "0x120dff8",
+      "end": "0x120e194",
+      "sha256": "b8a474af512ff833d05e53bbfa78e39a91867c7b6406b53bb6f6d848c61098ee"
+    },
+    "oid": {
+      "symbol": "CIS_TCBusObject.TCGateObject.GetOIDAsCGateID",
+      "start": "0xf47a58",
+      "end": "0xf47a74",
+      "sha256": "70cea152e3601d690aef8ea42df22e262a4c8f2dc82966cbda5cecd96b0cf815"
+    },
+    "address": {
+      "symbol": "CIS_TCBusObject.TCGateObject.GetAddressAsCGateID",
+      "start": "0xf47bf0",
+      "end": "0xf47c7c",
+      "sha256": "4b35f6d17bc66c35324bc8f5a7dcc7f6fbc2e62e6511751d9eb2255d871e308d"
+    },
+    "constructor": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.Create",
+      "start": "0x8435dc",
+      "end": "0x8436a4",
+      "sha256": "ef73b8e483d707e5737996723c5951b74daea5bd2f4defd0c3e00b452e6b0e21"
+    },
+    "internal_create": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.InternalCreate",
+      "start": "0x843d84",
+      "end": "0x843d90",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "set_timeout": {
+      "symbol": "CIS_TCGateCommand.TCGateCommand.SetTimeOut",
+      "start": "0x84404c",
+      "end": "0x844068",
+      "sha256": "d44174fa77dd1e5e6fe635c1821716ec0468b2b90b7a46b4ba2b5b2183575fd9"
+    }
+  },
+  "rules": {
+    "success": "Case-sensitive prefix200 OK (Pos==1), without a token-boundary check",
+    "error_order": [
+      [
+        "400",
+        "Syntax Error"
+      ],
+      [
+        "408",
+        "Operation failed",
+        "System Exception"
+      ],
+      [
+        "408",
+        "Operation failed",
+        "Send failed"
+      ],
+      [
+        "402",
+        "Operation not supported"
+      ]
+    ],
+    "errors": "Each pattern requires all case-sensitive substrings anywhere in the response; all matching branches run in order and later exceptions replace earlier ones",
+    "bad_object": "Case-insensitive substring bad object attempts completion; completion never overwrites error state1",
+    "state": "SetRealExceptionToRaise stores error state1; SetCompleted(true) sets complete3 only when current state is not1; unrecognized responses leave state unchanged",
+    "response_scope": "One callback string per invocation; ordered callbacks retain command state. Transport framing/timeouts are outside this probe",
+    "target": "Flavour adapter prepends optional //project/ to supplied application CGateID; GetOIDAsCGateID returns !OID when nonblank, otherwise virtual address. No numeric-path normalization occurs in generator",
+    "generator": "ApplicationType LABEL Target Language Group Level [Flavour plus space] Type Data; exact TEXT mode quotes through TagStringToCgateString, other payloads copied unchanged; DYNAMIC flag selects30000ms timeout",
+    "timeout_ms": {
+      "ordinary": 20000,
+      "DYNAMIC": 30000,
+      "basis": "Base constructor writes20000; inherited InternalCreate is a no-op; DYNAMIC generation overrides with30000"
+    },
+    "portable_boundary": "A conservative portable assessment must distinguish exact positive receipt from legacy bad-object completion and prefix quirks; it must not imply rendering or persistence"
+  },
+  "observations": [
+    {
+      "responses": [
+        "200 OK"
+      ],
+      "steps": [
+        {
+          "line": "200 OK",
+          "state": "completed",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "200 OKextra"
+      ],
+      "steps": [
+        {
+          "line": "200 OKextra",
+          "state": "completed",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "200 ok"
+      ],
+      "steps": [
+        {
+          "line": "200 ok",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "x200 OK"
+      ],
+      "steps": [
+        {
+          "line": "x200 OK",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        " 200 OK"
+      ],
+      "steps": [
+        {
+          "line": " 200 OK",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "bad object"
+      ],
+      "steps": [
+        {
+          "line": "bad object",
+          "state": "completed",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "401 BAD OBJECT"
+      ],
+      "steps": [
+        {
+          "line": "401 BAD OBJECT",
+          "state": "completed",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "400 Syntax Error details"
+      ],
+      "steps": [
+        {
+          "line": "400 Syntax Error details",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error details"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error details"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "x400x Syntax Error details"
+      ],
+      "steps": [
+        {
+          "line": "x400x Syntax Error details",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error details"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error details"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "400 syntax error"
+      ],
+      "steps": [
+        {
+          "line": "400 syntax error",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "408 Operation failed System Exception"
+      ],
+      "steps": [
+        {
+          "line": "408 Operation failed System Exception",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Failed"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "408 Operation failed Send failed"
+      ],
+      "steps": [
+        {
+          "line": "408 Operation failed Send failed",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Failed"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "408 Operation failed"
+      ],
+      "steps": [
+        {
+          "line": "408 Operation failed",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "402 Operation not supported"
+      ],
+      "steps": [
+        {
+          "line": "402 Operation not supported",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Not Supported"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Not Supported"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "402 Operation Not Supported"
+      ],
+      "steps": [
+        {
+          "line": "402 Operation Not Supported",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "500 failure"
+      ],
+      "steps": [
+        {
+          "line": "500 failure",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "100 Continue"
+      ],
+      "steps": [
+        {
+          "line": "100 Continue",
+          "state": "pending",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "200 OK",
+        "408 Operation failed Send failed"
+      ],
+      "steps": [
+        {
+          "line": "200 OK",
+          "state": "completed",
+          "exception": null
+        },
+        {
+          "line": "408 Operation failed Send failed",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Failed"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "408 Operation failed Send failed",
+        "200 OK"
+      ],
+      "steps": [
+        {
+          "line": "408 Operation failed Send failed",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Failed"
+          }
+        },
+        {
+          "line": "200 OK",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Failed"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "400 Syntax Error bad object"
+      ],
+      "steps": [
+        {
+          "line": "400 Syntax Error bad object",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error bad object"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error bad object"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "400 Syntax Error",
+        "bad object"
+      ],
+      "steps": [
+        {
+          "line": "400 Syntax Error",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error"
+          }
+        },
+        {
+          "line": "bad object",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "bad object",
+        "402 Operation not supported"
+      ],
+      "steps": [
+        {
+          "line": "bad object",
+          "state": "completed",
+          "exception": null
+        },
+        {
+          "line": "402 Operation not supported",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Not Supported"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Not Supported"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "bad object",
+        "500 failure"
+      ],
+      "steps": [
+        {
+          "line": "bad object",
+          "state": "completed",
+          "exception": null
+        },
+        {
+          "line": "500 failure",
+          "state": "completed",
+          "exception": null
+        }
+      ],
+      "exception_history": []
+    },
+    {
+      "responses": [
+        "400 Syntax Error 408 Operation failed System Exception Send failed 402 Operation not supported"
+      ],
+      "steps": [
+        {
+          "line": "400 Syntax Error 408 Operation failed System Exception Send failed 402 Operation not supported",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Not Supported"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error 408 Operation failed System Exception Send failed 402 Operation not supported"
+        },
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        },
+        {
+          "class": "ECGateException",
+          "message": "Operation Failed"
+        },
+        {
+          "class": "ECGateException",
+          "message": "Operation Not Supported"
+        }
+      ]
+    },
+    {
+      "responses": [
+        "402 Operation not supported",
+        "400 Syntax Error later"
+      ],
+      "steps": [
+        {
+          "line": "402 Operation not supported",
+          "state": "error",
+          "exception": {
+            "class": "ECGateException",
+            "message": "Operation Not Supported"
+          }
+        },
+        {
+          "line": "400 Syntax Error later",
+          "state": "error",
+          "exception": {
+            "class": "ECGateSyntaxError",
+            "message": "Syntax Error later"
+          }
+        }
+      ],
+      "exception_history": [
+        {
+          "class": "ECGateException",
+          "message": "Operation Not Supported"
+        },
+        {
+          "class": "ECGateSyntaxError",
+          "message": "Syntax Error later"
+        }
+      ]
+    }
+  ],
+  "boundary": "Original parser/predicate/completion instructions; synthetic string primitives and exception-state hook. No transport, CommandExecute, exception delivery, timeout or hardware execution."
+}

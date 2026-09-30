@@ -815,11 +815,11 @@ and blockers; do not predict a completion percentage in advance.
 #### P0 implementation checkpoint — 27 September 2026
 
 The first evidence-accounting implementation packages a versioned register
-and strict validator. It accounts for 22,156 committed source records: 3,767
+and strict validator. It accounts for 22,103 committed source records: 3,767
 topics, 3,680 headings, 1,349 anchors, 118 dialog candidates, 179 macro leaves,
 six unindexed HTML files, 209 public command blocks, 431 primary C-Gate paths,
 11 service supplement paths, 412 parsed executable forms, 10,102 executable
-controls and 1,892 event bindings. The installed-wheel acceptance runner and
+controls and 1,839 event bindings. The installed-wheel acceptance runner and
 wheel auditor use the same register and evidence bundle as `coverage`.
 
 This is source accounting, not completion of B1/B2 or P0. All records remain

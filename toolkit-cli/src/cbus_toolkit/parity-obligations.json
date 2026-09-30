@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
   "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
-  "denominator_version": "provisional-2026-09-30.1",
+  "denominator_version": "provisional-2026-09-30.2",
   "census_complete": false,
   "purpose": "Provisional exhaustive source accounting; not yet a deduplicated functional denominator or acceptance claim.",
   "source_digests": {
     "toolkit_surface": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401",
     "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
-    "toolkit_executable_surface": "f9fe2111679495b920deb4ce095fe3d6cc9693d7f478835d5f19d01977617af2",
-    "toolkit_dialog_map": "afc1b1a0d7fcf7a0dccc1f0556d07aa801b559464530787cf3af4e60e91ad073",
+    "toolkit_executable_surface": "c7205a186952f2c2543d9e545d1055a606889614b382294fa7e2cb2340ed2767",
+    "toolkit_dialog_map": "142c8265bae907317f9ff2a23c48521ac29d2140eaabee98e405d29ef212b644",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "ebf91e8c931d77576ffea21e86ae35dc465e9244ccab1576563252ef1c384c71",
+    "feature_ledger": "2f2db33ca3602a8eb50c08393873d447463b1ea804683208c624c07c0051aed5",
     "cgate_capability_matrix": "128b300cc16fe4f8caad7ff380a1abf298c54c04111a1441b37048ce0df8ff3a",
     "cgate_contract_inventory": "34876e6a2a20998444f28db0a9314829e64280053bfefdce44c8a26e59bdce20",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "a0017a1bd2f366987ebed1089305e07061baa6f184231711beef932871cc9954",
-    "cgate_tagged_session_differential_cmqttd": "3b86fdf13a6357bd8c52b89bb311b840a212d42f728cb3f39510adb7b4536a3a",
-    "cgate_session_physical_applicability": "6ba5e6657296d165daa62422972df8722e98417180f1d717e79902eca429cd72",
-    "roadmap": "efd26399c5ecd889a57f106bb7311250bdb956a66bbe4f7d5afce5313ae8c33f",
+    "cgate_session_differential_cmqttd": "95bfd9fd2ed4c7439f24fd4a6ebe59153b57c4d1b159715bc9409ed94393aaf5",
+    "cgate_tagged_session_differential_cmqttd": "b9ae68af3f57d5d9149c433644013868cbebc6360f01b19e45d529cf2b8e9e12",
+    "cgate_session_physical_applicability": "4123d6900dfd705eac5aa6ad164124a511e5b3752b7998c2683ad2f53215577e",
+    "roadmap": "e4239324c06bea061627dc42061626056111fc465f821bd98c3e140c5e63894f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
-    "parity_denominator_history": "abd8114e7ad40a54cac94dbe2f767f13519129400074de032a5eeec9635ce92c",
+    "parity_denominator_history": "6743465a137da2241cc1c1adb69cf809ace3238d9c0fbaaa20e19df069b130ca",
     "closure_receipts": "76e03b044a74d43f37fb7b57d9a701652b208b068ea13dd7b6b96891ebe00cf2"
   },
-  "evidence_bundle_sha256": "a28cd2706752ab6eecaab8213d04aab30aa26bd99aa43f0d0624d3b287ad8fa6",
+  "evidence_bundle_sha256": "5b829326dc919c2f340203b40d942e233bd330ff57e411a63627e1f91a41121f",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -404,6 +404,16 @@
       },
       "digest": "626d16c43308095f45b19db1284f573de44f23c85e835659ea8d34ba6d0841dd",
       "reason": "Allocated every obligation to one of 28 workflows (26 Toolkit help families, the C-Gate command service and a placeholder for four cross-workflow umbrella rows). Obligation and scope membership are unchanged from provisional-2026-09-29.2."
+    },
+    {
+      "version": "provisional-2026-09-30.2",
+      "counts": {
+        "obligations": 487,
+        "scope_items": 22103,
+        "workflows": 28
+      },
+      "digest": "35e1617bc4a2b234df06b719b53126cf339f2d1fdfbc53730f6fc549c50c5590",
+      "reason": "Regenerated pinned EXE/MAP census excludes exactly 53 scalar OnColor properties on the two proven LED classes, retaining unknown-class and genuine event candidates. Event count changes from 1892 to 1839; no functional obligation is removed or accepted by this inventory correction."
     }
   ],
   "workflows": [
@@ -2451,7 +2461,7 @@
     {
       "id": "executable_event_bindings",
       "scope_kind": "executable_event",
-      "count": 1892,
+      "count": 1839,
       "resolved": false
     },
     {
@@ -227515,78 +227525,6 @@
       "disposition": "pending_analysis"
     },
     {
-      "id": "scope:executable-event:16e1c3a05295360e00a9",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbLocalToggle/ledLocalToggleActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:31e74659178084d4f0c6",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOnActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ba87225d70eae0a50f14",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbRemote/ledRemoteOffActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:f98d96a4a64d82a3c244",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledBurdenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ca724633433d939c5604",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledRestrikeTimingActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:76656cee08de604d4ecb",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledClockGenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ba0ff1ce05ef160165fd",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbGlobalStatus/ledLearnModeActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:3098a5acf8e5c9c21dc0",
-      "kind": "executable_event",
-      "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/pnlBase/pnlLeft/pnlStandardStatus/gbVoltage/ledMainsPresent#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
       "id": "scope:executable-event:4f8ee1d469457a598d5b",
       "kind": "executable_event",
       "source_id": "TFRMCBUSUNITSTATUS/frmCBusUnitStatus/ActionList1/actUpdateStatus#OnExecute=actUpdateStatusExecute",
@@ -233038,51 +232976,6 @@
       "disposition": "pending_analysis"
     },
     {
-      "id": "scope:executable-event:c539feb02e38c71cb8e8",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMARXCHANNELSTATUS/frmDIMARXChannelStatus/GroupBox1/ledPanic1Active#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:d18870a567b48cd400a7",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMARXCHANNELSTATUS/frmDIMARXChannelStatus/GroupBox1/ledPanic2Active#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:b2b40d913942f26d0782",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMARXCHANNELSTATUS/frmDIMARXChannelStatus/GroupBox1/ledPanic3Active#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:e72711083d01a78b42e5",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMARXCHANNELSTATUS/frmDIMARXChannelStatus/GroupBox1/ledLoadShedActive#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:f9c5c514026d1aeefb19",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMARXCHANNELSTATUS/frmDIMARXChannelStatus/GroupBox1/ledHalogenActive#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
       "id": "scope:executable-form:d36e88829600a09c",
       "kind": "executable_form",
       "source_id": "TFRMDIMCHANNELSTATUS",
@@ -233865,114 +233758,6 @@
       "id": "scope:executable-event:aedf658fdd3593e8e587",
       "kind": "executable_event",
       "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/lblChannelStatus9#OnMouseMove=chkDIMDUChannelStatus1MouseMove",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:738020f41eb6e9b83cd9",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus1#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:2284f2b324090c8f83c8",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus2#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:e31c7f80d72aedd4e400",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus3#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:8d96c63adcc2383c8eba",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus4#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:c1cf1edf9312be654b0c",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus8#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:3b1084d2da67305a8601",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus7#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:fedc1c3429e248bb6768",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus6#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:8b31d61b47909f75b11a",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus5#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:418b27eb689fe784a9e9",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus12#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:8529e3f7249296f085ad",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus11#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:d14745596171bd2c9163",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus10#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:78f8c2e02b0a9273b910",
-      "kind": "executable_event",
-      "source_id": "TFRMDIMDUCHANNELSTATUS/frmDIMDUChannelStatus/gbDIMDUChannelStatus/ledDIMDUChannelStatus9#OnColor=clRed",
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -238103,87 +237888,6 @@
       "kind": "executable_control",
       "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/ChannelsLink",
       "component_class": "TFlashExpressionLink",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:df8f683ab17f9f466819",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus1#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:428b4a30a4d0b171d3e8",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus3#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:6432ba9a7c2e627afada",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus5#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ad28fb43dac46b035ab0",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus7#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:c1d247a9b919986d0ba5",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus2#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:598a124e82c8cc9ee87f",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus4#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:2bc2146ecb4c5b79778e",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus6#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:098a1fd35f4167645ff6",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbDSIChannelStatus/ledDSIChannelStatus8#OnColor=clRed",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:77cce440da28e409dee7",
-      "kind": "executable_event",
-      "source_id": "TFRMDSICHANNELSTATUS/frmDSIChannelStatus/gbPowerStatus/ledDSIPower#OnColor=clLime",
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -255433,96 +255137,6 @@
       "kind": "executable_control",
       "source_id": "TFRMIOPESTATUS/frmIOPEStatus/ApplicationObjectLink",
       "component_class": "TFlashExpressionLink",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:c5ffc027820ca55ee3cc",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbVoltage/ledMainsPresent#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:6cecc6b974c068623693",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbGlobalStatus/ledBurdenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:940af785537f0b8a0b8f",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbGlobalStatus/ledRestrikeTimingActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:c33f8d1e19a34682a095",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbGlobalStatus/ledClockGenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:8cc67e42cea4fc83d878",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbRemote/ledRemoteOnActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:533ea62997dc84f7a5c8",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbRemote/ledRemoteOffActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:474a12dbfce847fbf873",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbSensorState/ledSensor1Active#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:4953b04efc3a8b819e1d",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbSensorState/ledSensor2Active#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ab675e7e76c068eb3165",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbRelayStatus/ledRelay1FailSafe#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:ab9d25c73baaf94d3e80",
-      "kind": "executable_event",
-      "source_id": "TFRMIOPESTATUS/frmIOPEStatus/gbRelayStatus/ledRelay2FailSafe#OnColor=clLime",
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],
@@ -301413,78 +301027,6 @@
       "disposition": "pending_analysis"
     },
     {
-      "id": "scope:executable-event:49430a452e23de28fefe",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbVoltage/ledMainsPresent#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:7c1d9abb486f80e2c3b5",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbGlobalStatus/ledBurdenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:83d4e85482f70f3eaccb",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbGlobalStatus/ledRestrikeTimingActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:927a6eb954526171ff7a",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbGlobalStatus/ledClockGenActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:be36d80e29c9cca11e24",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbGlobalStatus/ledLearnModeActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:f840a9d6a6dfd3fdbba9",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbRemote/ledRemoteOnActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:f816058fd40af81deb66",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbRemote/ledRemoteOffActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:3bc323f6370760e00c79",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUS/frmStatus/gbLocalToggle/ledLocalToggleActive#OnColor=clLime",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
       "id": "scope:executable-event:a13d7680c052c243a9a8",
       "kind": "executable_event",
       "source_id": "TFRMSTATUS/frmStatus/ActionList/actSupport#OnExecute=actSupportExecute",
@@ -301704,15 +301246,6 @@
       "kind": "executable_control",
       "source_id": "TFRMSTATUSVOLTAGE/frmStatusVoltage/gbVoltage/vpVoltageDisplay",
       "component_class": "TFlashVoltagePanel",
-      "obligation_ids": [
-        "ledger:toolkit-surface-census"
-      ],
-      "disposition": "pending_analysis"
-    },
-    {
-      "id": "scope:executable-event:29079b0c254e671b79cd",
-      "kind": "executable_event",
-      "source_id": "TFRMSTATUSVOLTAGE/frmStatusVoltage/gbVoltage/ledMainsPresent#OnColor=clLime",
       "obligation_ids": [
         "ledger:toolkit-surface-census"
       ],

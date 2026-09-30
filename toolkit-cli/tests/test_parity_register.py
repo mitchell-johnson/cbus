@@ -279,7 +279,7 @@ class ParityRegisterTests(unittest.TestCase):
                 "cgate_supplement_path": 11,
                 "dialog": 118,
                 "executable_control": 10102,
-                "executable_event": 1892,
+                "executable_event": 1839,
                 "executable_form": 412,
                 "heading": 3680,
                 "macro_leaf": 179,
@@ -288,8 +288,8 @@ class ParityRegisterTests(unittest.TestCase):
                 "unindexed_html": 6,
             },
         )
-        self.assertEqual(report["scope_items"]["total"], 22156)
-        self.assertEqual(report["scope_items"]["unresolved"], 22156)
+        self.assertEqual(report["scope_items"]["total"], 22103)
+        self.assertEqual(report["scope_items"]["unresolved"], 22103)
         self.assertEqual(report["source_inventory"]["total_domains"], 15)
         self.assertEqual(report["source_inventory"]["resolved_domains"], 0)
         self.assertEqual(report["evidence_records"], 3)
@@ -1747,11 +1747,11 @@ class ParityRegisterTests(unittest.TestCase):
         history = register["denominator_history"]
         self.assertEqual(
             [entry["counts"]["obligations"] for entry in history],
-            [39, 39, 481, 484, 486, 487, 487],
+            [39, 39, 481, 484, 486, 487, 487, 487],
         )
         self.assertEqual(register["denominator_version"], history[-1]["version"])
         self.assertEqual(
-            history[-1]["counts"], {"obligations": 487, "scope_items": 22156, "workflows": 28}
+            history[-1]["counts"], {"obligations": 487, "scope_items": 22103, "workflows": 28}
         )
         self.assertEqual(len({entry["version"] for entry in history}), len(history))
         ledger = json.loads((ROOT / "src/cbus_toolkit/capabilities.json").read_text())

@@ -62,6 +62,11 @@ action-selector labels in native `Installation`/`Project` XML. Numeric
 language IDs and variants are explicit; no language names or defaults are
 inferred, and no physical slot-to-group mapping is guessed.
 
+The separate [TEXT dialog transaction](classic-dlt-language-dialog.md) follows
+the original legacy-flavour fallback, 20-UTF-16-unit initialization, empty-input
+default marker and selected-language finalization. Those rules are deliberately
+not imposed on this exact XML editor.
+
 ```sh
 cbus-toolkit dlt text show --project-xml project.xml --target //P1/254/56/20
 cbus-toolkit dlt text plan --project-xml project.xml --target //P1/254/56/20 \
