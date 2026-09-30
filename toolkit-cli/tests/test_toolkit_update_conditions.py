@@ -144,11 +144,15 @@ class ConditionTests(unittest.TestCase):
         bad=[facts(*({'path':str(x)} for x in range(9))),facts({'path':'x'},{'path':'x'}),facts({'path':'x','exists':None}),facts({'path':'x','exists':1}),facts({'path':'x','file_version':'1'*257}),encode({'format':subject.CONTEXT_FORMAT,'culture':'current','files':[]})]
         for context in bad:self.assertEqual(rows(self.evaluate(data('true'),context))['context_input']['status'],'unsupported')
 
-    def test_unproved_component_spaces_and_controls_are_explicitly_unsupported(self):
+    def test_component_spaces_and_signs_follow_the_original_version_vectors(self):
+        # toolkit-update-version-vectors.json pins these System.Version forms.
         for right in ('1 .2', '1. 2', '+1.2', '1.2\t'):
-            report=self.evaluate(data('A',A=definition(what=2,how=10,comparisonRightSideValue=right)))
-            self.assertEqual(rows(report)['expression_evaluation']['status'],'unsupported')
-            self.assertEqual(report.as_dict()['events'][0]['observations'],[])
+            report=self.evaluate(data('A',A=definition(what=2,how=10,comparisonRightSideValue=right)),
+                                 facts({'path':'owned','exists':True,'file_version':' 1.+2 '}))
+            self.assertEqual(rows(report)['expression_evaluation']['result'],True)
+        report=self.evaluate(data('A',A=definition(what=2,how=10,comparisonRightSideValue='-1.2')))
+        self.assertEqual(rows(report)['expression_evaluation']['status'],'failed')
+        self.assertEqual(report.as_dict()['events'][0]['observations'],[])
         for how in (16,17):
             report=self.evaluate(data('A',A=definition(what=2,how=how,comparisonRightSideValue='1.2')),facts({'path':'owned','exists':True,'file_version':'1.2\x01'}))
             self.assertEqual(rows(report)['expression_evaluation']['status'],'unsupported')

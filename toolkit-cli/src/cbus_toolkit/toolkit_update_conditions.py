@@ -7,6 +7,7 @@ import json
 import re
 
 from .toolkit_update_metadata import _json, _error
+from .toolkit_update_version import parse_version
 
 MAX_JSON_BYTES = 128 * 1024
 MAX_DEFINITIONS = 8
@@ -26,7 +27,6 @@ HOW = {'isTrue': 1, 'isFalse': 2, 'isEqual': 10, 'isNotEqual': 11, 'isGreater': 
 _NATIVE_HOW = {number: name[0].upper() + name[1:] for name, number in HOW.items()}
 _SPACE = ' \t\r\n\v\f'
 _IDENTIFIER = re.compile(r'[a-z_][a-z0-9_]*', re.ASCII)
-_VERSION_COMPONENT = re.compile(r'[0-9]+\Z', re.ASCII)
 
 
 class _Outcome(ValueError):
@@ -238,25 +238,10 @@ class _Parser:
 
 
 def _version(text):
-    """Observed bounded System.Version domain, with omitted components as -1."""
+    """Original System.Version.TryParse port, with omitted components as -1."""
     if text is None or text == '':
         return None
-    if any(char in text for char in '+\t\r\n\v\f'):
-        _unsupported('Version text uses an unproved sign/whitespace format')
-    parts = text.strip(' ').split('.')
-    if any(' ' in part for part in parts):
-        _unsupported('Version component whitespace is outside the observed profile')
-    if not 2 <= len(parts) <= 4:
-        return None
-    values = []
-    for part in parts:
-        if not _VERSION_COMPONENT.fullmatch(part):
-            return None
-        digits = part.lstrip('0') or '0'
-        if len(digits) > 10 or (len(digits) == 10 and digits > '2147483647'):
-            return None
-        values.append(int(digits))
-    return tuple(values + [-1] * (4 - len(values)))
+    return parse_version(text)
 
 
 def _native_how(number):

@@ -1,0 +1,2836 @@
+{
+ "format": "cbus-toolkit-update-trust-original-v1",
+ "scope": "Unchanged SESU 3.0.7 MultiPlatformUpdate revocation traversal (RVA 0x39FC), final metadata validator (RVA 0x37E0) and X509Chain policy on owned Mono 6.12 over fresh synthetic certificates. Synthetic anchors were added only to in-memory WhiteListCert maps; Windows CryptoAPI was not run.",
+ "static_policy": {
+  "source": "sesubrick.dad.dll IL (monodis, alias-resolved), SHA-256 21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+  "metadata_validator_rva": "0x37E0",
+  "revocation_traversal_rva": "0x39FC",
+  "pin_predicate_rva": "0x3CD0",
+  "pin_initializer_rva": "0x5ED0",
+  "certificate_by_subject_cache_rva": "0x3C00",
+  "certificate_by_thumbprint_cache_rva": "0x3D18",
+  "revocation_cache_rva": "0x3D9C",
+  "anchors": {
+   "root_pins": 2,
+   "revocation_signer_pins": 2,
+   "pin_rule": "exact uppercase SHA-1 thumbprint key and uppercase GetPublicKeyString value (RSA PKCS1 public key); no dates, store or signature",
+   "root_thumbprints": [
+    "1F8B978A8B484BFA0FC53F62E63C6BF5640A1A93",
+    "7D1B149F71DA7A77DFCBC1D99AD6E11F970527C6"
+   ],
+   "revocation_signer_thumbprints": [
+    "85CAABAC10E725ED52593159E9B3E6AB5FFD70E2",
+    "B60A284CC105A1D5D2EC839C0E03B39D8E4AF0C8"
+   ],
+   "configurable": false
+  },
+  "traversal": [
+   "fetch/cached rv1 list for the current certificate thumbprint",
+   "require signatures.rv1",
+   "validate JWT (x5t key, RS256, lifetime, 300 s skew) and payload_sha256 over the list with $.signatures excluded",
+   "require the rv1 signer to match a revocation-signer pin",
+   "union revokedSignatures and revokedCertificates (default ordinal HashSet<string>)",
+   "fail if any certificate traversed so far is listed",
+   "stop successfully at a pinned root",
+   "fail a self-signed unpinned certificate",
+   "resolve the issuer by IssuerName.Name through the subject cache or server",
+   "fail after 10 iterations"
+  ],
+  "final_validator": [
+   "verify node v1 JWT and digest",
+   "run the traversal",
+   "fail if the node token is in the accumulated revoked signatures",
+   "X509Chain.Build(leaf) with RevocationMode.NoCheck, VerificationFlags.AllowUnknownCertificateAuthority and the traversed certificates in ExtraStore",
+   "any exception logs a warning and IsMetadataValidated=false"
+  ],
+  "revocation_consumption": "Signed rv1 lists are the only revocation source: Windows CRL/OCSP is disabled (NoCheck). Lists for every traversed certificate are unioned; revoked certificates are matched to uppercase thumbprints by ordinal equality; revoked node tokens by exact string. List id is not compared with the requested thumbprint.",
+  "expiry_handling": {
+   "chain_certificates": "Only X509Chain.Build checks validity (NotTimeValid is not ignored), at the chain default DateTime.Now; JWT signing keys are RsaSecurityKey without certificate-date checks.",
+   "revocation_signer_certificate": "Never date-checked; only the pin applies.",
+   "rv1_and_v1_tokens": "Lifetime validated with the IdentityModel 300-second skew.",
+   "revocation_cache_ttl": "min(token ValidTo, UtcNow + 1 hour)",
+   "certificate_by_subject_cache_ttl": "UtcNow + 7 days",
+   "certificate_by_thumbprint_cache_ttl": "process lifetime"
+  },
+  "toolkit_application_certificates": {
+   "conclusion": "Not SESU update anchors: no SESU assembly references them and their keys match no WhiteListCert pin.",
+   "files": [
+    {
+     "name": "cacert.pem",
+     "sha256": "2ac1911f9a446bf99b62647587bfbc7d709e0f59776d5c32ef2f82f8b3dffe6f",
+     "referenced_by": "CBusToolkit.exe (UTF-16 name)",
+     "certificate_sha1": "36A8B4FC7543F65CEB58E70FB68A469964C82E18",
+     "self_signed": true,
+     "not_after": "2027-05-24T04:15:03Z"
+    },
+    {
+     "name": "publicclient.pem",
+     "sha256": "ae4618692687273ba6316c7605c7809eb330c4c4eb59ea62a873b9bc5d00206b",
+     "referenced_by": "CBusToolkit.exe (UTF-16 name)",
+     "certificate_sha1": "A320AFC127EA294E8176225260E00B9AB83E82FB",
+     "issued_by": "cacert.pem",
+     "not_after": "2027-05-24T04:15:05Z"
+    },
+    {
+     "name": "client.p12",
+     "sha256": "31d714b6c123fab629f45ed75f281b436203e71f4b2fdf2a17911915f50d5f19",
+     "referenced_by": "SharpCGateCommunicator.dll (UTF-16 name)",
+     "contents_inspected": false
+    }
+   ]
+  }
+ },
+ "original_assembly_sha256": {
+  "sesubrick.dad": "21a6b2fb74d9b308d22c740ca0a1d887d80a067cccc03f59e4dd1bbb6c9c4b0c",
+  "se.dad.sesu.common": "477fb88de310852611f26d1f845da23b8f0e6b602de8ab61a3eefc06339dc4ba",
+  "se.dad.signature.api": "e9fb6514e42e91c2aa56094c8d40ac0730860595943094c4fb1a816a90ce5b09",
+  "se.dad.signature.client": "fbebe2300a18672f09875a170178c11bebc857952499d3023bc0579f632774f3",
+  "microsoft.identitymodel.tokens": "52e734b9ffa2acc2cd25684ee815ecd398f1fb0d1fc3f26b58ae5d5c522b5f41"
+ },
+ "probe_source_sha256": "4d2b26c9d46a701a39efcfd0702ec0d534d5dc066b3bc8667a9bfb908b9d6995",
+ "runner_source_sha256": "e0d7efa27009d282242127a2001ba975c6b8ab4b91be743643568d5ef2cd32c4",
+ "run_report": {
+  "commands": [
+   {
+    "stage": "compile",
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   {
+    "stage": "run",
+    "exit_code": 0,
+    "stdout_sha256": "17fb8efd41300b76be71bae1bfb4c4b5e9214848c2011d1456f6c062241c71b2",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  ],
+  "unexpected_loopback_connection": false,
+  "executable_sha256": "a5ff03fb80e66cc30091afff5f1b5cdfb58e0cf72f0c8062ce1662441e392103",
+  "network_sandbox_profile_sha256": "5c358b8d847211333e7ba22df82d84f796b5f30a41a2682209a949d783adbd08"
+ },
+ "private_run_directory": "toolkit-update-trust/20260929T235621Z/trust",
+ "synthetic_material_committed": false,
+ "cases": [
+  {
+   "stage": "network-sandbox-witness",
+   "error": "AccessDenied"
+  },
+  {
+   "stage": "original-policy-constants",
+   "root_pin_count": 2,
+   "revocation_signer_pin_count": 2,
+   "v1_excluded": [
+    "$.files[*].url",
+    "$.signatures",
+    "$.urls",
+    "$.header.versionHistory",
+    "$.header.revision.author"
+   ],
+   "rv1_excluded": [
+    "$.signatures"
+   ],
+   "maximum_traversal_iterations": 10,
+   "signature_names": [
+    "rv1",
+    "v1"
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "valid",
+   "case": {
+    "label": "valid",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-expired",
+   "case": {
+    "label": "leaf-expired",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root",
+      "window": [
+       -30,
+       -1
+      ]
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "NotTimeValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": [
+       "NotTimeValid"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-not-yet-valid",
+   "case": {
+    "label": "leaf-not-yet-valid",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root",
+      "window": [
+       1,
+       30
+      ]
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "NotTimeValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": [
+       "NotTimeValid"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "root-expired",
+   "case": {
+    "label": "root-expired",
+    "roles": {
+     "root": {
+      "window": [
+       -30,
+       -1
+      ]
+     },
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "NotTimeValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "NotTimeValid",
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "wrong-anchor-unpinned-root",
+   "case": {
+    "label": "wrong-anchor-unpinned-root",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate '<root>' is selfsigned without being a CA."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate '<root>' is selfsigned without being a CA."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-revoked-in-root-list",
+   "case": {
+    "label": "leaf-revoked-in-root-list",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [
+       "leaf"
+      ],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-revoked-in-own-list",
+   "case": {
+    "label": "leaf-revoked-in-own-list",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [
+       "leaf"
+      ],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-revoked-lowercase-entry",
+   "case": {
+    "label": "leaf-revoked-lowercase-entry",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [
+       "$LEAF_LOWER"
+      ],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "root-revoked-in-own-list",
+   "case": {
+    "label": "root-revoked-in-own-list",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [
+       "root"
+      ],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "node-token-revoked",
+   "case": {
+    "label": "node-token-revoked",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": [
+       "$NODE_TOKEN"
+      ]
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 1,
+    "node_token_revoked": true
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature is revoked. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-signer-unpinned",
+   "case": {
+    "label": "revocation-signer-unpinned",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "RevocationList for certificate '<leaf>' is invalid as the signing certificate '<signer>' is not trusted."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "RevocationList for certificate '<leaf>' is invalid as the signing certificate '<signer>' is not trusted."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-signer-certificate-expired",
+   "case": {
+    "label": "revocation-signer-certificate-expired",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {
+      "window": [
+       -30,
+       -1
+      ]
+     }
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-list-token-expired",
+   "case": {
+    "label": "revocation-list-token-expired",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -7200,
+       "exp": -3600
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException",
+    "message": "IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '<time>', Current time (UTC): '<time>'."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException",
+     "detail": "IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '<time>', Current time (UTC): '<time>'."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-list-token-expired-within-skew",
+   "case": {
+    "label": "revocation-list-token-expired-within-skew",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -7200,
+       "exp": -120
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-list-id-mismatch",
+   "case": {
+    "label": "revocation-list-id-mismatch",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": [],
+      "id": "0000000000000000000000000000000000000000"
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "revocation-list-missing-rv1",
+   "case": {
+    "label": "revocation-list-missing-rv1",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": false,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "RevocationList for certificate '<leaf>' is missing signature 'rv1'."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "RevocationList for certificate '<leaf>' is missing signature 'rv1'."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "root-revocation-list-missing-rv1",
+   "case": {
+    "label": "root-revocation-list-missing-rv1",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": false,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "RevocationList for certificate '<root>' is missing signature 'rv1'."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "RevocationList for certificate '<root>' is missing signature 'rv1'."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "leaf-signature-by-other-key",
+   "case": {
+    "label": "leaf-signature-by-other-key",
+    "roles": {
+     "root": {},
+     "other": {},
+     "leaf": {
+      "issuer": "root",
+      "signer_key": "other"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "NotSignatureValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": [
+       "NotSignatureValid"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "node-token-expired",
+   "case": {
+    "label": "node-token-expired",
+    "roles": {
+     "root": {},
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -7200,
+     "exp": -3600
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException",
+     "detail": "IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '<time>', Current time (UTC): '<time>'."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "intermediate-valid",
+   "case": {
+    "label": "intermediate-valid",
+    "roles": {
+     "root": {},
+     "inter": {
+      "issuer": "root"
+     },
+     "leaf": {
+      "issuer": "inter"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "inter",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "inter",
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "InvalidBasicConstraints",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "inter",
+      "status": [
+       "InvalidBasicConstraints"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "intermediate-revoked-in-root-list",
+   "case": {
+    "label": "intermediate-revoked-in-root-list",
+    "roles": {
+     "root": {},
+     "inter": {
+      "issuer": "root"
+     },
+     "leaf": {
+      "issuer": "inter"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "inter",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [
+       "inter"
+      ],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "InvalidBasicConstraints",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "inter",
+      "status": [
+       "InvalidBasicConstraints"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate chain beginning with certificate '<leaf>' contains revoked certificate(s)."
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "intermediate-expired",
+   "case": {
+    "label": "intermediate-expired",
+    "roles": {
+     "root": {},
+     "inter": {
+      "issuer": "root",
+      "window": [
+       -30,
+       -1
+      ]
+     },
+     "leaf": {
+      "issuer": "inter"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "inter",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "inter",
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "InvalidBasicConstraints",
+     "NotTimeValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "inter",
+      "status": [
+       "InvalidBasicConstraints",
+       "NotTimeValid"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "intermediate-ca-valid",
+   "case": {
+    "label": "intermediate-ca-valid",
+    "roles": {
+     "root": {},
+     "inter": {
+      "issuer": "root",
+      "ca": true
+     },
+     "leaf": {
+      "issuer": "inter"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "inter",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "inter",
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "inter",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "intermediate-ca-expired",
+   "case": {
+    "label": "intermediate-ca-expired",
+    "roles": {
+     "root": {},
+     "inter": {
+      "issuer": "root",
+      "ca": true,
+      "window": [
+       -30,
+       -1
+      ]
+     },
+     "leaf": {
+      "issuer": "inter"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "inter",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "inter",
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": false,
+    "chain_status": [
+     "NotTimeValid",
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "inter",
+      "status": [
+       "NotTimeValid"
+      ]
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Signature chain is invalid. Signature = '<token>'"
+    }
+   ]
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "root-ca-extension-valid",
+   "case": {
+    "label": "root-ca-extension-valid",
+    "roles": {
+     "root": {
+      "ca": true
+     },
+     "leaf": {
+      "issuer": "root"
+     },
+     "signer": {}
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "chain-length-10",
+   "case": {
+    "label": "chain-length-10",
+    "roles": {
+     "root": {},
+     "signer": {},
+     "c1": {
+      "issuer": "root",
+      "ca": true
+     },
+     "c2": {
+      "issuer": "c1",
+      "ca": true
+     },
+     "c3": {
+      "issuer": "c2",
+      "ca": true
+     },
+     "c4": {
+      "issuer": "c3",
+      "ca": true
+     },
+     "c5": {
+      "issuer": "c4",
+      "ca": true
+     },
+     "c6": {
+      "issuer": "c5",
+      "ca": true
+     },
+     "c7": {
+      "issuer": "c6",
+      "ca": true
+     },
+     "c8": {
+      "issuer": "c7",
+      "ca": true
+     },
+     "leaf": {
+      "issuer": "c8"
+     }
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c8",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c7",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c6",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c5",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c4",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c3",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c2",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c1",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": true,
+    "certificates": [
+     "c1",
+     "c2",
+     "c3",
+     "c4",
+     "c5",
+     "c6",
+     "c7",
+     "c8",
+     "leaf",
+     "root"
+    ],
+    "revoked_signature_count": 0,
+    "node_token_revoked": false
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "c8",
+      "status": []
+     },
+     {
+      "role": "c7",
+      "status": []
+     },
+     {
+      "role": "c6",
+      "status": []
+     },
+     {
+      "role": "c5",
+      "status": []
+     },
+     {
+      "role": "c4",
+      "status": []
+     },
+     {
+      "role": "c3",
+      "status": []
+     },
+     {
+      "role": "c2",
+      "status": []
+     },
+     {
+      "role": "c1",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": true,
+   "original_log": []
+  },
+  {
+   "stage": "original-trust-case",
+   "label": "chain-length-11",
+   "case": {
+    "label": "chain-length-11",
+    "roles": {
+     "root": {},
+     "signer": {},
+     "c1": {
+      "issuer": "root",
+      "ca": true
+     },
+     "c2": {
+      "issuer": "c1",
+      "ca": true
+     },
+     "c3": {
+      "issuer": "c2",
+      "ca": true
+     },
+     "c4": {
+      "issuer": "c3",
+      "ca": true
+     },
+     "c5": {
+      "issuer": "c4",
+      "ca": true
+     },
+     "c6": {
+      "issuer": "c5",
+      "ca": true
+     },
+     "c7": {
+      "issuer": "c6",
+      "ca": true
+     },
+     "c8": {
+      "issuer": "c7",
+      "ca": true
+     },
+     "c9": {
+      "issuer": "c8",
+      "ca": true
+     },
+     "leaf": {
+      "issuer": "c9"
+     }
+    },
+    "leaf": "leaf",
+    "pin_roots": [
+     "root"
+    ],
+    "pin_signers": [
+     "signer"
+    ],
+    "revocation_lists": [
+     {
+      "for": "leaf",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c9",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c8",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c7",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c6",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c5",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c4",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c3",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c2",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "c1",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     },
+     {
+      "for": "root",
+      "signer": "signer",
+      "signed": true,
+      "lifetime": {
+       "nbf": -3600,
+       "exp": 86400
+      },
+      "revoked_certificates": [],
+      "revoked_signatures": []
+     }
+    ],
+    "node_lifetime": {
+     "nbf": -3600,
+     "exp": 86400
+    }
+   },
+   "original_traversal": {
+    "accepted": false,
+    "error": "System.Exception",
+    "message": "Certificate chain beginning with certificate '<leaf>' is longer than max chain length 10."
+   },
+   "x509_chain_with_original_policy": {
+    "built": true,
+    "chain_status": [
+     "UntrustedRoot"
+    ],
+    "elements": [
+     {
+      "role": "leaf",
+      "status": []
+     },
+     {
+      "role": "c9",
+      "status": []
+     },
+     {
+      "role": "c8",
+      "status": []
+     },
+     {
+      "role": "c7",
+      "status": []
+     },
+     {
+      "role": "c6",
+      "status": []
+     },
+     {
+      "role": "c5",
+      "status": []
+     },
+     {
+      "role": "c4",
+      "status": []
+     },
+     {
+      "role": "c3",
+      "status": []
+     },
+     {
+      "role": "c2",
+      "status": []
+     },
+     {
+      "role": "c1",
+      "status": []
+     },
+     {
+      "role": "root",
+      "status": [
+       "UntrustedRoot"
+      ]
+     }
+    ]
+   },
+   "original_is_metadata_validated": false,
+   "original_log": [
+    {
+     "level": "Warning",
+     "message": "ValidatePayLoad: exception caught when validating payload",
+     "error": "System.Exception",
+     "detail": "Certificate chain beginning with certificate '<leaf>' is longer than max chain length 10."
+    }
+   ]
+  },
+  {
+   "stage": "complete",
+   "cases": 27,
+   "original_dll_modified": false,
+   "synthetic_anchors_added_in_memory_only": true,
+   "network_denied": true
+  }
+ ]
+}
