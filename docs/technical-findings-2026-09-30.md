@@ -74,6 +74,20 @@ No full GUI or physical acceptance is implied. Publication replaces private
 runtime coordinates with explicitly labeled sanitized derivatives and retains
 raw originals privately.
 
+## Integrated firmware package safety
+
+The [package identity contract](../toolkit-cli/docs/firmware-package-snapshot.md)
+records immutable regular-file capture, bounded ZIP/AES reading and exact
+plan/image admission. Resume now checks the interrupted journal's package
+digest before its first archive parser, decryption reader or USB opener.
+Real-journal regressions reproduce the old defect and verify the correction.
+The [focused source/wheel receipt](../toolkit-cli/docs/firmware-package-snapshot-acceptance.json)
+passes 167 tests and 234 subtests in each environment with one original assembly
+replay excluded before execution; the [root validation](../toolkit-cli/docs/firmware-package-snapshot-root-validation.json)
+independently matches 277 package files. Offline NCC and payload interpretation
+are now implemented; physical commands, authenticity, bootloader behavior and
+Windows acceptance remain open. No full-suite or hardware run is implied.
+
 ## Queued local work at this snapshot
 
 These are inspected owner revisions, **not public commit links or permission
@@ -91,7 +105,7 @@ Uncommitted follow-on work is intentionally excluded from accepted results.
 | Wireless | `d8f23c01` → `26dcae0c` → `e5ee2f09` → `7f8a2c34` | Connection, Scenes and WTXU metadata-only creation. Native receipt verifies four CLI invocations, three separate project-save stages, preservation of 68 gateway parameters and cold reload; pairing remains false. WTXU constructor serial is an empty string, and unchanged native TagName rewrites self-collide. The later cached/action executor is follow-on work, not acceptance of physical DO. |
 | eDLT templates | `7a23fb5d` → `48112a9c` | Format/preview, ordered assignments and second-model staging: 98 tests/420 subtests. `toolkit-cli/docs/edlt-template-{staged-lifecycle,rebind-recovery,terminal-recovery}.md` retain 67 assignment cases, 25 model-load cases, 31 proxy rebind cases and 14 terminal cases. Parent/registration patches remain unapplied in the owner snapshot; actual control binding and confirmed persistence are still required. Apply stays refused. |
 | IOPE | `690b0965` | Environment corridor/output controls: 41 tests/96 subtests, plus two separate native tests covering nine model/revision rows, 72 edits, 102 refusals and 162 raw-byte assertions. `toolkit-cli/docs/iope-{workflows,environment,output-settings}.md` and `iope-workflow-acceptance-summary.json` bind the historical wheel. Registration remains a separate integration patch. Logic/join-recovery/timer follow-on work must receive its own receipt. |
-| Firmware packages | `de74df7e` → `b058a43d` | Original NCC branch from offline transcripts; package/file-descriptor binding and offline normalized payload interpretation. The physical loader still admits raw images only. `toolkit-cli/docs/firmware-update-plan.md` records bounds and container refusal. Patchset analysis is a later working-tree slice; authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |
+| Firmware packages | `de74df7e` → `b058a43d` → `1b03e1da` integrated above | Immutable package execution admission, offline NCC transcripts and normalized payload interpretation now have focused source/wheel validation. Patchset analysis and CLI error-reporting follow-ups remain queued; vendor authenticity, nonzero external-flash behavior and physical payload acceptance remain open. |
 | Rust routed selected serial | `b7c8aa9b` | `docs/rust-selected-serial-routed.md` and its evidence JSON record 135 unique focused test functions, scoped Clippy/format checks and no full workspace build. One-shot apply/recovery is bound to exact topology and inventories; 1/2/6-bridge cases use scripted peers. Native routed mutation, actual bridge delivery, device persistence and routed database reconciliation remain unverified. Machine coordinates must be sanitized before the receipt is public. |
 
 ## Fresh source recovery: facts that must survive integration

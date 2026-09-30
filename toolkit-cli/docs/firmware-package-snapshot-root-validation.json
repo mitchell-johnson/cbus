@@ -1,0 +1,62 @@
+{
+  "format": "cbus-firmware-snapshot-root-validation-v1",
+  "publication_baseline": "d217b0d29dc01392f5a14e3770fe438b3abe3439",
+  "accepted_package_receipt": "firmware-package-snapshot-acceptance.json",
+  "accepted_receipt_sha256": "76216a97ec3887b991fa429c223a85c357a902b31224effded88b089b760f6d7",
+  "package_files_independently_matched": 277,
+  "current_source_matches_tested_wheel": true,
+  "harness_files_independently_matched": 26,
+  "preexecution_replay_deselection_gates_verified": 2,
+  "pre_fix_resume_regression": {
+    "source_cli_commit": "28a1ba53b867f83b6de4249f2e4220332062a4e0",
+    "cli_sha256": "29afb3a448a127656c9ba8fc34f04b2d1783ccad8a9edcb645207940f423dab2",
+    "final_test_sha256": "e004cb599e2f9d7446a5b8f9e38c7a52133596396171a8734d810d96e79bf3f5",
+    "exit_code": 1,
+    "pytest_reported_failed_outcomes": 12,
+    "pytest_reported_passed_outcomes": 4,
+    "test_methods": 7,
+    "subtests": 9,
+    "junit_sha256": "bb733a3ae16fded562c92243ea9e1409bb9cc2bc027feaafabfd773ef7173aa1",
+    "source_scope": "Copied current package with exact pre-fix CLI bytes from declared Git revision; same final regression file.",
+    "raw_evidence": "Retained privately; coordinates omitted."
+  },
+  "additional_source_checks": {
+    "selection": [
+      "tests/test_skip_census.py",
+      "tests/test_parity_register.py"
+    ],
+    "passed": 56,
+    "subtests_passed": 550,
+    "failed": 0,
+    "skipped": 0,
+    "junit_sha256": "a8a5737f041d8753b929f36cde222a60fb14b86171a2157cf5d1443056d68674"
+  },
+  "register": {
+    "scope_items": 22103,
+    "obligations": 487,
+    "workflows": 28,
+    "census_complete": false,
+    "category_ledger_percent": 42.86,
+    "implemented_categories": 18,
+    "category_count": 42,
+    "functional_completion_percent": null
+  },
+  "skip_census": {
+    "test_modules": 522,
+    "modules_with_skip_sites": 249,
+    "native_runnable_tests": 244,
+    "native_selected_required_tests": 244
+  },
+  "no_rust_changes": true,
+  "server_differential_receipts": "Existing server source closures unchanged; validated by current register. No new differential execution claimed.",
+  "full_suite_run": false,
+  "native_assembly_replay_excluded": true,
+  "hardware_executed": false,
+  "vendor_authenticity_verified": false,
+  "physical_firmware_acceptance": false,
+  "privacy": {
+    "public_receipts": "Sanitized derivatives retain genuine source, wheel, harness and raw result hashes.",
+    "private_coordinates_omitted": true,
+    "raw_originals": "Retained privately; not committed."
+  }
+}

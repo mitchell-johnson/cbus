@@ -574,6 +574,15 @@ Firmware completion requires `cleanup_complete` independently of
 never silently reflash after a failed release or acquisition. See
 `toolkit-cli/docs/firmware-update-recovery.md`.
 
+Firmware package metadata and selected images must consume the same bounded
+immutable snapshot. `update-resume` admits the interrupted journal package
+SHA-256 before archive parsing, decryption or USB construction. Refuse missing
+or malformed digest bindings and differing bytes; after admission, consume the
+captured bytes even if the mutable filename changes. ZIP/AES integrity and
+SHA-256 do not authenticate vendor firmware. NCC and container payload helpers
+are offline models; no physical NCC or recognized-container execution is
+admitted. Read `toolkit-cli/docs/firmware-package-snapshot.md`.
+
 Rust project-label extraction bounds both raw and expanded/decoded input,
 including lossy UTF-8 replacement expansion, before output. CBZ archive
 CRC/decompression/unsupported-codec failures are structured refusals. The

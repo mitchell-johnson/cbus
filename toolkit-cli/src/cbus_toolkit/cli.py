@@ -1282,6 +1282,7 @@ def _firmware(args):
         with args.configuration_descriptor.open("rb") as source:
             configuration = source.read(65536)
         descriptor = parse_descriptors(device, configuration)
+        snapshot = None
         if args.action == "update-run":
             plan = updater.update_plan(args.file, variant=args.variant, hardware_version=args.hardware_version,
                                        force_font=args.force_font)
@@ -1290,12 +1291,18 @@ def _firmware(args):
             doc, _ = runner.load_journal(args.journal)
             selection = runner.journal_plan_options(doc)
             serial = args.expected_serial or selection["identity"]["usb_serial"]
-            plan = updater.update_plan(args.file, variant=selection["variant"], force_font=selection["force_font"])
+            package_binding = doc["binding"]["package"]
+            journal_sha256 = package_binding.get("sha256") if isinstance(package_binding, dict) else None
+            if not isinstance(journal_sha256, str):
+                raise ValueError("Resume journal requires a valid package SHA-256 digest")
+            snapshot = updater.open_package_snapshot(args.file, expected_sha256=journal_sha256)
+            plan = updater.update_plan(snapshot, variant=selection["variant"], force_font=selection["force_font"])
         if not plan["supported"]:
             return {"format": runner.RESULT_FORMAT, "operation": args.action.removeprefix("update-"),
                     "complete": False, "refused": True, "refusal_kind": "plan", "plan": plan,
                     "physical_device_verified": False}, 1
-        snapshot = updater.open_package_snapshot(args.file, expected_sha256=plan["package"]["sha256"])
+        snapshot = updater.open_package_snapshot(snapshot if snapshot is not None else args.file,
+                                                expected_sha256=plan["package"]["sha256"])
         images = updater.load_selected_images(snapshot, plan, password)
         opener = runner.USBDeviceOpener(bus=args.bus, address=args.address, expected_serial=serial,
                                         descriptor=descriptor, release_policy=args.release_policy,

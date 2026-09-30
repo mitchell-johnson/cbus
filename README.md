@@ -133,6 +133,12 @@ also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
 for these workflows.
 
+Firmware execution also binds package metadata and selected images to a
+bounded immutable snapshot. Resume checks that snapshot against the interrupted
+journal before archive parsing, decryption or USB construction. See the
+[package identity contract](toolkit-cli/docs/firmware-package-snapshot.md) for
+substitution guards, offline NCC/payload models and the remaining acceptance work.
+
 ### Connect to C-Gate
 
 Point the CLI at your C-Gate server. This example reads the project list:

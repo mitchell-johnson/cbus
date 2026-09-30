@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 517,
-    "modules_without_skip_sites": 269,
-    "modules_with_skip_sites": 248,
+    "test_modules": 522,
+    "modules_without_skip_sites": 273,
+    "modules_with_skip_sites": 249,
     "modules_by_category": {
       "cgate_test_host": 132,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 7,
+      "host_tool": 8,
       "native_cgate_local": 66,
       "native_opt_in": 2,
       "original_model_runtime": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 127,
       "partial": 20,
-      "none": 101
+      "none": 102
     },
     "native_runnable_tests": 244,
     "native_selected_required_tests": 244,
@@ -5499,6 +5499,41 @@
           "tests": [
             "FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty"
           ]
+        }
+      ]
+    },
+    "tests/test_firmware_package_metadata_input.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_firmware_package_metadata_input.py::FirmwarePackageMetadataInputTests::test_fifo_is_refused_before_any_blocking_read",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'mkfifo') and hasattr(os, 'O_NONBLOCK')",
+          "reason": "requires nonblocking FIFO support",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_firmware_package_metadata_input.py::FirmwarePackageMetadataInputTests::test_symlink_is_refused_before_hashing",
+          "kind": "decorator.skipUnless",
+          "condition": "hasattr(os, 'O_NOFOLLOW')",
+          "reason": "requires no-follow file support",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
         }
       ]
     },

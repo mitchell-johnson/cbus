@@ -110,8 +110,10 @@ The original interruption is re-raised with transfer and release evidence.
 
 ## Resume
 
-`update-resume` reads and validates the journal. It rebuilds the plan from the
-same package using the journal's variant and font option. It refuses without
+`update-resume` reads and validates the journal, then captures a bounded immutable
+package snapshot and compares its SHA-256 with the journal's package binding
+before opening an archive parser or decryption reader. It rebuilds the plan from
+that admitted snapshot using the journal's variant and font option. It refuses without
 device I/O if the journal is complete, malformed or tampered with, or if the
 package, variant or images differ from the binding. After recording
 `resume-started`, it:
@@ -185,11 +187,17 @@ PYTHONPATH=src:tests:. .venv/bin/python -m pytest -q tests/test_firmware_update_
 
 ## Limits
 
-Package inspection and selected-image loading currently open the package
-separately. A same-size replacement between those reads can supply different
-bytes without matching the inspected plan's digest/CRC. Immutable-snapshot
-binding and pre-USB identity checks remain a separate outstanding fix. The
-cleanup tests in this document do not validate that package-loading boundary.
+Package metadata and selected images now share immutable captured bytes.
+Selected-image loading checks the reviewed package digest before parsing or
+decryption and reproduces the plan's selection and steps. Resume additionally
+checks the journal digest before its first package parser. A replacement already
+present when capture occurs is rejected if it differs from the binding; replacing
+the mutable filename after admission does not change the captured bytes used
+by subsequent readers. These checks establish byte identity and archive integrity,
+not vendor authenticity. See [firmware-package-snapshot.md](firmware-package-snapshot.md)
+for the capture bounds, refusal boundary and focused regression selection.
+Earlier batch reports retain the same-size replacement gap as a historical
+finding; the cleanup matrix above alone does not validate its fix.
 
 This is development evidence. The fault points follow the memory peer's
 request model, not a measured bootloader. Real erase and program timing,
