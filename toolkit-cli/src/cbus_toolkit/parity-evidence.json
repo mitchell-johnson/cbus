@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "a82c9bcfdaeb695bbabfea5b7b54abefd12a43b6",
+      "source_revision": "1ead4c20af288afecc36f0a20019d101efcb22a1",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -57,6 +57,8 @@
           "rust/cbus-cgate/src/config.rs",
           "rust/cbus-cgate/src/config/disposition.rs",
           "rust/cbus-cgate/src/convertunit.rs",
+          "rust/cbus-cgate/src/dlt_profiles.json",
+          "rust/cbus-cgate/src/dlt_profiles.rs",
           "rust/cbus-cgate/src/etherlite.rs",
           "rust/cbus-cgate/src/file.rs",
           "rust/cbus-cgate/src/lib.rs",
@@ -210,7 +212,7 @@
           "toolkit-cli/tests/test_cgate_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "f12b1af9d196246b56f0e5c0567b1f6f90af7c97d20411e9eb0a842e0ab972e2"
+        "fingerprint_sha256": "61f0f0c0e114d0cc19ba5360d51787089a91074414d2dc2812af923c6fd89c0a"
       },
       "report_verification": {
         "format": "cgate-session-differential-v2",
@@ -225,11 +227,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "ad78c2157537741628b371499f3048932f10d416bbcf0558f0694bfdc5a17835"
+          "sha256": "4fb3e054b682bd315600812f92f6b8095418e445890e762fdf077286dfcf9e13"
         }
       ],
       "skips": [],
-      "record_sha256": "b597906c1cf912fe75a0b7de6fffc71e43230e52685271246db54fd00036a074"
+      "record_sha256": "db03f93bca942f4c899615e50b32462e9a17a14344a2ef0d0e6fcfba88a29eb7"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -264,7 +266,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "a82c9bcfdaeb695bbabfea5b7b54abefd12a43b6",
+      "source_revision": "1ead4c20af288afecc36f0a20019d101efcb22a1",
       "command": "/Users/mitchell/source/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /Users/mitchell/source/cbus-integrator-target/debug/cgate-mock --cmqttd-bin /Users/mitchell/source/cbus-integrator-target/debug/cmqttd --output-dir research/runtime",
       "exit_code": 0,
       "invalidates_on": {
@@ -289,6 +291,8 @@
           "rust/cbus-cgate/src/config.rs",
           "rust/cbus-cgate/src/config/disposition.rs",
           "rust/cbus-cgate/src/convertunit.rs",
+          "rust/cbus-cgate/src/dlt_profiles.json",
+          "rust/cbus-cgate/src/dlt_profiles.rs",
           "rust/cbus-cgate/src/etherlite.rs",
           "rust/cbus-cgate/src/file.rs",
           "rust/cbus-cgate/src/lib.rs",
@@ -443,7 +447,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "1924faf50ea6316f1b0d4c61d4653ec13aa27b06c8322b37e4a87052ca3afa46"
+        "fingerprint_sha256": "6aa6dded08fb95354f4e43a2e0fcdc9d200a1972a7390a1718389ab4e47c56b1"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -458,11 +462,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "73e6a7cbaa8056d06e4f131570d85161ed2270a32aad2296c564bc3b8d1cd4fc"
+          "sha256": "f94ed527bd19e0e3a59ccf6b3c174f319b43c3532fbe367db8000107375f603a"
         }
       ],
       "skips": [],
-      "record_sha256": "9bdc249b2711a927f81e366004f8747e685b0610ad4d93e0a9af4b1ed57ebcae"
+      "record_sha256": "976def7ce2ceba21fae73927da91da5aecd0c9aaef3ba8c4ceea1b5bb8de74e1"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -503,7 +507,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "a82c9bcfdaeb695bbabfea5b7b54abefd12a43b6",
+      "source_revision": "1ead4c20af288afecc36f0a20019d101efcb22a1",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -514,7 +518,7 @@
           "toolkit-cli/research/functional-obligation-pilot.json",
           "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json"
         ],
-        "fingerprint_sha256": "5a9fd7e31a46b319f9a1840138fd5836cf837c20bdc7ad07848f83763b531e24"
+        "fingerprint_sha256": "1f9b93ba6fd46674d5fe8da3d6208a917c576a5b06bf8dc223e98a730e38c7df"
       },
       "report_verification": {
         "format": "cbus-parity-test-report-v1",
@@ -534,16 +538,16 @@
         {
           "role": "input",
           "path": "src/cbus_toolkit/cgate-contract-inventory.json",
-          "sha256": "b07eec5d28865d1d16dedae3860249b72ca32815b95b687e9fabe4917bfb1085"
+          "sha256": "d05dc1ee4652c90071d0927556aa1332cd33e324fe8ee9c3c30a757ca05941a6"
         },
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "575e84a3a1dad61f6e0bfe5ec65d631e4bd6cbad75847189e9c92e161f9d75c2"
+          "sha256": "f21a8aeffb22e589f0732021320718c7894918f437f2051293cc890c85f14f66"
         }
       ],
       "skips": [],
-      "record_sha256": "7beea69e4dcd61d0dccf6a5d0bdfbaf4ea01f5dca05f851d55fcb2f675965c11"
+      "record_sha256": "0aa528b2191d98c23796b94a78e47421ad6962d894247fdc55f93903ebd7bc6c"
     }
   ]
 }
