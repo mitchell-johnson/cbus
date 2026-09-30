@@ -127,6 +127,7 @@
     "tests/test_input_options.py",
     "tests/test_iope_settings.py::IopeNativeTest",
     "tests/test_labels.py",
+    "tests/test_light_level_sensors.py::LightLevelSensorNativeTest",
     "tests/test_lighting_native.py",
     "tests/test_local_cgate.py",
     "tests/test_macros.py::NativeMacroTests",

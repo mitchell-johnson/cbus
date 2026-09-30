@@ -1,0 +1,408 @@
+{
+  "format": "cbus-light-level-sensor-review-v1",
+  "original_execution": false,
+  "inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "save": {
+    "prepare_forced_parameters": {
+      "sha256": "855b1d8907575a1d17ea3edc9b6d74926f535a2ef2e858662dcc19815256eb67",
+      "writes": [
+        {
+          "parameter": "PIRLightMovement",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRDarkMovement",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRDark",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DisableIR",
+          "value": 1,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "IRBankKeyOffset",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkOfficeBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "CorridorLinkActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "BroadcastBlock",
+          "value": 4,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIREnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "SingleJoinEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "SingleJoinEnablerControlGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DualJoinEnablerGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "DualJoinEnablerControlGroup",
+          "value": 255,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionActive",
+          "value": 1,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionBlock",
+          "value": 1,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionIRKey",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECFunctionIRActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRFunctionIRKey",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRFunctionIRActive",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIRLevelStore",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PECEnablerGroupLogic",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PIREnablerGroupLogic",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerAFunction",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerBFunction",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerATimerBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "PotentiometerBTimerBlock",
+          "value": 0,
+          "write": "SetValue"
+        },
+        {
+          "parameter": "RampRate",
+          "value": [
+            7,
+            7
+          ],
+          "write": "SetAsString"
+        },
+        {
+          "parameter": "JPCommand",
+          "programmable": false
+        },
+        {
+          "parameter": "SRCommand",
+          "programmable": false
+        },
+        {
+          "parameter": "LPCommand",
+          "programmable": false
+        },
+        {
+          "parameter": "LRCommand",
+          "programmable": false
+        },
+        {
+          "parameter": "BlockAllocation",
+          "programmable": false
+        },
+        {
+          "parameter": "IndicatorFunction",
+          "programmable": false
+        },
+        {
+          "parameter": "SceneKeySelector",
+          "programmable": false
+        },
+        {
+          "parameter": "PrimaryColour",
+          "programmable": false
+        },
+        {
+          "parameter": "LightLevel",
+          "index": 8,
+          "value": 0,
+          "write": "SetArrayInteger"
+        }
+      ]
+    },
+    "light_level_before_save": {
+      "sha256": "1154fcd38a9410e08f4eed7c4be195cd981ad69025bf9780081586ac85d20471",
+      "after_load_sha256": "3f92d925f7ae26b97c10012b88422011099c5f68dc379c07a38d4bf854c6d92b",
+      "calls": [
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.PrepareForcedParameters",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+        "CIS_TInputKey.TInputBlockCollection.GetItem",
+        "CIS_TInputKey.TInputBlock.GetGroup",
+        "CIS_TCommonCBus.TCBusGroup.IsUnused",
+        "Variants.@VarFromInt",
+        "Variants.@VarFromInt",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+        "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.CBusUnit",
+        "System.@FinalizeArray"
+      ],
+      "broadcast_active": {
+        "block_index": 4,
+        "group_unused": 0,
+        "group_used": 1
+      },
+      "indicator_block_assignment": [
+        {
+          "unit_flag": 0,
+          "value": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "unit_flag": 1,
+          "value": [
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "unit_flag": 2,
+          "value": [
+            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "unit_flag": null,
+          "value": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "indicator_loaded": [
+        {
+          "IndicatorBlockAssignment[0]": 5,
+          "unit_flag": 2
+        },
+        {
+          "IndicatorBlockAssignment[0]": 2,
+          "unit_flag": 1
+        },
+        {
+          "IndicatorBlockAssignment[0]": null,
+          "unit_flag": 0
+        }
+      ]
+    },
+    "margin": "Inherited multisensor AfterLoad/BeforeSave; see research/fixtures/sensor-margin-original-vectors.json"
+  },
+  "unit": {
+    "MaximumKeyCount": 0,
+    "GetMaximumVirtualKeyCount": -1,
+    "MaximumIndicatorCount": 1,
+    "IsJoinModeSupported": false,
+    "IsDualJoinModeSupported": false,
+    "IsCorridorLinkingSupported": false,
+    "IsInfraredNECSupported": false,
+    "HasApplication2": true,
+    "broadcast_block_timer_min_seconds": {
+      "block_index": 4,
+      "seconds": 10
+    }
+  },
+  "dialog": {
+    "initialise_sha256": "1a1f1cccaef615e7638a903cd3a4edf05224d4704c19e941e385762ec938ee57",
+    "hidden_tabs": [
+      "tsBankSwitch",
+      "tsBlocks",
+      "tsEnvironment",
+      "tsIndicators",
+      "tsKeyFunctions",
+      "tsLightLevel",
+      "tsOccupancy",
+      "tsScenes"
+    ],
+    "bindings": [
+      {
+        "control": "cmbLightLevel",
+        "expression": "Blocks[1].Group",
+        "helper": "PrepareFlashCxGroupComboBox"
+      },
+      {
+        "control": "cmbBroadcastGroup",
+        "expression": "Blocks[4].Group",
+        "helper": "PrepareFlashCxGroupComboBox"
+      },
+      {
+        "control": "cmbEnableGroup",
+        "expression": "LightLevelMaintEnableGroup",
+        "helper": "PrepareFlashCxGroupComboBox"
+      },
+      {
+        "control": "trkTargetLux",
+        "expression": "LightLevelTargetLux",
+        "helper": "PrepareFlashCxTrackBar"
+      },
+      {
+        "control": "trkMargin",
+        "expression": "LightLevelMarginPerc",
+        "helper": "PrepareFlashCxTrackBarEdit"
+      },
+      {
+        "control": "cmbLightOnOff",
+        "expression": "Blocks[2].Group",
+        "helper": "PrepareFlashCxGroupComboBox"
+      },
+      {
+        "control": "cmbLightOnOff",
+        "expression": "Blocks[2].Group",
+        "helper": "PrepareFlashCxGroupComboBox"
+      }
+    ],
+    "bindings_sha256": {
+      "InitialiseFormMode": "e61dfb0265062b200addc04c78d9e3bfb219b5d7cff351228098a65df63f86e1",
+      "RefreshAppStateChange": "ac706aad89e075851257a50e3640645fc1c2a5c1d3fbe019bf44ac1c5087f683"
+    },
+    "indicator_radio_unit_flag": {
+      "rdbLightLeveLED": 0,
+      "rdbLightOnOffLED": 1,
+      "rdbEnableGroupLED": 2
+    },
+    "indicator_sha256": "c1fce3664d3d07c1911422e44e0b798dc07d332a188e0b6425aa558b42188dff",
+    "on_off_application_switch": {
+      "block_index": 2,
+      "sha256": "08fc64e80edf352cf0a89f05c0a61885413336c72372f32a0e5b2bbd4222b69c",
+      "rule": "toggles Blocks[2].SecondaryApplication; RefreshAppStateChange clears it and disables the switch when the unit has no application 2 or its address is 255"
+    },
+    "target": {
+      "edit_text_byte_clamp": 200,
+      "edit_text_sha256": "185e18f9388632b18b3bc84ced11f43783557201acfcfac1e2ef7e9874f37ae0",
+      "entered_lux_clamp": 2000,
+      "entered_lux_sha256": "6463785cf73951e7f863eca2d1518bde4b1161695d47661aa6f668b15f313142",
+      "lux_to_byte": "Math.Ceil(lux / 10.0) for 0..2550",
+      "lux_to_byte_sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    "group_combo_exclusions": {
+      "HandleSENLLGroupComboOnIncludeItem": {
+        "sha256": "739e1b82fd46381ecfd2a5ee9cf97f4ab783c912e1d6ba50faabe3069c31a560",
+        "compares": [
+          "GetAddressAsInteger",
+          "GetGroup",
+          "GetItem",
+          "GetLightLevelMaintEnableGroup",
+          "GetLightLevelSensorUnit"
+        ]
+      },
+      "HandleSENLLEnableGroupOnIncludeItem": {
+        "sha256": "20c6dbd138db772fcad7309f9529c0d4eed3e4a77832a1b8443e57c2b0c07179",
+        "compares": [
+          "GetAddressAsInteger",
+          "GetGroup",
+          "GetItem",
+          "GetLightLevelMaintEnableGroup",
+          "GetLightLevelSensorUnit"
+        ]
+      }
+    },
+    "exclusion_rule": "A group combo omits groups other than 255 that another block or the maintenance enable group already uses, except its own current value; the enable combo omits groups used by any block."
+  },
+  "limits": [
+    "Static EXE/MAP analysis only; no Toolkit dialog or save was executed.",
+    "Base Neo/NeoPro block, timer and bank serialization is assumed to round-trip loaded values; only the save steps named here are source-recovered.",
+    "The broadcast interval (block 5 timer), Global and Power Fail tabs and ambient light reading are not modelled."
+  ]
+}
