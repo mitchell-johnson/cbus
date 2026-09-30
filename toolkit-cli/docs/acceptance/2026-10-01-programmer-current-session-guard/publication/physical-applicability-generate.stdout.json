@@ -1,0 +1,8 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "de2fd13c4d0538b0dcbce5548e78dba803eae44c758165126ccfadf4c063df14",
+  "content_kind": "text",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "3 physical applicability decisions passed\n"
+}

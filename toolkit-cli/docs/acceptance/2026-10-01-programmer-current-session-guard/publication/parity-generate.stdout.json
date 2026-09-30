@@ -1,0 +1,8 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "3955d3650d5db4bc3a887757ec039433d296a0604094b79a455ecc7a79e3a654",
+  "content_kind": "text",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "{\n  \"status\": \"generated\",\n  \"scope_items\": 22103,\n  \"obligations\": 487,\n  \"evidence_records\": 3,\n  \"census_complete\": false\n}\n"
+}

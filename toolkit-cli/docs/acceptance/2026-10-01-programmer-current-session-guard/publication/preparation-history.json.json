@@ -1,0 +1,12 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "b9cbb31b8f357aca3aceef8b3bb270ab854ded82a8fec57a0e98b6f2c39e77dd",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "premature_wheel": "fresh-wheel",
+    "accepted_wheel": "fresh-wheel-final",
+    "qualification": "The first wheel built before canonical receipt/parity refresh is preserved but not tested or accepted. The final build follows the successful refresh. One preliminary relative interpreter invocation failed before producer execution; its stderr is in the tool transcript."
+  }
+}

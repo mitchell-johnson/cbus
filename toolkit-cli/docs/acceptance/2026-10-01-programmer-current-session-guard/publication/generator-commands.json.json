@@ -1,0 +1,64 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "4ee4e644ed0db226c2ffd681ebcc62c614e7e402986004cd2324702f0bc6b78c",
+  "content_kind": "json",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/2/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": [
+    {
+      "label": "inventory",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_cgate_contract_inventory.py"
+      ],
+      "exit": 0,
+      "stdout_sha256": "d212606593b762579a3d9400755427c5cf299504f5db85e1703bd750884bc879",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "physical-applicability",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/cgate_session_physical_applicability.py"
+      ],
+      "exit": 0,
+      "stdout_sha256": "de2fd13c4d0538b0dcbce5548e78dba803eae44c758165126ccfadf4c063df14",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "parity",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_parity_register.py"
+      ],
+      "exit": 0,
+      "stdout_sha256": "3955d3650d5db4bc3a887757ec039433d296a0604094b79a455ecc7a79e3a654",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "f6366a739c07c2bc705ce6a81cc6411e79ca349bfac6be509d8d1f2b9108cb16",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "f6366a739c07c2bc705ce6a81cc6411e79ca349bfac6be509d8d1f2b9108cb16"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 16 tests\ntest service::tests::programmer_retry_reload_admits_all_owners_before_any_read ... ok\ntest service::tests::programmer_retry_reload_preserves_current_failed_typed ... ok\ntest service::tests::programmer_retry_reload_preserves_current_failed_raw ... ok\ntest service::tests::programmer_retry_reload_entry_preserves_raw_edits_before_io ... ok\ntest service::tests::programmer_retry_reload_entry_preserves_typed_edits_before_io ... ok\ntest service::tests::programmer_retry_reload_preserves_current_mismatched_raw ... ok\ntest service::tests::programmer_retry_reload_preserves_current_mismatched_typed ... ok\ntest service::tests::programmer_retry_reload_preserves_current_successful_raw ... ok\ntest service::tests::programmer_retry_reload_cannot_replace_new_session_or_old_pci_epoch ... ok\ntest service::tests::programmer_retry_reload_handoff_preserves_raw_edits_after_commit ... ok\ntest service::tests::programmer_retry_reload_handoff_preserves_typed_edits_after_commit ... ok\ntest service::tests::programmer_retry_reload_later_failure_restores_only_unchanged_preparations ... ok\ntest service::tests::programmer_retry_reload_rejects_unrestaged_dirty_and_raw_bits ... ok\ntest service::tests::programmer_retry_reload_preserves_current_successful_typed ... ok\ntest service::tests::programmer_retry_reload_failure_and_identity_conflict_preserve_evidence ... ok\ntest service::tests::programmer_retry_reload_rejects_missing_owner_source_and_lock ... ok\n\ntest result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 447 filtered out; finished in 5.72s\n\n"
+}

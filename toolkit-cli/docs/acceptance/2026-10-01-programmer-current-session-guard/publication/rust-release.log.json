@@ -1,0 +1,17 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "3b5a5c76565ad7395fdf30e798f9afbab88a4b1ff76523c7f89e6873fe85624c",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "3b5a5c76565ad7395fdf30e798f9afbab88a4b1ff76523c7f89e6873fe85624c"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cbus-vector-check v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-vector-check)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `release` profile [optimized] target(s) in 1m 58s\n"
+}

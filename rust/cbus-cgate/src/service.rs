@@ -926,6 +926,13 @@ struct DeployWorker {
     retries: HashSet<u64>,
 }
 
+/// Exact admission and commit witnesses for an asynchronous physical LOAD.
+#[derive(Default)]
+struct PpLoadObservation {
+    expected: Option<crate::PpSession>,
+    committed: Option<crate::PpSession>,
+}
+
 /// Prefix of a private broadcast carrying one PROGRAMMER instruction reply
 /// line for exactly one command session. It is never delivered verbatim.
 const PROGRAMMER_REPLY_MARKER: &str = "\u{0}programmer-reply ";
@@ -4138,6 +4145,7 @@ impl Service {
         if verb == "DEPLOY_QUEUE" && sub == "RETRY" {
             return self.deploy_queue_retry(client, tag, &words).await;
         }
+        let mut load_observation = PpLoadObservation::default();
         // A replacement attempt must never leave the preceding physical
         // identity available after an early validation or I/O failure.
         if verb == "PP" && matches!(sub, "LOAD" | "NEW" | "LOAD_FROM_FILE" | "SAVE") {
@@ -4172,6 +4180,9 @@ impl Service {
                             .next_physical_pp_attempt
                             .fetch_add(1, Ordering::Relaxed);
                     }
+                    if physical_load {
+                        load_observation.expected = Some(session.clone());
+                    }
                 }
             }
         }
@@ -4192,7 +4203,9 @@ impl Service {
                 .get(3)
                 .is_some_and(|source| !source.to_ascii_lowercase().starts_with("/db/"))
         {
-            return self.pp_load_physical(client, line, tag, &words).await;
+            return self
+                .pp_load_physical(client, line, tag, &words, &mut load_observation)
+                .await;
         }
         if verb == "PP"
             && sub == "SAVE"
@@ -11569,7 +11582,7 @@ impl Service {
                 "LOAD",
                 &[name.clone(), source.to_string()],
             );
-            let attempt = {
+            let pending = {
                 let mut model = self.model.lock().await;
                 let Some(current) = model.sessions.get_mut(name) else {
                     return Some(err(
@@ -11589,10 +11602,20 @@ impl Service {
                     .next_physical_pp_attempt
                     .fetch_add(1, Ordering::Relaxed);
                 current.physical_load_attempt = attempt;
-                attempt
+                current.clone()
+            };
+            let mut observation = PpLoadObservation {
+                expected: Some(pending),
+                committed: None,
             };
             let response = self
-                .pp_load_physical(&owner, &line, "retry-load", &["PP", "LOAD", name, source])
+                .pp_load_physical(
+                    &owner,
+                    &line,
+                    "retry-load",
+                    &["PP", "LOAD", name, source],
+                    &mut observation,
+                )
                 .await;
             let mut model = self.model.lock().await;
             let Some(current) = model.sessions.get_mut(name) else {
@@ -11602,35 +11625,56 @@ impl Service {
                     "408 RETRY session ended during reload",
                 ));
             };
-            // LOAD advances the attempt once. A concurrent transition must not
-            // have its state replaced by our retained failure evidence.
-            let matches = response.status < 400
-                && current.physical_load_attempt == attempt
-                && current.lock == before.lock
-                && current.source == before.source
-                && current.unit_type == before.unit_type
-                && current.firmware == before.firmware
-                && matches!(current.physical_load, PpPhysicalLoadState::Loaded(_));
-            if !matches {
-                if current.lock == before.lock && current.physical_load_attempt == attempt {
-                    let attempt = current.physical_load_attempt;
-                    *current = before;
-                    current.physical_load_attempt = attempt;
-                    current.physical_load = PpPhysicalLoadState::Invalidated;
-                }
-                return Some(if response.status >= 400 {
-                    response
-                } else {
-                    err(
-                        "retry-load",
-                        408,
-                        "408 RETRY physical identity changed during reload",
-                    )
-                });
+            match Self::finish_retry_reload(current, before, &observation, response) {
+                Ok(pair) => prepared.push(pair),
+                Err(response) => return Some(response),
             }
-            prepared.push((before, current.clone()));
         }
         None
+    }
+
+    /// Only the loader's atomic commit witness can authorize continuation or
+    /// restoration. A post-await current clone may contain a newer edit.
+    fn finish_retry_reload(
+        current: &mut crate::PpSession,
+        before: crate::PpSession,
+        observation: &PpLoadObservation,
+        response: Response,
+    ) -> Result<(crate::PpSession, crate::PpSession), Response> {
+        let committed_matches = observation.committed.as_ref() == Some(current);
+        if response.status < 400
+            && committed_matches
+            && current.lock == before.lock
+            && current.source == before.source
+            && current.unit_type == before.unit_type
+            && current.firmware == before.firmware
+            && matches!(current.physical_load, PpPhysicalLoadState::Loaded(_))
+        {
+            return Ok((before, current.clone()));
+        }
+        if observation.expected.as_ref() == Some(current) || committed_matches {
+            let attempt = current.physical_load_attempt;
+            *current = before;
+            current.physical_load_attempt = attempt;
+            current.physical_load = PpPhysicalLoadState::Invalidated;
+        } else if observation
+            .expected
+            .as_ref()
+            .is_some_and(|pending| current.physical_load_attempt == pending.physical_load_attempt)
+        {
+            // Preserve the newer staged evidence; this recovery cannot expose
+            // or use the read it raced, even if that read itself succeeded.
+            current.physical_load = PpPhysicalLoadState::Invalidated;
+        }
+        Err(if response.status >= 400 {
+            response
+        } else {
+            err(
+                "retry-load",
+                409,
+                "409 RETRY physical identity or staged session changed during reload",
+            )
+        })
     }
 
     /// Run one PROGRAMMER's instructions exactly once through the real
@@ -12399,6 +12443,7 @@ impl Service {
         line: &str,
         tag: &str,
         words: &[&str],
+        observation: &mut PpLoadObservation,
     ) -> Response {
         const MAX_PARAMETERS: usize = 4096;
         const MAX_UNIQUE_BYTES: usize = 1024 * 1024;
@@ -12427,7 +12472,7 @@ impl Service {
                 }
             }
         };
-        let (session_name, session_lock, load_attempt) = {
+        let (session_name, session_lock, expected) = {
             let mut staged = self.model.lock().await.clone();
             staged.current = client
                 .current
@@ -12439,6 +12484,16 @@ impl Service {
                     tag,
                     420,
                     "420 Programming object belongs to another connection",
+                );
+            }
+            let Some(expected) = staged.sessions.get(name).cloned() else {
+                return err(tag, 404, "404 Session not found");
+            };
+            if observation.expected.as_ref() != Some(&expected) {
+                return err(
+                    tag,
+                    409,
+                    "409 Programming session changed before physical load",
                 );
             }
             let response = staged.handle(line);
@@ -12458,11 +12513,7 @@ impl Service {
                     "409 Session lock does not cover the physical network",
                 );
             }
-            (
-                session.name.clone(),
-                session.lock.clone(),
-                session.physical_load_attempt,
-            )
+            (session.name.clone(), session.lock.clone(), expected)
         };
 
         let (pci_generation, pci) = self.current_pci_epoch().await;
@@ -12837,7 +12888,7 @@ impl Service {
         if session.lock != session_lock
             || !lock_held
             || !client.sessions.contains(&session_name)
-            || session.physical_load_attempt != load_attempt
+            || *session != expected
         {
             return err(
                 tag,
@@ -12861,6 +12912,7 @@ impl Service {
         session.raw = raw.clone();
         session.raw_unit = raw;
         session.raw_changed.clear();
+        observation.committed = Some(session.clone());
         ok(tag, vec![], "200 OK")
     }
 

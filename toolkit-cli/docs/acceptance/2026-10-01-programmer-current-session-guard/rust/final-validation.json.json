@@ -1,0 +1,427 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "e03af394d9921fe61d62eabda1326cfc6e2d14f7d94322367b75781f6d4f2a9a",
+  "content_kind": "json",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/commands/0/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/0/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "2a28e95d77f1fed0d9ce9f9b84c9f8f74beedc03ab35da659add1eff12dabafa"
+    },
+    {
+      "json_pointer": "/commands/1/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/1/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "51f1a1a05685270c5005421c25f4d7778ce0fa10caede15555858a2bf9d30cb9"
+    },
+    {
+      "json_pointer": "/commands/2/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/2/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "9426d8406421a2f033ee2036fec46d2b082b3d17fba89f16efec360f052dbb21"
+    },
+    {
+      "json_pointer": "/commands/3/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/3/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "c83dd954b205498e03334c96027dd32af706a33437166e76b353ab43f5ab0a0c"
+    },
+    {
+      "json_pointer": "/commands/4/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/4/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "8b3ea700e62949c0603b4224b448d6f568414af054a25cf1bf9ce7fc52083807"
+    },
+    {
+      "json_pointer": "/commands/5/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "cd18b0bbea9eac9a9620e4a1fe7100c750036cee25752d9a09fee8ac85838ede"
+    },
+    {
+      "json_pointer": "/commands/5/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "14b3cd93ee4bfdf305e043f3807fb7102b29fc14a748f311830fbbef239e6f59"
+    },
+    {
+      "json_pointer": "/red_attempts/0/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "8d979c59c7ec600b21a6bca4c5d23be96e4f612fbb5d068d00e5712dac3d198d"
+    },
+    {
+      "json_pointer": "/red_attempts/1/log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "1a553e63ad55d5de6c0c2bbccd00917f0918049d75dffcc2bf7809eb4a214032"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-identity.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "51f1a1a05685270c5005421c25f4d7778ce0fa10caede15555858a2bf9d30cb9",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1red-all-six.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "1a553e63ad55d5de6c0c2bbccd00917f0918049d75dffcc2bf7809eb4a214032",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1red.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "8d979c59c7ec600b21a6bca4c5d23be96e4f612fbb5d068d00e5712dac3d198d",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-system.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "14b3cd93ee4bfdf305e043f3807fb7102b29fc14a748f311830fbbef239e6f59",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-controls.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "2a28e95d77f1fed0d9ce9f9b84c9f8f74beedc03ab35da659add1eff12dabafa",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-routed.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "c83dd954b205498e03334c96027dd32af706a33437166e76b353ab43f5ab0a0c",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1green-controls-attempt1.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "7f916e450c605b1d81889d53979ede445a480354806b8e12a24f701ba1eef411",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-session.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "8b3ea700e62949c0603b4224b448d6f568414af054a25cf1bf9ce7fc52083807",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/logs/${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}~1final-save.log",
+      "action": "role_template",
+      "roles": [
+        "retry_race_acceptance"
+      ],
+      "raw_string_sha256": "9426d8406421a2f033ee2036fec46d2b082b3d17fba89f16efec360f052dbb21",
+      "target": "object_key"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "before": {
+      "rust/cbus-cgate/src/service.rs": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939",
+      "rust/cbus-cgate/src/service/tests.rs": "b87a1a2bdb816bb70f15d48a4ef73489d3d0d2f4cc3dc7208dce248cfc3b8084",
+      "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "commands": [
+      {
+        "name": "final-controls",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "programmer_retry_reload",
+          "--",
+          "--nocapture"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-controls.log",
+        "log_sha256": "f6366a739c07c2bc705ce6a81cc6411e79ca349bfac6be509d8d1f2b9108cb16",
+        "counts": {
+          "passed": 16,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-identity",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "physical_pp_info_identity",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-identity.log",
+        "log_sha256": "e9df65f8d3cbe694087fee0c6d1275dbdcd65ea39b429cb85961f458853f18c4",
+        "counts": {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-save",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "physical_pp_save_",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-save.log",
+        "log_sha256": "1cff583dd75e289afd60137c418504c3433b6c528b0d6509b3e5e708646d8c13",
+        "counts": {
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-routed",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "bridged_pp_load_save_correlates_route_and_keeps_session_on_target_network",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-routed.log",
+        "log_sha256": "6dd73c20152b1af4016a9aa9eed82a4ed55c03f1bcc5c570e5fc5d5446828350",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-session",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "pp_session_lifecycle",
+          "--no-fail-fast"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-session.log",
+        "log_sha256": "9e8665ee8f2f914571d410f7f73467c7635a1c97db668bea8c414b346e5c19f9",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      },
+      {
+        "name": "final-system",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cmqttd",
+          "--test",
+          "system_cgate_programmer_lifecycle",
+          "native_programmer_lifecycle_replays_against_cmqttd",
+          "--",
+          "--nocapture"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}/rust",
+        "exit": 0,
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-system.log",
+        "log_sha256": "b5cd6a8b96541cfa888cb033d08ad2f60027808e3e90821c4464f17934959ccf",
+        "counts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      }
+    ],
+    "full_suite_run": false,
+    "release_build_run": false,
+    "skips": [],
+    "qualifications": [
+      "Red production hashes were captured before each red execution; added race tests differ from pre-edit tests.",
+      "Entry and commit-handoff controls were added after the held-PCI red matrix; they have no separate red execution."
+    ],
+    "red_attempts": [
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "programmer_retry_reload_preserves_current",
+          "--",
+          "--nocapture"
+        ],
+        "before_sha256": {
+          "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+          "rust/cbus-cgate/src/service/tests.rs": "c4392826f83e72189587e0ec86dbed43624f0ddb77cc7819dec62484841e982f",
+          "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be"
+        },
+        "exit": 101,
+        "log_sha256": "c71477ac90cbfa6d2c9694502b830af2e67ae4762365237d8b55be98d165bfff",
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/red.log",
+        "counts": {
+          "passed": 0,
+          "failed": 2,
+          "ignored": 0
+        },
+        "source_unchanged_from_pre_edit": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "programmer_retry_reload_preserves_current",
+          "--",
+          "--nocapture"
+        ],
+        "before_sha256": {
+          "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+          "rust/cbus-cgate/src/service/tests.rs": "5900f6de2ce8866b619e3767ce68f7bfdbbc8f78dba6570c30f7e9e2b26558a0",
+          "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be"
+        },
+        "exit": 101,
+        "log_sha256": "fa9dc3ba40b3d57f02cf9b558a142cb38f8c29aaed7793c0d87a7685a07c2241",
+        "log": "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/red-all-six.log",
+        "counts": {
+          "passed": 0,
+          "failed": 6,
+          "ignored": 0
+        },
+        "source_unchanged_from_pre_edit": true
+      }
+    ],
+    "after": {
+      "rust/cbus-cgate/src/service.rs": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939",
+      "rust/cbus-cgate/src/service/tests.rs": "b87a1a2bdb816bb70f15d48a4ef73489d3d0d2f4cc3dc7208dce248cfc3b8084",
+      "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "source_unchanged": true,
+    "logs": {
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-identity.log": "e9df65f8d3cbe694087fee0c6d1275dbdcd65ea39b429cb85961f458853f18c4",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/red-all-six.log": "fa9dc3ba40b3d57f02cf9b558a142cb38f8c29aaed7793c0d87a7685a07c2241",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/red.log": "c71477ac90cbfa6d2c9694502b830af2e67ae4762365237d8b55be98d165bfff",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-system.log": "b5cd6a8b96541cfa888cb033d08ad2f60027808e3e90821c4464f17934959ccf",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-controls.log": "f6366a739c07c2bc705ce6a81cc6411e79ca349bfac6be509d8d1f2b9108cb16",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-routed.log": "6dd73c20152b1af4016a9aa9eed82a4ed55c03f1bcc5c570e5fc5d5446828350",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/green-controls-attempt1.log": "928c71cc6a58e8ab13512ca14707927ccdd2610d94bc5f104b407e73608e6fe2",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-session.log": "9e8665ee8f2f914571d410f7f73467c7635a1c97db668bea8c414b346e5c19f9",
+      "${CBUS_RETRY_RACE_ACCEPTANCE_ROOT}/final-save.log": "1cff583dd75e289afd60137c418504c3433b6c528b0d6509b3e5e708646d8c13"
+    }
+  }
+}

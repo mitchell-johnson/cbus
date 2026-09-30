@@ -1,0 +1,8 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "d212606593b762579a3d9400755427c5cf299504f5db85e1703bd750884bc879",
+  "content_kind": "text",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "{\n  \"status\": \"generated\",\n  \"paths\": 442,\n  \"primary_paths\": 431,\n  \"supplement_paths\": 11,\n  \"axis_status\": {\n    \"selector_grammar\": {\n      \"partial\": 431,\n      \"resolved\": 11\n    },\n    \"session_states\": {\n      \"partial\": 437,\n      \"resolved\": 5\n    },\n    \"target_forms\": {\n      \"resolved\": 5,\n      \"unresolved\": 437\n    },\n    \"authorization\": {\n      \"partial\": 442\n    },\n    \"response_event_envelopes\": {\n      \"partial\": 440,\n      \"resolved\": 2\n    },\n    \"effects_routing\": {\n      \"partial\": 433,\n      \"resolved\": 9\n    },\n    \"implementation_acceptance\": {\n      \"partial\": 442\n    }\n  }\n}\n"
+}

@@ -1,0 +1,18 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "8214898f95c852cfd604146b20e96c3b8a54752a6151dc63ed48259174ca5992",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "8214898f95c852cfd604146b20e96c3b8a54752a6151dc63ed48259174ca5992"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "from pathlib import Path\nimport hashlib,json,os,subprocess,sys,shutil\nROOT=Path('${CBUS_REPOSITORY_ROOT}');OUT=Path(__file__).resolve().parent\nTARGET=Path('${CBUS_CARGO_TARGET}')\nFILES=['rust/cbus-cgate/src/service.rs','rust/cbus-cgate/src/service/tests.rs','docs/cmqttd-cgate.md','rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs']\nsha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()\nbefore={p:sha(ROOT/p) for p in FILES}\nold=OUT/'pre-correction-bin';old.mkdir(mode=0o700)\nfor n in ('cgate-mock','cmqttd'):shutil.copy2(TARGET/'release'/n,old/n)\nenv=os.environ.copy();env.update(CARGO_TARGET_DIR=str(TARGET),CARGO_BUILD_JOBS='2')\ncommands=[('fmt',['cargo','+1.92.0','fmt','--all','--check']),('clippy',['cargo','+1.98.1','clippy','--workspace','--all-targets','--','-D','warnings']),('release',['cargo','+1.92.0','build','--release','--workspace'])]\nrecord={'sources_before':before,'pre_correction_binaries':{n:sha(old/n) for n in ('cgate-mock','cmqttd')},'commands':[],'full_test_suite_run':False}\nfor label,argv in commands:\n log=OUT/('rust-'+label+'.log')\n with log.open('w') as f:r=subprocess.run(argv,cwd=ROOT/'rust',env=env,stdout=f,stderr=subprocess.STDOUT)\n record['commands'].append({'name':label,'argv':argv,'exit':r.returncode,'log_sha256':sha(log)})\n (OUT/'rust-checks.json').write_text(json.dumps(record,indent=2)+'\\n');print(label,r.returncode,flush=True)\n if r.returncode:sys.exit(r.returncode)\nrecord['sources_after']={p:sha(ROOT/p) for p in FILES};assert before==record['sources_after']\nrecord['sources_stable']=True;record['release_binaries']={n:sha(TARGET/'release'/n) for n in ('cgate-mock','cmqttd')}\n(OUT/'rust-checks.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record['release_binaries']),flush=True)\n"
+}

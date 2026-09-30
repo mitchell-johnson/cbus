@@ -1,0 +1,17 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "e9df65f8d3cbe694087fee0c6d1275dbdcd65ea39b429cb85961f458853f18c4",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "e9df65f8d3cbe694087fee0c6d1275dbdcd65ea39b429cb85961f458853f18c4"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 7 tests\ntest service::tests::physical_pp_info_identity_old_load_cannot_replace_new_session_state ... ok\ntest service::tests::physical_pp_info_identity_is_load_provenance_not_current_database ... ok\ntest service::tests::physical_pp_info_identity_is_invalidated_by_lost_same_source_save_ack ... ok\ntest service::tests::physical_pp_info_identity_is_invalidated_by_failed_reload_and_transitions ... ok\ntest service::tests::physical_pp_info_identity_retains_original_stamp_after_confirmed_same_source_save ... ok\ntest service::tests::physical_pp_info_identity_save_to_other_unit_does_not_relabel_load_provenance ... ok\ntest service::tests::physical_pp_info_identity_rejects_reconnect_and_old_load_commit ... ok\n\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 456 filtered out; finished in 1.87s\n\n"
+}

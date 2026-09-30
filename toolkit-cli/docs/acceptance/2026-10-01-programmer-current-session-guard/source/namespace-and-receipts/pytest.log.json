@@ -1,0 +1,8 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "7c9901b880bc03f6b82b1502474470a4f49a0a613c0b793f527c17cf3ea83af0",
+  "content_kind": "text",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "................                                      [100%]\n16 passed, 19 subtests passed in 4.16s\n"
+}

@@ -22839,3 +22839,263 @@ async fn programmer_retry_reload_later_failure_restores_only_unchanged_preparati
         .is_err());
     }
 }
+
+async fn retry_current_edit_race(outcome: &str, raw_edit: bool) {
+    let (mut fixture, serial) = retry_identity_fixture().await;
+    let reloading = tokio::spawn({
+        let service = fixture.service.clone();
+        async move { service.prepare_programmer_retry("r", serial).await }
+    });
+    let request = if outcome == "failed" {
+        let request = database_pci_line(&mut fixture.peer).await;
+        assert!(request.starts_with(b"\\4605002101"));
+        request
+    } else {
+        fixture.identify(1, b"KEYML5").await;
+        fixture
+            .identify(
+                2,
+                if outcome == "mismatched" {
+                    b"9.9.00"
+                } else {
+                    b"2.1.00"
+                },
+            )
+            .await;
+        let request = database_pci_line(&mut fixture.peer).await;
+        assert!(request.starts_with(b"\\4605001A2002"));
+        request
+    };
+    let line = if raw_edit {
+        "[new-raw] PP SET_RAW_DATA S 32 A1B2"
+    } else {
+        "[new-set] PP SET S Indicator 0x9A 0xBC"
+    };
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, line)
+            .await
+            .status,
+        200
+    );
+    let newer = fixture.service.model.lock().await.sessions["S"].clone();
+    if outcome == "failed" {
+        let code = request[request.len() - 2];
+        fixture.peer.write_all(&[code, b'.']).await.unwrap();
+        database_pci_reply(&mut fixture.peer, 5, &[0x82, 1, 0xff]).await;
+    } else {
+        database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    }
+    let result = reloading.await.unwrap();
+    assert!(
+        result.as_ref().is_some_and(|r| r.status >= 400),
+        "{outcome}, raw={raw_edit}: {result:?}"
+    );
+    assert_eq!(
+        fixture.service.model.lock().await.sessions["S"],
+        newer,
+        "{outcome}, raw={raw_edit}: newer staged evidence lost"
+    );
+    assert_eq!(fixture.info().await.status, 408);
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, "[direct] PP SAVE_TO_SOURCE S")
+            .await
+            .status,
+        408
+    );
+    assert!(
+        tokio::time::timeout(
+            Duration::from_millis(20),
+            database_pci_line(&mut fixture.peer)
+        )
+        .await
+        .is_err(),
+        "recovery must not replay or STORE"
+    );
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_successful_typed() {
+    retry_current_edit_race("successful", false).await;
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_successful_raw() {
+    retry_current_edit_race("successful", true).await;
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_failed_typed() {
+    retry_current_edit_race("failed", false).await;
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_failed_raw() {
+    retry_current_edit_race("failed", true).await;
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_mismatched_typed() {
+    retry_current_edit_race("mismatched", false).await;
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_preserves_current_mismatched_raw() {
+    retry_current_edit_race("mismatched", true).await;
+}
+
+async fn retry_load_entry_edit_race(raw_edit: bool, public_load: bool) {
+    let (mut fixture, serial) = retry_identity_fixture().await;
+    let old_attempt = fixture.service.model.lock().await.sessions["S"].physical_load_attempt;
+    let guard = fixture.service.commands.lock().await;
+    let reloading = tokio::spawn({
+        let service = fixture.service.clone();
+        let mut owner = fixture.owner.clone();
+        async move {
+            if public_load {
+                Some(
+                    service
+                        .handle(&mut owner, "[public] PP LOAD S //HARNESS/254/p/5")
+                        .await,
+                )
+            } else {
+                service.prepare_programmer_retry("r", serial).await
+            }
+        }
+    });
+    tokio::time::timeout(Duration::from_secs(2), async {
+        loop {
+            if fixture.service.model.lock().await.sessions["S"].physical_load_attempt != old_attempt
+            {
+                break;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap();
+    let line = if raw_edit {
+        "[entry-raw] PP SET_RAW_DATA S 32 A1B2"
+    } else {
+        "[entry-set] PP SET S Indicator 0x9A 0xBC"
+    };
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, line)
+            .await
+            .status,
+        200
+    );
+    let newer = fixture.service.model.lock().await.sessions["S"].clone();
+    drop(guard);
+    let response = tokio::time::timeout(Duration::from_secs(2), reloading)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    assert_eq!(response.status, 409, "{response:?}");
+    assert_eq!(fixture.service.model.lock().await.sessions["S"], newer);
+    assert_eq!(fixture.info().await.status, 408);
+    assert!(tokio::time::timeout(
+        Duration::from_millis(20),
+        database_pci_line(&mut fixture.peer)
+    )
+    .await
+    .is_err());
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_entry_preserves_typed_edits_before_io() {
+    for public_load in [false, true] {
+        retry_load_entry_edit_race(false, public_load).await;
+    }
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_entry_preserves_raw_edits_before_io() {
+    for public_load in [false, true] {
+        retry_load_entry_edit_race(true, public_load).await;
+    }
+}
+
+async fn retry_load_handoff_edit_race(raw_edit: bool, mismatch: bool) {
+    let (mut fixture, _) = retry_identity_fixture().await;
+    let before = fixture.service.model.lock().await.sessions["S"].clone();
+    let loading = tokio::spawn({
+        let service = fixture.service.clone();
+        let owner = fixture.owner.clone();
+        let expected = before.clone();
+        async move {
+            let mut observation = PpLoadObservation {
+                expected: Some(expected),
+                committed: None,
+            };
+            let response = service
+                .pp_load_physical(
+                    &owner,
+                    "[read] PP LOAD S //HARNESS/254/p/5",
+                    "read",
+                    &["PP", "LOAD", "S", "//HARNESS/254/p/5"],
+                    &mut observation,
+                )
+                .await;
+            (response, observation)
+        }
+    });
+    fixture.identify(1, b"KEYML5").await;
+    fixture
+        .identify(2, if mismatch { b"9.9.00" } else { b"2.1.00" })
+        .await;
+    let request = database_pci_line(&mut fixture.peer).await;
+    assert!(request.starts_with(b"\\4605001A2002"));
+    database_pci_reply(&mut fixture.peer, 5, &[0x83, 0x20, 0x12, 0x34]).await;
+    let (response, observation) = loading.await.unwrap();
+    assert_eq!(response.status, 200);
+    let line = if raw_edit {
+        "[handoff-raw] PP SET_RAW_DATA S 32 A1B2"
+    } else {
+        "[handoff-set] PP SET S Indicator 0x9A 0xBC"
+    };
+    assert_eq!(
+        fixture
+            .service
+            .handle(&mut fixture.owner, line)
+            .await
+            .status,
+        200
+    );
+    let mut expected = fixture.service.model.lock().await.sessions["S"].clone();
+    expected.physical_load = PpPhysicalLoadState::Invalidated;
+    {
+        let mut model = fixture.service.model.lock().await;
+        let current = model.sessions.get_mut("S").unwrap();
+        let result = Service::finish_retry_reload(current, before, &observation, response);
+        assert_eq!(result.unwrap_err().status, 409);
+        assert_eq!(current, &expected);
+    }
+    assert_eq!(fixture.info().await.status, 408);
+    assert!(tokio::time::timeout(
+        Duration::from_millis(20),
+        database_pci_line(&mut fixture.peer)
+    )
+    .await
+    .is_err());
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_handoff_preserves_typed_edits_after_commit() {
+    for mismatch in [false, true] {
+        retry_load_handoff_edit_race(false, mismatch).await;
+    }
+}
+
+#[tokio::test]
+async fn programmer_retry_reload_handoff_preserves_raw_edits_after_commit() {
+    for mismatch in [false, true] {
+        retry_load_handoff_edit_race(true, mismatch).await;
+    }
+}

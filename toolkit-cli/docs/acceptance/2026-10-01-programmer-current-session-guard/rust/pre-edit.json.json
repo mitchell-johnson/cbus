@@ -1,0 +1,15 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "0e1dc34af4f657f9546176e49a2b4e331ca2e0f7a70592517276c17def5262aa",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "source_sha256": {
+      "rust/cbus-cgate/src/service.rs": "6d6edf5785a8a7b638c1438ea3bd0a67bd122dede17780e21db3c2ca8dd5c3b2",
+      "rust/cbus-cgate/src/service/tests.rs": "b6cac56b23ddccbab1b7a48419dd20e0bf4b8479fb1ad7b712467025eb42f187",
+      "docs/cmqttd-cgate.md": "02ae9ba07fc79658ead44dc38afe23870ba84ba6c71bb5b832bcd860adedc7be",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    }
+  }
+}

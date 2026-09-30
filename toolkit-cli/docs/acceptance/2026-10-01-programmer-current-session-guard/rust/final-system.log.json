@@ -1,0 +1,18 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "b5cd6a8b96541cfa888cb033d08ad2f60027808e3e90821c4464f17934959ccf",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "b5cd6a8b96541cfa888cb033d08ad2f60027808e3e90821c4464f17934959ccf"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.27s\n     Running tests/system_cgate_programmer_lifecycle.rs (${CBUS_CARGO_TARGET}/debug/deps/system_cgate_programmer_lifecycle-86318037bdc189a4)\n\nrunning 1 test\ntest native_programmer_lifecycle_replays_against_cmqttd ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.76s\n\n"
+}

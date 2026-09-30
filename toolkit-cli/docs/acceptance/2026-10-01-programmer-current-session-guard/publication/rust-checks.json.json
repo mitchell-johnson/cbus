@@ -1,0 +1,72 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "e131020dba30f5356efb28bec9c9d02b13505ea19b74f5b57805dd0cdde9944b",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "sources_before": {
+      "rust/cbus-cgate/src/service.rs": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939",
+      "rust/cbus-cgate/src/service/tests.rs": "b87a1a2bdb816bb70f15d48a4ef73489d3d0d2f4cc3dc7208dce248cfc3b8084",
+      "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "pre_correction_binaries": {
+      "cgate-mock": "6ad6647caf24ace9498b51fdc40b069ebbe26bbc4cc35be7ed5d8e8569d52090",
+      "cmqttd": "f8e9ec1ed5473b991d9477c4f73ce6be3fbf68e1833ab72b73f715b65219615a"
+    },
+    "commands": [
+      {
+        "name": "fmt",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "clippy",
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log_sha256": "8e60dc02866eb6104d36495e074215ed00a070ad9346903c96745028d06b4a49"
+      },
+      {
+        "name": "release",
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit": 0,
+        "log_sha256": "3b5a5c76565ad7395fdf30e798f9afbab88a4b1ff76523c7f89e6873fe85624c"
+      }
+    ],
+    "full_test_suite_run": false,
+    "sources_after": {
+      "rust/cbus-cgate/src/service.rs": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939",
+      "rust/cbus-cgate/src/service/tests.rs": "b87a1a2bdb816bb70f15d48a4ef73489d3d0d2f4cc3dc7208dce248cfc3b8084",
+      "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "sources_stable": true,
+    "release_binaries": {
+      "cgate-mock": "0efb04d64c1c2cd2a82a725cde57366ce403283d34289f5dc00ea4701ec60c78",
+      "cmqttd": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023"
+    }
+  }
+}

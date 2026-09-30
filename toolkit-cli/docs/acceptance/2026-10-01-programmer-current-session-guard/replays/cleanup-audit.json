@@ -1,0 +1,15 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "d1fa274eda0e74691d935f0649bb3703f6ada30355138b7b2b7710b79e5c6163",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "sampled_children_terminal": true,
+    "sampled_listeners_closed": true,
+    "simulator_and_broker_closed": true,
+    "temporary_project_directories_removed": true,
+    "qualification": "PID sampling observed four of six server children; fast tagged/Unit mock children were not sampled. All four producer invocations exited successfully after their existing terminate/wait cleanup. No current release binary processes remain.",
+    "no_current_release_binary_processes": true
+  }
+}

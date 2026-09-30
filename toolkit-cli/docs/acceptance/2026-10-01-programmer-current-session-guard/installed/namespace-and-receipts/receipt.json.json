@@ -1,0 +1,96 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "63538ef48ce4448d248e7003fc9e645a23d9b290e72f1e8b16b20af6afe73b1d",
+  "content_kind": "json",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/origins/cbus_toolkit",
+      "action": "role_template",
+      "roles": [
+        "fresh_wheel_acceptance"
+      ],
+      "raw_string_sha256": "fe21e30f0c28b1e80e5be27cf13ac73e5932136ae4a503c20eaa54f455ad8d29"
+    },
+    {
+      "json_pointer": "/origins/cbus_toolkit.cgate",
+      "action": "role_template",
+      "roles": [
+        "fresh_wheel_acceptance"
+      ],
+      "raw_string_sha256": "2d69dd738afd540abf9437e753518c7c6c6c9444583f4d7f65cc4112ca470eeb"
+    },
+    {
+      "json_pointer": "/origins/cbus_toolkit.native",
+      "action": "role_template",
+      "roles": [
+        "fresh_wheel_acceptance"
+      ],
+      "raw_string_sha256": "b55ae24c23a6c5478cf44d637980cc8cec7fdb6b3f30e71182088c4edcd61f29"
+    },
+    {
+      "json_pointer": "/origins/cbus_toolkit.programming",
+      "action": "role_template",
+      "roles": [
+        "fresh_wheel_acceptance"
+      ],
+      "raw_string_sha256": "b8ad2279b03cde7339ae814d760cd12159f45497000b84e99c2d65a94f32480b"
+    },
+    {
+      "json_pointer": "/cleanup/processes/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/cleanup/processes/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "exit": 0,
+    "parents": 16,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "bindings_stable": true,
+    "origins": {
+      "cbus_toolkit": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/__init__.py",
+      "cbus_toolkit.cgate": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/cgate.py",
+      "cbus_toolkit.native": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/native.py",
+      "cbus_toolkit.programming": "${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env/lib/python3.13/site-packages/cbus_toolkit/programming.py"
+    },
+    "cleanup": {
+      "kind": "mock-cleanup",
+      "processes": [
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0"
+          ],
+          "pid": 31882,
+          "exit": -9,
+          "terminal": true
+        },
+        {
+          "argv": [
+            "${CBUS_CARGO_TARGET}/release/cgate-mock",
+            "--bind",
+            "127.0.0.1:0"
+          ],
+          "pid": 31883,
+          "exit": -9,
+          "terminal": true
+        }
+      ],
+      "nodeid": "tests/test_cgate_dbsetxml_unit_differential.py::test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+    }
+  }
+}

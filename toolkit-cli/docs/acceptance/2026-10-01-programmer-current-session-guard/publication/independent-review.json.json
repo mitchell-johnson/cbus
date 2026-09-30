@@ -1,0 +1,32 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "e0aaa57885ecef347f9626da2271a5ccebd4ac5e85577db155cd5381353f5140",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "result": "signed_off",
+    "mode": "independent_read_only",
+    "reviewed_sources_sha256": {
+      "rust/cbus-cgate/src/service.rs": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939",
+      "rust/cbus-cgate/src/service/tests.rs": "b87a1a2bdb816bb70f15d48a4ef73489d3d0d2f4cc3dc7208dce248cfc3b8084",
+      "docs/cmqttd-cgate.md": "a32610a99d8ee4a7f9b099dde4e52dbb123bc5a2fd7e0fe8f4528401199334bf",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+    },
+    "new_unique_test_parents": 10,
+    "held_pci_outcomes": [
+      "success",
+      "failure",
+      "identity_mismatch"
+    ],
+    "edit_kinds": [
+      "typed",
+      "raw"
+    ],
+    "admission_public_and_retry": true,
+    "atomic_commit_witness_handoff": true,
+    "save_implementation_unchanged": true,
+    "lifecycle_assertions_unchanged": true,
+    "reviewer_executed_tests": false
+  }
+}

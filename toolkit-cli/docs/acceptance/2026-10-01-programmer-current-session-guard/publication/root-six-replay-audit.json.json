@@ -1,0 +1,62 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "b9cbf11a2316e81a80ace099a38bec51dcdd53a2efd5a31f2a5d6bf0235cbffe",
+  "content_kind": "json",
+  "coordinate_field_map": [],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": {
+    "result": "passed",
+    "receipts": [
+      {
+        "canonical_file": "cgate-dbsetxml-unit-differential-cmqttd.json",
+        "raw_sha256": "1f8b4a85947bee48c7a63dcb6e5624c1bcba7de49eb54a9c2dd1d67d6b6952dc",
+        "public_sha256": "159ab3cd67884bb66f6eade101adab1c01134b7c2f94267c7732a464c2ee7d8c",
+        "source_bindings": 188,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      },
+      {
+        "canonical_file": "cgate-dbsetxml-unit-differential-mock.json",
+        "raw_sha256": "3e283e857c022051c2f5be09aadcb55efc14d5bd3514e81f7d9b4fb2766d7efa",
+        "public_sha256": "da2eddda7c3a83b69e9b45a0bfbc885ab5738d0c7b5ed96ff1d6b15956b86009",
+        "source_bindings": 169,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      },
+      {
+        "canonical_file": "cgate-session-differential-cmqttd.json",
+        "raw_sha256": "2dbc10dc8ce9433f5f41d8e8c9afd2b494bbe6e299f665bb12fbd61f9c11225c",
+        "public_sha256": "d2c1d475dd3f85f7b7ff58de0c2e13272a0e01372b595d838bed5919f82799a9",
+        "source_bindings": 181,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      },
+      {
+        "canonical_file": "cgate-session-differential-fixed.json",
+        "raw_sha256": "e3ccabe56f334189258e536434b266f412b8b18a021c24b35b66487dffd0fec4",
+        "public_sha256": "3ce901d27dfdc699475be21a0db630102cf405875030025678e91f9fcc6633b1",
+        "source_bindings": 161,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      },
+      {
+        "canonical_file": "cgate-tagged-session-differential-cmqttd.json",
+        "raw_sha256": "90ef16bb7b1e302282d299ccd92e7281c5260c1d357fe64b9e7ff6c9fc864178",
+        "public_sha256": "52e12813a93de50d231bbe2028e9a6ba170a48cb9bbd380e936f79958c87c8b0",
+        "source_bindings": 183,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      },
+      {
+        "canonical_file": "cgate-tagged-session-differential-cgate-mock.json",
+        "raw_sha256": "f7ec1ceb2160da47d30bcf95fd0abaa6aac9246ad525bd0cd55cbd594340507a",
+        "public_sha256": "be6080572a491b2fea1a83040388c9abe194be3128b1d6007a24e1ed1e2e3572",
+        "source_bindings": 163,
+        "maintained_validator": true,
+        "root_regenerated_derivative_byte_identical": true
+      }
+    ],
+    "total_source_bindings_checked": 1045,
+    "unique_source_files": 197
+  }
+}

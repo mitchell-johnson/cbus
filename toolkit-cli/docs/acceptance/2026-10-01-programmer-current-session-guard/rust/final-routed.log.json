@@ -1,0 +1,17 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "6dd73c20152b1af4016a9aa9eed82a4ed55c03f1bcc5c570e5fc5d5446828350",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "6dd73c20152b1af4016a9aa9eed82a4ed55c03f1bcc5c570e5fc5d5446828350"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 1 test\ntest service::tests::bridged_pp_load_save_correlates_route_and_keeps_session_on_target_network ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 462 filtered out; finished in 0.03s\n\n"
+}

@@ -1,0 +1,17 @@
+{
+  "format": "cbus-load-guard-evidence-derivative-v1",
+  "raw_sha256": "aea2bb71d07e7ea1f137c9c49d58c28bf4c2cce6f30b4d0cef050b47480ba5b2",
+  "content_kind": "text",
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "fresh_wheel_acceptance"
+      ],
+      "raw_string_sha256": "aea2bb71d07e7ea1f137c9c49d58c28bf4c2cce6f30b4d0cef050b47480ba5b2"
+    }
+  ],
+  "qualification": "Declared runtime and checkout coordinates are role templates. Original bytes are archived outside Git. Protocol payloads, exit results and source digests are retained.",
+  "content": "Using Python 3.13.14 environment at: ${CBUS_WHEEL_ACCEPTANCE_ROOT}/installed-env\nResolved 1 package in 1ms\nPrepared 1 package in 26ms\nInstalled 1 package in 3ms\n + cbus-toolkit-cli==0.1.0 (from file://${CBUS_WHEEL_ACCEPTANCE_ROOT}/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl)\n"
+}
