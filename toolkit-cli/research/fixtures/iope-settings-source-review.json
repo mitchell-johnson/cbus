@@ -1,0 +1,325 @@
+{
+ "format": "cbus-iope-settings-source-review-v1",
+ "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+ "original_execution": "None. Static disassembly (MAP-named functions) and DFM analysis only.",
+ "inputs": {
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "unitspec_sha256": {
+   "I_IOPE.xml": "955f26d0422bb3c02860545f9e7402da6fcbc9674f518a2434bb462df8795d13",
+   "IOPE1R1.xml": "341c701fc8a57a7c4b1c8c6df322c6ec0283eb711c5b36934400a1dec7217a7f",
+   "IOPE2R2.xml": "05bf0e4749b61fe487c3ca3f9ece33b1693ffbb74f9e59bedf101fe9a6d2e803",
+   "IOPE2C4.xml": "87d87b091182ecfde31b66246df3b67a46adc5fefe946fd14afe99cf0547c245"
+  },
+  "form_resource_sha256": {
+   "TFRMIOPE": "7e92e7c738d0a8c76c397a2e5f86ab7f460cf214b0cdcdfbe2624726503698c9",
+   "TFRMIOPEGLOBAL": "64c3f4472a82cad38e1d1a5b40fc45276657fed8e3c4c412b4a26f52c623ce4d",
+   "TFRMIOPEPOWERFAILURE": "2afac217f4748f6c382b5109b0ba06f6ae7081525bb890d66cdf50e90ccf219c",
+   "TFRMOUTPUTRECOVERY": "a4c5d10e0cdfbc99623bc2ea4999a108bd1b1e1791bb7600732b5a98872c8880",
+   "TFRMOUTPUTRECOVERYLEVEL": "481bde3277c7e8ac1487a98428fc8f05fb9218797ae128b1d3dd915a4c4597b4",
+   "TFRMBROADCASTONPOWERUP": "2e85a9f89cf78a3e6537466c7e4aa362937268af353b9de93ae1a7bd51c0bee2",
+   "TFRMIOPEBLOCKTIMER": "3ae70a2a03c2b1f0c1f659207854d1d2d79b835eead68ff49479289c384c30fc"
+  }
+ },
+ "binding": {
+  "node_manager": null,
+  "dialog_factory": "TUnitDialogFactory.RegisterUnitDialog",
+  "dialog_class": "TfrmIOPE",
+  "unit_types": [
+   "IOPE1R1",
+   "IOPE2R2",
+   "IOPE2C4"
+  ],
+  "registration": [
+   "CIS_TfrmIOPE initialization",
+   "0x1396904"
+  ],
+  "lookup": [
+   "TddCommonCBusUnit.Initialise -> TUnitDialogFactory.GetUnitDialog (case-insensitive type name)",
+   "0xecb4f0"
+  ],
+  "unit_classes": "TIOPE1R1/TIOPE2R2/TIOPE2C4 via TUnitTypeFactory.RegisterUnitType 0.0.0..9",
+  "agent": "TIOPECGateAgent via CGateAgentFactory.RegisterAgent",
+  "other_unit_dialog_registrations": [
+   "TfrmArchitecturalDimmer (3)",
+   "TfrmDMXGateway",
+   "TfrmHydraExample",
+   "TfrmKEYGL5",
+   "TfrmPC_RDTS",
+   "TfrmSENCT4"
+  ]
+ },
+ "profiles": [
+  {
+   "unit_type": "IOPE1R1",
+   "sensors": 1,
+   "auxiliaries": 1,
+   "outputs": 1,
+   "relay_channels": [
+    1
+   ]
+  },
+  {
+   "unit_type": "IOPE2R2",
+   "sensors": 2,
+   "auxiliaries": 2,
+   "outputs": 2,
+   "relay_channels": [
+    1,
+    2
+   ]
+  },
+  {
+   "unit_type": "IOPE2C4",
+   "sensors": 2,
+   "auxiliaries": 2,
+   "outputs": 4,
+   "relay_channels": [
+    1,
+    2
+   ]
+  }
+ ],
+ "profile_evidence": "TIOPEUnit/TIOPE1R1/TIOPE2R2/TIOPE2C4 GetMaximumInput{Sensor,Auxiliary,Block}Count, GetMaximumOutputCount, TIOPE2C4.IsRelayChannel (index <= 1)",
+ "controls": [
+  {
+   "tab": "Global",
+   "control": "cmbLongPressTime",
+   "parameter": "LongPressTime",
+   "domain": "ordinal 6..63 (n x 16 ms; 0..5 excluded)",
+   "transform": "identity (CBusMSecSettingToInteger)",
+   "evidence": [
+    [
+     "cmbLongPressTimeIncludeItem",
+     "0x117c848"
+    ],
+    [
+     "CBusMSecSettingToInteger",
+     "0xf25204"
+    ],
+    [
+     "TCommonCBus.RegisterEnumerations",
+     "0xf2401c"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbRampRateGlobal1/2/3, cmbRampRateScene",
+   "parameter": "RampRateA/B/C/S",
+   "domain": "ordinal 0..15 (Instant..1020 secs)",
+   "transform": "identity (CBusRampRateToInteger)",
+   "evidence": [
+    [
+     "CBusRampRateToInteger",
+     "0xf25168"
+    ],
+    [
+     "IntegerToCBusRampRate",
+     "0xf25130"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbStatusReportInterval",
+   "parameter": "StatusReportInterval",
+   "domain": "3..255",
+   "transform": "identity; load shows values below 3 as 3",
+   "evidence": [
+    [
+     "SetCBusUnit loop 3..255",
+     "0x117b7ec"
+    ],
+    [
+     "StatusReportIntegerToString",
+     "0xc9b43c"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbSensorOccupancyDebounce",
+   "parameter": "SensorOccupancyDebounce",
+   "domain": "ordinal 0..6 (3 Counts..0.500 sec)",
+   "transform": "identity",
+   "evidence": [
+    [
+     "PropertiesChange",
+     "0x117c928"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbGlobal1..4RecallLevel",
+   "parameter": "Memory1..4",
+   "domain": "percent 0..100",
+   "transform": "PercentToLevel on change, LevelToPercent on display",
+   "evidence": [
+    [
+     "cmbGlobal1RecallLevelPropertiesChange",
+     "0x117c6e8"
+    ],
+    [
+     "RepopulateRecallLevelComboBoxProperties",
+     "0x117c628"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "chkClockGenEnable, chkBurden",
+   "parameter": "ClockGenEnable, Burden",
+   "domain": "boolean",
+   "transform": "identity",
+   "dependency": "enable rules (ClockGen/BurdenPropertiesEnabled) not reproduced",
+   "evidence": [
+    [
+     "BeforeSaveProgrammingInformation",
+     "0x12ddda4"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "rgSensorNEnabled (Disabled when On/Off)",
+   "parameter": "SensorNEnabled",
+   "domain": "On -> 1, Off -> 0",
+   "transform": "load and save invert the bit (xor 1) around the unit property",
+   "dependency": "sensor 2 group box hidden when the class has one sensor",
+   "evidence": [
+    [
+     "AfterLoadProgrammingInformation",
+     "0x12d8900"
+    ],
+    [
+     "BeforeSaveProgrammingInformation",
+     "0x12ddda4"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbSensorNEnableGroup",
+   "parameter": "SensorNEnableGroup",
+   "domain": "0..254, 255 = none",
+   "transform": "GetSimpleDecimalAddress",
+   "evidence": [
+    [
+     "BeforeSaveProgrammingInformation",
+     "0x12ddda4"
+    ]
+   ]
+  },
+  {
+   "tab": "Global",
+   "control": "cmbSensorNEnableGroupApplication",
+   "parameter": "SensorNEnableGroupInEnableControlApp",
+   "domain": "primary -> 0, enable-control -> 1",
+   "transform": "save writes (group application == network enable-control application)",
+   "evidence": [
+    [
+     "BeforeSaveProgrammingInformation",
+     "0x12ddda4"
+    ]
+   ]
+  },
+  {
+   "tab": "Power Failure",
+   "control": "rgSensorNStateRecovery",
+   "parameter": "SensorNEnableStateStoreEnabled + SensorNEnabledStartup",
+   "domain": "Enabled/Disabled/Restore",
+   "transform": "save: store=(Restore), startup=(Enabled); load: store wins, then startup, else Disabled",
+   "evidence": [
+    [
+     "AfterLoadProgrammingInformation",
+     "0x12d8900"
+    ],
+    [
+     "TIOPEUnit.RegisterEnumerations",
+     "0xd54934"
+    ]
+   ]
+  },
+  {
+   "tab": "Power Failure",
+   "control": "frmBroadcastOnPowerup block check boxes",
+   "parameter": "GroupAssertOnPowerup",
+   "domain": "bit per block 1..8",
+   "transform": "save sets bit b only if flagged, block group assigned and a bistable auxiliary references block b",
+   "evidence": [
+    [
+     "SaveGroupAssertOnPowerupAttribute",
+     "0x12dbd8c"
+    ],
+    [
+     "IsBlockAssociatedWithBistableKey",
+     "0x12dbccc"
+    ],
+    [
+     "LoadInputs (AuxiliaryNBlockAllocation references)",
+     "0x12d75a8"
+    ]
+   ]
+  },
+  {
+   "tab": "Power Failure",
+   "control": "frmOutputRecovery chkLevelStoreEnable / trkRecoveryLevel",
+   "parameter": "LevelStoreEnable[c-1], LightLevelOutput[c-1]",
+   "domain": "0/1; level 0..255",
+   "transform": "SaveOutputs writes 255 for every level-store channel",
+   "dependency": "channels sharing a group are coupled by the recovery frame; refused",
+   "evidence": [
+    [
+     "SaveOutputs",
+     "0x12dccb8"
+    ]
+   ]
+  },
+  {
+   "tab": "Input block timer",
+   "control": "teExpiryTime",
+   "parameter": "TimerHighByte/TimerLowByte",
+   "domain": "0..65535 s (max 18:12:15)",
+   "transform": "EncodeCBusTime h*3600+m*60+s; save High/LowByte per block",
+   "dependency": "the dialog opens from a block timer function; entry gating not reproduced",
+   "evidence": [
+    [
+     "EncodeExpiryTime",
+     "0x1186838"
+    ],
+    [
+     "EncodeCBusTime",
+     "0xc0d71c"
+    ],
+    [
+     "SaveTimerHighAndLowBytes",
+     "0x12db710"
+    ]
+   ]
+  }
+ ],
+ "unreproduced_save_effects": [
+  "LightStateMachine is written false on every save (reported by show)",
+  "Pot1/2TimerExpiryCommand rewritten from unit state",
+  "whole-array rewrites of output, logic and block parameters by SaveOutputs/SaveInputBlocks",
+  "scene, input source, join mode and corridor attribute saves"
+ ],
+ "not_admitted": [
+  "Scenes, Input Blocks, Sensor/Aux Functions and Simple tabs",
+  "Join Mode Recovery radio group",
+  "Logic Recovery and output Turn On/Logic/Restrike frames",
+  "dimmer recovery delay (TfrmOutputRecoveryLevel trkRecoveryDelay Min=6 not pinned)",
+  "timer expiry functions (TimerExpiryCommand)",
+  "EEPROMLevelStore (no dialog control found)",
+  "Environment (corridor linking) tab",
+  "Status tab"
+ ],
+ "open": [
+  "PrepareFlashRadioGroupSimple item/boolean order is inferred from BooleanInverse=False and corroborated by the I_IOPE.xml description, not executed",
+  "InputGroupAddress 255 treated as no block group (GroupByAddress lookup) by inference",
+  "ClockGen/Burden enable rules",
+  "firmware revisions outside the catalogued 1.0.00..1.2.99"
+ ]
+}

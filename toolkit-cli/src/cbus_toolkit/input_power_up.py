@@ -14,7 +14,7 @@ Two Toolkit editors are covered:
   $FF (unticked).
 
 IOPE occupancy controllers use a different enable rule (bistable auxiliary
-inputs and non-zero groups) and are not admitted here.
+inputs and assigned block groups); iope_settings.py edits them.
 """
 from __future__ import annotations
 

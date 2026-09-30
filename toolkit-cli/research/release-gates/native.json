@@ -124,6 +124,7 @@
     "tests/test_extended_macros.py::ExtendedNativeTest",
     "tests/test_hardware_fixture_matrix.py",
     "tests/test_input_options.py",
+    "tests/test_iope_settings.py::IopeNativeTest",
     "tests/test_labels.py",
     "tests/test_lighting_native.py",
     "tests/test_local_cgate.py",

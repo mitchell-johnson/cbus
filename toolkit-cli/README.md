@@ -863,6 +863,15 @@ with the original percent/level conversion and slider coupling. Use
 RELDN8SP, RELAY4 and other firmware are refused. See
 [din-output-settings.md](docs/din-output-settings.md).
 
+## IOPE occupancy-controller settings
+
+IOPE1R1, IOPE2R2 and IOPE2C4 (firmware 1.0.00..1.2.99) support the Toolkit
+Global tab, sensor enable and state-recovery controls, bistable-gated
+power-up broadcast, output-channel recovery and block timers. Use
+`iope-settings show|plan` on an exported snapshot, or
+`cgate unit ... [--dry-run] iope-settings` for a native apply with readback.
+See [iope-settings.md](docs/iope-settings.md).
+
 ## DLT profiles and classic label variants
 
 `dlt profiles` reports the DLT/eDLT registry and why an identity is admitted or

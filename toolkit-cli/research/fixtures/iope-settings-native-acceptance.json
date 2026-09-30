@@ -1,0 +1,128 @@
+{
+  "format": "cbus-iope-settings-acceptance-v1",
+  "backend": "local",
+  "scope": "Toolkit source-grounded IOPE Global, sensor enable, power failure and block timer settings through native PP and a closed database; no physical controller",
+  "types": [
+    {
+      "unit_type": "IOPE1R1",
+      "catalog_number": "5752PP/1R",
+      "firmware": "1.2.00",
+      "positive": [
+        "global",
+        "global-minimum",
+        "sensor-enable",
+        "sensor-state-enabled",
+        "broadcast",
+        "broadcast-off",
+        "output-recovery",
+        "output-level-store-255",
+        "block-timers"
+      ],
+      "boundary": [
+        "long-press-6-63",
+        "status-report-3-255",
+        "debounce-0-6",
+        "recall-0-255",
+        "timer-0-65535"
+      ],
+      "invalid": [
+        "sensor-high",
+        "enable-group-255",
+        "broadcast-momentary",
+        "broadcast-ungrouped-or-momentary",
+        "output-level-with-store",
+        "output-high",
+        "timer-overflow",
+        "long-press-5"
+      ],
+      "raw_byte_assertions": 35,
+      "unrelated_parameters_preserved": 87,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "IOPE2R2",
+      "catalog_number": "5752PP/2R",
+      "firmware": "1.2.00",
+      "positive": [
+        "global",
+        "global-minimum",
+        "sensor-enable",
+        "sensor-state-enabled",
+        "broadcast",
+        "broadcast-off",
+        "output-recovery",
+        "output-level-store-255",
+        "block-timers"
+      ],
+      "boundary": [
+        "long-press-6-63",
+        "status-report-3-255",
+        "debounce-0-6",
+        "recall-0-255",
+        "timer-0-65535"
+      ],
+      "invalid": [
+        "sensor-high",
+        "enable-group-255",
+        "broadcast-momentary",
+        "broadcast-ungrouped-or-momentary",
+        "output-level-with-store",
+        "output-high",
+        "timer-overflow",
+        "long-press-5"
+      ],
+      "raw_byte_assertions": 35,
+      "unrelated_parameters_preserved": 87,
+      "save_reload_passed": true
+    },
+    {
+      "unit_type": "IOPE2C4",
+      "catalog_number": "5752PP/2R/2D",
+      "firmware": "1.2.00",
+      "positive": [
+        "global",
+        "global-minimum",
+        "sensor-enable",
+        "sensor-state-enabled",
+        "broadcast",
+        "broadcast-off",
+        "output-recovery",
+        "output-level-store-255",
+        "block-timers"
+      ],
+      "boundary": [
+        "long-press-6-63",
+        "status-report-3-255",
+        "debounce-0-6",
+        "recall-0-255",
+        "timer-0-65535"
+      ],
+      "invalid": [
+        "sensor-high",
+        "enable-group-255",
+        "broadcast-momentary",
+        "broadcast-ungrouped-or-momentary",
+        "output-level-with-store",
+        "output-high",
+        "timer-overflow",
+        "long-press-5"
+      ],
+      "raw_byte_assertions": 35,
+      "unrelated_parameters_preserved": 87,
+      "save_reload_passed": true
+    }
+  ],
+  "refused": [
+    {
+      "unit_type": "IOPE2R2",
+      "firmware": "1.0.00",
+      "schema": "IOPE2C4.xml",
+      "values_unchanged": true
+    }
+  ],
+  "edits": 27,
+  "raw_byte_assertions": 105,
+  "passed": true,
+  "physical_hardware_verified": false,
+  "cli_passed": true
+}

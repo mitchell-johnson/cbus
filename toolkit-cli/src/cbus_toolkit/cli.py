@@ -1832,6 +1832,8 @@ def build_parser():
     p.add_argument("--show", action="store_true", help="Report the Toolkit tab view without editing")
     p.add_argument("--plan", dest="din_plan", type=Path, help="Apply a saved cbus-din-output-settings-plan-v1 after a stale check")
     _din_options(p)
+    from .iope_cli import native_options as iope_native_options
+    iope_native_options(unops)
     from .dlt_cli import native_options as dlt_native_options
     dlt_native_options(unops)
     from .wireless_cli import native_options as wireless_native_options
@@ -2256,6 +2258,8 @@ def build_parser():
         p.add_argument("--unit-type", help="Required for a bare parameter mapping")
         if action == "plan":
             _din_options(p)
+    from .iope_cli import offline_options as iope_offline_options
+    iope_offline_options(commands)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
     from .wireless_cli import options as wireless_options
@@ -3362,6 +3366,7 @@ def _programming(args, client):
     mutable = args.remote_action in ("set", "reset-defaults", "import", "key-macro", "neo-key-macro", "sensor-occupancy", "din-settings", "dlt-labels", "wireless-gateway", "wireless-globals", "edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes", "device-scene", "template-import", "template-copy", "template-reset-defaults")
     from .key_options_cli import NATIVE_ACTIONS as key_option_actions
     mutable = mutable or args.remote_action in key_option_actions
+    mutable = mutable or args.remote_action == "iope-settings"
     destination = args.destination or args.source
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
@@ -3578,6 +3583,12 @@ def _programming(args, client):
         elif args.remote_action in ("wireless-gateway", "wireless-globals"):
             from .wireless_cli import native as wireless_native
             result, edited = wireless_native(args, session)
+            if not edited:
+                return result
+            values = session.values()
+        elif args.remote_action == "iope-settings":
+            from .iope_cli import native as iope_native
+            result, edited = iope_native(args, session)
             if not edited:
                 return result
             values = session.values()
@@ -3974,6 +3985,9 @@ def run(args):
     if args.area == "wireless":
         from .wireless_cli import offline as wireless_offline
         return wireless_offline(args)
+    if args.area == "iope-settings":
+        from .iope_cli import offline as iope_offline
+        return iope_offline(args)
     if args.area == "din-settings":
         from .din_output_settings import check_profile
         identity = []
