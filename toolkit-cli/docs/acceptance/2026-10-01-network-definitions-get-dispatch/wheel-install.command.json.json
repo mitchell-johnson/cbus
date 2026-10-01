@@ -1,0 +1,68 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4a86c81a0ab72d69f287b2183e287f038208a61ca1ae06c5e4663e4aa2cec4af",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "host_runtime"
+      ],
+      "raw_string_sha256": "0aede0ee66a4b0b9420149654c3b67f51f23e6422605f92ee6ac77b4c6f4a603"
+    },
+    {
+      "json_pointer": "/argv/2",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "d1f8a496b285220f300523af402248c16da4565e0ce6e97fae307230de00e726"
+    },
+    {
+      "json_pointer": "/argv/8",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "b743717d644133524cfb3701b96a6ffaf0ce5af910c8e32fc4298e4ac0cc8c65"
+    },
+    {
+      "json_pointer": "/argv/10",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "290f78fc75f96ffcd30696fbd42e5194c5df7a33f8ec8d876ec2a2d4c1b60450"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "42946146233d391ddccda63b9dd0f4e1baf2cac95fd848ea3bd462cedea61106"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_HOST_RUNTIME}/bin/uv",
+      "--cache-dir",
+      "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/uv-cache",
+      "pip",
+      "install",
+      "--offline",
+      "--no-deps",
+      "--python",
+      "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/python",
+      "--reinstall",
+      "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "4fad03e1a23801ba12bd0a46857bd799e5be7e04bbfe38ee88c5e60208e46dce"
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "9650e336a2850319430048cea2fc2e38864eae1f836cf96bfa6647ca8d0cc79a",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/runs/0/report",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "fd4ce989e8644925d856d914d850ca8f01dfdc3369f608e8a007f4371de85f56"
+    },
+    {
+      "json_pointer": "/runs/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "f80a3a0b18dd90340f15dcbdb7b1cb71d43a70fcd6a405f083078d92339f2975"
+    },
+    {
+      "json_pointer": "/runs/0/argv/2",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/0/argv/6",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "cfc3571f6dd8ab6633fbfdff07fb1c6b7678c94be5f0147d9791500ca39c8fd2"
+    },
+    {
+      "json_pointer": "/runs/0/argv/8",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/runs/0/argv/10",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "6f1498508c211ba5233d495244b59e23928b3df5e1995ddff819a9ecec831e6d"
+    },
+    {
+      "json_pointer": "/runs/1/report",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "598199da4c75c5c0aaa522c7a9eec0acef4225845901d344a0f2f6d8fb76e089"
+    },
+    {
+      "json_pointer": "/runs/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "f80a3a0b18dd90340f15dcbdb7b1cb71d43a70fcd6a405f083078d92339f2975"
+    },
+    {
+      "json_pointer": "/runs/1/argv/2",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "b743717d644133524cfb3701b96a6ffaf0ce5af910c8e32fc4298e4ac0cc8c65"
+    },
+    {
+      "json_pointer": "/runs/1/argv/6",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "290f78fc75f96ffcd30696fbd42e5194c5df7a33f8ec8d876ec2a2d4c1b60450"
+    },
+    {
+      "json_pointer": "/runs/1/argv/8",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "cfc3571f6dd8ab6633fbfdff07fb1c6b7678c94be5f0147d9791500ca39c8fd2"
+    },
+    {
+      "json_pointer": "/runs/1/argv/10",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/runs/1/argv/12",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "3a5d0a55ce9db6ffc3e9f69965fece26a683fcc2a261640deeafbb21f15d8c95"
+    },
+    {
+      "json_pointer": "/logs/0/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "c6b6c186d197034c93608c9babc95069a426431d09076ac44ead1bee2899bde2"
+    },
+    {
+      "json_pointer": "/logs/1/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "64de744f3d54bbb4b745188291bf1f090bf79c356a303ba62d23e28cd6d9356a"
+    },
+    {
+      "json_pointer": "/prior_manifest/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "2cda4b6891cbe734380127c88386155d7fb35bf2681b9f30133af213e6f3cfa7"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "driver_sha256": "e30c857d1149c49472dceccde9394f95af8dce51e67c331ef914d9dfa83687a4",
+    "runs": [
+      {
+        "mode": "source",
+        "report": "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_SOURCE_20261001_7}/report.json",
+        "sha256": "8dc5624da4d7fe3602bad06b306f45d4def5aaeeeb44e8cae29344e6bf8d27d4",
+        "argv": [
+          "${CBUS_ORIGINAL_CLI_DRIVER}/driver.py",
+          "--python",
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "--mode",
+          "source",
+          "--vendor",
+          "${CBUS_ORIGINAL_CGATE_APP}",
+          "--java",
+          "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+          "--output",
+          "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_SOURCE_20261001_7}"
+        ],
+        "commands": 79,
+        "completed": true,
+        "source_unchanged": true,
+        "package_unchanged": true,
+        "artifacts_unchanged": true,
+        "cleanup_complete": true,
+        "proxy_cleanup": true,
+        "trap_cleanup": true,
+        "trap_connections": [],
+        "serial_path_absent": true
+      },
+      {
+        "mode": "installed",
+        "report": "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_WHEEL_20261001_2}/report.json",
+        "sha256": "86c9381ff0bc93180b1234597a5392b48e708bbfb04d4deb491a8e14415181e9",
+        "argv": [
+          "${CBUS_ORIGINAL_CLI_DRIVER}/driver.py",
+          "--python",
+          "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/python",
+          "--mode",
+          "installed",
+          "--wheel",
+          "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+          "--vendor",
+          "${CBUS_ORIGINAL_CGATE_APP}",
+          "--java",
+          "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+          "--output",
+          "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_WHEEL_20261001_2}"
+        ],
+        "commands": 79,
+        "completed": true,
+        "source_unchanged": true,
+        "package_unchanged": true,
+        "artifacts_unchanged": true,
+        "cleanup_complete": true,
+        "proxy_cleanup": true,
+        "trap_cleanup": true,
+        "trap_connections": [],
+        "serial_path_absent": true
+      }
+    ],
+    "logs": [
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt7.log",
+        "sha256": "3db9f1a4dbb5e6c654bf38e9369d96f8f1f6831ee2fbc96db411b65a4a629c29"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/wheel-attempt2.log",
+        "sha256": "4779c36cf225780db6dbaccda68e4dec8dc3eaa6438919ea7ccf6863db153abb"
+      }
+    ],
+    "prior_manifest": {
+      "path": "${CBUS_ORIGINAL_CLI_DRIVER}/final-validation.json",
+      "sha256": "7f0b1c6b3dbcdffffbaab5aeb60d0e559997eb97e4ca417fab0a49435e8d33b3"
+    },
+    "limitations": [
+      "Native FILE restore with public lowercase cni and two options returns408 CBusSecond=twoNetwork; explicitly observed limitation",
+      "Clean FILE restores definitions with literal Options=null",
+      "Native FILE partial insertion and arbitrary-name DB projection are not cmqttd parity"
+    ],
+    "full_suite_run": false,
+    "repository_edits": false
+  }
+}

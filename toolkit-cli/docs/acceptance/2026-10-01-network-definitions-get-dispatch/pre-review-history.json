@@ -1,0 +1,14 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "db20f8e3be17139ddaf52c87de5e08c2fc56461f2648c15c5107cecae8edc186",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "candidate_commit": "b7b4e5d3032dba6c70a9a63607e68fe05c0d9103",
+    "receipt_path": "toolkit-cli/docs/acceptance/2026-10-01-network-definitions/acceptance.json",
+    "receipt_sha256": "c9ccc9b1056d5e2227a8d8c5210a5658605e0dea5cee70b4d0c0c7f1bbcb94ce",
+    "qualification": "Pre-review focused acceptance passed but missed reserved GET namespace shadowing. Candidate main publication was held; failed regression and corrected source/binary/CLI evidence are preserved independently. Original receipt is immutable historical evidence, not current corrected acceptance."
+  }
+}

@@ -51,9 +51,20 @@ as evidence of functional completion.
 The [closed network setup and catalogue batch](feature-batch-2026-10-01-network-definitions.md)
 adds typed runtime definitions and repairs immediate DB LOAD after network creation.
 Current tag fields refresh matching closed definitions while preserving existing
-PCI bindings and unrelated runtime names. Source and fresh wheel each passed
-151 focused tests plus 657 subtests and a separate 114-command cmqttd journey;
-79 public CLI calls per environment ran against original C-Gate. Native creation
+PCI bindings and unrelated runtime names. Catalogue metadata GET now requires
+an exact explicit `//PROJECT/NAME` path, preserving generic server and issued-OID
+dispatch when legal runtime names collide. Review found the earlier held
+`b7b4e5d` candidate changed `GET cgate Name` from a 402 refusal to a 300 reply;
+its earlier receipt remains immutable historical evidence.
+The [corrected acceptance](acceptance/2026-10-01-network-definitions-get-dispatch/acceptance.json)
+has SHA-256 `d27cb05bb2f93cb2ac97ba2146c75ddf636fb80f9d5a8bf51bc1001b9795fb57`.
+It binds source and fresh wheel runs of 151 focused parent tests plus 661 subtests
+each, with no selected failures, errors or skips, and a separate 147-command
+cmqttd journey in each environment. Eight complete generic response comparisons
+preserve actual failure baselines; they do not establish successful generic OID
+lookup or broad native GET parity. Sixteen focused Rust tests and 30 native
+literal cases passed; no full suite ran. Fresh corrected-package original
+C-Gate journeys each completed 79 public CLI calls. Native creation
 receipts, runtime-to-tag SAVE DB materialization, FILE partial loads and option
 restoration retain their stated limits. This is bounded software delivery for
 issues 27/29/32; the broad ledger and zero fully accepted obligations are unchanged.

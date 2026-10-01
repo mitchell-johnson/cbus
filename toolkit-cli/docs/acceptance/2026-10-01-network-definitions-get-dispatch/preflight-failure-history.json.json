@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "aab146caf6c75d3bb4605bb3fae832951ea61d703bb4ce2d6f29069cf348a5c0",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "failure_junit_sha256": "1490e2fbfdf4f3f7d041ed7c02d6cf475d83dd168e0b3ed1160d275dddbf6e90",
+    "fixed_junit_sha256": "97377b6e9dec9968cca51234d6bee7eb533bfa781eb4e5ce4e02e996cf18e37e",
+    "cause": "Root preflight test imported nonexistent parser helper; corrected to actual build_parser. Product assertions unchanged.",
+    "failed_parent_tests": 1,
+    "passed_parent_tests_at_failure": 5,
+    "failed_run_passed_subtests": 38,
+    "corrected_parent_tests": 6,
+    "corrected_subtests": 43
+  }
+}

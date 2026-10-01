@@ -82,6 +82,9 @@ SAVE DB stores an internal snapshot.
 are aliases for its endpoint; Options retains space-separated tokens. A DB edit
 does not change these fields until an explicit DB load. Other GET selectors
 retain their existing dispatch and acceptance boundaries.
+Use the explicit `//PROJECT/NAME` path for these cmqttd catalogue fields. Bare
+server selectors such as `cgate` and issued `!OID` references retain their
+existing meaning, even if a runtime definition has the same name.
 
 On cmqttd, FILE selects an internal atomic repository snapshot. It is never a
 host filename. A missing snapshot is an empty load. Existing snapshots merge

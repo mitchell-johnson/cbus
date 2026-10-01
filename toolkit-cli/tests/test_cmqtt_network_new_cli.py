@@ -44,6 +44,11 @@ class NetworkNewPublicWireTests(unittest.TestCase):
             (('save', 'DB'), 'NET SAVE DB LAB', 200),
             (('load', 'FILE'), 'NET LOAD FILE LAB', 200),
             (('save', 'FILE'), 'NET SAVE FILE LAB', 200),
+            (('create', 'cgate', 'cni', '127.0.0.1:1'), 'NET CREATE cgate cni 127.0.0.1:1', 200),
+            (('create', 'projects', 'cni', '127.0.0.1:1'), 'NET CREATE projects cni 127.0.0.1:1', 200),
+            (('create', 'cbus', 'cni', '127.0.0.1:1'), 'NET CREATE cbus cni 127.0.0.1:1', 200),
+            (('create', '!71000000-0000-4000-8000-000000000001', 'cni', '127.0.0.1:1'),
+             'NET CREATE !71000000-0000-4000-8000-000000000001 cni 127.0.0.1:1', 200),
         )
         for arguments, command, status in cases:
             responses = [[b'[1] 200 OK.\r\n'], [f'[2] {status} fixture reply\r\n'.encode()]]
@@ -119,8 +124,14 @@ class OwnedNetworkCatalogueCLITests(unittest.TestCase):
                           'renamed_definition_retained', 'conflicting_numeric_runtime_refreshed_from_db',
                           'runtime_refresh_requires_explicit_db_load', 'deleted_db_row_preserves_active_runtime',
                           'stale_numeric_snapshot_not_resurrected', 'file_collision_atomic_refusal',
-                          'explicit_project_selection_isolated'):
+                          'explicit_project_selection_isolated', 'reserved_and_oid_get_dispatch_preserved'):
                 self.assertTrue(receipt[field], field)
+            self.assertEqual(len(receipt['generic_get_collision_checks']), 8)
+            for check in receipt['generic_get_collision_checks']:
+                self.assertEqual(check['before_exit'], check['after_exit'])
+                self.assertTrue(check['full_response_equal'])
+                self.assertTrue(check['stdout_bytes_equal'])
+                self.assertTrue(check['stderr_bytes_equal'])
             self.assertFalse(receipt['native_process_launched'])
             self.assertTrue(receipt['backend']['process_cleanup_verified'])
 

@@ -1,0 +1,26 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "1615c4a60c56c3319e7a4fc21725031328d057a6620408f49fc23e863e0657fc",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/prior_copy",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "d46856814eba222683e1803fcd0541043bfa4cbfaa7c071eb9ce037df8f27539"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "prior_sha256": "249d876f72998ae48352ca45e90a79e2ee1f4ab081c659dfde351c7c560e5f60",
+    "prior_copy": "${CBUS_ORIGINAL_CLI_DRIVER}/driver-249d876f72998ae48352ca45e90a79e2ee1f4ab081c659dfde351c7c560e5f60.py",
+    "current_sha256": "b51b2564abd0fec44e0a4e720120eb8d46d9501bdefce6f255a7e45147be2a20",
+    "changes": [
+      "expanded source closure",
+      "cleared inherited CBUS_*"
+    ]
+  }
+}

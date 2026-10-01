@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4fad03e1a23801ba12bd0a46857bd799e5be7e04bbfe38ee88c5e60208e46dce",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "4fad03e1a23801ba12bd0a46857bd799e5be7e04bbfe38ee88c5e60208e46dce"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": "Using Python 3.13.14 environment at: fresh-wheel/installed-env\nResolved 1 package in 14ms\nPrepared 1 package in 24ms\nInstalled 1 package in 5ms\n + cbus-toolkit-cli==0.1.0 (from file://${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl)\n"
+}

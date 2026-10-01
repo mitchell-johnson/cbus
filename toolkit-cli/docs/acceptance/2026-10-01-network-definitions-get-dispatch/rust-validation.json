@@ -1,0 +1,571 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "f4c37058344ec694592364128921e9abdaec202bd78ca4a33bdcb27f139970aa",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-db-rust-publication-validation-v2",
+    "date": "2026-10-01",
+    "base_commit": "b7b4e5d3032dba6c70a9a63607e68fe05c0d9103",
+    "publication_state": "private audited summary ready for root publication",
+    "frozen_source_hashes": {
+      "rust/cbus-cgate/src/service/net_lifecycle.rs": "f5e612b5b2b3c70de2e1b022f28ae89414c0baf9b1c00816c958c3a6af987364",
+      "rust/cbus-cgate/src/service.rs": "f7de9c887f45aa7c344346310b92d5141dbd1638f80d555ff00861d8b5563a22",
+      "rust/cbus-cgate/src/service/tests/net_db_load.rs": "743fda837f1a01c7b34dfad9eeba66173235bd394c86fd5b55d7f21f1b813f1c",
+      "rust/cbus-cgate/src/service/tests.rs": "fb19270fdd6eaac4fa4c4d3bc6f0da8caecf1bb628ade8c0029bb36c740b4d00",
+      "rust/cbus-cgate/src/capability_matrix.rs": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20",
+      "rust/cmqttd/tests/system_cgate_net_lifecycle.rs": "c369dbf1e807d4a9135ef89ff2fa0e96badb58315dd3992971d5cd8f40d39221",
+      "rust/testdata/vectors/cgate_net_db_reconciliation.jsonl": "83bf3292c7aaa01204167fc80b0b7b29ea3fbbfbfc944ff9c0103c9608a0ef4a",
+      "rust/testdata/fixtures/native_cgate_net_db_reconciliation.json": "32d0ea53000391dee0ee9d8b9e54496e6df916395fe8e065de78766a5397b596",
+      "rust/cbus-cgate/research/native_net_db_reconciliation_probe.py": "b032e26ebae30bd08bcf3aaed64f685d42f38078fcf5108cab9ec0437f782408",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
+      "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
+      "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
+      "rust/cbus-test-support/src/broker.rs": "5e72c68aec336147df5ad4a8973ca8d9e4983274ce3cffddb8a56ef342451dd8",
+      "rust/cbus-test-support/src/lib.rs": "ff0391c0f6dc73520a22c9ca5a5a74afbb64d33a8c62e8f78720003e4badc433",
+      "rust/cbus-test-support/src/pci.rs": "8e6e82b94a96077a4b2c589bc2f823613be8dad24ae2fcb2607c043dfefbfe91",
+      "rust/cbus-test-support/src/proc.rs": "e7093dde3b27dd3b551dc546ae3d2db08d5570ba99386460fc7cf076bda8b95f",
+      "rust/cbus-test-support/src/wait.rs": "2e4311260ac17418c1ee2553d77b14ce29866bd5c5cccfa9559d08f3a131feca",
+      "rust/cmqttd/Cargo.toml": "c37233e50068e5775275d36b1ca24f4e4dd66dfe719b8ebb016cb044f216ce0a",
+      "rust/cmqttd/tests/util/mod.rs": "beb4764e6134882be7d80232d430047e027de42f62c570bf41a28e62d1c4211c",
+      "rust/testdata/fixtures/native_cgate_cgl_routes.json": "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490",
+      "rust/testdata/fixtures/project.xml": "15eb06a6ce7c96b88baa77d240e66b90559bb85f5f594e454b7cd18fd8a1c9c1",
+      "rust/testdata/vectors/cgate_cgl_routes.jsonl": "0377952275e3022541a1a11cdf1b7a16ed638701a9c027048f2f0b8c5b7da269",
+      "rust/testdata/fixtures/behavioral_expectations.json": "4f9a19a091b70f45e427db5ca8c8a0983639cb4be4cda1072dc3c417481ad82a"
+    },
+    "rust_source_tree": {
+      "file_count": 205,
+      "sha256": "41805a83c30b30501297e2154de916130af7a05778c599a6fc9385ae49e68328",
+      "algorithm": "SHA256 of sorted repository-relative path + NUL + file SHA256 + LF for rg --files rust -g *.rs -g Cargo.toml -g Cargo.lock"
+    },
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "net_db_load",
+          "--lib"
+        ],
+        "exit": 0,
+        "tests_passed": 11,
+        "literal_response_subcases": 30
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "net_lifecycle_help_catalog_persistence_and_obsolete_boundary_are_native_shaped",
+          "--lib"
+        ],
+        "exit": 0,
+        "tests_passed": 1
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "net_save_load_explicit_project_targets_only_the_named_project",
+          "--lib"
+        ],
+        "exit": 0,
+        "tests_passed": 1
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "cmqttd_replays_native_cgl_capture_without_pci_traffic",
+          "--lib"
+        ],
+        "exit": 0,
+        "tests_passed": 1,
+        "NET_LOAD_DB_bypass_removed": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "net_lifecycle_mutations_and_network_locate_require_login_before_io",
+          "--lib"
+        ],
+        "exit": 0,
+        "tests_passed": 1
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "test",
+          "-p",
+          "cmqttd",
+          "--test",
+          "system_cgate_net_lifecycle"
+        ],
+        "exit": 0,
+        "tests_passed": 1,
+        "actual_daemon_owned_loopback": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "fmt",
+          "--check"
+        ],
+        "exit": 0
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.92.0",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit": 0
+      }
+    ],
+    "execution": {
+      "cwd": "rust/",
+      "cargo_build_jobs": 2,
+      "build_cache_location_redacted": true,
+      "toolchains": [
+        "cargo 1.92.0 (344c4567c 2025-10-21)",
+        "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      ],
+      "focused_tests_passed": 16,
+      "native_response_subcases": 30,
+      "full_cargo_test_workspace_run": false,
+      "full_suite_omission": "Explicit user instruction: do not run the full suite unless absolutely necessary."
+    },
+    "development_errors_retained": [
+      {
+        "command": "cargo +1.92.0 test -p cbus-cgate net_db_load --lib",
+        "exit": 101,
+        "error": "E0599 test helper used &Service instead of &Arc<Service>",
+        "resolution": "Test helper signature corrected; final ten-test run passes."
+      },
+      {
+        "command": "cargo +1.92.0 test -p cbus-cgate net_db_load --lib",
+        "exit": 101,
+        "errors": [
+          "Test attempted NET DELETE on operating configured network (468)",
+          "Test assumed 300 for absent/unsynchronized fixture unit GET (401, then402)"
+        ],
+        "resolution": "Test-only closed-state/fixture preconditions corrected; generic GET now compared with established model replies; final run passes."
+      },
+      {
+        "command": "cargo +1.92.0 test -p cbus-cgate net_catalog_optional_project_arguments --lib",
+        "exit": 0,
+        "tests_run": 0,
+        "credited": false,
+        "resolution": "Correct existing selector net_save_load_explicit_project_targets_only_the_named_project subsequently ran one passing test."
+      },
+      {
+        "command": "cargo +1.92.0 test -p cbus-cgate net_db_load_definition_get_requires_explicit_paths_when_legal_names_collide --lib",
+        "exit": 101,
+        "tests_passed": 0,
+        "tests_failed": 1,
+        "intentional_red": true,
+        "error": "Runtime cgate definition intercepted GET cgate Name, producing300 instead of baseline402.",
+        "resolution": "Strict explicit qualification now preserves generic selectors; final11-test module passes."
+      }
+    ],
+    "binaries": {
+      "cmqttd": {
+        "before_b7_sha256": "f54b70e1b1130ec25b36fb2dc49d95cb1890bd9a984f4f597fad6f53608fdb15",
+        "before_b7_bytes": 12906176,
+        "preserved_before_product_edit": true,
+        "new_sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445",
+        "new_bytes": 12906176,
+        "new_release_rehashed": true
+      },
+      "cgate-mock": {
+        "before_b7_sha256": "a963aa5fc02fe08419e36e765e81f4a88b9598aa4348b10426656672c2576ebb",
+        "before_b7_bytes": 3400208,
+        "preserved_before_product_edit": true,
+        "new_sha256": "a963aa5fc02fe08419e36e765e81f4a88b9598aa4348b10426656672c2576ebb",
+        "new_bytes": 3400208,
+        "new_release_rehashed": true
+      },
+      "cbus-tools": {
+        "before_b7_sha256": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018",
+        "before_b7_bytes": 2661440,
+        "preserved_before_product_edit": true,
+        "new_sha256": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018",
+        "new_bytes": 2661440,
+        "new_release_rehashed": true
+      }
+    },
+    "native_provenance": {
+      "fixture": "rust/testdata/fixtures/native_cgate_net_db_reconciliation.json",
+      "fixture_sha256": "32d0ea53000391dee0ee9d8b9e54496e6df916395fe8e065de78766a5397b596",
+      "fixture_command_count": 135,
+      "raw_receipt_sha256": "38001de8630ef840ad301fd79401a91849c68cad073610f4f2a1f5dd829a0ec9",
+      "oracle": {
+        "version": "3.4.0.2001",
+        "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+      },
+      "capture_sources": {
+        "rust/cbus-cgate/research/native_net_db_reconciliation_probe.py": "b032e26ebae30bd08bcf3aaed64f685d42f38078fcf5108cab9ec0437f782408",
+        "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+      },
+      "normalization_checks_passed": 17,
+      "normalization_checks": {
+        "empty_fresh_repeat_sequential_db": true,
+        "interface_change_refresh": true,
+        "numeric_collision_refresh": true,
+        "GET_aliases": true,
+        "GET_bridge": true,
+        "options_order_and_preservation": true,
+        "missing_file_nonempty": true,
+        "explicit_project_isolation": true,
+        "file_later_collision_partial": true,
+        "deleted_tag_runtime_retained": true,
+        "DBNEW_failed_unchanged": true,
+        "refresh_runtime_type_save": true,
+        "save_persists": true,
+        "source_closure": true,
+        "normalized_OIDs": true,
+        "normalized_owned_paths": true,
+        "normalized_host": true
+      },
+      "seven_owned_children_cleanup_reverified": true,
+      "closed_model_only": true,
+      "physical_or_windows_acceptance": false,
+      "generated_oid_allocator_parity_claimed": false
+    },
+    "literal_response_cases": {
+      "case_count": 30,
+      "case_bindings": [
+        {
+          "id": "empty_db",
+          "source_label": "empty_db",
+          "source_row_sha256": "ce941e9b0a2b9200f65b027fe3784a8933cb75b70b9abeb1a4b460e48b2afae5",
+          "vector_row_sha256": "f206271a33b4028c6a7076d1d1339a723f66134b2287bb0e78fd459c68e1deb2"
+        },
+        {
+          "id": "empty_list",
+          "source_label": "empty_list",
+          "source_row_sha256": "06d3f4288fc2bf3a10a4777579dc7b1a480453959fa5ff99b66edf82b528e3ee",
+          "vector_row_sha256": "007e88952b8a3bbb5d5f9189f215ca44d17789891079123991b00bc26efa82f7"
+        },
+        {
+          "id": "missing_file",
+          "source_label": "missing_file",
+          "source_row_sha256": "872d5aacf8f1838a0ea66584b7cb4eac9db2f6b793dd94b1092e471dd49a04f3",
+          "vector_row_sha256": "dc76a355bc7a83d4703d170b344b14fafc884fa770079ede4a61438b5cc6664e"
+        },
+        {
+          "id": "fresh_db",
+          "source_label": "fresh_db",
+          "source_row_sha256": "080fa6129bad9017a5b9c32315b967cecd97476a997d2bac581e7372a3c94083",
+          "vector_row_sha256": "17adb68ff495b8044ce622eda0c653861a2457c4807adca796634a7e41ed2a84"
+        },
+        {
+          "id": "fresh_list",
+          "source_label": "fresh_list",
+          "source_row_sha256": "cca1d56835dd671034d7f7ceea98cd5c5c4bef2a60da141c2358077b2e5f9315",
+          "vector_row_sha256": "e0f9fe27faabf81adffcf587bb2e8183d74a6778c2088ebde9a7dce4e083dde5"
+        },
+        {
+          "id": "repeat_db",
+          "source_label": "repeat_db",
+          "source_row_sha256": "e35ebd69319db5dc198ce9dc033f1dd0b67199ca9a96bfa16e4914a03a12f079",
+          "vector_row_sha256": "4425b42bb88dbf9a741b6d812c5c14f81c9d7d6df2f4d75f47e2ec1e136b4e33"
+        },
+        {
+          "id": "nonempty_missing_file",
+          "source_label": "nonempty_missing_file",
+          "source_row_sha256": "73776b46298f463768f8f0734f2027b8007e759c942ac4708e4676497b4a0202",
+          "vector_row_sha256": "32f001d4516b7a2ae1c645c7f41a9858e2667aedea2f440c24baa9f241c1e8d0"
+        },
+        {
+          "id": "cni_name",
+          "source_label": "cni_name",
+          "source_row_sha256": "f7cb06f17a2562c3fd5b18d2bc75447abebfcb66827ebc0f48e6f4d162881e52",
+          "vector_row_sha256": "93da6a30b00309b3f009f49c965b2771ee982163470e12115afafdd8f96c11bd"
+        },
+        {
+          "id": "cni_type",
+          "source_label": "cni_type",
+          "source_row_sha256": "737aa86383413845d21fac6f68bd2584477c9c59a4682f0bd732c220a11a6f3b",
+          "vector_row_sha256": "4946367fa486915b670809ab3f36ae69a78ddc54fd927ca9c9575e581fb9d290"
+        },
+        {
+          "id": "cni_options",
+          "source_label": "cni_options",
+          "source_row_sha256": "9c6940a137c3d34ced48767a404117cd53036eaa0f3ffdebcc575bd228e15fdb",
+          "vector_row_sha256": "a213c1d5375fed499ec4e0384dd6849a22c030de1af30ce01b5b25a04a05fa83"
+        },
+        {
+          "id": "cni_get",
+          "source_label": "cni_get",
+          "source_row_sha256": "4fc4323bc605249f7ad396789ddbba278ed7bdfc301f319f9210c0044f543221",
+          "vector_row_sha256": "efe3c135dea9d968452665bd7f50decc62a1c2303eaaa719970308cff9ee796b"
+        },
+        {
+          "id": "cni_interface",
+          "source_label": "cni_interface",
+          "source_row_sha256": "aaa0c6da2e24ef2280353cf08ca6ce97dda4a80be0356294bec6a76cb4c5c230",
+          "vector_row_sha256": "811b164918a04c3eb6762d5eabc0ebd223f7f5cf374498ae282956dd6efd2a27"
+        },
+        {
+          "id": "renamed_name",
+          "source_label": "renamed_name",
+          "source_row_sha256": "54b8b88f639d4c254dbb0305497c04fab4cb5cebfb3532bb4c7d5603cd7ddc59",
+          "vector_row_sha256": "8cc7e01cd00503817850d390ebb2ab7d9fe3a14406c4180520f6bff76ab489c0"
+        },
+        {
+          "id": "renamed_type",
+          "source_label": "renamed_type",
+          "source_row_sha256": "d15847b980428c8fbacd1600f59b5d748b8abba474314d955670dd6a1e82cdc9",
+          "vector_row_sha256": "931f8bb813ad54bf540c7f1f031061d3a588d6d3607ba709348417f17250d6bb"
+        },
+        {
+          "id": "renamed_address",
+          "source_label": "renamed_address",
+          "source_row_sha256": "96d81bb1c5251fc3988814acfa8cedb81b17a4c59814abc589037e5a48632c61",
+          "vector_row_sha256": "82abe701f603dbfe201f8b48dca03f57c6af552f8d91ef036d2d108da09c2b0a"
+        },
+        {
+          "id": "renamed_interface",
+          "source_label": "renamed_interface",
+          "source_row_sha256": "f7f1663521baf692cace085890d98ccd510fa630b861b944e9d036c454fb9c2c",
+          "vector_row_sha256": "e3a3cdb044d20206b1f229dbf05eccbc06a5f20c8e8c08c8822ddd1786925e89"
+        },
+        {
+          "id": "renamed_options",
+          "source_label": "renamed_options",
+          "source_row_sha256": "b36e14eea42d23071aca8f2d2fb9a30575c93ff170929669f2bf45ed425f958e",
+          "vector_row_sha256": "018001ac474d12681ccb3190ba080b0e0e47014e87dbb8fcf72ba0dce6a95272"
+        },
+        {
+          "id": "extra_name",
+          "source_label": "extra_name",
+          "source_row_sha256": "361f0713e9cea5c1bed46a19d9d882a67c57890ed48cf8eaba53836d8cd758d1",
+          "vector_row_sha256": "3c43b70980eed94a3f03050faac460bf56b97b39c74017736f26e95c45813eb3"
+        },
+        {
+          "id": "extra_type",
+          "source_label": "extra_type",
+          "source_row_sha256": "3b3b9ec0dd418e9a89c7094a775de87d35dfaacc2198d6cd40b64283b6415224",
+          "vector_row_sha256": "21e0b01d2f0519306a199a0449a7e07be2a42dd4412b12bfefba9b0690d220ca"
+        },
+        {
+          "id": "extra_address",
+          "source_label": "extra_address",
+          "source_row_sha256": "395142932e61abccc89c96b2d1ccf8e48d37ba4227592a1fccb22af5bf759cd9",
+          "vector_row_sha256": "40a0d1577e6b7905ca1588032a117fc87bd67e4d8da204f7a630ea61837408e0"
+        },
+        {
+          "id": "extra_interface",
+          "source_label": "extra_interface",
+          "source_row_sha256": "0299b8083e304406c36ae94cff65fdcaaac56f74f3cc884b1b3146b23d5a6cce",
+          "vector_row_sha256": "78e768849f49abb1ac2c505fc225c923e3ddfade0eb3fc167665df3b0bcafca5"
+        },
+        {
+          "id": "extra_options",
+          "source_label": "extra_options",
+          "source_row_sha256": "915b6216c6387dadf1b9c2e2f829c0fe294f8ecc3f1af66cf54da094f6f1bb97",
+          "vector_row_sha256": "d34f613375108bdeffed3dd60ea139dc51c634d949955e1fee7e6b5de18a29da"
+        },
+        {
+          "id": "extra_refreshed_options",
+          "source_label": "extra_refreshed_options",
+          "source_row_sha256": "ca2fb61a5f4bdb60a3c42c3deda24cfaf0faba457477c0c9362fc31a490722dc",
+          "vector_row_sha256": "f5037a474530e748394789b4e5a076559c6da7549cbae7255a78f3e0981d3e70"
+        },
+        {
+          "id": "conflict_runtime_interface",
+          "source_label": "conflict_runtime_interface",
+          "source_row_sha256": "3d80f6f5581f096b9299475d09fb985a31f624c4440bab3f8451aaea479c9a5d",
+          "vector_row_sha256": "cdf799ce214ab1b591729420b0628b03bb803ebef1c8c722aa6961a56bfe91ec"
+        },
+        {
+          "id": "conflict_runtime_address",
+          "source_label": "conflict_runtime_address",
+          "source_row_sha256": "75de682307a23c36073e5b8eb2c50c00fc6b72a384c390853b56c0f26604e9a5",
+          "vector_row_sha256": "898bc9afbd440ebf1601d55a070a494a0d2cbb6b72b1d180de6b5c27e98aa589"
+        },
+        {
+          "id": "conflict_runtime_type",
+          "source_label": "conflict_runtime_type",
+          "source_row_sha256": "1f31c12f548d7cafb1f2ec0d96544761c41349d1a5a19dc99e580a94a38ee6fc",
+          "vector_row_sha256": "21e2deebe8293914f63063a99b1f1c2d25455ce53cd2d0a78f7f309c67f1a41f"
+        },
+        {
+          "id": "conflict_runtime_options",
+          "source_label": "conflict_runtime_options",
+          "source_row_sha256": "62adfd37e23591243e2aa17bc4d3e4e0f8af80e39b795eff5ac67a5d6685f21c",
+          "vector_row_sha256": "29d67f476aebd0ab2a807b8575b5b42aa668f4bddcf184b4bdd8aafb126b98a2"
+        },
+        {
+          "id": "missing_explicit_db",
+          "source_label": "missing_explicit_db",
+          "source_row_sha256": "4d5a306dc04b2eeb2af6e42f7503bed36558d1d52c2ea64ecbded4a383eecdb6",
+          "vector_row_sha256": "6189e90e2199535e9fc8fe508929ba6a268001444e01b947ca4a2b8f6654b479"
+        },
+        {
+          "id": "missing_explicit_file",
+          "source_label": "missing_explicit_file",
+          "source_row_sha256": "ee14d982a3197ee5b734fa0a4c45f7d05d3af2017ffb25011567c16b8afd9591",
+          "vector_row_sha256": "0cfacc7bcaf7ea8371ff1907aac0d05874a46f853f0c6e26763b93f660208886"
+        },
+        {
+          "id": "file_collision",
+          "source_label": "file_collision",
+          "source_row_sha256": "a9bcf47128622a1acf94e58bafab49c8058b7e44460bbd8ab4168d02c9c57bfd",
+          "vector_row_sha256": "4335f7186525268d1bf01b5e21ab61a57c7c3a4304a03a286f33aa3960cad0bb"
+        }
+      ],
+      "source_reply_equality_after_declared_tokens": true,
+      "full_original_session_replay": false,
+      "setup_boundary": "Independent synthetic service setup establishes each selected response case. Legacy cmqttd DBCREATENET200 setup differs from native301 OID and is not credited as exact creation-wire parity."
+    },
+    "implemented_guards": [
+      "Current durable numeric tag fields refresh matching definitions; missing and repeated DB loads succeed.",
+      "Unrelated, renamed and tag-deleted active definitions remain.",
+      "Current canonical numeric tag rows override stale internal DB snapshot entries; legacy noncanonical names such as0254 and256 remain.",
+      "Matching refresh preserves exact previous optional runtime binding, including renamed collisions and CREATE-only unbound entries.",
+      "Only explicit canonical //PROJECT/NAME paths project Name,Type,InterfaceAddress,Interface,Options; bare server/object/OID selectors and noncanonical paths retain established generic GET dispatch.",
+      "Configured PCI Arc, network state, nonempty physical cache, group levels and retry count survive LOAD.",
+      "Malformed source and failed persistence preserve loaded model; operating configuration shell cannot be materialized as a DB row.",
+      "Actual daemon fresh Cni/Serial/Bridge creation/load remains closed and produces no post-startup PCI traffic; MQTT continues."
+    ],
+    "deviations": [
+      {
+        "id": "DBCREATENET_reply",
+        "native": "301 OID=<UUID>",
+        "cmqttd": "Existing200 OK response is retained.",
+        "evidence_labels": [
+          "create_cni",
+          "create_serial",
+          "create_bridge"
+        ],
+        "full_wire_parity": false
+      },
+      {
+        "id": "SAVE_DB_tag_materialization",
+        "native": "NET SAVE DB materializes runtime-only named and numeric definitions in tag XML. Runtime42 becomes Address42,TagName n42,NetworkNumber0xff (255) and retains refreshed Cni interface through PROJECT SAVE/CLOSE/LOAD.",
+        "cmqttd": "NET SAVE DB retains an internal snapshot; native runtime-only Network XML materialization remains unimplemented, including numeric42. The typed u8 tag map also does not model arbitrary named addresses.",
+        "evidence_labels": [
+          "saved_xml",
+          "refreshed_runtime_type_xml",
+          "final_refreshed_type_xml"
+        ],
+        "full_wire_parity": false
+      },
+      {
+        "id": "FILE_collision_partial_load",
+        "native": "A later name collision returns408 after earlier missing definitions were inserted.",
+        "cmqttd": "The whole FILE load is rolled back atomically on collision as a retained safety boundary.",
+        "evidence_labels": [
+          "file_later_collision",
+          "file_later_collision_list"
+        ],
+        "full_wire_parity": false
+      }
+    ],
+    "scope_exclusions": [
+      "Full Toolkit or C-Gate parity is not established.",
+      "No physical hardware, Windows VM, open-interface, reconnect or power-cycle acceptance.",
+      "Native no-selected-project400, broader GET * runtime-table, arbitrary named tag XML, vendor FILE format and multi-interface operation remain outside this batch.",
+      "Original DBNEW returned500 with unchanged XML; the capture establishes no successful native DBNEW clearing.",
+      "Earlier exploratory probe source snapshots were not retained; final source closure binds version7, while earlier private raw hashes remain."
+    ],
+    "audit": {
+      "source_freeze_hashes_reverified": true,
+      "native_fixture_and_capture_sources_reverified": true,
+      "raw_final_receipt_hash_reverified": true,
+      "all_30_vector_source_bindings_reverified": true,
+      "native_numeric42_number255_materialization_reverified": true,
+      "old_and_new_binaries_rehashed": true,
+      "new_tests_or_builds_run_during_audit": false,
+      "private_absolute_paths_or_hostnames_in_summary": false,
+      "original_b7_binary_copies_rehashed": true,
+      "release_completion_pending": false
+    },
+    "review_blocker_fix": {
+      "trigger": "Legal runtime network names cgate/projects/cbus/!OID could shadow bare GET selectors in b7b4e5d3.",
+      "guard": "Definition projection requires canonical explicit //PROJECT/NAME only; bare,reserved,OID,empty or repeated/trailing slash selectors retain generic dispatch. Legal network names remain accepted.",
+      "regression": "net_db_load_definition_get_requires_explicit_paths_when_legal_names_collide",
+      "before_fix": {
+        "exit": 101,
+        "tests_passed": 0,
+        "tests_failed": 1,
+        "selector": "GET cgate Name",
+        "actual": "300 cgate: Name=cgate",
+        "expected": "402 Operation not supported by: cgate (Parameter name not found)"
+      },
+      "after_fix": {
+        "tests_passed": 1,
+        "bare_baseline_checks": 20,
+        "explicit_definition_checks": 20,
+        "malformed_fallthrough_checks": 8,
+        "PCI_traffic": 0
+      },
+      "original_binary_copy_preserved": true,
+      "public_CLI_red_green": "Owned by acceptance producer; not credited by this Rust summary."
+    },
+    "original_before_batch_binaries": {
+      "cmqttd": {
+        "old_sha256": "27b694cb7c04c3a2837dfca0d20782271faa871e92ade33b59dbfae8a69b4023",
+        "new_sha256": "f54b70e1b1130ec25b36fb2dc49d95cb1890bd9a984f4f597fad6f53608fdb15",
+        "old_bytes": 12906176,
+        "new_bytes": 12906176,
+        "original_copy_rehashed": true,
+        "new_release_rehashed": true
+      },
+      "cgate-mock": {
+        "old_sha256": "0efb04d64c1c2cd2a82a725cde57366ce403283d34289f5dc00ea4701ec60c78",
+        "new_sha256": "a963aa5fc02fe08419e36e765e81f4a88b9598aa4348b10426656672c2576ebb",
+        "old_bytes": 3400208,
+        "new_bytes": 3400208,
+        "original_copy_rehashed": true,
+        "new_release_rehashed": true
+      },
+      "cbus-tools": {
+        "old_sha256": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018",
+        "new_sha256": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018",
+        "old_bytes": 2661440,
+        "new_bytes": 2661440,
+        "original_copy_rehashed": true,
+        "new_release_rehashed": true
+      }
+    }
+  }
+}

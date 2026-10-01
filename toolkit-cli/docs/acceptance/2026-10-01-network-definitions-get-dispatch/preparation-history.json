@@ -1,0 +1,208 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "ff73479731db1a78ddc670683a8772eea85b51fb038b634a6fae6fc9ada2b220",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-network-definitions-preparation-history-v1",
+    "rows": [
+      {
+        "role": "initial-publication-normalization",
+        "reason": "Privacy scanner refused literal temporary-root paths embedded in publication script derivative. Partial derivatives retained privately; explicit root roles added before republication. Product, package, test and binary bytes unchanged.",
+        "credited_as_test": false
+      },
+      {
+        "role": "cbus-network-new-red-20261001",
+        "raw_sha256": "b61244b0aa9d35ef1187b9f2ef0aa8d17c3e6d3cf414398795ea11cf7ce610a2",
+        "result": "failed",
+        "cli_calls": 30,
+        "reason": "Readiness harness expected300 instead of200 JSON; no model mutation. Earliest producer lacked after-bind sample.",
+        "error": {
+          "type": "AssertionError",
+          "message": "Owned daemon PCI did not become ready"
+        },
+        "after_input_sample_present": false,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-new-red2-20261001",
+        "raw_sha256": "b1a6dcd01cf9c44293315f276066f71536e72fac23a976ce050ba55cd652b131",
+        "result": "failed",
+        "cli_calls": 3,
+        "reason": "Genuine old binary DBCREATENET200 followed by LOAD DB408; created row already exists. Earliest producer lacked after-bind sample.",
+        "error": {
+          "type": "AssertionError",
+          "message": "CLI 2 (network-new-Cni) returned 1, expected 0: {\"error\": \"C-Gate error: 408 Operation failed: Network definitions file not found\", \"type\": \"CGateError\"}\n "
+        },
+        "after_input_sample_present": false,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-exploratory-20261001",
+        "raw_sha256": "8dc54f84cc7a1dee061c456b3dcbc3864173a0cf1c511f8d8b89bba62ae9e3d2",
+        "result": "failed",
+        "cli_calls": 1,
+        "reason": "Relative Python path failed before connection; corrected absolute venv path.",
+        "error": {
+          "type": "FileNotFoundError",
+          "message": "[Errno 2] No such file or directory: 'toolkit-cli/.venv/bin/python'"
+        },
+        "after_input_sample_present": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-exploratory2-20261001",
+        "raw_sha256": "f14a37e458fe54dd25f5978f0e61c60b34579a08c95a36f497c57fea670fe4df",
+        "result": "failed",
+        "cli_calls": 81,
+        "reason": "Fixture DBDELETE404 had no selected project; setup fixed through explicit PROJECT USE and DBDELETE in one public run.",
+        "error": {
+          "type": "AssertionError",
+          "message": "CLI 80 (delete-db-source-network) returned 1, expected 0: {\"error\": \"C-Gate error: 404 Project not selected\", \"type\": \"CGateError\"}\n "
+        },
+        "after_input_sample_present": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-exploratory3-20261001",
+        "raw_sha256": "7e4e383a0e5fefeb77c3432351297bd557fb004a598f47db1f117eaa9b8a477a",
+        "result": "failed",
+        "cli_calls": 114,
+        "reason": "All114 functional calls passed; premature startup checkpoint captured only3 reset frames. Exact complete8-frame startup now precedes all model commands.",
+        "error": {
+          "type": "AssertionError",
+          "message": "Network catalogue workflow issued daemon PCI I/O"
+        },
+        "after_input_sample_present": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-exploratory4-20261001",
+        "raw_sha256": "de6e1e38ab874bbc06b9bdc6885ca1424edf31511561900911a0b85bffff73fc",
+        "result": "passed",
+        "cli_calls": 114,
+        "reason": "114-command exploratory passed; final independent frozen source/wheel runs supersede it.",
+        "error": null,
+        "after_input_sample_present": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-get-collision-b7-red-20261001",
+        "raw_sha256": "767fcfc511413a825172adf361a64ed04f089f07d291a1c9e2f718dc66c823ae",
+        "result": "failed",
+        "cli_calls": 48,
+        "reason": "Executed b7 daemon with new public regression overlay. In selected NEWNET, GET cgate Name changed from confirmed402/exit1 to300 Name=cgate/exit0 after legal definition CREATE. All prior successful focused checks missed this dispatch case; binary/source/package bindings and owned cleanup were retained.",
+        "error": {
+          "type": "AssertionError",
+          "message": "Legal runtime definition shadowed generic GET cgate Name"
+        },
+        "inputs_before_after_equal": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-network-definitions-get-dispatch-exploratory-20261001",
+        "raw_sha256": "175d277ad6ff745f2a3874abbdf659701a4631880257356d6e26f89084bff42e",
+        "result": "passed",
+        "cli_calls": 147,
+        "reason": "Corrected147-command exploratory passed with all8 baseline/after generic replies equal and qualified metadata reads. Superseded by final source/wheel runs.",
+        "error": null,
+        "inputs_before_after_equal": true,
+        "owned_backend_cleanup": true
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-1",
+        "raw_sha256": "7724df9ea564082f2eec43a1e6b1fcb98a42c59c26908f26ae17ec56544451d9",
+        "completed": false,
+        "cli_calls": 0,
+        "failure": {
+          "type": "AssertionError",
+          "message": "Package/import probe failed"
+        },
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-2",
+        "raw_sha256": "3c1d11c7b63d87ef9f24a7834e881ddb3dbe19411db56b936a38d340da889274",
+        "completed": false,
+        "cli_calls": 0,
+        "failure": {
+          "type": "RuntimeError",
+          "message": "Could not reserve four owned local secure ports"
+        },
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-3",
+        "raw_sha256": "99fb1b82382eb6e24cef69611d9fb29496ecb561c87e6a8e37a9b5ed08335778",
+        "completed": false,
+        "cli_calls": 44,
+        "failure": {
+          "type": "AssertionError",
+          "message": "Unexpected runtime Type: {'lines': ['300 //PUBDEF/Alias: Type=cni'], 'final': '300 //PUBDEF/Alias: Type=cni', 'status': 300}"
+        },
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-4",
+        "raw_sha256": "b418c5d085cbc20d8f785ed0fed427265abaae72af685e4ac36fb3e3b7e04643",
+        "completed": false,
+        "cli_calls": 59,
+        "failure": {
+          "type": "AssertionError",
+          "message": "file-restore-empty-catalogue: unexpected CLI exit 1: {\"error\": \"C-Gate error: 408 Operation failed: Problem loading: Unable to load class:com.clipsal.cgate.cbus.net.CBusSecond=twoNetwork for network type:second=two (com.clipsal.cgate.cbus.net.CBusSecond=twoNetwork)\", \"type\": \"CGateError\"}\n"
+        },
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-5",
+        "raw_sha256": "0085046accaf72040fadf23aaf1bf0f2f1ea0310c792ee3a3e6e1fc149cb72b2",
+        "completed": false,
+        "cli_calls": 69,
+        "failure": {
+          "type": "AssertionError",
+          "message": "Unexpected runtime Options: {'lines': ['300 //PUBDEF/Alias: Options=null'], 'final': '300 //PUBDEF/Alias: Options=null', 'status': 300}"
+        },
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-6",
+        "raw_sha256": "b366aa6dada2fbf800fa50face7cce68b7b0c5faea9b5d712dcfa16e89aeda84",
+        "completed": true,
+        "cli_calls": 79,
+        "failure": null,
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-original-network-cli-source-20261001-7",
+        "raw_sha256": "8dc5624da4d7fe3602bad06b306f45d4def5aaeeeb44e8cae29344e6bf8d27d4",
+        "completed": true,
+        "cli_calls": 79,
+        "failure": null,
+        "qualification": "Initial original CLI attempts retain metadata/sandbox/assertion errors and newly observed FILE option behavior. Final bounded driver retains the actual native408 and Options null boundary rather than counting option restoration as supported."
+      },
+      {
+        "role": "cbus-network-definition-preflight.xml",
+        "raw_sha256": "1490e2fbfdf4f3f7d041ed7c02d6cf475d83dd168e0b3ed1160d275dddbf6e90"
+      },
+      {
+        "role": "cbus-network-definition-preflight-fixed.xml",
+        "raw_sha256": "97377b6e9dec9968cca51234d6bee7eb533bfa781eb4e5ce4e02e996cf18e37e"
+      },
+      {
+        "role": "cbus-network-new-public-wire-20261001.xml",
+        "raw_sha256": "fe39fce25386283d4dd8ac80c3755ec305df94316df416b0bdc99de7c80a8ede"
+      },
+      {
+        "role": "cbus-network-new-public-wire-final-20261001.xml",
+        "raw_sha256": "1d6768fdca962dee9e5e738ca169918f27ae78ad79f45c7c9def4bc07614278b"
+      },
+      {
+        "role": "cbus-network-new-public-wire-final2-20261001.xml",
+        "raw_sha256": "2813ff1a0a9c0f4a56d1ccd3cbf13384f70358e2e50813a18de2e420402fb5b3"
+      }
+    ],
+    "qualification": "Superseded and failed runs are immutable private originals. Harness repairs did not weaken product wire/no-replay/no-I/O assertions; newly observed original FILE limits remain explicit. No prior failed run is credited as final acceptance."
+  }
+}

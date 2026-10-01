@@ -1,0 +1,9 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": "warning: build_py: byte-compiling is disabled, skipping.\n\nwarning: install_lib: byte-compiling is disabled, skipping.\n\n"
+}

@@ -160,7 +160,26 @@ def execute(args, report, output):
         def invoke(arguments, expected=0, label=None, exact_commands=None):
             first = len(report['cgate_connections'])
             try:
-                value = cli.invoke([*gate, *arguments], expected=expected, label=label)
+                try:
+                    value = cli.invoke([*gate, *arguments], expected=0 if expected is None else expected, label=label)
+                except AssertionError:
+                    if expected is not None:
+                        raise
+                    row = cli.commands[-1]
+                    # A baseline GET may legitimately be absent in generic
+                    # dispatch. Observe only a confirmed failure of command2,
+                    # never a failed selection, timeout or malformed response.
+                    require(row.get('exit_status') == 1, 'Generic GET baseline did not complete with a known exit')
+                    value = json.loads(row['stderr_utf8'] or row['stdout_utf8'])
+                    require(value.get('type') == 'BatchCommandError'
+                            and value.get('completed_count') == 1 and value.get('failed_command_index') == 2
+                            and value.get('error', '').startswith('C-Gate error: ')
+                            and value.get('completed_responses', [{}])[0].get('status') == 200,
+                            'Generic GET baseline failed outside its confirmed read response')
+                if expected is None:
+                    cli.commands[-1]['expected_exit_status'] = cli.commands[-1]['exit_status']
+                    cli.commands[-1]['baseline_response_observation'] = True
+                    cli.commands[-1]['baseline_exit_policy'] = 'Observe success0 or confirmed command2 generic GET refusal1'
             finally:
                 # Retain exact traffic even when CLIRecorder raises for a
                 # genuinely unexpected exit. The evidence remains inspectable.
@@ -294,6 +313,49 @@ def execute(args, report, output):
                label='duplicate-network-refusal', exact_commands=[f'PROJECT USE {project}', f'DBCREATENET 240 Replacement Cni {trap_endpoint}'])
         require(export(project, 'after-duplicate-refusal') == reopened, 'Duplicate network changed the saved model')
         if not args.network_new_only:
+            report['reserved_and_oid_get_dispatch_preserved'] = False
+            collision_names = ('cgate', 'projects', 'cbus', '!' + report['network_new_cases'][0]['fields']['OID'])
+            report['generic_get_collision_checks'] = []
+            baseline = []
+            def generic_get(name, field, label, expected):
+                script = output / (label + '.cgate')
+                script.write_text(f'PROJECT USE NEWNET\nGET {name} {field}\n')
+                value = invoke(['run', script], expected=expected, label=label,
+                               exact_commands=['PROJECT USE NEWNET', f'GET {name} {field}'])
+                if cli.commands[-1]['exit_status'] == 0:
+                    require(isinstance(value, list) and len(value) == 2 and value[0].get('status') == 200,
+                            'Generic GET did not retain both exact selected-session replies')
+                return value, cli.commands[-1]
+            for index, name in enumerate(collision_names):
+                for field in ('Name', 'Type'):
+                    value, command = generic_get(name, field, f'generic-get-before-{index}-{field}', None)
+                    baseline.append((name, field, value, command))
+            for index, name in enumerate(collision_names):
+                definition('create', [name, 'cni', trap_endpoint], label=f'create-legal-get-collision-{index}')
+            for index, (name, field, before, before_command) in enumerate(baseline):
+                # Observe both possible exits after the mutation as well, then
+                # require the exact baseline exit and full returned payload.
+                after, after_command = generic_get(name, field, f'generic-get-after-{index}-{field}', None)
+                check = {'selector': name, 'field': field,
+                         'before_command_sequence': before_command['sequence'],
+                         'after_command_sequence': after_command['sequence'],
+                         'before_exit': before_command['exit_status'], 'after_exit': after_command['exit_status'],
+                         'before_response': before, 'after_response': after,
+                         'full_response_equal': before == after,
+                         'stdout_bytes_equal': before_command['stdout_hex'] == after_command['stdout_hex'],
+                         'stderr_bytes_equal': before_command['stderr_hex'] == after_command['stderr_hex']}
+                report['generic_get_collision_checks'].append(check)
+                require(check['before_exit'] == check['after_exit'] and check['full_response_equal']
+                        and check['stdout_bytes_equal'] and check['stderr_bytes_equal'],
+                        f'Legal runtime definition shadowed generic GET {name} {field}')
+            for name in collision_names:
+                property_value(name, 'Name', name)
+                property_value(name, 'Type', 'cni')
+                definition('delete', [name], label='delete-legal-get-collision-' + name)
+            require(names(label='catalogue-after-get-collision-cleanup') == ['240', '241', '242'],
+                    'Generic GET collision fixture cleanup changed original catalogue')
+            report['reserved_and_oid_get_dispatch_preserved'] = True
+            report['generic_get_scope'] = 'Generic bare and !OID responses preserved; runtime metadata read only through exact //PROJECT/NAME paths'
             initial_names = names(label='before-missing-file')
             definition('load', ['FILE'], label='nonempty-missing-file')
             require(names(label='after-missing-file') == initial_names, 'Missing FILE load changed nonempty catalogue')

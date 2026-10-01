@@ -1,0 +1,35 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "8781a08750a4b2011a63a68025774b2190745334083e07eb4187f86c69d66c1a",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "44bdddde7cd5a912910f033bcb220017c61817371293482b98b42d4e291317e4"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "42946146233d391ddccda63b9dd0f4e1baf2cac95fd848ea3bd462cedea61106"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/cbus-toolkit",
+      "--help"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

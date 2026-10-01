@@ -1011,6 +1011,10 @@ A missing explicit project returns native 401. With `--cgate-auth-file`, CREATE,
 DELETE, FLUSH, LOAD, RENAME, and SAVE require LOGIN; LIST and help remain open.
 The typed CLI exposes these catalogue commands under `cgate network definition`
 with required `--project`; see [closed setup and exact response rules](../../../../toolkit-cli/docs/network-definitions.md).
+Runtime definition GET Name/Type/InterfaceAddress/Interface/Options requires an
+exact `//PROJECT/NAME` path in cmqttd. Bare reserved selectors, issued `!OID`
+references and other paths keep their existing generic GET dispatch; legal
+colliding definition names remain allowed.
 
 The two physical forms use the configured shared PCI, directly or through a
 topology-resolved one-to-six-bridge route:

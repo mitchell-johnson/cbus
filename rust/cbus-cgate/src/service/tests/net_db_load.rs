@@ -523,3 +523,89 @@ async fn net_db_load_file_collision_retains_atomic_cmqttd_deviation() {
     assert_eq!(std::fs::read(&path).unwrap(), saved_bytes);
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn net_db_load_definition_get_requires_explicit_paths_when_legal_names_collide() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let oid = service.model.lock().await.projects["HARNESS"].networks[&254]
+        .oid
+        .clone();
+    let names = [
+        "cgate".to_string(),
+        "projects".to_string(),
+        "cbus".to_string(),
+        format!("!{oid}"),
+    ];
+    let fields = ["Name", "Type", "InterfaceAddress", "Interface", "Options"];
+    let mut baseline = Vec::new();
+    for name in &names {
+        for field in &fields {
+            let command = format!("GET {name} {field}");
+            baseline.push((command.clone(), run(&service, &mut client, &command).await));
+        }
+    }
+    for name in &names {
+        ok_command(
+            &service,
+            &mut client,
+            &format!("NET CREATE {name} Serial owned-absent-selector-port owned=yes"),
+        )
+        .await;
+    }
+    for (command, expected) in baseline {
+        assert_eq!(
+            run(&service, &mut client, &command).await,
+            expected,
+            "legal runtime name must not shadow generic GET selector: {command}"
+        );
+    }
+    for name in &names {
+        for (field, value) in [
+            ("Name", name.as_str()),
+            ("Type", "Serial"),
+            ("InterfaceAddress", "owned-absent-selector-port"),
+            ("Interface", "owned-absent-selector-port"),
+            ("Options", "owned=yes"),
+        ] {
+            let address = format!("//HARNESS/{name}");
+            let command = format!("GET {address} {field}");
+            assert_eq!(
+                run(&service, &mut client, &command).await.final_text,
+                format!("300 {address}: {field}={value}"),
+                "explicit definition path remains readable: {command}"
+            );
+        }
+    }
+    for address in [
+        "/cgate",
+        "//cgate",
+        "///HARNESS/cgate",
+        "//HARNESS//cgate",
+        "//HARNESS/cgate/",
+        "//HARNESS/cgate/extra",
+        "//HARNESS/",
+        "//",
+    ] {
+        let command = format!("GET {address} Type");
+        let expected = {
+            let mut model = service.model.lock().await.clone();
+            model.current = client.current.clone();
+            model.handle(&format!("[db-load] {command}"))
+        };
+        assert_eq!(
+            run(&service, &mut client, &command).await,
+            expected,
+            "noncanonical path must retain generic GET dispatch: {command}"
+        );
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read_u8())
+            .await
+            .is_err(),
+        "selector dispatch remains local"
+    );
+    std::fs::remove_file(path).unwrap();
+}

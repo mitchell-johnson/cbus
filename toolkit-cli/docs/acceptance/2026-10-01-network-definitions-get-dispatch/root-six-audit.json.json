@@ -1,0 +1,52 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "32a49bd101087086d14deef66d3bfa2b676d9dbfcaa4148de8fa3131a8c7d0f5",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "result": "passed",
+    "receipts": [
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+        "sha256": "09c4f21f9aae74b69f1852e5e8a633acaa5d1b2ac4771047af37420361ba8f7e",
+        "raw_sha256": "99f03007c25665ba54cd17aba2599757bc0c7e82218b35e65e12f059939582a0",
+        "source_bindings": 164
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+        "sha256": "63cebf447642cd6bd31c75793e9bb2fe37475b7a341bce34857edfa10403d40e",
+        "raw_sha256": "484446661d275cca651c75a0f0b8e4a1dc0c70fc8a5d9a26f091c2671f449635",
+        "source_bindings": 184
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "2f74a88ba505ffe7dc9eeee578d5c3f56e5af7b83ba1928c09f6513b2e333c71",
+        "raw_sha256": "61bdc1d89f7bd61adea5a8f951f5ebf97f632ce2c3430a57d3aa5f3392f1a9a4",
+        "source_bindings": 166
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "362f543b1cdaec78131bc9b4904d43d0a6bc04ca14257e9a004d0ea187a3684f",
+        "raw_sha256": "501f68d66f009acfc8d2b7dbd8a175e5854a72e9f69ff8964e31a53991ef8439",
+        "source_bindings": 186
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "a4937259a3d1799933faec2d9d2262a96aaf02d8ee4f9f62d0b04848ceb64b49",
+        "raw_sha256": "008f3858119b741b82b83ba3580fea06e471f82c348bc9c81a8a871ad3551247",
+        "source_bindings": 172
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "91470e44ed93eb7d32223ba5fa9a2b7be82334d746a88048172c17ce603c3490",
+        "raw_sha256": "5e77b433559ff7fd6d06813d622aff73fb54dad8bce9233c0ee6359534a8e219",
+        "source_bindings": 191
+      }
+    ],
+    "source_bindings": 1063,
+    "raw_public_sanitizer_byte_identical": true,
+    "cleanup_qualification": "Producer terminal/wait observed for all four commands; PID/socket/scratch evidence covers only descendants sampled while alive, with missing fast children explicitly unsampled."
+  }
+}

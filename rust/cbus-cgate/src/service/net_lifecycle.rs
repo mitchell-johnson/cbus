@@ -387,8 +387,8 @@ fn parse_mode(value: &str) -> Option<u8> {
 
 impl Service {
     /// The native catalogue owns these definition fields independently of tag
-    /// edits. Restrict this projection to exact network paths and single fields;
-    /// other GET selectors retain their established object/physical dispatch.
+    /// edits. Restrict this projection to explicit //PROJECT/NAME paths and
+    /// single fields; bare and OID GET selectors retain established dispatch.
     pub(super) async fn net_definition_get(
         &self,
         client: &ClientState,
@@ -403,8 +403,12 @@ impl Service {
         {
             return None;
         }
+        let explicit = words[1].strip_prefix("//")?;
+        let (project, name) = explicit.split_once('/')?;
+        if project.is_empty() || name.is_empty() || name.contains('/') {
+            return None;
+        }
         let current = current_project(self, client);
-        split_network_address(words[1], &current)?;
         let model = self.model.lock().await;
         let (_, definition) = network_definition(&model, words[1], &current).ok()?;
         let value = match words[2].to_ascii_lowercase().as_str() {
