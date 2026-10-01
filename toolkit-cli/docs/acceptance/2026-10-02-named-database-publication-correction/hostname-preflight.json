@@ -1,0 +1,154 @@
+{
+  "audited_receipt_sha256": "c5b8a87c814d341a3030dcdd7c69c92c726d87d826b45314a8aea5de33f3e685",
+  "data": {
+    "actual_field": {
+      "exact_declared_mapping_and_raw_leaf_digest_match": true,
+      "public_digest_matches_manifest": true,
+      "public_json_pointer": "/data/validation/junit_suites/0/hostname",
+      "public_value": "${CBUS_ACCEPTANCE_HOST}",
+      "raw_digest_matches_manifest": true,
+      "raw_hostname_value_sha256": "25aec3597b117f174075baf56b602e094cc981bff57fae5955fb0ffc88a33cab"
+    },
+    "authorship_qualification": "Reviewer authored prior Rust review fixes and Python matrix capture; did not author root private normalizer/publisher. This review is independent only for those helpers and current hostname normalization.",
+    "format": "cbus-private-publisher-hostname-preflight-sol-v1",
+    "independent_current_artifact_read_scan": {
+      "algorithm": "Own recursive JSON values/keys/string traversal; actual private hostname substring check; whole JSON text parse; embedded canonical hex/base64 UTF8 decoding; XML element/attribute matching also permits whitespace around attribute equals and element namespace prefix.",
+      "decoded_utf8_strings": 9501,
+      "derivatives": 75,
+      "files": 76,
+      "helper_code_executed": false,
+      "hostname_fields": 1,
+      "known_actual_private_hostname_occurrences": 0,
+      "masked_xml_junit_hostname_spans": 92,
+      "maximum_decode_layers": 6,
+      "receipt": 1,
+      "remaining_decodable_at_depth_limit": 0,
+      "string_visits": 63410,
+      "unmasked_casefold_json_hostname_fields": 0,
+      "unmasked_xml_hostname_element_or_attribute_spans": 0
+    },
+    "no_execution": {
+      "matrix_or_server_or_vendor_or_cargo_or_tests": true,
+      "normalizer_self_check_or_publisher_executed": false,
+      "source_or_metadata_or_publication_or_git_or_ci_changed": false
+    },
+    "old_a24_clearance": "Revoked/rejected history; no credit assigned by this preflight",
+    "pins": [
+      {
+        "bytes": 155854,
+        "path": "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-02-named-database-publication-correction/acceptance.json",
+        "sha256": "c5b8a87c814d341a3030dcdd7c69c92c726d87d826b45314a8aea5de33f3e685"
+      },
+      {
+        "bytes": 15230,
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/normalize_evidence.py",
+        "sha256": "f6a066e920805393f3ffc83049e95255b5ce7bb662a19423a2d5131606599eed"
+      },
+      {
+        "bytes": 17557,
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/publish_review_fixes.py",
+        "sha256": "a96c63ee0a1389553260c96e6fef6dafba5f407c5241cc252a2b85c66d73eb37"
+      },
+      {
+        "bytes": 43825,
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/coordinate-roles-v2.private.json",
+        "sha256": "d9c9adec7b67b03f79d914207f0ad801b40435b31e86f9e354ae8eddd5359d13"
+      },
+      {
+        "bytes": 45399,
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/publication-private-manifest.json",
+        "sha256": "3a7e57b298ead852a8c86c0134ac786291f2443eec8e7410b29205cc05c53e84"
+      },
+      {
+        "bytes": 4895,
+        "path": "${CBUS_OWNED_CBUS_SELECTED_SERIAL_VECTOR_DIAGNOSIS_20261001}/validation-summary.json",
+        "sha256": "e312d2a1b671db0819178836549fc1cc87758f61209b10d85eda50ec7704f3e9"
+      },
+      {
+        "bytes": 6421,
+        "path": "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-02-named-database-publication-correction/selected-serial/validation-summary.json",
+        "sha256": "b3abe142002f80c674518a99e3986894cd12221865944058e90f593252449f8f"
+      }
+    ],
+    "receipt_sha_before_after_equal": true,
+    "scope": "Read-only current hostname field, helper algorithm and declared scope. Not full reconstruction/publication clearance; another Sol owns full75derivative reconstruction.",
+    "static_helper_findings": {
+      "current_privacy_false_negatives_found": [],
+      "current_provenance_errors_found": [],
+      "nonblocking_scope_limits": [
+        {
+          "current_artifacts": "No unmasked alternate-form hostname was found by the independent broader read scan.",
+          "limit": "XML/JUnit hostname matching uses exact captured templates, not a general XML parser. Well-formed alternate grammar such as whitespace around attribute equals, element attributes or namespace prefixes is not universally covered by these regexes.",
+          "location": "normalize_evidence.py:23,29-30,152-153",
+          "qualification": "Do not infer a universal arbitrary-XML scanner guarantee from current captured-artifact inspection."
+        },
+        {
+          "current_artifacts": "No actual private hostname residue found; current flagged field is an ordinary JSON object member.",
+          "limit": "Escaped-key JSON is structurally handled when the entire string is valid JSON; arbitrary prefixed/suffixed log fragments with escaped keys are not universally parsed.",
+          "location": "normalize_evidence.py:31,67-73,126-134",
+          "qualification": "This is a future input-grammar limit, not an observed current leak."
+        }
+      ],
+      "positive_seams": [
+        "Direct casefold hostname string fields receive a declared json_hostname_role and raw string digest.",
+        "Whole JSON strings are parsed structurally, covering escaped keys and nested JSON serialization; literal text hostname gate covers ordinary JSON text fragments.",
+        "Scanner examines keys/values, embedded hex/base64 UTF8 candidates and JSON text through six layers; another decodable layer at limit is a finding.",
+        "Encoded inline segments that cannot be normalized are rejected by the publication gate rather than silently published.",
+        "Publisher pins complete private raw bytes, transformed payload and declared mapping; compact JSON serialization is explicitly recorded."
+      ]
+    },
+    "status": "passed_narrow_current_hostname_and_helper_provenance_review"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "normalizer_sha256": "f6a066e920805393f3ffc83049e95255b5ce7bb662a19423a2d5131606599eed",
+    "private_frozen_role_table_sha256": "d9c9adec7b67b03f79d914207f0ad801b40435b31e86f9e354ae8eddd5359d13",
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/0/path",
+        "raw_string_sha256": "6f45d057fc42d5de77ad95914d2359fdb2e78c8054160be25acc24f621941009"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/1/path",
+        "raw_string_sha256": "4d2c8fd647450bd830d6bf52346206708820a7f0ee39c2be65482b202435fef5"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/2/path",
+        "raw_string_sha256": "b0e2b98fe0d6f655c95712794ed5b90971bba73dc4075cd4a5e8096643d84583"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/3/path",
+        "raw_string_sha256": "170ede5f71018928ac6e79421f9f188270cb16ee52e8c6f0c8af30f565362232"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/4/path",
+        "raw_string_sha256": "7ebf5142861c44867c7a88e4e12f1ac91fd5fbc10e49c9e83871430b5d1cd8d6"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/5/path",
+        "raw_string_sha256": "a05e27ea66fabd508f61360b6c0ccaa8a19486a73e15667b147e73fc8ae24578"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/pins/6/path",
+        "raw_string_sha256": "b0621fd725a08d3faa7ddc823a58c377a42d9f1bb9fb3b6b69ae94558902b879"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value",
+  "raw": {
+    "bytes": 5716,
+    "encoding": "json",
+    "retained_privately": true,
+    "role": "hostname-preflight",
+    "sha256": "7b46581f295a5c74008b2f165cfe15f9886f48e86061aa5ed94e362f89f1b91b"
+  },
+  "scope": "Current replacement checkpoint read-only review only; prior a24 publication PASS revoked"
+}

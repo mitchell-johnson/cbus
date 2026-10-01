@@ -74,7 +74,7 @@
         {
           "errors": "0",
           "failures": "0",
-          "hostname": "unifi",
+          "hostname": "${CBUS_ACCEPTANCE_HOST}",
           "name": "pytest",
           "skipped": "0",
           "tests": "93",
@@ -106,6 +106,11 @@
         "action": "coordinate_roles_v2",
         "json_pointer": "/validation/cwd",
         "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+      },
+      {
+        "action": "json_hostname_role",
+        "json_pointer": "/validation/junit_suites/0/hostname",
+        "raw_string_sha256": "25aec3597b117f174075baf56b602e094cc981bff57fae5955fb0ffc88a33cab"
       }
     ]
   },

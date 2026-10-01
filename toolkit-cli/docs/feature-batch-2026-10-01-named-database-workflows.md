@@ -95,7 +95,7 @@ runtime definitions like cmqttd.
 The wheel SHA-256 is
 `393903920c25dee9b1ae60600bf93317a5539cdbef615bdf2cb680da2976d689`.
 All **326 Python/JSON package files** match between source, wheel and isolated
-installation. The [corrected scoped receipt](acceptance/2026-10-01-named-database-review-fixes/acceptance.json)
+installation. The [corrected scoped receipt](acceptance/2026-10-02-named-database-publication-correction/acceptance.json)
 binds current inputs, release binaries, package checks, test results and declared
 normalized derivatives. Independent publication audit and exact-head CI remain
 separate from these local results; GitHub tracks their terminal status.
@@ -140,6 +140,13 @@ and private copy remain preserved. The corrected receipt uses a frozen private
 role table, declared transformations and recursive decoded-coordinate/hostname
 checks. The first corrected draft was also rejected before publication for an
 incomplete nested-hostname scan. Accepted main receipts remain untouched.
+Parent review subsequently found a plain JSON JUnit `hostname` field in the
+committed `a24e66e2` evidence that the local audit missed. That receipt and audit
+are revoked and preserved as failed review history. The replacement explicitly
+normalizes parsed JSON hostname fields and structurally inspects encoded JSON,
+including escaped keys and nested serialized strings. This correction changes
+evidence and documentation only; the application source, package, metadata,
+release binaries and their test results remain bound to the same verified bytes.
 
 Other earlier preparation failures, interrupted pre-fix workspace execution and
 source-drift review attempts remain preserved without current acceptance credit.

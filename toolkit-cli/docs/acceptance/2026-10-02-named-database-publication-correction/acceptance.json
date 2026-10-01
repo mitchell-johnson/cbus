@@ -3,7 +3,7 @@
     {
       "bytes": 232585,
       "declared_transformation_count": 83,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/component-validation.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/component-validation.json",
       "raw_role": "python/component-validation",
       "raw_sha256": "78065ff1af01c3407be33a5fdb7aaa1fdfa5f03a46615b9b6d2ed30514f26cd8",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -12,7 +12,7 @@
     {
       "bytes": 95289,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/package-audit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/package-audit.json",
       "raw_role": "python/package-audit",
       "raw_sha256": "32cd02d51e718e2494c2f70f4ded99bf1bdc463c01c5a12e8f71bccfd055766a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -21,7 +21,7 @@
     {
       "bytes": 60051,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/frozen-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/frozen-bindings.json",
       "raw_role": "python/frozen-bindings",
       "raw_sha256": "2f8e5581c0a2d6fb7a54055efe1b6b1acc1c68eaf0ac031a9c2c8dec4da48cc3",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -30,7 +30,7 @@
     {
       "bytes": 2648,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/authorization.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/authorization.json",
       "raw_role": "python/authorization",
       "raw_sha256": "80183b54da3d32a11907615809e766aa35154d8d2a836e42880df5fec95c40fd",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -39,7 +39,7 @@
     {
       "bytes": 2275,
       "declared_transformation_count": 2,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/deferred-original.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/deferred-original.json",
       "raw_role": "python/deferred-original",
       "raw_sha256": "7af0ea6a4a911e78c3c639a77d13adcb22d145d0e034bb6c98d148b4bf984aca",
       "scope": "Manual original acceptance deferred under GitHub issue #72; zero current original execution credit",
@@ -48,7 +48,7 @@
     {
       "bytes": 3509,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/selection-correction.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/selection-correction.json",
       "raw_role": "python/selection-correction",
       "raw_sha256": "0b6f8593c017b56e625da18e423625891e41cb0ed6a9e754f94758c0d4be0b62",
       "scope": "Private harness selection correction; expanded source and installed guard attempts are excluded, not retried wholesale",
@@ -57,7 +57,7 @@
     {
       "bytes": 11912,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-peer-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-peer-junit.json",
       "raw_role": "python/source-peer-junit",
       "raw_sha256": "e8b7da003c746f9724805a03fb7c8176d93539d8f81504568a22f494e103fed8",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -66,7 +66,7 @@
     {
       "bytes": 2076,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-peer-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-peer-command.json",
       "raw_role": "python/source-peer-command",
       "raw_sha256": "d53cedb7d59d843ac231b05d0fcaeecc4bc34612d93eea6724c4b3b23361375a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -75,7 +75,7 @@
     {
       "bytes": 61645,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-peer-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-peer-bindings.json",
       "raw_role": "python/source-peer-bindings",
       "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -84,7 +84,7 @@
     {
       "bytes": 5905,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-adjacent-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-adjacent-junit.json",
       "raw_role": "python/source-adjacent-junit",
       "raw_sha256": "68746d8237277b19ebb0aa2a70d8a731b9c700d37ea201ac4e06ab43457903fe",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -93,7 +93,7 @@
     {
       "bytes": 2586,
       "declared_transformation_count": 6,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-adjacent-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-adjacent-command.json",
       "raw_role": "python/source-adjacent-command",
       "raw_sha256": "ce3257c54f941ce03c78929d2c5b8fa7cbcbcb97e4124d6e17360a32846b247a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -102,7 +102,7 @@
     {
       "bytes": 61649,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-adjacent-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-adjacent-bindings.json",
       "raw_role": "python/source-adjacent-bindings",
       "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -111,7 +111,7 @@
     {
       "bytes": 20584,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-guards-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-guards-junit.json",
       "raw_role": "python/source-guards-junit",
       "raw_sha256": "46c6557768dd0a0b1f13bd51b0351c2934b5fa72f568d1db6f55fb1c41ce6fec",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -120,7 +120,7 @@
     {
       "bytes": 3120,
       "declared_transformation_count": 8,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-guards-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-guards-command.json",
       "raw_role": "python/source-guards-command",
       "raw_sha256": "8149daca94e1d634649b11a577021766be76819739f95ebe4cf7d8797fd32b0c",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -129,7 +129,7 @@
     {
       "bytes": 61647,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-guards-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-guards-bindings.json",
       "raw_role": "python/source-guards-bindings",
       "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -138,7 +138,7 @@
     {
       "bytes": 6582,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-selected-serial-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-selected-serial-junit.json",
       "raw_role": "python/source-selected-serial-junit",
       "raw_sha256": "e385fc3f4caa6623a8ec0c92ec8b75ea17771436fc79e20469a419502caff120",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -147,7 +147,7 @@
     {
       "bytes": 2091,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-selected-serial-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-selected-serial-command.json",
       "raw_role": "python/source-selected-serial-command",
       "raw_sha256": "24b4ca050696b7d4b73c12a61cbf39adbc8322408dd38ae10f88768cb49e887f",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -156,7 +156,7 @@
     {
       "bytes": 61656,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-selected-serial-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-selected-serial-bindings.json",
       "raw_role": "python/source-selected-serial-bindings",
       "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -165,7 +165,7 @@
     {
       "bytes": 7157,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-sanitizer-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-sanitizer-junit.json",
       "raw_role": "python/source-sanitizer-junit",
       "raw_sha256": "3a49450a57f4af4c4f5b914e67ab11dcdcc3623ad60bc059dfa6d4a727e9c26a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -174,7 +174,7 @@
     {
       "bytes": 2086,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-sanitizer-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-sanitizer-command.json",
       "raw_role": "python/source-sanitizer-command",
       "raw_sha256": "9b00852ea2513723a7f62a6c732475f74ba534b45d463878f885ce7301bf7118",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -183,7 +183,7 @@
     {
       "bytes": 61650,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-sanitizer-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-sanitizer-bindings.json",
       "raw_role": "python/source-sanitizer-bindings",
       "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -192,7 +192,7 @@
     {
       "bytes": 255792,
       "declared_transformation_count": 277,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-modeled-report.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-modeled-report.json",
       "raw_role": "python/source-modeled-report",
       "raw_sha256": "6390400ce9ac6ad1f9422425fcd3fcdcbbdce996995eb228c4c9bb3865b30ac9",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -201,7 +201,7 @@
     {
       "bytes": 1504,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/source-modeled-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/source-modeled-junit.json",
       "raw_role": "python/source-modeled-junit",
       "raw_sha256": "3eab23e9bc310433bad038c9e3d6be098b5030156a4a2b2b386a9e62087061c7",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -210,7 +210,7 @@
     {
       "bytes": 11915,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-peer-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-peer-junit.json",
       "raw_role": "python/installed-peer-junit",
       "raw_sha256": "11aac15f8850b4aa8208e505a8a973377632ec3a20ce3fb4d348f8b212a47727",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -219,7 +219,7 @@
     {
       "bytes": 2150,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-peer-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-peer-command.json",
       "raw_role": "python/installed-peer-command",
       "raw_sha256": "ffc27deabaf7803ef34bd4addce2e67480882ca1cf7bda11dd9355b91dbe6740",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -228,7 +228,7 @@
     {
       "bytes": 61747,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-peer-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-peer-bindings.json",
       "raw_role": "python/installed-peer-bindings",
       "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -237,7 +237,7 @@
     {
       "bytes": 5908,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-adjacent-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-adjacent-junit.json",
       "raw_role": "python/installed-adjacent-junit",
       "raw_sha256": "78f974fe0ebf269207ce13ad575226e130cb44cbf4e9f47ee3b30d8b40666d26",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -246,7 +246,7 @@
     {
       "bytes": 2660,
       "declared_transformation_count": 6,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-adjacent-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-adjacent-command.json",
       "raw_role": "python/installed-adjacent-command",
       "raw_sha256": "14dae90adba4b52bd1c794636f580a28f10e32f5af23b6f853c890ef3fdeace1",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -255,7 +255,7 @@
     {
       "bytes": 61751,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-adjacent-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-adjacent-bindings.json",
       "raw_role": "python/installed-adjacent-bindings",
       "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -264,7 +264,7 @@
     {
       "bytes": 20587,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-guards-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-guards-junit.json",
       "raw_role": "python/installed-guards-junit",
       "raw_sha256": "5c45c727178b6281261737ce4db77cab2f47b6a22b1a229cac5d7e74c541b27c",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -273,7 +273,7 @@
     {
       "bytes": 3195,
       "declared_transformation_count": 8,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-guards-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-guards-command.json",
       "raw_role": "python/installed-guards-command",
       "raw_sha256": "00cce50e1212c149006ccd3573b62d516aa221b94ebc9530eae28be1bddf8b4b",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -282,7 +282,7 @@
     {
       "bytes": 61749,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-guards-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-guards-bindings.json",
       "raw_role": "python/installed-guards-bindings",
       "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -291,7 +291,7 @@
     {
       "bytes": 6585,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-selected-serial-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-selected-serial-junit.json",
       "raw_role": "python/installed-selected-serial-junit",
       "raw_sha256": "6b4f29299968b8643042452ad2cc6937633b25ca8206d7006956cd98491c9383",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -300,7 +300,7 @@
     {
       "bytes": 2165,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-selected-serial-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-selected-serial-command.json",
       "raw_role": "python/installed-selected-serial-command",
       "raw_sha256": "794ef9fbb88d611c784597c4e83e24489a51233c12dae9cca1cd5a558892f65f",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -309,7 +309,7 @@
     {
       "bytes": 61758,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-selected-serial-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-selected-serial-bindings.json",
       "raw_role": "python/installed-selected-serial-bindings",
       "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -318,7 +318,7 @@
     {
       "bytes": 7160,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-sanitizer-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-sanitizer-junit.json",
       "raw_role": "python/installed-sanitizer-junit",
       "raw_sha256": "6b308d0797376ed5d375732f73b39013ea12fb9763ec2470748d94cb0cd11b0f",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -327,7 +327,7 @@
     {
       "bytes": 2160,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-sanitizer-command.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-sanitizer-command.json",
       "raw_role": "python/installed-sanitizer-command",
       "raw_sha256": "ec8393a247326a372341c09b3af6ef5547dbeb8a0113a52a322ef90e7b649b3a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -336,7 +336,7 @@
     {
       "bytes": 61752,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-sanitizer-bindings.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-sanitizer-bindings.json",
       "raw_role": "python/installed-sanitizer-bindings",
       "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -345,7 +345,7 @@
     {
       "bytes": 266997,
       "declared_transformation_count": 289,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-modeled-report.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-modeled-report.json",
       "raw_role": "python/installed-modeled-report",
       "raw_sha256": "843198840da31393e11519f7abf8d7785f3727724d30e83fc40cb75af94155ba",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -354,7 +354,7 @@
     {
       "bytes": 1509,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/python/installed-modeled-junit.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/python/installed-modeled-junit.json",
       "raw_role": "python/installed-modeled-junit",
       "raw_sha256": "0a05b228b40e33659f5ff050d542b7500905481c3165ddb246c818d592fee802",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -363,7 +363,7 @@
     {
       "bytes": 28078,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/named-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/named-result.json",
       "raw_role": "rust/named-result",
       "raw_sha256": "6e0eb9f50eebc743453443864c02dd39f3cb5c80b179364e33878d9fe856f528",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -372,7 +372,7 @@
     {
       "bytes": 28541,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/net-save-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/net-save-result.json",
       "raw_role": "rust/net-save-result",
       "raw_sha256": "bbfed637ac2e6ab35b5ab54072331aea02ec888d30f579adb105a579aca7d3ef",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -381,7 +381,7 @@
     {
       "bytes": 25517,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/mock-archive-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/mock-archive-result.json",
       "raw_role": "rust/mock-archive-result",
       "raw_sha256": "e7f75e741d35b2da11bf46b30d18952804ca62f30c3e0820b682a145dc7e8041",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -390,7 +390,7 @@
     {
       "bytes": 25504,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/numeric-server-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/numeric-server-result.json",
       "raw_role": "rust/numeric-server-result",
       "raw_sha256": "bccd8de1f6fd148bc65ddfa652b9156a4056351b961ea411ab1f3fdaed074ccc",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -399,7 +399,7 @@
     {
       "bytes": 25481,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/numeric-tcp-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/numeric-tcp-result.json",
       "raw_role": "rust/numeric-tcp-result",
       "raw_sha256": "0af2e816d5f52e96b559eb635fef73b50ac962479f10cca5221f922f2a541e07",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -408,7 +408,7 @@
     {
       "bytes": 25157,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/fmt-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/fmt-result.json",
       "raw_role": "rust/fmt-result",
       "raw_sha256": "f2c75f3edc573243a447bcfb98853616666da38fe3cf93f17cc4444a40d8c969",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -417,7 +417,7 @@
     {
       "bytes": 25230,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/clippy-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/clippy-result.json",
       "raw_role": "rust/clippy-result",
       "raw_sha256": "e68f299f6b3652208776476813d66f2595f11d4afb9d51a4f9a8827ad11c53f5",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -426,7 +426,7 @@
     {
       "bytes": 25186,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/release-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/release-result.json",
       "raw_role": "rust/release-result",
       "raw_sha256": "2b06d6cdebb2b1dc9b8f4767d8ab99f681efe178d81df61a42a80c130519c780",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -435,7 +435,7 @@
     {
       "bytes": 25391,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/required-workspace-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/required-workspace-result.json",
       "raw_role": "rust/required-workspace-result",
       "raw_sha256": "7a5a0aa33bd9c5bdcb3fc9de886e34de00cf9d131e16030beffff23b6eae7c91",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -444,7 +444,7 @@
     {
       "bytes": 446547,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/required-workspace-log.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/required-workspace-log.json",
       "raw_role": "rust/required-workspace-log",
       "raw_sha256": "0e7c072ca188702a2ce70c9815f68817414005b088f35e52dbdb58f633f421e1",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -453,7 +453,7 @@
     {
       "bytes": 1903,
       "declared_transformation_count": 3,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/rust/release-binaries.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/rust/release-binaries.json",
       "raw_role": "rust/release-binaries",
       "raw_sha256": "ccdef3b56b4f72e7c98d6164d37e42f0373b3259e8c5ae5cf250fd4449332f3e",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -462,7 +462,7 @@
     {
       "bytes": 2783,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/final-six-sanitization.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/final-six-sanitization.json",
       "raw_role": "metadata/final-six-sanitization",
       "raw_sha256": "4f52bd56b493481d325b3c7828faf4ab8abe82c3721c0e64daea1bad5579259b",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -471,7 +471,7 @@
     {
       "bytes": 1835,
       "declared_transformation_count": 3,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/session-mock-final-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/session-mock-final-result.json",
       "raw_role": "metadata/session-mock-final-result",
       "raw_sha256": "7940e59c4e0c4bffb7506c9af65689065c9a96dcb5359178bb6c82453735da41",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -480,7 +480,7 @@
     {
       "bytes": 1847,
       "declared_transformation_count": 3,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/session-daemon-final-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/session-daemon-final-result.json",
       "raw_role": "metadata/session-daemon-final-result",
       "raw_sha256": "5753ac7234116e89dbed41c50b985106fd5511c5160efe32cf9f6e7d37871ce8",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -489,7 +489,7 @@
     {
       "bytes": 2058,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/tagged-final-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/tagged-final-result.json",
       "raw_role": "metadata/tagged-final-result",
       "raw_sha256": "2f056e5beda615ba251a4b8b1e79d542ab7907895a7fe4fd8e1886717eefb58e",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -498,7 +498,7 @@
     {
       "bytes": 2062,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/unit-mapper-final-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/unit-mapper-final-result.json",
       "raw_role": "metadata/unit-mapper-final-result",
       "raw_sha256": "9d86b3c0078dda42c1fb02694b2701ff68dfe8d6d951562d25e76703d13a682f",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -507,7 +507,7 @@
     {
       "bytes": 1207,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/skip-census-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/skip-census-result.json",
       "raw_role": "metadata/skip-census-result",
       "raw_sha256": "284f6d902b98f408c03bf955316d9d375f1c41198c04f28377c7d693f87332a0",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -516,7 +516,7 @@
     {
       "bytes": 1224,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/inventory-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/inventory-result.json",
       "raw_role": "metadata/inventory-result",
       "raw_sha256": "6d6fb13d13aa340355530902dc27575b0aca05de7fdbbc37eca945c1c3da0651",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -525,7 +525,7 @@
     {
       "bytes": 1330,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/physical-applicability-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/physical-applicability-result.json",
       "raw_role": "metadata/physical-applicability-result",
       "raw_sha256": "3112cec1fca9c45c33ae1a18aaedb9c2959c5379de5521edbcabf812218059dc",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -534,7 +534,7 @@
     {
       "bytes": 1212,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/parity-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/parity-result.json",
       "raw_role": "metadata/parity-result",
       "raw_sha256": "20739d9f6136f37be04fd0835f6419e45e082a04ccca9d6de161f79b2fe794ff",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -543,7 +543,7 @@
     {
       "bytes": 1230,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/skip-census-check-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/skip-census-check-result.json",
       "raw_role": "metadata/skip-census-check-result",
       "raw_sha256": "aef9ecd5b69ad61aa9f3214aa98f5c1c3de20e1c4a8ec22525dc2c323b65d09d",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -552,7 +552,7 @@
     {
       "bytes": 1247,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/inventory-check-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/inventory-check-result.json",
       "raw_role": "metadata/inventory-check-result",
       "raw_sha256": "9f9b0b3018ea1b94ab7dad80615b584f7b889fc962859f6d6b8c5f079250cbff",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -561,7 +561,7 @@
     {
       "bytes": 1235,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/parity-check-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/parity-check-result.json",
       "raw_role": "metadata/parity-check-result",
       "raw_sha256": "81ba8beb7bbdcd03a7f339576a1b7d0310679b8da35ef2f8c1f829a41c1cc03a",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -570,7 +570,7 @@
     {
       "bytes": 1287,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/coverage-result.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/coverage-result.json",
       "raw_role": "metadata/coverage-result",
       "raw_sha256": "5fa3f9d9985621bc783b570391ff608dd769ef6ca3bfe8177d7253dea64d2751",
       "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
@@ -579,7 +579,7 @@
     {
       "bytes": 222817,
       "declared_transformation_count": 0,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/metadata/coverage-output.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/metadata/coverage-output.json",
       "raw_role": "metadata/coverage-output",
       "raw_sha256": "d0e182e3824a92ea7bcd12d6c63dc9478ece92a022b44e0ce58e3c1338112239",
       "scope": "Coverage still incomplete; expected require-complete exit1, not an acceptance pass",
@@ -588,7 +588,7 @@
     {
       "bytes": 32759,
       "declared_transformation_count": 1,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/review/source-review.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/review/source-review.json",
       "raw_role": "review/source-review",
       "raw_sha256": "1ab80c46908b21de86043dbfb3d3844fee05c56d073fe74ce39caa81b5ebc3c9",
       "scope": "Read-only source review with explicit self-authorship qualifications; not test or publication audit execution",
@@ -597,7 +597,7 @@
     {
       "bytes": 70841,
       "declared_transformation_count": 66,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/independent-native-proof.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/independent-native-proof.json",
       "raw_role": "historical-original/independent-native-proof",
       "raw_sha256": "c45500aea56154db274d9feb1fc4cbd8ba14a328bc6d2448b19e55e8fcf861e1",
       "scope": "Historical contract preparation only; zero current corrected-candidate original execution credit",
@@ -606,7 +606,7 @@
     {
       "bytes": 465777,
       "declared_transformation_count": 34,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/scalar-byte-fields-attempt2.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/scalar-byte-fields-attempt2.json",
       "raw_role": "historical-original/scalar-byte-fields-attempt2",
       "raw_sha256": "4701492b9d9fd3f3a2af34261c047601e210e16d8ba1c8001d6b143fbcc54870",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -615,7 +615,7 @@
     {
       "bytes": 186615,
       "declared_transformation_count": 30,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/scalar-literal-storage-reload.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/scalar-literal-storage-reload.json",
       "raw_role": "historical-original/scalar-literal-storage-reload",
       "raw_sha256": "8cf21dbf2fc43b1b5f0f86720c66c6513c7e2efbfc46bdd052a30befa83328a7",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -624,7 +624,7 @@
     {
       "bytes": 188568,
       "declared_transformation_count": 30,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/interface-and-safe-rename-invariants.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/interface-and-safe-rename-invariants.json",
       "raw_role": "historical-original/interface-and-safe-rename-invariants",
       "raw_sha256": "0084bbae1cca3d9d302b035d9f3c16b62df99a7e2417a8f2ee7481adf9cb1445",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -633,7 +633,7 @@
     {
       "bytes": 183840,
       "declared_transformation_count": 30,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/interface-delete-lifecycle.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/interface-delete-lifecycle.json",
       "raw_role": "historical-original/interface-delete-lifecycle",
       "raw_sha256": "6db39e1b8e48f1495682cefa5b21a170e37ca1440b8f98398cbe88e52062c2c7",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -642,7 +642,7 @@
     {
       "bytes": 173775,
       "declared_transformation_count": 30,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/interface-delete-load.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/interface-delete-load.json",
       "raw_role": "historical-original/interface-delete-load",
       "raw_sha256": "b6807b1e556f3f8c264adca637e1ab549c69fa0ae6991dcf8058b395f8ecf645",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -651,7 +651,7 @@
     {
       "bytes": 173833,
       "declared_transformation_count": 30,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/historical-original/interface-delete-save.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/historical-original/interface-delete-save.json",
       "raw_role": "historical-original/interface-delete-save",
       "raw_sha256": "95511f99f0f9567bdb522eaca5cb59d06c56e84f51b9d8cd84d3defeb0c76843",
       "scope": "Historical native contract capture only; no latest-candidate original/GUI/hardware acceptance",
@@ -660,24 +660,25 @@
     {
       "bytes": 23656,
       "declared_transformation_count": 4,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/selected-serial/diagnosis-proof.json",
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/selected-serial/diagnosis-proof.json",
       "raw_role": "selected-serial/diagnosis-proof",
       "raw_sha256": "3c609a7819b91748541cd20eaf549a61b4425ff4d79add8788125ca079ec6887",
       "scope": "Bounded fixture diagnosis; exact prior CI cause remains unproven without original journal",
       "sha256": "638735cada5be81eb4253d621894c1cfbf4b381f4a6a763e593c707f1329cb65"
     },
     {
-      "bytes": 6187,
-      "declared_transformation_count": 2,
-      "path": "toolkit-cli/docs/acceptance/2026-10-01-named-database-review-fixes/selected-serial/validation-summary.json",
+      "bytes": 6421,
+      "declared_transformation_count": 3,
+      "path": "toolkit-cli/docs/acceptance/2026-10-02-named-database-publication-correction/selected-serial/validation-summary.json",
       "raw_role": "selected-serial/validation-summary",
       "raw_sha256": "e312d2a1b671db0819178836549fc1cc87758f61209b10d85eda50ec7704f3e9",
       "scope": "Earlier focused authored-test correction; final source/wheel selected module executions are recorded separately",
-      "sha256": "bbc96acd7790accb8a9e50a778d4daf7e361c413f8532ed824730e09bf8e7470"
+      "sha256": "b3abe142002f80c674518a99e3986894cd12221865944058e90f593252449f8f"
     }
   ],
   "baseline_branch_head": "e8a674c359606769dff71f8d7f7ae7dfc0bfa1c3",
   "complete_native_windows_gate_executed": false,
+  "correction_kind": "Evidence/privacy/docs only; the tested application source, package, metadata and release binaries are unchanged from a24",
   "current_input_count": 647,
   "current_inputs": [
     {
@@ -3295,6 +3296,7 @@
     "Prior interrupted pre-fix workspace run has no final credit.",
     "Private configured-owner regression baseline and earlier source-drift review attempts remain preserved.",
     "Initial publication draft rejected for incomplete decoded-hostname privacy scanning is retained privately and has no clearance.",
+    "Committed a24 receipt88cebaa5 and prior local audit a4ab813d were rejected by parent review for a plain JSON JUnit hostname field; exact history is preserved and its publication clearance is revoked.",
     "Misselected source and installed guards preparations with unconfigured nodes are excluded; corrected exact eligible attempts recorded in final matrix.",
     "Source/installed comparisons overlap and are not added as features."
   ],
@@ -3376,15 +3378,19 @@
   "normalization": {
     "decoded_depth_limit_fails_closed": true,
     "decoded_scan_maximum_layers": 6,
+    "direct_and_nested_json_hostname_fields_and_encoded_json_text_inspected": true,
     "embedded_encoded_minimum_characters": 4,
     "full_private_coordinates_not_published": true,
-    "generator_sha256": "f5a0dbb2bdbc4f10b4cbed175d0e01947a66990a0500364de1991d6d857a69dc",
+    "generator_sha256": "a96c63ee0a1389553260c96e6fef6dafba5f407c5241cc252a2b85c66d73eb37",
+    "json_text_structurally_parsed_including_escaped_keys_and_nested_serialized_strings": true,
     "json_values_and_keys_and_embedded_decoded_utf8_hex_base64_inspected": true,
-    "normalizer_sha256": "d2b711dfc5b67f8523c3fde73fd95c40fa175d740e76f094395e260652b50482",
+    "normalizer_sha256": "f6a066e920805393f3ffc83049e95255b5ce7bb662a19423a2d5131606599eed",
     "private_frozen_role_table_sha256": "d9c9adec7b67b03f79d914207f0ad801b40435b31e86f9e354ae8eddd5359d13",
     "scheme": "coordinate_roles_v2",
     "self_check": {
       "declared_transformations": 7,
+      "direct_nested_encoded_json_hostname_controls": 4,
+      "escaped_key_and_nested_json_serialization_controls": 4,
       "masked_residue_normalization_controls": 2,
       "nested_embedded_and_key_decode_controls": 3,
       "nested_embedded_hostname_detection_controls": 3,
@@ -3422,6 +3428,7 @@
     "selected_serial_independent_review_claimed": false,
     "selected_serial_self_authored": true
   },
+  "reviewed_application_source_commit": "a24e66e2e9bfbf71ed02266b5ca92e3eba6514ac",
   "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance",
   "selected_serial": {
     "exact_prior_ci_cause_proven": false,
