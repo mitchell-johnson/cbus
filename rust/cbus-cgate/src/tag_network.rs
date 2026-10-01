@@ -1718,6 +1718,50 @@ impl Server {
         }))
     }
 
+    // Admit only the already modeled empty label collection and its deferred
+    // load marker. Nonempty labels and arbitrary decorations remain refused.
+    pub(crate) fn associated_empty_level_copy_payload(extras: &crate::DbXmlExtras) -> bool {
+        if !extras.namespaces.is_empty()
+            || !extras.attributes.is_empty()
+            || extras.children.len() > 1
+        {
+            return false;
+        }
+        let Some(fragment) = extras.children.first() else {
+            return true;
+        };
+        let Ok(document) = roxmltree::Document::parse(fragment) else {
+            return false;
+        };
+        let root = document.root_element();
+        let markup = &fragment[root.range()];
+        // The DOM hides XML declarations and the built-in xmlns:xml binding.
+        // Require the entire retained fragment to be this element and permit
+        // only whitespace/self-closing syntax after its exact opening name.
+        let opening = markup.split_once('>').map(|(opening, _)| opening);
+        let empty_opening = opening
+            .and_then(|opening| opening.strip_prefix("<TagsDLT"))
+            .is_some_and(|tail| {
+                tail.trim_end()
+                    .strip_suffix('/')
+                    .unwrap_or(tail)
+                    .trim()
+                    .is_empty()
+            });
+        fragment.trim() == markup
+            && empty_opening
+            && root.has_tag_name("TagsDLT")
+            && root.tag_name().namespace().is_none()
+            && root.namespaces().len() == 0
+            && root.attributes().len() == 0
+            && document.root().children().all(|node| {
+                node == root || node.is_text() && node.text().unwrap_or_default().trim().is_empty()
+            })
+            && root
+                .children()
+                .all(|node| node.is_text() && node.text().unwrap_or_default().trim().is_empty())
+    }
+
     fn associated_level_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
         let verb = words.first()?.to_ascii_uppercase();
         let add = matches!(verb.as_str(), "DBADD" | "DBADDSAFE")
@@ -1835,10 +1879,12 @@ impl Server {
         if let Some(source) = source {
             let project = self.current.as_deref().expect("associated selected owner");
             let extras_key = Self::unit_document_key(project, &source.oid);
-            if self
+            let source_extras = self
                 .db_xml_extras
                 .get(&extras_key)
-                .is_some_and(|extras| extras != &crate::DbXmlExtras::default())
+                .cloned()
+                .unwrap_or_default();
+            if !Self::associated_empty_level_copy_payload(&source_extras)
                 || self
                     .pending_object(project, &source.oid)
                     .is_some_and(|pending| {
@@ -1876,21 +1922,59 @@ impl Server {
             let source_oid = format!("!{}", source.oid);
             rewritten[1] = &source_oid;
             rewritten[2] = &parent.canonical;
-            Some(if safe {
-                let value = self.level(&source.oid).expect("typed Level checked").value;
-                let response = self.dbcopy(tag, &rewritten);
-                if response.status == 301 {
-                    if let Some(oid) = response.final_text.strip_prefix("301 OID=") {
-                        // One operation: preserve Value before returning the
-                        // receipt, without a second command or implicit save.
-                        self.level_mut(oid).expect("new typed Level receipt").value = value;
-                    }
-                }
-                response
+            let source_value = self.level(&source.oid).map(|level| level.value);
+            let mut staged = self.clone();
+            let response = if safe {
+                staged.dbcopy(tag, &rewritten)
             } else {
-                self.handle_manual_command(tag, &rewritten, &rewritten.join(" "))
+                staged
+                    .handle_manual_command(tag, &rewritten, &rewritten.join(" "))
                     .expect("DBCOPY has an established manual owner")
-            })
+            };
+            if response.status != 301 {
+                return Some(response);
+            }
+            let Some(oid) = response
+                .final_text
+                .strip_prefix("301 OID=")
+                .filter(|oid| !oid.is_empty() && *oid != source.oid)
+            else {
+                return Some(err(
+                    tag,
+                    408,
+                    "408 Operation failed: Invalid associated Level copy receipt",
+                ));
+            };
+            if safe {
+                let Some(level) = staged.level_mut(oid) else {
+                    return Some(err(
+                        tag,
+                        408,
+                        "408 Operation failed: Associated Level copy owner missing",
+                    ));
+                };
+                // One staged operation owns Value and the admitted empty XML
+                // payload before301, without a second command/implicit save.
+                level.value = source_value.expect("typed Level checked");
+            } else if staged
+                .pending_object(project, oid)
+                .is_none_or(|pending| pending.element != "Level")
+            {
+                return Some(err(
+                    tag,
+                    408,
+                    "408 Operation failed: Associated pending Level copy owner missing",
+                ));
+            }
+            let mut destination_extras = source_extras;
+            if !destination_extras.children.is_empty() {
+                // A copied supported empty collection uses the existing
+                // canonical representation; source bytes remain untouched.
+                destination_extras.children = vec!["<TagsDLT/>".to_string()];
+            }
+            staged.store_db_xml_extras(project, oid, &destination_extras);
+            *self = staged;
+            Some(response)
         } else {
             rewritten[1] = &parent.canonical;
             Some(if safe {

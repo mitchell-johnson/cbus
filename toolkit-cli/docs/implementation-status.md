@@ -48,6 +48,26 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [empty TagsDLT copy extension](feature-batch-2026-10-02-empty-tags-copy.md)
+adds SAFE and unsafe associated Level copies with one strict empty collection or
+its deferred LOAD marker. It preserves source bytes, gives the destination a new
+OID, canonicalizes only the destination collection and prevents duplicate empty
+collections on scoped LOAD. Nonempty labels, arbitrary decorations, general
+owner migration and original/native acceptance remain open. Fresh integrated
+Rust 1.99 formatting, Clippy, workspace tests and release build passed, with
+8,641 tests passed and one ignored private-project case. Source and installed
+wheel each passed eight public CLI journeys; all 326 package files matched.
+Maintained interop passed 22 mock, 156 daemon and two framing parents, with two
+vendor-specification skips and 227 separately reported passing subtests.
+Six modeled comparisons and evidence regeneration passed; all 261 consumer
+parents passed, with one original-input skip and 934 passing subtests.
+The [bounded release receipt](../research/fixtures/empty-tags-owned-release-20261002.json)
+retains source/artifact bindings, independent cross-review and the final prose
+delta. The full Python suite was not repeated, and original/vendor/VM/hardware
+execution remains zero. The same batch removes two redundant closure borrows
+reported by Rust 1.99 Clippy in the preceding main-push CI. The category ratio
+and fully accepted obligation count remain unchanged.
+
 The [associated Level owner repair](feature-batch-2026-10-02-associated-levels.md)
 adds operation-scoped Level ADD/COPY delegation after a secondary database
 Network rename. Qualified/bare paths and admitted bare OIDs resolve the same

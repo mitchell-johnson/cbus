@@ -2319,7 +2319,7 @@ async fn renamed_associated_level_copy_refuses_retained_payload_and_stale_value_
                     .entry(key)
                     .or_default()
                     .children
-                    .push("<TagsDLT/>".to_string());
+                    .push("<TagsDLT><TagDLT><OID>55555555-5555-4555-8555-000000000005</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Retained</TagValue></TagDLT></TagsDLT>".to_string());
             } else {
                 model.db_xml_extras.remove(&key);
                 let pending_key = model.pending_object_key("ASSOC", &source).unwrap();
@@ -3006,6 +3006,528 @@ async fn associated_plain_netvar_retained_parent_or_child_xml_refuses_lossy_resy
     assert_eq!(
         scalar(&service, &mut client, &format!("!{child}/Value")).await,
         "33"
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+fn empty_tags_count(document: &str) -> usize {
+    let parsed = roxmltree::Document::parse(document).unwrap();
+    parsed
+        .descendants()
+        .filter(|node| node.has_tag_name("TagsDLT"))
+        .map(|node| {
+            assert!(
+                node.attributes().len() == 0
+                    && node.children().all(|child| child.is_text()
+                        && child.text().unwrap_or_default().trim().is_empty())
+            );
+            1
+        })
+        .sum()
+}
+
+async fn associated_empty_copy_source(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    group: &str,
+) -> String {
+    let source = created(service, client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{source}/Value 77"),
+        format!("DBSET !{source}/TagName Source"),
+        format!("DBSET !{source}/Address 7"),
+    ] {
+        ok_command(service, client, &command).await;
+    }
+    source
+}
+
+async fn install_associated_empty_tags(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    oid: &str,
+) {
+    let document = xml(service, client, &format!("!{oid}"))
+        .await
+        .replace("</Level>", "<TagsDLT/></Level>");
+    assert_eq!(
+        service
+            .handle_document(client, &format!("[named-db] DBSETXML !{oid}"), &document)
+            .await
+            .status,
+        301
+    );
+}
+
+#[tokio::test]
+async fn associated_empty_tags_safe_and_unsafe_copy_preserve_payload_value_and_source_through_restart(
+) {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = associated_empty_copy_source(&service, &mut client, &group).await;
+    install_associated_empty_tags(&service, &mut client, &source).await;
+    let source_xml = xml(&service, &mut client, &format!("!{source}")).await;
+    let configured = serde_json::to_value(&service.model.lock().await.projects["HARNESS"]).unwrap();
+    let copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+    )
+    .await;
+    assert_ne!(copy, source);
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{copy}/Value")).await,
+        "77"
+    );
+    assert_eq!(
+        empty_tags_count(&xml(&service, &mut client, &format!("!{copy}")).await),
+        1
+    );
+    // This is the explicit setter used by the typed CLI, separate from COPY.
+    ok_command(&service, &mut client, &format!("DBSETSAFE !{copy}/Value 8")).await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{copy}/Value")).await,
+        "8"
+    );
+    assert_eq!(
+        empty_tags_count(&xml(&service, &mut client, &format!("!{copy}")).await),
+        1
+    );
+    let pending = created(
+        &service,
+        &mut client,
+        &format!("DBCOPY //ASSOC/Renamed/56/1/7 !{group}"),
+    )
+    .await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{pending}/Value")).await,
+        "77"
+    );
+    // Existing incomplete associated XML exports core fields only. Keep that
+    // envelope unchanged, while retaining extras under the issued owner until
+    // completion makes its normal modeled Level XML authoritative.
+    assert_eq!(
+        empty_tags_count(&xml(&service, &mut client, &format!("!{pending}")).await),
+        0
+    );
+    {
+        let model = service.model.lock().await;
+        let copied = model.pending_object("ASSOC", &pending).unwrap();
+        assert!(
+            copied.path.is_none()
+                && !copied.fields.contains_key("Address")
+                && !copied.fields.contains_key("TagName")
+        );
+        assert_eq!(
+            model.db_xml_extras[&Server::unit_document_key("ASSOC", &pending)].children,
+            vec!["<TagsDLT/>".to_string()]
+        );
+    }
+    for command in [
+        format!("DBSET !{pending}/Address 9"),
+        format!("DBSET !{pending}/TagName PendingCopy"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    assert_eq!(
+        empty_tags_count(&xml(&service, &mut client, &format!("!{pending}")).await),
+        1
+    );
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{source}")).await,
+        source_xml
+    );
+    let graph = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(xml(&service, &mut client, "//ASSOC/Renamed").await, graph);
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    ok_command(&restarted, &mut client, "PROJECT USE ASSOC").await;
+    assert_eq!(xml(&restarted, &mut client, "//ASSOC/Renamed").await, graph);
+    assert_eq!(
+        serde_json::to_value(&restarted.model.lock().await.projects["HARNESS"]).unwrap(),
+        configured
+    );
+    assert_eq!(
+        xml(&restarted, &mut client, &format!("!{source}")).await,
+        source_xml
+    );
+    no_io(&mut restart_remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_empty_tags_copied_deferred_flag_loads_once_without_pending_or_foreign_owner() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = associated_empty_copy_source(&service, &mut client, &group).await;
+    // A same-project numeric neighbor has no associated tag overlay. Its
+    // plain typed flag must not be swept into this new LOAD owner subset.
+    for command in [
+        "DBCREATENET 12 Neighbor Cni 127.0.0.1:1",
+        "DBADDSAFE //ASSOC/12 Application 56 Lighting",
+        "DBADDSAFE //ASSOC/12/56 Group 1 Neighbor",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    let unassociated = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/12/56/1 Level 40 NeighborLevel",
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{unassociated}/Value 17"),
+    )
+    .await;
+    {
+        let mut model = service.model.lock().await;
+        assert!(!model.projects["ASSOC"]
+            .tag_networks
+            .values()
+            .any(|record| record.database_network == Some(12)));
+        assert!(model.pending_object("ASSOC", &unassociated).is_none());
+        model.db_xml_extras.insert(
+            Server::unit_document_key("ASSOC", &unassociated),
+            crate::DbXmlExtras {
+                saved_level_tags_pending: true,
+                ..Default::default()
+            },
+        );
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE ASSOC").await;
+    assert_eq!(
+        empty_tags_count(&xml(&service, &mut client, &format!("!{source}")).await),
+        0
+    );
+    let copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+    )
+    .await;
+    ok_command(&service, &mut client, &format!("DBSETSAFE !{copy}/Value 8")).await;
+    let pending = created(&service, &mut client, &format!("DBCOPY !{source} !{group}")).await;
+    for command in [
+        format!("DBSET !{pending}/TagName PendingCopy"),
+        format!("DBSET !{pending}/Address 9"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    let foreign = "99999999-9999-4999-8999-000000000001";
+    let neighbor = "99999999-9999-4999-8999-000000000002";
+    // Controlled snapshot fixtures exercise the exact project/association filter.
+    // Neither record is a pending Level: no mirror may be fabricated on LOAD.
+    {
+        let mut model = service.model.lock().await;
+        assert!(model.pending_object("ASSOC", &copy).is_none());
+        for oid in [&source, &copy, &pending] {
+            assert!(
+                model.db_xml_extras[&Server::unit_document_key("ASSOC", oid)]
+                    .saved_level_tags_pending
+            );
+        }
+        for (project, oid, parent) in [
+            ("OTHER", foreign, "//OTHER/254/56/1"),
+            ("HARNESS", neighbor, "//HARNESS/254/56/1"),
+        ] {
+            model.db_levels.insert(
+                format!("{project}\u{1f}{oid}"),
+                crate::DbLevel {
+                    oid: oid.to_string(),
+                    parent: parent.to_string(),
+                    address: 40,
+                    tag: "Unrelated".to_string(),
+                    value: Some(17),
+                    netvar: false,
+                },
+            );
+            model.db_xml_extras.insert(
+                Server::unit_document_key(project, oid),
+                crate::DbXmlExtras {
+                    saved_level_tags_pending: true,
+                    ..Default::default()
+                },
+            );
+        }
+    }
+    for oid in [&source, &copy, &pending] {
+        assert_eq!(
+            empty_tags_count(&xml(&service, &mut client, &format!("!{oid}")).await),
+            0
+        );
+    }
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    for oid in [&source, &copy, &pending] {
+        assert_eq!(
+            empty_tags_count(&xml(&service, &mut client, &format!("!{oid}")).await),
+            1
+        );
+        assert!(
+            !service.model.lock().await.db_xml_extras[&Server::unit_document_key("ASSOC", oid)]
+                .saved_level_tags_pending
+        );
+    }
+    let graph = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    ok_command(&service, &mut client, "PROJECT LOAD ASSOC").await;
+    assert_eq!(xml(&service, &mut client, "//ASSOC/Renamed").await, graph);
+    {
+        let model = service.model.lock().await;
+        assert!(model.pending_object("ASSOC", &copy).is_none());
+        let untouched = &model.db_xml_extras[&Server::unit_document_key("ASSOC", &unassociated)];
+        assert!(untouched.saved_level_tags_pending && untouched.children.is_empty());
+        for (project, oid) in [("OTHER", foreign), ("HARNESS", neighbor)] {
+            let extras = &model.db_xml_extras[&Server::unit_document_key(project, oid)];
+            assert!(extras.saved_level_tags_pending && extras.children.is_empty());
+        }
+    }
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{copy}/Value")).await,
+        "8"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{source}/Value")).await,
+        "77"
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_empty_tags_unsupported_payload_and_repository_failure_are_atomic() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = associated_empty_copy_source(&service, &mut client, &group).await;
+    let key = Server::unit_document_key("ASSOC", &source);
+    for fragment in [
+        "<TagsDLT marker=\"unsupported\"/>",
+        "<TagsDLT xmlns:x=\"urn:unknown\"/>",
+        "<TagsDLT><!--retained--></TagsDLT>",
+        "<?unknown value?><TagsDLT/>",
+        "<TagsDLT><TagDLT/></TagsDLT>",
+        "<TagsDLT/><TagsDLT/>",
+    ] {
+        service.model.lock().await.db_xml_extras.insert(
+            key.clone(),
+            crate::DbXmlExtras {
+                children: vec![fragment.to_string()],
+                ..Default::default()
+            },
+        );
+        let before = Database::from_server(&*service.model.lock().await);
+        let bytes = std::fs::read(&path).unwrap();
+        for command in [
+            format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+            format!("DBCOPY !{source} !{group}"),
+        ] {
+            assert_eq!(
+                run(&service, &mut client, &command).await.status,
+                408,
+                "{fragment}: {command}"
+            );
+            assert!(Database::from_server(&*service.model.lock().await) == before);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        }
+    }
+    service.model.lock().await.db_xml_extras.insert(
+        key,
+        crate::DbXmlExtras {
+            children: vec!["<TagsDLT/>".to_string()],
+            saved_level_tags_pending: true,
+            ..Default::default()
+        },
+    );
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    std::fs::remove_file(&path).unwrap();
+    std::fs::create_dir(&path).unwrap();
+    for command in [
+        format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+        format!("DBCOPY !{source} !{group}"),
+    ] {
+        assert_eq!(
+            run(&service, &mut client, &command).await.final_text,
+            "500 Database commit failed; change rolled back"
+        );
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert!(path.is_dir());
+    }
+    std::fs::remove_dir(&path).unwrap();
+    std::fs::write(&path, bytes).unwrap();
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_empty_tags_document_prolog_and_reserved_namespace_refuse_atomically() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = associated_empty_copy_source(&service, &mut client, &group).await;
+    let key = Server::unit_document_key("ASSOC", &source);
+    // Controlled retained-snapshot forms: fresh strict DBSETXML would normalize
+    // the supported empty collection and does not establish these raw bytes.
+    for fragment in [
+        "<?xml version=\"1.0\"?><TagsDLT/>",
+        "<TagsDLT xmlns:xml=\"http://www.w3.org/XML/1998/namespace\"/>",
+        "\u{feff}<TagsDLT/>",
+    ] {
+        service.model.lock().await.db_xml_extras.insert(
+            key.clone(),
+            crate::DbXmlExtras {
+                children: vec![fragment.to_string()],
+                saved_level_tags_pending: true,
+                ..Default::default()
+            },
+        );
+        let before = Database::from_server(&*service.model.lock().await);
+        let bytes = std::fs::read(&path).unwrap();
+        for command in [
+            format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+            format!("DBCOPY !{source} !{group}"),
+        ] {
+            assert_eq!(
+                run(&service, &mut client, &command).await.status,
+                408,
+                "{fragment}: {command}"
+            );
+            assert!(Database::from_server(&*service.model.lock().await) == before);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+            assert_eq!(
+                service.model.lock().await.db_xml_extras[&key].children,
+                vec![fragment.to_string()]
+            );
+        }
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_empty_tags_whitespace_and_flag_copy_loads_one_collection_preserving_source() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = associated_empty_copy_source(&service, &mut client, &group).await;
+    let whitespace_empty = " \n<TagsDLT/>";
+    let key = Server::unit_document_key("ASSOC", &source);
+    service.model.lock().await.db_xml_extras.insert(
+        key.clone(),
+        crate::DbXmlExtras {
+            children: vec![whitespace_empty.to_string()],
+            saved_level_tags_pending: true,
+            ..Default::default()
+        },
+    );
+    let source_xml = xml(&service, &mut client, &format!("!{source}")).await;
+    let configured = serde_json::to_value(&service.model.lock().await.projects["HARNESS"]).unwrap();
+    let copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+    )
+    .await;
+    ok_command(&service, &mut client, &format!("DBSETSAFE !{copy}/Value 8")).await;
+    let pending = created(&service, &mut client, &format!("DBCOPY !{source} !{group}")).await;
+    for command in [
+        format!("DBSET !{pending}/TagName CopyPending"),
+        format!("DBSET !{pending}/Address 9"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{source}")).await,
+        source_xml
+    );
+    {
+        let model = service.model.lock().await;
+        assert_eq!(
+            model.db_xml_extras[&key].children,
+            vec![whitespace_empty.to_string()]
+        );
+        for oid in [&copy, &pending] {
+            let extras = &model.db_xml_extras[&Server::unit_document_key("ASSOC", oid)];
+            assert_eq!(extras.children, vec!["<TagsDLT/>".to_string()]);
+            assert!(extras.saved_level_tags_pending);
+        }
+    }
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    for oid in [&source, &copy, &pending] {
+        assert_eq!(
+            empty_tags_count(&xml(&service, &mut client, &format!("!{oid}")).await),
+            1
+        );
+    }
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{source}")).await,
+        source_xml
+    );
+    let graph = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    ok_command(&service, &mut client, "PROJECT LOAD ASSOC").await;
+    assert_eq!(xml(&service, &mut client, "//ASSOC/Renamed").await, graph);
+    {
+        let model = service.model.lock().await;
+        assert_eq!(
+            model.db_xml_extras[&key].children,
+            vec![whitespace_empty.to_string()]
+        );
+        for oid in [&source, &copy, &pending] {
+            assert!(
+                !model.db_xml_extras[&Server::unit_document_key("ASSOC", oid)]
+                    .saved_level_tags_pending
+            );
+        }
+        assert_eq!(
+            serde_json::to_value(&model.projects["HARNESS"]).unwrap(),
+            configured
+        );
+    }
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{copy}/Value")).await,
+        "8"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{source}/Value")).await,
+        "77"
     );
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();

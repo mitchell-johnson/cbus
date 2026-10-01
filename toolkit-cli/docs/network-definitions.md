@@ -136,7 +136,10 @@ bare path, or its Group/NetVar OID, follows the original numeric database owner.
 It does not create another physical Network. See the
 [associated Level workflow](feature-batch-2026-10-02-associated-levels.md) for
 selection, Value initialization, save/reload and the remaining raw/NULL/decorated
-copy limits. The service's existing restriction on renaming any Network inside
+copy limits. The [empty TagsDLT extension](feature-batch-2026-10-02-empty-tags-copy.md)
+admits one strict empty Level collection after reload, preserving the source and
+the destination's owner. Other decorations remain unsupported.
+The service's existing restriction on renaming any Network inside
 its configured hardware project remains.
 
 OID mutations are selected-project scoped. Absolute named DBADD/DBADDSAFE

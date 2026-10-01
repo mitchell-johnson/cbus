@@ -1,0 +1,91 @@
+{
+  "format": "cbus-associated-empty-tags-cli-wire-v1",
+  "provenance": "Local public Python source CLI wire expectations over the private reviewed Rust v2 candidate. No original composed-copy execution or native/hardware acceptance.",
+  "scope": {
+    "owner": "selected secondary project LAB, renamed tag Network associated with numeric database Network 11",
+    "source": "complete imported Level Address=7 Value=77, explicit SAVE/CLOSE/LOAD materializes one strict unnamespaced attribute-free empty TagsDLT",
+    "raw_copy_preserves_source_value": 77,
+    "typed_copy_initializes_value_to_requested_address": true,
+    "source_and_unrelated_projects_preserved": true,
+    "single_empty_collection_after_repeated_load": true,
+    "cmqttd_json_restart": true,
+    "mock_persistence": "process-local SAVE/LOAD only",
+    "original_execution": false,
+    "physical_acceptance": false,
+    "unexecuted_public_edges": [
+      "nonempty labels and label OID refresh policy",
+      "retained TagsDLT attributes, namespaces, comments, PI and non-whitespace text",
+      "retained XML declaration, BOM and leading-whitespace saved-marker forms",
+      "repository-failure rollback injection and uncertain transport interruption",
+      "deferred marker copied before source LOAD",
+      "generic independent, Unit, cross-owner, NetVar and NULL schema/native parity"
+    ]
+  },
+  "cases": [
+    {
+      "id": "raw-safe",
+      "kind": "raw",
+      "commands": ["DBCOPYSAFE !${source} !${group2} 8 RawSafe"],
+      "requests": ["PROJECT USE LAB", "DBCOPYSAFE !${source} !${group2} 8 RawSafe"],
+      "statuses": [200, 301],
+      "address": 8,
+      "value": 77,
+      "name": "RawSafe"
+    },
+    {
+      "id": "raw-unsafe",
+      "kind": "raw",
+      "commands": ["DBCOPY !${source} !${group2}"],
+      "requests": ["PROJECT USE LAB", "DBCOPY !${source} !${group2}"],
+      "statuses": [200, 301],
+      "completion": ["DBSET !${issued}/TagName RawUnsafe", "DBSET !${issued}/Address 9"],
+      "address": 9,
+      "value": 77,
+      "name": "RawUnsafe"
+    },
+    {
+      "id": "typed-oid",
+      "kind": "typed",
+      "argv": ["copy", "!${source}", "!${group2}", "10", "TypedOID"],
+      "requests": ["PROJECT USE LAB", "DBGETXML !${source}", "DBCOPYSAFE !${source} !${group2} 10 TypedOID", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 10"],
+      "statuses": [200, 344, 301, 342, 200],
+      "address": 10,
+      "value": 10,
+      "name": "TypedOID"
+    },
+    {
+      "id": "typed-path",
+      "kind": "typed",
+      "argv": ["copy", "//LAB/Renamed/56/1/7", "//LAB/Renamed/56/2", "11", "TypedPath"],
+      "requests": ["PROJECT USE LAB", "DBGETXML //LAB/Renamed/56/1/7", "DBCOPYSAFE //LAB/Renamed/56/1/7 //LAB/Renamed/56/2 11 TypedPath", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 11"],
+      "statuses": [200, 344, 301, 342, 200],
+      "address": 11,
+      "value": 11,
+      "name": "TypedPath"
+    }
+  ],
+  "collision": {
+    "requests": ["PROJECT USE LAB", "DBGETXML !${source}", "DBCOPYSAFE !${source} !${group2} 8 Collision"],
+    "statuses": [200, 344, 401]
+  },
+  "auth_refusals": [
+    {
+      "kind": "typed",
+      "argv": ["copy", "!${source}", "!${group2}", "8", "Denied"],
+      "requests": ["PROJECT USE LAB", "DBGETXML !${source}", "DBCOPYSAFE !${source} !${group2} 8 Denied"],
+      "statuses": [200, 344, 420]
+    },
+    {
+      "kind": "raw",
+      "commands": ["DBCOPYSAFE !${source} !${group2} 8 Denied"],
+      "requests": ["PROJECT USE LAB", "DBCOPYSAFE !${source} !${group2} 8 Denied"],
+      "statuses": [200, 420]
+    },
+    {
+      "kind": "raw",
+      "commands": ["DBCOPY !${source} !${group2}"],
+      "requests": ["PROJECT USE LAB", "DBCOPY !${source} !${group2}"],
+      "statuses": [200, 420]
+    }
+  ]
+}

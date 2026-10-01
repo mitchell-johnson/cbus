@@ -1073,7 +1073,13 @@ SAFE copy retains source Value. Unsafe child-first ADD can complete under an
 incomplete Group OID, but incomplete copy destinations remain unsupported.
 Associated typed NULL getter/save remains local `342 ...=null`/`200`, and completed
 typed Level values use canonical decimal bytes; raw/NULL/NetVar semantics and
-decorated copy remain open. Plain legacy NetVars with an acknowledged parent
+decorated copy remain open. Associated Level COPY now admits absent or one
+strict unnamespaced, attribute-free empty TagsDLT collection and its deferred
+LOAD marker. It preserves source bytes, canonicalizes only the destination and
+avoids duplicate collections on scoped LOAD. Nonempty labels, arbitrary
+decorations and declarations/BOM remain refused. See the
+[empty collection scope](../../../../toolkit-cli/docs/feature-batch-2026-10-02-empty-tags-copy.md).
+Plain legacy NetVars with an acknowledged parent
 Value or retained parent/child XML extras cause atomic local `408` on tag-tree
 resync instead of silent loss; this does not establish native NetVar semantics.
 All configured hardware-project network renames

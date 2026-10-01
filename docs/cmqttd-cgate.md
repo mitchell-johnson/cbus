@@ -47,7 +47,17 @@ OIDs share that owner, with selected-project, Unit/retired identity, pending
 completion, LOGIN and durable rollback checks. Typed CLI Level initialization
 remains explicit on the operation's own connection. See the
 [associated Level workflow and outstanding semantics](../toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md);
-raw/NULL/NetVar values, retained XML copies and original acceptance remain open.
+raw/NULL/NetVar values and original acceptance remain open. The
+[empty collection copy extension](../toolkit-cli/docs/feature-batch-2026-10-02-empty-tags-copy.md)
+admits absent or one unnamespaced, attribute-free empty Level `TagsDLT` collection
+and its deferred LOAD marker within that same associated owner. COPY preserves
+source bytes and canonicalizes the destination collection; explicit LOAD keeps
+one collection without introducing a pending mirror or changing NULL getters.
+Nonempty labels, namespace declarations, attributes, comments, processing
+instructions, declarations/BOM and arbitrary retained XML remain refused before
+mutation. Controlled retained-snapshot whitespace cases preserve the source and
+avoid duplicate collections. This does not establish decorated-copy or native
+renamed-associated workflow parity.
 
 ## Start and connect
 

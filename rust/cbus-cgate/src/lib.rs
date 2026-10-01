@@ -3112,17 +3112,58 @@ impl Server {
     }
 
     fn materialize_loaded_nested_level_tags(&mut self, project: &str) {
-        for oid in self.nested_level_oids(project) {
+        let mut oids = self
+            .nested_level_oids(project)
+            .into_iter()
+            .collect::<HashSet<_>>();
+        let mut associated_empty = HashSet::new();
+        // SAFE associated copies are plain typed Levels, not pending mirrors.
+        // Their copied deferred marker must retain LOAD timing without changing
+        // the existing typed NULL getter or creating another owner record.
+        for level in self.db_levels.values().filter(|level| !level.netvar) {
+            if self
+                .network_of(&level.parent)
+                .is_some_and(|(owner, number)| {
+                    owner == project
+                        && self.projects.get(project).is_some_and(|record| {
+                            record
+                                .tag_networks
+                                .values()
+                                .any(|tag| tag.database_network == Some(number))
+                        })
+                })
+                && self
+                    .db_xml_extras
+                    .get(&Self::unit_document_key(project, &level.oid))
+                    .is_some_and(|extras| extras.saved_level_tags_pending)
+            {
+                oids.insert(level.oid.clone());
+                if self
+                    .db_xml_extras
+                    .get(&Self::unit_document_key(project, &level.oid))
+                    .is_some_and(Self::associated_empty_level_copy_payload)
+                {
+                    associated_empty.insert(level.oid.clone());
+                }
+            }
+        }
+        for oid in oids {
             if let Some(extras) = self
                 .db_xml_extras
                 .get_mut(&Self::unit_document_key(project, &oid))
             {
                 if extras.saved_level_tags_pending {
                     extras.saved_level_tags_pending = false;
-                    if !extras
-                        .children
-                        .iter()
-                        .any(|child| child.starts_with("<TagsDLT"))
+                    // Only the proved associated empty subset receives
+                    // semantic deduplication. Preserve source whitespace and
+                    // leave other owners/payloads on their existing policy.
+                    let has_admitted_empty =
+                        associated_empty.contains(&oid) && !extras.children.is_empty();
+                    if !has_admitted_empty
+                        && !extras
+                            .children
+                            .iter()
+                            .any(|child| child.starts_with("<TagsDLT"))
                     {
                         extras.children.push("<TagsDLT/>".to_string());
                     }
@@ -3971,7 +4012,7 @@ impl Server {
         for mut object in tables.db_pending {
             object.project = project.to_string();
             object.parent = remap(&object.parent);
-            object.path = object.path.as_deref().map(&remap);
+            object.path = object.path.as_deref().map(remap);
             self.known_oids.insert(object.oid.clone());
             self.insert_db_pending_object(object);
         }
@@ -10208,7 +10249,7 @@ impl Server {
                     return (key, object);
                 }
                 object.parent = remap(object.parent);
-                object.path = object.path.map(&remap);
+                object.path = object.path.map(remap);
                 let key = match key.split_once('\u{1e}') {
                     Some((base, path)) => format!("{base}\u{1e}{}", remap(path.to_string())),
                     None => key,

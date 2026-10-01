@@ -657,3 +657,264 @@ def test_public_renamed_associated_level_cli_auth_and_restart(tmp_path):
         if relay is not None:
             wires[:] = relay.evidence()
         associated_evidence(tmp_path / "associated-level-auth-evidence.json", evidence)
+
+
+def empty_tags_vector():
+    path = Path(__file__).resolve().parents[2] / "rust/testdata/vectors/cgate_associated_empty_tags_cli_wire.json"
+    vector = json.loads(path.read_text(encoding="utf-8"))
+    assert vector["format"] == "cbus-associated-empty-tags-cli-wire-v1"
+    assert not vector["scope"]["original_execution"]
+    return path, vector
+
+
+def empty_tags_expand(value, roles):
+    for role, oid in roles.items():
+        value = value.replace("${" + role + "}", oid)
+    assert "${" not in value, value
+    return value
+
+
+def empty_tags_run(relay, calls, work, *commands, expected=0):
+    """Public raw batch, with one selected session and no hidden initializer."""
+    script = work / f"raw-{len(calls)}.cgate"
+    script.write_text("\n".join(("PROJECT USE LAB", *commands)) + "\n", encoding="utf-8")
+    script.chmod(0o600)
+    before = len(relay.rows)
+    argv = [sys.executable, "-m", "cbus_toolkit", "cgate", "--host", relay.endpoint[0],
+            "--port", str(relay.endpoint[1]), "--timeout", "15", "run", str(script)]
+    result = subprocess.run(argv, text=True, capture_output=True, timeout=30)
+    value = json.loads(result.stdout or result.stderr)
+    call = {"argv": argv, "exit": result.returncode, "stdout": result.stdout,
+            "stderr": result.stderr, "result": value}
+    calls.append(call)
+    assert result.returncode == expected, value
+    assert len(relay.rows) == before + 1, "Raw CLI opened more than one connection"
+    row = relay.rows[before]
+    assert row["done"].wait(5), "Raw CLI connection did not close"
+    requests = bytes.fromhex(row["request_hex"]).decode("utf-8").splitlines()
+    tagged = [re.fullmatch(r"\[([^]]+)\] (.+)", line) for line in requests]
+    assert tagged and all(tagged), requests
+    tags, sent = zip(*(match.groups() for match in tagged))
+    assert len(set(tags)) == len(tags), "Raw CLI reused a request tag"
+    assert list(sent) == ["PROJECT USE LAB", *commands]
+    replies = bytes.fromhex(row["response_hex"]).decode("utf-8").splitlines()
+    terminals = {}
+    for line in replies:
+        match = re.fullmatch(r"\[([^]]+)\] (\d{3}) (.*)", line)
+        if match and match[1] in tags:
+            assert match[1] not in terminals, replies
+            terminals[match[1]] = (int(match[2]), match[3])
+    assert set(terminals) == set(tags), replies
+    assert terminals[tags[0]][0] == 200
+    call.update(commands=list(sent), statuses=[terminals[tag][0] for tag in tags],
+                terminals=[terminals[tag][1] for tag in tags])
+    return value, call
+
+
+def empty_tags_snapshot(owner, backend):
+    """Entire selected, foreign and configured projects, without dropping fields."""
+    control = "BRIDGE" if backend == "cmqttd" else "CONTROL"
+    result = {}
+    try:
+        for project in ("LAB", "OTHER", control):
+            assert owner.command("PROJECT USE " + project).code == 200
+            result[project] = associated_document(owner, "//" + project)
+    finally:
+        assert owner.command("PROJECT USE LAB").code == 200
+    return result
+
+
+def empty_tags_assert_level(document, *, oid, address, value, name):
+    level = ET.fromstring(document, parser=ET.XMLParser(
+        target=ET.TreeBuilder(insert_comments=True, insert_pis=True)))
+    assert level.tag == "Level" and level.attrib == {"Value": str(value)}
+    assert [child.tag for child in level] == ["OID", "TagName", "Address", "TagsDLT"]
+    assert (level.findtext("OID"), level.findtext("TagName"), level.findtext("Address")) == (
+        oid, name, str(address))
+    tags = level.find("TagsDLT")
+    assert not tags.attrib and len(tags) == 0 and not (tags.text or "").strip()
+
+
+def empty_tags_assert_copy(owner, oid, case):
+    path = f"//LAB/Renamed/56/2/{case['address']}"
+    identity = owner.command("DBGET " + path + "/OID")
+    assert identity.code == 342 and identity.final == f"342 {path}/OID={oid}", identity
+    document = associated_document(owner, "!" + oid)
+    assert associated_document(owner, path) == document
+    empty_tags_assert_level(document, oid=oid, address=case["address"],
+                            value=case["value"], name=case["name"])
+
+
+def empty_tags_graph_without_copies(document, copied_oids):
+    # Remove only literal newly issued Level fragments. Every other exported
+    # byte, including field order, whitespace and unrelated XML, must survive.
+    removed = set()
+    for match in list(re.finditer(r"<Level\b[^>]*>.*?</Level>", document, re.DOTALL)):
+        oid = ET.fromstring(match[0]).findtext("OID")
+        if oid in copied_oids:
+            assert oid not in removed, "Issued Level appeared twice in whole project"
+            removed.add(oid)
+            document = document.replace(match[0], "", 1)
+    assert removed == set(copied_oids)
+    return document
+
+
+@pytest.mark.parametrize("backend,variable", [
+    ("cgate-mock", "CBUS_CGATE_MOCK_BIN"), ("cmqttd", "CBUS_CMQTTD_BIN"),
+], ids=["mock", "daemon"])
+def test_public_associated_empty_tags_copy_after_reload(backend, variable, tmp_path):
+    supplied = os.environ.get(variable)
+    if not supplied:
+        pytest.skip(f"Select {variable} for the owned empty TagsDLT copy journey")
+    binary = Path(supplied).resolve()
+    assert binary.is_file() and os.access(binary, os.X_OK)
+    vector_path, vector = empty_tags_vector()
+    calls, processes, wires = [], [], []
+    evidence = {"format": "cbus-associated-empty-tags-cli-local-v1", "backend": backend,
+                "scope": vector["scope"], "vector": str(vector_path), "calls": calls,
+                "processes": processes, "wires": wires}
+    work = associated_work(tmp_path, "initial")
+    relay = None
+    try:
+        with no_contact_trap() as trap:
+            with owned_backend(backend, binary, work) as (endpoint, record):
+                processes.append(record)
+                with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
+                    roles = associated_seed(owner, work, trap)
+                    if backend == "cgate-mock":
+                        for command in ("PROJECT NEW CONTROL", f"DBCREATENET 254 Control Cni {trap}", "PROJECT USE LAB"):
+                            assert owner.command(command).code == 200
+                    initial = associated_document(owner, "!" + roles["source"])
+                    assert len(ET.fromstring(initial).findall("TagsDLT")) == 0
+                    # The source obtains its empty collection at the real LOAD boundary.
+                    for command in ("PROJECT SAVE LAB", "PROJECT CLOSE LAB", "PROJECT LOAD LAB", "PROJECT USE LAB"):
+                        assert owner.command(command).code == 200
+                    source = associated_document(owner, "!" + roles["source"])
+                    empty_tags_assert_level(source, oid=roles["source"], address=7, value=77, name="Source")
+                    before = empty_tags_snapshot(owner, backend)
+                    neighbor = associated_document(owner, "//LAB/12")
+                    evidence.update(before=before, source_xml=source, source_before_load=initial, oid_roles=roles)
+                    existing = {node.text for graph in before.values() for node in ET.fromstring(graph).iter("OID")}
+                    copied = {}
+                    for case in vector["cases"]:
+                        expand = lambda text: empty_tags_expand(text, roles)
+                        if case["kind"] == "raw":
+                            value, wire = empty_tags_run(relay, calls, work, *(expand(command) for command in case["commands"]))
+                            receipt = value[-1]
+                        else:
+                            receipt, wire = associated_cli(relay, calls, *(expand(arg) for arg in case["argv"]))
+                        assert receipt["status"] == 301, receipt
+                        match = re.fullmatch(r"301 OID=([0-9a-fA-F-]{36})", receipt["final"])
+                        assert match is not None, receipt
+                        oid = match[1]
+                        assert oid not in existing and oid not in copied
+                        roles["issued"] = oid
+                        roles[case["id"]] = oid
+                        assert wire["commands"] == [expand(command) for command in case["requests"]]
+                        assert wire["statuses"] == case["statuses"]
+                        if case.get("completion"):
+                            # The raw unsafe copy already retains Value before identity completion.
+                            pending, _ = associated_cli(relay, calls, "get", f"!{oid}/Value")
+                            assert pending["status"] == 342 and pending["final"].endswith("=77")
+                            _, completed = empty_tags_run(relay, calls, work, *(expand(command) for command in case["completion"]))
+                            assert completed["statuses"] == [200, 200, 200]
+                        copied[oid] = case
+                        empty_tags_assert_copy(owner, oid, case)
+                        got, _ = associated_cli(relay, calls, "get", f"!{oid}/Value")
+                        assert got["status"] == 342 and got["final"].endswith("=" + str(case["value"]))
+                        assert associated_document(owner, "!" + roles["source"]) == source
+                        current = empty_tags_snapshot(owner, backend)
+                        assert current["OTHER"] == before["OTHER"]
+                        control = "BRIDGE" if backend == "cmqttd" else "CONTROL"
+                        assert current[control] == before[control]
+                        assert associated_document(owner, "//LAB/12") == neighbor
+                        assert empty_tags_graph_without_copies(current["LAB"], copied) == empty_tags_graph_without_copies(before["LAB"], [])
+
+                    immutable = empty_tags_snapshot(owner, backend)
+                    state = (work / "state.json").read_bytes() if backend == "cmqttd" else None
+                    denied, wire = associated_cli(relay, calls, "copy", "!" + roles["source"],
+                                                  "!" + roles["group2"], 8, "Collision", expected=1)
+                    assert "401" in denied["error"]
+                    expand = lambda text: empty_tags_expand(text, roles)
+                    assert wire["commands"] == [expand(command) for command in vector["collision"]["requests"]]
+                    assert wire["statuses"] == vector["collision"]["statuses"]
+                    assert empty_tags_snapshot(owner, backend) == immutable
+                    if state is not None:
+                        assert (work / "state.json").read_bytes() == state
+                    for command in ("PROJECT SAVE LAB", "PROJECT CLOSE LAB", "PROJECT LOAD LAB", "PROJECT USE LAB", "PROJECT LOAD LAB"):
+                        assert owner.command(command).code == 200
+                    saved = empty_tags_snapshot(owner, backend)
+                    evidence["saved_repeated_reload"] = saved
+                    assert saved == immutable
+                    assert associated_document(owner, "!" + roles["source"]) == source
+                    for oid, case in copied.items():
+                        empty_tags_assert_copy(owner, oid, case)
+            if backend == "cmqttd":
+                restart = associated_work(tmp_path, "restart")
+                with owned_backend(backend, binary, restart, state_path=work / "state.json") as (endpoint, record):
+                    processes.append(record)
+                    with CGateClient(*endpoint, timeout=15) as owner:
+                        assert owner.command("PROJECT USE LAB").code == 200
+                        assert empty_tags_snapshot(owner, backend) == saved
+                        for command in ("PROJECT LOAD LAB", "PROJECT LOAD LAB"):
+                            assert owner.command(command).code == 200
+                        assert empty_tags_snapshot(owner, backend) == saved
+                        assert associated_document(owner, "!" + roles["source"]) == source
+                        for oid, case in copied.items():
+                            empty_tags_assert_copy(owner, oid, case)
+                evidence["json_restart_verified"] = True
+            else:
+                evidence["json_restart_verified"] = False
+            evidence["closed_graph_trap_contacts"] = 0
+    finally:
+        if relay is not None:
+            wires[:] = relay.evidence()
+        associated_evidence(tmp_path / "associated-empty-tags-evidence.json", evidence)
+
+
+def test_public_associated_empty_tags_copy_auth_stops_before_initializer(tmp_path):
+    supplied = os.environ.get("CBUS_CMQTTD_BIN")
+    if not supplied:
+        pytest.skip("Select CBUS_CMQTTD_BIN for the owned empty TagsDLT LOGIN journey")
+    binary = Path(supplied).resolve()
+    assert binary.is_file() and os.access(binary, os.X_OK)
+    _, vector = empty_tags_vector()
+    auth_file = tmp_path / "owned-auth.token"
+    token = uuid.uuid4().hex + uuid.uuid4().hex
+    auth_file.write_text(token + "\n", encoding="utf-8")
+    auth_file.chmod(0o600)
+    calls, processes, wires = [], [], []
+    evidence = {"format": "cbus-associated-empty-tags-cli-auth-local-v1", "scope": vector["scope"],
+                "calls": calls, "processes": processes, "wires": wires}
+    work = associated_work(tmp_path, "initial")
+    relay = None
+    try:
+        with no_contact_trap() as trap:
+            with owned_backend("cmqttd", binary, work, auth_file=auth_file) as (endpoint, record):
+                processes.append(record)
+                with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
+                    assert owner.command("LOGIN " + token).code == 200
+                    roles = associated_seed(owner, work, trap)
+                    for command in ("PROJECT SAVE LAB", "PROJECT CLOSE LAB", "PROJECT LOAD LAB", "PROJECT USE LAB"):
+                        assert owner.command(command).code == 200
+                    source = associated_document(owner, "!" + roles["source"])
+                    empty_tags_assert_level(source, oid=roles["source"], address=7, value=77, name="Source")
+                    before = empty_tags_snapshot(owner, "cmqttd")
+                    state = (work / "state.json").read_bytes()
+                    for case in vector["auth_refusals"]:
+                        expand = lambda text: empty_tags_expand(text, roles)
+                        if case["kind"] == "raw":
+                            value, wire = empty_tags_run(relay, calls, work, *(expand(command) for command in case["commands"]), expected=1)
+                        else:
+                            value, wire = associated_cli(relay, calls, *(expand(arg) for arg in case["argv"]), expected=1)
+                        assert "420" in value["error"]
+                        assert wire["commands"] == [expand(command) for command in case["requests"]]
+                        assert wire["statuses"] == case["statuses"]
+                        assert empty_tags_snapshot(owner, "cmqttd") == before
+                        assert associated_document(owner, "!" + roles["source"]) == source
+                        assert (work / "state.json").read_bytes() == state
+                    evidence.update(before_refusals=before, source_xml=source, closed_graph_trap_contacts=0)
+    finally:
+        if relay is not None:
+            wires[:] = relay.evidence()
+        associated_evidence(tmp_path / "associated-empty-tags-auth-evidence.json", evidence)

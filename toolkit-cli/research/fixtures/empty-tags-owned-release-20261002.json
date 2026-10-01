@@ -1,0 +1,805 @@
+{
+  "acceptance_limits": {
+    "fresh_owned_cmqttd_json_restart_verified": true,
+    "hardware_executions": 0,
+    "manual_handoff_issue": "https://github.com/mitchell-johnson/cbus/issues/72",
+    "original_toolkit_cgate_vendor_vm_executions": 0,
+    "physical_persistence_or_power_cycle_acceptance": false,
+    "public_cli_credit_for_retained_snapshot_only_edges": false,
+    "remaining": [
+      "nonempty label copy and new label OIDs",
+      "general/Unit/cross-owner copying",
+      "raw nonbyte/NULL/NetVar schema behavior",
+      "Project-OID XML hierarchy",
+      "saved-marker-before-LOAD public cases",
+      "uncertain transport/repository-fault public cases",
+      "complete original GUI/native associated-owner journey",
+      "live hardware and power-cycle acceptance"
+    ],
+    "retained_snapshot_library_only_edges": [
+      "attributes/namespaces including reserved xmlns:xml",
+      "comments/PI/text",
+      "XML declaration/BOM",
+      "leading whitespace with saved deferred marker"
+    ]
+  },
+  "ci": {
+    "current_publication_ci_status": "not claimed by this precommit receipt; exact published head and its CI are recorded in GitHub progress notes",
+    "preceding_head": "5fec59189c68f35ce17e4d92b690190a1de026c9",
+    "preceding_main_push_run": "https://github.com/mitchell-johnson/cbus/actions/runs/36907124421",
+    "preceding_rust_job_status": "failed: Rust 1.99 Clippy redundant remap borrows; tests/release skipped"
+  },
+  "completed_behavior": [
+    "Admitted Level copy resolves the existing numeric database owner after secondary tag-Network rename.",
+    "SAFE and unsafe copy stage the entire operation, retain raw source Value, allocate a fresh destination OID and preserve source bytes.",
+    "Absent or one strict empty unnamespaced attribute-free TagsDLT is admitted; destination collection alone canonicalizes to <TagsDLT/>. Deferred markers retain LOAD timing.",
+    "Scoped LOAD recognition avoids duplicate empty collections with retained leading whitespace; no synthetic pending mirror or typed NULL behavior change.",
+    "Typed CLI validates the 301 OID and initializes caller Value on the same selected connection; login/collision refusal stops before initialization/replay.",
+    "Nonempty labels, attributes, namespaces including reserved xmlns:xml, comments, PI, text, declarations, BOM and unknown payloads remain controlled atomic refusals."
+  ],
+  "completeness_credit": {
+    "category_ratio_is_verified_functionality_percentage": false,
+    "category_ratio_percent": 42.86,
+    "fully_accepted_obligations": 0,
+    "functional_denominator_complete": false,
+    "implemented_categories": 18,
+    "ledger_categories": 42,
+    "new_fully_accepted_functional_obligations": 0,
+    "overall_cgate_parity": false,
+    "overall_toolkit_parity": false
+  },
+  "date": "2026-10-02",
+  "execution_provenance": {
+    "current_static_source_freeze": {
+      "bytes": 1365,
+      "retained_privately": true,
+      "sha256": "0d031aa70f247cadcaf4db5b4d6191b7a3831363b25d1863ff48eac61ff60065"
+    },
+    "generated_resource_freeze": {
+      "bytes": 4552,
+      "retained_privately": true,
+      "sha256": "75f4b5051785b15bb89b1a34e83aeb59c0cfa435ed3c6275509163543a5d035f"
+    },
+    "post_validation_publication_prose_delta": {
+      "changes": [
+        {
+          "path": "toolkit-cli/docs/implementation-status.md",
+          "published_sha256": "a2edac91a7936eda702287b6b11cb94e300907531839b98425fb5ed08369df3d",
+          "tested_sha256": "f6de148e89672e5e47c403def7da1398c92424797ecf98c4db5094c9f9054447"
+        }
+      ],
+      "format": "cbus-empty-tags-publication-prose-delta-v1",
+      "frozen_source_resource_pins_unchanged": true,
+      "qualification": "The 3615-input roster was quiet and current at terminal finalization. Only the listed unbound status prose changed afterward; no broad-roster-current claim is made for final published prose. The 19 executed source/test/vector/guide/generated pins remain current. New report and release receipt are publication artifacts, not test executions."
+    },
+    "qualification": "Executed integrated uncommitted working tree based on this revision. Actual code, tests, guide, vectors and generated resources are bound below. The base commit alone does not contain or certify this extension. Raw source_revision fields remain unchanged; the publication commit is recorded by Git history and GitHub progress notes.",
+    "source_fingerprint": {
+      "docs/cmqttd-cgate.md": "81b40cf13acedfc65eaff046a059f8201018b63533f659acdb8f3509e94e207d",
+      "rust/cbus-cgate/src/lib.rs": "43edfcad3376169a023585ebfbc1f5a5288b286cebc2e5512e4440c22e5d8769",
+      "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "1411432b86c6541d4ac311f1c22609530b33152587f2ffca7f3520ef2bc0f21d",
+      "rust/cbus-cgate/src/tag_network.rs": "e7e2d4e3f70541e21c0537110e770a459cbbc52503a1c1517a09b1c95935c40d",
+      "rust/testdata/vectors/cgate_associated_empty_tags_cli_wire.json": "835af8b4a4d7d8571a8d6fecf700234209c9d028f04514de0b02ad15f85e09bb",
+      "rust/testdata/vectors/cgate_associated_level_cli_wire.json": "47e060ef4c6b4cfe1ebfb9f4c8910b59b88cc736e3711ace79d9fc1ab83b5247",
+      "toolkit-cli/Makefile": "2476447d8e18779c223248417e181444bc71c568ceb6bf120f853b32692e921a",
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "17d84a139f13a21058a5e96ddf3ac44f94e95131899f47b4277baf18cf0e6b0a",
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "6501a2b9a04286042fbff7f6a6581efa9f561730a0b54a3c96d30bcfc0c7bc6b",
+      "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "64e69e696b59748a35f5f364320a65b68549bc04e193e301f0170a1090621119",
+      "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "4e77f1ffb50a2d2088bd9208f69546f2ae06d6a1416bcdcdd1f38f6ca50ade5b",
+      "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "732263c6134f111091b5a7bfbd6762aa7b17240a17a6da2a6c21d6f98337ab4b",
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "46bb4ddbf35ddf36b0ad2940e0fb894d443c5864fb42eaa4a30aa8d41ee2b95c",
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "4aa7c8cffdb6b981f873cf181eae29a7e425f27c6fdcc096afa095d37c6aa717",
+      "toolkit-cli/research/release-gates/skip-census.json": "bfdbb6271e234946555ca1d7bc0ca88945056b9d2a30dd2efbfa3aba72538a0a",
+      "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": "149b3b48993e72a5552277f5cefd118c9af7f10b003398fdcdbe9f507f33e3fa",
+      "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "afe8f26285597a0b0984e3114dab637292a3807cddae29068ed7416fbcb93104",
+      "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "a99a67c0ae30f9ef18e4acb5ddd7b5aefe9d6af00bf7f3778e34ed8b834d54ea",
+      "toolkit-cli/tests/test_cgate_named_database_interop.py": "8dbef57a42bac6a2e1c34bc6b00f39ca24383718c90441c116ffce1b59be8fe8"
+    },
+    "whole_3615_input_roster_quiet_during_source_wheel_interop_and_current_at_terminal_finalization": true,
+    "working_tree_base_revision": "5fec59189c68f35ce17e4d92b690190a1de026c9"
+  },
+  "format": "cbus-associated-empty-tags-owned-release-v1",
+  "historical_full_python_validation": {
+    "preceding_published_receipt": {
+      "path": "toolkit-cli/research/fixtures/associated-level-owned-release-20261002.json",
+      "sha256": "137dbd98b9fa615fd3f99a0e2ec9d4a100d9cab7ca2ccf00162f99a191d442aa"
+    },
+    "preceding_source_full_run": {
+      "exit": 2,
+      "failed_parents": 14,
+      "passed_parents": 6753,
+      "reported_passed_subtests": 30545,
+      "skipped_parents": 449
+    },
+    "qualification": "The 14 failures concerned evidence publication format; the selected correction passed all 261 affected consumers. This extension reran those selected consumers and current CLI/interoperability only. Neither selected pass constitutes a final full Python suite pass."
+  },
+  "maintained_interoperability": {
+    "command_template": "make check-interop CGATE_MOCK_BIN=<frozen-release> CMQTTD_BIN=<frozen-release>",
+    "exit": 0,
+    "selections": {
+      "cgate": {
+        "junit_sha256": "01a8c38cbed5c62ba6244046c43b794ced786df07fc5d47aa9512c2eeb31290b",
+        "passed_parents": 22,
+        "reported_passed_subtests": 158,
+        "skip_reasons": [
+          "vendor unitspec directory is absent"
+        ],
+        "skipped_parents": 1,
+        "trace_sha256": "4b47c84c7fcd63d05b3d06e32c7d2cb1eb07af77f41eb7d14a239bf729c4879d"
+      },
+      "cmqttd": {
+        "junit_sha256": "cce06db076311c94b3303a1768c250734bf3a36e9144fe6ad8ddfb8a679772d6",
+        "passed_parents": 156,
+        "reported_passed_subtests": 69,
+        "skip_reasons": [
+          "Set CBUS_UNITSPEC_DIR to re-derive the matrix from decoded specs"
+        ],
+        "skipped_parents": 1,
+        "trace_sha256": "b901760252c9351328c838ef17d89f79bb8f633e6f829487aa189dc6d97e7e4e"
+      },
+      "dbgetxml": {
+        "junit_sha256": "b9beae2231f25fbecaf462fef0039310e53840831ddbb5fe343b787a887f55dc",
+        "passed_parents": 2,
+        "reported_passed_subtests": 0,
+        "skip_reasons": [],
+        "skipped_parents": 0,
+        "trace_sha256": "839c26bc31f5910a6115fd0732390b7cd8e8ecc323f4598c338d1a6733f5cf3a"
+      }
+    },
+    "skip_qualification": "Vendor unit specifications were absent. These skips have no execution or acceptance credit.",
+    "subtests_are_separate_from_parent_counts": true,
+    "summary": {
+      "bytes": 181239,
+      "retained_privately": true,
+      "sha256": "72c5667c3f59520c550ee051fe63a496b71d956a311d1fa0a7685f0ce23d7786"
+    },
+    "total_passed_parents": 180,
+    "total_reported_passed_subtests": 227,
+    "total_skipped_parents": 2
+  },
+  "metadata_validation": {
+    "actual_command_phases": [
+      {
+        "ended_at_utc": "2026-10-01T19:10:50.402494+00:00",
+        "exit": 0,
+        "log_sha256": "ebdc640949e118aa6f00f577545ef25e5500515c02c0c4483d8a1bc9bd7aaac8",
+        "phase": "session-mock",
+        "started_at_utc": "2026-10-01T19:10:49.952499+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:51.115536+00:00",
+        "exit": 0,
+        "log_sha256": "ebdc640949e118aa6f00f577545ef25e5500515c02c0c4483d8a1bc9bd7aaac8",
+        "phase": "session-daemon",
+        "started_at_utc": "2026-10-01T19:10:50.404621+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:51.639020+00:00",
+        "exit": 0,
+        "log_sha256": "5508d2f08c3f65d5a668214e3f774bd8000d85d8dc6bfa3dd018dbe90c8b3a68",
+        "phase": "tagged",
+        "started_at_utc": "2026-10-01T19:10:51.118015+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:52.161655+00:00",
+        "exit": 0,
+        "log_sha256": "0073ea77e19250a95894d5ca67738546fae6ed03702817db3890ca59397bc181",
+        "phase": "unit",
+        "started_at_utc": "2026-10-01T19:10:51.641808+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:52.361997+00:00",
+        "exit": 0,
+        "log_sha256": "8ce60cc14b57e23d6d6923b4ae29bb5115161a6fa8fe76a279543b925680b44d",
+        "phase": "sanitize-1",
+        "started_at_utc": "2026-10-01T19:10:52.262429+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:52.541112+00:00",
+        "exit": 0,
+        "log_sha256": "04170271e123ac116f697faa24fcaf1c6b3b2fd189efb0d62900ec920dbc3c2c",
+        "phase": "sanitize-2",
+        "started_at_utc": "2026-10-01T19:10:52.436899+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:52.721660+00:00",
+        "exit": 0,
+        "log_sha256": "021648f32751c8650d4d37df7c84e3d06a0f987f52b5bf067990e51a6bbf8af8",
+        "phase": "sanitize-3",
+        "started_at_utc": "2026-10-01T19:10:52.621107+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:52.905674+00:00",
+        "exit": 0,
+        "log_sha256": "6ef049702bac6c31241a4d58e0187bd093b072cdbaa5d26e34e6cd9025c141fe",
+        "phase": "sanitize-4",
+        "started_at_utc": "2026-10-01T19:10:52.799210+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:53.086372+00:00",
+        "exit": 0,
+        "log_sha256": "7120de9fbca0657ebbe3ce4a5759e971c2362797b0ca5052b8cae1f562bf7e37",
+        "phase": "sanitize-5",
+        "started_at_utc": "2026-10-01T19:10:52.985537+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:53.272747+00:00",
+        "exit": 0,
+        "log_sha256": "90bb40e0453d2f18e930d5e4bce301113354463171040274c7a184916450848a",
+        "phase": "sanitize-6",
+        "started_at_utc": "2026-10-01T19:10:53.167512+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:53.452413+00:00",
+        "exit": 0,
+        "log_sha256": "d212606593b762579a3d9400755427c5cf299504f5db85e1703bd750884bc879",
+        "phase": "inventory",
+        "started_at_utc": "2026-10-01T19:10:53.313255+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:59.164006+00:00",
+        "exit": 0,
+        "log_sha256": "6fc76a50a7b1ee2f5fc15d5b7cf104d3d77eef439aa2c72c5b08932b012c0832",
+        "phase": "skip-census",
+        "started_at_utc": "2026-10-01T19:10:53.455553+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:59.225974+00:00",
+        "exit": 0,
+        "log_sha256": "de2fd13c4d0538b0dcbce5548e78dba803eae44c758165126ccfadf4c063df14",
+        "phase": "applicability",
+        "started_at_utc": "2026-10-01T19:10:59.166706+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:59.737890+00:00",
+        "exit": 0,
+        "log_sha256": "3955d3650d5db4bc3a887757ec039433d296a0604094b79a455ecc7a79e3a654",
+        "phase": "parity",
+        "started_at_utc": "2026-10-01T19:10:59.228396+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:10:59.882443+00:00",
+        "exit": 0,
+        "log_sha256": "e6039daac440dbd18476bfa238dae2cba97249c54df4dc45aadcc5fa71a68379",
+        "phase": "inventory-check",
+        "started_at_utc": "2026-10-01T19:10:59.741024+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:11:05.498399+00:00",
+        "exit": 0,
+        "log_sha256": "6fc76a50a7b1ee2f5fc15d5b7cf104d3d77eef439aa2c72c5b08932b012c0832",
+        "phase": "census-check",
+        "started_at_utc": "2026-10-01T19:10:59.885423+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:11:05.949587+00:00",
+        "exit": 0,
+        "log_sha256": "9c3610cbb65a696a6a40bf415dc65232b845f9cf2bb1dc9902d0f31b34f369b1",
+        "phase": "parity-check",
+        "started_at_utc": "2026-10-01T19:11:05.501167+00:00"
+      },
+      {
+        "ended_at_utc": "2026-10-01T19:11:43.753618+00:00",
+        "exit": 0,
+        "log_sha256": "2da0e4347b9fa87be3e1d1c0095fd5461a49171545ba8e96c41fd95b363f9741",
+        "phase": "targeted-consumers",
+        "started_at_utc": "2026-10-01T19:11:05.952495+00:00"
+      }
+    ],
+    "actual_phase_count": 18,
+    "all34_publication_sanitizer_tests_passed": true,
+    "all_actual_phase_exits_zero": true,
+    "all_source_bindings_current_at_execution_finalization_and_publication": true,
+    "canonical_publication_proof": {
+      "bytes": 8654,
+      "retained_privately": true,
+      "sha256": "b56f97aa2bd4f8fa2c62dd810fd7b6fcc679a261734b2ff27dea18e1dca54dc0"
+    },
+    "consumer_parent_and_subtest_counts_are_separate": true,
+    "coordinate_intermediate_publications": 0,
+    "decoded_coordinate_findings": 0,
+    "direct_literal_publications": 6,
+    "maintained_sanitizer_sha256": "a3f0a444f733ac51fe66e8b43402ae22598b12455f8bb1b8d05dcb8b8ffb577d",
+    "modeled_comparisons_refreshed_against_retained_captures": 6,
+    "new_original_executions": 0,
+    "pipeline": "Literal actual private modeled comparison output -> maintained canonical publication sanitizer directly. No coordinate-normalized intermediate publication. Marker raw_file_sha256 binds the literal input, not an intermediate derivative.",
+    "publications": [
+      {
+        "artifact_sha256": "601d73febe77fbc64e9a2b4d71b4a19b8c7807246d4e5ade55d5c5b5f71d80a5",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "349b6db1f3ab5f0424a10e138db7ed0ff3fea508d5c04fef77ab6f23c58cc9e5",
+        "decoded_coordinate_findings": 0,
+        "kind": "session",
+        "literal_execution_sha256": "349b6db1f3ab5f0424a10e138db7ed0ff3fea508d5c04fef77ab6f23c58cc9e5",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cgate-mock",
+        "published_path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+        "published_sha256": "4e77f1ffb50a2d2088bd9208f69546f2ae06d6a1416bcdcdd1f38f6ca50ade5b",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "349b6db1f3ab5f0424a10e138db7ed0ff3fea508d5c04fef77ab6f23c58cc9e5",
+        "source_bindings": 172,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      },
+      {
+        "artifact_sha256": "7e93dd12ae83f268ae5884d2d78685e22a6b3e3d7c9959484e0b9df7910c5d14",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "2b0b62c4f902635d69198c58589c7e50123e6463750626242daefd524b5888aa",
+        "decoded_coordinate_findings": 0,
+        "kind": "session",
+        "literal_execution_sha256": "2b0b62c4f902635d69198c58589c7e50123e6463750626242daefd524b5888aa",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cmqttd",
+        "published_path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+        "published_sha256": "64e69e696b59748a35f5f364320a65b68549bc04e193e301f0170a1090621119",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "2b0b62c4f902635d69198c58589c7e50123e6463750626242daefd524b5888aa",
+        "source_bindings": 192,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      },
+      {
+        "artifact_sha256": "601d73febe77fbc64e9a2b4d71b4a19b8c7807246d4e5ade55d5c5b5f71d80a5",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "28008544c1a2cb043d35f3e8239dc191038e432aab3c6335cd2d47dc274d37fa",
+        "decoded_coordinate_findings": 0,
+        "kind": "tagged",
+        "literal_execution_sha256": "28008544c1a2cb043d35f3e8239dc191038e432aab3c6335cd2d47dc274d37fa",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cgate-mock",
+        "published_path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "published_sha256": "46bb4ddbf35ddf36b0ad2940e0fb894d443c5864fb42eaa4a30aa8d41ee2b95c",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "28008544c1a2cb043d35f3e8239dc191038e432aab3c6335cd2d47dc274d37fa",
+        "source_bindings": 174,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      },
+      {
+        "artifact_sha256": "7e93dd12ae83f268ae5884d2d78685e22a6b3e3d7c9959484e0b9df7910c5d14",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "27b3ae2af9f1e14eff908788c9e975f98464a24ec62abea4cec29154f3575985",
+        "decoded_coordinate_findings": 0,
+        "kind": "tagged",
+        "literal_execution_sha256": "27b3ae2af9f1e14eff908788c9e975f98464a24ec62abea4cec29154f3575985",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cmqttd",
+        "published_path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "published_sha256": "4aa7c8cffdb6b981f873cf181eae29a7e425f27c6fdcc096afa095d37c6aa717",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "27b3ae2af9f1e14eff908788c9e975f98464a24ec62abea4cec29154f3575985",
+        "source_bindings": 194,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      },
+      {
+        "artifact_sha256": "601d73febe77fbc64e9a2b4d71b4a19b8c7807246d4e5ade55d5c5b5f71d80a5",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "8bd5fbc15872ad22c24f5f2fc07b22e9f86a21eb5a7ad305e5d055a0358250bc",
+        "decoded_coordinate_findings": 0,
+        "kind": "unit",
+        "literal_execution_sha256": "8bd5fbc15872ad22c24f5f2fc07b22e9f86a21eb5a7ad305e5d055a0358250bc",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cgate-mock",
+        "published_path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "published_sha256": "6501a2b9a04286042fbff7f6a6581efa9f561730a0b54a3c96d30bcfc0c7bc6b",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "8bd5fbc15872ad22c24f5f2fc07b22e9f86a21eb5a7ad305e5d055a0358250bc",
+        "source_bindings": 180,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      },
+      {
+        "artifact_sha256": "7e93dd12ae83f268ae5884d2d78685e22a6b3e3d7c9959484e0b9df7910c5d14",
+        "canonical_archive_exactly_matches_input": true,
+        "canonical_marker_raw_sha256": "7bd5e46488f3d312b1c8ce891f59fc33214e69061a0409c9459d89e3edd405de",
+        "decoded_coordinate_findings": 0,
+        "kind": "unit",
+        "literal_execution_sha256": "7bd5e46488f3d312b1c8ce891f59fc33214e69061a0409c9459d89e3edd405de",
+        "marker_binds_literal_execution": true,
+        "new_execution_claimed_by_publication": false,
+        "noncoordinate_technical_payload_preserved": true,
+        "product": "cmqttd",
+        "published_path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "published_sha256": "17d84a139f13a21058a5e96ddf3ac44f94e95131899f47b4277baf18cf0e6b0a",
+        "publisher_input_classification": "literal actual modeled execution bytes; direct maintained publisher input",
+        "publisher_input_sha256": "7bd5e46488f3d312b1c8ce891f59fc33214e69061a0409c9459d89e3edd405de",
+        "source_bindings": 199,
+        "stage1_coordinate_transformations": [],
+        "stage2_exactly_two_declared_fields_changed": true
+      }
+    ],
+    "source_binding_count": 1111,
+    "targeted_consumers": {
+      "PYTHONPATH": "src:.:tests",
+      "actual_parent_elements": 262,
+      "errors": 0,
+      "failed_parents": 0,
+      "junit_sha256": "f5f2ff8d60f7f3d9f01dafb7707df64c5d7b5312ae6b09140d6cd360ac4d1feb",
+      "log_sha256": "2da0e4347b9fa87be3e1d1c0095fd5461a49171545ba8e96c41fd95b363f9741",
+      "modules": 12,
+      "passed_parents": 261,
+      "reported_passed_subtests": 934,
+      "skip_reasons": [
+        {
+          "class": "tests.test_dialog_map.DialogMapTests",
+          "name": "test_regeneration_from_original_inputs_matches_committed_map",
+          "reason": "Set CBUS_TOOLKIT_EXE, CBUS_CATALOG_PATH (or CBUS_LOCAL_CGATE_VENDOR) and CBUS_UNITSPEC_DIR to regenerate from original inputs"
+        }
+      ],
+      "skipped_parents": 1
+    }
+  },
+  "public_cli_validation": {
+    "current_full_python_suite_executed": false,
+    "environments": {
+      "source": {
+        "environment": "Python 3.13 source",
+        "errors": 0,
+        "executed_test_ids": [
+          "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_auth_and_restart",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_auth_stops_before_initializer"
+        ],
+        "failed_parents": 0,
+        "junit_sha256": "216d7124ed3f433d67259f6cd3b4e585208f799d9fd687d8120995d9bc78f5cd",
+        "passed_parents": 8,
+        "raw_journey_evidence": [
+          {
+            "backend": "cgate-mock",
+            "bytes": 29605,
+            "cli_calls": 11,
+            "connections": 11,
+            "restart_verified": false,
+            "retained_privately": true,
+            "sha256": "4a50e4b584d423d0b9c362854205743e90598b8dfb13f68cdc0e89694fab683d",
+            "tagged_commands": 30
+          },
+          {
+            "backend": "cmqttd",
+            "bytes": 33892,
+            "cli_calls": 11,
+            "connections": 11,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "c2d06ca1cc94630bd1a6401a2868276f103ef1703c31bd5766df0dc1aa34f936",
+            "tagged_commands": 30
+          },
+          {
+            "backend": null,
+            "bytes": 11712,
+            "cli_calls": 3,
+            "connections": 3,
+            "restart_verified": null,
+            "retained_privately": true,
+            "sha256": "81804b36e781069e4a419c299e2bec262d667dfe8100ec35851bc7bb0dd64ec3",
+            "tagged_commands": 7
+          },
+          {
+            "backend": "cgate-mock",
+            "bytes": 51717,
+            "cli_calls": 23,
+            "connections": 23,
+            "restart_verified": false,
+            "retained_privately": true,
+            "sha256": "29e6c80eedd1f6c6f92c9452054527a77d1935b89a32cb81558bece7b77a3337",
+            "tagged_commands": 63
+          },
+          {
+            "backend": "cmqttd",
+            "bytes": 59236,
+            "cli_calls": 23,
+            "connections": 23,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "b2e0d7bfa27c6eec00b80417bf44092614d28b79f720d509df6247ba7d09f15e",
+            "tagged_commands": 63
+          },
+          {
+            "backend": null,
+            "bytes": 16214,
+            "cli_calls": 3,
+            "connections": 3,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "1b7879ac29c3f06b687ef033eec2f695f8e80f3563cda732a8d4d0685ccd9981",
+            "tagged_commands": 7
+          }
+        ],
+        "runtime": {
+          "all_cli_terminals_definite": true,
+          "all_owned_cleanup_passed": true,
+          "associated_cli_calls": 49,
+          "denied_new_cli_calls": 16,
+          "empty_tags_cli_calls": 25,
+          "new_cli_calls": 74,
+          "new_connections": 74,
+          "new_tagged_commands": 200,
+          "new_trap_contacts": 0,
+          "old_cli_argv_exit_json_capture": true,
+          "old_cli_calls": 76,
+          "old_cli_wire_capture": false,
+          "owned_process_count": 11,
+          "post_initialization_pci_frames": 0,
+          "startup_pci_frames": 64,
+          "total_cli_calls": 150
+        },
+        "skipped_parents": 0,
+        "summary": {
+          "bytes": 128351,
+          "retained_privately": true,
+          "sha256": "54e81441a6dff73c1b207799d5b7d6df391792745e206ca2078cdd7d46b1e739"
+        },
+        "trace_sha256": "72fd80734596c827d9f1f300fab3d879acefef0d99ac6e593028aff1b199b6c2",
+        "whole_input_count_quiet_at_execution_and_finalization": 3615,
+        "whole_input_roster_after_sha256": "4695759855b49d6cf0a999cf33410687d1fe4db51a739ddd823336b493b0e2f5",
+        "whole_input_roster_before_sha256": "4695759855b49d6cf0a999cf33410687d1fe4db51a739ddd823336b493b0e2f5"
+      },
+      "wheel": {
+        "environment": "Python 3.13 isolated installed wheel with test,research,serial,usb extras",
+        "errors": 0,
+        "executed_test_ids": [
+          "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_auth_and_restart",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[daemon]",
+          "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_auth_stops_before_initializer"
+        ],
+        "failed_parents": 0,
+        "junit_sha256": "0a3908c6f1598513d228fb93a4d3f5e9c991f15435d7bb7486c98efc674b4cbf",
+        "passed_parents": 8,
+        "raw_journey_evidence": [
+          {
+            "backend": "cgate-mock",
+            "bytes": 30042,
+            "cli_calls": 11,
+            "connections": 11,
+            "restart_verified": false,
+            "retained_privately": true,
+            "sha256": "46c1dbb74f3a279fe5cdddf4d68dcfe9039c18502bcc811043627fe4f886b7ff",
+            "tagged_commands": 30
+          },
+          {
+            "backend": "cmqttd",
+            "bytes": 34325,
+            "cli_calls": 11,
+            "connections": 11,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "1f36b5a7af00f6f66ff84a69bef098a176a7ed1ff63876ef24ed45a92a531c53",
+            "tagged_commands": 30
+          },
+          {
+            "backend": null,
+            "bytes": 11827,
+            "cli_calls": 3,
+            "connections": 3,
+            "restart_verified": null,
+            "retained_privately": true,
+            "sha256": "88125ff9049233e884b8f98790cae46f66ca236e5cbf64669519f2b3d6f2b429",
+            "tagged_commands": 7
+          },
+          {
+            "backend": "cgate-mock",
+            "bytes": 52637,
+            "cli_calls": 23,
+            "connections": 23,
+            "restart_verified": false,
+            "retained_privately": true,
+            "sha256": "c02b8eb5c90f6cc3c59eed233d68b0182dc2a41ccb33a8e7fdc7ae20ac40a2a8",
+            "tagged_commands": 63
+          },
+          {
+            "backend": "cmqttd",
+            "bytes": 60152,
+            "cli_calls": 23,
+            "connections": 23,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "0b7aaec286e0e97938f85d7a99bfcd737401b5662d1a899a53ace38080f9cc95",
+            "tagged_commands": 63
+          },
+          {
+            "backend": null,
+            "bytes": 16328,
+            "cli_calls": 3,
+            "connections": 3,
+            "restart_verified": true,
+            "retained_privately": true,
+            "sha256": "c4554a32745efa6df5d0c361fbc04f408a8c6584f937183ecc887fb69f8a8429",
+            "tagged_commands": 7
+          }
+        ],
+        "runtime": {
+          "all_cli_terminals_definite": true,
+          "all_owned_cleanup_passed": true,
+          "associated_cli_calls": 49,
+          "denied_new_cli_calls": 16,
+          "empty_tags_cli_calls": 25,
+          "new_cli_calls": 74,
+          "new_connections": 74,
+          "new_tagged_commands": 200,
+          "new_trap_contacts": 0,
+          "old_cli_argv_exit_json_capture": true,
+          "old_cli_calls": 76,
+          "old_cli_wire_capture": false,
+          "owned_process_count": 11,
+          "post_initialization_pci_frames": 0,
+          "startup_pci_frames": 64,
+          "total_cli_calls": 150
+        },
+        "skipped_parents": 0,
+        "summary": {
+          "bytes": 190426,
+          "retained_privately": true,
+          "sha256": "7013ae6b78252b6bb8088be8cf5ca4989a40a72cf940e1510f7feda2bc4d22bc"
+        },
+        "trace_sha256": "72fd80734596c827d9f1f300fab3d879acefef0d99ac6e593028aff1b199b6c2",
+        "whole_input_count_quiet_at_execution_and_finalization": 3615,
+        "whole_input_roster_after_sha256": "4695759855b49d6cf0a999cf33410687d1fe4db51a739ddd823336b493b0e2f5",
+        "whole_input_roster_before_sha256": "4695759855b49d6cf0a999cf33410687d1fe4db51a739ddd823336b493b0e2f5"
+      }
+    },
+    "final_component_receipt": {
+      "bytes": 211018,
+      "retained_privately": true,
+      "sha256": "ef50ce523b1f3799a4314624c89f9a1d9f2dcb2ed9b0ac5507cf3dcd60b5618c"
+    },
+    "focused_test_command_template": "python -m pytest --noconftest -q -p no:cacheprovider -p research.ci_test_results tests/test_cgate_named_database_interop.py --junitxml=<owned-output> --cbus-ci-trace=<owned-output>",
+    "public_wire_vector": {
+      "path": "rust/testdata/vectors/cgate_associated_empty_tags_cli_wire.json",
+      "sha256": "835af8b4a4d7d8571a8d6fecf700234209c9d028f04514de0b02ad15f85e09bb"
+    },
+    "raw_artifact_inventory_qualification": "Actual phase directories are distinct; finalizer verified retained file hashes/sizes/modes, JUnit, trace, binary and input references before the publication prose delta.",
+    "source_wheel_installed_package_bytes_equal": true,
+    "source_wheel_installed_package_file_count": 326,
+    "template_qualification": "Role-based reproduction template, not an exact invocation. Literal commands/environment and outputs are retained in private phase artifacts. Source and wheel import isolation were inspected before execution.",
+    "wheel_bytes": 2659292,
+    "wheel_sha256": "9e293a9b2fb3e54680a004a41b4bcb1d8df7dc26e83c0a72260d4d9982b08010"
+  },
+  "release_artifacts": {
+    "cbus-tools": {
+      "name": "cbus-tools",
+      "retained_privately": true,
+      "sha256": "19c725597251690788c4a60f808787df3d370ef2606e03e2dd57639ec2478d2d"
+    },
+    "cgate-mock": {
+      "name": "cgate-mock",
+      "retained_privately": true,
+      "sha256": "601d73febe77fbc64e9a2b4d71b4a19b8c7807246d4e5ade55d5c5b5f71d80a5"
+    },
+    "cmqttd": {
+      "name": "cmqttd",
+      "retained_privately": true,
+      "sha256": "7e93dd12ae83f268ae5884d2d78685e22a6b3e3d7c9959484e0b9df7910c5d14"
+    }
+  },
+  "required_rust_checks": {
+    "cwd_role": "rust",
+    "earlier_integrated_lint_attempt": {
+      "clippy_exit": 101,
+      "fmt_exit": 0,
+      "manifest": {
+        "bytes": 25794,
+        "retained_privately": true,
+        "sha256": "2943d66aa1ad6ad1cdc31c6ce22aceb81f21bdb33d26da0843db5b7bd6529f45"
+      },
+      "reason": "This local attempt reported one remaining remap borrow and the redundant new predicate closure. The other borrow from the preceding main CI had already been corrected. All four checks were rerun after the final corrections and passed.",
+      "tests_or_release_executed": false
+    },
+    "manifest": {
+      "bytes": 42997,
+      "retained_privately": true,
+      "sha256": "f497f1953ecbf069c7d8c9bf6d5f7dbe305a4e47ef7e717ad60d52fda610e1e1"
+    },
+    "phases": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "exit": 0,
+        "phase": "fmt",
+        "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "seconds": 2.036
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "phase": "clippy",
+        "raw_log_sha256": "726898fab66b59df5667c36d11c69fbc65998bd42ea6fa4e336748d6b8f6891d",
+        "seconds": 16.752
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace"
+        ],
+        "exit": 0,
+        "phase": "workspace",
+        "raw_log_sha256": "63900f4ea81f10fce304b5993b79dcf020b5797cf74fdb38e5dc212d3ad43419",
+        "seconds": 415.731
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit": 0,
+        "phase": "release",
+        "raw_log_sha256": "a03a0ac7223b5b4536488f99fba2acf2c16b62d051ee6c36420814d13331e860",
+        "seconds": 112.403
+      }
+    ],
+    "source_input_count": 209,
+    "source_input_digest_encoding": "SHA-256 of UTF-8 json.dumps(inputs,sort_keys=True), default Python separators; complete literal manifest retained privately",
+    "source_input_roster_sha256": "ccd9af5040ea02c6b32cc41c3c47f5c7fa7dbc536dd28d15d8c531bcae10b08d",
+    "toolchain": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "workspace": {
+      "failed": 0,
+      "ignore_reason": "Requires CBUS_PRIVATE_PROJECT_XML and CBUS_PRIVATE_CGATE_STATE",
+      "ignored": 1,
+      "ignored_test": "private_existing_database_project_dlt_upgrade",
+      "named_database_module_passed": 41,
+      "named_module_counts_overlap_workspace": true,
+      "passed": 8641,
+      "raw_summary_rows": 97
+    }
+  },
+  "review": {
+    "authorship_qualification": "Metadata agent authored/executed metadata and independently reviewed root Rust lint changes/evidence. CLI agent authored its private acceptance harness and executed source/wheel/interop; it independently audited metadata. Root authored lint changes and the public aggregate, and independently recounted metadata/CLI raw evidence. Nobody receives independent review credit for their own implementation or execution. Final aggregate cross-review is retained privately before publication.",
+    "implementation_and_cli_static_reviews": "Historical isolated candidate review closed three XML classifier/LOAD findings and two public-CLI oracle findings before integration. Private debug results are not added to current release counts.",
+    "independent_metadata_cross_audit": {
+      "bytes": 11271,
+      "retained_privately": true,
+      "sha256": "881cf370132fa9ac04005a8d96abc663140c0f77945dcef37c30dde47aa95e98"
+    },
+    "independent_raw_rust_evidence_recount": {
+      "bytes": 1903,
+      "retained_privately": true,
+      "sha256": "a9274b51b4d336dd3863d0cbfddd0b7dadc9a844e24be767ce260db4b7e61186"
+    },
+    "new_execution_credit_from_reviews": 0,
+    "preserved_wrapper_history": "Private preparation/audit retries remain preserved; corrected result-module, receipt artifact-key and JUnit-properties interpretations added no product/test/resource execution and did not erase an earlier run.",
+    "root_independent_cli_metadata_evidence_recount": {
+      "bytes": 4404,
+      "retained_privately": true,
+      "sha256": "673fd8a467a24522277ffc0c30c1397f5d69a338339608b8394a3ab47a7a2d9e"
+    },
+    "root_small_lint_delta_and_static_scope_review": {
+      "bytes": 2183,
+      "retained_privately": true,
+      "sha256": "73758e70d84bd96b5d0129b8be7b8cccc8cf66b60ef4c543b72ae76a16fe0b6d"
+    }
+  },
+  "scope": "Bounded modeled associated numeric-owner Level COPY with absent/strict empty TagsDLT and deferred LOAD marker; existing selected Python CLI through cgate-mock/cmqttd; Rust 1.99 lint correction."
+}

@@ -1,5 +1,10 @@
 # Level editing after a database-network rename
 
+This report records the preceding `5fec5918` software checkpoint. The
+[empty TagsDLT copy extension](feature-batch-2026-10-02-empty-tags-copy.md)
+supersedes its copy refusal for one strict empty label collection; other stated
+compatibility limits remain.
+
 The Rust C-Gate service and Python Toolkit CLI now route admitted Level creation
 and copying through the existing numeric database owner after its tag Network
 Address is renamed. A Level remains a child of the same Group or NetVar; a name

@@ -56,6 +56,12 @@ decorated copies and original acceptance remain unfinished. The feature report
 records completed Rust, independent mock and source/wheel CLI checks, together
 with the corrected evidence-format failures from the full Python run.
 
+The [empty TagsDLT copy extension](toolkit-cli/docs/feature-batch-2026-10-02-empty-tags-copy.md)
+also supports copying an admitted Level after save/reload has materialized its
+empty label collection. The source keeps its Value and XML; typed CLI copy
+explicitly initializes the destination Value. Nonempty labels and other retained
+decorations remain outside this copy scope.
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the

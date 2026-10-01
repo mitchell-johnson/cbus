@@ -320,10 +320,39 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 3,
+      "gated_tests": 5,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
+        {
+          "scope": "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned empty TagsDLT copy journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_auth_stops_before_initializer",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select CBUS_CMQTTD_BIN for the owned empty TagsDLT LOGIN journey",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
         {
           "scope": "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions",
           "kind": "body.call",
@@ -375,6 +404,8 @@
             "rust_binaries"
           ],
           "tests": [
+            "test_public_associated_empty_tags_copy_after_reload",
+            "test_public_associated_empty_tags_copy_auth_stops_before_initializer",
             "test_public_named_safe_graph_separate_project_selected_sessions",
             "test_public_renamed_associated_level_cli_auth_and_restart",
             "test_public_renamed_associated_level_cli_owner_and_wire"
