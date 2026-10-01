@@ -3257,6 +3257,7 @@ async fn associated_empty_tags_copied_deferred_flag_loads_once_without_pending_o
                     address: 40,
                     tag: "Unrelated".to_string(),
                     value: Some(17),
+                    raw_value: None,
                     netvar: false,
                 },
             );
@@ -3529,6 +3530,879 @@ async fn associated_empty_tags_whitespace_and_flag_copy_loads_one_collection_pre
         scalar(&service, &mut client, &format!("!{source}/Value")).await,
         "77"
     );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+async fn associated_raw_netvar_levels(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+) -> (String, String, String) {
+    let variable = created(service, client, "DBADDSAFE //ASSOC/11/56 NetVar 4 Variable").await;
+    let plain = created(
+        service,
+        client,
+        &format!("DBADDSAFE !{variable} Level 7 VarPlain"),
+    )
+    .await;
+    let mirrored = created(service, client, &format!("DBADD !{variable} Level")).await;
+    for command in [
+        format!("DBSETSAFE !{plain}/Value 7"),
+        format!("DBSET !{mirrored}/Value 7"),
+        format!("DBSET !{mirrored}/TagName VarMirror"),
+        format!("DBSET !{mirrored}/Address 8"),
+    ] {
+        ok_command(service, client, &command).await;
+    }
+    (plain, mirrored, variable)
+}
+
+// Historical native evidence covers independent named records. These cases
+// compose that scalar contract with the separately established numeric owner.
+#[tokio::test]
+async fn associated_raw_level_values_preserve_one_owner_and_exact_mirrors() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let plain = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 7 Plain"),
+    )
+    .await;
+    let mirrored = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{mirrored}/Value 7"),
+        format!("DBSET !{mirrored}/TagName Mirrored"),
+        format!("DBSET !{mirrored}/Address 8"),
+        format!("DBSETSAFE !{plain}/Value 7"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    let (variable_plain, variable_mirrored, variable) =
+        associated_raw_netvar_levels(&service, &mut client).await;
+    let neighbor = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/Renamed/56 Group 2 Neighbor",
+    )
+    .await;
+    let neighbor_level = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{neighbor} Level 5 NeighborLevel"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{neighbor_level}/Value 19"),
+    )
+    .await;
+    ok_command(&service, &mut client, "PROJECT USE HARNESS").await;
+    let configured = xml(&service, &mut client, "//HARNESS/254").await;
+    ok_command(&service, &mut client, "PROJECT USE ASSOC").await;
+    let baseline_xml = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    let before_oids = oid_set(&baseline_xml);
+    let mut raw_writes = 0;
+    for (oid, parent, address) in [
+        (&plain, 1, 7),
+        (&mirrored, 1, 8),
+        (&variable_plain, 4, 7),
+        (&variable_mirrored, 4, 8),
+    ] {
+        for verb in ["DBSETSAFE", "DBSET"] {
+            for literal in [
+                "0xff",
+                "999",
+                "oops",
+                "-1",
+                "256",
+                "3.5",
+                "arbitrary text",
+                "雪<&\"",
+                "null",
+            ] {
+                for field in [
+                    format!("!{oid}/Value"),
+                    format!("//ASSOC/Renamed/56/{parent}/{address}/Value"),
+                    format!("Renamed/56/{parent}/{address}/Value"),
+                    format!("//ASSOC/11/56/{parent}/{address}/Value"),
+                    format!("11/56/{parent}/{address}/Value"),
+                ] {
+                    ok_command(&service, &mut client, &format!("{verb} {field} {literal}")).await;
+                    raw_writes += 1;
+                    for read in [
+                        format!("!{oid}/Value"),
+                        format!("//ASSOC/Renamed/56/{parent}/{address}/Value"),
+                        format!("Renamed/56/{parent}/{address}/Value"),
+                        format!("//ASSOC/11/56/{parent}/{address}/Value"),
+                        format!("11/56/{parent}/{address}/Value"),
+                    ] {
+                        assert_eq!(scalar(&service, &mut client, &read).await, literal);
+                    }
+                    assert_eq!(
+                        associated_level_xml_value(
+                            &xml(&service, &mut client, &format!("!{oid}")).await
+                        )
+                        .as_deref(),
+                        Some(literal)
+                    );
+                    let whole = xml(&service, &mut client, "//ASSOC/Renamed").await;
+                    let parsed = roxmltree::Document::parse(&whole).unwrap();
+                    assert_eq!(
+                        parsed
+                            .descendants()
+                            .find(|n| n.has_tag_name("Level")
+                                && n.children()
+                                    .any(|c| c.has_tag_name("OID") && c.text() == Some(oid)))
+                            .unwrap()
+                            .attribute("Value"),
+                        Some(literal)
+                    );
+                    assert_eq!(oid_set(&whole), before_oids);
+                    let baseline = roxmltree::Document::parse(&baseline_xml).unwrap();
+                    let selected = baseline
+                        .descendants()
+                        .find(|n| {
+                            n.has_tag_name("Level")
+                                && n.children().any(|c| {
+                                    c.has_tag_name("OID") && c.text() == Some(oid.as_str())
+                                })
+                        })
+                        .unwrap();
+                    let range = selected.range();
+                    let fragment = &baseline_xml[range.clone()];
+                    assert_eq!(fragment.matches("Value=\"7\"").count(), 1);
+                    let mut expected = baseline_xml.clone();
+                    expected.replace_range(
+                        range,
+                        &fragment.replacen(
+                            "Value=\"7\"",
+                            &format!("Value=\"{}\"", crate::xml_escape(literal)),
+                            1,
+                        ),
+                    );
+                    assert_eq!(whole, expected, "only the selected Value may change");
+                    let model = service.model.lock().await;
+                    assert_eq!(model.level(oid).unwrap().value, None);
+                    if oid == &mirrored || oid == &variable_mirrored {
+                        assert_eq!(
+                            model
+                                .pending_object("ASSOC", oid)
+                                .unwrap()
+                                .fields
+                                .get("Value")
+                                .map(String::as_str),
+                            Some(literal)
+                        );
+                    }
+                    drop(model);
+                    ok_command(
+                        &service,
+                        &mut client,
+                        &format!("DBSETSAFE !{oid}/Value 007"),
+                    )
+                    .await;
+                    assert_eq!(
+                        scalar(&service, &mut client, &format!("!{oid}/Value")).await,
+                        "7"
+                    );
+                }
+            }
+        }
+    }
+    assert_eq!(raw_writes, 360);
+    assert_eq!(
+        service.model.lock().await.level(&variable).unwrap().value,
+        None
+    );
+    assert!(service
+        .model
+        .lock()
+        .await
+        .level(&variable)
+        .unwrap()
+        .raw_value
+        .is_none());
+    ok_command(&service, &mut client, "PROJECT USE HARNESS").await;
+    assert_eq!(
+        xml(&service, &mut client, "//HARNESS/254").await,
+        configured
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_save_reload_and_internal_restart_preserve_literal_value() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{source}/Value 7"),
+        format!("DBSET !{source}/TagName Mirrored"),
+        format!("DBSET !{source}/Address 7"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    let (_, variable_source, variable) = associated_raw_netvar_levels(&service, &mut client).await;
+    for (source, parent, address) in [(&source, 1, 7), (&variable_source, 4, 8)] {
+        for literal in ["0xff", "999", "oops", "-1"] {
+            ok_command(
+                &service,
+                &mut client,
+                &format!("DBSETSAFE Renamed/56/{parent}/{address}/Value {literal}"),
+            )
+            .await;
+            let before = xml(&service, &mut client, &format!("!{source}")).await;
+            for command in [
+                "PROJECT SAVE ASSOC",
+                "PROJECT CLOSE ASSOC",
+                "PROJECT LOAD ASSOC",
+                "PROJECT USE ASSOC",
+            ] {
+                ok_command(&service, &mut client, command).await;
+            }
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{source}/Value")).await,
+                literal
+            );
+            assert_eq!(
+                associated_without_empty_level_tags(
+                    &xml(&service, &mut client, &format!("!{source}")).await
+                ),
+                associated_without_empty_level_tags(&before)
+            );
+            assert_eq!(
+                service
+                    .model
+                    .lock()
+                    .await
+                    .pending_object("ASSOC", source)
+                    .unwrap()
+                    .fields
+                    .get("Value")
+                    .map(String::as_str),
+                Some(literal)
+            );
+        }
+    }
+    let (restart_pci, mut restart_remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
+    let mut restarted_client = ClientState::default();
+    ok_command(&restarted, &mut restarted_client, "PROJECT USE ASSOC").await;
+    assert_eq!(
+        scalar(
+            &restarted,
+            &mut restarted_client,
+            &format!("!{source}/Value")
+        )
+        .await,
+        "-1"
+    );
+    assert_eq!(
+        associated_level_xml_value(
+            &xml(&restarted, &mut restarted_client, &format!("!{source}")).await
+        )
+        .as_deref(),
+        Some("-1")
+    );
+    assert_eq!(
+        restarted
+            .model
+            .lock()
+            .await
+            .level(&source)
+            .unwrap()
+            .raw_value
+            .as_deref(),
+        Some("-1")
+    );
+    assert_eq!(
+        scalar(
+            &restarted,
+            &mut restarted_client,
+            &format!("!{variable_source}/Value")
+        )
+        .await,
+        "-1"
+    );
+    assert_eq!(
+        restarted
+            .model
+            .lock()
+            .await
+            .level(&variable_source)
+            .unwrap()
+            .raw_value
+            .as_deref(),
+        Some("-1")
+    );
+    assert_eq!(
+        restarted.model.lock().await.level(&variable).unwrap().value,
+        None
+    );
+    assert!(restarted
+        .model
+        .lock()
+        .await
+        .level(&variable)
+        .unwrap()
+        .raw_value
+        .is_none());
+    let old: crate::DbLevel = serde_json::from_value(serde_json::json!({"oid":source,"parent":"//ASSOC/11/56/1","address":7,"tag":"Legacy","value":77,"netvar":false})).unwrap();
+    assert!(old.raw_value.is_none());
+    assert_eq!(old.effective_value().as_deref(), Some("77"));
+    let encoded = serde_json::to_value(old).unwrap();
+    assert!(encoded.get("raw_value").is_none());
+    no_io(&mut remote).await;
+    no_io(&mut restart_remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_copy_resync_and_external_xml_refuse_atomically() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 7 Raw"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{source}/Value oops"),
+    )
+    .await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    for command in [
+        format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+        format!("DBCOPY !{source} !{group}"),
+        format!("DBCOPY !{group} //ASSOC/Renamed/56"),
+        "DBCOPY //ASSOC/Renamed Installation/ASSOC".to_string(),
+        "DBCOPY //ASSOC/11/56/1/7 //ASSOC/11/56/1".to_string(),
+        "DBCOPY //ASSOC/11/56/1 //ASSOC/11/56".to_string(),
+        "DBCOPY //ASSOC/11 Installation/ASSOC".to_string(),
+        format!("DBCOPY !{group} //ASSOC/11/56"),
+        "DBCOPY //ASSOC/11/56 //ASSOC/11".to_string(),
+        "DBCOPY ASSOC HARNESS".to_string(),
+        "DBCOPY //ASSOC HARNESS".to_string(),
+        "DBCOPY ///ASSOC/11/56/1/7 //ASSOC/11/56/1".to_string(),
+        "DBCOPY ////ASSOC/11/56/1 //ASSOC/11/56".to_string(),
+        "DBCOPY ///ASSOC HARNESS".to_string(),
+        "DBCOPY //ASSOC/011 Installation/ASSOC".to_string(),
+        "DBCOPY //ASSOC/+11 Installation/ASSOC".to_string(),
+        "DBCOPY //ASSOC/11/056 //ASSOC/11".to_string(),
+        "DBCOPY //ASSOC/11/56/01 //ASSOC/11/56".to_string(),
+        "DBCOPY //ASSOC/11/56/1/007 //ASSOC/11/56/1".to_string(),
+        "DBCOPY //ASSOC/11/56/1/+7 //ASSOC/11/56/1".to_string(),
+        format!("DBCOPY !{group}/descendant //ASSOC/11/56"),
+        "DBCOPYSAFE //ASSOC/11/56/1/7 //ASSOC/11/56/1 8 Safe".to_string(),
+        "DBRENAMENETSAFE Renamed Again".to_string(),
+    ] {
+        assert_eq!(
+            run(&service, &mut client, &command).await.status,
+            408,
+            "{command}"
+        );
+        assert!(
+            Database::from_server(&*service.model.lock().await) == before,
+            "{command}"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), bytes, "{command}");
+    }
+    let document = xml(&service, &mut client, &format!("!{source}")).await;
+    assert_eq!(
+        service
+            .handle_document(
+                &mut client,
+                &format!("[named-db] DBSETXML !{source}"),
+                &document
+            )
+            .await
+            .status,
+        400
+    );
+    assert!(Database::from_server(&*service.model.lock().await) == before);
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    {
+        let mut model = service.model.lock().await;
+        assert!(model
+            .sync_tag_database_children("ASSOC", "Renamed")
+            .is_err());
+        assert!(Database::from_server(&model) == before);
+    }
+    for command in [
+        "DBSETSAFE //ASSOC/11/56/1/99/Value oops",
+        "DBSET 11/56/1/7/descendant/Value oops",
+    ] {
+        assert_eq!(run(&service, &mut client, command).await.status, 401);
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    }
+    // A normal typed value clears raw storage and restores the existing copy owner.
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{source}/Value +7"),
+    )
+    .await;
+    assert!(service
+        .model
+        .lock()
+        .await
+        .level(&source)
+        .unwrap()
+        .raw_value
+        .is_none());
+    let copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{source} !{group} 8 Copy"),
+    )
+    .await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{copy}/Value")).await,
+        "7"
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_stale_mirror_auth_foreign_and_repository_fences_preserve_state() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{source}/Value 7"),
+        format!("DBSET !{source}/TagName Mirror"),
+        format!("DBSET !{source}/Address 7"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    let key = service
+        .model
+        .lock()
+        .await
+        .pending_object_key("ASSOC", &source)
+        .unwrap();
+    service
+        .model
+        .lock()
+        .await
+        .db_pending
+        .get_mut(&key)
+        .unwrap()
+        .fields
+        .insert("Value".to_string(), "8".to_string());
+    let stale_before = Database::from_server(&*service.model.lock().await);
+    let stale_bytes = std::fs::read(&path).unwrap();
+    for command in [
+        format!("DBSETSAFE !{source}/Value oops"),
+        "DBSET Renamed/56/1/7/Value -1".to_string(),
+    ] {
+        assert_eq!(run(&service, &mut client, &command).await.status, 408);
+        assert!(Database::from_server(&*service.model.lock().await) == stale_before);
+        assert_eq!(std::fs::read(&path).unwrap(), stale_bytes);
+    }
+    service
+        .model
+        .lock()
+        .await
+        .db_pending
+        .get_mut(&key)
+        .unwrap()
+        .fields
+        .insert("Value".to_string(), "7".to_string());
+    ok_command(&service, &mut client, "PROJECT USE HARNESS").await;
+    let foreign_before = Database::from_server(&*service.model.lock().await);
+    let foreign_bytes = std::fs::read(&path).unwrap();
+    for command in [
+        format!("DBSETSAFE !{source}/Value oops"),
+        "DBSETSAFE //ASSOC/Renamed/56/1/7/Value oops".to_string(),
+        "DBSETSAFE //ASSOC/11/56/1/7/Value oops".to_string(),
+    ] {
+        assert_eq!(
+            run(&service, &mut client, &command).await.status,
+            401,
+            "{command}"
+        );
+        assert!(Database::from_server(&*service.model.lock().await) == foreign_before);
+        assert_eq!(std::fs::read(&path).unwrap(), foreign_bytes);
+    }
+    ok_command(&service, &mut client, "PROJECT USE ASSOC").await;
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"raw-level-local-test"))
+        .unwrap();
+    let auth_before = Database::from_server(&*service.model.lock().await);
+    let auth_bytes = std::fs::read(&path).unwrap();
+    for command in [
+        format!("DBSETSAFE !{source}/Value 999"),
+        "DBSET Renamed/56/1/7/Value -1".to_string(),
+    ] {
+        assert_eq!(run(&service, &mut client, &command).await.status, 420);
+        assert!(Database::from_server(&*service.model.lock().await) == auth_before);
+        assert_eq!(std::fs::read(&path).unwrap(), auth_bytes);
+    }
+    ok_command(&service, &mut client, "LOGIN raw-level-local-test").await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    std::fs::remove_file(&path).unwrap();
+    std::fs::create_dir(&path).unwrap();
+    for command in [
+        format!("DBSETSAFE !{source}/Value 0xff"),
+        "DBSET //ASSOC/Renamed/56/1/7/Value oops".to_string(),
+    ] {
+        assert_eq!(
+            run(&service, &mut client, &command).await.final_text,
+            "500 Database commit failed; change rolled back"
+        );
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert!(path.is_dir());
+    }
+    std::fs::remove_dir(&path).unwrap();
+    std::fs::write(&path, bytes).unwrap();
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_tagged_wire_matches_local_vector() {
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../testdata/vectors/cgate_associated_raw_level_value.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 7 Raw"),
+    )
+    .await;
+    for case in vector["cases"].as_array().unwrap() {
+        let command = case["command"]
+            .as_str()
+            .unwrap()
+            .replace("%LEVEL%", &source)
+            .replace("%GROUP%", &group);
+        let expected = case["wire"]
+            .as_str()
+            .unwrap()
+            .replace("%LEVEL%", &source)
+            .replace("%GROUP%", &group);
+        let response = run(&service, &mut client, &command).await;
+        assert_eq!(crate::format_response(&response), expected, "{command}");
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_byte_aliases_and_literal_null_keep_established_typed_policy() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let mirrored = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{mirrored}/Value 077"),
+        format!("DBSET !{mirrored}/TagName Alias"),
+        format!("DBSET !{mirrored}/Address 7"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    assert_eq!(
+        service
+            .model
+            .lock()
+            .await
+            .pending_object("ASSOC", &mirrored)
+            .unwrap()
+            .fields
+            .get("Value")
+            .map(String::as_str),
+        Some("077")
+    );
+    for literal in ["77", "077", "+77"] {
+        ok_command(
+            &service,
+            &mut client,
+            &format!("DBSETSAFE !{mirrored}/Value {literal}"),
+        )
+        .await;
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{mirrored}/Value")).await,
+            "77"
+        );
+        assert_eq!(
+            service
+                .model
+                .lock()
+                .await
+                .pending_object("ASSOC", &mirrored)
+                .unwrap()
+                .fields
+                .get("Value")
+                .map(String::as_str),
+            Some("77")
+        );
+    }
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{mirrored}/Value -0"),
+    )
+    .await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{mirrored}/Value")).await,
+        "0"
+    );
+    assert_eq!(
+        service.model.lock().await.level(&mirrored).unwrap().value,
+        Some(0)
+    );
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSET !{mirrored}/Value -0"),
+    )
+    .await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{mirrored}/Value")).await,
+        "-0"
+    );
+    assert_eq!(
+        service
+            .model
+            .lock()
+            .await
+            .level(&mirrored)
+            .unwrap()
+            .raw_value
+            .as_deref(),
+        Some("-0")
+    );
+    let plain = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 8 Plain"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{plain}/Value null"),
+    )
+    .await;
+    assert_eq!(
+        associated_level_xml_value(&xml(&service, &mut client, &format!("!{plain}")).await)
+            .as_deref(),
+        Some("null")
+    );
+    assert_eq!(
+        service
+            .model
+            .lock()
+            .await
+            .level(&plain)
+            .unwrap()
+            .raw_value
+            .as_deref(),
+        Some("null")
+    );
+    ok_command(&service, &mut client, &format!("DBSET !{plain}/Value")).await;
+    assert_eq!(
+        associated_level_xml_value(&xml(&service, &mut client, &format!("!{plain}")).await),
+        None
+    );
+    assert!(service
+        .model
+        .lock()
+        .await
+        .level(&plain)
+        .unwrap()
+        .raw_value
+        .is_none());
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{plain}/Value")).await,
+        "null"
+    );
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    assert_eq!(
+        run(
+            &service,
+            &mut client,
+            &format!("DBSETSAFE !{plain}/Value bad#tail")
+        )
+        .await
+        .status,
+        400
+    );
+    assert!(Database::from_server(&*service.model.lock().await) == before);
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_xml_unrepresentable_scalars_refuse_without_poisoning_owner() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 7 Text"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{source}/Value 7"),
+    )
+    .await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    let before_xml = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    for verb in ["DBSETSAFE", "DBSET"] {
+        for literal in ["bad\u{FFFE}", "bad\u{FFFF}"] {
+            let command = format!("{verb} !{source}/Value {literal}");
+            assert!(crate::parse_command(&format!("[named-db] {command}")).is_ok());
+            assert_eq!(run(&service, &mut client, &command).await.status, 408);
+            assert!(Database::from_server(&*service.model.lock().await) == before);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+            assert_eq!(
+                xml(&service, &mut client, "//ASSOC/Renamed").await,
+                before_xml
+            );
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{source}/Value")).await,
+                "7"
+            );
+        }
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_raw_level_copy_guard_preserves_independent_numeric_lexical_owner() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let source = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 7 Raw"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{source}/Value oops"),
+    )
+    .await;
+    let associated_before = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    for (index, name) in ["011", "11", "+11"].into_iter().enumerate() {
+        let oid = |part: usize| format!("11111111-2222-4333-8444-{:012x}", (index + 1) * 16 + part);
+        let level_oid = oid(5);
+        let independent = format!(
+            r#"<Network><OID>{}</OID><Address>{name}</Address><TagName>Independent</TagName><NetworkNumber>0xff</NetworkNumber><Interface><OID>{}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>{}</OID><Address>56</Address><TagName>Lighting</TagName><Group><OID>{}</OID><Address>1</Address><TagName>Main</TagName><Level Value="19"><OID>{level_oid}</OID><Address>7</Address><TagName>IndependentLevel</TagName></Level></Group></Application></Network>"#,
+            oid(1),
+            oid(2),
+            oid(3),
+            oid(4)
+        );
+        let record =
+            crate::tag_network::TagNetwork::parse(&independent, None, 20 + index as u64).unwrap();
+        service
+            .model
+            .lock()
+            .await
+            .register_tag_network("ASSOC", record);
+        let independent_path = format!("//ASSOC/{name}");
+        let independent_before = xml(&service, &mut client, &independent_path).await;
+        let fields = [
+            format!("{independent_path}/56/1/7/Value"),
+            format!("{name}/56/1/7/Value"),
+            format!("!{level_oid}/Value"),
+        ];
+        for verb in ["DBSETSAFE", "DBSET"] {
+            for field in &fields {
+                ok_command(
+                    &service,
+                    &mut client,
+                    &format!("{verb} {field} independent text"),
+                )
+                .await;
+                for read in &fields {
+                    assert_eq!(
+                        scalar(&service, &mut client, read).await,
+                        "independent text"
+                    );
+                }
+                assert_eq!(
+                    xml(&service, &mut client, "//ASSOC/Renamed").await,
+                    associated_before
+                );
+                ok_command(&service, &mut client, &format!("{verb} {field} 19")).await;
+                assert_eq!(
+                    xml(&service, &mut client, &independent_path).await,
+                    independent_before
+                );
+            }
+        }
+        assert!(!service
+            .model
+            .lock()
+            .await
+            .associated_raw_level_copy_source(&independent_path));
+        let copy = created(
+            &service,
+            &mut client,
+            &format!("DBCOPY {independent_path} Installation/Project"),
+        )
+        .await;
+        assert!(!copy.is_empty());
+        assert_eq!(
+            xml(&service, &mut client, &independent_path).await,
+            independent_before
+        );
+        assert_eq!(
+            xml(&service, &mut client, "//ASSOC/Renamed").await,
+            associated_before
+        );
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{source}/Value")).await,
+            "oops"
+        );
+    }
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }

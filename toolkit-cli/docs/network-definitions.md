@@ -135,8 +135,10 @@ renamed tag Address. Admitted Level add/copy through its renamed qualified or
 bare path, or its Group/NetVar OID, follows the original numeric database owner.
 It does not create another physical Network. See the
 [associated Level workflow](feature-batch-2026-10-02-associated-levels.md) for
-selection, Value initialization, save/reload and the remaining raw/NULL/decorated
-copy limits. The [empty TagsDLT extension](feature-batch-2026-10-02-empty-tags-copy.md)
+selection, Value initialization and save/reload. The
+[raw Value extension](feature-batch-2026-10-02-associated-raw-level-values.md)
+retains nonempty scalar Value strings on existing associated Levels under a
+Group or NetVar. The [empty TagsDLT extension](feature-batch-2026-10-02-empty-tags-copy.md)
 admits one strict empty Level collection after reload, preserving the source and
 the destination's owner. Other decorations remain unsupported.
 The service's existing restriction on renaming any Network inside
@@ -185,11 +187,50 @@ SAFE byte/collision checks are a separate admission boundary.
 
 Raw DBSET and DBSETSAFE on an independently owned named Network retain scalar
 lexemes for NetworkNumber and Level Value. Original C-Gate accepts `255`,
-`0xff`, `999`, `oops` and `-1`; the captured SAFE `999`/`oops` pair also validates,
-saves and reloads. cmqttd preserves this raw metadata behavior. Typed child
+`0xff`, `999`, `oops` and `-1`; a separate captured SAFE NetworkNumber=`999` and
+Level Value=`oops` case also validates, saves and reloads. cmqttd preserves this
+raw metadata behavior. Typed child
 creation still validates the requested address and initializes Level Value to
 a byte, and complete external XML admission remains strict. This does not
-extend raw scalar admission on numeric-associated or configured physical rows.
+establish original acceptance on numeric-associated or configured physical rows.
+
+On an existing numeric-associated Level, `database set PATH/Value VALUE
+--project NAME` now retains a nonempty non-byte scalar tail, including `0xff`,
+`999`, `oops`, `-1`, multiword text and XML-representable Unicode. For scalar
+Value reads/writes, qualified and bare exact canonical numeric paths, renamed
+lexical paths and the issued Level OID resolve the same
+authoritative owner. An existing independent numeric-looking Network keeps its
+lexical precedence on successfully resolved objects. Existing C-Gate tokenization folds tail whitespace to single
+spaces. SAFE recognizes an i64 in byte range; unsafe recognizes a u8. Byte
+values keep decimal canonicalization: `077` and `+77` read back as `77`, while
+SAFE `-0` becomes `0` and unsafe `-0` remains text. Literal `null` is stored text and remains
+distinct from a Level whose Value is absent in XML. Neither scalar writes nor
+reads send PCI traffic, and project persistence still requires explicit SAVE.
+Bare numeric object DBGETXML remains unsupported (`404` in owned service tests).
+Uniform Level XML reads use a renamed qualified/bare path or OID; qualified
+numeric object XML uses legacy owner-dependent projection; its raw/renamed profiles are outside this acceptance.
+
+Raw Value storage survives project SAVE/CLOSE/LOAD and cmqttd's internal JSON
+restart, preserving OIDs, exact completed pending mirrors and unrelated data.
+DBCOPY/DBCOPYSAFE of a raw Level or a containing subtree and tag-tree resynchronization
+refuse atomically with local `408` before a lossy byte/NULL projection. Numeric
+aliases and OID suffixes cannot bypass that preservation guard. These refusals
+are local limits, not original error-code equivalence. Complete external
+DBSETXML remains strict and does not admit exported raw Value documents. Empty
+SAFE values and `#` retain existing validation; XML-unrepresentable characters
+refuse before mutation. See the new report for execution evidence and the
+remaining raw-copy, NULL/NetVar-parent and original acceptance work.
+
+
+Known associated-owner bugs are deferred in [issue #74](https://github.com/mitchell-johnson/cbus/issues/74):
+canonical numeric Group COPY destinations return `401`, while renamed lexical
+paths and Group OIDs succeed for admitted byte copies. The newer LOAD sweep
+can also alter unsupported retained XML on a plain Level with a deferred empty
+label marker. Those payloads are outside the accepted LOAD profile. A separate
+missing-descendant Value-getter fallback is an unverified source-review
+hypothesis. The attempted fixture failed before that edge executed. These
+corrections were stopped by cyber protection; no private untested edits are
+integrated or credited.
 
 Deleting an independent Network's Interface removes that metadata and its OID.
 The remaining tree can validate, save/reload internally and load as a closed
@@ -207,7 +248,7 @@ admission: exporting such a graph does not prove it can be restored through a
 complete-XML parser. New unsafe/deep-child copies containing Units or unmodeled
 OID-bearing XML refuse before mutation. Renamed numeric-associated Level ADD and
 Level-source COPY now have the bounded owner route described above; associated
-raw/NULL/NetVar reconciliation and decorated copies remain open, together with
+raw copying, NULL/NetVar-parent reconciliation and decorated copies remain open, together with
 broader duplicate-selector precedence and full Project-OID operations.
 Local deletion retires descendant
 OIDs immediately; original C-Gate was observed to retain stale descendant reads

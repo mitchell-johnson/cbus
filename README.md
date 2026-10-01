@@ -50,8 +50,8 @@ acceptance is tracked separately in [the manual handoff](https://github.com/mitc
 The [associated Level workflow](toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md)
 also lets the CLI create and copy admitted Levels after a secondary database
 Network is renamed, following its original numeric owner through paths or OIDs.
-Raw SAFE copy retains the source Value; typed CLI copy initializes the new
-Level's Value to the caller's requested byte. Associated raw/NULL semantics,
+Direct DBCOPYSAFE preserves an admitted byte source Value; typed CLI copy initializes the new
+Level's Value to the caller's requested byte. Associated NULL semantics,
 decorated copies and original acceptance remain unfinished. The feature report
 records completed Rust, independent mock and source/wheel CLI checks, together
 with the corrected evidence-format failures from the full Python run.
@@ -61,6 +61,21 @@ also supports copying an admitted Level after save/reload has materialized its
 empty label collection. The source keeps its Value and XML; typed CLI copy
 explicitly initializes the destination Value. Nonempty labels and other retained
 decorations remain outside this copy scope.
+
+The [associated raw Value extension](toolkit-cli/docs/feature-batch-2026-10-02-associated-raw-level-values.md)
+lets `cbus-toolkit cgate database set PATH/Value VALUE --project NAME` retain
+non-byte strings on an existing Level under a Group or NetVar. For scalar Value
+reads/writes, exact canonical numeric paths,
+renamed paths and issued OIDs address the same owner. Existing independent
+numeric-looking Networks keep lexical precedence for successfully resolved objects. Explicit project save/reload and cmqttd restart preserve the value and identity. Raw-value copy
+and resynchronization remain controlled preservation refusals, and complete
+external XML admission remains strict. Bare numeric object XML reads remain
+unsupported; use a renamed lexical path or the issued OID. Numeric object XML
+compatibility for raw/renamed profiles remains tracked in [issue #73](https://github.com/mitchell-johnson/cbus/issues/73).
+
+Known numeric-copy and retained-XML LOAD bugs, plus an unverified missing-descendant
+selector edge, are recorded in the [manual correction handoff](https://github.com/mitchell-johnson/cbus/issues/74).
+These remain unfinished.
 
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,

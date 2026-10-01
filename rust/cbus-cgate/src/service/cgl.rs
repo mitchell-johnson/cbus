@@ -766,6 +766,7 @@ fn apply(model: &mut Server, project_name: &str, root: &Root) -> Result<Outcome,
                             address: level_address,
                             tag: name.clone(),
                             value: Some(level_address),
+                            raw_value: None,
                             netvar: false,
                         },
                     );

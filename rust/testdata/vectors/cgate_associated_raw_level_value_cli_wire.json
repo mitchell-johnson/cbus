@@ -1,0 +1,895 @@
+{
+  "format": "cbus-associated-raw-level-value-cli-wire-v1",
+  "provenance": "Local public CLI wire expectations for the selected private associated numeric-owner candidate. Retained original four representatives and SAFE oops reload remain historical independent named evidence only.",
+  "scope": {
+    "owner": "LAB renamed Network associated with numeric Network11; plain and completed Levels under existing Group and NetVar, initialized byte77",
+    "raw_tail_grammar": "Existing wire parser joins nonempty split scalar tokens with single spaces; SAFE retains #400; XML1.0-forbidden characters refuse408 atomically",
+    "SAFE_byte_grammar": "i64 parsed in0..255, 077/+77 canonical77 and -0 canonical0",
+    "unsafe_byte_grammar": "u8 parsed, 077/+77 canonical77 and -0 retained raw",
+    "literal_null_distinct_from_cleared_Value": true,
+    "NULL_NetVar_external_XML_admission_unchanged": true,
+    "raw_copy_and_resync": "Local controlled408 integrity refusal before mutation/allocation",
+    "original_execution": false,
+    "physical_acceptance": false,
+    "full_suite_or_wheel_acceptance": false,
+    "historical_original_reload_scope": "independent named SAFE oops only; no new original rawCOPY or associated acceptance",
+    "bare_canonical_numeric_object_XML": "Existing DBGETXML11/56/parent/level remains404; no positive object XML alias widening. Exact canonical numeric Value fields use selected owner.",
+    "canonical_numeric_object_XML": "No numeric object XML routing widening; qualified canonical form is observed read-only per owner, without uniform positive admission; bare form remains explicit public404 probe."
+  },
+  "scalar_selectors": [
+    "!${source}",
+    "${source_qualified}",
+    "${source_bare}",
+    "${source_numeric}",
+    "${source_numeric_bare}"
+  ],
+  "writes": [
+    {
+      "input": "077",
+      "selector": "!${source}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "77",
+        "DBSET": "77"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK"
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "+77",
+      "selector": "${source_qualified}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "77",
+        "DBSET": "77"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "-0",
+      "selector": "${source_bare}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "0",
+        "DBSET": "-0"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "0xff",
+      "selector": "${source_numeric}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "0xff",
+        "DBSET": "0xff"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "999",
+      "selector": "${source_numeric_bare}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "999",
+        "DBSET": "999"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "oops",
+      "selector": "!${source}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "oops",
+        "DBSET": "oops"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK"
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "-1",
+      "selector": "${source_qualified}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "-1",
+        "DBSET": "-1"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "two   words",
+      "selector": "${source_bare}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "two words",
+        "DBSET": "two words"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "caf\u00e9 \u0394 \u6771\u4eac",
+      "selector": "${source_numeric}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "caf\u00e9 \u0394 \u6771\u4eac",
+        "DBSET": "caf\u00e9 \u0394 \u6771\u4eac"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "Amp & <tag> \"quoted\" 'one'",
+      "selector": "${source_numeric_bare}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "Amp & <tag> \"quoted\" 'one'",
+        "DBSET": "Amp & <tag> \"quoted\" 'one'"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "12.5",
+      "selector": "!${source}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "12.5",
+        "DBSET": "12.5"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK"
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "18446744073709551616",
+      "selector": "${source_qualified}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "18446744073709551616",
+        "DBSET": "18446744073709551616"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    },
+    {
+      "input": "null",
+      "selector": "${source_bare}",
+      "verbs": [
+        "DBSETSAFE",
+        "DBSET"
+      ],
+      "expected": {
+        "DBSETSAFE": "null",
+        "DBSET": "null"
+      },
+      "terminals": {
+        "DBSETSAFE": [
+          "OK.",
+          "OK."
+        ],
+        "DBSET": [
+          "OK.",
+          "OK."
+        ]
+      }
+    }
+  ],
+  "write_statuses": [
+    200,
+    200
+  ],
+  "lifecycle": {
+    "commands": [
+      "PROJECT SAVE LAB",
+      "PROJECT CLOSE LAB",
+      "PROJECT LOAD LAB"
+    ],
+    "statuses": [
+      200,
+      200,
+      200,
+      200
+    ]
+  },
+  "refusals": [
+    {
+      "id": "typed-raw-Level-copy",
+      "kind": "typed",
+      "argv": [
+        "copy",
+        "!${source}",
+        "!${group2}",
+        "8",
+        "Refused"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML !${source}",
+        "DBCOPYSAFE !${source} !${group2} 8 Refused"
+      ],
+      "statuses": [
+        200,
+        344,
+        408
+      ]
+    },
+    {
+      "id": "raw-SAFE-Level-OID",
+      "kind": "raw",
+      "commands": [
+        "DBCOPYSAFE !${source} !${group2} 8 Refused"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPYSAFE !${source} !${group2} 8 Refused"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-canonical-Level",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ${source_numeric} //LAB/11/56/2"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ${source_numeric} //LAB/11/56/2"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-padded-Level",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ${source_padded_numeric} //LAB/11/56/2"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ${source_padded_numeric} //LAB/11/56/2"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-plus-Level",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ${source_plus_numeric} //LAB/11/56/2"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ${source_plus_numeric} //LAB/11/56/2"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-canonical-Group",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/56/1 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/56/1 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-SAFE-canonical-Group",
+      "kind": "raw",
+      "commands": [
+        "DBCOPYSAFE //LAB/11/56/1 //LAB/11/56 3 Refused"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPYSAFE //LAB/11/56/1 //LAB/11/56 3 Refused"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-Group-OID",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY !${group1} //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY !${group1} //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-canonical-Application",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/56 //LAB/11"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/56 //LAB/11"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-SAFE-canonical-Application",
+      "kind": "raw",
+      "commands": [
+        "DBCOPYSAFE //LAB/11/56 //LAB/11 57 Refused"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPYSAFE //LAB/11/56 //LAB/11 57 Refused"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-canonical-Network",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11 Installation/LAB"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11 Installation/LAB"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-zero-padded-Network",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/011 Installation/LAB"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/011 Installation/LAB"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-plus-Network",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/+11 Installation/LAB"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/+11 Installation/LAB"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-zero-padded-Application",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/056 //LAB/11"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/056 //LAB/11"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-zero-padded-Group",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/56/01 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/56/01 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-bare-Project",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY LAB ${control}"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY LAB ${control}"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-qualified-Project",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB ${control}"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB ${control}"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-triple-slash-Level",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY /${source_numeric} //LAB/11/56/2"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY /${source_numeric} //LAB/11/56/2"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-four-slash-Group",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ////LAB/11/56/1 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ////LAB/11/56/1 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-triple-slash-Project",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ///LAB ${control}"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ///LAB ${control}"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-unsafe-ancestor-OID-suffix",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY !${group1}/descendant //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY !${group1}/descendant //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "whole-tree-resync",
+      "kind": "raw",
+      "commands": [
+        "DBRENAMENETSAFE Renamed Again"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBRENAMENETSAFE Renamed Again"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-NetVar-OID",
+      "owner": "NetVar",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY !${netvar} //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY !${netvar} //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-canonical-NetVar",
+      "owner": "NetVar",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/56/4 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/56/4 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-padded-NetVar",
+      "owner": "NetVar",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY //LAB/11/56/04 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY //LAB/11/56/04 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "raw-triple-slash-NetVar",
+      "owner": "NetVar",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY ///LAB/11/56/4 //LAB/11/56"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY ///LAB/11/56/4 //LAB/11/56"
+      ],
+      "statuses": [
+        200,
+        408
+      ]
+    },
+    {
+      "id": "malformed-direct-Level-OID",
+      "kind": "raw",
+      "commands": [
+        "DBCOPY !${source}/Address !${group2}"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBCOPY !${source}/Address !${group2}"
+      ],
+      "statuses": [
+        200,
+        401
+      ]
+    },
+    {
+      "id": "existing-SAFE-hash-refusal",
+      "kind": "typed",
+      "argv": [
+        "set",
+        "!${source}/Value",
+        "#blocked"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSETSAFE !${source}/Value #blocked"
+      ],
+      "statuses": [
+        200,
+        400
+      ]
+    },
+    {
+      "id": "XML-forbidden-FFFE-DBSETSAFE",
+      "kind": "typed",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSETSAFE !${source}/Value bad\ufffetail"
+      ],
+      "statuses": [
+        200,
+        408
+      ],
+      "argv": [
+        "set",
+        "!${source}/Value",
+        "bad\ufffetail"
+      ],
+      "commands": []
+    },
+    {
+      "id": "XML-forbidden-FFFE-DBSET",
+      "kind": "raw",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSET !${source}/Value bad\ufffetail"
+      ],
+      "statuses": [
+        200,
+        408
+      ],
+      "argv": [],
+      "commands": [
+        "DBSET !${source}/Value bad\ufffetail"
+      ]
+    },
+    {
+      "id": "XML-forbidden-FFFF-DBSETSAFE",
+      "kind": "typed",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSETSAFE !${source}/Value bad\ufffftail"
+      ],
+      "statuses": [
+        200,
+        408
+      ],
+      "argv": [
+        "set",
+        "!${source}/Value",
+        "bad\ufffftail"
+      ],
+      "commands": []
+    },
+    {
+      "id": "XML-forbidden-FFFF-DBSET",
+      "kind": "raw",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSET !${source}/Value bad\ufffftail"
+      ],
+      "statuses": [
+        200,
+        408
+      ],
+      "argv": [],
+      "commands": [
+        "DBSET !${source}/Value bad\ufffftail"
+      ]
+    },
+    {
+      "id": "existing-bare-numeric-object-XML404",
+      "kind": "typed",
+      "argv": [
+        "get-xml",
+        "${source_numeric_bare}"
+      ],
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML ${source_numeric_bare}"
+      ],
+      "statuses": [
+        200,
+        404
+      ]
+    }
+  ],
+  "auth_refusals": [
+    {
+      "kind": "typed",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSETSAFE !${source}/Value 999"
+      ],
+      "statuses": [
+        200,
+        420
+      ],
+      "argv": [
+        "set",
+        "!${source}/Value",
+        "999"
+      ],
+      "commands": []
+    },
+    {
+      "kind": "raw",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBSET !${source}/Value caf\u00e9 denied"
+      ],
+      "statuses": [
+        200,
+        420
+      ],
+      "argv": [],
+      "commands": [
+        "DBSET !${source}/Value caf\u00e9 denied"
+      ]
+    }
+  ],
+  "unexecuted_edges": [
+    "native/Toolkit/VM/hardware acceptance",
+    "non-selected legacy/Unit/independent-owner raw grammar",
+    "stale mirror injection and repository-failure injection",
+    "verbatim whitespace/quoting retention",
+    "full suite, installed wheel and release checks"
+  ],
+  "xml_selectors": [
+    "!${source}",
+    "${source_qualified}",
+    "${source_bare}"
+  ]
+}

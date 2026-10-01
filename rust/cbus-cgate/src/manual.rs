@@ -2728,6 +2728,13 @@ impl Server {
         if words.len() < 3 {
             return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
         }
+        if self.associated_raw_level_copy_source(words[1]) {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Associated raw Level subtree copy is unsupported",
+            );
+        }
         let Some(selected) = self.current.clone() else {
             return err(
                 tag,
@@ -2982,7 +2989,11 @@ impl Server {
                         "//{project}/{network}/{application}/{group}/TagName"
                     )) || self.objects.contains(&format!(
                         "//{project}/{network}/{application}-GROUP-{group}"
-                    )) || self
+                    )) || self.db_levels.values().any(|level| {
+                        level.netvar
+                            && level.parent == format!("//{project}/{network}/{application}")
+                            && level.address == group
+                    }) || self
                         .db_pending
                         .values()
                         .any(|object| object.path.as_deref() == Some(path))
@@ -3358,6 +3369,7 @@ impl Server {
                         address,
                         tag: tag_name,
                         value,
+                        raw_value: None,
                         netvar: element == "NetVar",
                     },
                 );

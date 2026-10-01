@@ -1068,17 +1068,43 @@ admitted Level ADD and Level-source COPY resolve qualified/bare paths and bare
 Group/NetVar/Level OIDs through the same stable numeric database owner. Scalar or
 descendant OID suffixes, Unit/retired identities, foreign associated selection,
 stale Value mirrors and unsupported retained payload refuse before mutation.
-Typed CLI add/copy still initializes Value to the caller's requested byte; raw
-SAFE copy retains source Value. Unsafe child-first ADD can complete under an
+Typed CLI add/copy still initializes Value to the caller's requested byte;
+direct DBCOPYSAFE preserves an admitted byte source Value. Unsafe child-first ADD can complete under an
 incomplete Group OID, but incomplete copy destinations remain unsupported.
-Associated typed NULL getter/save remains local `342 ...=null`/`200`, and completed
-typed Level values use canonical decimal bytes; raw/NULL/NetVar semantics and
-decorated copy remain open. Associated Level COPY now admits absent or one
+Associated typed NULL getter/save remains local `342 ...=null`/`200`. Existing
+associated Levels under a Group or NetVar now retain nonempty raw Value strings
+through DBSET/DBSETSAFE, scalar/XML reads, explicit project SAVE/CLOSE/LOAD and
+internal JSON restart. Scalar Value reads/writes through qualified/bare exact
+canonical numeric paths, renamed lexical paths and the Level OID resolve one
+owner; exact completed mirrors are updated together. An existing independent
+numeric-looking Network keeps lexical precedence for successfully resolved objects. Bare numeric object DBGETXML
+remains unsupported with local `404`; uniform Level XML reads use renamed
+qualified/bare paths or OIDs. Qualified numeric object XML is legacy
+owner-dependent projection and remains unaccepted; see
+[issue #73](https://github.com/mitchell-johnson/cbus/issues/73). Byte
+values keep decimal canonicalization, including `077`/`+77` becoming `77`. SAFE
+recognizes an i64 in byte range and unsafe recognizes a u8; SAFE `-0` becomes `0`
+while unsafe `-0` remains text. Existing tail tokenization folds whitespace to
+single spaces. Literal `null` remains XML text rather than absence. Empty SAFE values and `#`
+retain their validation, and XML-unrepresentable characters refuse atomically.
+Raw-Level/ancestor COPY and tag-tree resynchronization return controlled local
+`408` before lossy projection, including numeric aliases, multiple leading
+slashes and legacy OID suffixes. Complete external DBSETXML remains strict.
+These raw-copy/refusal boundaries, NULL/NetVar-parent semantics and decorated
+copy remain open; see the
+[raw Value scope](../../../../toolkit-cli/docs/feature-batch-2026-10-02-associated-raw-level-values.md). Associated Level COPY now admits absent or one
 strict unnamespaced, attribute-free empty TagsDLT collection and its deferred
 LOAD marker. It preserves source bytes, canonicalizes only the destination and
 avoids duplicate collections on scoped LOAD. Nonempty labels, arbitrary
 decorations and declarations/BOM remain refused. See the
 [empty collection scope](../../../../toolkit-cli/docs/feature-batch-2026-10-02-empty-tags-copy.md).
+Known canonical numeric COPY destination401 and unsupported retained-XML plain-Level
+LOAD mutations are deferred in [issue #74](https://github.com/mitchell-johnson/cbus/issues/74).
+Use the admitted renamed lexical parent or Group OID for byte copies. Missing
+descendant Value-getter fallback is a source-review hypothesis, unexecuted because
+fixture setup failed. Do not credit the private untested corrections or claim
+unsupported payload LOAD preservation. The raw/renamed numeric object-XML profiles
+remain separate from retained imported-byte Group344/NetVar500 evidence in #73.
 Plain legacy NetVars with an acknowledged parent
 Value or retained parent/child XML extras cause atomic local `408` on tag-tree
 resync instead of silent loss; this does not establish native NetVar semantics.

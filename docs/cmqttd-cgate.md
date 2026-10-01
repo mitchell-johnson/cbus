@@ -47,7 +47,25 @@ OIDs share that owner, with selected-project, Unit/retired identity, pending
 completion, LOGIN and durable rollback checks. Typed CLI Level initialization
 remains explicit on the operation's own connection. See the
 [associated Level workflow and outstanding semantics](../toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md);
-raw/NULL/NetVar values and original acceptance remain open. The
+NULL/NetVar-parent semantics and original acceptance remain open. The
+[raw Level Value extension](../toolkit-cli/docs/feature-batch-2026-10-02-associated-raw-level-values.md)
+retains nonempty non-byte scalar tails on an existing associated Level under a
+Group or NetVar. Scalar Value reads/writes through qualified/bare exact canonical
+numeric paths, renamed lexical paths and its OID
+resolve the same authoritative record and exact completed mirrors. Existing
+independent numeric-looking Networks keep lexical precedence on successfully resolved objects. Explicit
+project SAVE/CLOSE/LOAD and internal JSON restart preserve the literal value,
+identity and unrelated data. SAFE retains its i64-in-byte-range grammar and
+unsafe its u8 grammar; accepted bytes stay canonical decimal, and existing
+tail tokenization folds whitespace to single spaces. Literal `null` remains
+text in XML, distinct from absence. XML-unrepresentable characters refuse
+before mutation. Raw-Level or ancestor DBCOPY/DBCOPYSAFE and tag-tree resynchronization
+return controlled local `408` before a lossy projection, including alternate
+numeric and legacy source selectors; complete external DBSETXML remains strict.
+Bare numeric object DBGETXML remains unsupported with local `404`; uniform Level
+XML reads use a renamed qualified/bare path or OID. Qualified numeric object XML
+uses legacy owner-dependent projection and its raw/renamed profiles are outside this acceptance. Raw copying and interchange
+therefore remain outstanding. The
 [empty collection copy extension](../toolkit-cli/docs/feature-batch-2026-10-02-empty-tags-copy.md)
 admits absent or one unnamespaced, attribute-free empty Level `TagsDLT` collection
 and its deferred LOAD marker within that same associated owner. COPY preserves
@@ -58,6 +76,17 @@ instructions, declarations/BOM and arbitrary retained XML remain refused before
 mutation. Controlled retained-snapshot whitespace cases preserve the source and
 avoid duplicate collections. This does not establish decorated-copy or native
 renamed-associated workflow parity.
+
+
+Known associated-owner bugs are deferred in [issue #74](https://github.com/mitchell-johnson/cbus/issues/74):
+canonical numeric Group COPY destinations return `401`, while renamed lexical
+paths and Group OIDs succeed for admitted byte copies. The newer LOAD sweep
+can also alter unsupported retained XML on a plain Level with a deferred empty
+label marker. Those payloads are outside the accepted LOAD profile. A separate
+missing-descendant Value-getter fallback is an unverified source-review
+hypothesis. The attempted fixture failed before that edge executed. These
+corrections were stopped by cyber protection; no private untested edits are
+integrated or credited.
 
 ## Start and connect
 

@@ -1,0 +1,76 @@
+{
+  "format": "cbus-associated-raw-level-value-wire-v1",
+  "provenance": "Modeled numeric/renamed associated-owner composition of historical independent named scalar observations; no current original or hardware execution. Wire refusal text is local.",
+  "scope": {
+    "raw_lexemes": [
+      "arbitrary nonempty admitted command tails"
+    ],
+    "canonical_decimal_bytes": true,
+    "raw_is_numeric_projection": false,
+    "external_xml_admission_relaxed": false,
+    "raw_copy_supported": false,
+    "native_null_parity": false,
+    "historical_native_representatives": [
+      "0xff",
+      "999",
+      "oops",
+      "-1"
+    ],
+    "safe_legacy_decimal_grammar": "i64 parsed in0..255, including -0",
+    "unsafe_legacy_decimal_grammar": "u8 parsed, with otherwise raw nonempty tails"
+  },
+  "cases": [
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value 0xff",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=0xff\n"
+    },
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value 999",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=999\n"
+    },
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value oops",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=oops\n"
+    },
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value -1",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=-1\n"
+    },
+    {
+      "command": "DBCOPYSAFE !%LEVEL% !%GROUP% 8 Copy",
+      "wire": "[named-db] 408 Operation failed: Associated raw Level copy is unsupported\n"
+    },
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value arbitrary text",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=arbitrary text\n"
+    },
+    {
+      "command": "DBSETSAFE !%LEVEL%/Value +7",
+      "wire": "[named-db] 200 OK\n"
+    },
+    {
+      "command": "DBGET !%LEVEL%/Value",
+      "wire": "[named-db] 342 !%LEVEL%/Value=7\n"
+    }
+  ]
+}

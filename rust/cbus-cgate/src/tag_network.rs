@@ -352,6 +352,14 @@ impl TagNode {
             || self.children.iter().any(Self::null_level_value)
     }
 
+    fn untyped_level_value(&self) -> bool {
+        (self.element == "Level"
+            && self
+                .field("Value")
+                .is_some_and(|value| value.parse::<u8>().is_err()))
+            || self.children.iter().any(Self::untyped_level_value)
+    }
+
     fn materialize_level_tags(&mut self) {
         if self.element == "Level"
             && !self.children.iter().any(|child| child.element == "TagsDLT")
@@ -1491,6 +1499,15 @@ impl Server {
             return Ok(());
         };
         let prefix = format!("//{project}/{address}/");
+        if self
+            .db_levels
+            .values()
+            .any(|level| level.parent.starts_with(&prefix) && level.raw_value.is_some())
+        {
+            return Err(
+                "Associated raw Level Value cannot be re-admitted as complete XML".to_string(),
+            );
+        }
         let plain_variables = self
             .db_levels
             .values()
@@ -1762,6 +1779,293 @@ impl Server {
                 .all(|node| node.is_text() && node.text().unwrap_or_default().trim().is_empty())
     }
 
+    fn associated_numeric_level_value_operand(
+        &self,
+        raw: &str,
+    ) -> Result<Option<AssociatedLevelOperand>, String> {
+        if raw.starts_with('!') {
+            return Ok(None);
+        }
+        if let Ok(Some(selection)) = self.tag_selection(raw) {
+            if self.projects[&selection.project].tag_networks[&selection.key]
+                .database_network
+                .is_none()
+            {
+                // Numeric-looking names keep established lexical ownership.
+                // Numeric Value routing is only a fallback for the associated
+                // typed owner when no independent named selection wins.
+                return Ok(None);
+            }
+        }
+        let path = if raw.starts_with("//") {
+            raw.to_string()
+        } else if let Some(project) = self.current.as_deref() {
+            format!("//{project}/{raw}")
+        } else {
+            return Ok(None);
+        };
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        if parts.len() < 5 || parts[2].eq_ignore_ascii_case("p") {
+            return Ok(None);
+        }
+        let Some(number) = parts[1].parse::<u8>().ok() else {
+            return Ok(None);
+        };
+        let project = parts[0];
+        if self
+            .associated_level_owner(project, &format!("//{project}/{number}"))
+            .is_none()
+        {
+            return Ok(None);
+        }
+        if self.current.as_deref() != Some(project) {
+            return Err("Associated Level project not selected".to_string());
+        }
+        let levels = self
+            .db_levels
+            .values()
+            .filter(|level| !level.netvar && format!("{}/{}", level.parent, level.address) == path)
+            .collect::<Vec<_>>();
+        if levels.len() != 1 {
+            return Err("Associated numeric Level has no unique addressed owner".to_string());
+        }
+        // Reuse the OID fence, including retired/Unit identity precedence and
+        // the established winning pending owner, instead of inventing a route.
+        match self.associated_level_operand(&format!("!{}", levels[0].oid))? {
+            Some(operand)
+                if operand.element == "Level" && operand.addressed && operand.canonical == path =>
+            {
+                Ok(Some(operand))
+            }
+            _ => Err("Associated numeric Level identity disagrees with its owner".to_string()),
+        }
+    }
+
+    fn associated_level_value_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
+        let verb = words.first()?.to_ascii_uppercase();
+        let getter = verb == "DBGET";
+        if !matches!(verb.as_str(), "DBGET" | "DBSET" | "DBSETSAFE")
+            || (getter && words.len() != 2)
+            || (!getter && words.len() < 3)
+        {
+            return None;
+        }
+        let (object_path, field) = words[1].rsplit_once('/')?;
+        if field != "Value" {
+            return None;
+        }
+        let operand = if getter {
+            match self.associated_numeric_level_value_operand(object_path) {
+                Ok(Some(operand)) => operand,
+                Ok(None) => return None,
+                Err(reason) => {
+                    return Some(err(
+                        tag,
+                        401,
+                        &format!("401 Bad object or device ID: {reason}"),
+                    ))
+                }
+            }
+        } else {
+            match self.associated_level_operand(object_path) {
+                Ok(Some(operand)) if operand.element == "Level" && operand.addressed => operand,
+                Ok(None) => match self.associated_numeric_level_value_operand(object_path) {
+                    Ok(Some(operand)) => operand,
+                    Ok(None) => return None,
+                    Err(reason) => {
+                        return Some(err(
+                            tag,
+                            401,
+                            &format!("401 Bad object or device ID: {reason}"),
+                        ))
+                    }
+                },
+                _ => return None,
+            }
+        };
+        let project = self.current.clone().expect("selected associated owner");
+        let level = self.level(&operand.oid)?;
+        if format!("{}/{}", level.parent, level.address) != operand.canonical || level.netvar {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Associated Level owner disagrees with its route",
+            ));
+        }
+        // The typed record is authoritative. Refuse any competing or stale
+        // completed mirror before mutation rather than silently healing it.
+        if self
+            .db_pending
+            .values()
+            .filter(|pending| pending.project == project && pending.oid == operand.oid)
+            .any(|pending| {
+                pending.element != "Level"
+                    || pending.path.as_deref() != Some(operand.canonical.as_str())
+                    || {
+                        let mirror = pending
+                            .fields
+                            .get("Value")
+                            .filter(|value| !value.is_empty());
+                        match (&level.raw_value, level.value) {
+                            (Some(raw), _) => mirror != Some(raw),
+                            (None, Some(byte)) => {
+                                mirror.and_then(|value| value.parse::<u8>().ok()) != Some(byte)
+                            }
+                            (None, None) => mirror.is_some(),
+                        }
+                    }
+            })
+        {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Associated Level Value mirror disagrees with its owner",
+            ));
+        }
+        if getter {
+            return Some(Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                status: 342,
+                final_text: format!(
+                    "342 {}={}",
+                    words[1],
+                    level
+                        .effective_value()
+                        .unwrap_or_else(|| "null".to_string())
+                ),
+            });
+        }
+        let value = words[2..].join(" ");
+        if value.is_empty() || (verb == "DBSETSAFE" && value.contains('#')) {
+            return Some(err(tag, 400, "400 Invalid field value"));
+        }
+        if !value.chars().all(|character| {
+            matches!(character,
+            '\u{9}' | '\u{A}' | '\u{D}' | '\u{20}'..='\u{D7FF}'
+                | '\u{E000}'..='\u{FFFD}' | '\u{10000}'..='\u{10FFFF}')
+        }) {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Level Value is not representable in XML",
+            ));
+        }
+        // Keep each established typed initializer grammar; every other
+        // nonempty tail remains raw text, with no inferred numeric projection.
+        let byte = if verb == "DBSETSAFE" {
+            value
+                .parse::<i64>()
+                .ok()
+                .and_then(|value| u8::try_from(value).ok())
+        } else {
+            value.parse::<u8>().ok()
+        };
+        let effective = byte.map_or_else(|| value.clone(), |byte| byte.to_string());
+        let mut staged = self.clone();
+        let level = staged.level_mut(&operand.oid).expect("checked typed Level");
+        level.value = byte;
+        level.raw_value = byte.is_none().then(|| value.clone());
+        for pending in staged.db_pending.values_mut().filter(|pending| {
+            pending.project == project
+                && pending.oid == operand.oid
+                && pending.element == "Level"
+                && pending.path.as_deref() == Some(operand.canonical.as_str())
+        }) {
+            pending
+                .fields
+                .insert("Value".to_string(), effective.clone());
+        }
+        // These are readback mirrors of one owner, never opaque second owners.
+        staged
+            .db_fields
+            .insert(format!("!{}/Value", operand.oid), effective.clone());
+        staged
+            .db_fields
+            .insert(format!("{}/Value", operand.canonical), effective);
+        *self = staged;
+        Some(crate::ok(
+            tag,
+            vec![],
+            if verb == "DBSETSAFE" && words[1].starts_with('!') {
+                "200 OK"
+            } else {
+                "200 OK."
+            },
+        ))
+    }
+
+    // Guard every existing copy projector, including canonical numeric paths
+    // which do not select a renamed lexical tag record. No raw Value may become
+    // a NULL DatabaseCopyNode before an identity is allocated.
+    pub(crate) fn associated_raw_level_copy_source(&self, raw: &str) -> bool {
+        let Some(selected) = self.current.as_deref() else {
+            return false;
+        };
+        if let Ok(Some(selection)) = self.tag_selection_in(raw, Some(selected)) {
+            if self.projects[&selection.project].tag_networks[&selection.key]
+                .database_network
+                .is_none()
+            {
+                // A known independent lexical owner wins before the legacy
+                // numeric projector, even when its name looks numeric.
+                return false;
+            }
+        }
+        let mut path = if raw.starts_with('!') {
+            // The legacy projector strips OID suffixes. This refusal guard
+            // must see that same object without admitting the suffix itself.
+            let bare = raw.split('/').next().unwrap_or_default();
+            match self.associated_level_operand(bare) {
+                Ok(Some(operand)) if operand.addressed => operand.canonical,
+                _ => return false,
+            }
+        } else if let Ok(Some(operand)) = self.associated_level_operand(raw) {
+            operand.canonical
+        } else if raw.starts_with("//") {
+            // The legacy source projector strips every leading slash before
+            // splitting its numeric path, including a three-slash spelling.
+            format!("//{}", raw.trim_start_matches('/').trim_end_matches('/'))
+        } else if raw.eq_ignore_ascii_case(selected) {
+            format!("//{selected}")
+        } else {
+            format!("//{selected}/{}", raw.trim_matches('/'))
+        };
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        if (2..=5).contains(&parts.len())
+            && !parts
+                .get(2)
+                .is_some_and(|part| part.eq_ignore_ascii_case("p"))
+        {
+            if let Ok(addresses) = parts[1..]
+                .iter()
+                .map(|part| part.parse::<u8>())
+                .collect::<Result<Vec<_>, _>>()
+            {
+                path = format!(
+                    "//{}/{}",
+                    parts[0],
+                    addresses
+                        .iter()
+                        .map(u8::to_string)
+                        .collect::<Vec<_>>()
+                        .join("/")
+                );
+            }
+        }
+        self.db_levels.values().any(|level| {
+            let Some((project, _)) = self.network_of(&level.parent) else {
+                return false;
+            };
+            let level_path = format!("{}/{}", level.parent, level.address);
+            level.raw_value.is_some()
+                && self
+                    .associated_level_owner(&project, &level.parent)
+                    .is_some()
+                && (level_path == path || level_path.starts_with(&format!("{path}/")))
+        })
+    }
+
     fn associated_level_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
         let verb = words.first()?.to_ascii_uppercase();
         let add = matches!(verb.as_str(), "DBADD" | "DBADDSAFE")
@@ -1877,6 +2181,16 @@ impl Server {
         }
         let mut rewritten = words.to_vec();
         if let Some(source) = source {
+            if self
+                .level(&source.oid)
+                .is_some_and(|level| level.raw_value.is_some())
+            {
+                return Some(err(
+                    tag,
+                    408,
+                    "408 Operation failed: Associated raw Level copy is unsupported",
+                ));
+            }
             let project = self.current.as_deref().expect("associated selected owner");
             let extras_key = Self::unit_document_key(project, &source.oid);
             let source_extras = self
@@ -2067,8 +2381,22 @@ impl Server {
         ) {
             return None;
         }
+        if let Some(response) = self.associated_level_value_command(tag, words) {
+            return Some(response);
+        }
         if let Some(response) = self.associated_level_command(tag, words) {
             return Some(response);
+        }
+        if matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE")
+            && words
+                .get(1)
+                .is_some_and(|source| self.associated_raw_level_copy_source(source))
+        {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Associated raw Level subtree copy is unsupported",
+            ));
         }
         let path = words.get(1)?;
         let qualified_project = path
@@ -2131,6 +2459,16 @@ impl Server {
         } else {
             record.root.at(&selected.indices)
         };
+        if matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE")
+            && record.database_network.is_some()
+            && node.untyped_level_value()
+        {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Associated raw Level subtree copy is unsupported",
+            ));
+        }
         if verb == "DBVALIDATE" {
             if words.len() != 2 || selected.field.is_some() {
                 return Some(err(tag, 400, "400 Syntax Error."));

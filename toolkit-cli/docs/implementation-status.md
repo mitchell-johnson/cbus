@@ -48,6 +48,29 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [associated raw Level Value extension](feature-batch-2026-10-02-associated-raw-level-values.md)
+retains nonempty non-byte scalar tails on existing Group/NetVar Levels, through
+explicit project save/reload and cmqttd JSON restart. Five scalar selectors and
+three uniformly checked object-XML routes retain one admitted owner. Required
+Rust 1.99 checks passed with 8,649 workspace tests and one ignored private-input
+case. Source and isolated installed wheel each passed 11 public CLI parents,
+with 1,754 CLI calls per environment, all 326 package files identical and 24
+source/resource pins unchanged. Maintained interop passed 183 parents with two
+vendor-specification skips and 227 separate passing subtests. Six fresh modeled
+comparisons and direct-literal evidence publications passed; all 261 consumer
+parents passed with one original-input skip and 934 separate subtests. See the
+[bounded receipt](../research/fixtures/associated-raw-level-owned-release-20261002.json)
+for exact source/artifact bindings, historical failures and the explicit later
+prose delta. The full Python suite was not repeated; current original/vendor/VM
+and hardware execution remains zero. Raw COPY/resync still refuse before lossy
+projection. Numeric object XML remains tracked in [#73](https://github.com/mitchell-johnson/cbus/issues/73).
+Reproduced canonical numeric byte-COPY destination401 and unsupported retained-XML
+plain-Level LOAD mutations are deferred in [#74](https://github.com/mitchell-johnson/cbus/issues/74)
+after cyber protection stopped the correction agent; untested private edits are
+excluded. Its missing-descendant getter edge remains unexecuted. These known
+limits remain open; the category ratio and fully accepted obligation count do
+not change.
+
 The [empty TagsDLT copy extension](feature-batch-2026-10-02-empty-tags-copy.md)
 adds SAFE and unsafe associated Level copies with one strict empty collection or
 its deferred LOAD marker. It preserves source bytes, gives the destination a new

@@ -2211,10 +2211,22 @@ pub struct DbLevel {
     pub address: u8,
     /// Tag name.
     pub tag: String,
-    /// Initialized byte value (`None` = native NULL).
+    /// Admitted typed byte projection; absent for NULL or a retained raw value.
     pub value: Option<u8>,
+    /// Nonempty raw scalar tail under an associated numeric Level owner.
+    /// This is not a numeric control projection or complete XML admission.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub raw_value: Option<String>,
     /// True for `NetVar` records (different document root, no Value init).
     pub netvar: bool,
+}
+
+impl DbLevel {
+    fn effective_value(&self) -> Option<String> {
+        self.raw_value
+            .clone()
+            .or_else(|| self.value.map(|value| value.to_string()))
+    }
 }
 
 /// Auxiliary XML data in a cmqttd repository snapshot. Fresh DBSETXML
@@ -3349,6 +3361,7 @@ impl Server {
                     address: level.address,
                     tag: level.tag.clone(),
                     value: level.value,
+                    raw_value: level.raw_value.clone(),
                     netvar: level.netvar,
                 })
             })
@@ -4969,8 +4982,7 @@ impl Server {
                 if field == Some("Value") {
                     if let Some(level) = self.level(oid) {
                         let value = level
-                            .value
-                            .map(|v| v.to_string())
+                            .effective_value()
                             .unwrap_or_else(|| "null".to_string());
                         // Space final like the `!oid/OID` probe: a
                         // dash-final would read as a continuation and
@@ -5915,8 +5927,8 @@ impl Server {
     /// modeled, so none are emitted.
     fn level_xml_document(&self, project: &str, level: &DbLevel) -> String {
         let attributes = level
-            .value
-            .map(|value| vec![("Value", value.to_string())])
+            .effective_value()
+            .map(|value| vec![("Value", value)])
             .unwrap_or_default();
         let mut output = self.db_xml_open(project, &level.oid, "Level", &attributes);
         output.push_str(&format!(
@@ -9563,6 +9575,7 @@ impl Server {
                         address: object.address,
                         tag: object.tag.clone(),
                         value: object.value,
+                        raw_value: None,
                         netvar: false,
                     },
                 );
@@ -9576,6 +9589,7 @@ impl Server {
                         address: object.address,
                         tag: object.tag.clone(),
                         value: None,
+                        raw_value: None,
                         netvar: true,
                     },
                 );
@@ -9801,6 +9815,7 @@ impl Server {
                     address: addr,
                     tag: words[4].to_string(),
                     value: None,
+                    raw_value: None,
                     netvar: element == "NETVAR",
                 },
             );
@@ -9869,6 +9884,13 @@ impl Server {
         }
         if !valid_target(words[1]) || !valid_target(words[2]) {
             return err(tag, status::BAD_REQUEST, "400 Invalid copy path");
+        }
+        if self.associated_raw_level_copy_source(words[1]) {
+            return err(
+                tag,
+                408,
+                "408 Operation failed: Associated raw Level subtree copy is unsupported",
+            );
         }
         if words[1].strip_prefix('!').is_some_and(|oid| {
             self.duplicated_unit_oid_in_current_project(oid.split('/').next().unwrap_or(""))
@@ -10060,6 +10082,7 @@ impl Server {
                             address: addr as u8,
                             tag: words[4].to_string(),
                             value: None,
+                            raw_value: None,
                             netvar: source.netvar,
                         },
                     );
@@ -10773,8 +10796,10 @@ impl Server {
             return err(tag, status::BAD_REQUEST, "400 Invalid field value");
         }
         // Level Value initialization (`DBSETSAFE !oid/Value byte`): the
-        // native column is a byte, so non-byte values are rejected rather
-        // than stored. Unknown OIDs keep the opaque store below.
+        // legacy typed initializer admits bytes here. Captured raw scalar
+        // lexemes are routed separately for an exact associated owner; this
+        // is not a native byte-column restriction. Unknown OIDs keep the
+        // opaque store below.
         if let Some(rest) = words[1].strip_prefix('!') {
             let mut segments = rest.splitn(2, '/');
             let oid = segments.next().unwrap_or("");
@@ -10825,6 +10850,7 @@ impl Server {
                         return err(tag, status::BAD_REQUEST, "400 Invalid level value");
                     }
                     level.value = Some(byte as u8);
+                    level.raw_value = None;
                     // Local typed-byte policy: canonical decimal readback,
                     // XML and copy, not raw associated lexeme parity. Raw
                     // incomplete and independent owners are not coerced.
@@ -10997,6 +11023,7 @@ impl Server {
                         "Value" => {
                             if value.is_empty() {
                                 level.value = None;
+                                level.raw_value = None;
                             } else {
                                 let Ok(byte) = value.parse::<u8>() else {
                                     return err(
@@ -11006,6 +11033,7 @@ impl Server {
                                     );
                                 };
                                 level.value = Some(byte);
+                                level.raw_value = None;
                             }
                         }
                         _ => {
@@ -11318,6 +11346,7 @@ impl Server {
                     "Value" => {
                         if value.is_empty() {
                             level.value = None;
+                            level.raw_value = None;
                         } else {
                             let Ok(byte) = value.parse::<u8>() else {
                                 return err(
@@ -11327,6 +11356,7 @@ impl Server {
                                 );
                             };
                             level.value = Some(byte);
+                            level.raw_value = None;
                         }
                     }
                     _ => {}

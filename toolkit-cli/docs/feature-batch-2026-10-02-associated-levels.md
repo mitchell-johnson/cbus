@@ -153,3 +153,15 @@ new original Toolkit/C-Gate execution is credited.
 See [named database workflows](feature-batch-2026-10-01-named-database-workflows.md),
 [network definitions](network-definitions.md) and the
 [implementation ledger](implementation-status.md) for the surrounding scope.
+
+## Later review: deferred corrections
+
+Known associated-owner bugs are deferred in [issue #74](https://github.com/mitchell-johnson/cbus/issues/74):
+canonical numeric Group COPY destinations return `401`, while renamed lexical
+paths and Group OIDs succeed for admitted byte copies. The newer LOAD sweep
+can also alter unsupported retained XML on a plain Level with a deferred empty
+label marker. Those payloads are outside the accepted LOAD profile. A separate
+missing-descendant Value-getter fallback is an unverified source-review
+hypothesis. The attempted fixture failed before that edge executed. These
+corrections were stopped by cyber protection; no private untested edits are
+integrated or credited.
