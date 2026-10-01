@@ -1,0 +1,72 @@
+{
+  "additional_execution": {
+    "full_python_suite_repeated": false,
+    "hardware": 0,
+    "original_toolkit_or_cgate": 0,
+    "product_tests": 0,
+    "vendor_or_vm": 0
+  },
+  "blocked_private_p2_corrections_integrated": false,
+  "bounded_release_receipt": {
+    "bytes": 37740,
+    "path": "toolkit-cli/research/fixtures/associated-raw-level-owned-release-20261002.json",
+    "sha256": "2db112e5ba0987e92d2d502124f705f6c86136f3043f194c54b8de2e2100e0e9",
+    "unchanged_after_reviews_and_rebase": true
+  },
+  "ci": "Actual final published head and its CI status are recorded separately in GitHub issues. This note has no self-referential publication commit or new CI success claim.",
+  "date": "2026-10-02",
+  "executed_worktree_bases": {
+    "final_python_and_metadata": "fb24849d75818bd244e29d2d61b41c977e4836b9",
+    "required_rust": "70a3dca47916f910204aca2f5d397c372487e62a"
+  },
+  "feature_commit": "63f0cde6e8670db57918e00a972b47235fa99c79",
+  "feature_commit_base": "c137cd5e59f88cde2c388bcf39a1055555bf486a",
+  "format": "cbus-associated-raw-level-publication-integration-v1",
+  "full_toolkit_or_cgate_parity": false,
+  "outstanding_issues": [
+    32,
+    72,
+    73,
+    74
+  ],
+  "post_rebase_verification": {
+    "all_frozen_pins_match_release_receipt": true,
+    "frozen_source_resource_pin_count": 24,
+    "independent_metadata_authorship_is_not_independent_acceptance": true,
+    "late_report_status_sha256": {
+      "toolkit-cli/docs/feature-batch-2026-10-02-associated-raw-level-values.md": "b48bbe63ceacfcfdd5c4e8098e9df8bb002d8e4ed410e0e525c28efd87d99830",
+      "toolkit-cli/docs/implementation-status.md": "3e08cbb77004b6c064f7c747d95eae08c12b3bd9ca325d7a0cf0d577ae46bccf"
+    },
+    "release_receipt_and_historical_3622_file_phase_rosters_rebound": false,
+    "reports_still_match_existing_late_prose_delta": true
+  },
+  "qualification": "The feature commit contains the reviewed integrated implementation. Required Rust checks executed an uncommitted tree based on70a3; final Python/metadata checks executed an uncommitted tree based onfb248. No base commit alone contains or certifies the feature. After validation, the committed batch was rebased over one upstream documentation change. This standalone integration note adds no execution credit and never rewrites historical phase rosters or the bounded release receipt.",
+  "selected_final_readonly_reviews": {
+    "independent_final_rendered_receipt_and_docs": {
+      "bytes": 12705,
+      "new_execution_credit": 0,
+      "retained_privately": true,
+      "sha256": "ad7cdef3ae19a9022126f74ae509f067be2b40af81e42b04f0dadebd692f5481"
+    },
+    "independent_publication_pins_diff_and_privacy": {
+      "bytes": 7555,
+      "new_execution_credit": 0,
+      "retained_privately": true,
+      "sha256": "bf4c005ceec10d39e4088866e57e3e6d5db6d39f75c03ada2b644a652f70d711"
+    }
+  },
+  "upstream_documentation_delta": {
+    "exact_changed_paths": [
+      "toolkit-cli/docs/toolkit-on-wine.md"
+    ],
+    "files": {
+      "toolkit-cli/docs/toolkit-on-wine.md": {
+        "final_python_context_sha256": "8828e83f0b2fe5664ed513ea41a37d170af381e2c6b3b2b37d4e1a5f8bd77967",
+        "publication_sha256": "60efd7be57219b2d20b0ffbb63f1b2389df783291b88a92fefb6832746e88bd7"
+      }
+    },
+    "qualification": "The upstream Wine guide reports a separately performed original-software workflow. This associated-Level batch gains no original-software acceptance from that report.",
+    "range": "fb24849d75818bd244e29d2d61b41c977e4836b9..c137cd5e59f88cde2c388bcf39a1055555bf486a",
+    "rust_python_product_test_vector_and_generated_resource_changes": false
+  }
+}
