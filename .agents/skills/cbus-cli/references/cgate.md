@@ -1004,7 +1004,12 @@ duplicates stay distinct and a lone flag creates no Property. Exact `0254`,
 not physical binding requests. DBGETXML/DBSETXML, DBGET/DBSET and OID mutations,
 project copy/archive and restart retain the authoritative local tree. NET SAVE
 DB edits the loaded database; explicit PROJECT SAVE commits its baseline.
-CLOSE/LOAD discards unsaved materialization. See the materialization batch and
+CLOSE/LOAD discards unsaved materialization. Independent exact tag rows are
+rejected before DALI gateway resolution and PP patch manifest selection can
+alias the configured PCI. Modeled descendant OIDs keep their existing duplicate
+selection and deletion-invalidation rules. Unrelated typed Application/Group
+TagName edits preserve already admitted legacy Unit PP decorations. See the
+integration corrections, materialization batch and
 operator guide for captured profiles, current source/wheel evidence and remaining
 native/physical acceptance. FILE is an internal snapshot selector and never a host path. A missing
 FILE snapshot succeeds as an empty load; an existing snapshot merges and fails

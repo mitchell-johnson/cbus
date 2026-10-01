@@ -124,9 +124,13 @@ a deleted numeric database row.
 The offline `project` commands accept these native string addresses in XML/CBZ
 projects marked DBVersion 2.3, or the supported native Project/OID profile.
 They retain exact case and spelling, duplicate Properties and complete subtrees.
-Legacy projects retain their numeric address grammar. NetworkNumber remains an
-independently validated byte; changing it does not rename Address or authorize
-physical traffic to that value.
+Projects with an explicit older DBVersion retain numeric address aliases.
+An unversioned Network with NetworkNumber `255` also selects the native lexical
+address profile. This includes a Network added to the unversioned Installation
+created by `project new`: Address `254` with NetworkNumber `255` resolves as
+exact `254`, and its numeric alias `0xfe` does not resolve. NetworkNumber remains
+an independently validated byte; changing it does not rename Address or
+authorize physical traffic to that value.
 Complete cross-project copies allocate fresh OIDs. Unsafe same-project copies
 of these named rows, and incomplete unsafe child additions, remain unsupported;
 cmqttd refuses them before mutation. It does not report a successful copy with
@@ -170,8 +174,10 @@ The acceptance batch uses disposable projects, owned loopback services and
 independent no-contact interface traps. It checks native DB-versus-FILE rules,
 public CLI creation, duplicate and uncertain replies, saved/reopened project
 fields, runtime catalogue preservation and no post-startup PCI traffic.
-See [the materialization batch report](feature-batch-2026-10-01-net-save-db-materialization.md)
-for current artifacts and source/wheel acceptance, and
+See [the integration corrections](feature-batch-2026-10-01-net-save-db-integration.md)
+for the corrected implementation and its acceptance, and
+[the materialization batch report](feature-batch-2026-10-01-net-save-db-materialization.md)
+for the first candidate's preserved evidence. See
 [the preceding catalogue report](feature-batch-2026-10-01-network-definitions.md)
 for its historical evidence and GET dispatch correction.
 

@@ -732,11 +732,11 @@ impl Server {
         // every SAVE creates fresh Property identities.
         interface.retain_children(|_| false);
         let tokens = options.join(" ").replace('=', " ");
-        let tokens = tokens.split_whitespace().collect::<Vec<_>>();
-        for pair in tokens.chunks_exact(2) {
+        let mut tokens = tokens.split_whitespace();
+        while let (Some(name), Some(value)) = (tokens.next(), tokens.next()) {
             interface.push_child(TagNode::new(
                 "Property",
-                &[("OID", &fresh_oid()), ("Name", pair[0]), ("Value", pair[1])],
+                &[("OID", &fresh_oid()), ("Name", name), ("Value", value)],
             ));
         }
         let old_oids = self.projects[project]
@@ -760,6 +760,25 @@ impl Server {
             let (oid, field) = rest
                 .split_once('/')
                 .map_or((rest, None), |(oid, field)| (oid, Some(field.to_string())));
+            // Numeric database descendants retain their established OID
+            // owner, including modeled duplicate selection and deletion
+            // invalidation. A materialized XML snapshot must not replace
+            // those rules with its first depth-first matching node.
+            if self
+                .invalidated_unit_oid_lookups
+                .contains(&(project.to_string(), oid.to_string()))
+                || record
+                    .networks
+                    .values()
+                    .any(|network| network.units.values().any(|unit| unit.oid == oid))
+                || self
+                    .db_pending
+                    .values()
+                    .any(|object| object.project == project && object.oid == oid)
+                || self.level_key(oid).is_some()
+            {
+                return Ok(None);
+            }
             for key in record.tag_networks.keys() {
                 let network = self.current_tag_record(project, key)?;
                 let mut indices = Vec::new();
@@ -1148,9 +1167,15 @@ impl Server {
                     && matches!(
                         node.element.as_str(),
                         "Application" | "Group" | "Level" | "NetVar"
-                    )))
+                    ))
+                || (matches!(node.element.as_str(), "Application" | "Group")
+                    && selected.field.as_deref() == Some("TagName")))
                 && matches!(verb.as_str(), "DBSET" | "DBSETSAFE" | "DBDELETE")
             {
+                // The existing database owner also mirrors Application/Group
+                // TagName edits. Replacing the whole Network for that scalar
+                // would re-admit untouched imported Units under strict
+                // DBSETXML rules that reject legacy PP decorations.
                 let mut path = format!("//{}/{address}", selected.project);
                 let mut current = &record.root;
                 for index in &selected.indices {

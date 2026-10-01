@@ -1,0 +1,9 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "407fd898a3885c7de09aa5136c596eac455c0ed7c9e3594f1fa2b6b41a2cf7b9",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "{\"six_bindings\": 1093, \"generators\": \"passed\", \"native_manifest_unchanged\": true, \"coverage_expected_exit\": 1}\n"
+}

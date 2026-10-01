@@ -1,0 +1,265 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "1e095aac3e1ec754e5e744659c382c519b1485c4136c6074d96c0293667a7b2e",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/synthetic_interfaces/serial_absent_owned_path",
+      "action": "role_template",
+      "roles": [
+        "original_project_reuse_scratch",
+        "temporary_root_alias"
+      ],
+      "raw_string_sha256": "d5092e6b9ebd086f7d60f36e7e4ae91478dc7c426c8a7d16c71bea9c962cba3f"
+    },
+    {
+      "json_pointer": "/owned_process/java",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/owned_process/work_directory",
+      "action": "role_template",
+      "roles": [
+        "original_project_reuse_scratch"
+      ],
+      "raw_string_sha256": "f693194a77ba33758c19a3bd582225d0104fbe6105d7ca7e69dab95bc81a93ca"
+    },
+    {
+      "json_pointer": "/owned_process/argv/0",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/owned_process/argv/2",
+      "action": "role_template",
+      "roles": [
+        "original_project_reuse_scratch",
+        "temporary_root_alias"
+      ],
+      "raw_string_sha256": "dfb03d9e094f8b23ab1b6a57c87c30a9848e466783b457b378e47072ae462595"
+    },
+    {
+      "json_pointer": "/owned_process/argv/6",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "ad8e2697bd11b55fc962216aad5d76de462ea58f84536f8b1523ff664ab68445"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-native-net-save-db-materialization-v1",
+    "commands": [
+      {
+        "label": "new",
+        "command": "PROJECT NEW REUSE",
+        "response": [
+          "[probe0] 200 OK."
+        ]
+      },
+      {
+        "label": "use",
+        "command": "PROJECT USE REUSE",
+        "response": [
+          "[probe1] 200 OK."
+        ]
+      },
+      {
+        "label": "create",
+        "command": "NET CREATE Old Cni 127.0.0.1:63915",
+        "response": [
+          "[probe2] 200 OK."
+        ]
+      },
+      {
+        "label": "save-db",
+        "command": "NET SAVE DB",
+        "response": [
+          "[probe3] 200 OK."
+        ]
+      },
+      {
+        "label": "save-file",
+        "command": "NET SAVE FILE",
+        "response": [
+          "[probe4] 200 OK."
+        ]
+      },
+      {
+        "label": "project-save",
+        "command": "PROJECT SAVE REUSE",
+        "response": [
+          "[probe5] 200 OK."
+        ]
+      },
+      {
+        "label": "list-original",
+        "command": "NET LIST",
+        "response": [
+          "[probe6] 131 network=Old State=new InterfaceState=closed"
+        ]
+      },
+      {
+        "label": "delete-open",
+        "command": "PROJECT DELETE REUSE",
+        "response": [
+          "[probe7] 200 OK."
+        ]
+      },
+      {
+        "label": "close-original",
+        "command": "PROJECT CLOSE REUSE",
+        "response": [
+          "[probe8] 200 OK."
+        ]
+      },
+      {
+        "label": "delete-closed",
+        "command": "PROJECT DELETE REUSE",
+        "response": [
+          "[probe9] 408 Operation failed: Unable to delete file"
+        ]
+      },
+      {
+        "label": "new-reused",
+        "command": "PROJECT NEW REUSE",
+        "response": [
+          "[probe10] 200 OK."
+        ]
+      },
+      {
+        "label": "use-reused",
+        "command": "PROJECT USE REUSE",
+        "response": [
+          "[probe11] 200 OK."
+        ]
+      },
+      {
+        "label": "list-reused",
+        "command": "NET LIST",
+        "response": [
+          "[probe12] 132 no networks found"
+        ]
+      },
+      {
+        "label": "whole-reused",
+        "command": "DBGETXML //REUSE",
+        "response": [
+          "[probe13] 343-Begin XML snippet",
+          "[probe13] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe13] 347-<Installation><OID>5901a720-9f72-103f-9488-d7645ee8282b</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T16:01:40.114+13:00</Modified><Project><OID>59021c50-9f72-103f-948b-d7645ee8282b</OID><TagName>REUSE</TagName><Address>REUSE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description></Project><InstallationDetail><OID>5901ce30-9f72-103f-9489-d7645ee8282b</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>unifi</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>5901f540-9f72-103f-948a-d7645ee8282b</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[probe13] 344 End XML snippet"
+        ]
+      },
+      {
+        "label": "load-db-reused",
+        "command": "NET LOAD DB",
+        "response": [
+          "[probe14] 200 OK."
+        ]
+      },
+      {
+        "label": "list-db-reused",
+        "command": "NET LIST",
+        "response": [
+          "[probe15] 132 no networks found"
+        ]
+      },
+      {
+        "label": "load-file-reused",
+        "command": "NET LOAD FILE",
+        "response": [
+          "[probe16] 200 OK."
+        ]
+      },
+      {
+        "label": "list-file-reused",
+        "command": "NET LIST",
+        "response": [
+          "[probe17] 131 network=Old State=new InterfaceState=closed"
+        ]
+      },
+      {
+        "label": "whole-file-reused",
+        "command": "DBGETXML //REUSE",
+        "response": [
+          "[probe18] 343-Begin XML snippet",
+          "[probe18] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe18] 347-<Installation><OID>5901a720-9f72-103f-9488-d7645ee8282b</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T16:01:40.114+13:00</Modified><Project><OID>59021c50-9f72-103f-948b-d7645ee8282b</OID><TagName>REUSE</TagName><Address>REUSE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description></Project><InstallationDetail><OID>5901ce30-9f72-103f-9489-d7645ee8282b</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>unifi</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>5901f540-9f72-103f-948a-d7645ee8282b</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[probe18] 344 End XML snippet"
+        ]
+      }
+    ],
+    "closed_model_only": true,
+    "physical_or_windows_acceptance": false,
+    "source_pins": {
+      "private_probe": "25b2b2305ae1731667d4e4ff60dbf8edec16fe5e289d096b9fe3a621d5e0a34c",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "greeting": "201 Service ready: Schneider Electric C-Gate Version: v3.4.0 (build 2001) #cmd-syntax=1.0",
+    "synthetic_interfaces": {
+      "cni_reserved_socket": "127.0.0.1:63915",
+      "serial_absent_owned_path": "${CBUS_ORIGINAL_PROJECT_REUSE_SCRATCH}${CBUS_TEMP_ROOT}/absent-serial-interface",
+      "second_cni_reserved_socket": "127.0.0.1:63916"
+    },
+    "owned_process": {
+      "backend": "local",
+      "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "java": "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+      "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+      "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "work_directory": "${CBUS_ORIGINAL_PROJECT_REUSE_SCRATCH}",
+      "projects_adopted": false,
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "cleanup_errors": [],
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "reserved_sockets_closed": true,
+      "log_closed": true,
+      "configured_ports": [
+        63909,
+        63910,
+        63911,
+        63912,
+        63913,
+        63914
+      ],
+      "pid": 13416,
+      "argv": [
+        "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+        "-Djava.net.preferIPv4Stack=true",
+        "-Djava.io.tmpdir=${CBUS_ORIGINAL_PROJECT_REUSE_SCRATCH}${CBUS_TEMP_ROOT}",
+        "-Xms64M",
+        "-Xmx512M",
+        "-jar",
+        "${CBUS_ORIGINAL_CGATE_APP}/cgate.jar"
+      ],
+      "listeners": [
+        "127.0.0.1:63909",
+        "127.0.0.1:63910",
+        "127.0.0.1:63911",
+        "127.0.0.1:63912",
+        "127.0.0.1:63913",
+        "127.0.0.1:63914"
+      ],
+      "exit_code": 143,
+      "server_log_sha256": "56d7a306de095d2581d6f21d61bd8c1a5056d0852c567b154e9f07d4ea987817",
+      "server_log_bytes": 240,
+      "server_log_hashed_bytes": 240,
+      "server_log_tail": [
+        "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+        "C-Gate is running."
+      ]
+    }
+  }
+}

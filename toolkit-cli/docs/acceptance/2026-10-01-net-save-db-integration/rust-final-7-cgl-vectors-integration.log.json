@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "d7c8c7bc8d31e4ee93f34ba2fa1d5279b2b58c155b683b2df5664f1485d3caff",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "d7c8c7bc8d31e4ee93f34ba2fa1d5279b2b58c155b683b2df5664f1485d3caff"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running tests/cgl_vectors.rs (${CBUS_CARGO_TARGET}/debug/deps/cgl_vectors-d08a64ff1c2b4a00)\n\nrunning 1 test\ntest cgate_mock_matches_every_cgl_route_vector ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.81s\n\n"
+}

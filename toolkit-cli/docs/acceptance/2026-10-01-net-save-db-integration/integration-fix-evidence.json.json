@@ -1,0 +1,444 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "e7b865c5224cf82d719335fb749222448c5bbe0b891aa3cc1ea92ab316c8330b",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/logs/0/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "2f74f88a751a4d0253f581891e15d0882b93cbb546b7b7066d0e463b8c2e24bf"
+    },
+    {
+      "json_pointer": "/logs/1/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "1957e143664db190b9acd8728853ea09b8c1b3bbd47f8d4fb87c7c030cc62d6f"
+    },
+    {
+      "json_pointer": "/logs/2/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "c0b5168bff673d3b48efba66a34b5db924a6c42c7f311da32e701106c93a8b81"
+    },
+    {
+      "json_pointer": "/logs/3/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "16675f4760d8634a3b099ca16d6c1140f6bed71dec420c21771cb31d845ce496"
+    },
+    {
+      "json_pointer": "/logs/4/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "1482dc55dcdbc7873914b542cb092c3014ca875243c29dba8a985d18c5ad33f0"
+    },
+    {
+      "json_pointer": "/logs/5/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "cba0f7302e508decc479bd5469b8595b53f3b185c251f580ebe615ebad88e220"
+    },
+    {
+      "json_pointer": "/logs/6/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "9263be8f029c821c30488eddeed52602c6f90ff2fa3698632faf4953eb6cc153"
+    },
+    {
+      "json_pointer": "/logs/7/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b463e2a59cd5d9dd796a4eb4c3286933063d31eaf1c0cc899b73c498110846c7"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-save-db-integration-fix-evidence-v1",
+    "physical": {
+      "before": {
+        "passed": 1,
+        "failed": 5,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+            "outcome": "FAILED"
+          }
+        ],
+        "parsed_test_results_complete": false,
+        "parsed_test_results_qualification": "Five complete result lines parsed; interleaved output omitted one complete result line. Terminal summary is authoritative for1passed/5failed. The six test identities and full final outcomes are separately pinned by unchanged source and after log."
+      },
+      "after": {
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "source_bindings": [
+        {
+          "path": "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs",
+          "sha256": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5"
+        },
+        {
+          "path": "rust/cbus-cgate/src/service/dali.rs",
+          "sha256": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388"
+        },
+        {
+          "path": "rust/cbus-cgate/src/service.rs",
+          "sha256": "fbb03dc1e2729c41872ba3cf140b4724b177327924bdf9d3b656005b94fcffdc"
+        }
+      ],
+      "before_after_regression_source_identical": true,
+      "before_after_regression_source_sha256": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5",
+      "controlled_endpoint": "tokio::io::duplex only",
+      "real_hardware_or_network_contacted": false,
+      "before_actual_observed_frames": [
+        "\\061400E381DA87 CR",
+        "\\061400E381DA82 CR",
+        "\\460500210193h CR"
+      ],
+      "qualification": "Actual controlled Service.handle PCI frames before fix; six final no-I/O rejection/admission controls passed. No live hardware acceptance."
+    },
+    "oid_pp": {
+      "before_reds": [
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "test_results": [
+            {
+              "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+              "outcome": "FAILED"
+            }
+          ]
+        },
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "test_results": [
+            {
+              "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+              "outcome": "FAILED"
+            }
+          ]
+        }
+      ],
+      "intermediate": {
+        "passed": 18,
+        "failed": 2,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "final": {
+        "passed": 20,
+        "failed": 0,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "source_bindings": [
+        {
+          "path": "rust/cbus-cgate/src/service/tests/net_save_db.rs",
+          "sha256": "a467c03b9975e156cb35986f5a0fb230dd36a4fb46a988403a42a84374e7fa43"
+        },
+        {
+          "path": "rust/cbus-cgate/src/tag_network.rs",
+          "sha256": "f5297fd069f4303d4f305e54bf5880c2cc41d85140cae25e42e64aec94c8b526"
+        }
+      ],
+      "initial_regression_source_pin_available": false,
+      "before_final_regression_source_identical": false,
+      "qualification": "Initial exact regression source SHA is unavailable. Before logs record actual Application instead of winning Unit selection and 408 PP exact Name/Value refusal. Initial combined post-product run passed18/20 because two assertions needed correction: DBDELETE !shared is the legacy invalidation trigger, and pre/postmaterialization whole Unit serialization differs through the existing mapper. Only final test assertions changed afterward, with no subsequent product edit; final fresh20-pass proof is separately pinned. Final PP test checks semantic decorations after materialization and exact unchanged Unit XML across later TagName edit."
+    },
+    "logs": [
+      {
+        "name": "physical-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/before.log",
+        "sha256": "4c783a5080a77003c61c7f0f61c396feecea8680e8360c61489c8e26fcb4410d",
+        "bytes": 3627
+      },
+      {
+        "name": "physical-after",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/after.log",
+        "sha256": "4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5",
+        "bytes": 1205
+      },
+      {
+        "name": "physical-source-attestation",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/evidence.txt",
+        "sha256": "b35f8c3e09e6267f1976fe6c697e2440200c03f0a5e72598baf76f7c0f5e15e8",
+        "bytes": 2272
+      },
+      {
+        "name": "oid-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/before-oid.log",
+        "sha256": "8fceac65be9e1f000094b7b22655b4390e0d57ccfc2ca26df47bda42bff43ab2",
+        "bytes": 1455
+      },
+      {
+        "name": "pp-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/before-pp.log",
+        "sha256": "c2be79182b850ab7ce06cb7dd1db62c7a006b7bd97314230f1241ff4ad62be6e",
+        "bytes": 1196
+      },
+      {
+        "name": "oid-pp-intermediate",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/after-net-save-db.log",
+        "sha256": "a3096257108d8425910cffcd47d840d956bd40cdc951dcfc15f2a81fd525ad67",
+        "bytes": 6975
+      },
+      {
+        "name": "oid-pp-final",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/after-net-save-db-final.log",
+        "sha256": "6e9bc004142e0b09b012854dc6a2bdcb60489007fa18eec5eb43cbc911b1a450",
+        "bytes": 2929
+      },
+      {
+        "name": "clippy-1.98.1",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/clippy-1.98.1.log",
+        "sha256": "030f82324f66303a57d284dfebc9486353d313e6b1c869b86bad19ddf093bf27",
+        "bytes": 648
+      }
+    ],
+    "clippy": {
+      "toolchain": "1.98.1",
+      "argv": [
+        "cargo",
+        "+1.98.1",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "root_observed_exit_status": 0,
+      "log_sha256": "030f82324f66303a57d284dfebc9486353d313e6b1c869b86bad19ddf093bf27"
+    },
+    "source_binding_qualification": "Current final source pins bind final proofs; only physical regression source is attested identical across red/green."
+  }
+}

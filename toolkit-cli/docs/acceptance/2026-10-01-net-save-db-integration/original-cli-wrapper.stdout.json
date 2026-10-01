@@ -1,0 +1,23 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "98f19e5a6a462c97075737db798ea99db8261f0a14a89c6249156f39633991e3",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance",
+        "java11",
+        "native_cli_driver",
+        "original_cgate",
+        "repository_checkout",
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "98f19e5a6a462c97075737db798ea99db8261f0a14a89c6249156f39633991e3"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "{\"mode\": \"source\", \"argv\": [\"${CBUS_TOOLKIT_ROOT}/.venv/bin/python\", \"${CBUS_ORIGINAL_CLI_DRIVER}/driver.py\", \"--python\", \"${CBUS_TOOLKIT_ROOT}/.venv/bin/python\", \"--mode\", \"source\", \"--vendor\", \"${CBUS_ORIGINAL_CGATE_APP}\", \"--java\", \"${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java\", \"--output\", \"${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1\"], \"cwd\": \"${CBUS_REPOSITORY_ROOT}\", \"exit_status\": 0, \"stdout\": {\"path\": \"${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1.stdout\", \"sha256\": \"283093750242effe0bff2fa1e62f907b4e40ed6a327dc8673afb4b8039af121d\", \"bytes\": 243}, \"stderr\": {\"path\": \"${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1.stderr\", \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"bytes\": 0}, \"report\": \"${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1/report.json\", \"report_sha256\": \"bda23a5c259e690861f953350a9488e7b681dd8e8122057bfc3bf608c5328cd7\", \"driver_sha256\": \"5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec\", \"terminal_checks\": {\"completed\": true, \"materialization_workflow_complete\": true, \"backend_cleanup_complete\": true, \"backend_process_exit_confirmed\": true, \"backend_listener_ownership_verified\": true, \"proxy_cleanup_complete\": true, \"proxy_errors_empty\": true, \"trap_cleanup_complete\": true, \"trap_connections_zero\": true, \"serial_path_absent\": true, \"source_unchanged\": true, \"package_unchanged\": true, \"artifacts_unchanged\": true, \"cleanup_errors_empty\": true}, \"commands\": 89, \"package_root\": \"${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit\", \"wheel_sha256\": null}\n{\"mode\": \"installed\", \"argv\": [\"${CBUS_TOOLKIT_ROOT}/.venv/bin/python\", \"${CBUS_ORIGINAL_CLI_DRIVER}/driver.py\", \"--python\", \"${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/python\", \"--mode\", \"installed\", \"--vendor\", \"${CBUS_ORIGINAL_CGATE_APP}\", \"--java\", \"${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java\", \"--output\", \"${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1\", \"--wheel\", \"${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl\"], \"cwd\": \"${CBUS_REPOSITORY_ROOT}\", \"exit_status\": 0, \"stdout\": {\"path\": \"${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1.stdout\", \"sha256\": \"3d2e6550fd060aa3b15817d96740c541d4e90153372c4453c4d35c7633b92a0d\", \"bytes\": 246}, \"stderr\": {\"path\": \"${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1.stderr\", \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"bytes\": 0}, \"report\": \"${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1/report.json\", \"report_sha256\": \"d0dc3ba6bb7c758c994547fbd2414ab57d476d0b5377b27f18c41eb374a6f91d\", \"driver_sha256\": \"5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec\", \"terminal_checks\": {\"completed\": true, \"materialization_workflow_complete\": true, \"backend_cleanup_complete\": true, \"backend_process_exit_confirmed\": true, \"backend_listener_ownership_verified\": true, \"proxy_cleanup_complete\": true, \"proxy_errors_empty\": true, \"trap_cleanup_complete\": true, \"trap_connections_zero\": true, \"serial_path_absent\": true, \"source_unchanged\": true, \"package_unchanged\": true, \"artifacts_unchanged\": true, \"cleanup_errors_empty\": true}, \"commands\": 89, \"package_root\": \"${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/lib/python3.13/site-packages/cbus_toolkit\", \"wheel_sha256\": \"eec0a78757ddacc8ac6a07cca1be7d1de503d22f6a9f52ef1f9667c2daca8947\"}\n"
+}

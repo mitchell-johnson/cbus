@@ -1,0 +1,9 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "402391c56160c8bdb36a909e53f16b2c37bbb357f1f2c9056d5d37d94ffe74b5",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "Root observed cargo +1.98.1 fmt --check from rust/: exit_code=0, output empty. This record is an attestation, not raw captured command output.\n"
+}

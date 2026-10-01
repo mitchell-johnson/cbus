@@ -37,6 +37,14 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 
 For closed network setup, read [network-definitions.md](../../../../toolkit-cli/docs/network-definitions.md). `network-new` admits legacy cmqttd creation 200 or native 301 with one UUID OID, and requires exact LOAD 200; after an incomplete load inspect the existing database row and catalogue before explicit recovery. `network definition` validates inputs before connection, requires `--project`, and exposes list/create/delete/rename/load/save/flush with no implicit OPEN or project save. DB load refreshes current database interface fields while preserving immutable physical bindings and unrelated active definitions. Use exact //PROJECT/NAME paths for cmqttd runtime Name/Type/Interface/InterfaceAddress/Options; bare server selectors and issued !OID references retain generic dispatch even when legal runtime names collide. FILE is an internal snapshot on cmqttd; a missing snapshot is empty, and existing-name collisions refuse atomically. Original FILE loads can partially add earlier rows before 408, so cmqttd atomic refusal is an explicit deviation. Original two-option FILE restoration returns408 and clean restored Options is literal null; native option-format parity remains unaccepted. NET SAVE DB materializes runtime definitions as complete tag Network rows. Keep exact string Address separate from NetworkNumber; missing rows get nNAME/0xff. Preserve Network/Interface OIDs across repeated saves, while Property OIDs change. Explicit PROJECT SAVE commits the database baseline. Offline project editing admits the captured native DBVersion2.3/Project-OID address profile and preserves exact lexical/case identities and complete XML/CBZ subtrees. cgate file-upload PATH SOURCE [--project NAME] uploads a bounded binary snapshot to the selected FILE service; cmqttd uses its virtual namespace and portable container, not native SQL-format interchange.
 
+For offline Network addresses, an explicit older DBVersion retains numeric
+aliases. An unversioned Network with NetworkNumber `255` selects native lexical
+addressing, including one added to the unversioned `project new` Installation:
+exact Address `254` resolves, but `0xfe` does not. Independent materialized tag
+rows cannot bind the configured PCI through DALI or PP patch numeric aliases.
+Read the [integration corrections](../../../../toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-integration.md)
+for retained OID lookup and legacy programming-field behavior.
+
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 
 For ST7 SENLL 2.0.01..2.4.99, `sensors light-level-plan` and

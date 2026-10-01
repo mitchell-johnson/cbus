@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "49825107772845aeec05eef9e3bd604ee338df3c6f2ac87d3f9bb31a7a5662d4",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "49825107772845aeec05eef9e3bd604ee338df3c6f2ac87d3f9bb31a7a5662d4"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-9db8455fc0d2e9fe)\n\nrunning 11 tests\ntest service::tests::net_db_load::net_db_load_does_not_materialize_nondurable_runtime_shell ... ok\ntest service::tests::net_db_load::net_db_load_commit_failure_rolls_back_and_configured_runtime_is_not_rebound ... ok\ntest service::tests::net_db_load::net_db_load_explicit_project_isolation_and_malformed_snapshot_rollback ... ok\ntest service::tests::net_db_load::net_db_load_definition_get_requires_explicit_paths_when_legal_names_collide ... ok\ntest service::tests::net_db_load::net_db_load_file_collision_retains_atomic_cmqttd_deviation ... ok\ntest service::tests::net_db_load::net_db_load_definition_get_uses_catalogue_fields_until_explicit_refresh ... ok\ntest service::tests::net_db_load::net_db_load_refresh_keeps_immutable_binding_and_noncanonical_legacy_names ... ok\ntest service::tests::net_db_load::net_db_load_refreshes_tag_fields_and_preserves_unrelated_runtime_names ... ok\ntest service::tests::net_db_load::net_db_load_ignores_stale_numeric_snapshots_but_retains_legacy_named_snapshots ... ok\ntest service::tests::net_db_load::net_db_load_materializes_fresh_and_sequential_closed_definitions_without_io ... ok\ntest service::tests::net_db_load::net_db_load_replays_literal_original_envelopes_and_source_bindings ... ok\n\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 489 filtered out; finished in 2.07s\n\n"
+}

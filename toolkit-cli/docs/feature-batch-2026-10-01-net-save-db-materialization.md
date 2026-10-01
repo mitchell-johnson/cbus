@@ -13,6 +13,12 @@ This is a bounded software milestone for
 Their wider original Toolkit and hardware obligations remain open. No house
 network, real adapter, Windows VM or physical C-Bus device was used.
 
+This report preserves the first candidate's acceptance at `a33d96b5`.
+[Subsequent integration corrections](feature-batch-2026-10-01-net-save-db-integration.md)
+cover independent-network physical isolation, modeled OID precedence, retained
+legacy PP decorations and validation with the CI Rust toolchain. The receipt
+below remains historical evidence; it is not the corrected candidate's receipt.
+
 ## Delivered behavior
 
 A missing tag row receives the exact runtime name as Address, `nNAME` as
@@ -74,7 +80,10 @@ Offline `project` commands recognize exact string addresses in the captured
 native DBVersion 2.3 and Project/OID profiles. NetworkNumber is independently
 validated as a byte. Copy allocates fresh subtree OIDs, move preserves identity,
 and failed duplicate or invalid edits leave the original document unchanged.
-Legacy project address aliases remain numeric.
+Projects with an explicit older DBVersion retain numeric address aliases.
+Unversioned Networks with NetworkNumber `255` select the native lexical profile,
+including those added to an unversioned `project new` Installation. Address
+`254` then resolves only by that exact spelling; `0xfe` does not resolve.
 
 The typed `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` snapshots
 one bounded regular local file before connection and uploads it as a base64

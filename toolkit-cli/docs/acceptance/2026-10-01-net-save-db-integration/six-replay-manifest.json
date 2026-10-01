@@ -1,0 +1,771 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "8a6837f2d1bacd02e1dacd169019e7eac27331e0bc554382e710478c8c26f543",
+  "content_kind": "json",
+  "field_projection": true,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/binary_before/cgate-mock/path",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/binary_before/cmqttd/path",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/binary_after/cgate-mock/path",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/binary_after/cmqttd/path",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/runs/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/0/argv/1",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "52f2a8edb2509c71caf46fff26b5c362c72f43ff8e52851ae0925fbebf5974b0"
+    },
+    {
+      "json_pointer": "/runs/0/argv/3",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/runs/0/argv/5",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "a3b27982c1c6e6d1d321dfec41cd5a95cc93b7d244ccc889ad4ee486ca309006"
+    },
+    {
+      "json_pointer": "/runs/0/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/runs/0/environment/PYTHONPATH",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "26e4701bc8ad763a9fc7d64cad9e713cc7ed3a14fbb52d7c1c51fb23259801c8"
+    },
+    {
+      "json_pointer": "/runs/0/owned_children_observed/75976/argv_ps",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "441d28f5954d02d15bf5e0410e373d26c2ec330029d8e0da9347041c01777df8"
+    },
+    {
+      "json_pointer": "/runs/0/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "df05907b66ffaad73648b341861a4689d07c42b253cec8d0a1ebc79b69770b4d"
+    },
+    {
+      "json_pointer": "/runs/0/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "0de67d7910967d5274bd046129b374132adb6286cf2ee1f5c5fcb0b2e421c146"
+    },
+    {
+      "json_pointer": "/runs/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/1/argv/1",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7674c4b98ca7493352b81aa81ced0ed0e38351c9eb30aebd803ac0dc7e75b2f7"
+    },
+    {
+      "json_pointer": "/runs/1/argv/3",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/runs/1/argv/5",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "22ef38d469d35f146da6daadb8aab0dde031f7083d4e511bdd5d7282ddcf7054"
+    },
+    {
+      "json_pointer": "/runs/1/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/runs/1/environment/PYTHONPATH",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "26e4701bc8ad763a9fc7d64cad9e713cc7ed3a14fbb52d7c1c51fb23259801c8"
+    },
+    {
+      "json_pointer": "/runs/1/owned_children_observed/76022/argv_ps",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "differential_scratch_1"
+      ],
+      "raw_string_sha256": "463877eff53847f6931b86aa741835561af986af1df2206738437987a52f0f7f"
+    },
+    {
+      "json_pointer": "/runs/1/owned_children_observed/76022/temporary_roots/0",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_1"
+      ],
+      "raw_string_sha256": "6be8c2decd0b805fa926912b8e59adb03859a9db6d1c522ecd0773a0a7781f8b"
+    },
+    {
+      "json_pointer": "/runs/1/owned_children_observed/76022/temporary_roots_removed_after_producer_exit/${CBUS_DIFFERENTIAL_SCRATCH_1}",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_1"
+      ],
+      "raw_string_sha256": "6be8c2decd0b805fa926912b8e59adb03859a9db6d1c522ecd0773a0a7781f8b",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/runs/1/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "eb7985ac5b6a5e22e8a736b2093320dd05cf9afcb1f32813c9d9148a8abaa9a1"
+    },
+    {
+      "json_pointer": "/runs/1/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "bf657b2e2badfdfe36d4cf74985a9f8e2019fd5d97acf8935ac81b1c4dbb3d2f"
+    },
+    {
+      "json_pointer": "/runs/2/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/2/argv/1",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "16fae244085adc899cc666218e3a276d7bd8ee3e9b32f7ba79a5c53a61b8e49e"
+    },
+    {
+      "json_pointer": "/runs/2/argv/3",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/runs/2/argv/5",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/runs/2/argv/7",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "64a6e2337f49b6817d986ac9d946ff556c1178cfe93c5b161eaf7181fa886438"
+    },
+    {
+      "json_pointer": "/runs/2/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/runs/2/environment/PYTHONPATH",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "26e4701bc8ad763a9fc7d64cad9e713cc7ed3a14fbb52d7c1c51fb23259801c8"
+    },
+    {
+      "json_pointer": "/runs/2/owned_children_observed/76094/argv_ps",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "differential_scratch_2"
+      ],
+      "raw_string_sha256": "5ef4a7af75f96372f41b6192bc8f163d5fc7ea5fc2c8700682b4d58a12a875a6"
+    },
+    {
+      "json_pointer": "/runs/2/owned_children_observed/76094/temporary_roots/0",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_2"
+      ],
+      "raw_string_sha256": "369f5a6b463984526bf66050c287545efc6f670ac182edc9d984a546bf04b03e"
+    },
+    {
+      "json_pointer": "/runs/2/owned_children_observed/76094/temporary_roots_removed_after_producer_exit/${CBUS_DIFFERENTIAL_SCRATCH_2}",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_2"
+      ],
+      "raw_string_sha256": "369f5a6b463984526bf66050c287545efc6f670ac182edc9d984a546bf04b03e",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/runs/2/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "c0f15ee2386aa5f928bd7b5d3617656806638ce4898cb56f9d7999a1dda9827d"
+    },
+    {
+      "json_pointer": "/runs/2/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "66c3c0df4002dd64e86871eb5d6238eac0357f99b1fc4d713eac1d16b481c334"
+    },
+    {
+      "json_pointer": "/runs/3/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/3/argv/1",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "092f5aa19a9c4d58661266db3f80641167e8ece6fecf644df49baa6acfdbba3a"
+    },
+    {
+      "json_pointer": "/runs/3/argv/3",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/runs/3/argv/5",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/runs/3/argv/7",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "64a6e2337f49b6817d986ac9d946ff556c1178cfe93c5b161eaf7181fa886438"
+    },
+    {
+      "json_pointer": "/runs/3/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/runs/3/environment/PYTHONPATH",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "26e4701bc8ad763a9fc7d64cad9e713cc7ed3a14fbb52d7c1c51fb23259801c8"
+    },
+    {
+      "json_pointer": "/runs/3/owned_children_observed/76145/argv_ps",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "differential_scratch_3"
+      ],
+      "raw_string_sha256": "c6489cac1e5bba1d316757bab87b5982e89285dcf93fd2e5d501648ec9bbe9f8"
+    },
+    {
+      "json_pointer": "/runs/3/owned_children_observed/76145/temporary_roots/0",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_3"
+      ],
+      "raw_string_sha256": "a62bf2d0b1ec90c93a168f50dee1817c7bb38d8d25c3f1ab358562c41a80caa6"
+    },
+    {
+      "json_pointer": "/runs/3/owned_children_observed/76145/temporary_roots_removed_after_producer_exit/${CBUS_DIFFERENTIAL_SCRATCH_3}",
+      "action": "role_template",
+      "roles": [
+        "differential_scratch_3"
+      ],
+      "raw_string_sha256": "a62bf2d0b1ec90c93a168f50dee1817c7bb38d8d25c3f1ab358562c41a80caa6",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/runs/3/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "680e959954be5dabd2aa805f948b49c87a477160121c0de3d8dddb88fb443022"
+    },
+    {
+      "json_pointer": "/runs/3/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "7073d605e9b0da903b3af9df204ed353c978ef80d64f23e8f0013f1b8cecbc76"
+    },
+    {
+      "json_pointer": "/candidates/0/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "a3b27982c1c6e6d1d321dfec41cd5a95cc93b7d244ccc889ad4ee486ca309006"
+    },
+    {
+      "json_pointer": "/candidates/0/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "3506b406aadc872a331a6ee3337e30717bb0730156d310e8a97bd6a76b3956b1"
+    },
+    {
+      "json_pointer": "/candidates/1/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "22ef38d469d35f146da6daadb8aab0dde031f7083d4e511bdd5d7282ddcf7054"
+    },
+    {
+      "json_pointer": "/candidates/1/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "9322f27145ee7828965808ecffbe7f216636b7a66547a814d82e4343ae9e5386"
+    },
+    {
+      "json_pointer": "/candidates/2/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "4f397c1ccaf8ebf0cbe88f10319dfa766ce80d68cc21f74f17a5d4f8c9aa7b19"
+    },
+    {
+      "json_pointer": "/candidates/2/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "d116e7aa1ae50c36f7bf5cd8d34c06ae86f8ee22a915629d96c46c1606ba68cf"
+    },
+    {
+      "json_pointer": "/candidates/3/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "9fdf51b1c90527252b9bf55391e452777cbb29b73910783d1cc265d2448f32dc"
+    },
+    {
+      "json_pointer": "/candidates/3/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "77882b9b0da8394ab089af9e00d1d5c2d3d4d52ba051826c071b5de2df6389d0"
+    },
+    {
+      "json_pointer": "/candidates/4/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "4ff36e28baf18c7e2a740405de4918003e07176ded6db55c2b1c61976281a31a"
+    },
+    {
+      "json_pointer": "/candidates/4/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "569da8fc603ed66b298fb029cf28a553241eca4538df8289edb3bca5beb51c5b"
+    },
+    {
+      "json_pointer": "/candidates/5/raw_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "02d3ac57b0b5105081895f1d4c58476bbf3280b5ae27534296de131ade854d98"
+    },
+    {
+      "json_pointer": "/candidates/5/candidate_path",
+      "action": "role_template",
+      "roles": [
+        "differential"
+      ],
+      "raw_string_sha256": "65a78f894faf90c8d8b959cf0d7e9f7e4185ccae12af52d5ed04d9469477b4d1"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "complete": true,
+    "driver_sha256": "de2b8cf6596ba171d7ca32af537855fbceb8618f062b0dd78fe1f2f0cf13bd73",
+    "binary_before": {
+      "cgate-mock": {
+        "path": "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "sha256": "dd24d809a91dee7846f205d05313f378fcb78e7331965f9434ec3e8be80e935e"
+      },
+      "cmqttd": {
+        "path": "${CBUS_CARGO_TARGET}/release/cmqttd",
+        "sha256": "5164a42acc1fd720b96a806fb1edafe0136c6fdbc1966c8bcad8e95fa4c355e4"
+      }
+    },
+    "binary_after": {
+      "cgate-mock": {
+        "path": "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "sha256": "dd24d809a91dee7846f205d05313f378fcb78e7331965f9434ec3e8be80e935e"
+      },
+      "cmqttd": {
+        "path": "${CBUS_CARGO_TARGET}/release/cmqttd",
+        "sha256": "5164a42acc1fd720b96a806fb1edafe0136c6fdbc1966c8bcad8e95fa4c355e4"
+      }
+    },
+    "source_before_canonical_sha256": "2f11bc3fa1d190e0f9502263f46830d517db2930462c3144ac55a1b965b32b2b",
+    "source_after_canonical_sha256": "2f11bc3fa1d190e0f9502263f46830d517db2930462c3144ac55a1b965b32b2b",
+    "runs": [
+      {
+        "label": "session-mock",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_TOOLKIT_ROOT}/research/cgate_session_differential.py",
+          "--mock-bin",
+          "${CBUS_CARGO_TARGET}/release/cgate-mock",
+          "--output",
+          "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-session-differential-fixed.json"
+        ],
+        "cwd": "${CBUS_TOOLKIT_ROOT}",
+        "environment": {
+          "PYTHONPATH": "${CBUS_TOOLKIT_ROOT}/src:${CBUS_TOOLKIT_ROOT}"
+        },
+        "owned_children_observed": {
+          "75976": {
+            "argv_ps": "${CBUS_CARGO_TARGET}/release/cgate-mock --bind 127.0.0.1:0",
+            "listening_ports": [],
+            "temporary_roots": [],
+            "not_alive_after_producer_exit": true,
+            "ports_closed_after_producer_exit": {},
+            "temporary_roots_removed_after_producer_exit": {}
+          }
+        },
+        "child_observation_scope": "only descendant PIDs of this owned producer",
+        "pid": 75967,
+        "exit_status": 0,
+        "producer_waited": true,
+        "stdout": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/session-mock.stdout",
+          "sha256": "ebdc640949e118aa6f00f577545ef25e5500515c02c0c4483d8a1bc9bd7aaac8",
+          "bytes": 90
+        },
+        "stderr": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/session-mock.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      {
+        "label": "session-cmqttd",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_TOOLKIT_ROOT}/research/run_cgate_session_cmqttd_differential.py",
+          "--cmqttd-bin",
+          "${CBUS_CARGO_TARGET}/release/cmqttd",
+          "--output",
+          "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-session-differential-cmqttd.json"
+        ],
+        "cwd": "${CBUS_TOOLKIT_ROOT}",
+        "environment": {
+          "PYTHONPATH": "${CBUS_TOOLKIT_ROOT}/src:${CBUS_TOOLKIT_ROOT}"
+        },
+        "owned_children_observed": {
+          "76022": {
+            "argv_ps": "${CBUS_CARGO_TARGET}/release/cmqttd --tcp 127.0.0.1:61529 --broker-address 127.0.0.1 --broker-port 61530 --broker-disable-tls --timesync 0 --status-resync 0 --project-file ${CBUS_DIFFERENTIAL_SCRATCH_1}/project.xml --cgate-bind 127.0.0.1:0 --cgate-state ${CBUS_DIFFERENTIAL_SCRATCH_1}/state.json",
+            "listening_ports": [
+              61534,
+              61535
+            ],
+            "temporary_roots": [
+              "${CBUS_DIFFERENTIAL_SCRATCH_1}"
+            ],
+            "not_alive_after_producer_exit": true,
+            "ports_closed_after_producer_exit": {
+              "61534": true,
+              "61535": true
+            },
+            "temporary_roots_removed_after_producer_exit": {
+              "${CBUS_DIFFERENTIAL_SCRATCH_1}": true
+            }
+          }
+        },
+        "child_observation_scope": "only descendant PIDs of this owned producer",
+        "pid": 76017,
+        "exit_status": 0,
+        "producer_waited": true,
+        "stdout": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/session-cmqttd.stdout",
+          "sha256": "ebdc640949e118aa6f00f577545ef25e5500515c02c0c4483d8a1bc9bd7aaac8",
+          "bytes": 90
+        },
+        "stderr": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/session-cmqttd.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      {
+        "label": "tagged-both",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_TOOLKIT_ROOT}/research/cgate_tagged_session_differential.py",
+          "--mock-bin",
+          "${CBUS_CARGO_TARGET}/release/cgate-mock",
+          "--cmqttd-bin",
+          "${CBUS_CARGO_TARGET}/release/cmqttd",
+          "--output-dir",
+          "${CBUS_DIFFERENTIAL_ROOT}/raw"
+        ],
+        "cwd": "${CBUS_TOOLKIT_ROOT}",
+        "environment": {
+          "PYTHONPATH": "${CBUS_TOOLKIT_ROOT}/src:${CBUS_TOOLKIT_ROOT}"
+        },
+        "owned_children_observed": {
+          "76094": {
+            "argv_ps": "${CBUS_CARGO_TARGET}/release/cmqttd --tcp 127.0.0.1:61544 --broker-address 127.0.0.1 --broker-port 61545 --broker-disable-tls --timesync 0 --status-resync 0 --project-file ${CBUS_DIFFERENTIAL_SCRATCH_2}/project.xml --cgate-bind 127.0.0.1:0 --cgate-state ${CBUS_DIFFERENTIAL_SCRATCH_2}/state.json",
+            "listening_ports": [
+              61547,
+              61548
+            ],
+            "temporary_roots": [
+              "${CBUS_DIFFERENTIAL_SCRATCH_2}"
+            ],
+            "not_alive_after_producer_exit": true,
+            "ports_closed_after_producer_exit": {
+              "61547": true,
+              "61548": true
+            },
+            "temporary_roots_removed_after_producer_exit": {
+              "${CBUS_DIFFERENTIAL_SCRATCH_2}": true
+            }
+          }
+        },
+        "child_observation_scope": "only descendant PIDs of this owned producer",
+        "pid": 76082,
+        "exit_status": 0,
+        "producer_waited": true,
+        "stdout": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/tagged-both.stdout",
+          "sha256": "5508d2f08c3f65d5a668214e3f774bd8000d85d8dc6bfa3dd018dbe90c8b3a68",
+          "bytes": 230
+        },
+        "stderr": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/tagged-both.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      {
+        "label": "unit-both",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_TOOLKIT_ROOT}/research/cgate_dbsetxml_unit_differential.py",
+          "--mock-bin",
+          "${CBUS_CARGO_TARGET}/release/cgate-mock",
+          "--cmqttd-bin",
+          "${CBUS_CARGO_TARGET}/release/cmqttd",
+          "--output-dir",
+          "${CBUS_DIFFERENTIAL_ROOT}/raw"
+        ],
+        "cwd": "${CBUS_TOOLKIT_ROOT}",
+        "environment": {
+          "PYTHONPATH": "${CBUS_TOOLKIT_ROOT}/src:${CBUS_TOOLKIT_ROOT}"
+        },
+        "owned_children_observed": {
+          "76145": {
+            "argv_ps": "${CBUS_CARGO_TARGET}/release/cmqttd --tcp 127.0.0.1:61556 --broker-address 127.0.0.1 --broker-port 61557 --broker-disable-tls --timesync 0 --status-resync 0 --project-file ${CBUS_DIFFERENTIAL_SCRATCH_3}/project.xml --cgate-bind 127.0.0.1:0 --cgate-state ${CBUS_DIFFERENTIAL_SCRATCH_3}/state.json",
+            "listening_ports": [
+              61559,
+              61560
+            ],
+            "temporary_roots": [
+              "${CBUS_DIFFERENTIAL_SCRATCH_3}"
+            ],
+            "not_alive_after_producer_exit": true,
+            "ports_closed_after_producer_exit": {
+              "61559": true,
+              "61560": true
+            },
+            "temporary_roots_removed_after_producer_exit": {
+              "${CBUS_DIFFERENTIAL_SCRATCH_3}": true
+            }
+          }
+        },
+        "child_observation_scope": "only descendant PIDs of this owned producer",
+        "pid": 76128,
+        "exit_status": 0,
+        "producer_waited": true,
+        "stdout": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/unit-both.stdout",
+          "sha256": "0073ea77e19250a95894d5ca67738546fae6ed03702817db3890ca59397bc181",
+          "bytes": 238
+        },
+        "stderr": {
+          "path": "${CBUS_DIFFERENTIAL_ROOT}/unit-both.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      }
+    ],
+    "candidates": [
+      {
+        "kind": "session",
+        "product": "cgate-mock",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-session-differential-fixed.json",
+        "raw_sha256": "acda66fdad4481c25f3eaf24abe31740f96c9c5daf937a019e13f91f5128c31f",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-session-differential-fixed.json",
+        "candidate_sha256": "595ceba9fdc0a51589fe532a94b440ceb41c9fbdfa999c9eb7ec7a48c7888a56",
+        "source_bindings": 169
+      },
+      {
+        "kind": "session",
+        "product": "cmqttd",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-session-differential-cmqttd.json",
+        "raw_sha256": "32fd0c017848f0a06793706e0ccdd15e9328f051fdef55e3b42593c6dd54120a",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-session-differential-cmqttd.json",
+        "candidate_sha256": "1bb660959b0fd8db7300607eac4e03b2537b75dd5085160796a0a7c23e05a63b",
+        "source_bindings": 189
+      },
+      {
+        "kind": "tagged",
+        "product": "cgate-mock",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-tagged-session-differential-mock.json",
+        "raw_sha256": "b3b3c9d55eaaa1850781f37795ee328ba9e69c530706c82254fc4941bfe62593",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-tagged-session-differential-mock.json",
+        "candidate_sha256": "3e7f65da08b6283552ba03ee8862bc67047122a30b99fbf27fcc5ab6e98773ef",
+        "source_bindings": 171
+      },
+      {
+        "kind": "tagged",
+        "product": "cmqttd",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-tagged-session-differential-cmqttd.json",
+        "raw_sha256": "08123b6e2cc9651d0fc859c1df3ad17a550aaa54e58382b22415b25cd5a76715",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-tagged-session-differential-cmqttd.json",
+        "candidate_sha256": "10e9192c4af2070385fe28eddf15ad65e7926599840b754ea8ac94ff24e518bb",
+        "source_bindings": 191
+      },
+      {
+        "kind": "unit",
+        "product": "cgate-mock",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-dbsetxml-unit-differential-mock.json",
+        "raw_sha256": "b9e180d14ea46663222f3d987e10852b062055f7e2006bead8b5582f8041ea72",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-dbsetxml-unit-differential-mock.json",
+        "candidate_sha256": "7aae3b2b80fbf40b1ff74cabc5d0624892850e49f8baad838ac1225e58697b36",
+        "source_bindings": 177
+      },
+      {
+        "kind": "unit",
+        "product": "cmqttd",
+        "raw_path": "${CBUS_DIFFERENTIAL_ROOT}/raw/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "raw_sha256": "0ffa35c2799cb0a54337d6622145565db21a0a92874f7fa11b0c8cffb025f210",
+        "candidate_path": "${CBUS_DIFFERENTIAL_ROOT}/public-candidates/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "candidate_sha256": "46da6bd19f6d429bc777d0e281069f259c8029e8ae3dc53bb8af0b2a13c58ae2",
+        "source_bindings": 196
+      }
+    ],
+    "cleanup_qualification": "Producer terminal/wait observed for all four commands; PID/socket/scratch evidence covers only descendants sampled while alive, with missing fast children explicitly unsampled.",
+    "projection_note": "Repeated full source closures remain privately archived and in strict canonical receipts; public manifest records their digests."
+  }
+}

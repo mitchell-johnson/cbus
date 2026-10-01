@@ -1,0 +1,52 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "858298a380debc80889087373748c67d95b46b2e90d04c39e5fee9c35d227fa2",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/old_pipeline_root",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "3abc51d6d9ae3b4fb6541667cc568253b1d12172c64b751f701c7c7c19a01268"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-save-db-integration-preparation-v1",
+    "old_pipeline_root": "${CBUS_OWNED_CBUS_NET_SAVE_DB_FINAL_20261001}",
+    "copied_pipeline": {
+      "final-driver.py": {
+        "old_sha256": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+        "new_sha256": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d"
+      },
+      "generate.py": {
+        "old_sha256": "1b4f6a6c0723178a53da7f8e0f8f808370ea594f630906992d68359938bf5083",
+        "new_sha256": "0a06a2887b2385d671cdb15947c71ce8048e94e054b284a8f6110c7e3d9cfa34"
+      },
+      "publication-helpers.py": {
+        "old_sha256": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750",
+        "new_sha256": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750"
+      },
+      "publish.py": {
+        "old_sha256": "30c08cc1feddf7324804459e1fc2dda0eb7714db69e17703cd0852b94a5202d3",
+        "new_sha256": "66b713c16923da43664827b1f6e9d1f7e66b2b959e62d692057203c9a0b10736"
+      }
+    },
+    "original_driver_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+    "wrapper_sha256": "9aece0a1a8f45d173a77bd7d31f6a2ce800bba5b3fbe48cdac0ad2bb37207994",
+    "old_evidence_unchanged": true,
+    "replay_execution_pending_root_go": false,
+    "root_go_received": true,
+    "executed_pipeline_sha256": {
+      "final-driver.py": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+      "generate.py": "0a06a2887b2385d671cdb15947c71ce8048e94e054b284a8f6110c7e3d9cfa34",
+      "publication-helpers.py": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750",
+      "publish.py": "3ef69a8885c956019b2d05228a6d9fc7fd514397b5592400532870080a65fbdf",
+      "prepare-fix-evidence.py": "e6bff45eabc69cdb382ccca8d31419beebacf223643b5d880a34a1601bc9ffce"
+    },
+    "previous_receipt_sha256": "26d59868a7f0794af32718e3f0f6da39784f8d5977896a562ae3ae7fbdd9d869"
+  }
+}

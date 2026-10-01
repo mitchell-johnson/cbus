@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "c2be79182b850ab7ce06cb7dd1db62c7a006b7bd97314230f1241ff4ad62be6e",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "c2be79182b850ab7ce06cb7dd1db62c7a006b7bd97314230f1241ff4ad62be6e"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 1 test\n\nthread 'service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations' (8117626) panicked at cbus-cgate/src/service/tests/net_save_db.rs:11:5:\nassertion `left == right` failed: DBSETSAFE //SYNTH/254/57/TagName After: Response { tag: \"save-db\", lines: [], final_text: \"408 Operation failed: DBSETXML PP requires exactly Name and Value attributes\", status: 408 }\n  left: 408\n right: 200\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntest service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations ... FAILED\n\nfailures:\n\nfailures:\n    service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 499 filtered out; finished in 0.05s\n\nerror: test failed, to rerun pass `-p cbus-cgate --lib`\n"
+}

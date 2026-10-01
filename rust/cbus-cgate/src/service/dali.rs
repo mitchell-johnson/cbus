@@ -316,6 +316,16 @@ impl Service {
         target: &str,
     ) -> Result<(u8, Option<String>), Response> {
         let model = self.model.lock().await;
+        // Check exact tag ownership before numeric unit parsing can turn an
+        // independent database Network into an alias of the configured PCI.
+        // All core, emergency and specialized DALI targets resolve here.
+        if model.independent_tag_target(target) {
+            return Err(err(
+                tag,
+                404,
+                "404 Named database Network is not connected to a physical interface",
+            ));
+        }
         let project = model.projects.get(&self.project);
         let network = project.and_then(|project| project.networks.get(&self.network));
         let unit = if let Some(oid) = target.strip_prefix('!') {

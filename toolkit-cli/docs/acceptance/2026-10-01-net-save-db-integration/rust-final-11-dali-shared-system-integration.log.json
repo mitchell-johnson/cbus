@@ -1,0 +1,19 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "e38594bf2f057855d583d9fb50c7725f15e350275bc8c5b6188110002373ac59",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "e38594bf2f057855d583d9fb50c7725f15e350275bc8c5b6188110002373ac59"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "   Compiling log v0.4.33\n   Compiling tracing-core v0.1.36\n   Compiling rustls-webpki v0.102.8\n   Compiling spin v0.9.9\n   Compiling utf8parse v0.2.2\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.9.4\n   Compiling anstyle-query v1.1.5\n   Compiling is_terminal_polyfill v1.70.2\n   Compiling colorchoice v1.0.5\n   Compiling anstyle-parse v1.0.0\n   Compiling anstyle v1.0.14\n   Compiling regex-syntax v0.8.11\n   Compiling if-addrs v0.15.0\n   Compiling mio v1.2.2\n   Compiling zopfli v0.8.3\n   Compiling strsim v0.11.1\n   Compiling tracing v0.1.44\n   Compiling anstream v1.0.0\n   Compiling security-framework v2.11.1\n   Compiling lazy_static v1.5.0\n   Compiling rustls v0.22.4\n   Compiling clap_lex v1.1.0\n   Compiling slab v0.4.12\n   Compiling futures-task v0.3.33\n   Compiling tokio v1.53.0\n   Compiling zip v2.4.2\n   Compiling mio-serial v5.0.7\n   Compiling futures-util v0.3.33\n   Compiling clap_builder v4.6.2\n   Compiling sharded-slab v0.1.7\n   Compiling tracing-log v0.2.0\n   Compiling flume v0.12.0\n   Compiling regex-automata v0.4.16\n   Compiling rustls-native-certs v0.7.3\n   Compiling flume v0.11.1\n   Compiling socket-pktinfo v0.4.0\n   Compiling thread_local v1.1.10\n   Compiling nu-ansi-term v0.50.3\n   Compiling mdns-sd v0.20.2\n   Compiling cbus-mqtt v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-mqtt)\n   Compiling clap v4.6.2\n   Compiling matchers v0.2.0\n   Compiling tracing-subscriber v0.3.23\n   Compiling tokio-serial v5.5.0\n   Compiling tokio-rustls v0.25.0\n   Compiling cbus-test-support v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-test-support)\n   Compiling cbus-transport v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-transport)\n   Compiling rumqttc v0.24.0\n   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.62s\n     Running tests/system_cgate_dali.rs (${CBUS_CARGO_TARGET}/debug/deps/system_cgate_dali-71aa4e436cf8c9ee)\n\nrunning 1 test\ntest dali_core_and_emergency_are_correlated_authenticated_and_keep_mqtt_live ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.06s\n\n"
+}

@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "73ef2d675dabedcd5fa9cde0a65a5b15bb1c4ee6cc3ba9d94f079760142c86b3",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "73ef2d675dabedcd5fa9cde0a65a5b15bb1c4ee6cc3ba9d94f079760142c86b3"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-9db8455fc0d2e9fe)\n\nrunning 6 tests\ntest service::dali::tests::auth_boundary_is_mutation_and_mode_aware ... ok\ntest service::dali::tests::payloads_pin_native_byte_order ... ok\ntest service::dali::tests::every_implemented_path_has_native_help_evidence ... ok\ntest service::dali::tests::service_emits_native_execute_envelope_and_exact_wire ... ok\ntest service::dali::tests::reconnect_generation_makes_completed_old_write_uncertain_without_replay ... ok\ntest service::dali::tests::service_preserves_emergency_enum_name_nak_and_pre_io_failures ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 494 filtered out; finished in 0.04s\n\n"
+}

@@ -1537,3 +1537,186 @@ async fn net_save_db_unselected_known_tag_mutations_refuse_without_opaque_succes
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation() {
+    const SHARED: &str = "11111111-1111-4111-8111-111111111111";
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for text in [
+        "PROJECT NEW XDUP",
+        "PROJECT USE XDUP",
+        "DBCREATENET 253 Local Cni 127.0.0.1:1",
+    ] {
+        command(&service, &mut client, text).await;
+    }
+    let initial = run(&service, &mut client, "DBGETXML //XDUP/253").await;
+    let parsed =
+        roxmltree::Document::parse(initial.lines[0].strip_prefix("347-").unwrap()).unwrap();
+    let oid = |node: roxmltree::Node<'_, '_>| {
+        node.children()
+            .find(|child| child.has_tag_name("OID"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string()
+    };
+    let network_oid = oid(parsed.root_element());
+    let interface_oid = oid(parsed
+        .descendants()
+        .find(|node| node.has_tag_name("Interface"))
+        .unwrap());
+    let document = format!(
+        "<Network><OID>{network_oid}</OID><TagName>Local</TagName><Address>253</Address><NetworkNumber>253</NetworkNumber><Interface><OID>{interface_oid}</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>{SHARED}</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>{SHARED}</OID><TagName>First</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>First room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"20\"/></Unit><Unit><OID>{SHARED}</OID><TagName>Second</TagName><Address>21</Address><UnitType>KEYE1</UnitType><UnitName>Second room</UnitName><FirmwareVersion>1.2.68</FirmwareVersion><PP Name=\"UnitAddress\" Value=\"21\"/></Unit></Network>"
+    );
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[save-db] DBSETXML //XDUP/253", &document)
+            .await
+            .status,
+        301
+    );
+    let before = run(&service, &mut client, &format!("DBGETXML !{SHARED}")).await;
+    assert!(before.lines[0].contains("<Address>21</Address>"));
+    assert_eq!(
+        run(&service, &mut client, &format!("DBGET !{SHARED}/TagName"))
+            .await
+            .final_text,
+        format!("342 !{SHARED}/TagName=Second")
+    );
+    command(&service, &mut client, "NET LOAD DB").await;
+    command(&service, &mut client, "NET SAVE DB").await;
+    assert_eq!(
+        run(&service, &mut client, &format!("DBGETXML !{SHARED}"))
+            .await
+            .lines,
+        before.lines
+    );
+    assert_eq!(
+        run(&service, &mut client, &format!("DBGET !{SHARED}/TagName"))
+            .await
+            .final_text,
+        format!("342 !{SHARED}/TagName=Second")
+    );
+    command(&service, &mut client, &format!("DBDELETE !{SHARED}")).await;
+    for text in [
+        format!("DBGETXML !{SHARED}"),
+        format!("DBGET !{SHARED}/TagName"),
+        format!("DBGET !{SHARED}/OID"),
+    ] {
+        assert_eq!(
+            run(&service, &mut client, &text).await.status,
+            401,
+            "{text}"
+        );
+    }
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //XDUP/253/p/20")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //XDUP/253/56")
+            .await
+            .status,
+        200
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations() {
+    let xml = r#"<Installation><Project><TagName>SYNTH</TagName>
+      <Network xmlns:v="urn:example"><TagName>Local</TagName><Address>254</Address>
+        <Interface><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>
+        <Application><TagName>Original</TagName><Address>57</Address></Application>
+        <Unit v:flag="kept"><TagName>Sample eDLT</TagName><Address>5</Address>
+          <UnitType>KEYGL5</UnitType><UnitName>Room</UnitName><FirmwareVersion>5.5.00</FirmwareVersion>
+          <PP Name="EEPROM Checksum" Value="0x0" v:mark="yes"><v:Extra>nested</v:Extra></PP>
+          <v:Opaque>preserved</v:Opaque>
+        </Unit>
+      </Network>
+    </Project></Installation>"#;
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(xml, None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    command(
+        &service,
+        &mut client,
+        "DBSETSAFE //SYNTH/254/57/TagName Before",
+    )
+    .await;
+    command(&service, &mut client, "NET CLOSE 254").await;
+    command(&service, &mut client, "NET SAVE DB").await;
+    let before = run(&service, &mut client, "DBGETXML //SYNTH/254/p/5")
+        .await
+        .lines;
+    let parsed = roxmltree::Document::parse(before[0].strip_prefix("347-").unwrap()).unwrap();
+    let unit = parsed.root_element();
+    assert_eq!(unit.attribute(("urn:example", "flag")), Some("kept"));
+    let pp = unit
+        .children()
+        .find(|node| node.has_tag_name("PP"))
+        .unwrap();
+    assert_eq!(pp.attribute("Name"), Some("EEPROM Checksum"));
+    assert_eq!(pp.attribute("Value"), Some("0x0"));
+    assert_eq!(pp.attribute(("urn:example", "mark")), Some("yes"));
+    assert_eq!(
+        pp.children()
+            .find(|node| node.has_tag_name(("urn:example", "Extra")))
+            .and_then(|node| node.text()),
+        Some("nested")
+    );
+    assert_eq!(
+        unit.children()
+            .find(|node| node.has_tag_name(("urn:example", "Opaque")))
+            .and_then(|node| node.text()),
+        Some("preserved")
+    );
+    command(
+        &service,
+        &mut client,
+        "DBSETSAFE //SYNTH/254/57/TagName After",
+    )
+    .await;
+    assert_eq!(
+        run(&service, &mut client, "DBGET //SYNTH/254/57/TagName")
+            .await
+            .final_text,
+        "342 //SYNTH/254/57/TagName=After"
+    );
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //SYNTH/254/p/5")
+            .await
+            .lines,
+        before
+    );
+    // Retention of an already admitted project shape does not admit decorated
+    // PP elements in a new complete DBSETXML replacement.
+    let document = run(&service, &mut client, "DBGETXML //SYNTH/254")
+        .await
+        .lines[0]
+        .strip_prefix("347-")
+        .unwrap()
+        .to_string();
+    assert_eq!(
+        service
+            .handle_document(&mut client, "[save-db] DBSETXML //SYNTH/254", &document)
+            .await
+            .status,
+        408
+    );
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //SYNTH/254/p/5")
+            .await
+            .lines,
+        before
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}

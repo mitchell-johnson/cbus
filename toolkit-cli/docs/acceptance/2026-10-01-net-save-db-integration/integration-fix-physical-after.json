@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Blocking waiting for file lock on build directory\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.24s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-9db8455fc0d2e9fe)\n\nrunning 6 tests\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire ... ok\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected ... ok\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire ... ok\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire ... ok\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission ... ok\ntest service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 494 filtered out; finished in 0.48s\n\n"
+}

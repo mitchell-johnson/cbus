@@ -12197,6 +12197,15 @@ impl Service {
         if words.len() < 4 {
             return err(tag, 400, "400 not enough arguments to command");
         }
+        // WRITE_PATCH owns its target parser. Reject independent tag rows
+        // before numeric aliases or manifest selection can bind the PCI.
+        if self.model.lock().await.independent_tag_target(words[2]) {
+            return err(
+                tag,
+                404,
+                "404 Named database Network is not connected to a physical interface",
+            );
+        }
         if words[2].trim_start_matches('/').split('/').count() != 4 {
             return err(tag, 401, "401 Bad address");
         }

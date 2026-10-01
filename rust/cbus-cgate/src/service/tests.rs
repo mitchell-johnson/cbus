@@ -5,6 +5,7 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 #[path = "tests/net_db_load.rs"]
 mod net_db_load;
 mod net_save_db;
+mod net_save_db_physical_alias;
 
 #[test]
 fn native_command_trace_requires_a_recognized_top_level_family() {
