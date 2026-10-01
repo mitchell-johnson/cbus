@@ -55,8 +55,10 @@ canonicalize Unit XML; refusal preservation uses that accepted baseline.
 
 Project identity has one existing envelope owner. The global index is rebuilt
 and persisted on legacy restart, retained when a Network is deleted and retired
-when the Project is deleted. Unsupported Project-OID operations refuse instead
-of fabricating descendant reads or writing an unrelated opaque field row.
+when the Project is deleted. Unsupported scalar DBGET and guarded add/copy/set/delete
+forms on the selected Project OID refuse. Project-OID DBGETXML forms remain
+unaccepted and can reach the legacy opaque fallback; success does not establish
+descendant resolution.
 
 `cgate-mock --native-project-archives` exposes its existing supported complete
 XML/gzip/ZIP archive parser through process-local FILE storage. The default
@@ -154,7 +156,8 @@ No uncertain mutation was replayed.
 
 ## Remaining work
 
-- Full Project-OID hierarchy/scalar operations and source-qualified aliases.
+- Full Project-OID hierarchy/scalar operations, source-qualified aliases and
+  accepted XML routing beyond legacy fallback responses.
 - Renamed numeric-associated Level creation and legacy owner delegation.
 - Mixed Unit/decorated copy graphs and hidden identities in retained XML. New
   unsafe/deep-child forms refuse these before mutation; previously supported
