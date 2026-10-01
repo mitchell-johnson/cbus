@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 616,
-    "modules_without_skip_sites": 323,
-    "modules_with_skip_sites": 293,
+    "test_modules": 619,
+    "modules_without_skip_sites": 324,
+    "modules_with_skip_sites": 295,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 10,
-      "native_cgate_local": 78,
+      "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 102,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
-      "rust_binaries": 14,
+      "rust_binaries": 15,
       "unclassified": 25,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 139,
+      "all": 140,
       "partial": 20,
-      "none": 134
+      "none": 135
     },
-    "native_runnable_tests": 258,
-    "native_selected_required_tests": 258,
+    "native_runnable_tests": 259,
+    "native_selected_required_tests": 259,
     "native_excluded": 0,
-    "native_selection_selectors": 161
+    "native_selection_selectors": 162
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -311,6 +311,42 @@
           ],
           "tests": [
             "test_python_client_and_pipelined_xml_roundtrip"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_named_database_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned named database journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_public_named_safe_graph_separate_project_selected_sessions"
           ]
         }
       ]
@@ -6807,6 +6843,33 @@
           ],
           "categories": [
             "cgate_test_host"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_native_cgate_database_project_cli.py": {
+      "categories": [
+        "native_cgate_local"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_native_cgate_database_project_cli.py::NativeDatabaseProjectCliTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_NATIVE_SERVICE_BACKEND') == 'local' and all((os.environ.get(name) for name in ('CBUS_CGATE_JAVA', 'CBUS_LOCAL_CGATE_VENDOR')))",
+          "reason": "Select local backend and pinned Java11/vendor for owned original typed CLI validation",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND"
+          ],
+          "categories": [
+            "native_cgate_local"
           ],
           "offline": "skips",
           "native": "runs"

@@ -1,0 +1,44 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "439ee478a18b664c29312066124da9ab31fc8f64cc0055ebe6540af12b5f8ca9",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/binaries/0/path",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+    },
+    {
+      "json_pointer": "/binaries/1/path",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+    },
+    {
+      "json_pointer": "/binaries/2/path",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "27b338b7823c45c9f0cb3f5df3f92303682771a53654ff65a21096d27973877b"
+    }
+  ],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "source_release_validation": "release-build-3.json",
+    "binaries": [
+      {
+        "binary": "cmqttd",
+        "path": "${CBUS_CARGO_TARGET}/release/cmqttd",
+        "sha256": "9182947ef4c01a968113d8cd42cccbf2a7044b596b16066c8d6eef9ae1d9e207"
+      },
+      {
+        "binary": "cgate-mock",
+        "path": "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "sha256": "77dfa61f6e879f200e93ca550f3fd79548b7eb9f20ced82d39a1f7b0ae24a1d4"
+      },
+      {
+        "binary": "cbus-tools",
+        "path": "${CBUS_CARGO_TARGET}/release/cbus-tools",
+        "sha256": "e3bbfcaadcdd4da3ddfdb97fcfde6609d3e24ed4b631997890b8886853ac5108"
+      }
+    ]
+  }
+}

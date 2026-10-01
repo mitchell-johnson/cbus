@@ -13,6 +13,14 @@ from pathlib import Path
 from . import __version__
 
 
+_DATABASE_PROJECT_ACTIONS = (
+    "get", "get-xml", "set", "set-xml", "add", "copy", "delete", "validate",
+)
+_DATABASE_PROJECT_HELP = (
+    "Select this loaded project on the same C-Gate connection before the database operation; no project save"
+)
+
+
 class BatchCommandError(RuntimeError):
     def __init__(self, error, completed):
         super().__init__(str(error))
@@ -1813,9 +1821,10 @@ def build_parser():
     for action in ("get", "get-xml", "set", "add", "copy", "delete", "validate", "rename-network"):
         p = dbop.add_parser(action)
         p.add_argument("path")
+        if action in _DATABASE_PROJECT_ACTIONS:
+            p.add_argument("--project", help=_DATABASE_PROJECT_HELP)
         if action == "get-xml":
             p.add_argument("--output", type=Path, help="Write raw native XML to a new local file")
-            p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
         if action == "set":
             p.add_argument("value")
         if action == "add":
@@ -1829,7 +1838,7 @@ def build_parser():
     p = dbop.add_parser("set-xml", help="Submit a UTF-8 file as one native DBSETXML document")
     p.add_argument("path", help="Database object or field path, including //PROJECT/... or !OID")
     p.add_argument("file", type=Path, help="Local UTF-8 XML document, at most 16 MiB")
-    p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
+    p.add_argument("--project", help=_DATABASE_PROJECT_HELP)
     p.add_argument("--expect-current-sha256", type=_sha256_digest,
                    help="Refuse if a fresh DBGETXML differs from this exported document hash")
     p.add_argument("--readback", action="store_true",
@@ -2816,6 +2825,7 @@ def _cgate(args):
         commands = []
     database_xml_document = None
     database_xml_sha256 = None
+    database_project = None
     file_upload_plan = None
     if args.action == "file-upload":
         from .file_transfer import prepare_upload
@@ -2828,6 +2838,10 @@ def _cgate(args):
     if (args.action == "database" and args.remote_action == "get-xml"
             and args.output is not None and args.output.exists()):
         raise ValueError("XML export destination already exists")
+    if (args.action == "database" and args.remote_action in _DATABASE_PROJECT_ACTIONS
+            and args.project is not None):
+        from .native import _project
+        database_project = _project(args.project)
     edlt_audit_expected = None
     if args.action == "edlt-label-audit" and args.baseline is not None:
         # Reject malformed or tampered evidence before opening a server
@@ -2922,9 +2936,9 @@ def _cgate(args):
             from .programming import xml_text
             from .native import NativeDatabase
             db = NativeDatabase(client)
-            if args.remote_action in ("get-xml", "set-xml") and args.project is not None:
+            if database_project is not None:
                 from .native import NativeProjects
-                NativeProjects(client).operation("use", args.project)
+                NativeProjects(client).operation("use", database_project)
             if args.remote_action == "network-new":
                 result = db.create_network(args.project, args.address, args.name, args.interface_type, args.interface_address)
             elif args.remote_action == "unit-new":

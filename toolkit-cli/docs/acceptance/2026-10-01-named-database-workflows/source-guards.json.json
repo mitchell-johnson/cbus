@@ -1,0 +1,38 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "66e357e4897c3c64b97f14cea5c9d6a80266134c2a1678cf8b3503d3fc6d7005",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/11",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "30ea95a2ca8fe6a2629eafe0642fb3efe15742cef75829e08ba5c901bc591b68"
+    }
+  ],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_skip_census.py",
+      "tests/test_cgate_contract_inventory.py",
+      "tests/test_parity_register.py",
+      "tests/test_project_legacy_transform_receipt.py",
+      "tests/test_project_legacy_transform_versions_receipt.py",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_RUST_VALIDATION_ROOT}/generated-and-legacy-guards-sanitized.xml"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "4f5c2b49632038d3b311f9fc0dd5b9ad30c9834c5f22650c5bf409b764d36a2d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

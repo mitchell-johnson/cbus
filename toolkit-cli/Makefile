@@ -93,7 +93,9 @@ build-interop:
 check-cgate-interop: compile
 	test -x "$(CGATE_MOCK_BIN)"
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
-		tests/test_rust_cgate_interop.py -q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
+		tests/test_rust_cgate_interop.py \
+		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
+		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
@@ -102,6 +104,7 @@ check-cmqtt-interop: compile
 		tests/test_cmqtt_dali_commissioning_interop.py \
 		tests/test_cmqtt_network_new_cli.py \
 		tests/test_cmqtt_network_save_db_cli.py tests/test_cgate_file_upload.py \
+		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

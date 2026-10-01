@@ -1,0 +1,45 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "464374af40260702f4096c43c5fd19e648a48f529895ddd38830d2d27dc81e46",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "8255c30f1706454430a90f7367b0be0c8a8959a1b08fbd2f3163bc62f936d87b"
+    },
+    {
+      "json_pointer": "/argv/4",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "4b305045b303600ed61fd2a06018ee863b76a8d9f200a0a04c972d79075d3556"
+    },
+    {
+      "json_pointer": "/argv/7",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "b1c4025f50f8d5ca6332efa46c3715634387ff212588ed341feec0dbfd0eccc3"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "46dd450efcae6760704f42c66573023fd3628a61951ebf57a814ad429413319b"
+    }
+  ],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "argv": [
+      "${CBUS_FINAL_WHEEL_ROOT}/fresh-wheel/installed-env/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_database_project_cli.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_FINAL_WHEEL_ROOT}/installed-peer.xml"
+    ],
+    "cwd": "${CBUS_FINAL_WHEEL_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "0f264e9156c7cc7ce5957ff8d2934b3643dfad53b856c63d739f122ca576710e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -2,6 +2,7 @@ use super::*;
 use base64::Engine as _;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
+mod named_database_workflows;
 #[path = "tests/net_db_load.rs"]
 mod net_db_load;
 mod net_save_db;

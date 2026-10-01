@@ -48,6 +48,18 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [named database workflow](feature-batch-2026-10-01-named-database-workflows.md)
+adds independent named Application/Group/NetVar/Level SAFE construction and copy,
+ordered incomplete raw objects, selected Project-OID Network copy destinations,
+and durable Project identity index repair. Typed scalar database commands select
+`--project` on their own connection, including copy pre-reads and Level
+initialization. Targeted service and public CLI journeys cover save/reload,
+internal restart, source preservation, refusals and uncertain mutation handling.
+The report distinguishes original C-Gate component evidence from owned mock and
+daemon journeys. Broader Project-OID operations, numeric-associated Level
+delegation, mixed retained-XML copies and full native/hardware gates remain open;
+the broad ledger and fully accepted obligation counts are unchanged.
+
 The [export-order checkpoint](feature-batch-2026-10-01-net-save-db-export-order.md)
 reconciles an older numeric-order test with 27 fresh original C-Gate commands:
 Network 254 created before Network 1 remains first before materialization,
@@ -55,7 +67,9 @@ after DB load/save and after durable reload. It preserves the model's
 no-selection/no-mutation checks and pins the exact ordered JSON projection.
 Production code and rebuilt release binaries are unchanged; current
 source-bound evidence is separate from the preceding candidate's failed CI.
-Named child creation/copy and standalone typed project selection remain open.
+Named child creation/copy and standalone typed project selection were still
+open at that checkpoint; the subsequent named workflow above implements their
+bounded independent-network forms.
 
 The [runtime-to-tag materialization batch](feature-batch-2026-10-01-net-save-db-materialization.md)
 implements NET SAVE DB as complete Network/Interface/Property trees, including
@@ -68,7 +82,9 @@ source/wheel evidence are separate from full Toolkit and physical acceptance.
 The batch also repairs two historical native.py binding guards without changing
 their original receipts, with strict scoped carry-forward and fresh owned
 original transform tests. Unsafe named-row copy/addition forms retain explicit
-refusals. Broad ledger and fully accepted obligation counts remain unchanged.
+refusals at that checkpoint. The subsequent named workflow adds bounded
+incomplete construction and same-project copy; broader forms retain their limits.
+Broad ledger and fully accepted obligation counts remain unchanged.
 
 The [closed network setup and catalogue batch](feature-batch-2026-10-01-network-definitions.md)
 adds typed runtime definitions and repairs immediate DB LOAD after network creation.

@@ -3818,9 +3818,10 @@ impl Server {
         self.db_pending.values().any(|object| object.oid == oid)
             || self.db_levels.values().any(|level| level.oid == oid)
             || self.projects.values().any(|project| {
-                Self::tag_network_oids(project)
-                    .iter()
-                    .any(|candidate| candidate == oid)
+                self.named_project_oid(&project.name) == Some(oid)
+                    || Self::tag_network_oids(project)
+                        .iter()
+                        .any(|candidate| candidate == oid)
                     || project.networks.values().any(|network| {
                         network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
                     })
@@ -4062,7 +4063,11 @@ impl Server {
                 Err(error) => return err(tag, 408, &format!("408 Operation failed: {error}")),
             };
             let mut tagged = Vec::new();
-            tag_rows(&record.root, address, &mut tagged);
+            tag_rows(
+                &record.root,
+                record.root.field("Address").unwrap_or("null"),
+                &mut tagged,
+            );
             for row in tagged {
                 push(row);
             }

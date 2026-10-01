@@ -1,4 +1,4 @@
-//! Complete native tag Network records, independent of physical addressing.
+//! Native tag Network records, independent of physical addressing.
 //!
 //! A runtime name is a string. In particular, the native SAVE DB result for
 //! name `42` has Address `42` and NetworkNumber `0xff`; this is not physical
@@ -41,6 +41,8 @@ pub struct TagNetwork {
     pub database_network: Option<u8>,
     #[serde(default)]
     pub created_seq: u64,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    saved_level_tags_pending: bool,
 }
 
 impl TagNode {
@@ -98,6 +100,30 @@ impl TagNode {
         } else {
             self.retain_fragments(|fragment| !fragment.starts_with(&format!("<{name}")));
             self.push_field(name.to_string(), value);
+            // Incomplete native identities still have schema order, regardless
+            // of whether the caller supplied Address or TagName first.
+            if matches!(name, "TagName" | "Address") {
+                let added = self.fields.len() - 1;
+                self.content_order
+                    .retain(|entry| *entry != TagContent::Field(added));
+                let position = self
+                    .content_order
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(position, entry)| match entry {
+                        TagContent::Field(index)
+                            if self.fields[*index].0 == "OID"
+                                || (name == "Address" && self.fields[*index].0 == "TagName") =>
+                        {
+                            Some(position + 1)
+                        }
+                        _ => None,
+                    })
+                    .max()
+                    .unwrap_or(0);
+                self.content_order
+                    .insert(position, TagContent::Field(added));
+            }
         }
     }
 
@@ -210,7 +236,7 @@ impl TagNode {
         for (key, value) in &self.attributes {
             xml.push_str(&format!(" {key}=\"{}\"", xml_escape(value)));
         }
-        if self.element == "PP"
+        if matches!(self.element.as_str(), "PP" | "TagsDLT")
             && self.fields.is_empty()
             && self.children.is_empty()
             && self.retained_xml.is_empty()
@@ -297,6 +323,78 @@ impl TagNode {
         for child in &mut self.children {
             child.refresh_oids();
         }
+    }
+
+    fn clear_copy_identities(&mut self) {
+        if matches!(
+            self.element.as_str(),
+            "Network" | "Application" | "Group" | "NetVar" | "Level"
+        ) {
+            self.retain_fields(|(key, _)| !matches!(key.as_str(), "Address" | "TagName"));
+            self.attributes.remove("Address");
+            self.attributes.remove("TagName");
+        }
+        for child in &mut self.children {
+            child.clear_copy_identities();
+        }
+    }
+
+    fn null_tag_name(&self) -> bool {
+        (matches!(
+            self.element.as_str(),
+            "Network" | "Application" | "Group" | "NetVar" | "Level"
+        ) && self.field("TagName").is_none())
+            || self.children.iter().any(Self::null_tag_name)
+    }
+
+    fn null_level_value(&self) -> bool {
+        (self.element == "Level" && self.field("Value").is_none())
+            || self.children.iter().any(Self::null_level_value)
+    }
+
+    fn materialize_level_tags(&mut self) {
+        if self.element == "Level"
+            && !self.children.iter().any(|child| child.element == "TagsDLT")
+            && !self
+                .retained_xml
+                .iter()
+                .any(|xml| xml.starts_with("<TagsDLT"))
+        {
+            self.push_child(Self::new("TagsDLT", &[]));
+        }
+        for child in &mut self.children {
+            child.materialize_level_tags();
+        }
+    }
+
+    fn needs_level_tags(&self) -> bool {
+        (self.element == "Level"
+            && !self.children.iter().any(|child| child.element == "TagsDLT")
+            && !self
+                .retained_xml
+                .iter()
+                .any(|xml| xml.starts_with("<TagsDLT")))
+            || self.children.iter().any(Self::needs_level_tags)
+    }
+
+    fn unprobed_copy_payload(&self) -> bool {
+        self.element == "Unit"
+            || self.retained_xml.iter().any(|fragment| {
+                // Structured fragments remain losslessly owned, but copying
+                // hidden identities without a modeled census would falsely
+                // promise a fresh closure. Refuse this unprobed form intact.
+                let wrapped = format!("<fragment>{fragment}</fragment>");
+                roxmltree::Document::parse(&wrapped).map_or(true, |document| {
+                    document.descendants().any(|node| {
+                        node.is_element()
+                            && (node.tag_name().name() == "OID"
+                                || node
+                                    .attributes()
+                                    .any(|attribute| attribute.name().eq_ignore_ascii_case("oid")))
+                    })
+                })
+            })
+            || self.children.iter().any(Self::unprobed_copy_payload)
     }
 }
 
@@ -508,6 +606,7 @@ impl TagNetwork {
             root,
             database_network,
             created_seq,
+            saved_level_tags_pending: false,
         })
     }
 
@@ -556,7 +655,165 @@ struct Selection {
     field: Option<String>,
 }
 
+fn child_type(token: &str) -> bool {
+    matches!(
+        token,
+        "Interface"
+            | "Property"
+            | "Application"
+            | "Group"
+            | "NetVar"
+            | "Level"
+            | "Unit"
+            | "TagsDLT"
+            | "TagDLT"
+    )
+}
+
+fn indexed_type(token: &str) -> Option<(&str, usize)> {
+    let (kind, index) = token.split_once('[')?;
+    child_type(kind).then_some(())?;
+    let index = index.strip_suffix(']')?.parse::<usize>().ok()?;
+    (index > 0).then_some((kind, index - 1))
+}
+
+fn walk_tag_path(
+    root: &TagNode,
+    mut indices: Vec<usize>,
+    suffix: &str,
+) -> Result<(Vec<usize>, Option<String>), String> {
+    let tokens = suffix
+        .split('/')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>();
+    let mut offset = 0;
+    while offset < tokens.len() {
+        let node = root.at(&indices);
+        let token = tokens[offset];
+        if offset + 2 == tokens.len() && child_type(token) && tokens[offset + 1] == "OID" {
+            return Ok((indices, Some(format!("{token}/OID"))));
+        }
+        if offset + 1 == tokens.len()
+            && !child_type(token)
+            && indexed_type(token).is_none()
+            && (node.field(token).is_some()
+                || !node.children.iter().any(|child| {
+                    child.field("Address") == Some(token) || child.field("Name") == Some(token)
+                }))
+        {
+            return Ok((indices, Some(token.to_string())));
+        }
+        let index = if let Some((kind, ordinal)) = indexed_type(token) {
+            let ordinal = if kind == "Interface" { 0 } else { ordinal };
+            node.children
+                .iter()
+                .enumerate()
+                .filter(|(_, child)| child.element == kind)
+                .nth(ordinal)
+                .map(|(index, _)| index)
+        } else if child_type(token) {
+            node.children
+                .iter()
+                .position(|child| child.element == token)
+        } else if token == "p" {
+            offset += 1;
+            let address = tokens.get(offset).ok_or("Unit address required")?;
+            node.children.iter().position(|child| {
+                child.element == "Unit" && child.field("Address") == Some(*address)
+            })
+        } else {
+            node.children.iter().position(|child| {
+                child.field("Address") == Some(token) || child.field("Name") == Some(token)
+            })
+        }
+        .ok_or_else(|| {
+            format!("Bad object or device ID: Index out of range in address part {token}")
+        })?;
+        indices.push(index);
+        offset += 1;
+    }
+    Ok((indices, None))
+}
+
 impl Server {
+    pub(crate) fn named_project_oid(&self, project: &str) -> Option<&str> {
+        self.db_xml_extras
+            .get(&Self::unit_document_key(
+                project,
+                crate::native_archive::ENVELOPE_KEY,
+            ))?
+            .attributes
+            .get("project-oid")
+            .map(String::as_str)
+    }
+
+    fn ensure_named_project_oid(&mut self, project: &str) {
+        if self.named_project_oid(project).is_none() {
+            let oid = fresh_oid();
+            self.db_xml_extras
+                .entry(Self::unit_document_key(
+                    project,
+                    crate::native_archive::ENVELOPE_KEY,
+                ))
+                .or_default()
+                .attributes
+                .insert("project-oid".to_string(), oid.clone());
+        }
+        if let Some(oid) = self.named_project_oid(project).map(str::to_string) {
+            self.known_oids.insert(oid.clone());
+            self.objects.insert(format!("!{oid}"));
+        }
+    }
+
+    pub(crate) fn named_tag_save_error(&self, project: &str) -> Option<&'static str> {
+        let records = &self.projects.get(project)?.tag_networks;
+        if records
+            .values()
+            .filter(|record| record.database_network.is_none())
+            .any(|record| record.root.null_tag_name())
+        {
+            return Some("NOT NULL constraint failed: tagged_entity.tag_name");
+        }
+        records
+            .values()
+            .filter(|record| record.database_network.is_none())
+            .any(|record| record.root.null_level_value())
+            .then_some("NOT NULL constraint failed: level_tag.value")
+    }
+
+    pub(crate) fn named_tag_xml_null(&self, project: &str) -> bool {
+        self.projects.get(project).is_some_and(|project| {
+            project
+                .tag_networks
+                .values()
+                .filter(|record| record.database_network.is_none())
+                .any(|record| record.root.null_tag_name())
+        })
+    }
+
+    pub(crate) fn save_named_level_tags(&mut self, project: &str) {
+        if let Some(project) = self.projects.get_mut(project) {
+            for record in project
+                .tag_networks
+                .values_mut()
+                .filter(|record| record.database_network.is_none())
+            {
+                record.saved_level_tags_pending = record.root.needs_level_tags();
+            }
+        }
+    }
+
+    pub(crate) fn load_named_level_tags(&mut self, project: &str) {
+        if let Some(project) = self.projects.get_mut(project) {
+            for record in project.tag_networks.values_mut().filter(|record| {
+                record.database_network.is_none() && record.saved_level_tags_pending
+            }) {
+                record.root.materialize_level_tags();
+                record.saved_level_tags_pending = false;
+            }
+        }
+    }
+
     fn validate_numeric_tag_source(
         &self,
         project: &str,
@@ -692,6 +949,7 @@ impl Server {
                 root: parse_node(parsed.root_element())?,
                 database_network: Some(address),
                 created_seq: network.created_seq,
+                saved_level_tags_pending: false,
             }
         } else {
             let oid = fresh_oid();
@@ -717,6 +975,7 @@ impl Server {
                 root,
                 database_network: None,
                 created_seq: crate::next_network_seq(&self.projects[project]),
+                saved_level_tags_pending: false,
             }
         };
         let interface = record
@@ -744,26 +1003,33 @@ impl Server {
             .get(name)
             .map(|record| record.root.oids())
             .unwrap_or_default();
+        self.ensure_named_project_oid(project);
         self.register_tag_network(project, record);
         self.retire_inactive_db_oids(&old_oids);
         Ok(())
     }
 
     fn tag_selection(&self, path: &str) -> Result<Option<Selection>, String> {
-        let Some(project) = self.current.as_deref() else {
+        self.tag_selection_in(path, self.current.as_deref())
+    }
+
+    fn tag_selection_in(
+        &self,
+        path: &str,
+        project: Option<&str>,
+    ) -> Result<Option<Selection>, String> {
+        let Some(project) = project else {
             return Ok(None);
         };
         let Some(record) = self.projects.get(project) else {
             return Ok(None);
         };
         if let Some(rest) = path.strip_prefix('!') {
-            let (oid, field) = rest
+            let (oid, suffix) = rest
                 .split_once('/')
-                .map_or((rest, None), |(oid, field)| (oid, Some(field.to_string())));
-            // Numeric database descendants retain their established OID
-            // owner, including modeled duplicate selection and deletion
-            // invalidation. A materialized XML snapshot must not replace
-            // those rules with its first depth-first matching node.
+                .map_or((rest, ""), |(oid, suffix)| (oid, suffix));
+            // A numeric database descendant keeps its established owner,
+            // including duplicate-OID selection and transitive invalidation.
             if self
                 .invalidated_unit_oid_lookups
                 .contains(&(project.to_string(), oid.to_string()))
@@ -775,7 +1041,7 @@ impl Server {
                     .db_pending
                     .values()
                     .any(|object| object.project == project && object.oid == oid)
-                || self.level_key(oid).is_some()
+                || (self.current.as_deref() == Some(project) && self.level_key(oid).is_some())
             {
                 return Ok(None);
             }
@@ -783,6 +1049,7 @@ impl Server {
                 let network = self.current_tag_record(project, key)?;
                 let mut indices = Vec::new();
                 if network.root.find_oid(oid, &mut indices) {
+                    let (indices, field) = walk_tag_path(&network.root, indices, suffix)?;
                     return Ok(Some(Selection {
                         project: project.to_string(),
                         key: key.clone(),
@@ -799,67 +1066,35 @@ impl Server {
         else {
             return Ok(None);
         };
-        let mut parts = relative.split('/');
-        let Some(key) = parts.next() else {
-            return Ok(None);
-        };
-        if !record.tag_networks.contains_key(key) {
-            return Ok(None);
-        }
+        let (address, suffix) = relative.split_once('/').unwrap_or((relative, ""));
+        // Keys are internal identities for unnamed/duplicate Networks. The
+        // lexical Address comes only from the authoritative node, never OID
+        // keys or parsing a numeric-looking name into a physical address.
+        let key = record
+            .tag_networks
+            .iter()
+            .filter(|(_, tag)| tag.root.field("Address") == Some(address))
+            .min_by_key(|(key, tag)| (tag.created_seq, *key))
+            .map(|(key, _)| key);
+        let Some(key) = key else { return Ok(None) };
         let network = self.current_tag_record(project, key)?;
-        let mut node = &network.root;
-        let mut indices = Vec::new();
-        let tokens = parts.collect::<Vec<_>>();
-        let mut offset = 0;
-        while offset < tokens.len() {
-            let token = tokens[offset];
-            if offset + 1 == tokens.len()
-                && (node.field(token).is_some()
-                    || !node.children.iter().any(|child| {
-                        child.field("Address") == Some(token)
-                            || child.field("Name") == Some(token)
-                            || child.element == token
-                    }))
-            {
-                return Ok(Some(Selection {
-                    project: project.to_string(),
-                    key: key.to_string(),
-                    indices,
-                    field: Some(token.to_string()),
-                }));
-            }
-            let (element, address, consumed) = if token == "p" {
-                (Some("Unit"), tokens.get(offset + 1).copied(), 2)
-            } else if token == "Interface" {
-                (Some("Interface"), None, 1)
-            } else {
-                (None, Some(token), 1)
-            };
-            let Some(index) = node.children.iter().position(|child| {
-                element.is_none_or(|e| child.element == e)
-                    && address.is_none_or(|a| {
-                        child.field("Address") == Some(a) || child.field("Name") == Some(a)
-                    })
-            }) else {
-                return if network
+        let selected = walk_tag_path(&network.root, Vec::new(), suffix);
+        match selected {
+            Ok((indices, field)) => Ok(Some(Selection {
+                project: project.to_string(),
+                key: key.clone(),
+                indices,
+                field,
+            })),
+            Err(_)
+                if network
                     .database_network
-                    .is_some_and(|address| address.to_string() == key)
-                {
-                    Ok(None)
-                } else {
-                    Err("Named Network descendant not found".to_string())
-                };
-            };
-            indices.push(index);
-            node = &node.children[index];
-            offset += consumed;
+                    .is_some_and(|number| number.to_string() == address) =>
+            {
+                Ok(None)
+            }
+            Err(error) => Err(error),
         }
-        Ok(Some(Selection {
-            project: project.to_string(),
-            key: key.to_string(),
-            indices,
-            field: None,
-        }))
     }
 
     fn unselected_tag_target(&self, path: &str) -> bool {
@@ -927,10 +1162,11 @@ impl Server {
                 _ => return false,
             }
         };
-        self.projects
-            .get(project)
-            .and_then(|project| project.tag_networks.get(name))
-            .is_some_and(|record| record.database_network.is_none())
+        self.projects.get(project).is_some_and(|project| {
+            project.tag_networks.values().any(|record| {
+                record.database_network.is_none() && record.root.field("Address") == Some(name)
+            })
+        })
     }
 
     pub(crate) fn tag_network_oids(project: &Project) -> Vec<String> {
@@ -956,21 +1192,272 @@ impl Server {
     }
 
     pub(crate) fn register_tag_network(&mut self, project: &str, record: TagNetwork) {
-        let key = record
-            .root
-            .field("Address")
-            .expect("validated Address")
-            .to_string();
+        let address = record.root.field("Address");
+        let mut key = address
+            .filter(|address| {
+                self.projects[project]
+                    .tag_networks
+                    .get(*address)
+                    .is_none_or(|existing| existing.root.field("OID") == record.root.field("OID"))
+            })
+            .map(str::to_string)
+            .unwrap_or_else(|| {
+                format!("!{}", record.root.field("OID").expect("internal root OID"))
+            });
+        let base = format!("!{}", record.root.field("OID").expect("internal root OID"));
+        let mut suffix = 0_u64;
+        while self.projects[project]
+            .tag_networks
+            .get(&key)
+            .is_some_and(|existing| existing.root.field("OID") != record.root.field("OID"))
+        {
+            suffix += 1;
+            key = format!("{base}#{suffix}");
+        }
         for oid in record.root.oids() {
             self.known_oids.insert(oid.clone());
             self.objects.insert(format!("!{oid}"));
         }
-        self.objects.insert(format!("//{project}/{key}"));
+        if let Some(address) = address {
+            self.objects.insert(format!("//{project}/{address}"));
+        }
         self.projects
             .get_mut(project)
             .expect("validated project")
             .tag_networks
             .insert(key, record);
+    }
+
+    fn replace_internal_tag_record(
+        &mut self,
+        project: &str,
+        key: &str,
+        record: TagNetwork,
+    ) -> Result<(), String> {
+        if record.database_network.is_some() {
+            return self.replace_tag_record(project, key, record);
+        }
+        // This is an already-owned internal graph, not external complete XML
+        // admission. Absent identities and literal unsafe Addresses persist
+        // under that one owner without creating numeric or pending mirrors.
+        let old = self.current_tag_record(project, key)?;
+        self.projects
+            .get_mut(project)
+            .expect("project")
+            .tag_networks
+            .remove(key);
+        self.register_tag_network(project, record);
+        self.retire_inactive_db_oids(&old.root.oids());
+        Ok(())
+    }
+
+    fn named_child_allowed(parent: &str, child: &str) -> bool {
+        matches!(
+            (parent, child),
+            ("Network", "Application")
+                | ("Application", "Group" | "NetVar")
+                | ("Group" | "NetVar", "Level")
+        )
+    }
+
+    fn named_address_collision(
+        parent: &TagNode,
+        element: &str,
+        address: &str,
+        own_oid: Option<&str>,
+    ) -> bool {
+        parent.children.iter().any(|child| {
+            child.element == element
+                && child.field("Address") == Some(address)
+                && (own_oid.is_none() || child.field("OID") != own_oid)
+        })
+    }
+
+    fn add_named_tag_child(
+        &mut self,
+        tag: &str,
+        words: &[&str],
+        selected: &Selection,
+        record: &TagNetwork,
+    ) -> Response {
+        let safe = words[0].eq_ignore_ascii_case("DBADDSAFE");
+        if (safe && words.len() < 5) || (!safe && words.len() != 3) {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let parent = record.root.at(&selected.indices);
+        let element = match words[2].to_ascii_lowercase().as_str() {
+            "application" => "Application",
+            "group" => "Group",
+            "netvar" => "NetVar",
+            "level" => "Level",
+            _ => return err(tag, 401, "401 Bad object or device ID: Field not found"),
+        };
+        if selected.field.is_some() || !Self::named_child_allowed(&parent.element, element) {
+            return err(tag, 401, "401 Bad object or device ID: Field not found");
+        }
+        if safe {
+            if words[3].parse::<u8>().is_err() {
+                return err(tag, 401, "401 Bad object or device ID: Invalid address");
+            }
+            if Self::named_address_collision(parent, element, words[3], None) {
+                return err(
+                    tag,
+                    401,
+                    "401 Bad object or device ID: Element address in use",
+                );
+            }
+        }
+        let oid = fresh_oid();
+        let mut child = TagNode::new(element, &[("OID", &oid)]);
+        if safe {
+            child.set("TagName", words[4..].join(" "));
+            child.set("Address", words[3].to_string());
+        }
+        let mut replacement = record.clone();
+        replacement.root.at_mut(&selected.indices).push_child(child);
+        let mut staged = self.clone();
+        match staged.replace_internal_tag_record(&selected.project, &selected.key, replacement) {
+            Ok(()) => {
+                *self = staged;
+                Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: format!("301 OID={oid}"),
+                    status: 301,
+                }
+            }
+            Err(error) => err(tag, 408, &format!("408 Operation failed: {error}")),
+        }
+    }
+
+    fn copy_named_tag_node(
+        &mut self,
+        tag: &str,
+        words: &[&str],
+        selected: &Selection,
+        record: &TagNetwork,
+    ) -> Response {
+        let safe = words[0].eq_ignore_ascii_case("DBCOPYSAFE");
+        if (safe && words.len() < 5) || (!safe && words.len() != 3) || selected.field.is_some() {
+            return err(tag, 400, "400 Syntax Error.");
+        }
+        let source = record.root.at(&selected.indices);
+        if !matches!(
+            source.element.as_str(),
+            "Network" | "Application" | "Group" | "NetVar" | "Level"
+        ) {
+            return err(tag, 408, "408 Operation failed: Object type mismatch");
+        }
+        let mut staged = self.clone();
+        let mut copied = source.clone();
+        copied.refresh_oids();
+        let oid = copied.field("OID").expect("copied OID").to_string();
+        if source.element == "Network" {
+            let qualified = format!("//{}/Installation/Project", selected.project);
+            let project_oid = staged.named_project_oid(&selected.project);
+            let internal_parent = words[2] == "Installation/Project"
+                || words[2] == qualified
+                || project_oid.is_some_and(|oid| words[2] == format!("!{oid}"));
+            if !safe && internal_parent && source.unprobed_copy_payload() {
+                return err(tag, 408, "408 Operation failed: Mixed unsafe Network copy with Unit or unmodeled OID-bearing payload is unsupported");
+            }
+            let destination = words[2].trim_start_matches("//");
+            // Preserve the previously supported complete cross-project form;
+            // the captured same-project form deliberately clears identities.
+            let project_parent =
+                !destination.contains('/') && staged.projects.contains_key(destination);
+            let cross_project = project_parent && destination != selected.project;
+            if !internal_parent && !cross_project && !(safe && project_parent) {
+                let mismatch =
+                    words[2] == "Installation" || words[2] == format!("//{}", selected.project);
+                return if mismatch {
+                    err(tag, 408, "408 Operation failed: Object type mismatch")
+                } else {
+                    err(tag, 401, "401 Bad object or device ID: Object not found")
+                };
+            }
+            if !safe && internal_parent {
+                copied.clear_copy_identities();
+            }
+            if safe {
+                copied.set("Address", words[3].to_string());
+                copied.set("TagName", words[4..].join(" "));
+            }
+            let destination = if project_parent {
+                destination
+            } else {
+                &selected.project
+            };
+            let created_seq = crate::next_network_seq(&staged.projects[destination]);
+            let replacement = TagNetwork {
+                root: copied,
+                database_network: None,
+                created_seq,
+                saved_level_tags_pending: false,
+            };
+            if safe {
+                if let Err(error) = staged.insert_tag_copy(destination, replacement) {
+                    return err(tag, 408, &format!("408 Operation failed: {error}"));
+                }
+            } else {
+                staged.register_tag_network(destination, replacement);
+            }
+        } else {
+            if source.unprobed_copy_payload() {
+                return err(tag, 408, "408 Operation failed: Named child copy with Unit or unmodeled OID-bearing payload is unsupported");
+            }
+            let destination = match staged.tag_selection(words[2]) {
+                Ok(Some(destination)) => destination,
+                _ => return err(tag, 401, "401 Bad object or device ID: Object not found"),
+            };
+            if destination.project != selected.project || destination.field.is_some() {
+                return err(tag, 401, "401 Bad object or device ID: Object not found");
+            }
+            let mut target = match staged.current_tag_record(&destination.project, &destination.key)
+            {
+                Ok(target) if target.database_network.is_none() => target,
+                _ => {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: Independent named destination required",
+                    )
+                }
+            };
+            let parent = target.root.at_mut(&destination.indices);
+            if !Self::named_child_allowed(&parent.element, &copied.element) {
+                return err(tag, 401, "401 Bad object or device ID: Field not found");
+            }
+            if safe {
+                if words[3].parse::<u8>().is_err() {
+                    return err(tag, 401, "401 Bad object or device ID: Invalid address");
+                }
+                if Self::named_address_collision(parent, &copied.element, words[3], None) {
+                    return err(
+                        tag,
+                        401,
+                        "401 Bad object or device ID: Element address in use",
+                    );
+                }
+                copied.set("Address", words[3].to_string());
+                copied.set("TagName", words[4..].join(" "));
+            } else {
+                copied.clear_copy_identities();
+            }
+            parent.push_child(copied);
+            if let Err(error) =
+                staged.replace_internal_tag_record(&destination.project, &destination.key, target)
+            {
+                return err(tag, 408, &format!("408 Operation failed: {error}"));
+            }
+        }
+        *self = staged;
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
     }
 
     /// Synchronize the existing numeric *database* children while keeping its
@@ -1029,6 +1516,67 @@ impl Server {
 
     pub(crate) fn tag_database_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
         let verb = words.first()?.to_ascii_uppercase();
+        if verb == "DBGET" && words.len() == 2 {
+            let path = words[1];
+            let qualified = path
+                .strip_prefix("//")
+                .and_then(|rest| rest.split_once("/Installation/Project/OID"))
+                .filter(|(_, suffix)| suffix.is_empty())
+                .map(|(project, _)| project);
+            let project = qualified.or(self.current.as_deref());
+            if let Some(oid) = project.and_then(|project| self.named_project_oid(project)) {
+                if qualified.is_some()
+                    || path == "Installation/Project/OID"
+                    || path == format!("!{oid}/OID")
+                {
+                    return Some(Response {
+                        tag: tag.to_string(),
+                        lines: Vec::new(),
+                        final_text: format!("342 {path}={oid}"),
+                        status: 342,
+                    });
+                }
+            }
+        }
+        if matches!(
+            verb.as_str(),
+            "DBGET"
+                | "DBSET"
+                | "DBSETSAFE"
+                | "DBDELETE"
+                | "DBADD"
+                | "DBADDSAFE"
+                | "DBCOPY"
+                | "DBCOPYSAFE"
+        ) {
+            if let Some(rest) = words.get(1).and_then(|path| path.strip_prefix('!')) {
+                let (oid, suffix) = rest.split_once('/').unwrap_or((rest, ""));
+                if self
+                    .current
+                    .as_deref()
+                    .and_then(|project| self.named_project_oid(project))
+                    == Some(oid)
+                {
+                    // Only wrapper identity and the Network-copy destination
+                    // are modeled. Do not fabricate a Project descendant or
+                    // acknowledge writes into a second opaque field store.
+                    if matches!(verb.as_str(), "DBSET" | "DBSETSAFE")
+                        && suffix.eq_ignore_ascii_case("OID")
+                    {
+                        return Some(err(
+                            tag,
+                            408,
+                            "408 Operation failed: OID field can not be changed",
+                        ));
+                    }
+                    return Some(err(
+                        tag,
+                        401,
+                        "401 Bad object or device ID: Unsupported Project OID operation",
+                    ));
+                }
+            }
+        }
         if !matches!(
             verb.as_str(),
             "GET"
@@ -1043,11 +1591,21 @@ impl Server {
                 | "DBCOPYSAFE"
                 | "DBADD"
                 | "DBADDSAFE"
+                | "DBVALIDATE"
         ) {
             return None;
         }
         let path = words.get(1)?;
-        let selected = match self.tag_selection(path) {
+        let qualified_project = path
+            .strip_prefix("//")
+            .and_then(|rest| rest.split('/').next());
+        let selection_project =
+            if matches!(verb.as_str(), "DBGET" | "DBGETXML" | "DBADD" | "DBADDSAFE") {
+                qualified_project.or(self.current.as_deref())
+            } else {
+                self.current.as_deref()
+            };
+        let selected = match self.tag_selection_in(path, selection_project) {
             Ok(Some(selected)) => selected,
             Ok(None) => {
                 // Known tag targets require explicit project selection.
@@ -1070,7 +1628,7 @@ impl Server {
                 }
                 return None;
             }
-            Err(error) => return Some(err(tag, 408, &format!("408 Operation failed: {error}"))),
+            Err(error) => return Some(err(tag, 401, &format!("401 {error}"))),
         };
         let record = match self.current_tag_record(&selected.project, &selected.key) {
             Ok(record) => record,
@@ -1085,6 +1643,24 @@ impl Server {
         } else {
             record.root.at(&selected.indices)
         };
+        if verb == "DBVALIDATE" {
+            if words.len() != 2 || selected.field.is_some() {
+                return Some(err(tag, 400, "400 Syntax Error."));
+            }
+            if node.null_tag_name() || node.null_level_value() {
+                return Some(err(
+                    tag,
+                    408,
+                    "408 Operation failed: Incomplete named graph cannot be validated",
+                ));
+            }
+            return Some(Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("233 {}: Valid", node.element),
+                status: 233,
+            });
+        }
         if verb == "GET" {
             // This retained refusal is a runtime property boundary, not a
             // projection of database scalar fields into the GET namespace.
@@ -1104,14 +1680,69 @@ impl Server {
             }
             if verb == "DBGETXML" {
                 return Some(if selected.field.is_none() {
-                    Self::db_xml_response(tag, node.document())
+                    if node.null_tag_name() {
+                        err(tag, 444, "444 Unable to get XML: Object is null")
+                    } else {
+                        Self::db_xml_response(tag, node.document())
+                    }
                 } else {
                     err(tag, 401, "401 Object not found")
                 });
             }
             return Some(if let Some(field) = selected.field {
+                if let Some(kind) = field.strip_suffix("/OID").filter(|kind| child_type(kind)) {
+                    let children = node
+                        .children
+                        .iter()
+                        .filter(|child| child.element == kind)
+                        .collect::<Vec<_>>();
+                    if children.is_empty() {
+                        return Some(err(
+                            tag,
+                            401,
+                            &format!("401 Bad object or device ID: Field {kind} not found"),
+                        ));
+                    }
+                    let base = path.strip_suffix(&field).unwrap_or(path);
+                    let mut rows = children
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(index, child)| {
+                            child.field("OID").map(|oid| {
+                                if kind == "Interface" {
+                                    format!("{base}Interface/OID={oid}")
+                                } else {
+                                    format!("{base}{kind}[{}]/OID={oid}", index + 1)
+                                }
+                            })
+                        })
+                        .collect::<Vec<_>>();
+                    let Some(last) = rows.pop() else {
+                        return Some(err(
+                            tag,
+                            401,
+                            "401 Bad object or device ID: Element OID not found.",
+                        ));
+                    };
+                    return Some(Response {
+                        tag: tag.to_string(),
+                        lines: rows.into_iter().map(|row| format!("342-{row}")).collect(),
+                        final_text: format!("342 {last}"),
+                        status: 342,
+                    });
+                }
                 let Some(value) = node.field(&field) else {
-                    return Some(err(tag, 401, "401 Object not found"));
+                    return Some(err(
+                        tag,
+                        401,
+                        if matches!(field.as_str(), "Address" | "TagName" | "Value")
+                            && !(node.element == "NetVar" && field == "Value")
+                        {
+                            "401 Bad object or device ID: Object is null"
+                        } else {
+                            "401 Bad object or device ID: Element Value not found."
+                        },
+                    ));
                 };
                 let output_path = if selected.indices.is_empty() {
                     path.strip_prefix(&format!("//{}/", selected.project))
@@ -1119,6 +1750,17 @@ impl Server {
                 } else {
                     path
                 };
+                let output_path = output_path
+                    .split('/')
+                    .map(|part| {
+                        if indexed_type(part).is_some_and(|(kind, _)| kind == "Interface") {
+                            "Interface"
+                        } else {
+                            part
+                        }
+                    })
+                    .collect::<Vec<_>>()
+                    .join("/");
                 Response {
                     tag: tag.to_string(),
                     lines: Vec::new(),
@@ -1157,9 +1799,10 @@ impl Server {
             return None;
         }
         if matches!(verb.as_str(), "DBADD" | "DBADDSAFE") {
-            // Incomplete child creation has a separate native pending-object
-            // contract. Do not acknowledge a dropped or invented child.
-            return Some(err(tag,408,"408 Operation failed: incomplete child creation in a named Network is unsupported; submit complete DBSETXML"));
+            return Some(self.add_named_tag_child(tag, words, &selected, &record));
+        }
+        if matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE") && record.database_network.is_none() {
+            return Some(self.copy_named_tag_node(tag, words, &selected, &record));
         }
         if let Some(address) = record.database_network {
             if (node.element == "Unit"
@@ -1210,6 +1853,65 @@ impl Server {
                         Err("Field value required".to_string())
                     } else {
                         let value = words.get(2..).unwrap_or_default().join(" ");
+                        if record.database_network.is_none() {
+                            let admitted = node.element == "Unit"
+                                || matches!(field, "TagName" | "Address" | "Description")
+                                || (node.element == "Network"
+                                    && matches!(
+                                        field,
+                                        "NetworkNumber" | "InterfaceType" | "InterfaceAddress"
+                                    ))
+                                || (node.element == "Interface"
+                                    && matches!(field, "InterfaceType" | "InterfaceAddress"))
+                                || (node.element == "Property"
+                                    && matches!(field, "Name" | "Value"))
+                                || (node.element == "Level" && field == "Value");
+                            if !admitted {
+                                return Some(err(
+                                    tag,
+                                    401,
+                                    "401 Bad object or device ID: Field not found",
+                                ));
+                            }
+                            if verb == "DBSETSAFE" && field == "Address" {
+                                if (node.element == "Network" && !valid_address(&value))
+                                    || (node.element != "Network" && value.parse::<u8>().is_err())
+                                {
+                                    return Some(err(
+                                        tag,
+                                        401,
+                                        "401 Bad object or device ID: Invalid address",
+                                    ));
+                                }
+                                let collision =
+                                    if let Some((_, parent)) = selected.indices.split_last() {
+                                        Self::named_address_collision(
+                                            record.root.at(parent),
+                                            &node.element,
+                                            &value,
+                                            node.field("OID"),
+                                        )
+                                    } else {
+                                        self.projects[&selected.project].tag_networks.values().any(
+                                            |other| {
+                                                other.root.field("Address") == Some(value.as_str())
+                                                    && other.root.field("OID") != node.field("OID")
+                                            },
+                                        ) || canonical_address(&value).is_some_and(|address| {
+                                            self.projects[&selected.project]
+                                                .networks
+                                                .contains_key(&address)
+                                        })
+                                    };
+                                if collision {
+                                    return Some(err(
+                                        tag,
+                                        401,
+                                        "401 Bad object or device ID: Element address in use",
+                                    ));
+                                }
+                            }
+                        }
                         let mut replacement = record.clone();
                         if selected.indices.is_empty()
                             && matches!(field, "InterfaceType" | "InterfaceAddress")
@@ -1225,7 +1927,11 @@ impl Server {
                             replacement.root.at_mut(&selected.indices).set(field, value);
                         }
                         staged
-                            .replace_tag_record(&selected.project, &selected.key, replacement)
+                            .replace_internal_tag_record(
+                                &selected.project,
+                                &selected.key,
+                                replacement,
+                            )
                             .map(|()| "200 OK.".to_string())
                     }
                 } else {
@@ -1250,7 +1956,7 @@ impl Server {
                         keep
                     });
                     staged
-                        .replace_tag_record(&selected.project, &selected.key, replacement)
+                        .replace_internal_tag_record(&selected.project, &selected.key, replacement)
                         .map(|()| "200 OK.".to_string())
                 }
             }
@@ -1258,14 +1964,14 @@ impl Server {
                 if words.len() != 3
                     || !selected.indices.is_empty()
                     || selected.field.is_some()
-                    || (verb == "DBRENAMENETSAFE" && words[2].parse::<u8>().is_err())
+                    || !valid_address(words[2])
                 {
                     Err("Invalid network rename".to_string())
                 } else {
                     let mut replacement = record.clone();
                     replacement.root.set("Address", words[2].to_string());
                     staged
-                        .replace_tag_record(&selected.project, &selected.key, replacement)
+                        .replace_internal_tag_record(&selected.project, &selected.key, replacement)
                         .map(|()| "200 OK.".to_string())
                 }
             }

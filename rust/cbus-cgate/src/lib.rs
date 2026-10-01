@@ -3066,6 +3066,7 @@ impl Server {
             // with both single and repeated Application OIDs.
             if response.status == status::OK && words.len() == 3 {
                 self.materialize_loaded_nested_level_tags(words[2]);
+                self.load_named_level_tags(words[2]);
                 self.invalidated_unit_oid_lookups
                     .retain(|(project, _)| project != words[2]);
             }
@@ -3167,6 +3168,10 @@ impl Server {
             .or(self.current.as_deref())
             .expect("validated project")
             .to_string();
+        if let Some(error) = self.named_tag_save_error(&project) {
+            return err(tag, 408, &format!("408 Operation failed: {error}"));
+        }
+        self.save_named_level_tags(&project);
         self.save_nested_level_tags(&project);
         self.mark_project_saved(&project);
         ok(tag, vec![], "200 OK")
@@ -3563,6 +3568,10 @@ impl Server {
     /// Remove all durable database records owned by one project while
     /// retaining shared OIDs that still belong to a native-style copy.
     fn delete_project_prefix(&mut self, project: &str, project_oids: HashSet<String>) {
+        let project_oids = project_oids
+            .into_iter()
+            .chain(self.named_project_oid(project).map(str::to_string))
+            .collect::<HashSet<_>>();
         let exact = format!("//{project}");
         let prefix = format!("{exact}/");
         self.db_fields
@@ -3604,7 +3613,8 @@ impl Server {
             .collect();
         for oid in removed_oids {
             let object_in_use = self.projects.values().any(|project| {
-                Self::tag_network_oids(project).contains(&oid)
+                self.named_project_oid(&project.name) == Some(oid.as_str())
+                    || Self::tag_network_oids(project).contains(&oid)
                     || project.networks.values().any(|network| {
                         network.oid == oid
                             || network.interface_oid == oid
@@ -3933,6 +3943,10 @@ impl Server {
                 .into_iter()
                 .map(|(oid, value)| (Self::unit_document_key(project, &oid), value)),
         );
+        if let Some(oid) = self.named_project_oid(project).map(str::to_string) {
+            self.known_oids.insert(oid.clone());
+            self.objects.insert(format!("!{oid}"));
+        }
         self.db_fields.extend(
             tables
                 .db_fields
@@ -5191,6 +5205,9 @@ impl Server {
         let Some(project) = self.projects.get(project_name) else {
             return err(tag, status::ABSENT, "401 Project not found");
         };
+        if self.named_tag_xml_null(project_name) {
+            return err(tag, 444, "444 Unable to get XML: Object is null");
+        }
         let schema = if project.tag_networks.is_empty() {
             ""
         } else {
@@ -9260,6 +9277,7 @@ impl Server {
     fn active_db_oids(&self, project: &str) -> HashSet<String> {
         let mut output = HashSet::new();
         if let Some(record) = self.projects.get(project) {
+            output.extend(self.named_project_oid(project).map(str::to_string));
             output.extend(Self::tag_network_oids(record));
             for network in record.networks.values() {
                 output.insert(network.oid.clone());
@@ -9285,7 +9303,8 @@ impl Server {
     fn retire_inactive_db_oids(&mut self, candidates: &[String]) {
         for oid in candidates {
             let active = self.projects.values().any(|project| {
-                Self::tag_network_oids(project).contains(oid)
+                self.named_project_oid(&project.name) == Some(oid.as_str())
+                    || Self::tag_network_oids(project).contains(oid)
                     || project.networks.values().any(|network| {
                         network.oid == *oid
                             || network.interface_oid == *oid
@@ -9294,6 +9313,7 @@ impl Server {
             }) || self.db_pending.values().any(|object| object.oid == *oid)
                 || self.db_levels.values().any(|level| level.oid == *oid);
             if active {
+                self.known_oids.insert(oid.clone());
                 self.objects.insert(format!("!{oid}"));
                 continue;
             }
@@ -12214,9 +12234,10 @@ impl Server {
             return false;
         }
         self.projects.get(current).is_some_and(|project| {
-            Self::tag_network_oids(project)
-                .iter()
-                .any(|value| value == oid)
+            self.named_project_oid(current) == Some(oid)
+                || Self::tag_network_oids(project)
+                    .iter()
+                    .any(|value| value == oid)
         }) || self.pending_object(current, oid).is_some()
             || self.projects.get(current).is_some_and(|project| {
                 project.networks.values().any(|network| {

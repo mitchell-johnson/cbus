@@ -799,7 +799,9 @@ async fn net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_compl
         run(&service, &mut client, "DBCOPY //AUX/0254 AUX")
             .await
             .status,
-        408
+        // Original named-copy capture returns401 for a bare same-project
+        // parent. Installation/Project is the admitted unsafe destination.
+        401
     );
     assert!(Database::from_server(&*service.model.lock().await) == before);
     assert_eq!(
@@ -1241,6 +1243,17 @@ async fn net_save_db_associated_network_oid_delete_retires_complete_subtree_side
     .await;
     command(&service, &mut client, "NET LOAD DB").await;
     command(&service, &mut client, "NET SAVE DB").await;
+    let project_oid = run(
+        &service,
+        &mut client,
+        "DBGET //AUX/Installation/Project/OID",
+    )
+    .await
+    .final_text
+    .split_once('=')
+    .unwrap()
+    .1
+    .to_string();
     let root = record(&service, "AUX", "42").await;
     let mut oids = root.root.oids();
     assert!(oids.len() >= 6);
@@ -1333,10 +1346,18 @@ async fn net_save_db_associated_network_oid_delete_retires_complete_subtree_side
         .unit_pp_values
         .keys()
         .any(|key| key.starts_with(unit_prefix)));
-    assert!(!model
+    // The Project survives deletion of its Network. Its single envelope
+    // owner is not a deleted Unit sidecar; every other AUX extra must retire.
+    let envelope_key = Server::unit_document_key("AUX", crate::native_archive::ENVELOPE_KEY);
+    assert!(model
         .db_xml_extras
         .keys()
-        .any(|key| key.starts_with(unit_prefix)));
+        .filter(|key| key.starts_with(unit_prefix))
+        .all(|key| key == &envelope_key));
+    assert_eq!(
+        model.db_xml_extras[&envelope_key].attributes["project-oid"],
+        project_oid
+    );
     assert_eq!(model.active_db_oids("HARNESS"), foreign_oids);
     drop(model);
     assert_eq!(
@@ -1355,6 +1376,19 @@ async fn net_save_db_associated_network_oid_delete_retires_complete_subtree_side
     drop(service);
     let (pci_client, mut remote) = pci();
     let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(
+        run(
+            &restarted,
+            &mut client,
+            "DBGET //AUX/Installation/Project/OID"
+        )
+        .await
+        .final_text
+        .split_once('=')
+        .unwrap()
+        .1,
+        project_oid
+    );
     for oid in &oids {
         assert_eq!(
             run(&restarted, &mut client, &format!("DBGETXML !{oid}"))

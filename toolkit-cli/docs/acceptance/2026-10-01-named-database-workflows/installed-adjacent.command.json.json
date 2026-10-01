@@ -1,0 +1,57 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "8b87da9047741d286a3b30722beac624c8c71ea630f1b5cb076d0b18b7f7596d",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "8255c30f1706454430a90f7367b0be0c8a8959a1b08fbd2f3163bc62f936d87b"
+    },
+    {
+      "json_pointer": "/argv/4",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "e515ac51c4a82554a6eab5878b1fa0297716113e5963ae9a35bd0de7f172cb99"
+    },
+    {
+      "json_pointer": "/argv/5",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "5599bba767d908c9220e42e8c5f62517f7ec5ce5aa9e44cffb5c0d6a4ffc4473"
+    },
+    {
+      "json_pointer": "/argv/6",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "c19ad8509a81414bae63b8eee46c5b55d106f4e7f3d4d53e2871dd9a2a6045c0"
+    },
+    {
+      "json_pointer": "/argv/9",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "13277d813fccfed6619877131e569cc6c7f14658a9a997e1f9eb10dd91373bc9"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "46dd450efcae6760704f42c66573023fd3628a61951ebf57a814ad429413319b"
+    }
+  ],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "argv": [
+      "${CBUS_FINAL_WHEEL_ROOT}/fresh-wheel/installed-env/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_native.py::NativeGrammarTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate.py::CGateTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_file_upload.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_FINAL_WHEEL_ROOT}/installed-adjacent.xml"
+    ],
+    "cwd": "${CBUS_FINAL_WHEEL_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "8824a48a5756e9df030770fa9a1b0d43d88429912c05e714cfa83735e83ce627",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

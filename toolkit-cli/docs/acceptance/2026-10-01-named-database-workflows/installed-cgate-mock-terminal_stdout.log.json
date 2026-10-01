@@ -1,0 +1,9 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "43a23bc9a831577b97c9764921427c5e3b07aa5fa1142ffd7376860ca200ecc8",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": "cgate-mock listening on 127.0.0.1:55636\n"
+}

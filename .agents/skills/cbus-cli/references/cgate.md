@@ -1035,6 +1035,34 @@ exact `//PROJECT/NAME` path in cmqttd. Bare reserved selectors, issued `!OID`
 references and other paths keep their existing generic GET dispatch; legal
 colliding definition names remain allowed.
 
+For independent named tag Networks, typed `cgate database get`, `set`, `add`,
+`copy`, `delete` and `validate` accept `--project NAME`, as do the XML commands.
+They validate before connection and require exact `200 PROJECT USE` on the
+same client before all dependent commands. No load, save or open is implicit;
+uncertain mutations are never replayed. SAFE Application/Group/NetVar/Level
+construction and copy return `301 OID`; typed Level creation/copy initializes
+Value to the requested byte, while raw SAFE copy retains source Value.
+
+Unsafe independent child creation/copy uses one ordered incomplete tag graph.
+Missing TagName causes XML `444` and project-save `408`; named objects without
+Address can save, but a Level also requires Value. Unsafe Network copy targets
+`Installation/Project`, its qualified form or the selected Project OID; a bare
+project name returns `401`. It clears tagged Address/TagName, preserves
+NetworkNumber, Interface/Property metadata and Values, and refreshes modeled
+descendant OIDs. Copies containing Unit or OID-bearing retained XML refuse
+before mutation in the new unsafe/deep-child forms. Complete external XML
+admission stays strict. Project OID hierarchy/scalar operations beyond identity
+and the Network-copy destination remain unsupported. Internal restart evidence
+does not establish incomplete vendor archive admission. See the
+[named workflow scope](../../../../toolkit-cli/docs/feature-batch-2026-10-01-named-database-workflows.md).
+
+For an owned mock's complete named XML fixture, use
+`cgate-mock --native-project-archives --bind 127.0.0.1:0` and the public FILE
+upload/PROJECT RESTORE workflow. This opts into the existing supported archive
+parser in process-local FILE storage; the default mock retains internal
+snapshot archives. Neither mode accesses host paths or provides durable storage.
+The mock's `NET SAVE DB` does not materialize runtime definitions like cmqttd.
+
 The two physical forms use the configured shared PCI, directly or through a
 topology-resolved one-to-six-bridge route:
 

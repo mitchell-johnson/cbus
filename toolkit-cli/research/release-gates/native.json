@@ -54,6 +54,7 @@
     "tests/test_applications.py",
     "tests/test_calculator.py",
     "tests/test_cgate.py",
+    "tests/test_native_cgate_database_project_cli.py",
     "tests/test_cgl.py",
     "tests/test_classic_replacement.py::NativeReplacementTests",
     "tests/test_cli.py",

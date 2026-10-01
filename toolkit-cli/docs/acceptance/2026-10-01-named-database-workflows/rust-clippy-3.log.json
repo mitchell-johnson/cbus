@@ -1,0 +1,15 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "b35a4172c72c0c138ccc5f9e3e16195bf892235232d4501af395a19eda2a9beb",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "coordinate_roles",
+      "raw_string_sha256": "b35a4172c72c0c138ccc5f9e3e16195bf892235232d4501af395a19eda2a9beb"
+    }
+  ],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": "    Checking cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.52s\n"
+}

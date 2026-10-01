@@ -1,0 +1,9 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "880788ab699126c9329c9db7f99b0b1304aa364734e0e405e1762b57ece476ef",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": "............................. [ 82%]\n......                                         [100%]\n35 passed, 69 subtests passed in 13.06s\n"
+}

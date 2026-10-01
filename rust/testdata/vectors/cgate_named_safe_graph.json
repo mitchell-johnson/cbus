@@ -1,0 +1,385 @@
+{
+  "format": "cbus-cgate-named-safe-graph-contract-v1",
+  "scope": "Original selected closed named Network scalar SAFE graph, before project save. Local service execution is separately required. This fixture is not a full native gate or hardware acceptance.",
+  "provenance": {
+    "software": "C-Gate 3.4.0 build 2001",
+    "original_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "private_graph_raw_sha256": "a7944ab1e10d7c4fd06493818c532947bf5405a0482fb77c5f196c7d682f7f63",
+    "private_normalized_fixture_sha256": "26d8ab0578e125fdcac404dc1c36c01e7ec6d7ec5c40023bdb992b5a8e560a91",
+    "private_proof_sha256": "57df4eeeab77e7179abcbc842728bdfb482ca1d267d42a68fb8eeaca4cf1d733"
+  },
+  "normalization": [
+    "Remove only original request tag prefix; the test supplies its own tag.",
+    "Substitute five dynamic OIDs with equality-preserving semantic roles; bind each from its single301 creation receipt."
+  ],
+  "cases": [
+    {
+      "label": "safe-application",
+      "command": "DBADDSAFE //LAB/CustomA Application 56 Lighting",
+      "status": 301,
+      "reply": [
+        "301 OID=%APP_OID%"
+      ]
+    },
+    {
+      "label": "app-issued-identity",
+      "command": "DBGET !%APP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/OID=%APP_OID%"
+      ]
+    },
+    {
+      "label": "app-created-OID",
+      "command": "DBGET !%APP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/OID=%APP_OID%"
+      ]
+    },
+    {
+      "label": "app-created-Address",
+      "command": "DBGET !%APP_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/Address=56"
+      ]
+    },
+    {
+      "label": "app-created-TagName",
+      "command": "DBGET !%APP_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/TagName=Lighting"
+      ]
+    },
+    {
+      "label": "safe-group",
+      "command": "DBADDSAFE !%APP_OID% Group 1 Lamp",
+      "status": 301,
+      "reply": [
+        "301 OID=%GROUP_OID%"
+      ]
+    },
+    {
+      "label": "group-issued-identity",
+      "command": "DBGET !%GROUP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/OID=%GROUP_OID%"
+      ]
+    },
+    {
+      "label": "group-created-OID",
+      "command": "DBGET !%GROUP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/OID=%GROUP_OID%"
+      ]
+    },
+    {
+      "label": "group-created-Address",
+      "command": "DBGET !%GROUP_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/Address=1"
+      ]
+    },
+    {
+      "label": "group-created-TagName",
+      "command": "DBGET !%GROUP_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/TagName=Lamp"
+      ]
+    },
+    {
+      "label": "safe-level",
+      "command": "DBADDSAFE !%GROUP_OID% Level 7 Evening",
+      "status": 301,
+      "reply": [
+        "301 OID=%LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "level-issued-identity",
+      "command": "DBGET !%LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/OID=%LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "level-default-OID",
+      "command": "DBGET !%LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/OID=%LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "level-default-Address",
+      "command": "DBGET !%LEVEL_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/Address=7"
+      ]
+    },
+    {
+      "label": "level-default-TagName",
+      "command": "DBGET !%LEVEL_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/TagName=Evening"
+      ]
+    },
+    {
+      "label": "level-default-Value",
+      "command": "DBGET !%LEVEL_OID%/Value",
+      "status": 401,
+      "reply": [
+        "401 Bad object or device ID: Object is null"
+      ]
+    },
+    {
+      "label": "level-initialize-value",
+      "command": "DBSETSAFE !%LEVEL_OID%/Value 7",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "label": "level-initialized-OID",
+      "command": "DBGET !%LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/OID=%LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "level-initialized-Address",
+      "command": "DBGET !%LEVEL_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/Address=7"
+      ]
+    },
+    {
+      "label": "level-initialized-TagName",
+      "command": "DBGET !%LEVEL_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/TagName=Evening"
+      ]
+    },
+    {
+      "label": "level-initialized-Value",
+      "command": "DBGET !%LEVEL_OID%/Value",
+      "status": 342,
+      "reply": [
+        "342 !%LEVEL_OID%/Value=7"
+      ]
+    },
+    {
+      "label": "safe-netvar",
+      "command": "DBADDSAFE !%APP_OID% NetVar 4 Variable",
+      "status": 301,
+      "reply": [
+        "301 OID=%NETVAR_OID%"
+      ]
+    },
+    {
+      "label": "netvar-issued-identity",
+      "command": "DBGET !%NETVAR_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_OID%/OID=%NETVAR_OID%"
+      ]
+    },
+    {
+      "label": "netvar-created-OID",
+      "command": "DBGET !%NETVAR_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_OID%/OID=%NETVAR_OID%"
+      ]
+    },
+    {
+      "label": "netvar-created-Address",
+      "command": "DBGET !%NETVAR_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_OID%/Address=4"
+      ]
+    },
+    {
+      "label": "netvar-created-TagName",
+      "command": "DBGET !%NETVAR_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_OID%/TagName=Variable"
+      ]
+    },
+    {
+      "label": "netvar-created-Value",
+      "command": "DBGET !%NETVAR_OID%/Value",
+      "status": 401,
+      "reply": [
+        "401 Bad object or device ID: Element Value not found."
+      ]
+    },
+    {
+      "label": "safe-netvar-level",
+      "command": "DBADDSAFE !%NETVAR_OID% Level 42 Dinner",
+      "status": 301,
+      "reply": [
+        "301 OID=%NETVAR_LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "nvlevel-issued-identity",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/OID=%NETVAR_LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "nvlevel-default-OID",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/OID=%NETVAR_LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "nvlevel-default-Address",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/Address=42"
+      ]
+    },
+    {
+      "label": "nvlevel-default-TagName",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/TagName=Dinner"
+      ]
+    },
+    {
+      "label": "nvlevel-default-Value",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/Value",
+      "status": 401,
+      "reply": [
+        "401 Bad object or device ID: Object is null"
+      ]
+    },
+    {
+      "label": "nvlevel-initialize-value",
+      "command": "DBSETSAFE !%NETVAR_LEVEL_OID%/Value 42",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "label": "nvlevel-initialized-OID",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/OID=%NETVAR_LEVEL_OID%"
+      ]
+    },
+    {
+      "label": "nvlevel-initialized-Address",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/Address=42"
+      ]
+    },
+    {
+      "label": "nvlevel-initialized-TagName",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/TagName=Dinner"
+      ]
+    },
+    {
+      "label": "nvlevel-initialized-Value",
+      "command": "DBGET !%NETVAR_LEVEL_OID%/Value",
+      "status": 342,
+      "reply": [
+        "342 !%NETVAR_LEVEL_OID%/Value=42"
+      ]
+    },
+    {
+      "label": "safe-app-tag-edit",
+      "command": "DBSETSAFE !%APP_OID%/TagName LightingEdited",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "label": "app-edited-OID",
+      "command": "DBGET !%APP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/OID=%APP_OID%"
+      ]
+    },
+    {
+      "label": "app-edited-Address",
+      "command": "DBGET !%APP_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/Address=56"
+      ]
+    },
+    {
+      "label": "app-edited-TagName",
+      "command": "DBGET !%APP_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%APP_OID%/TagName=LightingEdited"
+      ]
+    },
+    {
+      "label": "safe-group-tag-edit",
+      "command": "DBSETSAFE !%GROUP_OID%/TagName LampEdited",
+      "status": 200,
+      "reply": [
+        "200 OK."
+      ]
+    },
+    {
+      "label": "group-edited-OID",
+      "command": "DBGET !%GROUP_OID%/OID",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/OID=%GROUP_OID%"
+      ]
+    },
+    {
+      "label": "group-edited-Address",
+      "command": "DBGET !%GROUP_OID%/Address",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/Address=1"
+      ]
+    },
+    {
+      "label": "group-edited-TagName",
+      "command": "DBGET !%GROUP_OID%/TagName",
+      "status": 342,
+      "reply": [
+        "342 !%GROUP_OID%/TagName=LampEdited"
+      ]
+    }
+  ]
+}

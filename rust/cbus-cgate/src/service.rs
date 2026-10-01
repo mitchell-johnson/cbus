@@ -539,6 +539,41 @@ impl Database {
         }
         let original_known_oids = self.known_oids.clone();
         let mut used_oids = self.known_oids.iter().cloned().collect::<HashSet<_>>();
+        // Project identities belong to their existing envelope, including
+        // internally saved incomplete graphs. Derive their global index from
+        // that owner rather than requiring an older snapshot's index to have
+        // already listed it. Archive/image tables use relative envelope keys.
+        for project in self.projects.values() {
+            if let Some(oid) = self
+                .db_xml_extras
+                .get(&Server::unit_document_key(
+                    &project.name,
+                    crate::native_archive::ENVELOPE_KEY,
+                ))
+                .and_then(|extras| extras.attributes.get("project-oid"))
+            {
+                used_oids.insert(oid.clone());
+                self.objects.insert(format!("!{oid}"));
+            }
+        }
+        for extras in self.database_file_db_xml_extras.values() {
+            if let Some(oid) = extras
+                .get(crate::native_archive::ENVELOPE_KEY)
+                .and_then(|extras| extras.attributes.get("project-oid"))
+            {
+                used_oids.insert(oid.clone());
+            }
+        }
+        for image in self.saved_projects.iter().flat_map(HashMap::values) {
+            if let Some(oid) = image
+                .tables
+                .db_xml_extras
+                .get(crate::native_archive::ENVELOPE_KEY)
+                .and_then(|extras| extras.attributes.get("project-oid"))
+            {
+                used_oids.insert(oid.clone());
+            }
+        }
         for project in self.projects.values().chain(self.database_files.values()) {
             used_oids.extend(Server::tag_network_oids(project));
             for network in project.networks.values() {
@@ -582,6 +617,10 @@ impl Database {
             );
         }
         used_oids.remove("");
+        let migrated_oid_index = used_oids.len() != original_known_oids.len()
+            || used_oids
+                .iter()
+                .any(|oid| !original_known_oids.contains(oid));
         for oid in &used_oids {
             reserve_restored_oid(oid);
         }
@@ -657,7 +696,7 @@ impl Database {
             Some(images) => s.saved_projects = images,
             None => s.mark_all_projects_saved(),
         }
-        Ok(migrated_network_oids || images_missing)
+        Ok(migrated_network_oids || migrated_oid_index || images_missing)
     }
 
     fn save(&self, path: &Path) -> io::Result<()> {

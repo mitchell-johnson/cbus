@@ -1,0 +1,52 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "04cf9e98290659bb71c7299ba94f6d41439d3c6dc9dcb67ad6a2bc97c9c620ee",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "result": "passed",
+    "receipts": [
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+        "sha256": "fca657de624076efcd300af336ccabfb9301f37858cd772925583271deb5b423",
+        "raw_sha256": "7ffd5eb879785147aead53528622ceb57b02107b6052868af6eb946aae52ed0a",
+        "source_bindings": 172
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+        "sha256": "740e8ec37422ba901be6258092d54b5a76003ba2052962d338b18479b4562209",
+        "raw_sha256": "3eab2e5f7119a5f1b0bbc91f79adaf7d0f4d514038d2d5b310b1a467e3edf415",
+        "source_bindings": 192
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "a0543df1370a0db8852003bb8563dbd36c0d3b03d6fdc451a142eaf7f02cb337",
+        "raw_sha256": "c22f59dd32d429042e7fac7f7be9d5ad76152064b542c3ed4f2bc908df5a88e0",
+        "source_bindings": 174
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "4f6ac1c56d2138c9a64397ea07b6d5aacdfd244c7cdf83610f3f5d807fa03f5f",
+        "raw_sha256": "04f37ade41e947751ae3570d85a57dddebd6d5b09a68c6b1ba0fda9d71f23fda",
+        "source_bindings": 194
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "c8ae61549cc119ad0e90887b195ddb8446fe391a56f299d1f4da53c2d9e40746",
+        "raw_sha256": "38dc83d6d15634cf99da1986e27b37132d93d74cc5bdf86f0a27d37126373890",
+        "source_bindings": 180
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "f12572f3f07358dd6507d98b934b8faa3d69dcab708529a1a62e567145b645a7",
+        "raw_sha256": "df90a7e4aa20b485724221ebe7b09909e3c6e5e9b250e1179c2d77d1a76037c2",
+        "source_bindings": 199
+      }
+    ],
+    "source_bindings": 1111,
+    "all_validated_before_and_after": true,
+    "raw_bytes_retained_privately": true
+  }
+}

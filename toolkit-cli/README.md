@@ -54,6 +54,19 @@ Properties in native XML/CBZ. Repeated SAVE keeps Network/Interface OIDs and
 replaces Property OIDs. Follow it with explicit `cgate project save NAME` when
 the loaded database should become the saved project baseline.
 
+The scalar database commands `get`, `set`, `add`, `copy`, `delete` and `validate`
+also accept `--project NAME`. Each selects the project on its own connection
+before using an issued OID, reading a copy source or initializing a new Level.
+For example, `cgate database add //LAB/CustomA application 56 Lighting
+--project LAB` creates an Application in an existing independent named Network.
+Use its returned OID for subsequent Group/NetVar/Level edits. cmqttd preserves
+these ordered children, fresh copy identities and incomplete raw objects through
+explicit save/reload and internal JSON restart. A Level requires Value before
+project save; typed creation/copy initializes it to the requested address.
+The [named workflow report](docs/feature-batch-2026-10-01-named-database-workflows.md)
+records software and bounded original-server checks. Full Project-OID operations,
+mixed payload copies and broader original/physical acceptance remain open.
+
 `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
 snapshot through the server FILE protocol. cmqttd stores it in its virtual
 repository namespace for portable conversion commands. Upload completion does

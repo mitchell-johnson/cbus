@@ -35,6 +35,14 @@ unrelated tag edits. Whole-project XML preserves Network creation order; the
 binds that rule to fresh original-server evidence and preserves the export's
 selection and model-state checks.
 
+The [named database workflow](toolkit-cli/docs/feature-batch-2026-10-01-named-database-workflows.md)
+adds Applications, Groups, NetVars and Levels to those independent named
+Networks, with fresh identities on copies and explicit save/reload. Typed
+`cgate database get`, `set`, `add`, `copy`, `delete` and `validate` now accept
+`--project NAME` and select that project on the command's own connection.
+The [operator guide](toolkit-cli/docs/network-definitions.md) explains Level
+initialization, incomplete-object constraints and the remaining native limits.
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the
@@ -104,6 +112,7 @@ retains its separate source-bound acceptance record.
 | Preview or save database thermostat settings, explicit Celsius/Fahrenheit form normalization and supported templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [template allocation](toolkit-cli/docs/thermostat-templates.md)) |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
 | Create a closed database network, inspect runtime definitions, or save them into the project | `cbus-toolkit cgate database network-new` and `cgate network definition` ([setup and lifecycle](toolkit-cli/docs/network-definitions.md)) |
+| Edit or copy a loaded project's named Applications, Groups, NetVars or Levels | `cbus-toolkit cgate database get`, `set`, `add`, `copy`, `delete`, `validate`, with `--project NAME` ([selected sessions and persistence](toolkit-cli/docs/network-definitions.md)) |
 | Upload a local file for the server's FILE service and portable conversions | `cbus-toolkit cgate file-upload PATH SOURCE [--project PROJECT]`; cmqttd uses a virtual repository namespace |
 | Review a supported database unit move, retain a backup, save/reopen and inspect an interrupted attempt | `cbus-toolkit cgate conversion plan-move`, `apply-move`, `recover` ([workflow and bounds](toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery)) |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |

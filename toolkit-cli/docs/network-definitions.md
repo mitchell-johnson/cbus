@@ -95,8 +95,30 @@ cbus-toolkit cgate project close LAB
 cbus-toolkit cgate project load LAB
 ```
 
-For a named or OID scalar edit, select the loaded project on the same
-connection. The command file below edits only the tag database:
+For a named or OID database operation, pass `--project` to select the loaded
+project on that invocation's connection. Get, set, add, copy, delete, validate,
+get-xml and set-xml share this option. For example:
+
+```sh
+cbus-toolkit cgate database get //LAB/CustomA/TagName --project LAB
+cbus-toolkit cgate database set //LAB/CustomA/TagName Workshop --project LAB
+cbus-toolkit cgate database add //LAB/CustomA application 56 Lighting --project LAB
+cbus-toolkit cgate database add //LAB/CustomA/56 group 1 Lamp --project LAB
+cbus-toolkit cgate database add //LAB/CustomA/56/1 level 7 Evening --project LAB
+cbus-toolkit cgate database validate //LAB/CustomA --project LAB
+cbus-toolkit cgate project save LAB
+```
+
+These examples require an existing loaded `LAB/CustomA` and unused child
+addresses. Typed add/copy use DBADDSAFE/DBCOPYSAFE; a Level creation also reads
+the issued OID and initializes its Value to the requested byte on that same
+connection. Raw DBCOPYSAFE retains the source Level Value until explicitly
+edited. A selection refusal or lost reply stops the dependent operation;
+the CLI does not reconnect or replay. Selection does not implicitly load,
+save or open a project/network, or rewrite a qualified path to another project.
+
+For an explicitly selected multi-command session, a command file remains
+useful. The following edits only the tag database:
 
 ```sh
 cat > edit-network.cgate <<'EOF'
@@ -108,10 +130,12 @@ cbus-toolkit cgate run edit-network.cgate
 cbus-toolkit cgate database get-xml //LAB/CustomA --project LAB --output Workshop.xml
 ```
 
-Known tag mutations outside the selected project return 401 before changing
-state. In particular, a separate `project use` CLI invocation cannot select a
-later invocation's connection. This refusal is cmqttd's selected-project safety
-boundary; the original SAVE experiment pins the selected DBSET sequence.
+OID mutations are selected-project scoped. Absolute named DBADD/DBADDSAFE
+parents can target their qualified project without changing the current
+selection, as observed in original C-Gate; this does not authorize an OID
+mutation in that other project. A separate `project use` CLI invocation cannot
+select a later invocation's connection. Explicit `--project` keeps standalone
+typed operations predictable. LOGIN requirements still precede mutation.
 
 `NET SAVE DB` updates the loaded database. `PROJECT SAVE` commits that database
 to the project baseline; CLOSE/LOAD discards unsaved materialization. cmqttd
@@ -131,10 +155,30 @@ created by `project new`: Address `254` with NetworkNumber `255` resolves as
 exact `254`, and its numeric alias `0xfe` does not resolve. NetworkNumber remains
 an independently validated byte; changing it does not rename Address or
 authorize physical traffic to that value.
-Complete cross-project copies allocate fresh OIDs. Unsafe same-project copies
-of these named rows, and incomplete unsafe child additions, remain unsupported;
-cmqttd refuses them before mutation. It does not report a successful copy with
-the native pending-null semantics missing.
+Independent named database Networks support SAFE Application, Group, NetVar
+and Level construction/copy. Group and NetVar can contain Levels; NetVar is an
+Application child and has no Value field of its own. The admitted copies issue
+fresh OIDs for modeled descendants and preserve the source graph.
+
+Raw DBADD and same-project DBCOPY also retain incomplete named graphs by OID.
+The unsafe Network-copy parent is `Installation/Project`, its qualified form,
+or the selected Project OID. A bare project name is not that unsafe parent.
+Copy clears the tagged objects' Address/TagName while retaining NetworkNumber,
+Interface/Property metadata and Level Values. Missing TagName causes XML export
+444 and project save 408; a named object without Address can be saved, while a
+Level additionally needs Value. Child completion preserves creation order and
+the issued OIDs. Unsafe Address writes retain literal values and duplicates;
+SAFE byte/collision checks are a separate admission boundary.
+
+Incomplete graphs survive cmqttd's internal JSON restart and explicit project
+baseline reload. They do not widen complete external DBSETXML or native archive
+admission: exporting such a graph does not prove it can be restored through a
+complete-XML parser. New unsafe/deep-child copies containing Units or unmodeled
+OID-bearing XML refuse before mutation. Renamed numeric-associated Level
+construction, additional decorated copies, duplicate-selector precedence and
+full Project-OID operations remain unaccepted. Local deletion retires descendant
+OIDs immediately; original C-Gate was observed to retain stale descendant reads
+until reload. No native bug-equivalence or full workflow parity is claimed.
 
 `cgate get //PROJECT/NAME Name`, `Type`, `InterfaceAddress`, `Interface` and
 `Options` inspect an existing runtime definition. Interface and InterfaceAddress

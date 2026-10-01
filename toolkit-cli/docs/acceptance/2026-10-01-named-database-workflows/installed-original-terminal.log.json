@@ -1,0 +1,9 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "ea4b1029dd77777aa5e95cc9aa1654a5d169a19f7c48c0dca26c1811c002a386",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)\nLogging to file: logs/event.txt\n20261001-211510.163 800 cgate - C-Gate started.\r\nC-Gate is running.\n"
+}

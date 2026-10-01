@@ -198,6 +198,20 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 ## Test data
 
+The named database CLI journey runs in both interoperability selections through
+explicit `[mock]` and `[daemon]` test nodes. Every CLI subprocess selects its
+project on the same connection before using OIDs; the journey checks fresh copy
+identities, Level values, refusals, explicit save/reload and neighbouring graphs.
+The mock uses `--native-project-archives` and public FILE upload/PROJECT RESTORE
+to import complete named XML. The daemon uses real NET CREATE/NET SAVE DB
+materialization. This does not claim mock runtime-definition materialization.
+Tests own their child processes, loopback listeners, inert broker, PCI simulator
+and no-contact CNI trap, and verify cleanup. With no configured binary they skip
+explicitly; these provisioning skips are separate from configured passes. The
+original C-Gate component test is independently provisioned and does not replace
+the complete native or hardware release gates. See the
+[named workflow report](../toolkit-cli/docs/feature-batch-2026-10-01-named-database-workflows.md).
+
 `rust/testdata/vectors/` contains JSONL compatibility vectors for checksums,
 frame encoding and decoding, ramp rates, MQTT topics, Home Assistant discovery,
 and selected C-Gate behavior. The `cbus-golden-tests` build script generates a

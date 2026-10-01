@@ -1,0 +1,9 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "e5e6ed85f895a1a5f0cfa0d532cf01429d6018a74fbc3af768a5adb1ce47ce9b",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": "2026-10-01T08:15:25.508940Z  INFO cmqttd: C-Gate service listening on 127.0.0.1:55947\n2026-10-01T08:15:25.509026Z  INFO cmqttd: C-Gate event service listening on 127.0.0.1:55948\n2026-10-01T08:15:30.511575Z  WARN cmqttd: MQTT connection error: Network timeout; retrying\n2026-10-01T08:15:36.516608Z  WARN cmqttd: MQTT connection error: Network timeout; retrying\n2026-10-01T08:15:40.121147Z  INFO cmqttd: shutdown signal received; disconnecting from MQTT\n"
+}

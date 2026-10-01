@@ -24,6 +24,11 @@
 //! access model); pass `--deny-programming` to reproduce the default-deny
 //! native posture.
 //!
+//! `--native-project-archives` opts PROJECT ARCHIVE/RESTORE into the
+//! supported complete XML, gzip and single-entry ZIP containers in the
+//! process-local FILE namespace. It does not expose host files or provide
+//! persistent storage. Without it, archives remain internal model snapshots.
+//!
 //! ```sh
 //! cgate-mock --bind 127.0.0.1:0   # ephemeral port, prints the address
 //! ```
@@ -43,9 +48,12 @@ use tokio::sync::{mpsc, Mutex};
 const MAX_LINE_BYTES: usize = 1024 * 1024;
 /// Cap for a single here-document body.
 const MAX_DOCUMENT_BYTES: usize = 16 * 1024 * 1024;
+const USAGE: &str = "usage: cgate-mock [--bind ADDR] [--deny-programming] [--unitspec DIR] [--native-project-archives]\n\
+    --native-project-archives  Supported complete XML/gzip/ZIP PROJECT containers in process-local FILE storage; no host files or persistence.\n\
+    Default PROJECT archives remain internal model snapshots.";
 
 fn usage() -> ! {
-    eprintln!("usage: cgate-mock [--bind ADDR] [--deny-programming] [--unitspec DIR]");
+    eprintln!("{USAGE}");
     std::process::exit(2);
 }
 
@@ -82,9 +90,16 @@ struct Hub {
 }
 
 impl Hub {
-    fn new(programming: bool, unitspec: Option<std::path::PathBuf>) -> Self {
+    fn new(
+        programming: bool,
+        unitspec: Option<std::path::PathBuf>,
+        native_project_archives: bool,
+    ) -> Self {
         let mut server =
             Server::new(cbus_cgate::AccessLevel::Program).with_programming(programming);
+        if native_project_archives {
+            server = server.with_native_project_archives();
+        }
         if let Some(dir) = unitspec {
             server = server.with_unitspec_dir(dir);
         }
@@ -230,13 +245,19 @@ async fn main() {
     let mut bind = "127.0.0.1:20033".to_string();
     let mut deny_programming = false;
     let mut unitspec: Option<std::path::PathBuf> = None;
+    let mut native_project_archives = false;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--bind" => bind = args.next().unwrap_or_else(|| usage()),
             "--deny-programming" => deny_programming = true,
+            "--native-project-archives" => native_project_archives = true,
             "--unitspec" => {
                 unitspec = Some(args.next().unwrap_or_else(|| usage()).into());
+            }
+            "--help" | "-h" => {
+                println!("{USAGE}");
+                return;
             }
             _ => usage(),
         }
@@ -246,7 +267,11 @@ async fn main() {
         std::process::exit(1);
     });
     println!("cgate-mock listening on {}", listener.local_addr().unwrap());
-    let hub = Arc::new(Mutex::new(Hub::new(!deny_programming, unitspec)));
+    let hub = Arc::new(Mutex::new(Hub::new(
+        !deny_programming,
+        unitspec,
+        native_project_archives,
+    )));
     loop {
         let Ok((stream, _)) = listener.accept().await else {
             continue;
@@ -520,4 +545,117 @@ fn head_tag(head: &str) -> &str {
         .and_then(|s| s.split_once(']'))
         .map(|(t, _)| t)
         .unwrap_or("")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+    #[test]
+    fn native_project_archives_opt_in_restores_complete_named_graph_only() {
+        let document = concat!(
+            "<Installation><Project><TagName>SEED</TagName><Address>SEED</Address>",
+            "<Network><TagName>Source</TagName><Address>CustomA</Address>",
+            "<NetworkNumber>17</NetworkNumber><Interface><InterfaceType>Cni</InterfaceType>",
+            "<InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface>",
+            "<Application><TagName>Lighting</TagName><Address>56</Address>",
+            "<Group><TagName>Main</TagName><Address>1</Address></Group>",
+            "</Application></Network></Project></Installation>"
+        );
+        let payload = STANDARD.encode(document);
+        let mut default = Hub::new(true, None, false);
+        assert_eq!(
+            default
+                .server
+                .handle("[mkdir] FILE MKDIR Projects/archived")
+                .status,
+            200
+        );
+        assert_eq!(
+            default
+                .server
+                .handle_document("[upload] FILE UPLOAD Projects/archived/seed.xml", &payload,)
+                .status,
+            200
+        );
+        assert_eq!(
+            default
+                .server
+                .handle("[restore] PROJECT RESTORE LAB seed.xml")
+                .status,
+            404
+        );
+        for command in [
+            "[new] PROJECT NEW SNAPSHOT",
+            "[archive] PROJECT ARCHIVE SNAPSHOT snapshot.xml",
+            "[restore] PROJECT RESTORE COPY snapshot.xml",
+        ] {
+            assert_eq!(default.server.handle(command).status, 200, "{command}");
+        }
+
+        let mut enabled = Hub::new(true, None, true);
+        assert_eq!(
+            enabled
+                .server
+                .handle("[mkdir] FILE MKDIR Projects/archived")
+                .status,
+            200
+        );
+        assert_eq!(
+            enabled
+                .server
+                .handle_document("[upload] FILE UPLOAD Projects/archived/seed.xml", &payload,)
+                .status,
+            200
+        );
+        let response = enabled
+            .server
+            .handle("[restore] PROJECT RESTORE LAB seed.xml");
+        assert_eq!(response.status, 200, "{response:?}");
+        assert_eq!(enabled.server.current_project(), None);
+        assert_eq!(enabled.server.handle("[use] PROJECT USE LAB").status, 200);
+        assert_eq!(
+            enabled
+                .server
+                .handle("[name] DBGET //LAB/CustomA/56/1/TagName")
+                .final_text,
+            "342 //LAB/CustomA/56/1/TagName=Main"
+        );
+        assert_eq!(
+            enabled
+                .server
+                .handle("[add] DBADDSAFE //LAB/CustomA Application 57 Extra")
+                .status,
+            301
+        );
+
+        let incomplete = STANDARD.encode(
+            "<Installation><Project><TagName>BAD</TagName><Address>BAD</Address>\
+             <Network><TagName>Incomplete</TagName><Address>CustomB</Address>\
+             </Network></Project></Installation>",
+        );
+        assert_eq!(
+            enabled
+                .server
+                .handle_document(
+                    "[upload-bad] FILE UPLOAD Projects/archived/incomplete.xml",
+                    &incomplete,
+                )
+                .status,
+            200
+        );
+        assert_eq!(
+            enabled
+                .server
+                .handle("[restore-bad] PROJECT RESTORE BAD incomplete.xml")
+                .status,
+            408
+        );
+        assert_eq!(enabled.server.current_project().as_deref(), Some("LAB"));
+        assert_eq!(
+            enabled.server.handle("[use-bad] PROJECT USE BAD").status,
+            404
+        );
+    }
 }

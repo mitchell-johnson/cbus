@@ -1,0 +1,54 @@
+{
+  "format": "cbus-named-database-evidence-derivative-v1",
+  "raw_sha256": "ce0dee8d7aa27032b7fba040dffa05850e7499a45d183029ff6e9002522d7735",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Exact bytes are privately SHA-bound; local paths and Hostname coordinates use declared roles in text, object keys and UTF-8 hex/base64. Actual synthetic loopback ports and OIDs are retained. Added stdout/stderr text and aggregate test summaries are explicit projections; raw byte counts and digests still bind original bytes. A derivative is not original wire.",
+  "content": {
+    "argv": [
+      "cargo",
+      "+1.98.1",
+      "test",
+      "-p",
+      "cbus-cgate",
+      "--lib",
+      "service::tests::named_database_workflows",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "source_quiet": true,
+    "source_pins": [
+      {
+        "path": "cbus-cgate/src/lib.rs",
+        "sha256": "42e5edf8960bfd8b051f7c08673bc92be82361212bae8fc46f9819b8f460a975"
+      },
+      {
+        "path": "cbus-cgate/src/manual.rs",
+        "sha256": "da7d4d3fa1c06da56a57169ed9da0bc90c3eecdd763a1a7b9a58e017f299976a"
+      },
+      {
+        "path": "cbus-cgate/src/tag_network.rs",
+        "sha256": "9f420c04aa83093efb57931e75606c9d863d0e375e1d3ac751ace30417955e15"
+      },
+      {
+        "path": "cbus-cgate/src/service.rs",
+        "sha256": "8a5fe6bf9222a699ecf7ed7b2625f5da20611c6fc5d0c3513fd2e87646629e15"
+      },
+      {
+        "path": "cbus-cgate/src/service/tests.rs",
+        "sha256": "eee92b84b8694d55ca0e1c2a103cdcce2368e9cf4e537e88aec45926a2e1888f"
+      },
+      {
+        "path": "cbus-cgate/src/service/tests/net_save_db.rs",
+        "sha256": "3f7fe90ff0f1659c20654bc4960b6d3fe14284d360d66cef0529c14735177553"
+      },
+      {
+        "path": "cbus-cgate/src/service/tests/named_database_workflows.rs",
+        "sha256": "471055fb0e8865dd38269bd2489b11529895f2e806e41f4e0b73c988833884f6"
+      }
+    ],
+    "log_sha256": "bdce4c1b8683a37fd8a15b9e54a19fb1bf5f889b532cd01a44191b3519774e7c"
+  }
+}
