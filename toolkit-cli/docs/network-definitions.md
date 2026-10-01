@@ -130,6 +130,15 @@ cbus-toolkit cgate run edit-network.cgate
 cbus-toolkit cgate database get-xml //LAB/CustomA --project LAB --output Workshop.xml
 ```
 
+An existing numeric database Network in a secondary project may also have a
+renamed tag Address. Admitted Level add/copy through its renamed qualified or
+bare path, or its Group/NetVar OID, follows the original numeric database owner.
+It does not create another physical Network. See the
+[associated Level workflow](feature-batch-2026-10-02-associated-levels.md) for
+selection, Value initialization, save/reload and the remaining raw/NULL/decorated
+copy limits. The service's existing restriction on renaming any Network inside
+its configured hardware project remains.
+
 OID mutations are selected-project scoped. Absolute named DBADD/DBADDSAFE
 parents can target their qualified project without changing the current
 selection, as observed in original C-Gate; this does not authorize an OID
@@ -193,9 +202,11 @@ Incomplete graphs survive cmqttd's internal JSON restart and explicit project
 baseline reload. They do not widen complete external DBSETXML or native archive
 admission: exporting such a graph does not prove it can be restored through a
 complete-XML parser. New unsafe/deep-child copies containing Units or unmodeled
-OID-bearing XML refuse before mutation. Renamed numeric-associated Level
-construction, additional decorated copies, duplicate-selector precedence and
-full Project-OID operations remain unaccepted. Local deletion retires descendant
+OID-bearing XML refuse before mutation. Renamed numeric-associated Level ADD and
+Level-source COPY now have the bounded owner route described above; associated
+raw/NULL/NetVar reconciliation and decorated copies remain open, together with
+broader duplicate-selector precedence and full Project-OID operations.
+Local deletion retires descendant
 OIDs immediately; original C-Gate was observed to retain stale descendant reads
 until reload. No native bug-equivalence or full workflow parity is claimed.
 

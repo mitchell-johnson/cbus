@@ -28,16 +28,26 @@ connection manager; it never replays, resumes, or reuses the partial snapshot.
 `Installation/Project/Network` snapshot for an existing loaded project,
 independently of the connection's current project selection. It composes the
 same Network subtrees returned by direct network reads, including modeled
-applications, groups, labels, units and PP fields, in numeric network order.
+applications, groups, labels, units and PP fields, in Network creation order.
 This enables Toolkit CLI CSV export for a unit, network or entire project
 through cmqttd. The native selector and hierarchy are backed by
 [11 retained original project reads](../toolkit-cli/research/fixtures/native-cgate-project-xml-shape.json).
 The minimal wrapper omits unmodeled native Installation/Project OIDs,
 timestamps and metadata; it is **not a lossless Schneider project export**,
-and numeric network order is local service behavior. The read neither
+with the ordering bound by the
+[export-order checkpoint](../toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-export-order.md).
+The read neither
 selects a project nor performs PCI I/O. Missing projects return 401. Other
 project selector aliases, exact native error wording, complete original
 wrapper metadata and original Toolkit report-manager order remain unverified.
+
+Admitted Level ADD/COPY after a secondary tag-Network rename now delegates to
+the existing numeric database owner. Qualified/bare paths and bare Group/NetVar
+OIDs share that owner, with selected-project, Unit/retired identity, pending
+completion, LOGIN and durable rollback checks. Typed CLI Level initialization
+remains explicit on the operation's own connection. See the
+[associated Level workflow and outstanding semantics](../toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md);
+raw/NULL/NetVar values, retained XML copies and original acceptance remain open.
 
 ## Start and connect
 

@@ -320,7 +320,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 1,
+      "gated_tests": 3,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -338,6 +338,35 @@
           ],
           "offline": "unknown",
           "native": "unknown"
+        },
+        {
+          "scope": "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_auth_and_restart",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select CBUS_CMQTTD_BIN for the owned associated Level LOGIN journey",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        },
+        {
+          "scope": "tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned associated Level journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
         }
       ],
       "not_native": [
@@ -346,7 +375,9 @@
             "rust_binaries"
           ],
           "tests": [
-            "test_public_named_safe_graph_separate_project_selected_sessions"
+            "test_public_named_safe_graph_separate_project_selected_sessions",
+            "test_public_renamed_associated_level_cli_auth_and_restart",
+            "test_public_renamed_associated_level_cli_owner_and_wire"
           ]
         }
       ]

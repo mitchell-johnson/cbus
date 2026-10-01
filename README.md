@@ -47,6 +47,15 @@ deletion in independent database graphs, while keeping the configured physical
 Network's address and interface binding protected. Original Toolkit/C-Gate
 acceptance is tracked separately in [the manual handoff](https://github.com/mitchell-johnson/cbus/issues/72).
 
+The [associated Level workflow](toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md)
+also lets the CLI create and copy admitted Levels after a secondary database
+Network is renamed, following its original numeric owner through paths or OIDs.
+Raw SAFE copy retains the source Value; typed CLI copy initializes the new
+Level's Value to the caller's requested byte. Associated raw/NULL semantics,
+decorated copies and original acceptance remain unfinished. The feature report
+records completed Rust, independent mock and source/wheel CLI checks, together
+with the corrected evidence-format failures from the full Python run.
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the

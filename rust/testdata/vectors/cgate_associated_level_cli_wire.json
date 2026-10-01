@@ -1,0 +1,71 @@
+{
+  "format": "cbus-associated-level-cli-wire-v1",
+  "provenance": "Local public typed CLI contract over the Rust associated numeric owner; retained generic receipt semantics. No original renamed-associated execution.",
+  "scope": {
+    "source_value": 77,
+    "caller_initializes_destination_value_to_address": true,
+    "associated_typed_null_get": "342 Value=null",
+    "associated_typed_null_save": 200,
+    "completed_level_byte_policy": "77, 077 and +77 canonicalize to decimal 77 locally",
+    "raw_associated_or_null_native_parity": false,
+    "original_execution": false,
+    "physical_acceptance": false
+  },
+  "null_case": {
+    "requests": ["PROJECT USE LAB", "DBGET !${null}/Value"],
+    "statuses": [200, 342],
+    "value": "null",
+    "provenance": "Direct SAFE add without the typed caller's Value initializer; associated local NULL/save policy only."
+  },
+  "cases": [
+    {
+      "id": "add-qualified",
+      "argv": ["add", "//LAB/Renamed/56/1", "level", "8", "Qualified"],
+      "requests": ["PROJECT USE LAB", "DBADDSAFE //LAB/Renamed/56/1 Level 8 Qualified", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 8"],
+      "statuses": [200, 301, 342, 200],
+      "value": 8
+    },
+    {
+      "id": "add-bare",
+      "argv": ["add", "Renamed/56/1", "level", "9", "Bare"],
+      "requests": ["PROJECT USE LAB", "DBADDSAFE Renamed/56/1 Level 9 Bare", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 9"],
+      "statuses": [200, 301, 342, 200],
+      "value": 9
+    },
+    {
+      "id": "add-parent-oid",
+      "argv": ["add", "!${group1}", "level", "10", "ByOID"],
+      "requests": ["PROJECT USE LAB", "DBADDSAFE !${group1} Level 10 ByOID", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 10"],
+      "statuses": [200, 301, 342, 200],
+      "value": 10
+    },
+    {
+      "id": "copy-source-oid-parent-oid",
+      "argv": ["copy", "!${source}", "!${group2}", "11", "OIDCopy"],
+      "requests": ["PROJECT USE LAB", "DBGETXML !${source}", "DBCOPYSAFE !${source} !${group2} 11 OIDCopy", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 11"],
+      "statuses": [200, 344, 301, 342, 200],
+      "value": 11
+    },
+    {
+      "id": "copy-source-path-parent-qualified",
+      "argv": ["copy", "//LAB/Renamed/56/1/7", "//LAB/Renamed/56/2", "12", "PathCopy"],
+      "requests": ["PROJECT USE LAB", "DBGETXML //LAB/Renamed/56/1/7", "DBCOPYSAFE //LAB/Renamed/56/1/7 //LAB/Renamed/56/2 12 PathCopy", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 12"],
+      "statuses": [200, 344, 301, 342, 200],
+      "value": 12
+    },
+    {
+      "id": "add-retained-netvar-parent-oid",
+      "argv": ["add", "!${netvar}", "level", "13", "VariableLevel"],
+      "requests": ["PROJECT USE LAB", "DBADDSAFE !${netvar} Level 13 VariableLevel", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 13"],
+      "statuses": [200, 301, 342, 200],
+      "value": 13
+    },
+    {
+      "id": "copy-retained-netvar-parent-path",
+      "argv": ["copy", "!${source}", "//LAB/Renamed/56/4", "14", "VariableCopy"],
+      "requests": ["PROJECT USE LAB", "DBGETXML !${source}", "DBCOPYSAFE !${source} //LAB/Renamed/56/4 14 VariableCopy", "DBGET !${issued}/OID", "DBSETSAFE !${issued}/Value 14"],
+      "statuses": [200, 344, 301, 342, 200],
+      "value": 14
+    }
+  ]
+}

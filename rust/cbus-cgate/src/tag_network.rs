@@ -739,6 +739,13 @@ fn walk_tag_path(
     Ok((indices, None))
 }
 
+struct AssociatedLevelOperand {
+    canonical: String,
+    element: String,
+    oid: String,
+    addressed: bool,
+}
+
 impl Server {
     pub(crate) fn named_project_oid(&self, project: &str) -> Option<&str> {
         self.db_xml_extras
@@ -1376,7 +1383,7 @@ impl Server {
             let project_parent =
                 !destination.contains('/') && staged.projects.contains_key(destination);
             let cross_project = project_parent && destination != selected.project;
-            if !internal_parent && !cross_project && !(safe && project_parent) {
+            if !(internal_parent || cross_project || safe && project_parent) {
                 let mismatch =
                     words[2] == "Installation" || words[2] == format!("//{}", selected.project);
                 return if mismatch {
@@ -1483,6 +1490,45 @@ impl Server {
         let Some(previous) = self.projects[project].networks.get(&address).cloned() else {
             return Ok(());
         };
+        let prefix = format!("//{project}/{address}/");
+        let plain_variables = self
+            .db_levels
+            .values()
+            .filter(|level| {
+                level.netvar
+                    && level.parent.starts_with(&prefix)
+                    && !self
+                        .db_pending
+                        .values()
+                        .any(|pending| pending.project == project && pending.oid == level.oid)
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        for variable in &plain_variables {
+            if variable.value.is_some() {
+                return Err(
+                    "Associated NetVar parent Value cannot be projected losslessly".to_string(),
+                );
+            }
+            let path = format!("{}/{}", variable.parent, variable.address);
+            if std::iter::once(variable.oid.as_str())
+                .chain(
+                    self.db_levels
+                        .values()
+                        .filter(|level| level.parent == path)
+                        .map(|level| level.oid.as_str()),
+                )
+                .any(|oid| {
+                    self.db_xml_extras
+                        .get(&Self::unit_document_key(project, oid))
+                        .is_some_and(|extras| extras != &crate::DbXmlExtras::default())
+                })
+            {
+                return Err(
+                    "Associated NetVar retained payload cannot be projected losslessly".to_string(),
+                );
+            }
+        }
         let mut normalized = record.root;
         normalized.set("Address", address.to_string());
         normalized.set("NetworkNumber", address.to_string());
@@ -1515,12 +1561,345 @@ impl Server {
         let result = self
             .apply_db_xml_replacement(&target, &object)
             .map_err(|(_, e)| e);
+        if result.is_ok() {
+            // Keep a plain typed NetVar's original owner/readback rather than
+            // replacing it with a new pending mirror during rehydration.
+            self.db_pending.retain(|_, pending| {
+                !(pending.project == project
+                    && pending.element == "NetVar"
+                    && plain_variables.iter().any(|variable| {
+                        variable.oid == pending.oid
+                            && pending.path.as_deref()
+                                == Some(
+                                    format!("{}/{}", variable.parent, variable.address).as_str(),
+                                )
+                    }))
+            });
+        }
         self.projects
             .get_mut(project)
             .expect("project")
             .tag_networks
             .insert(key.to_string(), overlay);
         result
+    }
+
+    // Resolve only a stable numeric database owner. This never changes the
+    // physical network resolver and never parses a named/internal storage key.
+    fn associated_level_owner(&self, project: &str, raw: &str) -> Option<u8> {
+        let mut path = raw.to_string();
+        let mut seen = HashSet::new();
+        for _ in 0..=self.db_pending.len() {
+            if !seen.insert(path.clone()) {
+                return None;
+            }
+            if let Some(oid) = path.strip_prefix('!') {
+                if oid.is_empty() || oid.contains('/') {
+                    return None;
+                }
+                path = self.pending_object(project, oid)?.parent.clone();
+                continue;
+            }
+            let (owner_project, number) = self.network_of(&path)?;
+            if owner_project != project {
+                return None;
+            }
+            return self
+                .projects
+                .get(project)?
+                .tag_networks
+                .values()
+                .any(|record| record.database_network == Some(number))
+                .then_some(number);
+        }
+        None
+    }
+
+    fn associated_level_operand(
+        &self,
+        raw: &str,
+    ) -> Result<Option<AssociatedLevelOperand>, String> {
+        let Some(project) = self.current.as_deref() else {
+            return Ok(None);
+        };
+        let Some(project_record) = self.projects.get(project) else {
+            return Ok(None);
+        };
+        if let Some(oid) = raw.strip_prefix('!') {
+            // Several general legacy resolvers strip suffixes. Never call
+            // those with a scalar/descendant spelling as a Level operand.
+            if oid.is_empty() || oid.contains('/') {
+                return Err("Level operands require a bare OID".to_string());
+            }
+            if self
+                .invalidated_unit_oid_lookups
+                .contains(&(project.to_string(), oid.to_string()))
+                || project_record
+                    .networks
+                    .values()
+                    .any(|network| network.units.values().any(|unit| unit.oid == oid))
+            {
+                return Err("Level operand resolves to a retired or Unit identity".to_string());
+            }
+            // Preserve the established pending winner, including xml_order.
+            // pending_for_project is not a path resolver: it returns !OID.
+            if let Some(object) = self.pending_object(project, oid) {
+                let route = object.path.as_deref().unwrap_or(&object.parent);
+                if self.associated_level_owner(project, route).is_some() {
+                    return Ok(Some(AssociatedLevelOperand {
+                        canonical: object.path.clone().unwrap_or_else(|| raw.to_string()),
+                        element: object.element.clone(),
+                        oid: oid.to_string(),
+                        addressed: object.path.is_some(),
+                    }));
+                }
+            }
+            if let Some(level) = self.level(oid) {
+                if self
+                    .associated_level_owner(project, &level.parent)
+                    .is_some()
+                {
+                    return Ok(Some(AssociatedLevelOperand {
+                        canonical: format!("{}/{}", level.parent, level.address),
+                        element: if level.netvar { "NetVar" } else { "Level" }.to_string(),
+                        oid: oid.to_string(),
+                        addressed: true,
+                    }));
+                }
+            }
+        }
+        let Some(selected) = self.tag_selection_in(raw, Some(project))? else {
+            return Ok(None);
+        };
+        let record = self.current_tag_record(project, &selected.key)?;
+        let Some(number) = record.database_network else {
+            return Ok(None);
+        };
+        if selected.field.is_some() {
+            return Err("A scalar field is not a Level operand".to_string());
+        }
+        let mut canonical = format!("//{project}/{number}");
+        let mut node = &record.root;
+        for index in selected.indices {
+            node = &node.children[index];
+            if !matches!(
+                node.element.as_str(),
+                "Application" | "Group" | "NetVar" | "Level"
+            ) {
+                return Err("Unsupported associated Level route".to_string());
+            }
+            let address = node
+                .field("Address")
+                .and_then(|value| value.parse::<u8>().ok())
+                .ok_or_else(|| "Level route has no byte Address".to_string())?;
+            canonical.push_str(&format!("/{address}"));
+        }
+        let oid = node
+            .field("OID")
+            .ok_or_else(|| "Level route has no identity".to_string())?;
+        // Require a real legacy identity at that path, never just path length.
+        let typed_identity = self.level(oid).filter(|level| {
+            format!("{}/{}", level.parent, level.address) == canonical
+                && node.element == if level.netvar { "NetVar" } else { "Level" }
+        });
+        if typed_identity.is_none() {
+            let target = self
+                .resolve_db_xml_target(&canonical)
+                .map_err(|(_, reason)| reason)?;
+            if target.oid != oid || target.kind.element() != node.element {
+                return Err("Associated Level route identity disagrees with its owner".to_string());
+            }
+        }
+        Ok(Some(AssociatedLevelOperand {
+            canonical,
+            element: node.element.clone(),
+            oid: oid.to_string(),
+            addressed: true,
+        }))
+    }
+
+    fn associated_level_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
+        let verb = words.first()?.to_ascii_uppercase();
+        let add = matches!(verb.as_str(), "DBADD" | "DBADDSAFE")
+            && words.get(2)?.eq_ignore_ascii_case("Level");
+        let copy = matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE");
+        if !add && !copy {
+            return None;
+        }
+        let safe = verb.ends_with("SAFE");
+        if (safe && words.len() != 5) || (!safe && words.len() < 3) {
+            return None;
+        }
+        let failure =
+            |reason: &str| err(tag, 401, &format!("401 Bad object or device ID: {reason}"));
+        if add
+            && words[1]
+                .strip_prefix("//")
+                .and_then(|path| path.split('/').next())
+                .is_some_and(|project| self.current.as_deref() != Some(project))
+        {
+            // No internal storage-key precondition: explicit project differs
+            // from selection (including None). Fence only
+            // the exact winning lexical root with a proven numeric owner.
+            let associated_owner = words[1].strip_prefix("//").and_then(|path| {
+                let mut parts = path.split('/');
+                let project = self.projects.get(parts.next()?)?;
+                let address = parts.next()?;
+                project
+                    .tag_networks
+                    .iter()
+                    .filter(|(_, record)| record.root.field("Address") == Some(address))
+                    .min_by_key(|(key, record)| (record.created_seq, *key))
+                    .and_then(|(_, record)| record.database_network)
+                    .filter(|number| project.networks.contains_key(number))
+            });
+            if associated_owner.is_some() {
+                return Some(failure("Associated Level project not selected"));
+            }
+        }
+        let source = if copy {
+            if words[1].strip_prefix('!').is_some_and(|raw| {
+                let oid = raw.split('/').next().unwrap_or_default();
+                self.current
+                    .as_deref()
+                    .and_then(|project| self.projects.get(project))
+                    .is_some_and(|project| {
+                        project
+                            .networks
+                            .values()
+                            .any(|network| network.units.values().any(|unit| unit.oid == oid))
+                    })
+            }) {
+                // Keep the existing duplicate Unit/path resolution in dbcopy.
+                return None;
+            }
+            // Unit copy/duplicate-OID policy is outside this handler. A
+            // malformed suffix on a known Level is still a Level refusal.
+            let known_level_oid = words[1].strip_prefix('!').is_some_and(|raw| {
+                let oid = raw.split('/').next().unwrap_or_default();
+                self.level(oid).is_some_and(|level| !level.netvar)
+                    || self
+                        .current
+                        .as_deref()
+                        .and_then(|project| self.pending_object(project, oid))
+                        .is_some_and(|object| object.element == "Level")
+            });
+            match self.associated_level_operand(words[1]) {
+                Ok(Some(source)) if source.element == "Level" => Some(source),
+                Err(reason) if known_level_oid => return Some(failure(&reason)),
+                _ => return None,
+            }
+        } else {
+            None
+        };
+        let parent_word = if copy { words[2] } else { words[1] };
+        let parent = match self.associated_level_operand(parent_word) {
+            Ok(Some(parent)) => parent,
+            Ok(None) => {
+                // Independent named rows retain their TagNode handler. If a
+                // source already chose the associated owner, do not hand its
+                // child to an unrelated graph or opaque fallback.
+                return source
+                    .as_ref()
+                    .map(|_| failure("Associated Level destination not found"));
+            }
+            Err(reason) => return Some(failure(&reason)),
+        };
+        if !matches!(parent.element.as_str(), "Group" | "NetVar") {
+            return Some(failure("Level parent must be a Group or NetVar"));
+        }
+        if safe && !parent.addressed {
+            return Some(failure(
+                "SAFE Level parent must have an addressed owner path",
+            ));
+        }
+        if safe {
+            // Validate before issuing any OID, preserving existing byte/name
+            // CLI grammar. Raw independent scalar lexemes remain untouched.
+            let address = match words[3].parse::<u8>() {
+                Ok(address) => address,
+                Err(_) => return Some(err(tag, 400, "400 Invalid database address")),
+            };
+            if words[4].is_empty() || words[4].contains('#') {
+                return Some(err(tag, 400, "400 Invalid tag name"));
+            }
+            if self
+                .db_levels
+                .values()
+                .any(|level| level.parent == parent.canonical && level.address == address)
+            {
+                return Some(failure("Level Address already exists"));
+            }
+        }
+        let mut rewritten = words.to_vec();
+        if let Some(source) = source {
+            let project = self.current.as_deref().expect("associated selected owner");
+            let extras_key = Self::unit_document_key(project, &source.oid);
+            if self
+                .db_xml_extras
+                .get(&extras_key)
+                .is_some_and(|extras| extras != &crate::DbXmlExtras::default())
+                || self
+                    .pending_object(project, &source.oid)
+                    .is_some_and(|pending| {
+                        pending.fields.keys().any(|field| {
+                            !matches!(field.as_str(), "OID" | "Address" | "TagName" | "Value")
+                        }) || self.db_pending.values().any(|child| {
+                            child.project == project && child.parent == format!("!{}", source.oid)
+                        })
+                    })
+            {
+                return Some(err(tag, 408, "408 Operation failed: Associated Level copy with retained payload is unsupported"));
+            }
+            if source.addressed {
+                if let (Some(level), Some(pending)) = (
+                    self.level(&source.oid),
+                    self.pending_object(project, &source.oid),
+                ) {
+                    let mirror = pending
+                        .fields
+                        .get("Value")
+                        .filter(|value| !value.is_empty());
+                    if mirror.map(|value| value.parse::<u8>().ok()) != level.value.map(Some) {
+                        return Some(err(tag, 408, "408 Operation failed: Associated Level Value mirror disagrees with its owner"));
+                    }
+                }
+            }
+            if safe && (!source.addressed || self.level(&source.oid).is_none()) {
+                return Some(failure("SAFE Level source has no typed record"));
+            }
+            // An incomplete unsafe destination remains outside the existing
+            // copy owner: do not fabricate an addressed route or project.
+            if !parent.addressed {
+                return Some(failure("Associated copy destination is not addressed"));
+            }
+            let source_oid = format!("!{}", source.oid);
+            rewritten[1] = &source_oid;
+            rewritten[2] = &parent.canonical;
+            Some(if safe {
+                let value = self.level(&source.oid).expect("typed Level checked").value;
+                let response = self.dbcopy(tag, &rewritten);
+                if response.status == 301 {
+                    if let Some(oid) = response.final_text.strip_prefix("301 OID=") {
+                        // One operation: preserve Value before returning the
+                        // receipt, without a second command or implicit save.
+                        self.level_mut(oid).expect("new typed Level receipt").value = value;
+                    }
+                }
+                response
+            } else {
+                self.handle_manual_command(tag, &rewritten, &rewritten.join(" "))
+                    .expect("DBCOPY has an established manual owner")
+            })
+        } else {
+            rewritten[1] = &parent.canonical;
+            Some(if safe {
+                self.dbadd(tag, &rewritten)
+            } else {
+                self.handle_manual_command(tag, &rewritten, &rewritten.join(" "))
+                    .expect("DBADD has an established manual owner")
+            })
+        }
     }
 
     pub(crate) fn tag_database_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
@@ -1603,6 +1982,9 @@ impl Server {
                 | "DBVALIDATE"
         ) {
             return None;
+        }
+        if let Some(response) = self.associated_level_command(tag, words) {
+            return Some(response);
         }
         let path = words.get(1)?;
         let qualified_project = path

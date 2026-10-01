@@ -1,6 +1,6 @@
 # Implementation status and outstanding work
 
-Updated **1 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Updated **2 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **42 areas: 18 implemented, 22 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
@@ -48,6 +48,33 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [associated Level owner repair](feature-batch-2026-10-02-associated-levels.md)
+adds operation-scoped Level ADD/COPY delegation after a secondary database
+Network rename. Qualified/bare paths and admitted bare OIDs resolve the same
+numeric database owner; child-first unsafe completion and exact addressed Value
+mirror updates retain that owner. Required Rust checks passed with 8,636 tests
+passed, zero failed and one ignored private-project test. The focused 36-test
+run overlaps that workspace result; an independent owned mock probe passed 61
+commands and 12 checks. Final source and installed wheel each passed five public
+CLI journeys, with all 326 package files identical. The complete Python run
+passed 6,753 parent tests, failed 14 evidence-format cases and skipped 449;
+publication correction passed all 261 affected consumer tests, including those
+14 cases, with one original-input skip. These selected passes do not establish
+a final full-suite pass. Maintained interop passed with two vendor-specification
+skips; its product/test/vector/binary inputs are unchanged by the publication
+correction. The scoped receipt keeps separate subtest counts and historical
+input rosters. Typed CLI journeys cover both Rust servers, with daemon
+authentication and restart checks. Associated typed NULL
+getters/save, canonical byte values, decorated-copy refusals and the configured
+hardware-project rename restriction remain explicit compatibility limits.
+Legacy NetVars and Level children remain in Application XML; tag-tree resync
+refuses unrepresentable acknowledged Value/retained payload instead of dropping
+it. This preservation guard is a local repair, not native semantic acceptance.
+Original comparison is deferred under
+[issue #72](https://github.com/mitchell-johnson/cbus/issues/72); this repair does
+not change the 18/42 category ledger or zero fully accepted obligation count.
+The 42.86% category ratio is not a verified functionality percentage.
+
 The [named database workflow](feature-batch-2026-10-01-named-database-workflows.md)
 adds independent named Application/Group/NetVar/Level SAFE construction and copy,
 ordered incomplete raw objects, selected Project-OID Network copy destinations,
@@ -61,8 +88,8 @@ literal scalar writes, and resolve configured-network protection by explicit
 runtime ownership rather than a coincidentally numeric database key. Fresh
 source/wheel component checks are separate from historical native captures;
 current original acceptance is deferred under [issue #72](https://github.com/mitchell-johnson/cbus/issues/72).
-Broader Project-OID operations, numeric-associated Level
-delegation, mixed retained-XML copies and full native/hardware gates remain open;
+Broader Project-OID operations, numeric-associated raw/NULL semantics,
+mixed retained-XML copies and full native/hardware gates remain open;
 the broad ledger and fully accepted obligation counts are unchanged.
 
 The [export-order checkpoint](feature-batch-2026-10-01-net-save-db-export-order.md)

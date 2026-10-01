@@ -1063,6 +1063,23 @@ parser in process-local FILE storage; the default mock retains internal
 snapshot archives. Neither mode accesses host paths or provides durable storage.
 The mock's `NET SAVE DB` does not materialize runtime definitions like cmqttd.
 
+For an existing numeric-associated tag Network renamed in a secondary project,
+admitted Level ADD and Level-source COPY resolve qualified/bare paths and bare
+Group/NetVar/Level OIDs through the same stable numeric database owner. Scalar or
+descendant OID suffixes, Unit/retired identities, foreign associated selection,
+stale Value mirrors and unsupported retained payload refuse before mutation.
+Typed CLI add/copy still initializes Value to the caller's requested byte; raw
+SAFE copy retains source Value. Unsafe child-first ADD can complete under an
+incomplete Group OID, but incomplete copy destinations remain unsupported.
+Associated typed NULL getter/save remains local `342 ...=null`/`200`, and completed
+typed Level values use canonical decimal bytes; raw/NULL/NetVar semantics and
+decorated copy remain open. Plain legacy NetVars with an acknowledged parent
+Value or retained parent/child XML extras cause atomic local `408` on tag-tree
+resync instead of silent loss; this does not establish native NetVar semantics.
+All configured hardware-project network renames
+remain refused while the service runs. See the
+[associated Level scope](../../../../toolkit-cli/docs/feature-batch-2026-10-02-associated-levels.md).
+
 The two physical forms use the configured shared PCI, directly or through a
 topology-resolved one-to-six-bridge route:
 

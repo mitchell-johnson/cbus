@@ -95,6 +95,7 @@ check-cgate-interop: compile
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
 		tests/test_rust_cgate_interop.py \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
+		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -105,6 +106,8 @@ check-cmqtt-interop: compile
 		tests/test_cmqtt_network_new_cli.py \
 		tests/test_cmqtt_network_save_db_cli.py tests/test_cgate_file_upload.py \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[daemon]' \
+		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[daemon]' \
+		tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_auth_and_restart \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

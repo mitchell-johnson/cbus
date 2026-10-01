@@ -5413,6 +5413,27 @@ impl Server {
             for child in children {
                 output.push_str(&self.pending_db_xml_document(project, child));
             }
+            if object.element == "Application" {
+                let pending_oids = self
+                    .db_pending
+                    .values()
+                    .filter(|candidate| candidate.project == project)
+                    .map(|candidate| candidate.oid.as_str())
+                    .collect::<HashSet<_>>();
+                let mut variables = self
+                    .db_levels
+                    .values()
+                    .filter(|level| {
+                        level.parent == path
+                            && level.netvar
+                            && !pending_oids.contains(level.oid.as_str())
+                    })
+                    .collect::<Vec<_>>();
+                variables.sort_by_key(|level| (level.address, &level.oid));
+                for variable in variables {
+                    output.push_str(&self.typed_netvar_xml_document(project, variable));
+                }
+            }
             if matches!(object.element.as_str(), "Group" | "NetVar") {
                 let pending_oids = self
                     .db_pending
@@ -5437,6 +5458,42 @@ impl Server {
         }
         self.append_db_xml_extensions(project, &object.oid, &mut output);
         output.push_str(&format!("</{}>", object.element));
+        output
+    }
+
+    // SAFE numeric NetVars can precede any pending mirror. Their identity and
+    // children must participate in the owning Application projection, or a
+    // later associated Network rename would retire them while re-syncing it.
+    fn typed_netvar_xml_document(&self, project: &str, variable: &DbLevel) -> String {
+        let mut output = self.db_xml_open(project, &variable.oid, "NetVar", &[]);
+        output.push_str(&format!(
+            "<OID>{}</OID><TagName>{}</TagName><Address>{}</Address>",
+            xml_escape(&variable.oid),
+            xml_escape(&variable.tag),
+            variable.address,
+        ));
+        let path = format!("{}/{}", variable.parent, variable.address);
+        let children = self.db_xml_children(project, &path, &["Level"]);
+        let pending_oids = children
+            .iter()
+            .map(|child| child.oid.as_str())
+            .collect::<HashSet<_>>();
+        for child in &children {
+            output.push_str(&self.pending_db_xml_document(project, child));
+        }
+        let mut levels = self
+            .db_levels
+            .values()
+            .filter(|level| {
+                level.parent == path && !level.netvar && !pending_oids.contains(level.oid.as_str())
+            })
+            .collect::<Vec<_>>();
+        levels.sort_by_key(|level| (level.address, &level.oid));
+        for level in levels {
+            output.push_str(&self.level_xml_document(project, level));
+        }
+        self.append_db_xml_extensions(project, &variable.oid, &mut output);
+        output.push_str("</NetVar>");
         output
     }
 
@@ -10727,6 +10784,28 @@ impl Server {
                         return err(tag, status::BAD_REQUEST, "400 Invalid level value");
                     }
                     level.value = Some(byte as u8);
+                    // Local typed-byte policy: canonical decimal readback,
+                    // XML and copy, not raw associated lexeme parity. Raw
+                    // incomplete and independent owners are not coerced.
+                    let value = if level.netvar {
+                        value
+                    } else {
+                        (byte as u8).to_string()
+                    };
+                    let level_path = format!("{}/{}", level.parent, level.address);
+                    if let Some(project) = self.current.as_deref() {
+                        // Completed/imported Levels retain a pending mirror.
+                        // Update only this exact addressed typed owner, never
+                        // an incomplete raw Value or another OID claimant.
+                        for pending in self.db_pending.values_mut().filter(|pending| {
+                            pending.project == project
+                                && pending.oid == oid
+                                && pending.element == "Level"
+                                && pending.path.as_deref() == Some(level_path.as_str())
+                        }) {
+                            pending.fields.insert("Value".to_string(), value.clone());
+                        }
+                    }
                     self.db_fields.insert(words[1].to_string(), value);
                     return ok(tag, vec![], "200 OK");
                 }

@@ -1,0 +1,451 @@
+{
+  "completeness_credit": {
+    "new_fully_accepted_functional_obligations": 0,
+    "overall_cgate_parity": false,
+    "overall_toolkit_parity": false
+  },
+  "date": "2026-10-02",
+  "format": "cbus-associated-level-owned-release-v1",
+  "independent_review": {
+    "all_peers_closed": true,
+    "authorship_qualification": "Reviewer authored historical reconciliation work but did not author the current Level patch/tests",
+    "checks": {
+      "complete_rename_preservation": true,
+      "explicit_copy_initialization_source_preserved": true,
+      "netvar_parent_level_route": true,
+      "nonnull_plain_netvar_refusal_preserves_state": true,
+      "plain_netvar_oid_survives_rename": true,
+      "raw_safe_copy_source_value": true,
+      "refusals_whole_tree_unchanged": true,
+      "retained_payload_refusal_preserves_tree": true,
+      "saved_reloaded_complete_tree": true,
+      "selection_isolation": true,
+      "source_binary_bindings_unchanged": true,
+      "unsafe_completion_same_identity": true
+    },
+    "checks_passed": 12,
+    "command_reply_transactions": 61,
+    "comparison_qualification": "Complete supported semantic tree; only at most one empty attribute-free unnamespaced Level TagsDLT child removed for load normalization",
+    "owned_child_exit": -15,
+    "private_review_sha256": "4b6526579b0e20d89b6bfdb8eb4231a1c89b400390b19318845e0c1c12e2add0",
+    "probe_executions": 1,
+    "probe_exit_code": 0,
+    "probe_sha256": "a2e598cde23a7a08bb0ccf2820a5a6fe90fa475af9918629c20297b0eb7ef054",
+    "runtime": "owned frozen cgate-mock only",
+    "runtime_result_sha256": "36e6f247e21ecfad2ed8e22e48f823a6339dd923619dddbd2f9912df890a8f49",
+    "source_review": "no unresolved blocker in bounded admitted profile"
+  },
+  "metadata": {
+    "canonical_publication": {
+      "all1111_source_bindings_current": true,
+      "all6_maintained_publication_markers_valid": true,
+      "all_noncoordinate_payload_preserved": true,
+      "canonical_marker_raw_sha_binds_archived_normalized_intermediate_not_literal_execution": true,
+      "coordinate_role_table_sha256": "de41998ea67b616f0ac692100f71365e9bed1edf8b5238307a03b17494b1ca6d",
+      "decoded_coordinate_findings": 0,
+      "literal_execution_bytes_preserved_privately": true,
+      "maintained_sanitizer_source_sha256": "a3f0a444f733ac51fe66e8b43402ae22598b12455f8bb1b8d05dcb8b8ffb577d",
+      "new_comparison_executions": 0,
+      "new_original_executions": 0,
+      "phase_record_sha256": "40959830228062cf59ef28b72187697c85d2e4b698dc4e08531996e3c4f4b769",
+      "pipeline": "Literal private execution bytes -> reviewed coordinate-normalized intermediate -> maintained canonical publication sanitizer. The intermediate is a derivative, not literal execution output. Canonical marker raw_file_sha256 binds the archived intermediate; the private proof separately binds literal originals.",
+      "resource_freeze_sha256": "80959a300f1f6dce51a716b1e457cd28e33865f20bfc75c63f03fc7b85b6b237",
+      "retained_initial_targeted_harness_failure": {
+        "exit_code": 1,
+        "junit_sha256": "b434cdae04760b88f6dfe9568544a0a86fbe73b99a3bfafe8d24de110fa2e195",
+        "log_sha256": "52e1bab14eee726d4ff62c04df55848cc0b7cba1d138cfbdc14ab17c6e842116",
+        "qualification": "No product/evidence defect: --noconftest harness omitted tests from PYTHONPATH, causing existing coverage bare import failure. Canonical34 sanitizer cases passed even here. Same12modules rerun with explicit tests path; no source/test change."
+      },
+      "reviewed_normalizer_source_sha256": "f6a066e920805393f3ffc83049e95255b5ce7bb662a19423a2d5131606599eed",
+      "sanitizer_generator_check_commands_all_zero": true,
+      "source_binding_count": 1111,
+      "two_stage_publication_proof_sha256": "683c1cb1e53fb801229cafe353e52e3565fcb6993c40c541ce79cdfb6eb0b55d"
+    },
+    "comparison_execution": {
+      "all1111_source_bindings_valid_after_sanitization_and_generators": true,
+      "all_phase_exits_zero": true,
+      "command_phases": 11,
+      "coordinate_role_table_sha256": "de41998ea67b616f0ac692100f71365e9bed1edf8b5238307a03b17494b1ca6d",
+      "final_resource_manifest_sha256": "b5bfdb4e58cd7f10239eb52370f1b055406456e544ce97d3660bfbc917f7d39a",
+      "original_executions": 0,
+      "qualification": "Six actual modeled comparisons refreshed against retained captures during metadata attempt3; no current original execution. Its generic publication envelopes were subsequently corrected without rerunning comparisons.",
+      "real_comparisons_refreshed": 6,
+      "sanitization_proof_sha256": "9d3e2fd5763b631200f1179f731004840410ec4dcf30411b6d608d549911252b",
+      "source_binding_count": 1111
+    }
+  },
+  "original_native_hardware_acceptance": {
+    "new_hardware_execution": false,
+    "new_original_executions": 0,
+    "new_vendor_or_vm_execution": false,
+    "original_renamed_associated_journey": "deferred under issue72",
+    "process_restart_claim": "Verified fresh owned cmqttd JSON restart in source and installed-wheel journeys; no restart claim from independent mock probe"
+  },
+  "public_cli_validation": {
+    "environments": {
+      "installed": {
+        "actual_runtime": {
+          "all_owned_cleanup_passed": true,
+          "new_cli_calls": 49,
+          "new_connections": 49,
+          "new_tagged_commands": 133,
+          "new_trap_contacts": 0,
+          "old_cli_argv_exit_json_capture": true,
+          "old_cli_calls": 76,
+          "old_cli_wire_capture": false,
+          "owned_process_count": 7,
+          "post_initialization_pci_frames": 0,
+          "startup_pci_frames": 40,
+          "total_cli_calls": 125
+        },
+        "errors": 0,
+        "executed_test_ids": [
+          "tests.test_cgate_named_database_interop::test_public_named_safe_graph_separate_project_selected_sessions[mock]",
+          "tests.test_cgate_named_database_interop::test_public_named_safe_graph_separate_project_selected_sessions[daemon]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_owner_and_wire[mock]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_owner_and_wire[daemon]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_auth_and_restart"
+        ],
+        "failed": 0,
+        "passed_parent_tests": 5,
+        "phase_receipt_sha256": "7b07817c0d05f142084bbed3c4e3002ed6cc853838eb661cfdba05f40d13fb02",
+        "runtime_audit_sha256": "74df662deba87a81eebb207f3f3afdd808cdee357cf3a6fd82611ff05f90b1cd",
+        "skipped": 0
+      },
+      "source": {
+        "actual_runtime": {
+          "all_owned_cleanup_passed": true,
+          "new_cli_calls": 49,
+          "new_connections": 49,
+          "new_tagged_commands": 133,
+          "new_trap_contacts": 0,
+          "old_cli_argv_exit_json_capture": true,
+          "old_cli_calls": 76,
+          "old_cli_wire_capture": false,
+          "owned_process_count": 7,
+          "post_initialization_pci_frames": 0,
+          "startup_pci_frames": 40,
+          "total_cli_calls": 125
+        },
+        "errors": 0,
+        "executed_test_ids": [
+          "tests.test_cgate_named_database_interop::test_public_named_safe_graph_separate_project_selected_sessions[mock]",
+          "tests.test_cgate_named_database_interop::test_public_named_safe_graph_separate_project_selected_sessions[daemon]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_owner_and_wire[mock]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_owner_and_wire[daemon]",
+          "tests.test_cgate_named_database_interop::test_public_renamed_associated_level_cli_auth_and_restart"
+        ],
+        "failed": 0,
+        "passed_parent_tests": 5,
+        "phase_receipt_sha256": "1608443d385d34ac3689dbc5b58d8bc2b13d869d24f8799df4827f52ca3ae75a",
+        "runtime_audit_sha256": "8bcabf596e26c5c6f02ec3a5897355d73eff35fa72b1ea5c99cf83689a0cf400",
+        "skipped": 0
+      }
+    },
+    "executor_qualification": "Integration agent authored the focused Python coverage and local vector; root executed final source6 and installed6 using the prepared harness. Independent review is recorded separately.",
+    "package_byte_audit_sha256": "29dc04952310a3091a51573f78ab1da19b03e94664b5d901d69d9b0fe89c2c4b",
+    "package_file_count": 326,
+    "private_final_component_manifest_sha256": "34ffc54b602cc63b56e9fd32f00faa5148ca8b90b66bc0aa8ed6cd13c18eece7",
+    "raw_artifact_inventory_sha256": "b8c2b0613e20d74ae84bafd665791853f21de24a9566a0824b391bce2b230bb6",
+    "same_final_input_rosters": true,
+    "scope": "Five owned offline/model public CLI journeys per environment. This component receipt records focused validation; root records broader checks separately. No original/vendor/VM/hardware execution. Exact gold is local associated owner plus retained generic semantics; does not establish renamed-associated native parity.",
+    "source_and_installed_counts_are_not_added_to_functional_completion": true,
+    "source_input_roster_count": 539,
+    "source_input_roster_digest_encoding": "SHA-256 of UTF-8 JSON mapping with sorted keys and compact separators, no trailing newline",
+    "source_input_roster_sha256": "26985b0932fe4a0060c690292472747d2581dee76a16f9783af643abb819b8bf",
+    "source_quiet": true,
+    "source_wheel_installed_package_bytes_equal": true,
+    "wheel_sha256": "9e55212b4baf9ce6dcc43bba57955eee4f1f1ca5afc6ca00380e3e9c5aee3458"
+  },
+  "python_validation": {
+    "exact_publication_ci": "Pending; no CI result claimed by this receipt",
+    "final_full_source_or_installed_wheel_suite_pass_claimed": false,
+    "full_source_check": {
+      "all14_passed_in_targeted_correction": true,
+      "command": [
+        "make",
+        "check"
+      ],
+      "cwd": "toolkit-cli",
+      "errors": 0,
+      "exit_code": 2,
+      "failed_parent_tests": 14,
+      "failed_test_ids": [
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[session-cgate-session-differential-fixed.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[session-cgate-session-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[tagged-cgate-tagged-session-differential-cgate-mock.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[tagged-cgate-tagged-session-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[unit-cgate-dbsetxml-unit-differential-mock.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_all_six_receipts_preserve_every_noncoordinate_field[unit-cgate-dbsetxml-unit-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[session-cgate-session-differential-fixed.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[session-cgate-session-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[tagged-cgate-tagged-session-differential-cgate-mock.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[tagged-cgate-tagged-session-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[unit-cgate-dbsetxml-unit-differential-mock.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_future_published_fixtures_support_synthetic_metadata_tests[unit-cgate-dbsetxml-unit-differential-cmqttd.json]"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_actual_offline_generator_accepts_derivatives_and_binds_their_bytes"
+        },
+        {
+          "class": "tests.test_sanitize_evidence_receipts",
+          "name": "test_no_resanitization_or_wrong_family"
+        }
+      ],
+      "failure_cause": "All14 failures were publication sanitizer/derivative-consumer cases: generic coordinate normalization omitted maintained canonical publication metadata. No product behavior failure was reported.",
+      "historical_input_roster_count": 1292,
+      "historical_input_roster_digest_encoding": "SHA-256 of UTF-8 JSON mapping with sorted keys and compact separators, no trailing newline",
+      "historical_input_roster_sha256": "2c8ef9bc2222846555be14ebba8846c551c01882e3747f0962977ff5a2e8cfe9",
+      "junit_sha256": "bada8a896db3a0c9b36c00c664de1330328097f1752b5f5d0f2ccb0edd6e836c",
+      "parent_elements": 7216,
+      "passed_parent_tests": 6753,
+      "private_required_manifest_sha256": "27681772bd4578e858b00d139fc2cdc03d35b600fa557035670e2058c399c486",
+      "qualification": "Retained failed full-suite execution, not a final full-suite pass. Canonical publication and generated accounting changed afterward; correction reran all12 affected consumer modules without product/test changes. Full suite was not repeated per user request.",
+      "raw_log_sha256": "71685764db6fd3b5c6092fa0a9bb3f0bd53020734918d106e0799ca878f29532",
+      "reported_passed_subtests": 30545,
+      "skipped_parent_tests": 449,
+      "source_quiet_during_execution": true
+    },
+    "interop_check": {
+      "command": [
+        "make",
+        "check-interop"
+      ],
+      "current_original_execution": 0,
+      "cwd": "toolkit-cli",
+      "exit_code": 0,
+      "framing_tests_passed": 2,
+      "private_required_manifest_sha256": "bc29f915614377ea83241c22896341f14abf37e4803b5fbc8f947f1f2b38d138",
+      "profiles": [
+        {
+          "backend": "mock",
+          "errors": 0,
+          "failed": 0,
+          "junit_parent_elements": 22,
+          "junit_sha256": "5bd8251b64ce7bdd9fd0693b28d5b62fae1d7bc6cb0527532d7818d205aa91bd",
+          "passed_parent_tests": 21,
+          "reported_passed_subtests": 158,
+          "skip_reasons": [
+            "vendor unitspec directory is absent"
+          ],
+          "skipped_parent_tests": 1
+        },
+        {
+          "backend": "cmqttd",
+          "errors": 0,
+          "failed": 0,
+          "junit_parent_elements": 155,
+          "junit_sha256": "ef33bbe1ff95e02fc1138d8a1365de881618c83a30995d936ac52cb8cf6ff5cf",
+          "passed_parent_tests": 154,
+          "reported_passed_subtests": 69,
+          "skip_reasons": [
+            "Set CBUS_UNITSPEC_DIR to re-derive the matrix from decoded specs"
+          ],
+          "skipped_parent_tests": 1
+        }
+      ],
+      "qualification": "Executed before canonical publication envelope/accounting correction. Product source, tests, wire vector and release binaries are unchanged. Input roster is historical and retained; final CLI checks separately bind corrected resources. Counts overlap other selections.",
+      "raw_log_sha256": "a0f0c1791f260b634d128ffd59b7cf2ea955c4a1719d5471a9f374ba8d85638e",
+      "retained_capture_comparisons": 6,
+      "source_input_roster_count": 1292,
+      "source_input_roster_sha256": "2c8ef9bc2222846555be14ebba8846c551c01882e3747f0962977ff5a2e8cfe9",
+      "source_quiet": true
+    },
+    "publication_correction": {
+      "actual_parent_elements": 262,
+      "errors": 0,
+      "exit_code": 0,
+      "failed_parents": 0,
+      "full_suite_reexecution": false,
+      "junit_sha256": "8415a58ee6298fa495331f05cc07ff8795bb254782f74c72c9a4e47e1823edd0",
+      "log_sha256": "99da0dc3152afed423b6e4b821f0a8e58a8b42173119f6fa8468e5b80580ba65",
+      "modules": 12,
+      "passed_parents": 261,
+      "qualification": "261 passing parent tests plus934 separately reported subtests; one original-input skip. Includes all34 sanitizer cases and all14 previously failing IDs. An earlier harness import failure is retained separately.",
+      "reported_passed_subtests": 934,
+      "sanitize_module_all34_passed": true,
+      "skip_reasons": [
+        {
+          "class": "tests.test_dialog_map.DialogMapTests",
+          "name": "test_regeneration_from_original_inputs_matches_committed_map",
+          "reason": "Set CBUS_TOOLKIT_EXE, CBUS_CATALOG_PATH (or CBUS_LOCAL_CGATE_VENDOR) and CBUS_UNITSPEC_DIR to regenerate from original inputs"
+        }
+      ],
+      "skipped_parents": 1
+    }
+  },
+  "release_binary_sha256": {
+    "cbus-tools": "3b3fa20fb9faf087194f5438c16cccab9c23569995ffe8250d71a39c20ed9184",
+    "cgate-mock": "c0c12807ed1c56a95703ad61107c24b9fb1752f56e48e890c20454e2e482764b",
+    "cmqttd": "404259bd01996c0282bd7ea14bf07346e73a90c51a359f8c8aa10078d56bc06e"
+  },
+  "remaining_differences": [
+    "associated NULL getter342/null and SAVE200 differ from retained independent/native contract",
+    "canonical completed typed Level bytes are not raw literal parity",
+    "decorated copies and unsupported NetVar parent/child payloads refuse before mutation",
+    "original renamed-associated journey is deferred under issue72",
+    "mock does not exercise configured PCI graph, broker, process restart or hardware"
+  ],
+  "retained_failure_history": {
+    "cancelled_full_python_attempt1_has_acceptance_credit": false,
+    "cancelled_full_python_attempt1_sha256": "1b183203bf7c92e864971afbb1787dae4b883697cded5e48bd585345dc884480",
+    "failed_or_superseded_runs_confer_final_credit": false,
+    "private_author_focus_summary_sha256": "47053671e43ee96be237e42ef4096b78ef981a5270e8d08857e04f4434ed7689",
+    "private_cli_excluded_attempts_sha256": "0a9c251f190081c7560d7507f2b1733f24a1c47dacbdab0ec4d6287bb509d73d",
+    "private_cli_offline_dependency_cache_miss_sha256": "1fcd7232833f8f0c9a4186f9948301fa3ed1782c332029edb1adb086a8f47c6b",
+    "private_metadata_attempt2_wrapper_failure_sha256": "95a8910dbbb5776d670033f14d1b33c7bfb494ddec51bc0af3676a8a32114aae",
+    "private_required_rust_attempt1_sha256": "fb46c755ce4f37e140c8387c2ade7c54f1cf91ec36e303222ae145b3e26af160",
+    "source4_has_final_credit": false,
+    "successful_superseded_source4_sha256": "bcd85fb6415e02732f94cd6f0a5eb1f3b8fd9ee7931a194bdbe01cff3cdaf8ed",
+    "superseded_cli_final_v1_manifest_sha256": "07d7099cfab1ea680d86a95368459da810129c4772113d9a6a446f5e2e3de4df",
+    "superseded_cli_source5_and_installed4_have_final_credit": false
+  },
+  "rust_validation": {
+    "executor": "implementation author for focused module; root for final required workspace checks",
+    "focused_module": {
+      "current_workspace_focus_id_sha256": "cbcfa772f49aec167b3705f2b9bb8f7abde23820fea955aa32d99ce3baa743a6",
+      "existing_tests": 21,
+      "failed": 0,
+      "final_workspace_named_result": {
+        "failed": 0,
+        "ignored": 0,
+        "independent_check": "each36 exact named test line was inspected with status ok; not an independent Cargo execution",
+        "passed": 36,
+        "raw_log_sha256": "6c87378d6e701f48519bd642f9c538ff9a8094c07f4a48f22e160ebea6922b72",
+        "tag_network_sha256": "5c33d20559a28f1b96f4de3cf732d946b5de3758c27d9eabb1d507a269f4d7ab",
+        "test_id_set_sha256": "cbcfa772f49aec167b3705f2b9bb8f7abde23820fea955aa32d99ce3baa743a6",
+        "unique_tests": 36
+      },
+      "historical_focus_source_fingerprint": {
+        "rust/cbus-cgate/src/lib.rs": "eb6586e6271b12cb2ed55e4ab5827ae91249b77927cef8e906141b9bcac94ef0",
+        "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "9530f166997580e4ece40a4804335314f32b4d1fa358d16c1ab864232a787e35",
+        "rust/cbus-cgate/src/tag_network.rs": "7062168d23525cdab95edbb87c062153fa9e37822b3ebe947414e8acfe7dc567"
+      },
+      "historical_focused_log_sha256": "776083a61ded882e2d0c8a00660b190ea1213d998ae9dc2c1c50f21fce1f26e5",
+      "ignored": 0,
+      "new_tests": 15,
+      "passed": 36,
+      "private_history_summary_sha256": "47053671e43ee96be237e42ef4096b78ef981a5270e8d08857e04f4434ed7689",
+      "qualification": "Author focused execution preceded the Boolean-equivalent Clippy refactor; final workspace independently executed these same36 IDs at current source",
+      "unique_tests": 36
+    },
+    "private_required_manifest_sha256": "9f414d74e336d6909b0e230c38ebb9ca6fc3fd2705d0099cd5c4c80bc3fca7d4",
+    "required_commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "cwd": "rust",
+        "exit_code": 0,
+        "phase": "fmt",
+        "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "cwd": "rust",
+        "exit_code": 0,
+        "phase": "clippy",
+        "raw_log_sha256": "7200ff9b123620dc44ec91dae1179121603980a198f09217f2f7009f81e6029e"
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace"
+        ],
+        "cwd": "rust",
+        "exit_code": 0,
+        "phase": "workspace",
+        "raw_log_sha256": "6c87378d6e701f48519bd642f9c538ff9a8094c07f4a48f22e160ebea6922b72"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "cwd": "rust",
+        "exit_code": 0,
+        "phase": "release",
+        "raw_log_sha256": "107a76e4700098a338951a830272805ff61d16bd9df205fcfa7a1e6cbe44143a"
+      }
+    ],
+    "required_source_roster_count": 209,
+    "required_source_roster_sha256": "05470b76028b7c2b0844ad2b569b8c85441a1f7f090316a6d52c4b8b87380229",
+    "source_quiet": true,
+    "workspace_counts": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 8636
+    }
+  },
+  "scope": "Local admitted Level ADD/COPY through a stable associated numeric database owner after tag Network rename; not full Toolkit/C-Gate parity",
+  "source_binding_qualification": "Current 17 input hashes were captured by final source6 and installed6 CLI executions after canonical publication. Historical full-source and interop rosters remain separate; they are not rebound to these hashes.",
+  "source_fingerprint": {
+    "docs/cmqttd-cgate.md": "d36af68c3df22c48009b83d3da7865e9fc6c5abd84ee5147954d46095b40baf4",
+    "rust/cbus-cgate/src/lib.rs": "eb6586e6271b12cb2ed55e4ab5827ae91249b77927cef8e906141b9bcac94ef0",
+    "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "9530f166997580e4ece40a4804335314f32b4d1fa358d16c1ab864232a787e35",
+    "rust/cbus-cgate/src/tag_network.rs": "5c33d20559a28f1b96f4de3cf732d946b5de3758c27d9eabb1d507a269f4d7ab",
+    "rust/testdata/vectors/cgate_associated_level_cli_wire.json": "47e060ef4c6b4cfe1ebfb9f4c8910b59b88cc736e3711ace79d9fc1ab83b5247",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "496e8adabc36a057ad5ec39a16776f80665bae084b445eb44fb771cc29ff8c78",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "a38d93a8353f998e4c253d316bdc45c8118b2b969ed64311a33ea85dbb976c2d",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "2208a1a0c629196c006855c41a5c9bbe360402d03f9bac6de3bfefc917519a92",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "f9a8f4f0c5e2f3ed202eddcb6753f124ce4d9d9b91e862078d1a4828c18ac469",
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "843223c7f55535efddddbb09a4e7719fcb7c3048070e0abaffb7295fc944dc05",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "59e2df71f56ec857cc85fca148e86ad49cda113ad6e0977fd381efa1e83b1946",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "7c3ce84ff34a72cd82e9ac62287674fa65680286281b66fb1a3fedc950b63a10",
+    "toolkit-cli/research/release-gates/skip-census.json": "9137efb76a203b1ac0478b3e0653ec53818d2a19435540f2607796d656424ea2",
+    "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": "3502745ae05b3aee87d5f886956215b126638b090b6ae5b96fdef9218b25e6ca",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "a0dc97d7246a54ea4d75df8401f84238a8a02cd3d92983faf6d1e088df9c818f",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "dc1d202e6e59c0136d790ef9efb72afc26d8a2db395514309b82289f897f9599",
+    "toolkit-cli/tests/test_cgate_named_database_interop.py": "9d88cbbe5b65e4ff21f1f777e956feebd753c947b58988b5c0519d7a0f9b144f"
+  },
+  "status": "bounded-software-validated-with-corrected-publication-failures"
+}

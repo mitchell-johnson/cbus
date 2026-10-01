@@ -158,7 +158,11 @@ No uncertain mutation was replayed.
 
 - Full Project-OID hierarchy/scalar operations, source-qualified aliases and
   accepted XML routing beyond legacy fallback responses.
-- Renamed numeric-associated Level creation and legacy owner delegation.
+- Associated-owner reconciliation beyond the admitted Level route.
+  The subsequent [associated Level batch](feature-batch-2026-10-02-associated-levels.md)
+  implements Level ADD/COPY after a secondary Network rename; associated
+  raw/NULL/NetVar and retained payload semantics still need reconciliation and
+  original acceptance.
 - Mixed Unit/decorated copy graphs and hidden identities in retained XML. New
   unsafe/deep-child forms refuse these before mutation; previously supported
   complete SAFE Network copy grammar is preserved.
