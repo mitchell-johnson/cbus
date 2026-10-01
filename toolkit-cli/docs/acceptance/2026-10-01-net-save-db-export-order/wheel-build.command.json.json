@@ -1,0 +1,44 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "685ad4e762f16c1cc602392bc12d763674a8b4b19014779840ddb7fb0f64bd21",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/2",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "71fc11ffa7b04cac9498ad280bb47be67e6f40918dfa07bf72434a457ebb25db"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "62f974e4bb4fa7c7d5047eac5f5add7b1813b8ddb9f1a3f19025b78224fad6fd"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-c",
+      "import setuptools.build_meta; print(setuptools.build_meta.build_wheel('${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels'))"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/build-input",
+    "exit_status": 0,
+    "stdout_sha256": "641842ebb5a634c60f8f7fdb28b11150e81f13689f1d633987b0a2be7c4f3dd1",
+    "stderr_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb"
+  }
+}

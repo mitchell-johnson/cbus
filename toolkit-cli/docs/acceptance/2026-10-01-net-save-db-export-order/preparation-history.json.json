@@ -1,0 +1,53 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4973744e9392a2debf65405152cbe0e0f5fe96987b137874ac35dcf024ce7989",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/source_pipeline",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fa7b1c15e9b200bd02c97250731f8843e43da96c58b24a8dedaa3240d0f77761"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-save-db-export-order-preparation-v1",
+    "source_pipeline": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FINAL_20261001}",
+    "copied_scripts": {
+      "final-driver.py": {
+        "old_sha256": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+        "prepared_sha256": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d"
+      },
+      "generate.py": {
+        "old_sha256": "0a06a2887b2385d671cdb15947c71ce8048e94e054b284a8f6110c7e3d9cfa34",
+        "prepared_sha256": "1076a761f307de973f4ced72499506d80b34822f54b54b8e99d4b01bf8c8f1a7"
+      },
+      "publication-helpers.py": {
+        "old_sha256": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750",
+        "prepared_sha256": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750"
+      },
+      "publish.py": {
+        "old_sha256": "3ef69a8885c956019b2d05228a6d9fc7fd514397b5592400532870080a65fbdf",
+        "prepared_sha256": "8eb6989ed5e3d2a44a687ac3fb1b0b782296e40ad4699604f80785a2401de95c"
+      }
+    },
+    "native_driver_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+    "native_wrapper_sha256": "9f31f68be044329c43b3caa5e7b300de405463870819094b43cd2b0d23e76073",
+    "root_release_go_pending": false,
+    "previous_receipt_sha256": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+    "old_evidence_unchanged": true,
+    "root_release_go_received": true,
+    "current_pipeline_sha256": {
+      "final-driver.py": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+      "generate.py": "1076a761f307de973f4ced72499506d80b34822f54b54b8e99d4b01bf8c8f1a7",
+      "publication-helpers.py": "5a41e41edc894297ce06f7ea219511e1c608cf0492eda4b72c7fd02630ef7210",
+      "publish.py": "cc4e68e2c0afd61a5b14403c2bbeab0dd7b720811c81159876dd72c4ca092af2",
+      "prepare-export-order-evidence.py": "113c9e619a43d4f45108e72f4f6c613ecf1acc364bd7bb3e740ff02f6ace1349"
+    },
+    "six_actual_source_bindings": 1099
+  }
+}

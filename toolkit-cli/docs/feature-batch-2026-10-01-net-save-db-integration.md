@@ -6,6 +6,12 @@ These changes complete the bounded software corrections to
 [the first candidate](feature-batch-2026-10-01-net-save-db-materialization.md).
 They do not establish full Toolkit or C-Gate semantic parity.
 
+This report preserves the integration candidate's local acceptance at
+`6b208d08`. Its subsequent CI found an older project-export test expecting
+numeric order. The [export-order checkpoint](feature-batch-2026-10-01-net-save-db-export-order.md)
+reconciles that assertion with fresh original-server evidence, retaining the
+production behavior and this report's immutable receipt.
+
 ## Corrected behavior
 
 An independently saved tag Network such as exact `0254` cannot address the

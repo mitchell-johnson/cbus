@@ -1011,7 +1011,11 @@ selection and deletion-invalidation rules. Unrelated typed Application/Group
 TagName edits preserve already admitted legacy Unit PP decorations. See the
 integration corrections, materialization batch and
 operator guide for captured profiles, current source/wheel evidence and remaining
-native/physical acceptance. FILE is an internal snapshot selector and never a host path. A missing
+native/physical acceptance. Whole-project export keeps Network creation order;
+the separate cgate_project_export_order.json vector pins numeric 254 created
+before 1 across original DB save and durable reload. Retain the modeled
+export's selection and mutation checks; this projection is not exact whole
+Installation XML parity. FILE is an internal snapshot selector and never a host path. A missing
 FILE snapshot succeeds as an empty load; an existing snapshot merges and fails
 with 408 before mutation if a saved name already exists. Original FILE loads can
 partially add earlier entries before 408; cmqttd's atomic refusal is a documented

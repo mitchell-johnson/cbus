@@ -1,0 +1,114 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-original-numeric-project-export-order-proof-v1",
+    "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+    "fixture_sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+    "network_order": [
+      {
+        "address": "254",
+        "tag_name": "Later",
+        "network_number": "254"
+      },
+      {
+        "address": "1",
+        "tag_name": "First",
+        "network_number": "1"
+      }
+    ],
+    "stages": [
+      "before NET LOAD DB/NET SAVE DB",
+      "after NET LOAD DB",
+      "after NET SAVE DB",
+      "after PROJECT SAVE/CLOSE/LOAD/USE",
+      "while OTHER selected"
+    ],
+    "subtree_checks": [
+      {
+        "whole_label": "whole-before-net-save",
+        "direct_label": "direct254-before",
+        "address": "254",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "a349981e516843400a20f2f3b7134ddc5969ac96e916bc51f26b74f3fa991fcb"
+      },
+      {
+        "whole_label": "whole-before-net-save",
+        "direct_label": "direct1-before",
+        "address": "1",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "afb9d3f6ceb49745f2a1a2b5b6cf40142b91283ba2c2a93cb3d2e260755eda44"
+      },
+      {
+        "whole_label": "whole-after-net-load",
+        "direct_label": "direct254-after-net-load",
+        "address": "254",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "a349981e516843400a20f2f3b7134ddc5969ac96e916bc51f26b74f3fa991fcb"
+      },
+      {
+        "whole_label": "whole-after-net-load",
+        "direct_label": "direct1-after-net-load",
+        "address": "1",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "afb9d3f6ceb49745f2a1a2b5b6cf40142b91283ba2c2a93cb3d2e260755eda44"
+      },
+      {
+        "whole_label": "whole-after-net-save",
+        "direct_label": "direct254-after-net-save",
+        "address": "254",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "a349981e516843400a20f2f3b7134ddc5969ac96e916bc51f26b74f3fa991fcb"
+      },
+      {
+        "whole_label": "whole-after-net-save",
+        "direct_label": "direct1-after-net-save",
+        "address": "1",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "afb9d3f6ceb49745f2a1a2b5b6cf40142b91283ba2c2a93cb3d2e260755eda44"
+      },
+      {
+        "whole_label": "whole-reloaded",
+        "direct_label": "direct254-reloaded",
+        "address": "254",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "a349981e516843400a20f2f3b7134ddc5969ac96e916bc51f26b74f3fa991fcb"
+      },
+      {
+        "whole_label": "whole-reloaded",
+        "direct_label": "direct1-reloaded",
+        "address": "1",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "afb9d3f6ceb49745f2a1a2b5b6cf40142b91283ba2c2a93cb3d2e260755eda44"
+      },
+      {
+        "whole_label": "whole-from-other",
+        "direct_label": "direct254-from-other",
+        "address": "254",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "a349981e516843400a20f2f3b7134ddc5969ac96e916bc51f26b74f3fa991fcb"
+      },
+      {
+        "whole_label": "whole-from-other",
+        "direct_label": "direct1-from-other",
+        "address": "1",
+        "whole_subtree_equals_direct_xml_bytes": true,
+        "subtree_sha256": "afb9d3f6ceb49745f2a1a2b5b6cf40142b91283ba2c2a93cb3d2e260755eda44"
+      }
+    ],
+    "all_xml_terminal_statuses": 344,
+    "command_count": 27,
+    "complete_private_process_log_bound": true,
+    "all_inputs_unchanged": true,
+    "owned_cleanup_verified": true,
+    "trap_connections": 0,
+    "optional_children_probed": false,
+    "private_repair_preparation_only": true,
+    "current_candidate_acceptance": false,
+    "qualification": "Exact two numeric DBCREATENET creation-order evidence; NetworkNumber values254and1 exclude ascending numeric number order. Original response/whole export while OTHER selected is captured, but no direct introspection of original internal state/no-selection is claimed."
+  }
+}

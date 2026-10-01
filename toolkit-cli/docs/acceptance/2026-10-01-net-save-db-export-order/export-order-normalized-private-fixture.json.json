@@ -1,0 +1,717 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/source_pins/${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}~1probe.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "5c9283baf7a8ffa369df393afbcdef073b8ca6168f8221d882e74d28c07b0df2",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_TOOLKIT_ROOT}~1research~1local_cgate.py",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}~1driver.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_ORIGINAL_CGATE_APP}~1cgate.jar",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "ad8e2697bd11b55fc962216aad5d76de462ea58f84536f8b1523ff664ab68445",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_ORIGINAL_JAVA11}~1Contents~1Home~1bin~1java",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_TOOLKIT_ROOT}~1docs~1acceptance~12026-10-01-net-save-db-integration~1acceptance.json",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f3be5a9d39697cfdeae9257b3d34053a4bb7e1ab0de50e7402bf623b23cecaa8",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/source_pins/${CBUS_REPOSITORY_ROOT}~1rust~1testdata~1fixtures~1native_cgate_net_save_db_materialization.json",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "5aa79e0dc7aa6698587a1d67846cc36711a673e7a88ecd36e95d148f227aba8f",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/commands/4/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "361be8fe8f91dd146d2530409e7da8e80e8ac7ea2f14c789db0023c93e2145fe"
+    },
+    {
+      "json_pointer": "/commands/8/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "fa37d0e4a61a1d53553af1e84e8374659d5dab00aa62ef962040953133e22577"
+    },
+    {
+      "json_pointer": "/commands/12/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "2917babffb1c8ae6999e7e6d75fdccc2dd4406ffc26f85e90e0764d1383cc8f3"
+    },
+    {
+      "json_pointer": "/commands/19/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "fbc75aeb16285011bbe99463d92d7db10942b2a96b62f262e5e44a0782837698"
+    },
+    {
+      "json_pointer": "/commands/24/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "e6d9e7369ec845f0e23103a7ca74c16bd4d4f61d57a76bc5aad324356a414f95"
+    },
+    {
+      "json_pointer": "/xml_observations/0/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "98f69504a27fbee05ebef1f8bf46d329e386e1344a7a827bc78af7d18767f1c0"
+    },
+    {
+      "json_pointer": "/xml_observations/3/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "98f69504a27fbee05ebef1f8bf46d329e386e1344a7a827bc78af7d18767f1c0"
+    },
+    {
+      "json_pointer": "/xml_observations/6/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "98f69504a27fbee05ebef1f8bf46d329e386e1344a7a827bc78af7d18767f1c0"
+    },
+    {
+      "json_pointer": "/xml_observations/9/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "053b02536437999900683e5212e3e73cf13c77aacca96b49b6cdcb1c296c48e0"
+    },
+    {
+      "json_pointer": "/xml_observations/12/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "053b02536437999900683e5212e3e73cf13c77aacca96b49b6cdcb1c296c48e0"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-original-project-export-creation-order-private-fixture-v1",
+    "oracle": {
+      "version": "3.4.0.2001",
+      "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+    },
+    "source_pins": {
+      "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/probe.py": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+      "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+      "${CBUS_ORIGINAL_CGATE_APP}/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-01-net-save-db-integration/acceptance.json": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+      "${CBUS_REPOSITORY_ROOT}/rust/testdata/fixtures/native_cgate_net_save_db_materialization.json": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b"
+    },
+    "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+    "private_repair_preparation_only": true,
+    "current_candidate_acceptance": false,
+    "net_save_db_sent": true,
+    "commands": [
+      {
+        "label": "new",
+        "command": "PROJECT NEW SNAP",
+        "response": [
+          "[o0] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "use",
+        "command": "PROJECT USE SNAP",
+        "response": [
+          "[o1] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "create254",
+        "command": "DBCREATENET 254 Later Cni 127.0.0.1:%CNI_TRAP_PORT%",
+        "response": [
+          "[o2] 301 OID=%OID_1%"
+        ],
+        "status": 301,
+        "terminal_complete": true
+      },
+      {
+        "label": "create1",
+        "command": "DBCREATENET 1 First Cni 127.0.0.1:%CNI_TRAP_PORT%",
+        "response": [
+          "[o3] 301 OID=%OID_2%"
+        ],
+        "status": 301,
+        "terminal_complete": true
+      },
+      {
+        "label": "whole-before-net-save",
+        "command": "DBGETXML //SNAP",
+        "response": [
+          "[o4] 343-Begin XML snippet",
+          "[o4] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o4] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o4] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct254-before",
+        "command": "DBGETXML //SNAP/254",
+        "response": [
+          "[o5] 343-Begin XML snippet",
+          "[o5] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o5] 347-<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o5] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct1-before",
+        "command": "DBGETXML //SNAP/1",
+        "response": [
+          "[o6] 343-Begin XML snippet",
+          "[o6] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o6] 347-<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o6] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "net-load-db",
+        "command": "NET LOAD DB",
+        "response": [
+          "[o7] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "whole-after-net-load",
+        "command": "DBGETXML //SNAP",
+        "response": [
+          "[o8] 343-Begin XML snippet",
+          "[o8] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o8] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o8] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct254-after-net-load",
+        "command": "DBGETXML //SNAP/254",
+        "response": [
+          "[o9] 343-Begin XML snippet",
+          "[o9] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o9] 347-<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o9] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct1-after-net-load",
+        "command": "DBGETXML //SNAP/1",
+        "response": [
+          "[o10] 343-Begin XML snippet",
+          "[o10] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o10] 347-<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o10] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "net-save-db",
+        "command": "NET SAVE DB",
+        "response": [
+          "[o11] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "whole-after-net-save",
+        "command": "DBGETXML //SNAP",
+        "response": [
+          "[o12] 343-Begin XML snippet",
+          "[o12] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o12] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o12] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct254-after-net-save",
+        "command": "DBGETXML //SNAP/254",
+        "response": [
+          "[o13] 343-Begin XML snippet",
+          "[o13] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o13] 347-<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o13] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct1-after-net-save",
+        "command": "DBGETXML //SNAP/1",
+        "response": [
+          "[o14] 343-Begin XML snippet",
+          "[o14] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o14] 347-<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o14] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "save",
+        "command": "PROJECT SAVE SNAP",
+        "response": [
+          "[o15] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "close",
+        "command": "PROJECT CLOSE SNAP",
+        "response": [
+          "[o16] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "load",
+        "command": "PROJECT LOAD SNAP",
+        "response": [
+          "[o17] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "use-reloaded",
+        "command": "PROJECT USE SNAP",
+        "response": [
+          "[o18] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "whole-reloaded",
+        "command": "DBGETXML //SNAP",
+        "response": [
+          "[o19] 343-Begin XML snippet",
+          "[o19] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o19] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_9%</OID><Application>cgate</Application><Property><OID>%OID_10%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_11%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_13%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_14%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_15%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_16%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_17%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_18%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_19%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_20%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_21%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_22%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_23%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_24%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_26%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_27%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_28%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_29%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_30%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_31%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_33%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_34%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_35%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_36%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_37%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_38%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_39%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_40%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_42%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_43%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_44%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_45%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_47%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_48%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_49%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_53%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_54%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_55%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_56%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_57%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_59%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_60%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o19] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct254-reloaded",
+        "command": "DBGETXML //SNAP/254",
+        "response": [
+          "[o20] 343-Begin XML snippet",
+          "[o20] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o20] 347-<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o20] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct1-reloaded",
+        "command": "DBGETXML //SNAP/1",
+        "response": [
+          "[o21] 343-Begin XML snippet",
+          "[o21] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o21] 347-<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o21] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "new-other",
+        "command": "PROJECT NEW OTHER",
+        "response": [
+          "[o22] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "use-other",
+        "command": "PROJECT USE OTHER",
+        "response": [
+          "[o23] 200 OK."
+        ],
+        "status": 200,
+        "terminal_complete": true
+      },
+      {
+        "label": "whole-from-other",
+        "command": "DBGETXML //SNAP",
+        "response": [
+          "[o24] 343-Begin XML snippet",
+          "[o24] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o24] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_9%</OID><Application>cgate</Application><Property><OID>%OID_10%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_11%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_13%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_14%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_15%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_16%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_17%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_18%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_19%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_20%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_21%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_22%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_23%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_24%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_26%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_27%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_28%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_29%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_30%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_31%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_33%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_34%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_35%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_36%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_37%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_38%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_39%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_40%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_42%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_43%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_44%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_45%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_47%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_48%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_49%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_53%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_54%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_55%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_56%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_57%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_59%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_60%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o24] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct254-from-other",
+        "command": "DBGETXML //SNAP/254",
+        "response": [
+          "[o25] 343-Begin XML snippet",
+          "[o25] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o25] 347-<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o25] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      },
+      {
+        "label": "direct1-from-other",
+        "command": "DBGETXML //SNAP/1",
+        "response": [
+          "[o26] 343-Begin XML snippet",
+          "[o26] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o26] 347-<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+          "[o26] 344 End XML snippet"
+        ],
+        "status": 344,
+        "terminal_complete": true
+      }
+    ],
+    "xml_observations": [
+      {
+        "label": "whole-before-net-save",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "direct254-before",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          }
+        ]
+      },
+      {
+        "label": "direct1-before",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "whole-after-net-load",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "direct254-after-net-load",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          }
+        ]
+      },
+      {
+        "label": "direct1-after-net-load",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "whole-after-net-save",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "direct254-after-net-save",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          }
+        ]
+      },
+      {
+        "label": "direct1-after-net-save",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "whole-reloaded",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_9%</OID><Application>cgate</Application><Property><OID>%OID_10%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_11%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_13%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_14%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_15%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_16%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_17%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_18%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_19%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_20%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_21%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_22%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_23%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_24%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_26%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_27%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_28%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_29%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_30%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_31%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_33%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_34%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_35%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_36%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_37%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_38%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_39%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_40%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_42%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_43%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_44%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_45%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_47%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_48%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_49%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_53%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_54%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_55%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_56%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_57%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_59%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_60%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "direct254-reloaded",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          }
+        ]
+      },
+      {
+        "label": "direct1-reloaded",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "whole-from-other",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_9%</OID><Application>cgate</Application><Property><OID>%OID_10%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_11%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_13%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_14%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_15%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_16%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_17%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_18%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_19%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_20%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_21%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_22%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_23%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_24%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_26%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_27%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_28%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_29%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_30%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_31%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_33%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_34%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_35%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_36%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_37%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_38%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_39%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_40%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_42%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_43%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_44%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_45%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_47%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_48%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_49%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_53%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_54%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_55%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_56%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_57%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_59%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_60%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_7%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>%OSVERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_8%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      },
+      {
+        "label": "direct254-from-other",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_1%</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_5%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "%OID_1%"
+          }
+        ]
+      },
+      {
+        "label": "direct1-from-other",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>%OID_2%</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>%OID_6%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%CNI_TRAP_PORT%</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "%OID_2%"
+          }
+        ]
+      }
+    ],
+    "normalization": [
+      "Equality-preserving OIDs are stable tokens; timestamps/hostname/OSversion and owned endpoint/scratch are explicit tokens.",
+      "Exact raw tagged wire and logs remain private; normalizedfixture is not unchanged live bytes."
+    ],
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    "trap_connections": 0,
+    "qualification": "Optional Unit/Application/Group children not probed. This captures numeric DBCREATENET whole-export order before and after NET LOAD DB, NET SAVE DB and durable reload. Original selected-project behavior is only claimed from captured statuses, not inferred from cmqttd no-selection assertions."
+  }
+}

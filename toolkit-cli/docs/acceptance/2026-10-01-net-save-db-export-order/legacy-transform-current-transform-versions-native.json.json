@@ -1,0 +1,211 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "edb2ee2407251ed7762727a7b5e9d8d6e1d10a4cec84ac1425e05c9d2579b034",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-project-legacy-transform-versions-native-v1",
+    "target": "original C-Gate 3.4.0 build 2001, owned XML repository and loopback only",
+    "sources": {
+      "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "transform_sha256": {
+        "v2tov21.xslt": "8346eab4259b957d53fc2b5c14ee1e058196124eabe4a7e3fb45b145f74735a8",
+        "v21tov22.xslt": "e2090621171b5febf4903eaa964dd7a855b3d3cea827678da3758376dceab875",
+        "v22tov23.xslt": "5674534824826a2db5e3b762c207ce0e566298e54703f628d16f9b3d2d47dab2",
+        "projectversions.xml": "f9b2e0a83753321e311dee1ac7e1817b28dd984a792a2fd2923efa1cac85aaf8"
+      },
+      "native_test_sha256": "336fcf08ad3cb3909998aa574a7dcb0358479c2052ea0cdeff05cd7bb4fc5c09",
+      "portable_module_sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
+      "native_module_sha256": "71dad383ef146a380eb9d1537f265913bab1ffaf9a5f9a8cb057dfcf174dcd23",
+      "cli_dispatch_sha256": "99c97254c36ea1826f0af7c1a74214455d37ad3019b0cc1433fcb3954837dc6e",
+      "portable_test_sha256": "e4b9a5083d820de48327f82bc5f116e566c7e3f5322325b1bdd325178c44159f",
+      "owned_service_harness_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "cases": [
+      {
+        "name": "V21DTD",
+        "source_version": "2.1",
+        "source_sha256": "88e867446fe6048e85a6f75e3016fcda868f7afd27d5c1040a2cb3f6ead4eb4c",
+        "output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
+        "backup_sha256": "88e867446fe6048e85a6f75e3016fcda868f7afd27d5c1040a2cb3f6ead4eb4c",
+        "preview": [
+          "199-current DBVersion is: 2.1",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.1 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V21DTD"
+      },
+      {
+        "name": "V21ENC",
+        "source_version": "2.1",
+        "source_sha256": "6fd56ebcc45a76c8e64849b526265f55bb3c8644190e3ca89c8b688a64037891",
+        "output_sha256": "013d8f4dffe845a564bd9de2f56231c36f2048ad906f00f519d2a53909cfb5ee",
+        "backup_sha256": "6fd56ebcc45a76c8e64849b526265f55bb3c8644190e3ca89c8b688a64037891",
+        "preview": [
+          "199-current DBVersion is: 2.1",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.1 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V21ENC"
+      },
+      {
+        "name": "V21X11",
+        "source_version": "2.1",
+        "source_sha256": "f2ee82485e6dc789336cff1a599c1ae9cd9745a3d9127a5084a3af9573b2cd05",
+        "output_sha256": "eafeea84196d28fb3832f3863b446bf42244c21484f30b52e56837e41e7df224",
+        "backup_sha256": "f2ee82485e6dc789336cff1a599c1ae9cd9745a3d9127a5084a3af9573b2cd05",
+        "preview": [
+          "199-current DBVersion is: 2.1",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2.1 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V21X11"
+      },
+      {
+        "name": "V2DTD",
+        "source_version": "2",
+        "source_sha256": "674c97c2b283c22b57651fc816dde7626d4f958ba60d0a6f10dbe8c98f69a540",
+        "output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
+        "backup_sha256": "674c97c2b283c22b57651fc816dde7626d4f958ba60d0a6f10dbe8c98f69a540",
+        "preview": [
+          "199-current DBVersion is: 2",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2 to 2.1 XSLT file: v2tov21.xslt",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V2DTD"
+      },
+      {
+        "name": "V2ENC",
+        "source_version": "2",
+        "source_sha256": "05ccfbd43f5fa67cca1374b6fee2d902b3d2c7b261e010061647ccddf8c9e455",
+        "output_sha256": "013d8f4dffe845a564bd9de2f56231c36f2048ad906f00f519d2a53909cfb5ee",
+        "backup_sha256": "05ccfbd43f5fa67cca1374b6fee2d902b3d2c7b261e010061647ccddf8c9e455",
+        "preview": [
+          "199-current DBVersion is: 2",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2 to 2.1 XSLT file: v2tov21.xslt",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V2ENC"
+      },
+      {
+        "name": "V2X11",
+        "source_version": "2",
+        "source_sha256": "d21f002a4a1dac6aa51ab4092ad5e61733ab298aa6d55a97fd07287866898d7c",
+        "output_sha256": "eafeea84196d28fb3832f3863b446bf42244c21484f30b52e56837e41e7df224",
+        "backup_sha256": "d21f002a4a1dac6aa51ab4092ad5e61733ab298aa6d55a97fd07287866898d7c",
+        "preview": [
+          "199-current DBVersion is: 2",
+          "199-wanted DBVersion is: 2.3",
+          "199-Calculated transform list:",
+          "199-Transform from 2 to 2.1 XSLT file: v2tov21.xslt",
+          "199-Transform from 2.1 to 2.2 XSLT file: v21tov22.xslt",
+          "199-Transform from 2.2 to 2.3 XSLT file: v22tov23.xslt",
+          "200 OK."
+        ],
+        "transform": "200 OK.",
+        "load_before": "408 Operation failed: Project load failed: Incompatible project: DBVersion is 2 and must be 2.3 - perform a TRANSFORM PROJECT command to fix this",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "V2X11"
+      },
+      {
+        "name": "VBAD1",
+        "source_version": "1",
+        "source_sha256": "5d7803b96cadc64381723aedd3de67416677fdf81db86a72f7a9c92bebb014bd",
+        "backup_sha256": "5d7803b96cadc64381723aedd3de67416677fdf81db86a72f7a9c92bebb014bd",
+        "preview": [
+          "199-current DBVersion is: 1",
+          "199-wanted DBVersion is: 2.3",
+          "408 Operation failed: Transform failed: No suitable transforms"
+        ],
+        "transform": "408 Operation failed: Transform failed: No suitable transforms",
+        "source_unchanged": true
+      },
+      {
+        "name": "VBAD24",
+        "source_version": "2.4",
+        "source_sha256": "2050f3fcec6a6871d4fb36a2f8cff012435188f10d62825bf9b7e8648967b773",
+        "backup_sha256": "2050f3fcec6a6871d4fb36a2f8cff012435188f10d62825bf9b7e8648967b773",
+        "preview": [
+          "199-current DBVersion is: 2.4",
+          "199-wanted DBVersion is: 2.3",
+          "408 Operation failed: Transform failed: No suitable transforms"
+        ],
+        "transform": "408 Operation failed: Transform failed: No suitable transforms",
+        "source_unchanged": true
+      }
+    ],
+    "custom_stylesheet_output": {
+      "source_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+      "preview": [
+        "199-Calculated transform list:",
+        "199-Transform with XSLT file: v22tov23.xslt",
+        "200 OK."
+      ],
+      "preview_source_unchanged": true,
+      "preview_output_unchanged": true,
+      "source_backup_created": false,
+      "output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
+      "source_unchanged_after_transform": true,
+      "load_after": "200 OK.",
+      "readback_db_version": "2.3",
+      "readback_project_address": "VOUT",
+      "in_place": {
+        "output_sha256": "0bd9a252ab42edc1738349f916f3287fc4ca1fc8373eeb260c33173f8716b853",
+        "backup_sha256": "f006dec4f633383fc5a883c8d86f3d88c3a08db5da4e62a14f8e9799deaf7825",
+        "load_after": "200 OK.",
+        "readback_db_version": "2.3",
+        "readback_project_address": "VINLINE"
+      }
+    },
+    "service": {
+      "listener_ownership_verified": true,
+      "listener_count": 6,
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "cleanup_complete": true
+    },
+    "physical_networks_opened": false,
+    "scope": "Unitless repaired XML 2 and 2.1 via default native migration; no arbitrary unit XSLT parity"
+  }
+}

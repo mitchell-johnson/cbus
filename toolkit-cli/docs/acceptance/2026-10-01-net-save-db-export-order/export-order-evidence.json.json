@@ -1,0 +1,309 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "0a7dab08e333ba587487fb3ffceed71581049949c01aab1f6722a98e9cbafd72",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/support/0/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "5c9283baf7a8ffa369df393afbcdef073b8ca6168f8221d882e74d28c07b0df2"
+    },
+    {
+      "json_pointer": "/support/1/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "93b6fb6840e935e44663300738fefdba63e31aa2c68b98fefc7ad99ce4e22ca9"
+    },
+    {
+      "json_pointer": "/support/2/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "9bf9f58dc7dbef26f40e3b55d803281e2281a2a12d5826257ecdf067400c7509"
+    },
+    {
+      "json_pointer": "/support/3/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a8c24c26365ee2da0e481779435f7ebb6553f7284368ad5a70b55f7d5153f3ae"
+    },
+    {
+      "json_pointer": "/support/4/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fb94a4b52e1e237438493d8322ebe7371d7428b3fdb98d3bb5059614d4351562"
+    },
+    {
+      "json_pointer": "/support/5/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fcbfb50f31749d859fa266b6dde975e75afbf2c60bcb6bca389cc2dd20d6c142"
+    },
+    {
+      "json_pointer": "/support/6/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b4fe776dd89f5269a58ba3796e52b5e449f4d6d46dbe851698c6ebdc2ebd4a34"
+    },
+    {
+      "json_pointer": "/support/7/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a8726a9ec1ff5981c8257e2de59277e971947da6324d7c03f3447b81a86b66a1"
+    },
+    {
+      "json_pointer": "/support/8/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "d1210d215297548f1e6934e1b69d0ef865dcb53317a3854d0c775eaa0e596084"
+    },
+    {
+      "json_pointer": "/support/9/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b947b819df6a256b759809e5d8c576681cb24c3813616d6e2f6e91f7c560ab42"
+    },
+    {
+      "json_pointer": "/support/10/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "75e339477f14dab0d2685bcdc1a1b17544bd76deffaadee6e31a253b59078ff6"
+    },
+    {
+      "json_pointer": "/support/11/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "328b927d57fe98655aab3f7d10a59b82db0424f2d779bbd46a3a0eb4dcfcd4bf"
+    },
+    {
+      "json_pointer": "/support/12/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "e51de2bbf521769c07b581af0a6ac4f31f17a815028c880aa2e3b71f1a6b729c"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-project-export-order-correction-evidence-v1",
+    "raw_native_commands": 27,
+    "native_order_projection": [
+      {
+        "address": "254",
+        "tag_name": "Later",
+        "network_number": "254"
+      },
+      {
+        "address": "1",
+        "tag_name": "First",
+        "network_number": "1"
+      }
+    ],
+    "native_stages": [
+      "before NET LOAD DB/NET SAVE DB",
+      "after NET LOAD DB",
+      "after NET SAVE DB",
+      "after PROJECT SAVE/CLOSE/LOAD/USE",
+      "while OTHER selected"
+    ],
+    "native_whole_subtree_direct_xml_byte_equal_checks": 10,
+    "native_optional_children_probed": false,
+    "original_internal_selection_or_state_introspection": false,
+    "minimal_modeled_Installation_wrapper_is_exact_original_document": false,
+    "production_behavior_change": false,
+    "test_only_change_proof": {
+      "after_lib_sha256": "35872a314d191c923f63d2b7c07ec5465a3d39ee2c991432e0671592b112c6cc",
+      "before_lib_sha256": "fe2d5551ddbddacf5c2ec65e7f6de817047aa85241298cf546d050f387ef1798",
+      "before_source_roster_sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+      "diff_log": "test-only-source-diff.patch",
+      "diff_sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+      "production_prefix_and_remaining_suffix_byte_equal": true,
+      "independently_rechecked": true,
+      "before_test_body_sha256": "3f25aa297e1cdaf10e6a80096c33c88426f2450b864e67a3febb369e9f6f72a3",
+      "after_test_body_sha256": "48f7fa935b232a1fbdbc902915707febfe9b8fb92c4edcb3017d80251ea53469",
+      "project_selection_and_model_immutability_assertions_retained": true
+    },
+    "before_focused_test": {
+      "argv": [
+        "cargo",
+        "+1.98.1",
+        "test",
+        "-p",
+        "cbus-cgate",
+        "--lib",
+        "tests::project_xml_composes_networks_without_selection_or_mutation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "rust",
+      "exit_code": 101,
+      "log": "before-project-xml.log",
+      "log_sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+      "test_results": [
+        {
+          "id": "tests::project_xml_composes_networks_without_selection_or_mutation",
+          "outcome": "FAILED"
+        }
+      ],
+      "scope": "Focused reproduction before assertion correction; no full workspace suite"
+    },
+    "after_focused_test_ids": [
+      "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+      "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+      "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+      "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+      "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+      "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+      "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+      "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+      "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+      "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+      "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+      "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+      "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+      "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+      "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+      "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+      "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+      "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+      "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+      "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+      "tests::network_xml_reports_model_state",
+      "tests::project_xml_composes_networks_without_selection_or_mutation",
+      "tests::project_xml_empty_snapshot_has_bounded_exact_wire_vector"
+    ],
+    "vector_bindings": [
+      {
+        "path": "rust/testdata/vectors/cgate_project_export_order.json",
+        "sha256": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd"
+      },
+      {
+        "path": "rust/testdata/vectors/cgate_project_snapshot.json",
+        "sha256": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa"
+      }
+    ],
+    "empty_snapshot_request_response_and_format_unchanged": true,
+    "old_empty_vector_sha256": "a37b1ef60f3a33477cfdd7b6040a845da064f78938fbf1f390fe6d058c38e2ae",
+    "support": [
+      {
+        "name": "probe.py",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/probe.py",
+        "sha256": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+        "bytes": 9574
+      },
+      {
+        "name": "raw.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/raw.json",
+        "sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+        "bytes": 169924
+      },
+      {
+        "name": "normalized-private-fixture.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/normalized-private-fixture.json",
+        "sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+        "bytes": 52002
+      },
+      {
+        "name": "summary.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/summary.json",
+        "sha256": "646b4d3f88f5175ce8db094e321d26afad52e9710f546b73132f29b7b57e8c2e",
+        "bytes": 2498
+      },
+      {
+        "name": "order-proof.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/order-proof.json",
+        "sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+        "bytes": 3945
+      },
+      {
+        "name": "process.log",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/process.log",
+        "sha256": "8bb6f3aca896ccc58fd8f5d72ea6bf39069cbfdaab373427b06e1e764dec7a0c",
+        "bytes": 240
+      },
+      {
+        "name": "driver.stdout",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/driver.stdout",
+        "sha256": "bad602f062f6095e6cd71599edab459f9f86046612db5107a8747c9b0d59bcb9",
+        "bytes": 1654
+      },
+      {
+        "name": "driver.stderr",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/driver.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "name": "validation-before-command.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/before-command.json",
+        "sha256": "7dacc2952fdd795626a67320039f66ffd408f2187834e11e3f5eed21106b6905",
+        "bytes": 607
+      },
+      {
+        "name": "validation-before-project-xml.log",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/before-project-xml.log",
+        "sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+        "bytes": 1868
+      },
+      {
+        "name": "validation-test-only-source-diff.patch",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/test-only-source-diff.patch",
+        "sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+        "bytes": 1717
+      },
+      {
+        "name": "validation-source-before.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/source-before.json",
+        "sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+        "bytes": 29863
+      },
+      {
+        "name": "validation-source-after-correction.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/source-after-correction.json",
+        "sha256": "ee17dbf03c4fd33d2d51188e78b9506e6051305a8fed66df6631951f41eeded6",
+        "bytes": 29863
+      }
+    ],
+    "ci_classification": {
+      "base_revision": "6b208d087fd7433c605cc44b97c4c09896ffa0eb",
+      "scope": "Immutable 6b208d CI had one outdated Project-export order assertion failure; Rustfmt/Clippy green, release skipped. This focused local checkpoint is not a terminal CI pass. Earlier a33 CI Clippy failure remains historical."
+    },
+    "full_suite_run": false,
+    "native_release_gate_run": false,
+    "hardware_or_windows_acceptance": false,
+    "qualification": "One legacy test expectation was reconciled with actual original numeric Network creation order. Fresh original27-command proof observes responses and graph order; original internal selection/immutability were not inspected. Local model selection/immutability assertions remain tested. Historical integration physical/OID/PP red-green captures are carried without new execution credit; final module executions are credited by the current Rust manifest only."
+  }
+}

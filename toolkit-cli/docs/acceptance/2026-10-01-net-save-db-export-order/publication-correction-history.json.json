@@ -1,0 +1,25 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "5e151599cf933af5ba6e8a254fb5866f3b67b467491e928d8d5a8405b36caddf",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/private_attempt_directory",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "67981ecd4f8fbb859aad7e6e89072ce64ef966cd206288ef64cf780311f3ed13"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-private-publication-correction-v1",
+    "superseded_receipt_sha256": "7f33f83f9449c8386e23ab0213cc233410aae3c5274801cdc3503b89d305c22d",
+    "reason": "Final privacy scan found XML Hostname values retained in coordinate-free UTF-8 wire hex; draft preserved privately and no independent PASS credited.",
+    "private_attempt_directory": "${CBUS_FINAL_ACCEPTANCE_ROOT}/publication-attempt1",
+    "source_binary_or_execution_changes": false,
+    "correction_scope": "Declared Hostname role transformation for arbitrary valid hexadecimal/base64 UTF-8 values, including object keys; opaque FILE omissions preserved."
+  }
+}

@@ -30,7 +30,10 @@ records the first candidate's software and original C-Gate acceptance boundaries
 The [integration corrections](toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-integration.md)
 also isolate DALI and PP patch traffic from independent database rows, preserve
 existing duplicate-OID lookup rules and retain legacy programming fields during
-unrelated tag edits.
+unrelated tag edits. Whole-project XML preserves Network creation order; the
+[export-order checkpoint](toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-export-order.md)
+binds that rule to fresh original-server evidence and preserves the export's
+selection and model-state checks.
 
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,

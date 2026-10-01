@@ -48,6 +48,15 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [export-order checkpoint](feature-batch-2026-10-01-net-save-db-export-order.md)
+reconciles an older numeric-order test with 27 fresh original C-Gate commands:
+Network 254 created before Network 1 remains first before materialization,
+after DB load/save and after durable reload. It preserves the model's
+no-selection/no-mutation checks and pins the exact ordered JSON projection.
+Production code and rebuilt release binaries are unchanged; current
+source-bound evidence is separate from the preceding candidate's failed CI.
+Named child creation/copy and standalone typed project selection remain open.
+
 The [runtime-to-tag materialization batch](feature-batch-2026-10-01-net-save-db-materialization.md)
 implements NET SAVE DB as complete Network/Interface/Property trees, including
 exact string addresses and independent NetworkNumber. It preserves existing

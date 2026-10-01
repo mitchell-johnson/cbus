@@ -1,0 +1,14 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "a37b1ef60f3a33477cfdd7b6040a845da064f78938fbf1f390fe6d058c38e2ae",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cgate-modeled-project-snapshot-v1",
+    "source": "Native //PROJECT selector and Installation/Project/Network hierarchy from the retained CSV four-project capture; minimal modeled wrapper and numeric network ordering are local service behavior, not an exact original project document.",
+    "request": "[7] DBGETXML //EMPTY\r\n",
+    "response": "[7] 343-Begin XML snippet\r\n[7] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n[7] 347-<Installation><Project><Address>EMPTY</Address></Project></Installation>\r\n[7] 344 End XML snippet\r\n"
+  }
+}

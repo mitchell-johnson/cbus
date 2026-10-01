@@ -175,7 +175,9 @@ independent no-contact interface traps. It checks native DB-versus-FILE rules,
 public CLI creation, duplicate and uncertain replies, saved/reopened project
 fields, runtime catalogue preservation and no post-startup PCI traffic.
 See [the integration corrections](feature-batch-2026-10-01-net-save-db-integration.md)
-for the corrected implementation and its acceptance, and
+for physical/database ownership fixes, and
+[the export-order checkpoint](feature-batch-2026-10-01-net-save-db-export-order.md)
+for current evidence of Network creation-order export. See
 [the materialization batch report](feature-batch-2026-10-01-net-save-db-materialization.md)
 for the first candidate's preserved evidence. See
 [the preceding catalogue report](feature-batch-2026-10-01-network-definitions.md)

@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "7e451933f2d5d625d6b40e1aba187a5557b62608d674c33af1accd26bf5c6a44",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "7e451933f2d5d625d6b40e1aba187a5557b62608d674c33af1accd26bf5c6a44"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "{\"raw\": \"${CBUS_OWNED_CBUS_NATIVE_PROJECT_NAME_REUSE_20261001}/run/raw.json\", \"fixture\": \"${CBUS_OWNED_CBUS_NATIVE_PROJECT_NAME_REUSE_20261001}/normalized.json\", \"raw_sha256\": \"1e095aac3e1ec754e5e744659c382c519b1485c4136c6074d96c0293667a7b2e\", \"fixture_sha256\": \"44bac02d61343450753966828f3bbe72e9223f7ae0e78ebcbe51ea7cfc9b9663\", \"cleanup\": {\"listener_ownership_verified\": true, \"cleanup_complete\": true, \"process_exit_confirmed\": true, \"work_removed\": true}}\n"
+}

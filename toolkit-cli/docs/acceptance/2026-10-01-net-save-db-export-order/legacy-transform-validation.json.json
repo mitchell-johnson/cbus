@@ -1,0 +1,61 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "aa385d15b750661563455fed487a2d016ff3df0505c5b5ca1aca2e80620a1d12",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-legacy-transform-current-carry-forward-validation-v1",
+    "historical_receipts_unchanged": true,
+    "source_before_after_equal": true,
+    "source_bindings": {
+      "src/cbus_toolkit/native.py": "71dad383ef146a380eb9d1537f265913bab1ffaf9a5f9a8cb057dfcf174dcd23",
+      "src/cbus_toolkit/cli.py": "99c97254c36ea1826f0af7c1a74214455d37ad3019b0cc1433fcb3954837dc6e",
+      "tests/project_legacy_transform_receipt_source.py": "d19fc3297a07e9e45bbee7a2e71a858665e10dc70379b705a323b6e40a455ef5",
+      "tests/test_project_legacy_transform_receipt.py": "34806e64bfb99383f60ccde20f1868bc24e0d998542c7819c4f5c8c29b83f07d",
+      "tests/test_project_legacy_transform_versions_receipt.py": "2741775375723c237bf9d6198e62e8d57c60b68c4356fc15a99c8493ae989cfe",
+      "research/fixtures/project-legacy-transform-historical-native-d217b0d2.zip": "bf3d03465dd59196b3f518693e640b5bf6d33619dc38e65d56bc0705852eeb80",
+      "research/fixtures/project-legacy-transform-native-receipt.json": "8b9bed9a578c946e4a31f700446371e562d9d29312a35a4dedce13b78362d1c0",
+      "research/fixtures/project-legacy-transform-versions-native-receipt.json": "83cabc189adbcdfa148b21e880a771c75ba0ed55b489ca17ec1a2fb7828494a6",
+      "tests/test_project_legacy_transform_native.py": "59172bba8c9ecb555794ebef67e6bb8a2620742e33bbf452281cf3d89163a983",
+      "tests/test_project_legacy_transform_versions_native.py": "336fcf08ad3cb3909998aa574a7dcb0358479c2052ea0cdeff05cd7bb4fc5c09",
+      "research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "guard_tests": {
+      "passed": 5,
+      "mutations": 13,
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_project_legacy_transform_receipt.py",
+        "tests/test_project_legacy_transform_versions_receipt.py"
+      ],
+      "PYTHONPATH": "src:tests",
+      "log_sha256": "e453d28d5aa13661e88f4eadf63d210590b1ceae2c962cc8ddb6373199d6c155"
+    },
+    "native_tests": {
+      "passed": 2,
+      "skips": 0,
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_project_legacy_transform_native.py",
+        "tests/test_project_legacy_transform_versions_native.py"
+      ],
+      "PYTHONPATH": "src:.",
+      "python": "3.13.14",
+      "log_sha256": "135293bbaa14019a5818ec46d9cf4980f13b9a566b7678ca7dd52d19e5a3abfb",
+      "subtests_passed": 12
+    },
+    "reports": {
+      "current-transform-native.json": "b3de3d3e0cd294246dfe4c8b7b3f91a2cb9ad8230e7476586f320b3d2c23763e",
+      "current-transform-versions-native.json": "edb2ee2407251ed7762727a7b5e9d8d6e1d10a4cec84ac1425e05c9d2579b034"
+    },
+    "qualification": "Initial bare pytest invocation failed collection due missing tests helper path; reported tool output, not an archived raw log. Subsequent explicit PYTHONPATH runs and raw logs retained. No full suite or historical receipt regeneration."
+  }
+}

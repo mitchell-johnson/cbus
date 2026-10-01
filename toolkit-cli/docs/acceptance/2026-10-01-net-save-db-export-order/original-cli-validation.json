@@ -1,0 +1,306 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4e9e933f553246042b363f39534519ca043419deb0f3677069f8ccdaf0878fc1",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/runs/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/0/argv/1",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "9b949c71cb87370056b1992e5b9540a7bb62829cb6fb1b884704bfde93985f89"
+    },
+    {
+      "json_pointer": "/runs/0/argv/3",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/0/argv/7",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "cfc3571f6dd8ab6633fbfdff07fb1c6b7678c94be5f0147d9791500ca39c8fd2"
+    },
+    {
+      "json_pointer": "/runs/0/argv/9",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/runs/0/argv/11",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "e0f818990679355f1303c4b1640dd059d0ec2300f77eba00f8774d9c631a5e10"
+    },
+    {
+      "json_pointer": "/runs/0/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+    },
+    {
+      "json_pointer": "/runs/0/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "4637b4513a5d34d14d6f504da678744ec82b7b42527d6efcbc307c86b433782e"
+    },
+    {
+      "json_pointer": "/runs/0/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "bb5156240c0d396a245365f10c5d8bdf7d5f9b51faab20f13f54b0d458adb1c9"
+    },
+    {
+      "json_pointer": "/runs/0/report",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "6a19bc5abbd55680778716bb046cb6c518ad05d84213cfbbc78f3ad803b76261"
+    },
+    {
+      "json_pointer": "/runs/0/package_root",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "d6a8348ee9f92f2287fbf519dce2b12d1a56526aaaca743210ac3f0963ba5fbf"
+    },
+    {
+      "json_pointer": "/runs/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/runs/1/argv/1",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "9b949c71cb87370056b1992e5b9540a7bb62829cb6fb1b884704bfde93985f89"
+    },
+    {
+      "json_pointer": "/runs/1/argv/3",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "f69485f0cad158f36c0e80947276d152c667eeb958c2b133876a55941e83ad09"
+    },
+    {
+      "json_pointer": "/runs/1/argv/7",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "cfc3571f6dd8ab6633fbfdff07fb1c6b7678c94be5f0147d9791500ca39c8fd2"
+    },
+    {
+      "json_pointer": "/runs/1/argv/9",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/runs/1/argv/11",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "4169e7e3208ebdee064a5aeb04b04f864171dc7a2344610c30a5eea78a9b3e03"
+    },
+    {
+      "json_pointer": "/runs/1/argv/13",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "10fb8154aa5d151abff6c711457665877e36d80753a62c031b090470d7f77c32"
+    },
+    {
+      "json_pointer": "/runs/1/cwd",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+    },
+    {
+      "json_pointer": "/runs/1/stdout/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "bd0ed3d5a9ee2e5b48a5fe3c31e19f47389a1e8eae282b5d678bc0a1e926f4a9"
+    },
+    {
+      "json_pointer": "/runs/1/stderr/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "62918d16ccd94b7cf3771821ff1c0d49966d479dbfbd20412897b3fa53146e0a"
+    },
+    {
+      "json_pointer": "/runs/1/report",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "51d84466e11fb3c71a56f537cf1dc8db3ed8b97a1ea5fdd2cbf69f89c59a3483"
+    },
+    {
+      "json_pointer": "/runs/1/package_root",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "d252e90ad86236f699b230ab664106b8d0aadefab4c735a751f7fc025eafd3c6"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-original-materialization-cli-validation-v1",
+    "driver_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+    "wrapper_sha256": "9f31f68be044329c43b3caa5e7b300de405463870819094b43cd2b0d23e76073",
+    "runs": [
+      {
+        "mode": "source",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_ORIGINAL_CLI_DRIVER}/driver.py",
+          "--python",
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "--mode",
+          "source",
+          "--vendor",
+          "${CBUS_ORIGINAL_CGATE_APP}",
+          "--java",
+          "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+          "--output",
+          "${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}",
+        "exit_status": 0,
+        "stdout": {
+          "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1.stdout",
+          "sha256": "8b4723617d0fee36986cedd509b97edb749d9d5fb3760a45dbcf3fe9ef43a26d",
+          "bytes": 244
+        },
+        "stderr": {
+          "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "report": "${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1/report.json",
+        "report_sha256": "c4635bad7be012378ada95f689cd1523e3652c90ce9405214df22d32ae562c20",
+        "driver_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+        "terminal_checks": {
+          "completed": true,
+          "materialization_workflow_complete": true,
+          "backend_cleanup_complete": true,
+          "backend_process_exit_confirmed": true,
+          "backend_listener_ownership_verified": true,
+          "proxy_cleanup_complete": true,
+          "proxy_errors_empty": true,
+          "trap_cleanup_complete": true,
+          "trap_connections_zero": true,
+          "serial_path_absent": true,
+          "source_unchanged": true,
+          "package_unchanged": true,
+          "artifacts_unchanged": true,
+          "cleanup_errors_empty": true
+        },
+        "commands": 89,
+        "package_root": "${CBUS_TOOLKIT_ROOT}/src/cbus_toolkit",
+        "wheel_sha256": null
+      },
+      {
+        "mode": "installed",
+        "argv": [
+          "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+          "${CBUS_ORIGINAL_CLI_DRIVER}/driver.py",
+          "--python",
+          "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/python",
+          "--mode",
+          "installed",
+          "--vendor",
+          "${CBUS_ORIGINAL_CGATE_APP}",
+          "--java",
+          "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+          "--output",
+          "${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1",
+          "--wheel",
+          "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}",
+        "exit_status": 0,
+        "stdout": {
+          "path": "${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1.stdout",
+          "sha256": "6b4bd971822f24a99f780cd47bacf90bf24777e616b44ad32395a13e690f1c47",
+          "bytes": 247
+        },
+        "stderr": {
+          "path": "${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "report": "${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1/report.json",
+        "report_sha256": "e9fb0e7d73e95ccc3593fc884b07d04547b32349bf58409447f7ec9fe04e85a5",
+        "driver_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+        "terminal_checks": {
+          "completed": true,
+          "materialization_workflow_complete": true,
+          "backend_cleanup_complete": true,
+          "backend_process_exit_confirmed": true,
+          "backend_listener_ownership_verified": true,
+          "proxy_cleanup_complete": true,
+          "proxy_errors_empty": true,
+          "trap_cleanup_complete": true,
+          "trap_connections_zero": true,
+          "serial_path_absent": true,
+          "source_unchanged": true,
+          "package_unchanged": true,
+          "artifacts_unchanged": true,
+          "cleanup_errors_empty": true
+        },
+        "commands": 89,
+        "package_root": "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/lib/python3.13/site-packages/cbus_toolkit",
+        "wheel_sha256": "1b7d63f8ac29598160592c5966c9e8ba72aaf9ee7bb360ebfe1e47b94cae1fc6"
+      }
+    ],
+    "full_suite_run": false,
+    "hardware_acceptance": false
+  }
+}

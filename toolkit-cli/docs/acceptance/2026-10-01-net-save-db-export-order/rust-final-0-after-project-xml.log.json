@@ -1,0 +1,19 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "3be7f0e5a5b9ce382a70b544681a616542c2785c24fe832c0b1be758adcf4775",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "3be7f0e5a5b9ce382a70b544681a616542c2785c24fe832c0b1be758adcf4775"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.07s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-9db8455fc0d2e9fe)\n\nrunning 1 test\ntest tests::project_xml_composes_networks_without_selection_or_mutation ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 499 filtered out; finished in 0.01s\n\n"
+}

@@ -1,0 +1,22 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "9f31f68be044329c43b3caa5e7b300de405463870819094b43cd2b0d23e76073",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance",
+        "java11",
+        "native_cli_driver",
+        "original_cgate",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "9f31f68be044329c43b3caa5e7b300de405463870819094b43cd2b0d23e76073"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "import hashlib,json,subprocess,os\nfrom pathlib import Path\nR=Path('${CBUS_ORIGINAL_CLI_DRIVER}');O=Path('${CBUS_FINAL_ACCEPTANCE_ROOT}');repo=Path('${CBUS_REPOSITORY_ROOT}')\nsha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()\ndriver=R/'driver.py'; assert sha(driver)=='5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec'\nwheel=O/'fresh-wheel/wheels/cbus_toolkit_cli-0.1.0-py3-none-any.whl'; assert sha(wheel)==json.loads((O/'frozen-bindings.json').read_text())['wheel_sha256']\nmanifest={'format':'cbus-original-materialization-cli-validation-v1','driver_sha256':sha(driver),'wrapper_sha256':sha(Path(__file__)),'runs':[],'full_suite_run':False,'hardware_acceptance':False}\nenv={k:v for k,v in os.environ.items() if not k.startswith('CBUS_') and k not in ('PYTHONPATH','PYTHONHOME')}\nfor mode,python in [('source',repo/'toolkit-cli/.venv/bin/python'),('installed',O/'fresh-wheel/installed-env/bin/python')]:\n out=R/(mode+'-execution-1');stdout=R/(mode+'-execution-1.stdout');stderr=R/(mode+'-execution-1.stderr')\n argv=[str(repo/'toolkit-cli/.venv/bin/python'),str(driver),'--python',str(python),'--mode',mode,'--vendor','${CBUS_ORIGINAL_CGATE_APP}','--java','${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java','--output',str(out)]\n if mode=='installed':argv+=['--wheel',str(wheel)]\n with stdout.open('xb') as a,stderr.open('xb') as b:result=subprocess.run(argv,cwd=repo,env=env,stdout=a,stderr=b)\n report=out/'report.json';v=json.loads(report.read_text());checks={'completed':v['completed'],'materialization_workflow_complete':v.get('materialization_workflow_complete',False),'backend_cleanup_complete':v['backend']['cleanup_complete'],'backend_process_exit_confirmed':v['backend']['process_exit_confirmed'],'backend_listener_ownership_verified':v['backend']['listener_ownership_verified'],'proxy_cleanup_complete':v['proxy']['cleanup_complete'],'proxy_errors_empty':not v['proxy'].get('errors'),'trap_cleanup_complete':v['trap']['cleanup_complete'],'trap_connections_zero':not v['trap']['connections'],'serial_path_absent':v.get('serial_path_absent',False),'source_unchanged':v['source_unchanged'],'package_unchanged':v['package_unchanged'],'artifacts_unchanged':v['artifacts_unchanged'],'cleanup_errors_empty':not v.get('cleanup_errors')}\n run={'mode':mode,'argv':argv,'cwd':str(repo),'exit_status':result.returncode,'stdout':{'path':str(stdout),'sha256':sha(stdout),'bytes':stdout.stat().st_size},'stderr':{'path':str(stderr),'sha256':sha(stderr),'bytes':stderr.stat().st_size},'report':str(report),'report_sha256':sha(report),'driver_sha256':sha(driver),'terminal_checks':checks,'commands':len(v['commands']),'package_root':v['package_before']['package_root'],'wheel_sha256':sha(wheel) if mode=='installed' else None}\n manifest['runs'].append(run);(R/'final-validation.json').write_text(json.dumps(manifest,indent=2)+'\\n');print(json.dumps(run),flush=True)\n assert result.returncode==0 and all(checks.values()),v.get('failure')\n"
+}

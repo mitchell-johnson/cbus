@@ -1,0 +1,235 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "c52028de385ed883ed5d12d6ae2f8161352ade5d1dc9428e3fe2f5175ad15c9a",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/0/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/0/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/1/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/1/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/2/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/2/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/3/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/3/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/4/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/4/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/5/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/5/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/6/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/6/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    },
+    {
+      "json_pointer": "/7/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/7/cwd",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7c38e22c116f52c217d0d643602169d9fdd2971a376aad888c02bcd31e94c9bf"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": [
+    {
+      "label": "skip-census",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/skip_census.py"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "ac691c58ed80db7d0e1741c8a15f6763eeea317ae675fef15f9d6eb62b8edc1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "inventory",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_cgate_contract_inventory.py"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "d212606593b762579a3d9400755427c5cf299504f5db85e1703bd750884bc879",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "physical-applicability",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/cgate_session_physical_applicability.py",
+        "--output",
+        "research/fixtures/cgate-session-physical-applicability.json"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "de2fd13c4d0538b0dcbce5548e78dba803eae44c758165126ccfadf4c063df14",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "parity",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_parity_register.py"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "3955d3650d5db4bc3a887757ec039433d296a0604094b79a455ecc7a79e3a654",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "skip-census-check",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/skip_census.py",
+        "--check"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "ac691c58ed80db7d0e1741c8a15f6763eeea317ae675fef15f9d6eb62b8edc1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "inventory-check",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_cgate_contract_inventory.py",
+        "--check"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "e6039daac440dbd18476bfa238dae2cba97249c54df4dc45aadcc5fa71a68379",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "parity-check",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "research/build_parity_register.py",
+        "--check"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 0,
+      "stdout_sha256": "9c3610cbb65a696a6a40bf415dc65232b845f9cf2bb1dc9902d0f31b34f369b1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "coverage",
+      "argv": [
+        "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+        "-m",
+        "cbus_toolkit",
+        "coverage",
+        "--require-complete"
+      ],
+      "cwd": "${CBUS_TOOLKIT_ROOT}",
+      "exit_status": 1,
+      "stdout_sha256": "96895d1eb3a5f3d34db40cb8db237fdefa83ace0341091607b138d6c85564e0d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

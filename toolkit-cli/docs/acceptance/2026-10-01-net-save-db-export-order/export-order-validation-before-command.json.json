@@ -1,0 +1,33 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "7dacc2952fdd795626a67320039f66ffd408f2187834e11e3f5eed21106b6905",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "cargo",
+      "+1.98.1",
+      "test",
+      "-p",
+      "cbus-cgate",
+      "--lib",
+      "tests::project_xml_composes_networks_without_selection_or_mutation",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "rust",
+    "exit_code": 101,
+    "log": "before-project-xml.log",
+    "log_sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+    "test_results": [
+      {
+        "id": "tests::project_xml_composes_networks_without_selection_or_mutation",
+        "outcome": "FAILED"
+      }
+    ],
+    "scope": "Focused reproduction before assertion correction; no full workspace suite"
+  }
+}

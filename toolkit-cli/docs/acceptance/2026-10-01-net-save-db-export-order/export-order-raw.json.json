@@ -1,0 +1,1157 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/commands/4/response_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "787f749ca24a108d08ae85b062c1ef71fc9302b1bd02579a8440878c4a58cdd4",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/commands/4/response_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "10185414a938486aec81cdea0231c28657a85d80145a85083f1c77826856351f"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/commands/4/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "9de8265eab0d2fe155dbe406f822f53ae5ab4b0f5e978a84da52517e7892e874"
+    },
+    {
+      "json_pointer": "/commands/8/response_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "8cbc7d8056c756ee714eb44ee42433f2318f761184a84a2986a6bb071732d12f",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/commands/8/response_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "0c2e03cf68597217bb2976de209cd9ce6bd9dc63accc7371d776819077a37b0e"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/commands/8/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "454b47e01aa8b30fd49e3100d3f54430ea7960ca05fa41b70380de94018b019e"
+    },
+    {
+      "json_pointer": "/commands/12/response_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "3558bd745808b7cd18886f8c623702003172c3d458685460e111285b1c865d7a",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/commands/12/response_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "9ba126b79ddc1a617f0c3f9741d30b9dd7d502ed356bb81a653d59c6f91d6430"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/commands/12/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "73262c17dd4cdd91bb86217e15316da3b474353ccb305a65584f0460262063d8"
+    },
+    {
+      "json_pointer": "/commands/19/response_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "9dcc5ca839470c65d4e2ef6208815e6489c4a5e8836efef69843280d33d4304c",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/commands/19/response_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "dd91b5588e4e603336491ebd28e9a108460629748453b5aa5e5fbb7107190c7d"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/commands/19/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "71f69b5b21eaca5d7495725893586662fb71ca5abb20b55a7f4231b3ac68cfb2"
+    },
+    {
+      "json_pointer": "/commands/24/response_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "e1c3c3f8255d3fc1c61761039d0bca7abe04fb81ed308a47b9f37b785b5dc6f2",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/commands/24/response_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "08db5bd71e05c0a961618f9a10eca7c2b1ac5809537cbc49f35d5456cc492c36"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/commands/24/response/2",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "9c82da911ed09165e33d1a364803f904c6e4a6be5bb1018e659a69ec2653eaef"
+    },
+    {
+      "json_pointer": "/wire_connections/0/server_to_client_hex",
+      "action": "utf8_coordinate_roles_then_hex",
+      "raw_string_sha256": "5dd436af4714470469f57ccb0611f1ae80b14c6514c6877db0d6c071bb280636",
+      "decoded_transformations": [
+        {
+          "json_pointer": "/wire_connections/0/server_to_client_hex",
+          "action": "role_template",
+          "roles": [
+            "acceptance_xml_hostname"
+          ],
+          "raw_string_sha256": "05fa43b15fa87a914012ae2153048e11530134db16bb8bae48d0065eb86ebe69"
+        }
+      ]
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}~1probe.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "5c9283baf7a8ffa369df393afbcdef073b8ca6168f8221d882e74d28c07b0df2",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_TOOLKIT_ROOT}~1research~1local_cgate.py",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}~1driver.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_ORIGINAL_CGATE_APP}~1cgate.jar",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "ad8e2697bd11b55fc962216aad5d76de462ea58f84536f8b1523ff664ab68445",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_ORIGINAL_JAVA11}~1Contents~1Home~1bin~1java",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_TOOLKIT_ROOT}~1docs~1acceptance~12026-10-01-net-save-db-integration~1acceptance.json",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f3be5a9d39697cfdeae9257b3d34053a4bb7e1ab0de50e7402bf623b23cecaa8",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_before/${CBUS_REPOSITORY_ROOT}~1rust~1testdata~1fixtures~1native_cgate_net_save_db_materialization.json",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "5aa79e0dc7aa6698587a1d67846cc36711a673e7a88ecd36e95d148f227aba8f",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/xml_observations/0/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61"
+    },
+    {
+      "json_pointer": "/xml_observations/3/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61"
+    },
+    {
+      "json_pointer": "/xml_observations/6/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61"
+    },
+    {
+      "json_pointer": "/xml_observations/9/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d"
+    },
+    {
+      "json_pointer": "/xml_observations/12/xml",
+      "action": "role_template",
+      "roles": [
+        "acceptance_xml_hostname"
+      ],
+      "raw_string_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d"
+    },
+    {
+      "json_pointer": "/private_process_log/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fcbfb50f31749d859fa266b6dde975e75afbf2c60bcb6bca389cc2dd20d6c142"
+    },
+    {
+      "json_pointer": "/owned_process/java",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/owned_process/work_directory",
+      "action": "role_template",
+      "roles": [
+        "system_temporary_root"
+      ],
+      "raw_string_sha256": "3693f23f20f91a927042e6ffb3bcde2ac76d56f5ec79ea030f7040ffd7e8f216"
+    },
+    {
+      "json_pointer": "/owned_process/argv/0",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4"
+    },
+    {
+      "json_pointer": "/owned_process/argv/2",
+      "action": "role_template",
+      "roles": [
+        "system_temporary_root",
+        "temporary_root_alias"
+      ],
+      "raw_string_sha256": "154fe455d042c9b39336794cfe1d8e5eba323c091eeaf875a3befa293a8fccae"
+    },
+    {
+      "json_pointer": "/owned_process/argv/6",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "ad8e2697bd11b55fc962216aad5d76de462ea58f84536f8b1523ff664ab68445"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}~1probe.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "5c9283baf7a8ffa369df393afbcdef073b8ca6168f8221d882e74d28c07b0df2",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_TOOLKIT_ROOT}~1research~1local_cgate.py",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}~1driver.py",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_ORIGINAL_CGATE_APP}~1cgate.jar",
+      "action": "role_template",
+      "roles": [
+        "original_cgate"
+      ],
+      "raw_string_sha256": "ad8e2697bd11b55fc962216aad5d76de462ea58f84536f8b1523ff664ab68445",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_ORIGINAL_JAVA11}~1Contents~1Home~1bin~1java",
+      "action": "role_template",
+      "roles": [
+        "java11"
+      ],
+      "raw_string_sha256": "199a21c83b054ca08f02b9303f39c5861422c029158bb67adeaf529e6ca7d4b4",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_TOOLKIT_ROOT}~1docs~1acceptance~12026-10-01-net-save-db-integration~1acceptance.json",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f3be5a9d39697cfdeae9257b3d34053a4bb7e1ab0de50e7402bf623b23cecaa8",
+      "target": "object_key"
+    },
+    {
+      "json_pointer": "/inputs_after/${CBUS_REPOSITORY_ROOT}~1rust~1testdata~1fixtures~1native_cgate_net_save_db_materialization.json",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "5aa79e0dc7aa6698587a1d67846cc36711a673e7a88ecd36e95d148f227aba8f",
+      "target": "object_key"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-original-project-export-creation-order-raw-v1",
+    "commands": [
+      {
+        "label": "new",
+        "command": "PROJECT NEW SNAP",
+        "tag": "o0",
+        "request_hex": "5b6f305d2050524f4a454354204e455720534e41500d0a",
+        "response_hex": "5b6f305d20323030204f4b2e0d0a",
+        "response": [
+          "[o0] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o0] 200 OK.",
+        "duration_seconds": 0.011347833991749212
+      },
+      {
+        "label": "use",
+        "command": "PROJECT USE SNAP",
+        "tag": "o1",
+        "request_hex": "5b6f315d2050524f4a4543542055534520534e41500d0a",
+        "response_hex": "5b6f315d20323030204f4b2e0d0a",
+        "response": [
+          "[o1] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o1] 200 OK.",
+        "duration_seconds": 0.00023674999829381704
+      },
+      {
+        "label": "create254",
+        "command": "DBCREATENET 254 Later Cni 127.0.0.1:50247",
+        "tag": "o2",
+        "request_hex": "5b6f325d2044424352454154454e455420323534204c6174657220436e69203132372e302e302e313a35303234370d0a",
+        "response_hex": "5b6f325d20333031204f49443d37396334383363302d396638352d313033662d613262322d6561663962636630653730370d0a",
+        "response": [
+          "[o2] 301 OID=79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 301,
+        "final": "[o2] 301 OID=79c483c0-9f85-103f-a2b2-eaf9bcf0e707",
+        "duration_seconds": 0.03523087498615496
+      },
+      {
+        "label": "create1",
+        "command": "DBCREATENET 1 First Cni 127.0.0.1:50247",
+        "tag": "o3",
+        "request_hex": "5b6f335d2044424352454154454e4554203120466972737420436e69203132372e302e302e313a35303234370d0a",
+        "response_hex": "5b6f335d20333031204f49443d37396334616164302d396638352d313033662d613262342d6561663962636630653730370d0a",
+        "response": [
+          "[o3] 301 OID=79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 301,
+        "final": "[o3] 301 OID=79c4aad0-9f85-103f-a2b4-eaf9bcf0e707",
+        "duration_seconds": 0.0004374590062070638
+      },
+      {
+        "label": "whole-before-net-save",
+        "command": "DBGETXML //SNAP",
+        "tag": "o4",
+        "request_hex": "5b6f345d204442474554584d4c202f2f534e41500d0a",
+        "response_hex": "5b6f345d203334332d426567696e20584d4c20736e69707065740d0a5b6f345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f345d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f345d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o4] 343-Begin XML snippet",
+          "[o4] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o4] 347-<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o4] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o4] 344 End XML snippet",
+        "duration_seconds": 0.015066958003444597
+      },
+      {
+        "label": "direct254-before",
+        "command": "DBGETXML //SNAP/254",
+        "tag": "o5",
+        "request_hex": "5b6f355d204442474554584d4c202f2f534e41502f3235340d0a",
+        "response_hex": "5b6f355d203334332d426567696e20584d4c20736e69707065740d0a5b6f355d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f355d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f355d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o5] 343-Begin XML snippet",
+          "[o5] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o5] 347-<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o5] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o5] 344 End XML snippet",
+        "duration_seconds": 0.0024384999996982515
+      },
+      {
+        "label": "direct1-before",
+        "command": "DBGETXML //SNAP/1",
+        "tag": "o6",
+        "request_hex": "5b6f365d204442474554584d4c202f2f534e41502f310d0a",
+        "response_hex": "5b6f365d203334332d426567696e20584d4c20736e69707065740d0a5b6f365d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f365d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f365d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o6] 343-Begin XML snippet",
+          "[o6] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o6] 347-<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o6] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o6] 344 End XML snippet",
+        "duration_seconds": 0.0023217499838210642
+      },
+      {
+        "label": "net-load-db",
+        "command": "NET LOAD DB",
+        "tag": "o7",
+        "request_hex": "5b6f375d204e4554204c4f41442044420d0a",
+        "response_hex": "5b6f375d20323030204f4b2e0d0a",
+        "response": [
+          "[o7] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o7] 200 OK.",
+        "duration_seconds": 0.006340499996440485
+      },
+      {
+        "label": "whole-after-net-load",
+        "command": "DBGETXML //SNAP",
+        "tag": "o8",
+        "request_hex": "5b6f385d204442474554584d4c202f2f534e41500d0a",
+        "response_hex": "5b6f385d203334332d426567696e20584d4c20736e69707065740d0a5b6f385d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f385d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f385d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o8] 343-Begin XML snippet",
+          "[o8] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o8] 347-<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o8] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o8] 344 End XML snippet",
+        "duration_seconds": 0.003939041984267533
+      },
+      {
+        "label": "direct254-after-net-load",
+        "command": "DBGETXML //SNAP/254",
+        "tag": "o9",
+        "request_hex": "5b6f395d204442474554584d4c202f2f534e41502f3235340d0a",
+        "response_hex": "5b6f395d203334332d426567696e20584d4c20736e69707065740d0a5b6f395d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f395d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f395d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o9] 343-Begin XML snippet",
+          "[o9] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o9] 347-<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o9] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o9] 344 End XML snippet",
+        "duration_seconds": 0.001932041981490329
+      },
+      {
+        "label": "direct1-after-net-load",
+        "command": "DBGETXML //SNAP/1",
+        "tag": "o10",
+        "request_hex": "5b6f31305d204442474554584d4c202f2f534e41502f310d0a",
+        "response_hex": "5b6f31305d203334332d426567696e20584d4c20736e69707065740d0a5b6f31305d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31305d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31305d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o10] 343-Begin XML snippet",
+          "[o10] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o10] 347-<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o10] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o10] 344 End XML snippet",
+        "duration_seconds": 0.002249790995847434
+      },
+      {
+        "label": "net-save-db",
+        "command": "NET SAVE DB",
+        "tag": "o11",
+        "request_hex": "5b6f31315d204e455420534156452044420d0a",
+        "response_hex": "5b6f31315d20323030204f4b2e0d0a",
+        "response": [
+          "[o11] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o11] 200 OK.",
+        "duration_seconds": 0.0003233750176150352
+      },
+      {
+        "label": "whole-after-net-save",
+        "command": "DBGETXML //SNAP",
+        "tag": "o12",
+        "request_hex": "5b6f31325d204442474554584d4c202f2f534e41500d0a",
+        "response_hex": "5b6f31325d203334332d426567696e20584d4c20736e69707065740d0a5b6f31325d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31325d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f31325d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o12] 343-Begin XML snippet",
+          "[o12] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o12] 347-<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o12] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o12] 344 End XML snippet",
+        "duration_seconds": 0.0035139580140821636
+      },
+      {
+        "label": "direct254-after-net-save",
+        "command": "DBGETXML //SNAP/254",
+        "tag": "o13",
+        "request_hex": "5b6f31335d204442474554584d4c202f2f534e41502f3235340d0a",
+        "response_hex": "5b6f31335d203334332d426567696e20584d4c20736e69707065740d0a5b6f31335d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31335d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31335d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o13] 343-Begin XML snippet",
+          "[o13] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o13] 347-<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o13] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o13] 344 End XML snippet",
+        "duration_seconds": 0.002405457984423265
+      },
+      {
+        "label": "direct1-after-net-save",
+        "command": "DBGETXML //SNAP/1",
+        "tag": "o14",
+        "request_hex": "5b6f31345d204442474554584d4c202f2f534e41502f310d0a",
+        "response_hex": "5b6f31345d203334332d426567696e20584d4c20736e69707065740d0a5b6f31345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31345d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31345d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o14] 343-Begin XML snippet",
+          "[o14] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o14] 347-<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o14] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o14] 344 End XML snippet",
+        "duration_seconds": 0.0019160830124747008
+      },
+      {
+        "label": "save",
+        "command": "PROJECT SAVE SNAP",
+        "tag": "o15",
+        "request_hex": "5b6f31355d2050524f4a454354205341564520534e41500d0a",
+        "response_hex": "5b6f31355d20323030204f4b2e0d0a",
+        "response": [
+          "[o15] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o15] 200 OK.",
+        "duration_seconds": 0.19140483302180655
+      },
+      {
+        "label": "close",
+        "command": "PROJECT CLOSE SNAP",
+        "tag": "o16",
+        "request_hex": "5b6f31365d2050524f4a45435420434c4f534520534e41500d0a",
+        "response_hex": "5b6f31365d20323030204f4b2e0d0a",
+        "response": [
+          "[o16] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o16] 200 OK.",
+        "duration_seconds": 0.00037970798439346254
+      },
+      {
+        "label": "load",
+        "command": "PROJECT LOAD SNAP",
+        "tag": "o17",
+        "request_hex": "5b6f31375d2050524f4a454354204c4f414420534e41500d0a",
+        "response_hex": "5b6f31375d20323030204f4b2e0d0a",
+        "response": [
+          "[o17] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o17] 200 OK.",
+        "duration_seconds": 0.013616957992780954
+      },
+      {
+        "label": "use-reloaded",
+        "command": "PROJECT USE SNAP",
+        "tag": "o18",
+        "request_hex": "5b6f31385d2050524f4a4543542055534520534e41500d0a",
+        "response_hex": "5b6f31385d20323030204f4b2e0d0a",
+        "response": [
+          "[o18] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o18] 200 OK.",
+        "duration_seconds": 0.0004858749744016677
+      },
+      {
+        "label": "whole-reloaded",
+        "command": "DBGETXML //SNAP",
+        "tag": "o19",
+        "request_hex": "5b6f31395d204442474554584d4c202f2f534e41500d0a",
+        "response_hex": "5b6f31395d203334332d426567696e20584d4c20736e69707065740d0a5b6f31395d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31395d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c436f6e6669673e3c4f49443e37396363373330302d396638352d313033662d613262362d6561663962636630653730373c2f4f49443e3c4170706c69636174696f6e3e63676174653c2f4170706c69636174696f6e3e3c50726f70657274793e3c4f49443e37396363396131302d396638352d313033662d613262372d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d666173742d73746172743c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363633132302d396638352d313033662d613262382d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d76332d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363653833302d396638352d313033662d613262392d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e6d6f64656c2d6368616e67652d6576656e74733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364306634302d396638352d313033662d613262612d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e73686f772d636f6d6d616e642d6661696c7572653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364333635302d396638352d313033662d613262622d6561663962636630653730373c2f4f49443e3c4e616d653e6175746f2d72656f70656e3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364356436302d396638352d313033662d613262632d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d6170706c69636174696f6e3c2f4e616d653e3c56616c75653e35363c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364383437302d396638352d313033662d613262642d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d74782d64656c61793c2f4e616d653e3c56616c75653e3235303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364616238302d396638352d313033662d613262652d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d63616368653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364643239302d396638352d313033662d613262662d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d636f6d70726573733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364663961302d396638352d313033662d613263302d6561663962636630653730373c2f4f49443e3c4e616d653e6367726f7570732d66696c653c2f4e616d653e3c56616c75653e6367726f7570732e7478743c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365323062302d396638352d313033662d613263312d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465723c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365343763302d396638352d313033662d613263322d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465726d6f64653c2f4e616d653e3c56616c75653e7365636f6e646172793c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365366564302d396638352d313033662d613263332d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e7570646174652d696e74657276616c3c2f4e616d653e3c56616c75653e33303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365393565302d396638352d313033662d613263342d6561663962636630653730373c2f4f49443e3c4e616d653e636f6d6d732d64656275673c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365626366302d396638352d313033662d613263352d6561663962636630653730373c2f4f49443e3c4e616d653e656e61626c652e736176652d73746174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365653430302d396638352d313033662d613263362d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6175746f2d7068616e746f6d2d67726f7570733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366306231302d396638352d313033662d613263372d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6c6561726e2d7570646174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366333232302d396638352d313033662d613263382d6561663962636630653730373c2f4f49443e3c4e616d653e6c6f63616c2d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366353933302d396638352d313033662d613263392d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6170706c69636174696f6e2d636f6e6e6563743c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366383034302d396638352d313033662d613263612d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6175746f2d7068616e746f6d2d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366613735302d396638352d313033662d613263622d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d6661696c7572652d6365696c696e673c2f4e616d653e3c56616c75653e31303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366636536302d396638352d313033662d613263632d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d66616c6c6261636b2d64656c61793c2f4e616d653e3c56616c75653e313030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366663537302d396638352d313033662d613263642d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e636f6d6d616e64732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430316338302d396638352d313033662d613263652d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430343339302d396638352d313033662d613263662d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65642d687973746572657369733c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430366161302d396638352d313033662d613264302d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e7063692e706f6c6c2d696e74657276616c3c2f4e616d653e3c56616c75653e36303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430393162302d396638352d313033662d613264312d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965733c2f4e616d653e3c56616c75653e323c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430623863302d396638352d313033662d613264322d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965732e7063692d636865636b3c2f4e616d653e3c56616c75653e313c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430646664302d396638352d313033662d613264332d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e73696d756c74616e656f75732d6964656e7469666965733c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431303665302d396638352d313033662d613264342d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e736f757263653c2f4e616d653e3c56616c75653e64623c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431326466302d396638352d313033662d613264352d6561663962636630653730373c2f4f49443e3c4e616d653e7063692d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431353530302d396638352d313033662d613264362d6561663962636630653730373c2f4f49443e3c4e616d653e7063692e6c6f63616c2d73616c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431376331302d396638352d313033662d613264372d6561663962636630653730373c2f4f49443e3c4e616d653e72656f70656e2d64656c61793c2f4e616d653e3c56616c75653e31353030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431613332302d396638352d313033662d613264382d6561663962636630653730373c2f4f49443e3c4e616d653e7265706f72742d6e65772d6f626a656374733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431636133302d396638352d313033662d613264392d6561663962636630653730373c2f4f49443e3c4e616d653e726573706f6e73652d64656c61793c2f4e616d653e3c56616c75653e353530303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431663134302d396638352d313033662d613264612d6561663962636630653730373c2f4f49443e3c4e616d653e73657269616c2e666978626175643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432313835302d396638352d313033662d613264622d6561663962636630653730373c2f4f49443e3c4e616d653e73706565642d77726974653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432336636302d396638352d313033662d613264632d6561663962636630653730373c2f4f49443e3c4e616d653e737461727475702d64656c61793c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432363637302d396638352d313033662d613264642d6561663962636630653730373c2f4f49443e3c4e616d653e73776565702d74696d656f75743c2f4e616d653e3c56616c75653e323030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432386438302d396638352d313033662d613264652d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d666173742d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432623439302d396638352d313033662d613264662d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d74696d653c2f4e616d653e3c56616c75653e333630303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432646261302d396638352d313033662d613265302d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e656e61626c65643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433303262302d396638352d313033662d613265312d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d6178696d756d3c2f4e616d653e3c56616c75653e3330303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433323963302d396638352d313033662d613265322d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d696e696d756d3c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433353064302d396638352d313033662d613265332d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e73796e632d74696d652d666163746f723c2f4e616d653e3c56616c75653e302e37353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433373765302d396638352d313033662d613265342d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e73796e632d667265652e706572696f64733c2f4e616d653e3c56616c75653e3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433396566302d396638352d313033662d613265352d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d64656c6574653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433633630302d396638352d313033662d613265362d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d7570646174652d64623c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433656431302d396638352d313033662d613265372d6561663962636630653730373c2f4f49443e3c4e616d653e756e726176656c2e7265616464726573732d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434313432302d396638352d313033662d613265382d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d6367726f7570733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434336233302d396638352d313033662d613265392d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d71756575652d737765657065723c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c2f436f6e6669673e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f31395d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o19] 343-Begin XML snippet",
+          "[o19] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o19] 347-<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Config><OID>79cc7300-9f85-103f-a2b6-eaf9bcf0e707</OID><Application>cgate</Application><Property><OID>79cc9a10-9f85-103f-a2b7-eaf9bcf0e707</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>79ccc120-9f85-103f-a2b8-eaf9bcf0e707</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>79cce830-9f85-103f-a2b9-eaf9bcf0e707</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>79cd0f40-9f85-103f-a2ba-eaf9bcf0e707</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>79cd3650-9f85-103f-a2bb-eaf9bcf0e707</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>79cd5d60-9f85-103f-a2bc-eaf9bcf0e707</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>79cd8470-9f85-103f-a2bd-eaf9bcf0e707</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>79cdab80-9f85-103f-a2be-eaf9bcf0e707</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>79cdd290-9f85-103f-a2bf-eaf9bcf0e707</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>79cdf9a0-9f85-103f-a2c0-eaf9bcf0e707</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>79ce20b0-9f85-103f-a2c1-eaf9bcf0e707</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>79ce47c0-9f85-103f-a2c2-eaf9bcf0e707</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>79ce6ed0-9f85-103f-a2c3-eaf9bcf0e707</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>79ce95e0-9f85-103f-a2c4-eaf9bcf0e707</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>79cebcf0-9f85-103f-a2c5-eaf9bcf0e707</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>79cee400-9f85-103f-a2c6-eaf9bcf0e707</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>79cf0b10-9f85-103f-a2c7-eaf9bcf0e707</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>79cf3220-9f85-103f-a2c8-eaf9bcf0e707</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>79cf5930-9f85-103f-a2c9-eaf9bcf0e707</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>79cf8040-9f85-103f-a2ca-eaf9bcf0e707</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>79cfa750-9f85-103f-a2cb-eaf9bcf0e707</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>79cfce60-9f85-103f-a2cc-eaf9bcf0e707</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>79cff570-9f85-103f-a2cd-eaf9bcf0e707</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>79d01c80-9f85-103f-a2ce-eaf9bcf0e707</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>79d04390-9f85-103f-a2cf-eaf9bcf0e707</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>79d06aa0-9f85-103f-a2d0-eaf9bcf0e707</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>79d091b0-9f85-103f-a2d1-eaf9bcf0e707</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>79d0b8c0-9f85-103f-a2d2-eaf9bcf0e707</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>79d0dfd0-9f85-103f-a2d3-eaf9bcf0e707</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>79d106e0-9f85-103f-a2d4-eaf9bcf0e707</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>79d12df0-9f85-103f-a2d5-eaf9bcf0e707</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>79d15500-9f85-103f-a2d6-eaf9bcf0e707</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>79d17c10-9f85-103f-a2d7-eaf9bcf0e707</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>79d1a320-9f85-103f-a2d8-eaf9bcf0e707</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>79d1ca30-9f85-103f-a2d9-eaf9bcf0e707</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>79d1f140-9f85-103f-a2da-eaf9bcf0e707</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>79d21850-9f85-103f-a2db-eaf9bcf0e707</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>79d23f60-9f85-103f-a2dc-eaf9bcf0e707</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>79d26670-9f85-103f-a2dd-eaf9bcf0e707</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>79d28d80-9f85-103f-a2de-eaf9bcf0e707</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>79d2b490-9f85-103f-a2df-eaf9bcf0e707</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>79d2dba0-9f85-103f-a2e0-eaf9bcf0e707</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>79d302b0-9f85-103f-a2e1-eaf9bcf0e707</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>79d329c0-9f85-103f-a2e2-eaf9bcf0e707</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>79d350d0-9f85-103f-a2e3-eaf9bcf0e707</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>79d377e0-9f85-103f-a2e4-eaf9bcf0e707</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>79d39ef0-9f85-103f-a2e5-eaf9bcf0e707</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>79d3c600-9f85-103f-a2e6-eaf9bcf0e707</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>79d3ed10-9f85-103f-a2e7-eaf9bcf0e707</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>79d41420-9f85-103f-a2e8-eaf9bcf0e707</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>79d43b30-9f85-103f-a2e9-eaf9bcf0e707</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o19] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o19] 344 End XML snippet",
+        "duration_seconds": 0.012599582987604663
+      },
+      {
+        "label": "direct254-reloaded",
+        "command": "DBGETXML //SNAP/254",
+        "tag": "o20",
+        "request_hex": "5b6f32305d204442474554584d4c202f2f534e41502f3235340d0a",
+        "response_hex": "5b6f32305d203334332d426567696e20584d4c20736e69707065740d0a5b6f32305d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32305d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32305d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o20] 343-Begin XML snippet",
+          "[o20] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o20] 347-<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o20] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o20] 344 End XML snippet",
+        "duration_seconds": 0.002202208008384332
+      },
+      {
+        "label": "direct1-reloaded",
+        "command": "DBGETXML //SNAP/1",
+        "tag": "o21",
+        "request_hex": "5b6f32315d204442474554584d4c202f2f534e41502f310d0a",
+        "response_hex": "5b6f32315d203334332d426567696e20584d4c20736e69707065740d0a5b6f32315d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32315d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32315d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o21] 343-Begin XML snippet",
+          "[o21] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o21] 347-<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o21] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o21] 344 End XML snippet",
+        "duration_seconds": 0.001804041996365413
+      },
+      {
+        "label": "new-other",
+        "command": "PROJECT NEW OTHER",
+        "tag": "o22",
+        "request_hex": "5b6f32325d2050524f4a454354204e4557204f544845520d0a",
+        "response_hex": "5b6f32325d20323030204f4b2e0d0a",
+        "response": [
+          "[o22] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o22] 200 OK.",
+        "duration_seconds": 0.0004884169902652502
+      },
+      {
+        "label": "use-other",
+        "command": "PROJECT USE OTHER",
+        "tag": "o23",
+        "request_hex": "5b6f32335d2050524f4a45435420555345204f544845520d0a",
+        "response_hex": "5b6f32335d20323030204f4b2e0d0a",
+        "response": [
+          "[o23] 200 OK."
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 200,
+        "final": "[o23] 200 OK.",
+        "duration_seconds": 0.0003654999891296029
+      },
+      {
+        "label": "whole-from-other",
+        "command": "DBGETXML //SNAP",
+        "tag": "o24",
+        "request_hex": "5b6f32345d204442474554584d4c202f2f534e41500d0a",
+        "response_hex": "5b6f32345d203334332d426567696e20584d4c20736e69707065740d0a5b6f32345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32345d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c436f6e6669673e3c4f49443e37396363373330302d396638352d313033662d613262362d6561663962636630653730373c2f4f49443e3c4170706c69636174696f6e3e63676174653c2f4170706c69636174696f6e3e3c50726f70657274793e3c4f49443e37396363396131302d396638352d313033662d613262372d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d666173742d73746172743c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363633132302d396638352d313033662d613262382d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d76332d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363653833302d396638352d313033662d613262392d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e6d6f64656c2d6368616e67652d6576656e74733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364306634302d396638352d313033662d613262612d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e73686f772d636f6d6d616e642d6661696c7572653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364333635302d396638352d313033662d613262622d6561663962636630653730373c2f4f49443e3c4e616d653e6175746f2d72656f70656e3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364356436302d396638352d313033662d613262632d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d6170706c69636174696f6e3c2f4e616d653e3c56616c75653e35363c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364383437302d396638352d313033662d613262642d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d74782d64656c61793c2f4e616d653e3c56616c75653e3235303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364616238302d396638352d313033662d613262652d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d63616368653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364643239302d396638352d313033662d613262662d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d636f6d70726573733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364663961302d396638352d313033662d613263302d6561663962636630653730373c2f4f49443e3c4e616d653e6367726f7570732d66696c653c2f4e616d653e3c56616c75653e6367726f7570732e7478743c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365323062302d396638352d313033662d613263312d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465723c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365343763302d396638352d313033662d613263322d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465726d6f64653c2f4e616d653e3c56616c75653e7365636f6e646172793c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365366564302d396638352d313033662d613263332d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e7570646174652d696e74657276616c3c2f4e616d653e3c56616c75653e33303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365393565302d396638352d313033662d613263342d6561663962636630653730373c2f4f49443e3c4e616d653e636f6d6d732d64656275673c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365626366302d396638352d313033662d613263352d6561663962636630653730373c2f4f49443e3c4e616d653e656e61626c652e736176652d73746174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365653430302d396638352d313033662d613263362d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6175746f2d7068616e746f6d2d67726f7570733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366306231302d396638352d313033662d613263372d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6c6561726e2d7570646174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366333232302d396638352d313033662d613263382d6561663962636630653730373c2f4f49443e3c4e616d653e6c6f63616c2d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366353933302d396638352d313033662d613263392d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6170706c69636174696f6e2d636f6e6e6563743c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366383034302d396638352d313033662d613263612d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6175746f2d7068616e746f6d2d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366613735302d396638352d313033662d613263622d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d6661696c7572652d6365696c696e673c2f4e616d653e3c56616c75653e31303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366636536302d396638352d313033662d613263632d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d66616c6c6261636b2d64656c61793c2f4e616d653e3c56616c75653e313030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366663537302d396638352d313033662d613263642d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e636f6d6d616e64732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430316338302d396638352d313033662d613263652d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430343339302d396638352d313033662d613263662d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65642d687973746572657369733c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430366161302d396638352d313033662d613264302d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e7063692e706f6c6c2d696e74657276616c3c2f4e616d653e3c56616c75653e36303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430393162302d396638352d313033662d613264312d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965733c2f4e616d653e3c56616c75653e323c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430623863302d396638352d313033662d613264322d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965732e7063692d636865636b3c2f4e616d653e3c56616c75653e313c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430646664302d396638352d313033662d613264332d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e73696d756c74616e656f75732d6964656e7469666965733c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431303665302d396638352d313033662d613264342d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e736f757263653c2f4e616d653e3c56616c75653e64623c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431326466302d396638352d313033662d613264352d6561663962636630653730373c2f4f49443e3c4e616d653e7063692d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431353530302d396638352d313033662d613264362d6561663962636630653730373c2f4f49443e3c4e616d653e7063692e6c6f63616c2d73616c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431376331302d396638352d313033662d613264372d6561663962636630653730373c2f4f49443e3c4e616d653e72656f70656e2d64656c61793c2f4e616d653e3c56616c75653e31353030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431613332302d396638352d313033662d613264382d6561663962636630653730373c2f4f49443e3c4e616d653e7265706f72742d6e65772d6f626a656374733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431636133302d396638352d313033662d613264392d6561663962636630653730373c2f4f49443e3c4e616d653e726573706f6e73652d64656c61793c2f4e616d653e3c56616c75653e353530303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431663134302d396638352d313033662d613264612d6561663962636630653730373c2f4f49443e3c4e616d653e73657269616c2e666978626175643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432313835302d396638352d313033662d613264622d6561663962636630653730373c2f4f49443e3c4e616d653e73706565642d77726974653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432336636302d396638352d313033662d613264632d6561663962636630653730373c2f4f49443e3c4e616d653e737461727475702d64656c61793c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432363637302d396638352d313033662d613264642d6561663962636630653730373c2f4f49443e3c4e616d653e73776565702d74696d656f75743c2f4e616d653e3c56616c75653e323030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432386438302d396638352d313033662d613264652d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d666173742d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432623439302d396638352d313033662d613264662d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d74696d653c2f4e616d653e3c56616c75653e333630303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432646261302d396638352d313033662d613265302d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e656e61626c65643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433303262302d396638352d313033662d613265312d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d6178696d756d3c2f4e616d653e3c56616c75653e3330303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433323963302d396638352d313033662d613265322d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d696e696d756d3c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433353064302d396638352d313033662d613265332d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e73796e632d74696d652d666163746f723c2f4e616d653e3c56616c75653e302e37353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433373765302d396638352d313033662d613265342d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e73796e632d667265652e706572696f64733c2f4e616d653e3c56616c75653e3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433396566302d396638352d313033662d613265352d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d64656c6574653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433633630302d396638352d313033662d613265362d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d7570646174652d64623c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433656431302d396638352d313033662d613265372d6561663962636630653730373c2f4f49443e3c4e616d653e756e726176656c2e7265616464726573732d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434313432302d396638352d313033662d613265382d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d6367726f7570733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434336233302d396638352d313033662d613265392d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d71756575652d737765657065723c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c2f436f6e6669673e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f32345d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o24] 343-Begin XML snippet",
+          "[o24] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o24] 347-<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Config><OID>79cc7300-9f85-103f-a2b6-eaf9bcf0e707</OID><Application>cgate</Application><Property><OID>79cc9a10-9f85-103f-a2b7-eaf9bcf0e707</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>79ccc120-9f85-103f-a2b8-eaf9bcf0e707</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>79cce830-9f85-103f-a2b9-eaf9bcf0e707</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>79cd0f40-9f85-103f-a2ba-eaf9bcf0e707</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>79cd3650-9f85-103f-a2bb-eaf9bcf0e707</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>79cd5d60-9f85-103f-a2bc-eaf9bcf0e707</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>79cd8470-9f85-103f-a2bd-eaf9bcf0e707</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>79cdab80-9f85-103f-a2be-eaf9bcf0e707</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>79cdd290-9f85-103f-a2bf-eaf9bcf0e707</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>79cdf9a0-9f85-103f-a2c0-eaf9bcf0e707</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>79ce20b0-9f85-103f-a2c1-eaf9bcf0e707</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>79ce47c0-9f85-103f-a2c2-eaf9bcf0e707</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>79ce6ed0-9f85-103f-a2c3-eaf9bcf0e707</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>79ce95e0-9f85-103f-a2c4-eaf9bcf0e707</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>79cebcf0-9f85-103f-a2c5-eaf9bcf0e707</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>79cee400-9f85-103f-a2c6-eaf9bcf0e707</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>79cf0b10-9f85-103f-a2c7-eaf9bcf0e707</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>79cf3220-9f85-103f-a2c8-eaf9bcf0e707</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>79cf5930-9f85-103f-a2c9-eaf9bcf0e707</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>79cf8040-9f85-103f-a2ca-eaf9bcf0e707</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>79cfa750-9f85-103f-a2cb-eaf9bcf0e707</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>79cfce60-9f85-103f-a2cc-eaf9bcf0e707</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>79cff570-9f85-103f-a2cd-eaf9bcf0e707</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>79d01c80-9f85-103f-a2ce-eaf9bcf0e707</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>79d04390-9f85-103f-a2cf-eaf9bcf0e707</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>79d06aa0-9f85-103f-a2d0-eaf9bcf0e707</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>79d091b0-9f85-103f-a2d1-eaf9bcf0e707</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>79d0b8c0-9f85-103f-a2d2-eaf9bcf0e707</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>79d0dfd0-9f85-103f-a2d3-eaf9bcf0e707</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>79d106e0-9f85-103f-a2d4-eaf9bcf0e707</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>79d12df0-9f85-103f-a2d5-eaf9bcf0e707</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>79d15500-9f85-103f-a2d6-eaf9bcf0e707</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>79d17c10-9f85-103f-a2d7-eaf9bcf0e707</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>79d1a320-9f85-103f-a2d8-eaf9bcf0e707</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>79d1ca30-9f85-103f-a2d9-eaf9bcf0e707</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>79d1f140-9f85-103f-a2da-eaf9bcf0e707</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>79d21850-9f85-103f-a2db-eaf9bcf0e707</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>79d23f60-9f85-103f-a2dc-eaf9bcf0e707</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>79d26670-9f85-103f-a2dd-eaf9bcf0e707</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>79d28d80-9f85-103f-a2de-eaf9bcf0e707</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>79d2b490-9f85-103f-a2df-eaf9bcf0e707</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>79d2dba0-9f85-103f-a2e0-eaf9bcf0e707</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>79d302b0-9f85-103f-a2e1-eaf9bcf0e707</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>79d329c0-9f85-103f-a2e2-eaf9bcf0e707</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>79d350d0-9f85-103f-a2e3-eaf9bcf0e707</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>79d377e0-9f85-103f-a2e4-eaf9bcf0e707</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>79d39ef0-9f85-103f-a2e5-eaf9bcf0e707</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>79d3c600-9f85-103f-a2e6-eaf9bcf0e707</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>79d3ed10-9f85-103f-a2e7-eaf9bcf0e707</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>79d41420-9f85-103f-a2e8-eaf9bcf0e707</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>79d43b30-9f85-103f-a2e9-eaf9bcf0e707</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[o24] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o24] 344 End XML snippet",
+        "duration_seconds": 0.011313833994790912
+      },
+      {
+        "label": "direct254-from-other",
+        "command": "DBGETXML //SNAP/254",
+        "tag": "o25",
+        "request_hex": "5b6f32355d204442474554584d4c202f2f534e41502f3235340d0a",
+        "response_hex": "5b6f32355d203334332d426567696e20584d4c20736e69707065740d0a5b6f32355d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32355d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32355d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o25] 343-Begin XML snippet",
+          "[o25] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o25] 347-<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o25] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o25] 344 End XML snippet",
+        "duration_seconds": 0.007193083001766354
+      },
+      {
+        "label": "direct1-from-other",
+        "command": "DBGETXML //SNAP/1",
+        "tag": "o26",
+        "request_hex": "5b6f32365d204442474554584d4c202f2f534e41502f310d0a",
+        "response_hex": "5b6f32365d203334332d426567696e20584d4c20736e69707065740d0a5b6f32365d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32365d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32365d2033343420456e6420584d4c20736e69707065740d0a",
+        "response": [
+          "[o26] 343-Begin XML snippet",
+          "[o26] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[o26] 347-<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+          "[o26] 344 End XML snippet"
+        ],
+        "terminal_complete": true,
+        "sent": true,
+        "status": 344,
+        "final": "[o26] 344 End XML snippet",
+        "duration_seconds": 0.002180915995268151
+      }
+    ],
+    "wire_connections": [
+      {
+        "sequence": 0,
+        "client_to_server_hex": "5b6f305d2050524f4a454354204e455720534e41500d0a5b6f315d2050524f4a4543542055534520534e41500d0a5b6f325d2044424352454154454e455420323534204c6174657220436e69203132372e302e302e313a35303234370d0a5b6f335d2044424352454154454e4554203120466972737420436e69203132372e302e302e313a35303234370d0a5b6f345d204442474554584d4c202f2f534e41500d0a5b6f355d204442474554584d4c202f2f534e41502f3235340d0a5b6f365d204442474554584d4c202f2f534e41502f310d0a5b6f375d204e4554204c4f41442044420d0a5b6f385d204442474554584d4c202f2f534e41500d0a5b6f395d204442474554584d4c202f2f534e41502f3235340d0a5b6f31305d204442474554584d4c202f2f534e41502f310d0a5b6f31315d204e455420534156452044420d0a5b6f31325d204442474554584d4c202f2f534e41500d0a5b6f31335d204442474554584d4c202f2f534e41502f3235340d0a5b6f31345d204442474554584d4c202f2f534e41502f310d0a5b6f31355d2050524f4a454354205341564520534e41500d0a5b6f31365d2050524f4a45435420434c4f534520534e41500d0a5b6f31375d2050524f4a454354204c4f414420534e41500d0a5b6f31385d2050524f4a4543542055534520534e41500d0a5b6f31395d204442474554584d4c202f2f534e41500d0a5b6f32305d204442474554584d4c202f2f534e41502f3235340d0a5b6f32315d204442474554584d4c202f2f534e41502f310d0a5b6f32325d2050524f4a454354204e4557204f544845520d0a5b6f32335d2050524f4a45435420555345204f544845520d0a5b6f32345d204442474554584d4c202f2f534e41500d0a5b6f32355d204442474554584d4c202f2f534e41502f3235340d0a5b6f32365d204442474554584d4c202f2f534e41502f310d0a",
+        "server_to_client_hex": "32303120536572766963652072656164793a205363686e656964657220456c65637472696320432d476174652056657273696f6e3a2076332e342e3020286275696c642032303031292023636d642d73796e7461783d312e300d0a5b6f305d20323030204f4b2e0d0a5b6f315d20323030204f4b2e0d0a5b6f325d20333031204f49443d37396334383363302d396638352d313033662d613262322d6561663962636630653730370d0a5b6f335d20333031204f49443d37396334616164302d396638352d313033662d613262342d6561663962636630653730370d0a5b6f345d203334332d426567696e20584d4c20736e69707065740d0a5b6f345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f345d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f345d2033343420456e6420584d4c20736e69707065740d0a5b6f355d203334332d426567696e20584d4c20736e69707065740d0a5b6f355d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f355d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f355d2033343420456e6420584d4c20736e69707065740d0a5b6f365d203334332d426567696e20584d4c20736e69707065740d0a5b6f365d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f365d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f365d2033343420456e6420584d4c20736e69707065740d0a5b6f375d20323030204f4b2e0d0a5b6f385d203334332d426567696e20584d4c20736e69707065740d0a5b6f385d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f385d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f385d2033343420456e6420584d4c20736e69707065740d0a5b6f395d203334332d426567696e20584d4c20736e69707065740d0a5b6f395d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f395d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f395d2033343420456e6420584d4c20736e69707065740d0a5b6f31305d203334332d426567696e20584d4c20736e69707065740d0a5b6f31305d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31305d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31305d2033343420456e6420584d4c20736e69707065740d0a5b6f31315d20323030204f4b2e0d0a5b6f31325d203334332d426567696e20584d4c20736e69707065740d0a5b6f31325d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31325d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f31325d2033343420456e6420584d4c20736e69707065740d0a5b6f31335d203334332d426567696e20584d4c20736e69707065740d0a5b6f31335d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31335d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31335d2033343420456e6420584d4c20736e69707065740d0a5b6f31345d203334332d426567696e20584d4c20736e69707065740d0a5b6f31345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31345d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f31345d2033343420456e6420584d4c20736e69707065740d0a5b6f31355d20323030204f4b2e0d0a5b6f31365d20323030204f4b2e0d0a5b6f31375d20323030204f4b2e0d0a5b6f31385d20323030204f4b2e0d0a5b6f31395d203334332d426567696e20584d4c20736e69707065740d0a5b6f31395d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f31395d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c436f6e6669673e3c4f49443e37396363373330302d396638352d313033662d613262362d6561663962636630653730373c2f4f49443e3c4170706c69636174696f6e3e63676174653c2f4170706c69636174696f6e3e3c50726f70657274793e3c4f49443e37396363396131302d396638352d313033662d613262372d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d666173742d73746172743c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363633132302d396638352d313033662d613262382d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d76332d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363653833302d396638352d313033662d613262392d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e6d6f64656c2d6368616e67652d6576656e74733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364306634302d396638352d313033662d613262612d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e73686f772d636f6d6d616e642d6661696c7572653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364333635302d396638352d313033662d613262622d6561663962636630653730373c2f4f49443e3c4e616d653e6175746f2d72656f70656e3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364356436302d396638352d313033662d613262632d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d6170706c69636174696f6e3c2f4e616d653e3c56616c75653e35363c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364383437302d396638352d313033662d613262642d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d74782d64656c61793c2f4e616d653e3c56616c75653e3235303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364616238302d396638352d313033662d613262652d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d63616368653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364643239302d396638352d313033662d613262662d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d636f6d70726573733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364663961302d396638352d313033662d613263302d6561663962636630653730373c2f4f49443e3c4e616d653e6367726f7570732d66696c653c2f4e616d653e3c56616c75653e6367726f7570732e7478743c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365323062302d396638352d313033662d613263312d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465723c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365343763302d396638352d313033662d613263322d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465726d6f64653c2f4e616d653e3c56616c75653e7365636f6e646172793c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365366564302d396638352d313033662d613263332d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e7570646174652d696e74657276616c3c2f4e616d653e3c56616c75653e33303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365393565302d396638352d313033662d613263342d6561663962636630653730373c2f4f49443e3c4e616d653e636f6d6d732d64656275673c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365626366302d396638352d313033662d613263352d6561663962636630653730373c2f4f49443e3c4e616d653e656e61626c652e736176652d73746174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365653430302d396638352d313033662d613263362d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6175746f2d7068616e746f6d2d67726f7570733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366306231302d396638352d313033662d613263372d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6c6561726e2d7570646174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366333232302d396638352d313033662d613263382d6561663962636630653730373c2f4f49443e3c4e616d653e6c6f63616c2d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366353933302d396638352d313033662d613263392d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6170706c69636174696f6e2d636f6e6e6563743c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366383034302d396638352d313033662d613263612d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6175746f2d7068616e746f6d2d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366613735302d396638352d313033662d613263622d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d6661696c7572652d6365696c696e673c2f4e616d653e3c56616c75653e31303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366636536302d396638352d313033662d613263632d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d66616c6c6261636b2d64656c61793c2f4e616d653e3c56616c75653e313030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366663537302d396638352d313033662d613263642d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e636f6d6d616e64732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430316338302d396638352d313033662d613263652d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430343339302d396638352d313033662d613263662d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65642d687973746572657369733c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430366161302d396638352d313033662d613264302d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e7063692e706f6c6c2d696e74657276616c3c2f4e616d653e3c56616c75653e36303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430393162302d396638352d313033662d613264312d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965733c2f4e616d653e3c56616c75653e323c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430623863302d396638352d313033662d613264322d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965732e7063692d636865636b3c2f4e616d653e3c56616c75653e313c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430646664302d396638352d313033662d613264332d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e73696d756c74616e656f75732d6964656e7469666965733c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431303665302d396638352d313033662d613264342d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e736f757263653c2f4e616d653e3c56616c75653e64623c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431326466302d396638352d313033662d613264352d6561663962636630653730373c2f4f49443e3c4e616d653e7063692d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431353530302d396638352d313033662d613264362d6561663962636630653730373c2f4f49443e3c4e616d653e7063692e6c6f63616c2d73616c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431376331302d396638352d313033662d613264372d6561663962636630653730373c2f4f49443e3c4e616d653e72656f70656e2d64656c61793c2f4e616d653e3c56616c75653e31353030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431613332302d396638352d313033662d613264382d6561663962636630653730373c2f4f49443e3c4e616d653e7265706f72742d6e65772d6f626a656374733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431636133302d396638352d313033662d613264392d6561663962636630653730373c2f4f49443e3c4e616d653e726573706f6e73652d64656c61793c2f4e616d653e3c56616c75653e353530303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431663134302d396638352d313033662d613264612d6561663962636630653730373c2f4f49443e3c4e616d653e73657269616c2e666978626175643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432313835302d396638352d313033662d613264622d6561663962636630653730373c2f4f49443e3c4e616d653e73706565642d77726974653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432336636302d396638352d313033662d613264632d6561663962636630653730373c2f4f49443e3c4e616d653e737461727475702d64656c61793c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432363637302d396638352d313033662d613264642d6561663962636630653730373c2f4f49443e3c4e616d653e73776565702d74696d656f75743c2f4e616d653e3c56616c75653e323030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432386438302d396638352d313033662d613264652d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d666173742d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432623439302d396638352d313033662d613264662d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d74696d653c2f4e616d653e3c56616c75653e333630303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432646261302d396638352d313033662d613265302d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e656e61626c65643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433303262302d396638352d313033662d613265312d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d6178696d756d3c2f4e616d653e3c56616c75653e3330303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433323963302d396638352d313033662d613265322d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d696e696d756d3c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433353064302d396638352d313033662d613265332d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e73796e632d74696d652d666163746f723c2f4e616d653e3c56616c75653e302e37353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433373765302d396638352d313033662d613265342d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e73796e632d667265652e706572696f64733c2f4e616d653e3c56616c75653e3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433396566302d396638352d313033662d613265352d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d64656c6574653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433633630302d396638352d313033662d613265362d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d7570646174652d64623c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433656431302d396638352d313033662d613265372d6561663962636630653730373c2f4f49443e3c4e616d653e756e726176656c2e7265616464726573732d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434313432302d396638352d313033662d613265382d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d6367726f7570733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434336233302d396638352d313033662d613265392d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d71756575652d737765657065723c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c2f436f6e6669673e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f31395d2033343420456e6420584d4c20736e69707065740d0a5b6f32305d203334332d426567696e20584d4c20736e69707065740d0a5b6f32305d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32305d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32305d2033343420456e6420584d4c20736e69707065740d0a5b6f32315d203334332d426567696e20584d4c20736e69707065740d0a5b6f32315d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32315d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32315d2033343420456e6420584d4c20736e69707065740d0a5b6f32325d20323030204f4b2e0d0a5b6f32335d20323030204f4b2e0d0a5b6f32345d203334332d426567696e20584d4c20736e69707065740d0a5b6f32345d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32345d203334372d3c496e7374616c6c6174696f6e3e3c4f49443e37396266303538302d396638352d313033662d613261652d6561663962636630653730373c2f4f49443e3c444256657273696f6e3e322e333c2f444256657273696f6e3e3c56657273696f6e3e312e303c2f56657273696f6e3e3c4d6f6469666965643e323032362d31302d30315431383a31383a33352e3438302b31333a30303c2f4d6f6469666965643e3c50726f6a6563743e3c4f49443e37396266376162302d396638352d313033662d613262312d6561663962636630653730373c2f4f49443e3c5461674e616d653e534e41503c2f5461674e616d653e3c416464726573733e534e41503c2f416464726573733e3c4465736372697074696f6e3e432d4275732070726f6a6563742067656e6572617465642066726f6d206c697665206e6574776f726b20627920432d476174652076332e342e3020286275696c642032303031293c2f4465736372697074696f6e3e3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e3c436f6e6669673e3c4f49443e37396363373330302d396638352d313033662d613262362d6561663962636630653730373c2f4f49443e3c4170706c69636174696f6e3e63676174653c2f4170706c69636174696f6e3e3c50726f70657274793e3c4f49443e37396363396131302d396638352d313033662d613262372d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d666173742d73746172743c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363633132302d396638352d313033662d613262382d6561663962636630653730373c2f4f49443e3c4e616d653e616c6c6f772d76332d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396363653833302d396638352d313033662d613262392d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e6d6f64656c2d6368616e67652d6576656e74733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364306634302d396638352d313033662d613262612d6561663962636630653730373c2f4f49443e3c4e616d653e6170706c69636174696f6e2e73686f772d636f6d6d616e642d6661696c7572653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364333635302d396638352d313033662d613262622d6561663962636630653730373c2f4f49443e3c4e616d653e6175746f2d72656f70656e3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364356436302d396638352d313033662d613262632d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d6170706c69636174696f6e3c2f4e616d653e3c56616c75653e35363c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364383437302d396638352d313033662d613262642d6561663962636630653730373c2f4f49443e3c4e616d653e636275732d74782d64656c61793c2f4e616d653e3c56616c75653e3235303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364616238302d396638352d313033662d613262652d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d63616368653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364643239302d396638352d313033662d613262662d6561663962636630653730373c2f4f49443e3c4e616d653e636275732e74782d636f6d70726573733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396364663961302d396638352d313033662d613263302d6561663962636630653730373c2f4f49443e3c4e616d653e6367726f7570732d66696c653c2f4e616d653e3c56616c75653e6367726f7570732e7478743c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365323062302d396638352d313033662d613263312d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465723c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365343763302d396638352d313033662d613263322d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e6d61737465726d6f64653c2f4e616d653e3c56616c75653e7365636f6e646172793c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365366564302d396638352d313033662d613263332d6561663962636630653730373c2f4f49443e3c4e616d653e636c6f636b2e7570646174652d696e74657276616c3c2f4e616d653e3c56616c75653e33303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365393565302d396638352d313033662d613263342d6561663962636630653730373c2f4f49443e3c4e616d653e636f6d6d732d64656275673c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365626366302d396638352d313033662d613263352d6561663962636630653730373c2f4f49443e3c4e616d653e656e61626c652e736176652d73746174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396365653430302d396638352d313033662d613263362d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6175746f2d7068616e746f6d2d67726f7570733c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366306231302d396638352d313033662d613263372d6561663962636630653730373c2f4f49443e3c4e616d653e6c69676874696e672e6c6561726e2d7570646174653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366333232302d396638352d313033662d613263382d6561663962636630653730373c2f4f49443e3c4e616d653e6c6f63616c2d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366353933302d396638352d313033662d613263392d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6170706c69636174696f6e2d636f6e6e6563743c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366383034302d396638352d313033662d613263612d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6175746f2d7068616e746f6d2d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366613735302d396638352d313033662d613263622d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d6661696c7572652d6365696c696e673c2f4e616d653e3c56616c75653e31303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366636536302d396638352d313033662d613263632d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6272696467652e6d6d692d66616c6c6261636b2d64656c61793c2f4e616d653e3c56616c75653e313030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396366663537302d396638352d313033662d613263642d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e636f6d6d616e64732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430316338302d396638352d313033662d613263652d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65643c2f4e616d653e3c56616c75653e333c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430343339302d396638352d313033662d613263662d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e6572726f722e756e6974732d6661696c65642d687973746572657369733c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430366161302d396638352d313033662d613264302d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e7063692e706f6c6c2d696e74657276616c3c2f4e616d653e3c56616c75653e36303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430393162302d396638352d313033662d613264312d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965733c2f4e616d653e3c56616c75653e323c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430623863302d396638352d313033662d613264322d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e726574726965732e7063692d636865636b3c2f4e616d653e3c56616c75653e313c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396430646664302d396638352d313033662d613264332d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e73696d756c74616e656f75732d6964656e7469666965733c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431303665302d396638352d313033662d613264342d6561663962636630653730373c2f4f49443e3c4e616d653e6e6574776f726b2e736f757263653c2f4e616d653e3c56616c75653e64623c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431326466302d396638352d313033662d613264352d6561663962636630653730373c2f4f49443e3c4e616d653e7063692d666c6f772d636f6e74726f6c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431353530302d396638352d313033662d613264362d6561663962636630653730373c2f4f49443e3c4e616d653e7063692e6c6f63616c2d73616c3c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431376331302d396638352d313033662d613264372d6561663962636630653730373c2f4f49443e3c4e616d653e72656f70656e2d64656c61793c2f4e616d653e3c56616c75653e31353030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431613332302d396638352d313033662d613264382d6561663962636630653730373c2f4f49443e3c4e616d653e7265706f72742d6e65772d6f626a656374733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431636133302d396638352d313033662d613264392d6561663962636630653730373c2f4f49443e3c4e616d653e726573706f6e73652d64656c61793c2f4e616d653e3c56616c75653e353530303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396431663134302d396638352d313033662d613264612d6561663962636630653730373c2f4f49443e3c4e616d653e73657269616c2e666978626175643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432313835302d396638352d313033662d613264622d6561663962636630653730373c2f4f49443e3c4e616d653e73706565642d77726974653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432336636302d396638352d313033662d613264632d6561663962636630653730373c2f4f49443e3c4e616d653e737461727475702d64656c61793c2f4e616d653e3c56616c75653e303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432363637302d396638352d313033662d613264642d6561663962636630653730373c2f4f49443e3c4e616d653e73776565702d74696d656f75743c2f4e616d653e3c56616c75653e323030303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432386438302d396638352d313033662d613264652d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d666173742d7063693c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432623439302d396638352d313033662d613264662d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632d74696d653c2f4e616d653e3c56616c75653e333630303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396432646261302d396638352d313033662d613265302d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e656e61626c65643c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433303262302d396638352d313033662d613265312d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d6178696d756d3c2f4e616d653e3c56616c75653e3330303c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433323963302d396638352d313033662d613265322d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e6d696e696d756d3c2f4e616d653e3c56616c75653e353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433353064302d396638352d313033662d613265332d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e70616464696e672e73796e632d74696d652d666163746f723c2f4e616d653e3c56616c75653e302e37353c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433373765302d396638352d313033662d613265342d6561663962636630653730373c2f4f49443e3c4e616d653e73796e632e73796e632d667265652e706572696f64733c2f4e616d653e3c56616c75653e3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433396566302d396638352d313033662d613265352d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d64656c6574653c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433633630302d396638352d313033662d613265362d6561663962636630653730373c2f4f49443e3c4e616d653e756e69742d6175746f2d7570646174652d64623c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396433656431302d396638352d313033662d613265372d6561663962636630653730373c2f4f49443e3c4e616d653e756e726176656c2e7265616464726573732d6272696467653c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434313432302d396638352d313033662d613265382d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d6367726f7570733c2f4e616d653e3c56616c75653e6e6f3c2f56616c75653e3c2f50726f70657274793e3c50726f70657274793e3c4f49443e37396434336233302d396638352d313033662d613265392d6561663962636630653730373c2f4f49443e3c4e616d653e7573652d71756575652d737765657065723c2f4e616d653e3c56616c75653e7965733c2f56616c75653e3c2f50726f70657274793e3c2f436f6e6669673e3c2f50726f6a6563743e3c496e7374616c6c6174696f6e44657461696c3e3c4f49443e37396266326339302d396638352d313033662d613261662d6561663962636630653730373c2f4f49443e3c53797374656d4c6f636174696f6e3e5b756e6b6e6f776e5d3c2f53797374656d4c6f636174696f6e3e3c4861726477617265506c6174666f726d3e5b756e6b6e6f776e5d3c2f4861726477617265506c6174666f726d3e3c486f73746e616d653e247b434255535f414343455054414e43455f484f53547d3c2f486f73746e616d653e3c4f534e616d653e4d6163204f5320583c2f4f534e616d653e3c4f5356657273696f6e3e31352e372e343c2f4f5356657273696f6e3e3c48617264776172654c6f636174696f6e3e5b756e6b6e6f776e5d3c2f48617264776172654c6f636174696f6e3e3c4d61696e74656e616e6365456d61696c3e5b756e6b6e6f776e5d3c2f4d61696e74656e616e6365456d61696c3e3c496e7374616c6c65723e3c4f49443e37396266353361302d396638352d313033662d613262302d6561663962636630653730373c2f4f49443e3c4e616d653e5b756e6b6e6f776e5d3c2f4e616d653e3c2f496e7374616c6c65723e3c2f496e7374616c6c6174696f6e44657461696c3e3c2f496e7374616c6c6174696f6e3e0d0a5b6f32345d2033343420456e6420584d4c20736e69707065740d0a5b6f32355d203334332d426567696e20584d4c20736e69707065740d0a5b6f32355d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32355d203334372d3c4e6574776f726b3e3c4f49443e37396334383363302d396638352d313033662d613262322d6561663962636630653730373c2f4f49443e3c5461674e616d653e4c617465723c2f5461674e616d653e3c416464726573733e3235343c2f416464726573733e3c4e6574776f726b4e756d6265723e3235343c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334616164302d396638352d313033662d613262332d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32355d2033343420456e6420584d4c20736e69707065740d0a5b6f32365d203334332d426567696e20584d4c20736e69707065740d0a5b6f32365d203334372d3c3f786d6c2076657273696f6e3d22312e302220656e636f64696e673d227574662d38223f3e0a5b6f32365d203334372d3c4e6574776f726b3e3c4f49443e37396334616164302d396638352d313033662d613262342d6561663962636630653730373c2f4f49443e3c5461674e616d653e46697273743c2f5461674e616d653e3c416464726573733e313c2f416464726573733e3c4e6574776f726b4e756d6265723e313c2f4e6574776f726b4e756d6265723e3c496e746572666163653e3c4f49443e37396334643165302d396638352d313033662d613262352d6561663962636630653730373c2f4f49443e3c496e74657266616365547970653e436e693c2f496e74657266616365547970653e3c496e74657266616365416464726573733e3132372e302e302e313a35303234373c2f496e74657266616365416464726573733e3c2f496e746572666163653e3c2f4e6574776f726b3e0d0a5b6f32365d2033343420456e6420584d4c20736e69707065740d0a",
+        "closed": true
+      }
+    ],
+    "proxy": {
+      "address": [
+        "127.0.0.1",
+        50259
+      ],
+      "cleanup_complete": true
+    },
+    "trap": {
+      "address": [
+        "127.0.0.1",
+        50247
+      ],
+      "connections": [],
+      "cleanup_complete": true
+    },
+    "inputs_before": {
+      "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/probe.py": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+      "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+      "${CBUS_ORIGINAL_CGATE_APP}/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-01-net-save-db-integration/acceptance.json": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+      "${CBUS_REPOSITORY_ROOT}/rust/testdata/fixtures/native_cgate_net_save_db_materialization.json": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b"
+    },
+    "closed_model_only": true,
+    "net_save_db_sent": true,
+    "hardware_or_windows_acceptance": false,
+    "private_repair_preparation_only": true,
+    "current_candidate_acceptance": false,
+    "optional_children_not_probed": true,
+    "synthetic_interface": "127.0.0.1:50247",
+    "greeting_hex": "32303120536572766963652072656164793a205363686e656964657220456c65637472696320432d476174652056657273696f6e3a2076332e342e3020286275696c642032303031292023636d642d73796e7461783d312e300d0a",
+    "xml_observations": [
+      {
+        "label": "whole-before-net-save",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct254-before",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct1-before",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "whole-after-net-load",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct254-after-net-load",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct1-after-net-load",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "whole-after-net-save",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "ea987b6c598ea30b997695d94bfa71448e2f52470eb3498c360ba92fcb04ae61",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct254-after-net-save",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct1-after-net-save",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "whole-reloaded",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Config><OID>79cc7300-9f85-103f-a2b6-eaf9bcf0e707</OID><Application>cgate</Application><Property><OID>79cc9a10-9f85-103f-a2b7-eaf9bcf0e707</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>79ccc120-9f85-103f-a2b8-eaf9bcf0e707</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>79cce830-9f85-103f-a2b9-eaf9bcf0e707</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>79cd0f40-9f85-103f-a2ba-eaf9bcf0e707</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>79cd3650-9f85-103f-a2bb-eaf9bcf0e707</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>79cd5d60-9f85-103f-a2bc-eaf9bcf0e707</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>79cd8470-9f85-103f-a2bd-eaf9bcf0e707</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>79cdab80-9f85-103f-a2be-eaf9bcf0e707</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>79cdd290-9f85-103f-a2bf-eaf9bcf0e707</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>79cdf9a0-9f85-103f-a2c0-eaf9bcf0e707</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>79ce20b0-9f85-103f-a2c1-eaf9bcf0e707</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>79ce47c0-9f85-103f-a2c2-eaf9bcf0e707</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>79ce6ed0-9f85-103f-a2c3-eaf9bcf0e707</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>79ce95e0-9f85-103f-a2c4-eaf9bcf0e707</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>79cebcf0-9f85-103f-a2c5-eaf9bcf0e707</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>79cee400-9f85-103f-a2c6-eaf9bcf0e707</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>79cf0b10-9f85-103f-a2c7-eaf9bcf0e707</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>79cf3220-9f85-103f-a2c8-eaf9bcf0e707</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>79cf5930-9f85-103f-a2c9-eaf9bcf0e707</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>79cf8040-9f85-103f-a2ca-eaf9bcf0e707</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>79cfa750-9f85-103f-a2cb-eaf9bcf0e707</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>79cfce60-9f85-103f-a2cc-eaf9bcf0e707</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>79cff570-9f85-103f-a2cd-eaf9bcf0e707</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>79d01c80-9f85-103f-a2ce-eaf9bcf0e707</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>79d04390-9f85-103f-a2cf-eaf9bcf0e707</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>79d06aa0-9f85-103f-a2d0-eaf9bcf0e707</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>79d091b0-9f85-103f-a2d1-eaf9bcf0e707</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>79d0b8c0-9f85-103f-a2d2-eaf9bcf0e707</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>79d0dfd0-9f85-103f-a2d3-eaf9bcf0e707</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>79d106e0-9f85-103f-a2d4-eaf9bcf0e707</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>79d12df0-9f85-103f-a2d5-eaf9bcf0e707</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>79d15500-9f85-103f-a2d6-eaf9bcf0e707</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>79d17c10-9f85-103f-a2d7-eaf9bcf0e707</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>79d1a320-9f85-103f-a2d8-eaf9bcf0e707</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>79d1ca30-9f85-103f-a2d9-eaf9bcf0e707</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>79d1f140-9f85-103f-a2da-eaf9bcf0e707</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>79d21850-9f85-103f-a2db-eaf9bcf0e707</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>79d23f60-9f85-103f-a2dc-eaf9bcf0e707</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>79d26670-9f85-103f-a2dd-eaf9bcf0e707</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>79d28d80-9f85-103f-a2de-eaf9bcf0e707</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>79d2b490-9f85-103f-a2df-eaf9bcf0e707</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>79d2dba0-9f85-103f-a2e0-eaf9bcf0e707</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>79d302b0-9f85-103f-a2e1-eaf9bcf0e707</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>79d329c0-9f85-103f-a2e2-eaf9bcf0e707</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>79d350d0-9f85-103f-a2e3-eaf9bcf0e707</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>79d377e0-9f85-103f-a2e4-eaf9bcf0e707</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>79d39ef0-9f85-103f-a2e5-eaf9bcf0e707</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>79d3c600-9f85-103f-a2e6-eaf9bcf0e707</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>79d3ed10-9f85-103f-a2e7-eaf9bcf0e707</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>79d41420-9f85-103f-a2e8-eaf9bcf0e707</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>79d43b30-9f85-103f-a2e9-eaf9bcf0e707</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct254-reloaded",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct1-reloaded",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "whole-from-other",
+        "path": "//SNAP",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Installation><OID>79bf0580-9f85-103f-a2ae-eaf9bcf0e707</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>2026-10-01T18:18:35.480+13:00</Modified><Project><OID>79bf7ab0-9f85-103f-a2b1-eaf9bcf0e707</OID><TagName>SNAP</TagName><Address>SNAP</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network><Config><OID>79cc7300-9f85-103f-a2b6-eaf9bcf0e707</OID><Application>cgate</Application><Property><OID>79cc9a10-9f85-103f-a2b7-eaf9bcf0e707</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>79ccc120-9f85-103f-a2b8-eaf9bcf0e707</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>79cce830-9f85-103f-a2b9-eaf9bcf0e707</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>79cd0f40-9f85-103f-a2ba-eaf9bcf0e707</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>79cd3650-9f85-103f-a2bb-eaf9bcf0e707</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>79cd5d60-9f85-103f-a2bc-eaf9bcf0e707</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>79cd8470-9f85-103f-a2bd-eaf9bcf0e707</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>79cdab80-9f85-103f-a2be-eaf9bcf0e707</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>79cdd290-9f85-103f-a2bf-eaf9bcf0e707</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>79cdf9a0-9f85-103f-a2c0-eaf9bcf0e707</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>79ce20b0-9f85-103f-a2c1-eaf9bcf0e707</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>79ce47c0-9f85-103f-a2c2-eaf9bcf0e707</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>79ce6ed0-9f85-103f-a2c3-eaf9bcf0e707</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>79ce95e0-9f85-103f-a2c4-eaf9bcf0e707</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>79cebcf0-9f85-103f-a2c5-eaf9bcf0e707</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>79cee400-9f85-103f-a2c6-eaf9bcf0e707</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>79cf0b10-9f85-103f-a2c7-eaf9bcf0e707</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>79cf3220-9f85-103f-a2c8-eaf9bcf0e707</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>79cf5930-9f85-103f-a2c9-eaf9bcf0e707</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>79cf8040-9f85-103f-a2ca-eaf9bcf0e707</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>79cfa750-9f85-103f-a2cb-eaf9bcf0e707</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>79cfce60-9f85-103f-a2cc-eaf9bcf0e707</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>79cff570-9f85-103f-a2cd-eaf9bcf0e707</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>79d01c80-9f85-103f-a2ce-eaf9bcf0e707</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>79d04390-9f85-103f-a2cf-eaf9bcf0e707</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>79d06aa0-9f85-103f-a2d0-eaf9bcf0e707</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>79d091b0-9f85-103f-a2d1-eaf9bcf0e707</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>79d0b8c0-9f85-103f-a2d2-eaf9bcf0e707</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>79d0dfd0-9f85-103f-a2d3-eaf9bcf0e707</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>79d106e0-9f85-103f-a2d4-eaf9bcf0e707</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>79d12df0-9f85-103f-a2d5-eaf9bcf0e707</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>79d15500-9f85-103f-a2d6-eaf9bcf0e707</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>79d17c10-9f85-103f-a2d7-eaf9bcf0e707</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>79d1a320-9f85-103f-a2d8-eaf9bcf0e707</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>79d1ca30-9f85-103f-a2d9-eaf9bcf0e707</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>79d1f140-9f85-103f-a2da-eaf9bcf0e707</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>79d21850-9f85-103f-a2db-eaf9bcf0e707</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>79d23f60-9f85-103f-a2dc-eaf9bcf0e707</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>79d26670-9f85-103f-a2dd-eaf9bcf0e707</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>79d28d80-9f85-103f-a2de-eaf9bcf0e707</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>79d2b490-9f85-103f-a2df-eaf9bcf0e707</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>79d2dba0-9f85-103f-a2e0-eaf9bcf0e707</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>79d302b0-9f85-103f-a2e1-eaf9bcf0e707</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>79d329c0-9f85-103f-a2e2-eaf9bcf0e707</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>79d350d0-9f85-103f-a2e3-eaf9bcf0e707</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>79d377e0-9f85-103f-a2e4-eaf9bcf0e707</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>79d39ef0-9f85-103f-a2e5-eaf9bcf0e707</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>79d3c600-9f85-103f-a2e6-eaf9bcf0e707</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>79d3ed10-9f85-103f-a2e7-eaf9bcf0e707</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>79d41420-9f85-103f-a2e8-eaf9bcf0e707</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>79d43b30-9f85-103f-a2e9-eaf9bcf0e707</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>79bf2c90-9f85-103f-a2af-eaf9bcf0e707</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>${CBUS_ACCEPTANCE_HOST}</Hostname><OSName>Mac OS X</OSName><OSVersion>15.7.4</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>79bf53a0-9f85-103f-a2b0-eaf9bcf0e707</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "xml_sha256": "df6f6ef840a5e4eb112b2d084d9cc1b87b11469f7e5014789c4d97655424022d",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          },
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct254-from-other",
+        "path": "//SNAP/254",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c483c0-9f85-103f-a2b2-eaf9bcf0e707</OID><TagName>Later</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>79c4aad0-9f85-103f-a2b3-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "34af7da92f83b3533fb58cd2540916c0a1395294a2987c553bd4d64b1dca1c49",
+        "networks": [
+          {
+            "address": "254",
+            "tag_name": "Later",
+            "network_number": "254",
+            "oid": "79c483c0-9f85-103f-a2b2-eaf9bcf0e707"
+          }
+        ]
+      },
+      {
+        "label": "direct1-from-other",
+        "path": "//SNAP/1",
+        "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Network><OID>79c4aad0-9f85-103f-a2b4-eaf9bcf0e707</OID><TagName>First</TagName><Address>1</Address><NetworkNumber>1</NetworkNumber><Interface><OID>79c4d1e0-9f85-103f-a2b5-eaf9bcf0e707</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:50247</InterfaceAddress></Interface></Network>",
+        "xml_sha256": "3f7a9f5ea660e22ff2a13a1c9fb2892266f0050cbe6314b10ed83f1df44ce625",
+        "networks": [
+          {
+            "address": "1",
+            "tag_name": "First",
+            "network_number": "1",
+            "oid": "79c4aad0-9f85-103f-a2b4-eaf9bcf0e707"
+          }
+        ]
+      }
+    ],
+    "completed": true,
+    "private_process_log": {
+      "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/process.log",
+      "sha256": "8bb6f3aca896ccc58fd8f5d72ea6bf39069cbfdaab373427b06e1e764dec7a0c",
+      "bytes": 240
+    },
+    "owned_process": {
+      "backend": "local",
+      "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "java": "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+      "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)",
+      "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "work_directory": "${CBUS_SYSTEM_TEMP_ROOT}/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-hy_p4xwz",
+      "projects_adopted": false,
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "cleanup_errors": [],
+      "process_exit_confirmed": true,
+      "work_removed": true,
+      "reserved_sockets_closed": true,
+      "log_closed": true,
+      "configured_ports": [
+        50249,
+        50250,
+        50251,
+        50252,
+        50253,
+        50254
+      ],
+      "pid": 95242,
+      "argv": [
+        "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java",
+        "-Djava.net.preferIPv4Stack=true",
+        "-Djava.io.tmpdir=${CBUS_SYSTEM_TEMP_ROOT}/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/cbus-owned-native-hy_p4xwz${CBUS_TEMP_ROOT}",
+        "-Xms64M",
+        "-Xmx512M",
+        "-jar",
+        "${CBUS_ORIGINAL_CGATE_APP}/cgate.jar"
+      ],
+      "listeners": [
+        "127.0.0.1:50249",
+        "127.0.0.1:50250",
+        "127.0.0.1:50251",
+        "127.0.0.1:50252",
+        "127.0.0.1:50253",
+        "127.0.0.1:50254"
+      ],
+      "exit_code": 143,
+      "server_log_sha256": "8bb6f3aca896ccc58fd8f5d72ea6bf39069cbfdaab373427b06e1e764dec7a0c",
+      "server_log_bytes": 240,
+      "server_log_hashed_bytes": 240,
+      "server_log_tail": [
+        "Schneider Electric C-Gate(TM) v3.4.0 (build 2001)",
+        "C-Gate is running."
+      ]
+    },
+    "inputs_after": {
+      "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/probe.py": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+      "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+      "${CBUS_ORIGINAL_CGATE_APP}/cgate.jar": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "${CBUS_ORIGINAL_JAVA11}/Contents/Home/bin/java": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-01-net-save-db-integration/acceptance.json": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+      "${CBUS_REPOSITORY_ROOT}/rust/testdata/fixtures/native_cgate_net_save_db_materialization.json": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b"
+    },
+    "inputs_unchanged": true
+  }
+}

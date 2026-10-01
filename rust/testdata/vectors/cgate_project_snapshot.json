@@ -1,6 +1,6 @@
 {
   "format": "cgate-modeled-project-snapshot-v1",
-  "source": "Native //PROJECT selector and Installation/Project/Network hierarchy from the retained CSV four-project capture; minimal modeled wrapper and numeric network ordering are local service behavior, not an exact original project document.",
+  "source": "Native //PROJECT selector and Installation/Project/Network hierarchy from the retained CSV four-project capture; the minimal modeled wrapper is local service behavior, not an exact original project document. Network creation-order projections are separately pinned by cgate_project_export_order.json.",
   "request": "[7] DBGETXML //EMPTY\r\n",
   "response": "[7] 343-Begin XML snippet\r\n[7] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n[7] 347-<Installation><Project><Address>EMPTY</Address></Project></Installation>\r\n[7] 344 End XML snippet\r\n"
 }

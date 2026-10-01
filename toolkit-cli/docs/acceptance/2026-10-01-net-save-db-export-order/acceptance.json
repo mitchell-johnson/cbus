@@ -1,0 +1,4641 @@
+{
+  "format": "cbus-net-save-db-export-order-acceptance-v1",
+  "result": "passed",
+  "source_git_head_at_execution": "6b208d087fd7433c605cc44b97c4c09896ffa0eb",
+  "source_revision_qualification": "Execution uses frozen working-tree source hashes at the recorded HEAD; publication commit is later.",
+  "python": {
+    "source": {
+      "unique_parent_tests": 218,
+      "parent_ids": [
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_legacy_transform_receipt_is_source_bound"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_project_source_carry_forward_detects_argument_and_forwarding_changes"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_source_carry_forward_detects_route_and_transitive_changes"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_source_carry_forward_rejects_shadowing_and_module_monkeypatches"
+        ],
+        [
+          "tests.test_project_legacy_transform_versions_receipt",
+          "test_earlier_versions_receipt_is_source_bound"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_add_named_network_requires_explicit_native_number_representation"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_captured_address_lexemes_and_case_are_independent_of_network_number"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_copy_named_subtree_retains_values_and_allocates_complete_fresh_identities"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_duplicate_or_invalid_edits_restore_the_complete_document"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_legacy_numeric_aliases_and_other_entity_bounds_remain"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_move_named_address_preserves_network_number_and_all_subtree_identities"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_named_deletion_keeps_other_same_number_rows"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_named_network_edit_preserves_interfaces_properties_and_unrelated_rows"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_number_lexical_edits_do_not_rename_or_normalize_address"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_original_materialized_project_inspects_and_lists_every_network"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_xml_and_cbz_roundtrips_preserve_complete_native_dom_and_original_bytes"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_address_validation"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_archive_expansion_limit"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_atomic_failure_keeps_original_and_cleans_temporary"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_bad_entity_paths"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_clone_rewrites_repeated_internal_reference_elements"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_copy_regenerates_oids_and_preserves_internal_references"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_create_new_project_and_all_entity_kinds"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_delete_leaf_and_cascade"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_address_and_failed_multi_field_update_roll_back"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_archive_names_are_rejected"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_field_validation_is_reported_without_crashing"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_edited_archive_preserves_members_metadata_and_comment"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exact_archive_roundtrip"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exact_unedited_xml_roundtrip"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_explicit_format_conversion_and_extension_does_not_silently_convert"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exposed_dom_changes_are_not_silently_lost"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_external_explicit_reference_protects_delete_and_oid_change"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_generic_nested_fields_attributes_and_removal"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_inspect_lists_and_compact_paths"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_internal_explicit_reference_protects_oid_edit_and_removal"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_invalid_project_reports_and_cannot_save"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_invalid_unknown_sql_and_doctype_inputs"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_move_preserves_oid"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_multi_project_archive_requires_selection_preserves_other_project"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_namespace_scope_retained_when_moving_between_siblings"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_oid_child_style_retained_when_adding"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_opaque_parameters_are_never_silently_rewritten"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_parameter_crud_preserves_unknown_attributes_and_program_block"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_project_without_oids_does_not_invent_style"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_reject_destructive_scalar_edit_and_invalid_xml_names"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_scalar_edit_preserves_comment_and_handles_cdata_terminator"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_unknown_elements_comments_pi_cdata_and_namespaces_survive"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_unknown_scalar_and_foreign_entity_names_are_preserved"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_write_preserves_permissions_and_refuses_symlinks"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_corrupt_cbz_cli_returns_json_error_without_traceback"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_corrupt_member_compression_is_a_project_error"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_fifo_is_refused_without_opening"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_fifo_substituted_after_stat_is_refused_without_reading"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_file_growth_cannot_turn_the_bounded_load_into_an_unbounded_read"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_forged_member_size_cannot_expand_an_unbounded_deflate_block"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_regular_file_symlink_remains_readable"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_stored_and_deflated_cbz_members_keep_their_payload_and_codec"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_unsupported_zip_codecs_are_rejected_before_any_member_is_decoded"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_binary_and_empty_uploads_send_one_bound_document_after_explicit_selection"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_invalid_path_missing_large_and_nonregular_inputs_refuse_before_connection"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_prepared_upload_consumes_one_immutable_binary_snapshot"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_refusal_unknown_completion_and_lost_reply_do_not_replay_upload"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_initial_projection_preserves_complete_baseline_metadata"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_receipt_requires_complete_independent_address_and_ordered_property_identity"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_repeated_save_requires_stable_network_interface_and_rebuilt_property_oids"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.OwnedNetworkSaveDBCLITests",
+          "test_public_cli_materializes_complete_rows_and_preserves_explicit_persistence_boundaries"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_all_catalogue_operations_use_the_explicit_project_and_native_shapes"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_cli_preflight_rejects_unsafe_fields_without_connecting"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_malformed_or_irrelevant_arguments_refuse_before_project_selection"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_noncompletion_and_lost_reply_never_replay_a_mutation"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_plan_is_pure_and_carries_both_empty_and_nonempty_list_codes"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_unconfirmed_selection_stops_before_catalogue_command"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_create_and_load_refusals_unknown_response_and_lost_reply_never_replay_or_claim_success"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_definition_mutation_refuses_non200_and_retains_exact_project_scoped_sequence"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_every_typed_definition_operation_has_one_exact_explicit_project_wire_sequence"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_malformed_typed_arguments_refuse_before_connecting_to_the_selected_endpoint"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_network_new_sends_exact_use_create_load_once_without_implicit_save_or_open"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.OwnedNetworkCatalogueCLITests",
+          "test_public_cli_network_new_and_definition_saved_closed_lifecycle_without_pci_io"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_address_and_project_name_validation"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_complete_xml_document_uses_one_here_document_and_rejects_bad_paths"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_database_network_rename_uses_selected_project_and_decimal_addresses"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_native_confirmation_stops_dependent_writes_and_backup_workflows"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_parameter_values_are_remainder_not_shell_quoted"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_rejects_command_injection_before_any_io"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_all_typed_locate_selectors_emit_exact_native_commands"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_commissioning_grammar_keeps_operations_explicit"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_invalid_arguments_rejected_before_io"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_network_management_invalid_values_refuse_before_command"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_network_management_requires_exact_200_receipt"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_error_and_timeout_never_report_success"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_wait_allows_background_startup_after_open"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_wait_observes_sync_then_ok_without_restarting"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_typed_learn_grades_emit_exact_native_commands"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_invalid_typed_inputs_fail_in_argument_parsing_before_connect"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_learn_cli_emits_exact_native_high_grade_and_honest_receipt"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_locate_cli_covers_every_selector_and_exact_wire_command"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_rejection_and_lost_reply_never_emit_a_success_receipt_or_replay"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_import_preflight_and_backup_before_native_mutation"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_native_binding_rules_unknown_fields_absent_networks_and_names"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_parse_counts_and_preserve_optional_metadata"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_reject_bad_nested_addresses_names_routes_and_duplicates"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_reject_bad_version_shape_and_duplicate_json_fields"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_selection_and_native_payload_extraction"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_skipped_network_is_incomplete_even_with_3xx_response"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_conflicts_preserve_names_and_runtime_layer_reports_again_after_reload"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_fixture_is_current_sanitized_and_vectors_are_derived_from_it"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_import_ignores_supplied_routes_and_reports_skips_as_incomplete"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_routes_follow_bridge_units_up_to_six_hops_and_last_selected_network_is_local"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_validation_and_nameless_hazard"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_native_capture_preserves_three_internal_console_rows"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_unexpected_internal_row_is_not_filtered"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_missing_rust_console_row_fails_complete_comparison"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_inconsistent_rust_console_timestamp_is_rejected"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_client_tag_echo_must_match_exactly"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_reply_must_use_native_crlf"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_connected_server_with_wrong_greeting_is_behavior_failure"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_stale_native_capture_fails_before_probe"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-test-support/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/Cargo.toml]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/testdata/fixtures/native_cgate_dali_help.json]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(\"missing.json\")-include is missing]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(concat!(\"data\", \".json\"))-nonliteral include]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_inside_repository_but_outside_workspace_is_fingerprinted"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_outside_repository_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_source_resolving_outside_workspace_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_broken_tagged_reply_is_a_red_executed_case_not_a_blocked_skip"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_pre_fix_receipt_is_red_without_skipped_cases"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_all_eleven_cases_preserve_full_numeric_tagged_wire"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-[502] -[999] -numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-[502] --numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-2-\\r\\n-\\n-numeric prefix or CRLF]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-tag=Console-tag=Other-Console row]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-300--300 -continuation or terminal]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-40123-40125-owned peer port]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[5-1-20260928-120001-20260928-120010-timestamp changed]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[10-0-cmd5-cmd3-queried identity]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[7-0-408-200-None]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_extra_or_missing_console_row_is_rejected"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_live_reader_rejects_wrong_tag_or_lf_before_any_receipt_credit"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_native_fixture_byte_change_fails_closed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_altered_bundle_record_and_artifact_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_blocked_dimension_requires_known_unavailable_fixture_blockers"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_census_complete_cannot_hide_unresolved_scope"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_contract_domain_cannot_resolve_with_partial_axes"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_ledger_contract_and_route_only_claims_are_guarded"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_paths_have_independent_source_bound_obligations"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_closure_receipt_artifact_and_fingerprint_bind_closure"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_census_requires_one_counted_domain_per_scope_kind"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_fixture_is_derived_from_obligations_and_evidence"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_completed_roadmap_item_remains_in_work_item_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_denominator_history_versions_every_change"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_duplicate_json_keys_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_empty_or_placeholder_workflows_withhold_the_denominator"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_every_obligation_belongs_to_one_workflow_with_its_minimum_dimensions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_bytes_are_strictly_parsed_and_content_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_target_and_obligation_references_must_match"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_feature_ledger_bytes_are_strictly_parsed_and_digest_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_installed_wheel_refuses_to_recompute_fingerprints"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_missing_duplicate_and_unknown_ids_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_nonfunctional_scope_requires_an_exact_passed_disposition_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_dimension_requires_matching_passed_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_requires_explicit_hash_bound_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_offline_decision_only_receipt_can_exclude_physical_and_original"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_denominator_history_reconstructs_prior_versions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_physical_paths_are_blocked_by_matrix_fixtures"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_rejects_a_substituted_feature_ledger"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_forged_raw_prefix_with_updated_digests"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_rehashed_dynamic_payload_tampering"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_workflows_cover_toolkit_families_and_every_obligation"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_a_recognized_report_artifact"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_result_and_bound_oracle_artifacts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_decision_declarations_must_match_executed_report"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_report_cannot_relabel_failed_or_uncovered_cases"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_session_differential_cannot_claim_mismatched_payload"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_required_and_unexplained_skips_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_resolved_domains_and_scope_items_cannot_hide_unknown_work"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_scope_disposition_receipts_are_strict_and_reciprocal"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_sensitive_evidence_requires_physical_environment_and_original_oracle"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_differential_acceptance_rejects_missing_or_stale_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_builder_rejects_stale_or_missing_original_sources"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_rejects_broken_packaged_anchors"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_physical_applicability_rejects_stale_or_missing_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_skipped_cases_cannot_be_duplicated_or_claimed_executed"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_work_items_must_belong_to_the_authoritative_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_workflow_criteria_are_strict"
+        ]
+      ],
+      "passed_subtests_not_added_to_parent_counts": 742,
+      "runtime_skips": 0,
+      "actual_cli_calls": 114,
+      "source_bindings": 1143,
+      "verified_raw_file_bindings": 643,
+      "flags": {
+        "complete_runtime_rows_materialized": true,
+        "repeated_save_stable_roots_fresh_properties": true,
+        "explicit_project_save_boundary": true,
+        "project_save_close_load_preserves_complete_rows": true,
+        "direct_and_oid_network_reads_equal": true,
+        "offline_cli_preserves_native_rows": true,
+        "unselected_named_mutation_refused_without_change": true,
+        "named_oid_and_complete_xml_mutations_preserved": true,
+        "oid_delete_and_fresh_rematerialization": true,
+        "explicit_project_isolation": true,
+        "copy_archive_repository_portable_transform_preserves_rows": true,
+        "daemon_restart_preserves_complete_rows": true,
+        "mqtt_one_connection_per_owned_daemon": true,
+        "literal_pci_after_cleanup_verified": true
+      },
+      "cni_trap_connections": 0,
+      "serial_path_absent": true,
+      "serial_open_syscalls_assessed": false,
+      "owned_cleanup_verified": true,
+      "unexecuted_provisioning_scope": [
+        "tests/test_native.py::NativeOracleTests",
+        "tests/test_networks.py::NativeNetworksTests",
+        "tests/test_cgl.py::NativeCGLTests"
+      ]
+    },
+    "installed": {
+      "unique_parent_tests": 218,
+      "parent_ids": [
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_legacy_transform_receipt_is_source_bound"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_project_source_carry_forward_detects_argument_and_forwarding_changes"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_source_carry_forward_detects_route_and_transitive_changes"
+        ],
+        [
+          "tests.test_project_legacy_transform_receipt",
+          "test_native_source_carry_forward_rejects_shadowing_and_module_monkeypatches"
+        ],
+        [
+          "tests.test_project_legacy_transform_versions_receipt",
+          "test_earlier_versions_receipt_is_source_bound"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_add_named_network_requires_explicit_native_number_representation"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_captured_address_lexemes_and_case_are_independent_of_network_number"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_copy_named_subtree_retains_values_and_allocates_complete_fresh_identities"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_duplicate_or_invalid_edits_restore_the_complete_document"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_legacy_numeric_aliases_and_other_entity_bounds_remain"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_move_named_address_preserves_network_number_and_all_subtree_identities"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_named_deletion_keeps_other_same_number_rows"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_named_network_edit_preserves_interfaces_properties_and_unrelated_rows"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_number_lexical_edits_do_not_rename_or_normalize_address"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_original_materialized_project_inspects_and_lists_every_network"
+        ],
+        [
+          "tests.test_project_native_network_addresses.NativeNetworkAddressProjectTests",
+          "test_xml_and_cbz_roundtrips_preserve_complete_native_dom_and_original_bytes"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_address_validation"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_archive_expansion_limit"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_atomic_failure_keeps_original_and_cleans_temporary"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_bad_entity_paths"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_clone_rewrites_repeated_internal_reference_elements"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_copy_regenerates_oids_and_preserves_internal_references"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_create_new_project_and_all_entity_kinds"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_delete_leaf_and_cascade"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_address_and_failed_multi_field_update_roll_back"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_archive_names_are_rejected"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_duplicate_field_validation_is_reported_without_crashing"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_edited_archive_preserves_members_metadata_and_comment"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exact_archive_roundtrip"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exact_unedited_xml_roundtrip"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_explicit_format_conversion_and_extension_does_not_silently_convert"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_exposed_dom_changes_are_not_silently_lost"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_external_explicit_reference_protects_delete_and_oid_change"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_generic_nested_fields_attributes_and_removal"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_inspect_lists_and_compact_paths"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_internal_explicit_reference_protects_oid_edit_and_removal"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_invalid_project_reports_and_cannot_save"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_invalid_unknown_sql_and_doctype_inputs"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_move_preserves_oid"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_multi_project_archive_requires_selection_preserves_other_project"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_namespace_scope_retained_when_moving_between_siblings"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_oid_child_style_retained_when_adding"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_opaque_parameters_are_never_silently_rewritten"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_parameter_crud_preserves_unknown_attributes_and_program_block"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_project_without_oids_does_not_invent_style"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_reject_destructive_scalar_edit_and_invalid_xml_names"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_scalar_edit_preserves_comment_and_handles_cdata_terminator"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_unknown_elements_comments_pi_cdata_and_namespaces_survive"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_unknown_scalar_and_foreign_entity_names_are_preserved"
+        ],
+        [
+          "tests.test_project.ProjectTest",
+          "test_write_preserves_permissions_and_refuses_symlinks"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_corrupt_cbz_cli_returns_json_error_without_traceback"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_corrupt_member_compression_is_a_project_error"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_fifo_is_refused_without_opening"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_fifo_substituted_after_stat_is_refused_without_reading"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_file_growth_cannot_turn_the_bounded_load_into_an_unbounded_read"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_forged_member_size_cannot_expand_an_unbounded_deflate_block"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_regular_file_symlink_remains_readable"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_stored_and_deflated_cbz_members_keep_their_payload_and_codec"
+        ],
+        [
+          "tests.test_project_input_safety.ProjectInputSafetyTests",
+          "test_unsupported_zip_codecs_are_rejected_before_any_member_is_decoded"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_binary_and_empty_uploads_send_one_bound_document_after_explicit_selection"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_invalid_path_missing_large_and_nonregular_inputs_refuse_before_connection"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_prepared_upload_consumes_one_immutable_binary_snapshot"
+        ],
+        [
+          "tests.test_cgate_file_upload.FileUploadTests",
+          "test_refusal_unknown_completion_and_lost_reply_do_not_replay_upload"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_initial_projection_preserves_complete_baseline_metadata"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_receipt_requires_complete_independent_address_and_ordered_property_identity"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.MaterializedNetworkReceiptTests",
+          "test_repeated_save_requires_stable_network_interface_and_rebuilt_property_oids"
+        ],
+        [
+          "tests.test_cmqtt_network_save_db_cli.OwnedNetworkSaveDBCLITests",
+          "test_public_cli_materializes_complete_rows_and_preserves_explicit_persistence_boundaries"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_all_catalogue_operations_use_the_explicit_project_and_native_shapes"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_cli_preflight_rejects_unsafe_fields_without_connecting"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_malformed_or_irrelevant_arguments_refuse_before_project_selection"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_noncompletion_and_lost_reply_never_replay_a_mutation"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_plan_is_pure_and_carries_both_empty_and_nonempty_list_codes"
+        ],
+        [
+          "tests.test_network_definitions.NetworkDefinitionTests",
+          "test_unconfirmed_selection_stops_before_catalogue_command"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_create_and_load_refusals_unknown_response_and_lost_reply_never_replay_or_claim_success"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_definition_mutation_refuses_non200_and_retains_exact_project_scoped_sequence"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_every_typed_definition_operation_has_one_exact_explicit_project_wire_sequence"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_malformed_typed_arguments_refuse_before_connecting_to_the_selected_endpoint"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.NetworkNewPublicWireTests",
+          "test_network_new_sends_exact_use_create_load_once_without_implicit_save_or_open"
+        ],
+        [
+          "tests.test_cmqtt_network_new_cli.OwnedNetworkCatalogueCLITests",
+          "test_public_cli_network_new_and_definition_saved_closed_lifecycle_without_pci_io"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_address_and_project_name_validation"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_complete_xml_document_uses_one_here_document_and_rejects_bad_paths"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_database_network_rename_uses_selected_project_and_decimal_addresses"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_native_confirmation_stops_dependent_writes_and_backup_workflows"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_parameter_values_are_remainder_not_shell_quoted"
+        ],
+        [
+          "tests.test_native.NativeGrammarTests",
+          "test_rejects_command_injection_before_any_io"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_all_typed_locate_selectors_emit_exact_native_commands"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_commissioning_grammar_keeps_operations_explicit"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_invalid_arguments_rejected_before_io"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_network_management_invalid_values_refuse_before_command"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_network_management_requires_exact_200_receipt"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_error_and_timeout_never_report_success"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_wait_allows_background_startup_after_open"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_readiness_wait_observes_sync_then_ok_without_restarting"
+        ],
+        [
+          "tests.test_networks.NetworksTests",
+          "test_typed_learn_grades_emit_exact_native_commands"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_invalid_typed_inputs_fail_in_argument_parsing_before_connect"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_learn_cli_emits_exact_native_high_grade_and_honest_receipt"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_locate_cli_covers_every_selector_and_exact_wire_command"
+        ],
+        [
+          "tests.test_cli_network_management.NetworkManagementCLITests",
+          "test_rejection_and_lost_reply_never_emit_a_success_receipt_or_replay"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_import_preflight_and_backup_before_native_mutation"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_native_binding_rules_unknown_fields_absent_networks_and_names"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_parse_counts_and_preserve_optional_metadata"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_reject_bad_nested_addresses_names_routes_and_duplicates"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_reject_bad_version_shape_and_duplicate_json_fields"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_selection_and_native_payload_extraction"
+        ],
+        [
+          "tests.test_cgl.CGLTests",
+          "test_skipped_network_is_incomplete_even_with_3xx_response"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_conflicts_preserve_names_and_runtime_layer_reports_again_after_reload"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_fixture_is_current_sanitized_and_vectors_are_derived_from_it"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_import_ignores_supplied_routes_and_reports_skips_as_incomplete"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_routes_follow_bridge_units_up_to_six_hops_and_last_selected_network_is_local"
+        ],
+        [
+          "tests.test_cgl.CommittedNativeCaptureTests",
+          "test_validation_and_nameless_hazard"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_body_skip_calls_carry_their_guarding_condition"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_committed_census_is_current_and_native_selection_complete"
+        ],
+        [
+          "tests.test_skip_census.SkipCensusTests",
+          "test_interpreter_evaluates_gates_under_the_native_profile"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_junit_records_skip_identity_and_cannot_pass_strict_gate"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_main_writes_failing_receipt_when_a_selected_test_skips"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_and_provision_are_exact_without_retaining_values"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_empty_duplicate_external_and_wrong_platform_selection"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_manifest_rejects_malformed_or_misplaced_pins"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_native_gate_pins_match_the_owned_runtime_provenance"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_pinned_runtime_rejects_substituted_launcher_or_tampered_home"
+        ],
+        [
+          "tests.test_release_gate.ReleaseGateTests",
+          "test_value_provision_can_pin_an_exact_selector"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_native_capture_preserves_three_internal_console_rows"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_unexpected_internal_row_is_not_filtered"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_missing_rust_console_row_fails_complete_comparison"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_inconsistent_rust_console_timestamp_is_rejected"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_client_tag_echo_must_match_exactly"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_reply_must_use_native_crlf"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_connected_server_with_wrong_greeting_is_behavior_failure"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_stale_native_capture_fails_before_probe"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_passed_receipt_rejects_missing_or_stale_source_binding"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-protocol/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-transport/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-test-support/src/lib.rs]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cmqttd-rust/cbus-mqtt/Cargo.toml]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_transitive_workspace_change_invalidates_passed_receipt[cgate-mock-rust/testdata/fixtures/native_cgate_dali_help.json]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(\"missing.json\")-include is missing]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_untracked_rust_include_fails_closed[include_str!(concat!(\"data\", \".json\"))-nonliteral include]"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_inside_repository_but_outside_workspace_is_fingerprinted"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_literal_rust_include_outside_repository_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_rust_source_resolving_outside_workspace_fails_closed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_cmqttd_receipt_is_separate_and_fully_executed"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_broken_tagged_reply_is_a_red_executed_case_not_a_blocked_skip"
+        ],
+        [
+          "tests.test_cgate_session_differential",
+          "test_pre_fix_receipt_is_red_without_skipped_cases"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_all_eleven_cases_preserve_full_numeric_tagged_wire"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-[502] -[999] -numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-[502] --numeric prefix]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-2-\\r\\n-\\n-numeric prefix or CRLF]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-tag=Console-tag=Other-Console row]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-0-300--300 -continuation or terminal]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[2-1-40123-40125-owned peer port]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[5-1-20260928-120001-20260928-120010-timestamp changed]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[10-0-cmd5-cmd3-queried identity]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_wire_mutations_are_rejected_or_compare_red[7-0-408-200-None]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_extra_or_missing_console_row_is_rejected"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_live_reader_rejects_wrong_tag_or_lf_before_any_receipt_credit"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_native_fixture_byte_change_fails_closed"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_tagged_session_differential",
+          "test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[mock]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_committed_original_vs_rust_mapper_receipt[cmqttd]"
+        ],
+        [
+          "tests.test_cgate_dbsetxml_unit_differential",
+          "test_mapper_receipt_rejects_mutated_original_and_rust_wire"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_altered_bundle_record_and_artifact_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_blocked_dimension_requires_known_unavailable_fixture_blockers"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_census_complete_cannot_hide_unresolved_scope"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_contract_domain_cannot_resolve_with_partial_axes"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_ledger_contract_and_route_only_claims_are_guarded"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_path_mapping_rejects_missing_duplicate_and_orphaned_rows"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_cgate_paths_have_independent_source_bound_obligations"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_closure_receipt_artifact_and_fingerprint_bind_closure"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_census_requires_one_counted_domain_per_scope_kind"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_complete_fixture_is_derived_from_obligations_and_evidence"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_completed_roadmap_item_remains_in_work_item_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_denominator_history_versions_every_change"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_duplicate_json_keys_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_empty_or_placeholder_workflows_withhold_the_denominator"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_every_obligation_belongs_to_one_workflow_with_its_minimum_dimensions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_bytes_are_strictly_parsed_and_content_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_invalidation_is_recomputed_from_a_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_evidence_target_and_obligation_references_must_match"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_feature_ledger_bytes_are_strictly_parsed_and_digest_bound"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_installed_wheel_refuses_to_recompute_fingerprints"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_missing_duplicate_and_unknown_ids_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_nonfunctional_scope_requires_an_exact_passed_disposition_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_dimension_requires_matching_passed_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_not_applicable_requires_explicit_hash_bound_decision"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_offline_decision_only_receipt_can_exclude_physical_and_original"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_closure_receipt_closes_only_verified_items"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_denominator_history_reconstructs_prior_versions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_evidence_artifacts_match_source_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_invalidation_rules_match_their_reports_and_checkout"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_physical_paths_are_blocked_by_matrix_fixtures"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_accounts_for_all_committed_source_surfaces"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_register_rejects_a_substituted_feature_ledger"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_forged_raw_prefix_with_updated_digests"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_tagged_wire_rejects_rehashed_dynamic_payload_tampering"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_packaged_workflows_cover_toolkit_families_and_every_obligation"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_a_recognized_report_artifact"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_passed_evidence_requires_result_and_bound_oracle_artifacts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_decision_declarations_must_match_executed_report"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_report_cannot_relabel_failed_or_uncovered_cases"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_rehashed_session_differential_cannot_claim_mismatched_payload"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_required_and_unexplained_skips_are_rejected"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_resolved_domains_and_scope_items_cannot_hide_unknown_work"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_scope_disposition_receipts_are_strict_and_reciprocal"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_sensitive_evidence_requires_physical_environment_and_original_oracle"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_differential_acceptance_rejects_missing_or_stale_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_builder_rejects_stale_or_missing_original_sources"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_has_scoped_differential_and_physical_decisions"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_function_pilot_rejects_broken_packaged_anchors"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_session_physical_applicability_rejects_stale_or_missing_receipt"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_skipped_cases_cannot_be_duplicated_or_claimed_executed"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_work_items_must_belong_to_the_authoritative_roster"
+        ],
+        [
+          "tests.test_parity_register.ParityRegisterTests",
+          "test_workflow_criteria_are_strict"
+        ]
+      ],
+      "passed_subtests_not_added_to_parent_counts": 742,
+      "runtime_skips": 0,
+      "actual_cli_calls": 114,
+      "source_bindings": 1143,
+      "verified_raw_file_bindings": 645,
+      "flags": {
+        "complete_runtime_rows_materialized": true,
+        "repeated_save_stable_roots_fresh_properties": true,
+        "explicit_project_save_boundary": true,
+        "project_save_close_load_preserves_complete_rows": true,
+        "direct_and_oid_network_reads_equal": true,
+        "offline_cli_preserves_native_rows": true,
+        "unselected_named_mutation_refused_without_change": true,
+        "named_oid_and_complete_xml_mutations_preserved": true,
+        "oid_delete_and_fresh_rematerialization": true,
+        "explicit_project_isolation": true,
+        "copy_archive_repository_portable_transform_preserves_rows": true,
+        "daemon_restart_preserves_complete_rows": true,
+        "mqtt_one_connection_per_owned_daemon": true,
+        "literal_pci_after_cleanup_verified": true
+      },
+      "cni_trap_connections": 0,
+      "serial_path_absent": true,
+      "serial_open_syscalls_assessed": false,
+      "owned_cleanup_verified": true,
+      "unexecuted_provisioning_scope": [
+        "tests/test_native.py::NativeOracleTests",
+        "tests/test_networks.py::NativeNetworksTests",
+        "tests/test_cgl.py::NativeCGLTests"
+      ]
+    }
+  },
+  "original_public_cli": {
+    "source": {
+      "actual_cli_calls": 89,
+      "online_cli_calls_with_exact_wire": 73,
+      "calls_without_server_connection": 16,
+      "source_bindings": 1168,
+      "python_version": [
+        3,
+        13,
+        14
+      ],
+      "all_cleanup_verified": true,
+      "cni_trap_connections": 0,
+      "serial_path_absent": true,
+      "serial_open_syscalls_assessed": false,
+      "native_stale_named_snippet_observed": true,
+      "file_observation": {
+        "upload": {
+          "format": "cbus-cgate-file-upload-v1",
+          "server_path": "tmp/owned-upload.bin",
+          "source_file": "${CBUS_ORIGINAL_CLI_DRIVER}/source-execution-1/owned-upload.bin",
+          "bytes": 23,
+          "sha256": "522ab92a914ddc0043ab91ced3301f1549855da2d45d4e363fb71338f583e54a",
+          "upload_completed": true,
+          "response": {
+            "lines": [
+              "200 OK."
+            ],
+            "final": "200 OK.",
+            "status": 200
+          },
+          "project_save_requested": false,
+          "server_storage_policy": "Selected server FILE semantics; cmqttd uses its virtual namespace"
+        },
+        "download_canonical_json_sha256": "f982f077f8dd337e840c7267bce7c53c99e2ad5d5cbc213b591d87f7cd432072",
+        "download_payload_publicly_omitted": true
+      },
+      "scope": "Original C-Gate closed model only; no cmqttd parity, hardware, Windows, interface open, or reference-rewrite claim",
+      "cmqttd_parity_claimed": false
+    },
+    "installed": {
+      "actual_cli_calls": 89,
+      "online_cli_calls_with_exact_wire": 73,
+      "calls_without_server_connection": 16,
+      "source_bindings": 1168,
+      "python_version": [
+        3,
+        13,
+        14
+      ],
+      "all_cleanup_verified": true,
+      "cni_trap_connections": 0,
+      "serial_path_absent": true,
+      "serial_open_syscalls_assessed": false,
+      "native_stale_named_snippet_observed": true,
+      "file_observation": {
+        "upload": {
+          "format": "cbus-cgate-file-upload-v1",
+          "server_path": "tmp/owned-upload.bin",
+          "source_file": "${CBUS_ORIGINAL_CLI_DRIVER}/installed-execution-1/owned-upload.bin",
+          "bytes": 23,
+          "sha256": "522ab92a914ddc0043ab91ced3301f1549855da2d45d4e363fb71338f583e54a",
+          "upload_completed": true,
+          "response": {
+            "lines": [
+              "200 OK."
+            ],
+            "final": "200 OK.",
+            "status": 200
+          },
+          "project_save_requested": false,
+          "server_storage_policy": "Selected server FILE semantics; cmqttd uses its virtual namespace"
+        },
+        "download_canonical_json_sha256": "f982f077f8dd337e840c7267bce7c53c99e2ad5d5cbc213b591d87f7cd432072",
+        "download_payload_publicly_omitted": true
+      },
+      "scope": "Original C-Gate closed model only; no cmqttd parity, hardware, Windows, interface open, or reference-rewrite claim",
+      "cmqttd_parity_claimed": false
+    }
+  },
+  "wheel_sha256": "1b7d63f8ac29598160592c5966c9e8ba72aaf9ee7bb360ebfe1e47b94cae1fc6",
+  "installed_source_equal_package_files": 326,
+  "release_binaries_sha256": {
+    "cmqttd": "5164a42acc1fd720b96a806fb1edafe0136c6fdbc1966c8bcad8e95fa4c355e4",
+    "cgate-mock": "dd24d809a91dee7846f205d05313f378fcb78e7331965f9434ec3e8be80e935e",
+    "cbus-tools": "e3bbfcaadcdd4da3ddfdb97fcfde6609d3e24ed4b631997890b8886853ac5108"
+  },
+  "rust_validation": {
+    "base_revision": "6b208d087fd7433c605cc44b97c4c09896ffa0eb",
+    "binaries": {
+      "cbus-tools": {
+        "before_after_release_bytes_equal": true,
+        "previous_preserved_sha256": "e3bbfcaadcdd4da3ddfdb97fcfde6609d3e24ed4b631997890b8886853ac5108",
+        "release_sha256": "e3bbfcaadcdd4da3ddfdb97fcfde6609d3e24ed4b631997890b8886853ac5108"
+      },
+      "cgate-mock": {
+        "before_after_release_bytes_equal": true,
+        "previous_preserved_sha256": "dd24d809a91dee7846f205d05313f378fcb78e7331965f9434ec3e8be80e935e",
+        "release_sha256": "dd24d809a91dee7846f205d05313f378fcb78e7331965f9434ec3e8be80e935e"
+      },
+      "cmqttd": {
+        "before_after_release_bytes_equal": true,
+        "previous_preserved_sha256": "5164a42acc1fd720b96a806fb1edafe0136c6fdbc1966c8bcad8e95fa4c355e4",
+        "release_sha256": "5164a42acc1fd720b96a806fb1edafe0136c6fdbc1966c8bcad8e95fa4c355e4"
+      }
+    },
+    "changed_source_scope": "Exactly project_xml_composes_networks_without_selection_or_mutation test body; all production content and other test content byte-identical.",
+    "ci_qualification": {
+      "base_revision": "6b208d087fd7433c605cc44b97c4c09896ffa0eb",
+      "scope": "Immutable 6b208d CI had one outdated Project-export order assertion failure; Rustfmt/Clippy green, release skipped. This focused local checkpoint is not a terminal CI pass. Earlier a33 CI Clippy failure remains historical."
+    },
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "tests::project_xml_composes_networks_without_selection_or_mutation",
+          "--",
+          "--exact",
+          "--nocapture"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 9.8,
+        "exit_code": 0,
+        "log": "after-project-xml.log",
+        "log_sha256": "3be7f0e5a5b9ce382a70b544681a616542c2785c24fe832c0b1be758adcf4775",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 1
+        },
+        "test_ids": [
+          "tests::project_xml_composes_networks_without_selection_or_mutation"
+        ]
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "tests::project_xml_empty_snapshot_has_bounded_exact_wire_vector",
+          "--",
+          "--exact",
+          "--nocapture"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 0.16,
+        "exit_code": 0,
+        "log": "after-project-empty-xml.log",
+        "log_sha256": "464f9c93055949f5245191b8cf554c58f48516e7f46c265c81199b73d6474d25",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 1
+        },
+        "test_ids": [
+          "tests::project_xml_empty_snapshot_has_bounded_exact_wire_vector"
+        ]
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "tests::network_xml_reports_model_state",
+          "--",
+          "--exact",
+          "--nocapture"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 0.07,
+        "exit_code": 0,
+        "log": "after-network-xml.log",
+        "log_sha256": "da03589e6c2098e9bff739c9d0f09ede8e119817cd6c893968deadef84d11e0a",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 1
+        },
+        "test_ids": [
+          "tests::network_xml_reports_model_state"
+        ]
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "service::tests::net_save_db",
+          "--",
+          "--nocapture"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 2.28,
+        "exit_code": 0,
+        "log": "after-net-save-db.log",
+        "log_sha256": "a3c74d63b816ebd9c25038e0bc5f47142d01d6eb729ff58e7dd99b3a18829c9e",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 26
+        },
+        "test_ids": [
+          "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+          "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+          "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+          "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+          "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+          "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+          "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+          "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+          "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+          "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+          "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+          "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+          "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+          "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+          "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+          "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+          "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+          "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+          "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+          "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+          "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors"
+        ]
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "fmt",
+          "--check"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 1.97,
+        "exit_code": 0,
+        "log": "fmt-1.98.1.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 0
+        },
+        "test_ids": []
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 4.31,
+        "exit_code": 0,
+        "log": "clippy-1.98.1.log",
+        "log_sha256": "50be92478b6e44ed7331f1fa574a008bbe6ca535ccde8cc9ebea24ddf6d0ebc7",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 0
+        },
+        "test_ids": []
+      },
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "cwd": "rust",
+        "elapsed_seconds": 96.81,
+        "exit_code": 0,
+        "log": "release-1.98.1.log",
+        "log_sha256": "877d251fbbd5e6b95c5b051cc6cfae3e5d47e86ffe09f91dcbf7452ea472c0f4",
+        "test_counts": {
+          "FAILED": 0,
+          "ignored": 0,
+          "ok": 0
+        },
+        "test_ids": []
+      }
+    ],
+    "date": "2026-10-01",
+    "declared_msrv": null,
+    "evidence_pins": [
+      {
+        "path": "rust/testdata/vectors/cgate_project_export_order.json",
+        "sha256": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd"
+      },
+      {
+        "path": "rust/testdata/vectors/cgate_project_snapshot.json",
+        "sha256": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa"
+      },
+      {
+        "path": "toolkit-cli/research/local_cgate.py",
+        "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+      }
+    ],
+    "format": "cbus-rust-net-save-db-validation-v1",
+    "full_workspace_test_omission_reason": "Explicit bounded validation scope; CI full library failure reproduced separately and corrected through native order evidence.",
+    "full_workspace_test_run": false,
+    "hardware_acceptance": false,
+    "native_project_export_order": {
+      "capture": {
+        "commands": 27,
+        "inputs_unchanged": true,
+        "local_cgate_helper_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+        "normalized_private_fixture_sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+        "order_proof_sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+        "owned_cleanup_verified": true,
+        "physical_or_windows_acceptance": false,
+        "probe_sha256": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+        "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+        "trap_connections": 0
+      },
+      "command": "DBGETXML //SNAP",
+      "expected_networks": [
+        {
+          "address": "254",
+          "network_number": "254",
+          "tag_name": "Later"
+        },
+        {
+          "address": "1",
+          "network_number": "1",
+          "tag_name": "First"
+        }
+      ],
+      "format": "cgate-native-project-network-order-v1",
+      "native_stages": [
+        "before NET LOAD DB/NET SAVE DB",
+        "after NET LOAD DB",
+        "after NET SAVE DB",
+        "after PROJECT SAVE/CLOSE/LOAD/USE",
+        "while OTHER selected before export"
+      ],
+      "native_xml_terminal_status": 344,
+      "oracle": {
+        "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+        "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+        "version": "3.4.0.2001"
+      },
+      "scope": "Exact ordered Address/TagName/NetworkNumber projection of five original exports, with ten whole-subtree/direct XML comparisons. Optional Unit/Application children were not probed. Original internal selection or model immutability was not inspected. The service's minimal Installation wrapper is not an exact original project document.",
+      "setup": [
+        "PROJECT NEW SNAP",
+        "PROJECT USE SNAP",
+        "DBCREATENET 254 Later Cni 127.0.0.1:%CNI_TRAP_PORT%",
+        "DBCREATENET 1 First Cni 127.0.0.1:%CNI_TRAP_PORT%"
+      ],
+      "whole_subtree_direct_xml_byte_equal_checks": 10
+    },
+    "native_release_gate_run": false,
+    "only_changed_rust_source_file": "rust/cbus-cgate/src/lib.rs",
+    "previous_integration_receipt_sha256": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+    "previous_materialization_receipt_sha256": "26d59868a7f0794af32718e3f0f6da39784f8d5977896a562ae3ae7fbdd9d869",
+    "prior_failure_runs": [
+      {
+        "argv": [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "-p",
+          "cbus-cgate",
+          "--lib",
+          "tests::project_xml_composes_networks_without_selection_or_mutation",
+          "--",
+          "--exact",
+          "--nocapture"
+        ],
+        "binding": "Before assertion correction on immutable 6b208d baseline; not credited as final validation",
+        "cwd": "rust",
+        "exit_code": 101,
+        "log": "before-project-xml.log",
+        "log_sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+        "scope": "Focused reproduction before assertion correction; no full workspace suite",
+        "test_results": [
+          {
+            "id": "tests::project_xml_composes_networks_without_selection_or_mutation",
+            "outcome": "FAILED"
+          }
+        ]
+      }
+    ],
+    "private_path_policy": "Manifest uses only repository-relative paths and log basenames; all before artifacts privately retained with0700 directory/0600 files.",
+    "rust_source_cargo_roster": [
+      {
+        "path": "rust/Cargo.lock",
+        "sha256": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0"
+      },
+      {
+        "path": "rust/Cargo.toml",
+        "sha256": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99"
+      },
+      {
+        "path": "rust/cbus-cgate/Cargo.toml",
+        "sha256": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33"
+      },
+      {
+        "path": "rust/cbus-cgate/src/access.rs",
+        "sha256": "5adb01f249c725d6ba1794f00211c9e938e38dc79907c771b384bb15a8ad4233"
+      },
+      {
+        "path": "rust/cbus-cgate/src/auth.rs",
+        "sha256": "a31698651805d0551c5ff42d3ff1b7de9dcaef3ef7ebba65b6d3f86a1684d21e"
+      },
+      {
+        "path": "rust/cbus-cgate/src/capability_matrix.rs",
+        "sha256": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20"
+      },
+      {
+        "path": "rust/cbus-cgate/src/config.rs",
+        "sha256": "bb387a6cef547f80c87befed31b2342504d3f33bdea79f6b98234f6c17eb9414"
+      },
+      {
+        "path": "rust/cbus-cgate/src/config/disposition.rs",
+        "sha256": "9ea68b9eb5c550beeebf21a0a879501dae5b166f8d4292f13f81c983277f85eb"
+      },
+      {
+        "path": "rust/cbus-cgate/src/convertunit.rs",
+        "sha256": "a6bdcc026a9a25cd3eb54e864f6106084c6dde047e09d73b609f184d653fb1e0"
+      },
+      {
+        "path": "rust/cbus-cgate/src/dlt_profiles.rs",
+        "sha256": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a"
+      },
+      {
+        "path": "rust/cbus-cgate/src/etherlite.rs",
+        "sha256": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381"
+      },
+      {
+        "path": "rust/cbus-cgate/src/file.rs",
+        "sha256": "da0cdfd2caa13e838149af7b9cdbf2e15eb07bd662eb2292a0721d97c7c71ac8"
+      },
+      {
+        "path": "rust/cbus-cgate/src/lib.rs",
+        "sha256": "35872a314d191c923f63d2b7c07ec5465a3d39ee2c991432e0671592b112c6cc"
+      },
+      {
+        "path": "rust/cbus-cgate/src/main.rs",
+        "sha256": "c283a230ade13eee06839d53f58ab4793c7afc192e9196c3ef595adc083b27b9"
+      },
+      {
+        "path": "rust/cbus-cgate/src/manual.rs",
+        "sha256": "c21f0fd7b32f1bce130be046e6e0ffe6ecea8983fe3d48ddb45d4d52e126456d"
+      },
+      {
+        "path": "rust/cbus-cgate/src/native_archive.rs",
+        "sha256": "5ecf92c11bcec6dcb8e1d7508d5b5735162935c7a627263ef19abbf4b1ddf81c"
+      },
+      {
+        "path": "rust/cbus-cgate/src/object_access.rs",
+        "sha256": "88ec1930e3de571ecf2713516e2deae147d8a5c5c97fb4b95f922bf823d51ec0"
+      },
+      {
+        "path": "rust/cbus-cgate/src/object_access_table.rs",
+        "sha256": "e436a27f0ce29ef45b6c0185e86c21d9774bad9f7778d7f5f4dd41e7a8ff056b"
+      },
+      {
+        "path": "rust/cbus-cgate/src/port.rs",
+        "sha256": "1f76f0ae969f86d5608c106e1f62e78a7783af6439f2fbacda4dc0488bfd3990"
+      },
+      {
+        "path": "rust/cbus-cgate/src/pp_namespace_tests.rs",
+        "sha256": "fc4534cf255c2e2956d3edf505638d272bcebf4046f1d07214b7828f1bd00f88"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service.rs",
+        "sha256": "fbb03dc1e2729c41872ba3cf140b4724b177327924bdf9d3b656005b94fcffdc"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/calculator.rs",
+        "sha256": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/cgl.rs",
+        "sha256": "c0222f1d3cc1a5c782edd292f14cc5df3e4f3fc534f4f39f94aa5b0c5ffe1cba"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/connection_admission.rs",
+        "sha256": "dd0b229e767d8d49e29cca3a0e36cac05ed37831f9abcf3f7044685296d58339"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/dali.rs",
+        "sha256": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/dali_journal.rs",
+        "sha256": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/dali_proxy.rs",
+        "sha256": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/dali_proxy_lines.rs",
+        "sha256": "59981214582ee2ce0eb1d346d782132171b4a6f5b939a3188526b156f17ca331"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/dali_specialized.rs",
+        "sha256": "837d8cde5029710d5ca4e38b9835b16aa43073c2a5757d60c914c1133508077d"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/family_help.rs",
+        "sha256": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/move_journal.rs",
+        "sha256": "7f7550c0ec3d1ac497fb01ca7361034742aac26d567ee9f9200ccc24346d4c4f"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/net_lifecycle.rs",
+        "sha256": "6362a8773c94ce03aa88a50e055f3f23b425b213356743b3cb8daf18654b5993"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/pp_patch.rs",
+        "sha256": "6a1dc32d0dd359b0c11268cf717275bddf6fac2652ad40b87cc7756c9fb05aa3"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests.rs",
+        "sha256": "92c2bead19c513e825648ddf18594e2cbdbf6e497c1b5cbf619798e28152c2ee"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests/net_db_load.rs",
+        "sha256": "fa730221703ca30dd4d625c261fa0797ac3167c6d8c28d4861b8dccd66b3ef96"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests/net_save_db.rs",
+        "sha256": "a467c03b9975e156cb35986f5a0fb230dd36a4fb46a988403a42a84374e7fa43"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs",
+        "sha256": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests/object_authorization.rs",
+        "sha256": "91bb06bec7ef2c28cd5d749ac62eba3076377322e76c1659433b67a48d93eab5"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/tests/secondary_authorization.rs",
+        "sha256": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/transform.rs",
+        "sha256": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501"
+      },
+      {
+        "path": "rust/cbus-cgate/src/service/unravel_plan.rs",
+        "sha256": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb"
+      },
+      {
+        "path": "rust/cbus-cgate/src/show.rs",
+        "sha256": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c"
+      },
+      {
+        "path": "rust/cbus-cgate/src/tag_network.rs",
+        "sha256": "f5297fd069f4303d4f305e54bf5880c2cc41d85140cae25e42e64aec94c8b526"
+      },
+      {
+        "path": "rust/cbus-cgate/src/unitspec.rs",
+        "sha256": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/capability_matrix.rs",
+        "sha256": "273dc5d505e325c8c5d64bfacfa92dd1435b2bd38eff664996216c531c9a0e7c"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/cgl_vectors.rs",
+        "sha256": "21c2fee6921c2d8b1e134d188be701fb163d38db1f9abd6fc2186be2e083c7fd"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/cross_kind_oid.rs",
+        "sha256": "ec47a62da640e24bac7d500fdf1c27b1c90515e5137300b39044bf86e2cf8269"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/dbsetxml_errors.rs",
+        "sha256": "ca9d538b333fb09ae2069737fa10e22f33869828e8c0607397e1e396ddf407d3"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/dbsetxml_lifecycle.rs",
+        "sha256": "ec11d7f3d96fbf924fcd785f3e08dd55f911a8147174095e01e1dccc097a76a8"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/dlt_profile_admission.rs",
+        "sha256": "630ec6ed40eada56859c6d287e48158012c62b4c0078ffbab884f5960597e5c4"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/five_plus_unit_oid.rs",
+        "sha256": "0548448cd45a8fd4f9839cd0b5459e37fa7786e1fa652ef1fe31cda0e93a9049"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/large_unit_oid.rs",
+        "sha256": "f668de6706e1c64008b1ac5e7e8107c17bcc93531b43afb0913e76bf15fe9d72"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/nine_ten_unit_oid.rs",
+        "sha256": "8af2e6f79b506e4b69d1896b386df31b447ce7deda769b037ebf8f6fbda5b5bc"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/oid_index_probe.rs",
+        "sha256": "6b77f8f0b2978ba24db0ca4269266a6e457f8037ad193b9f5f58b04817159cef"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/server.rs",
+        "sha256": "fa35999aec2cc6969d64e39fb627befdd5f350f667874be1172f107df852801e"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/show_native_matrix.rs",
+        "sha256": "7c10cecdf946b9616d8f315432dfc290033ef839ae4ea39abba123f62c2371ae"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/tcp.rs",
+        "sha256": "0de0260ecb7dabe004b2e89d252bb35a872076fd422f3ff9fcce60a333f5ab90"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/tls.rs",
+        "sha256": "e9a7cfc814865d5a03f35ee0401b40dcd88a022f88ffebc2868fbaa99e934f6c"
+      },
+      {
+        "path": "rust/cbus-cgate/tests/unit_diagnostics.rs",
+        "sha256": "dc487ea2618042f6e2e4dd1678712ee058881193aacea6006528ba6befe84815"
+      },
+      {
+        "path": "rust/cbus-golden-tests/Cargo.toml",
+        "sha256": "388da3b07c9b86dfc90105bcda8694e8dc62e559f8d13d95fc8ac2d3b3ff72d0"
+      },
+      {
+        "path": "rust/cbus-golden-tests/build.rs",
+        "sha256": "7aa9ba7f6d12281fe51153caa543d1ee68bef294bbda3e7f3de818841bbaf5e3"
+      },
+      {
+        "path": "rust/cbus-golden-tests/src/lib.rs",
+        "sha256": "5c07e9a8d7552443e76506f1838c58f9628f5d46f872fae6d23bcc7da9911e6c"
+      },
+      {
+        "path": "rust/cbus-golden-tests/tests/domain.rs",
+        "sha256": "030f05306cdb7f2cb19bb0ff6b556fa1d7cdc152a1771d22dbd6b749bf0819dd"
+      },
+      {
+        "path": "rust/cbus-golden-tests/tests/golden_vectors.rs",
+        "sha256": "4eb6f7cea7bf421e0d3e68b36cbc629be4d16fd4d8c0667843af79efddba2c1f"
+      },
+      {
+        "path": "rust/cbus-mqtt/Cargo.toml",
+        "sha256": "e2ed518eae7e5e7afe29df72b10d1fed354de185735c3b5c94a2c774bdb83931"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/cbz.rs",
+        "sha256": "f29329c243c63e2e0dafd1964173f59febb630623537e895f10d9be0288af332"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/command.rs",
+        "sha256": "6f7f371fa6b10e04c6864709d461641f78fb249b3f7b4d1bab7121295b6fa462"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/discovery.rs",
+        "sha256": "353341dcc02f54b5c813d88e72ef0ea5447b2bfd35e9ed27d26fe9b8bc5733e1"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/lib.rs",
+        "sha256": "a11bb2357a989e7feed38a13604b31d0b2f2ce000f4529ca3021361d26def4ec"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/topics.rs",
+        "sha256": "9e5934727873e8558c31b072057026ab8da449ab737a1afb263bcb648b534b55"
+      },
+      {
+        "path": "rust/cbus-mqtt/src/vector_check.rs",
+        "sha256": "6330a5076f1d3cbe0519b01f8c00891f4e36a9420483583fb0e8a255389c9826"
+      },
+      {
+        "path": "rust/cbus-mqtt/tests/cbz_edges.rs",
+        "sha256": "32207ca36d3df8557745f067e032714820023c9d205aee4706b9feedde421fec"
+      },
+      {
+        "path": "rust/cbus-mqtt/tests/cbz_input_safety.rs",
+        "sha256": "a0e58fbca1def54905d7b2f07c40bad2c18b81e4e3cbdcf9872889c4e2af98c3"
+      },
+      {
+        "path": "rust/cbus-mqtt/tests/discovery_labels.rs",
+        "sha256": "1e9f11a1901f373ad8002d8097241caac50481bcdf1fed3176ac2c237a230ff3"
+      },
+      {
+        "path": "rust/cbus-mqtt/tests/set_command_matrix.rs",
+        "sha256": "5698d621e4984b80d7820b78e33e41326e17e7efccd936f7c8a0d552f6d208c1"
+      },
+      {
+        "path": "rust/cbus-mqtt/tests/topics_edges.rs",
+        "sha256": "0817c712e3b0f50636a126a80fb0529bc280224a1975852171045524158b3ff0"
+      },
+      {
+        "path": "rust/cbus-protocol/Cargo.toml",
+        "sha256": "3bf12f109f534b9e2f7692cae2a9e768acce65a605a153006cc88102faeeb609"
+      },
+      {
+        "path": "rust/cbus-protocol/src/cal.rs",
+        "sha256": "fcb0d9df59c0c0a9df2e47379c985124d4571fa9106b54a9355acbe7181c54c2"
+      },
+      {
+        "path": "rust/cbus-protocol/src/cni_discovery.rs",
+        "sha256": "ba69cf4f1cc4f27650a4896067ef16f4732c27aff859ffa05494c3ecf4ada4fd"
+      },
+      {
+        "path": "rust/cbus-protocol/src/common.rs",
+        "sha256": "67c90acf93417a76e0b8852212bd03b1cf81787918dfe45ff5166f0ff4bb5e60"
+      },
+      {
+        "path": "rust/cbus-protocol/src/consts.rs",
+        "sha256": "df1d021425eb86eb51b5c6c1d6e57d5c21bea82258fb5ac954542a44cf1780b0"
+      },
+      {
+        "path": "rust/cbus-protocol/src/dali.rs",
+        "sha256": "4a0c4bda8cb7ad7538208cfd395c88d93b67054769ffdd87e52ef198279ea02a"
+      },
+      {
+        "path": "rust/cbus-protocol/src/decode.rs",
+        "sha256": "1c9850a14124a4937d7f0cb033040e69485d3a71a64aedfb38f46d0b6f8d5fee"
+      },
+      {
+        "path": "rust/cbus-protocol/src/edlt_sync_metadata.rs",
+        "sha256": "f208973db5ef138a84159ee350fc039319e8f62271c43fd4231aedbbd0481db1"
+      },
+      {
+        "path": "rust/cbus-protocol/src/edlt_widget_groups.rs",
+        "sha256": "a8bdaa5717fe2f98f6fe96195af4e72fa725241013d35e74e9eb09f25ef62489"
+      },
+      {
+        "path": "rust/cbus-protocol/src/json.rs",
+        "sha256": "b81098cdfbcf76c09295377b6c6bc051ced7a1c4712f32418f0c749bb6093dd3"
+      },
+      {
+        "path": "rust/cbus-protocol/src/kfi.rs",
+        "sha256": "d50fe64746488d1e90d444c2af2a1e9a114d02c0b41233ac501d85eb3f739ce3"
+      },
+      {
+        "path": "rust/cbus-protocol/src/label_clear.rs",
+        "sha256": "f46a0767ef13479d386f060a1b2bd3f970dfb29822f63613039ad99cafd3ab52"
+      },
+      {
+        "path": "rust/cbus-protocol/src/lib.rs",
+        "sha256": "3c06481c934802d190f1a29e860507dda3a7a805aa9940cb744b76e8ebb88a21"
+      },
+      {
+        "path": "rust/cbus-protocol/src/packet.rs",
+        "sha256": "e171602e6585a80aa05f7d97e70412a94845bcb837ed19283ac2b298c2b830ce"
+      },
+      {
+        "path": "rust/cbus-protocol/src/pci_observation.rs",
+        "sha256": "ad6bb0976fbeb0ffcd32eb7be563b052a67be1d2785f6f43ff78471c1943fa95"
+      },
+      {
+        "path": "rust/cbus-protocol/src/project_identity.rs",
+        "sha256": "136015bbe5e8d4ee31e43b6fe1b0a594db2dcab3d8aaeb25f6671e7f790eee6c"
+      },
+      {
+        "path": "rust/cbus-protocol/src/report.rs",
+        "sha256": "27bb1da38040d5b06f8e9fd805baf7690183ee4cb88f067dc1935db81e5e14d3"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/accesscontrol.rs",
+        "sha256": "be9e8b45ad7a3f849fd5535d3c3f339eef5e59a75a2516677e27c000d328118a"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/aircon.rs",
+        "sha256": "ea370f56bbe1f5efe3d392d6bfe0609664bea1f254aa5911917bd64d9c8faa92"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/audio.rs",
+        "sha256": "4fec97e4ff043a0d7a81220328773987c2cbf7d3815aac93a909fd5df6a3e230"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/clock.rs",
+        "sha256": "103dfda2e3fd30541944098826996309b6976554543e9b26f793c2ac66f589a3"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/enable.rs",
+        "sha256": "fe53fc9c895f876df01daadf16b97835fe42a70818fb12f2af19f09948d8dd4d"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/ereport.rs",
+        "sha256": "449a003df1bc7a7821198d1d96a58db9945017fb11692ec78446df4dcf834652"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/identify.rs",
+        "sha256": "fbffd7aba5ecd46b62fc9b9f63539e573d7e67e438d84e7ece0c9ef9c0cca7f5"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/label.rs",
+        "sha256": "9f341a8591adab6dbc7bbf7a7b995d9a39adf29fdb1dc9acf00a1b8c91ef6b81"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/lighting.rs",
+        "sha256": "873639441c0f88ea5250391b408e83a06829bc4962eea185a24ff5e9200bfc53"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/measurement.rs",
+        "sha256": "82542813adc3b3146724ab40b165140f50ecb00011a78918593b61bb5ac240ae"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/mediatransport.rs",
+        "sha256": "cbeb29100f08897ec5b219b10f62b7a6d537f7baa89a25007d7e7b00b8aa1851"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/mod.rs",
+        "sha256": "3c86690d90a77c6ade065c15f2dea21ea6c14343905dbac2b95f75766cc419e2"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/network_management.rs",
+        "sha256": "7f11001b27c9ac5684a054f0fb88c20f252ceb362cb15d9851311c207f9025b5"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/security.rs",
+        "sha256": "52bdc5339a9a3769761a9f35f98aa22e026c0df3b3e07ec108af584b2c4444fd"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/shortmessage.rs",
+        "sha256": "7f70abe9658761b1c63c42b413893b19debd2c7592b429c6e793f64e2f557aaa"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/status_request.rs",
+        "sha256": "6546cac4bbd2f68b67d6589602486553df8b86a1c0a627ccb0116b80eb08c96c"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/telephony.rs",
+        "sha256": "16989f9756ca9bd0f55dca997f0bbd68b050d8b546f16ff520721d6c6152fda7"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/temperature.rs",
+        "sha256": "3a14d64a19aca7679b019745f7c2e2623eaa00b9bdbd076e2af53281f630ad71"
+      },
+      {
+        "path": "rust/cbus-protocol/src/sal/trigger.rs",
+        "sha256": "f6fbd953f436ff6ebdb9e6fe1027f59ad17cac753d2657fee902230619e8d38d"
+      },
+      {
+        "path": "rust/cbus-protocol/src/serial_address.rs",
+        "sha256": "b278a63c21cf7c1fbc5c2a95bbb33127dc6d37b546753fe37d10b4b4193b66bf"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/common_edges.rs",
+        "sha256": "a108bcd1e9b2e9bf0dd6c84e94422920d2b4742fe4bb7b016e15dc3c1002cd4f"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/decode_edges.rs",
+        "sha256": "a2ad44b9bafeb0a84b63b4e86e6b5fb42883741fb65d51b09b1ee94f7d8d7c00"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/encode_edges.rs",
+        "sha256": "e2a0f5bc198c78a0eeac27c3336228589c2578f84e11d9038d16d987e2ab7cc0"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/json_edges.rs",
+        "sha256": "629b3d1988e3113f7aa2f5a69cbe2f61eec5f996bc0e85585d410eccb05f3ccd"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/observed_labels_vectors.rs",
+        "sha256": "65b835f769e5c9e23abda37f6924f0db9981bd28f6555fdceea61eb1910b8a72"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/proptest_roundtrip.rs",
+        "sha256": "e230ba8d5f763bcdee315351f74fd83a2f186e452698118bfd6b9ca33836df9a"
+      },
+      {
+        "path": "rust/cbus-protocol/tests/serial_address_vectors.rs",
+        "sha256": "4501c244d212ba94b0c57809059d4a4dc65ed0c853847a124d0b9b6abffa582f"
+      },
+      {
+        "path": "rust/cbus-simulator/Cargo.toml",
+        "sha256": "64a228fe397a44c5b56062bfa985a71f9fa60a1612537073e7b0939eafd94789"
+      },
+      {
+        "path": "rust/cbus-simulator/src/main.rs",
+        "sha256": "d8f7810fd42ea16f95fa8dd0086a9d612c28871daf0e3cacc4c9b73b3f4f5eac"
+      },
+      {
+        "path": "rust/cbus-simulator/tests/system_sim.rs",
+        "sha256": "32fe3581d71ce13e463979ad6df31a0937c0fb20d9f26e4437535dc064966cf4"
+      },
+      {
+        "path": "rust/cbus-test-support/Cargo.toml",
+        "sha256": "e5ff75e7e87fd374c3a5d757bc98fe5f22d5623e41e44bd8a1ca7db81a3cd83f"
+      },
+      {
+        "path": "rust/cbus-test-support/src/broker.rs",
+        "sha256": "5e72c68aec336147df5ad4a8973ca8d9e4983274ce3cffddb8a56ef342451dd8"
+      },
+      {
+        "path": "rust/cbus-test-support/src/lib.rs",
+        "sha256": "ff0391c0f6dc73520a22c9ca5a5a74afbb64d33a8c62e8f78720003e4badc433"
+      },
+      {
+        "path": "rust/cbus-test-support/src/pci.rs",
+        "sha256": "8e6e82b94a96077a4b2c589bc2f823613be8dad24ae2fcb2607c043dfefbfe91"
+      },
+      {
+        "path": "rust/cbus-test-support/src/proc.rs",
+        "sha256": "e7093dde3b27dd3b551dc546ae3d2db08d5570ba99386460fc7cf076bda8b95f"
+      },
+      {
+        "path": "rust/cbus-test-support/src/wait.rs",
+        "sha256": "2e4311260ac17418c1ee2553d77b14ce29866bd5c5cccfa9559d08f3a131feca"
+      },
+      {
+        "path": "rust/cbus-tools/Cargo.toml",
+        "sha256": "a5ecbc5ba5355612da4e7c9c3d2111f002f837154047cf46a1efb6029ff2d4b4"
+      },
+      {
+        "path": "rust/cbus-tools/src/cni_scan.rs",
+        "sha256": "73b4b525ba9fdcea0d5af33a17ba79e4b58ad4784322a812daad9a9b7ca10573"
+      },
+      {
+        "path": "rust/cbus-tools/src/commissioning_lease.rs",
+        "sha256": "cbf7418a74cac56bfb2ca85499fffd1e72ecadbc5b375bc2a34197e1e7a9484d"
+      },
+      {
+        "path": "rust/cbus-tools/src/lib.rs",
+        "sha256": "7779def56548d3ae480ad8c9f5429c881bb67e4a1a808a53ceab3b2f236cbac1"
+      },
+      {
+        "path": "rust/cbus-tools/src/main.rs",
+        "sha256": "74e54dbe28952f4d698bdf28d6bf1b523a38c2971fd1155583e3508f8677764c"
+      },
+      {
+        "path": "rust/cbus-tools/tests/cli.rs",
+        "sha256": "90fc97d8dd8da5d47bf3af84be2223e50ab0f986b94b5fd19551ceffc888585d"
+      },
+      {
+        "path": "rust/cbus-tools/tests/serial_commissioning.rs",
+        "sha256": "28568ac9990298044020767db15b73b86044f27f3e1363332bc42dad5040aa3e"
+      },
+      {
+        "path": "rust/cbus-transport/Cargo.toml",
+        "sha256": "8baaf563db7f58aeeeb96f6e25335d1c67b342ee472a96bb16c09e2b7de64f5f"
+      },
+      {
+        "path": "rust/cbus-transport/src/apply.rs",
+        "sha256": "c59dc52896fda2743af4dfbd5b0dff77478794fae830c283cb962b6c507004c2"
+      },
+      {
+        "path": "rust/cbus-transport/src/cni_discovery.rs",
+        "sha256": "3b6a13ba2c0d5da1c4df09a612b0cc47b343c6021a671a670995dd81e459d4a5"
+      },
+      {
+        "path": "rust/cbus-transport/src/commissioning_route.rs",
+        "sha256": "af7808a804afafe076d6ee782db469a7f5b92971f00c9f099ffdc66118a605a1"
+      },
+      {
+        "path": "rust/cbus-transport/src/conn.rs",
+        "sha256": "1483c7e96526b2c458b750722e1799f04d5eec9e112e2ccf860fb217dda3e3d6"
+      },
+      {
+        "path": "rust/cbus-transport/src/flow.rs",
+        "sha256": "7bd2078c84170d3e679034f3ca517bb4ab0fd4bd9f5b3af43564b9daa5e7f327"
+      },
+      {
+        "path": "rust/cbus-transport/src/framing.rs",
+        "sha256": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d"
+      },
+      {
+        "path": "rust/cbus-transport/src/inventory.rs",
+        "sha256": "4f9468f72fa16680fad676ed243a00dd3e6d6c8786c3c1e719f9285211398a06"
+      },
+      {
+        "path": "rust/cbus-transport/src/journal.rs",
+        "sha256": "8043ac0cda5068252553430250d024e5e33541b1729a07e61be69868c8379a11"
+      },
+      {
+        "path": "rust/cbus-transport/src/lib.rs",
+        "sha256": "1aa6ba71e3a69d236136cf2e2c8271094aab477f32f6a2a9cc4ea3f29b7b1eca"
+      },
+      {
+        "path": "rust/cbus-transport/src/pci.rs",
+        "sha256": "289d92f6bbb910ab5917dd93b9e029aa4e4aa2793b454e9bf9c5dfb9ef028c41"
+      },
+      {
+        "path": "rust/cbus-transport/src/pci/mmi.rs",
+        "sha256": "89063d09c06ee1afceb44ba40de63484a308962f0a6cfd173dd52eca11885e24"
+      },
+      {
+        "path": "rust/cbus-transport/src/pci/programming.rs",
+        "sha256": "5b6a0e2143accbc51f4f40135fc08e36214c562670092adf40af72ff679b54b0"
+      },
+      {
+        "path": "rust/cbus-transport/src/pci/selected_serial_observation.rs",
+        "sha256": "3b64863416bd16c2fd2a018d7964fcfa783fac3f571a08ad02847560640cb591"
+      },
+      {
+        "path": "rust/cbus-transport/src/plan.rs",
+        "sha256": "25db5dd036c6690aade528945bbe41c7f41e5893c00e128ef6fb64d0ad878b93"
+      },
+      {
+        "path": "rust/cbus-transport/src/serial_address.rs",
+        "sha256": "7d667f4365208d28dfed708eed6efd38ca7fd9f66c63765c1d81f00cfad01cdf"
+      },
+      {
+        "path": "rust/cbus-transport/src/verify.rs",
+        "sha256": "6d9d1c53831e78eb899f86c10e832b0ae2151684602d908af3f4645cc306d502"
+      },
+      {
+        "path": "rust/cbus-transport/tests/endpoint_edges.rs",
+        "sha256": "1353755cb97c4f2c091d6fe217f3b0fe05653a74796d619cc8c285f67d2d10bc"
+      },
+      {
+        "path": "rust/cbus-transport/tests/framing_edges.rs",
+        "sha256": "4f3abd7d9b9880f4d46c7cdba6b2b8ec79f632f6089424f2d50aa26604048aab"
+      },
+      {
+        "path": "rust/cbus-transport/tests/inventory.rs",
+        "sha256": "3574f16c3d3b16b58f6b4f91ae5b4e9e61fbb78b43b15b137ea3332108d0f8bb"
+      },
+      {
+        "path": "rust/cbus-transport/tests/journal.rs",
+        "sha256": "b41c4136e415af9e4cbadbbe0b72798f405b78ce774d15afef296d588bd2ceac"
+      },
+      {
+        "path": "rust/cbus-transport/tests/proptest_framing.rs",
+        "sha256": "187c2823529d323c3681b2ff0a2fdf53ed493c83904c1fb9718001536eaf92fe"
+      },
+      {
+        "path": "rust/cbus-transport/tests/selected_serial_apply.rs",
+        "sha256": "9ae52ade32f643916253a8593eb2de1263b2bc270f2347d35cc0e1a637cf1685"
+      },
+      {
+        "path": "rust/cbus-transport/tests/selected_serial_plan.rs",
+        "sha256": "db9f4da8471c3863548a61ab8c1fd361eeb553b1ccc4cea1c48cdb81d51e18a5"
+      },
+      {
+        "path": "rust/cbus-transport/tests/selected_serial_verify.rs",
+        "sha256": "ab67044ecd1cfecb7b4ffa40897e01b21d654c301d9963dc4b31743365f49bab"
+      },
+      {
+        "path": "rust/cbus-transport/tests/serial_address.rs",
+        "sha256": "138ad8d8439a5b0681239d2dc50dc4acab1075085a994c9fccc00b1265952289"
+      },
+      {
+        "path": "rust/cbus-vector-check/Cargo.toml",
+        "sha256": "e07ef71cce994e307726ce6f754db751aaa02e1bef68de19ba98d1a24986fcef"
+      },
+      {
+        "path": "rust/cbus-vector-check/src/main.rs",
+        "sha256": "0428c0ea02f3bad935638874a6d3d6dcebc99973ddacbc0a811b9137cb36029e"
+      },
+      {
+        "path": "rust/cmqttd/Cargo.toml",
+        "sha256": "c37233e50068e5775275d36b1ca24f4e4dd66dfe719b8ebb016cb044f216ce0a"
+      },
+      {
+        "path": "rust/cmqttd/src/cli.rs",
+        "sha256": "7f4d32032d96c18ed8dcb578bafbc3b8a7da8014a4a81da17c952f53a574b22b"
+      },
+      {
+        "path": "rust/cmqttd/src/discover.rs",
+        "sha256": "d8767f2705557586c7bc9b574f108afd0dc116743f452a5286a0d1df283a1eec"
+      },
+      {
+        "path": "rust/cmqttd/src/gateway.rs",
+        "sha256": "0aebed3a040644166dcd7b1ffa30b910d49a0b1db92f23bb0f1e8f15466a1df0"
+      },
+      {
+        "path": "rust/cmqttd/src/main.rs",
+        "sha256": "13c25717d930ca2463c93cd87cfa590f7632e24815e3bf0085dd58c0dea499d9"
+      },
+      {
+        "path": "rust/cmqttd/src/setup.rs",
+        "sha256": "55671eeb468dde9d26467e6a50e22f8b00c0830aae3826d31d40654ac9f23f64"
+      },
+      {
+        "path": "rust/cmqttd/tests/entrypoint.rs",
+        "sha256": "27cfddc6643ee98d7433d6b241965df7a3ad56c74d5a40c152e246b8f415cb0b"
+      },
+      {
+        "path": "rust/cmqttd/tests/serde_feature_graph.rs",
+        "sha256": "60fc21629d5705d9c72dae5178f65dc70f621e24409d1dbfd7c44d5d94880c29"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate.rs",
+        "sha256": "aaf2070b60c715b9576ffed927d30cf3a2a2bada7bd03dc76021b60fbeae7430"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_access.rs",
+        "sha256": "cc8464388d5e8967e2fdcc15925bf5a6854c7618a9fcbb4daee2b989dc5c0557"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_access_control.rs",
+        "sha256": "94183d8e99510cafdbca0884d1f9765387d231cf8cfc75236317d8409d30b759"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_admin.rs",
+        "sha256": "69d318f8eb3f075a96e8adbcad6d15d718c481517db82c61c5537f8a0c1a6c0f"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_aircon.rs",
+        "sha256": "75a49ef16ef6840dcd9ce4e5bc3978448b5a9773e99aad7c2ad73d52e328a8d9"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_audio.rs",
+        "sha256": "28ed62971b8bbbdee0f045c23e8e314c805df0b6d793501ec2b23265499d4dd5"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_broadcast_event.rs",
+        "sha256": "3c30f51e7e0a820541ccc8f043f5f0f3959e7f0eff821e9254ffb8784a599320"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_config.rs",
+        "sha256": "8367e7992b1add53d2f97265f024989e01162aaea3496404858b6e1b32f8a275"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_config_admission.rs",
+        "sha256": "9647d6999622ccee2220e5a8b93dafab42465aa132f6a69dac3048517797700b"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_dali.rs",
+        "sha256": "88e2c38bc3d19d70a567f29372f7206646b88e8d9e076fa23a49ec54d88292f1"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_dali_specialized.rs",
+        "sha256": "0838fe38d5de14361d38b070309fb6f67db0f1551768d5372f7ac5041f7b12ac"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_database_lifecycle.rs",
+        "sha256": "1c703fc8fbbb7ba3964610909a05b8b83a8af534cd76c621184c213f866b3491"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_event_transport.rs",
+        "sha256": "f9f71e90f1683f2cc49aae7f1d2ad21163990b2dfb9d6cf95f0ca27f0b3508aa"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_file.rs",
+        "sha256": "fd6c48a7bcdc5f232df3e2fac8919ba3a2fcbcd2554be85d556175216fac7ac4"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_general_tree.rs",
+        "sha256": "07726a25d54f4f04f5553fbcda80ea3ffaf2bfb5ba08aa86de90ae4b347f71ac"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_measurement.rs",
+        "sha256": "b3fc6379258561e3e3b46e08bbae3ffb5f4b32a3aa19b0389c684fb25e9f9bb5"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_mediatransport.rs",
+        "sha256": "65090e2632f1e60d3ab87c386529a0ec6d6fedf4364945f219de7497b2481bcf"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_move_journal.rs",
+        "sha256": "14b7d28e49a2fc0d5aa21fbe81fb859039328c4e70776bff2de5f137777a0556"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_net_lifecycle.rs",
+        "sha256": "c369dbf1e807d4a9135ef89ff2fa0e96badb58315dd3992971d5cd8f40d39221"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_port.rs",
+        "sha256": "eff728504713015cb42c88eef7755687a5b5c937e93aa5c78a7af9796319d48f"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_pp_liveness.rs",
+        "sha256": "dcdfa5c54daeff5407a4f9374b86937b378003e9978fe64da2ac94a18f861aec"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_pp_programmer.rs",
+        "sha256": "eaf96b299914527320466e29329e8612808efeb7c3ddd1b675e883983ffcf6dc"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs",
+        "sha256": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_project_copy_delete.rs",
+        "sha256": "f033e3afcc97ce121ab6c065a78a07e9720987e617c881fc2bf92458eab9a152"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_remaining_applications.rs",
+        "sha256": "c53f78b31bf71b0edeb6ad82aabb2bbab61d7ca0d8d3b47787a16ffb2dc3f252"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_security.rs",
+        "sha256": "dfcad80fe824f2cb0b051b673c187365315b55a2c1ade760d232206ec07d8215"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_cgate_telephony.rs",
+        "sha256": "bdfc474056888bad5ad408aa917e692dca50e7105b115bdb73cda1b3454bea0b"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_commands.rs",
+        "sha256": "850e25a16c9faa78b1ea74335c54b70b5bd684390bb3d8b05c075873e32c1208"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_discovery.rs",
+        "sha256": "ad532297a7c9968bc41ba11414ba4b6c65c1435a5cba753299e2366cfac6bc2e"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_events.rs",
+        "sha256": "dd05f9f6e18aaae97a139e8618de8a7e20ca7c721ae11f4ab9fc9d7d61fbfded"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_flow.rs",
+        "sha256": "965aeed5d13587a44fb2c51f64fc9c223ccbfc96227f569ddbe541a9dd3cb4b0"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_init.rs",
+        "sha256": "87ff13c4180e81ffef8998834e5b1cbb6e9a840f86e18c58913829eba4d3925d"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_mqtt_consistency.rs",
+        "sha256": "55fad058b8b1c2d4cf1d7e488312ee6f24a7c92a978c59b2ae26c76b65571414"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_resilience.rs",
+        "sha256": "7d4f377e78a408b349445dd18a1a74a88f3b0af1f7f3c044649d91e7d18baea7"
+      },
+      {
+        "path": "rust/cmqttd/tests/system_serial_pty.rs",
+        "sha256": "df42416e3c1add434dfdffd14d4995ee3ebe20e13914fe2f9dff4d7eef54bd91"
+      },
+      {
+        "path": "rust/cmqttd/tests/util/mod.rs",
+        "sha256": "beb4764e6134882be7d80232d430047e027de42f62c570bf41a28e62d1c4211c"
+      }
+    ],
+    "rust_source_cargo_roster_count": 208,
+    "rust_source_cargo_roster_sha256": "de37eba99195f50e667389f8536c946737216e87464ac249ae3762a71613487f",
+    "rust_source_quiet_before_after": true,
+    "rust_toolchain": "1.98.1",
+    "scope": "Test-only assertion correction pins the existing creation-order Project export; focused owned source checks preserve selection/model state and all NET SAVE regressions. No product behavior change or full-suite/native/hardware acceptance claim.",
+    "source_binding": "Full current Rust source/Cargo roster after one test-only lib.rs correction; production prefix and suffix are byte-identical to before; validation window stayed quiet.",
+    "supersedes_validation_manifest_sha256": "a9a50a12531539eaf4fa0d29f4683765396d4e829ef92b7152de1c0993dad8f1",
+    "test_execution_pass_count": 29,
+    "test_failed_count": 0,
+    "test_ignored_count": 0,
+    "test_only_change_proof": {
+      "after_lib_sha256": "35872a314d191c923f63d2b7c07ec5465a3d39ee2c991432e0671592b112c6cc",
+      "before_lib_sha256": "fe2d5551ddbddacf5c2ec65e7f6de817047aa85241298cf546d050f387ef1798",
+      "before_source_roster_sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+      "diff_log": "test-only-source-diff.patch",
+      "diff_sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+      "production_prefix_and_remaining_suffix_byte_equal": true
+    },
+    "unique_test_count": 29,
+    "unique_test_ids": [
+      "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+      "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+      "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+      "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+      "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+      "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+      "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+      "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+      "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+      "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+      "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+      "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+      "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+      "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+      "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+      "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+      "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+      "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+      "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+      "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+      "tests::network_xml_reports_model_state",
+      "tests::project_xml_composes_networks_without_selection_or_mutation",
+      "tests::project_xml_empty_snapshot_has_bounded_exact_wire_vector"
+    ],
+    "validation_generation": "native-project-export-creation-order-test-correction-final",
+    "windows_toolkit_acceptance": false
+  },
+  "historical_native_raw_capture_commands": 126,
+  "native_fixture_sha256": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b",
+  "native_experiment_sha256": "86b7c7db964280c1a1bfe2aba54eaa11ab5a3d0bc14f209a23d95eeb67cae11a",
+  "six_current_differential_source_bindings": 1099,
+  "retained_original_replay_cases_per_backend": {
+    "session": 9,
+    "tagged_session": 11,
+    "unit_exact_wire": 12,
+    "combined_network": 2
+  },
+  "test_census_modules": 616,
+  "native_manifest_sha256": "f720bc657a2613a5cbcf361173cbc936f0971ac056757b85cbac6537b60b756c",
+  "native_selection_rewritten": false,
+  "full_suite_run": false,
+  "native_release_gate_run": false,
+  "hardware_acceptance": false,
+  "windows_toolkit_acceptance": false,
+  "coverage_require_complete_exit": 1,
+  "broad_feature_ledger": {
+    "implemented": 18,
+    "total": 42,
+    "percentage": 42.86
+  },
+  "fully_accepted_functional_obligations": 0,
+  "denominator_ready": false,
+  "feature_percentage_available": false,
+  "previous_receipt_sha256": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+  "historical_materialization_receipt_sha256": "26d59868a7f0794af32718e3f0f6da39784f8d5977896a562ae3ae7fbdd9d869",
+  "historical_prior_receipt_sha256": "d27cb05bb2f93cb2ac97ba2146c75ddf636fb80f9d5a8bf51bc1001b9795fb57",
+  "scope": "Repair of one legacy Project XML ordering expectation using a fresh original numeric254then1 creation-order capture; current strict differential and source/wheel public CLI re-execution of the closed NET SAVE DB workflows. Production behavior is unchanged; project selection/model immutability assertions are retained.",
+  "deviations": [
+    "cmqttd retains legacy200 DBCREATENET; original301 UUID is admitted by CLI but not identical Rust wire behavior.",
+    "cmqttd FILE collision refusal is atomic; original may insert earlier rows before408.",
+    "Original clean FILE-restored Options is literalnull and two opaque options cause observed408; native FILE option/format parity remains open.",
+    "Original OID deletion can leave a stale direct named XML snippet; cmqttd returns its coherent current complete tree.",
+    "cmqttd portable SQLite FILE container is not Schneider native SQL-format interchange."
+  ],
+  "qualifications": [
+    "Parent tests and subtests are separate; standalone journeys overlap owned journey tests and are not added as unique tests.",
+    "The126raw boundary probe uses systemPython3.9; public original CLI usesPython3.13.",
+    "Unselected native/hardware classes are never credited; bounded original runs do not replace the full native release gate.",
+    "Six strict differential comparisons use retained original captures. The retained126probe is historical; these original public CLI runs launch fresh original software and re-execute the bounded historical contract, not all new Rust fix branches.",
+    "Serial path absence is not syscall tracing. BrokerCONNECT/SUBSCRIBE and oneconnection perdaemon prove lifecycle only, not bidirectionalMQTTcontrol.",
+    "Network/Interface OIDs survive repeated SAVE; Property OIDs intentionally change. Native option splitting is ordered sequentialpairing, not arbitrary CLI escaped-token parity.",
+    "All source/package/binary/wheel bytes are rechecked unchanged; original private evidence and coordinate transformations are digest-bound.",
+    "This supports bounded milestones for issues27/29/32 without full umbrella closure or full Toolkit/C-Gate parity.",
+    "CI is monitored separately; targeted local checks do not imply terminal CI success."
+  ],
+  "artifacts": [
+    {
+      "path": "source-focused-before.json.json",
+      "sha256": "3c375105b209102ed00b466f97eeb37e8f1f7765e9c06030e90f31dd4c974697",
+      "raw_sha256": "981abcf81c81a9f5f6dc5c0a1438d4b41a54e1c0a11edb98a98d1258cd39a980",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "source-focused-after.json.json",
+      "sha256": "3edc5f886be59162ae208dd617c8496c44d8c0c3e50a0d063f9fcc0e154abfd6",
+      "raw_sha256": "31cbd566b545abbb0a75ff975bf554ab09e4f94a645882465bfc9fdf71880f1e",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-focused-result.json.json",
+      "sha256": "32b246db9354c3a07358c2f8710bb34be83395ed7c0f55f145531cc267af14a8",
+      "raw_sha256": "8cbcc09fc180286536456a410082fce054452b26d7c33e8e3ecde29cb7f80d9d",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.command.json.json",
+      "sha256": "3947a31e72a4f47c6522e0e396601a781a78c5b9be3ad430f081eae908be8657",
+      "raw_sha256": "80bf7aaea8cf85076311b1646657840aa528286b28258c63db4180e250a73cd4",
+      "coordinate_fields": 23
+    },
+    {
+      "path": "source-focused.stdout.json",
+      "sha256": "b12ff0a811a9ca3974bb9d6b47f36ecc74ff91f5d7f91870b930701bd1c64f20",
+      "raw_sha256": "94d8dce96f04d0e810aff4092fa615312522ffc987f1378a9e8d1b1891581c6f",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-focused.xml.json",
+      "sha256": "a4b7e33436738b00556c6ba1d2774de6095d619772a8d3ab68b63515e5473f9d",
+      "raw_sha256": "3e35c57a71d8e20c11766a559f77c7865f1526e496c8fbf48c8d8d901b5585e2",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-journey-before.json.json",
+      "sha256": "3c375105b209102ed00b466f97eeb37e8f1f7765e9c06030e90f31dd4c974697",
+      "raw_sha256": "981abcf81c81a9f5f6dc5c0a1438d4b41a54e1c0a11edb98a98d1258cd39a980",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "source-journey-after.json.json",
+      "sha256": "3edc5f886be59162ae208dd617c8496c44d8c0c3e50a0d063f9fcc0e154abfd6",
+      "raw_sha256": "31cbd566b545abbb0a75ff975bf554ab09e4f94a645882465bfc9fdf71880f1e",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "source-journey.command.json.json",
+      "sha256": "fdd6ef6a011827ee1c09c626ebdbdb080f63292e2d1f9423da62b6bf9abc2963",
+      "raw_sha256": "47dec4e6d237d5353aa94bcfbfb8665e9f171b7f5566db01a8fd429f540b51ff",
+      "coordinate_fields": 5
+    },
+    {
+      "path": "source-journey.stdout.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-journey.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "source-journey.json",
+      "sha256": "37d15ad643244eeb225645b0b36b72567c9c1a1ab340a3f71105cbcd23ed64c3",
+      "raw_sha256": "68b2b17640c04b3af38d153f22f8abecb5ab162ba8513c513a8993e4f0bcc2b7",
+      "coordinate_fields": 1124
+    },
+    {
+      "path": "source-original-cli.json",
+      "sha256": "eb6e12b44295bc1078e0b3154c6dabe870009c07638fd8cdb974534070ebfddf",
+      "raw_sha256": "c4635bad7be012378ada95f689cd1523e3652c90ce9405214df22d32ae562c20",
+      "coordinate_fields": 538
+    },
+    {
+      "path": "installed-focused-before.json.json",
+      "sha256": "2935837f62a4e26cea0f13d35ad79478fc8457449dc5054e56b93f04e3600ea1",
+      "raw_sha256": "e6b380279291354bbbb9f5a41e960a4bb406ac7c0acca62fb0a787d3d005f267",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "installed-focused-after.json.json",
+      "sha256": "c2159994c89f10ca0ddca86cb65ded8d4393ecdf79c3994e05924b877cecbcea",
+      "raw_sha256": "c44dc65c90660ae45beee6d0fef0e94a66cfe860cfaae3d0a5f32f992953761b",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-focused-result.json.json",
+      "sha256": "32b246db9354c3a07358c2f8710bb34be83395ed7c0f55f145531cc267af14a8",
+      "raw_sha256": "8cbcc09fc180286536456a410082fce054452b26d7c33e8e3ecde29cb7f80d9d",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.command.json.json",
+      "sha256": "6f86ed14078c3deabcec04b59a822e9918006c4cdbdb3efad8ff84a330e8dd8f",
+      "raw_sha256": "0a99bfef269d685293dfca1e04809db69391937b7fe6079da0502e571ff762fb",
+      "coordinate_fields": 23
+    },
+    {
+      "path": "installed-focused.stdout.json",
+      "sha256": "ad6e05f9fc9147a026f4b369231da20b98f1a4771b3991678b6abf78e72b9c35",
+      "raw_sha256": "ed01a22a20d91cc72c9bd14a19795a87f46fa27ecc6efebf4b1e4158716caec6",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-focused.xml.json",
+      "sha256": "4166004741d1295e34a6cb69cc3159190f1dc288ccf873de9cba18e2690b1b5e",
+      "raw_sha256": "ccbeabaa7109373318d1544e517d71a4a5b210f0ee655fac5811ea1ff01f41b2",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-journey-before.json.json",
+      "sha256": "2935837f62a4e26cea0f13d35ad79478fc8457449dc5054e56b93f04e3600ea1",
+      "raw_sha256": "e6b380279291354bbbb9f5a41e960a4bb406ac7c0acca62fb0a787d3d005f267",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "installed-journey-after.json.json",
+      "sha256": "c2159994c89f10ca0ddca86cb65ded8d4393ecdf79c3994e05924b877cecbcea",
+      "raw_sha256": "c44dc65c90660ae45beee6d0fef0e94a66cfe860cfaae3d0a5f32f992953761b",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "installed-journey.command.json.json",
+      "sha256": "0ffcf9e62d56db59905299b9c295d71fe3b53db4bcfdcbb750a3d79c8a2ac32b",
+      "raw_sha256": "d89097e04c85c5e535d649e9751c6b4517158691225c10f01cbec454ea926cfc",
+      "coordinate_fields": 6
+    },
+    {
+      "path": "installed-journey.stdout.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-journey.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "installed-journey.json",
+      "sha256": "34d31d7f51ffdd91e34a2009516cac5f66529d35beb66e6ff6b4220f25502c3f",
+      "raw_sha256": "fca56f17d247041c286b4c1fa80c303b8f303eaa36f81c5c3c6473da32e1e38c",
+      "coordinate_fields": 1128
+    },
+    {
+      "path": "installed-original-cli.json",
+      "sha256": "b8ae8c6307d7d058f5220aa4ff4c415176cf84ba4899bf7f8848c067855e8357",
+      "raw_sha256": "e9fb0e7d73e95ccc3593fc884b07d04547b32349bf58409447f7ec9fe04e85a5",
+      "coordinate_fields": 541
+    },
+    {
+      "path": "final-driver.py.json",
+      "sha256": "4e7087ec919300318cc6e4ac7c0f74f552c257b8c20f4784a4d9f5b2878a063d",
+      "raw_sha256": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "generate.py.json",
+      "sha256": "4b2d243a97890cc6c5d8129b277c76d5a32d02cf86087efa80f8e2da26c2bf54",
+      "raw_sha256": "1076a761f307de973f4ced72499506d80b34822f54b54b8e99d4b01bf8c8f1a7",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "publication-helpers.py.json",
+      "sha256": "f353027b16e29db9e5ac4881df8ae51852aa35a3323d4a05289102ee97a5f485",
+      "raw_sha256": "5a41e41edc894297ce06f7ea219511e1c608cf0492eda4b72c7fd02630ef7210",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "publish.py.json",
+      "sha256": "6aa252198809a22f461ee450dafa02134987b3a33a500003af77a95178218d76",
+      "raw_sha256": "cc4e68e2c0afd61a5b14403c2bbeab0dd7b720811c81159876dd72c4ca092af2",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "six-driver.stdout.json",
+      "sha256": "22b2a2fd4e56afe422af092f65c1d78577660298f0fb35f09577514cea6ceb46",
+      "raw_sha256": "517a81190e758d607d9b562317d76bf3e849ae64ecd3d14c1adf4ef22d1e5015",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "six-driver.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "generation-driver.stdout.json",
+      "sha256": "1a3dbbd0b22bd2a24e1a0807865d562e44b56741a52dc594eaf138f74e4566c2",
+      "raw_sha256": "cbc42989f65004aa54aabb2e4a50e0fdde3a0fe7f6fdde670da65add4b07ac4b",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "generation-driver.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "build-driver.stdout.json",
+      "sha256": "799b8dcdb444ca2ace17db3d5b2a2b732346a0fc448307a61a39b62cbe03b821",
+      "raw_sha256": "3df778b4a540fd50d1de27e7111e517ef85788f98a66e4ed7f8addff28ca8737",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "build-driver.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "frozen-bindings.json.json",
+      "sha256": "1f7208601d48631d0f8682d820111ec133ea486d0a295e3a72625d7d6db15ae2",
+      "raw_sha256": "20a6039ec42e7c8f80e878daf48042cbd232beabf50bb41a5da75a9c341fe56b",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "generation-commands.json.json",
+      "sha256": "d93109b9773d5dda9ab73cb099410bb67943cae0223789078cc433aff550cfa0",
+      "raw_sha256": "c52028de385ed883ed5d12d6ae2f8161352ade5d1dc9428e3fe2f5175ad15c9a",
+      "coordinate_fields": 16
+    },
+    {
+      "path": "root-six-audit.json.json",
+      "sha256": "eb4c77733cad82604f2ed4ad26dd241a7656b31d5f05975f6dffb7380140ec1d",
+      "raw_sha256": "5b87b568b964c23b28bc766c841fbe1714eb52d301baea2d4abea2eac2df3351",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "preparation-history.json.json",
+      "sha256": "31ab6f28b4d453b52561f9d0fb5def4f864763175ee84e25330867fdcfedb88c",
+      "raw_sha256": "4973744e9392a2debf65405152cbe0e0f5fe96987b137874ac35dcf024ce7989",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "publication-correction-history.json.json",
+      "sha256": "7cc67318f29ea022eb3a38ae71680b68fa4027d43d36d5f6f832c284934bd562",
+      "raw_sha256": "5e151599cf933af5ba6e8a254fb5866f3b67b467491e928d8d5a8405b36caddf",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-publication-validation.json.json",
+      "sha256": "a426d0da79dd50c1265e7bab1873f03631e26eaea8eac95cda3fc8bd21b708a8",
+      "raw_sha256": "98d0c7986c98f1fb253a2cc031e18b4f1b65324c642e922adb28b0e185635615",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "integration-fix-evidence.json.json",
+      "sha256": "49bb9ba37c4dd962735fa3b5242b65b8cabcf3e0ae7ca1a898c2332259f08418",
+      "raw_sha256": "afc370a04d3905ccb7c4f9b1f245b3a8337e316f5b9caef1d9d6bf81ffd58b04",
+      "coordinate_fields": 8
+    },
+    {
+      "path": "prepare-export-order-evidence.py.json",
+      "sha256": "e96b0716323e7030422b5cc9e0e727537b2d892bfba7ceb05ccca8c7b5e16970",
+      "raw_sha256": "113c9e619a43d4f45108e72f4f6c613ecf1acc364bd7bb3e740ff02f6ace1349",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "export-order-evidence.json.json",
+      "sha256": "bb3dcaa9ac393a7bb281b14168a7cc057a0a773e7225374112b0a98331870973",
+      "raw_sha256": "0a7dab08e333ba587487fb3ffceed71581049949c01aab1f6722a98e9cbafd72",
+      "coordinate_fields": 13
+    },
+    {
+      "path": "previous-empty-snapshot-vector.json.json",
+      "sha256": "1fe05b74028d397d9b8992de5109c435751f02de7bd5877864a1df39297a5b18",
+      "raw_sha256": "a37b1ef60f3a33477cfdd7b6040a845da064f78938fbf1f390fe6d058c38e2ae",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-build.command.json.json",
+      "sha256": "3a987b91674923d7a85c348957ceef9451ee22077f94101f823b3a4877a1fcd1",
+      "raw_sha256": "685ad4e762f16c1cc602392bc12d763674a8b4b19014779840ddb7fb0f64bd21",
+      "coordinate_fields": 3
+    },
+    {
+      "path": "wheel-build.stdout.json",
+      "sha256": "63950564ba45bc36dd4fc17c0ae6c0324087e058113c6ff6259786d7f7cdb8e5",
+      "raw_sha256": "641842ebb5a634c60f8f7fdb28b11150e81f13689f1d633987b0a2be7c4f3dd1",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "wheel-build.stderr.json",
+      "sha256": "7595153ae576893e93181cd266b560f56c2891bde64a8f6cd429f895eccd0c9f",
+      "raw_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-install.command.json.json",
+      "sha256": "d0fd9a5f2fecde6c68ec1006d9b8917b516c4fba4e9a4543e3a74c0adc321b8a",
+      "raw_sha256": "8535d674cc03d64145fecb4d5022cd10c799c025b5aa8a3698decaf6609ca75a",
+      "coordinate_fields": 5
+    },
+    {
+      "path": "wheel-install.stdout.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-install.stderr.json",
+      "sha256": "4bb79952929e8356d7b21935139dbdb973b8bef3a444efb5f6f5381d8ddf7387",
+      "raw_sha256": "3f03ea1e8fddde5be46f9dfd663f08329ed914b7bf2d405a6583a41b47c857d4",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "wheel-console-help.command.json.json",
+      "sha256": "d1c082c8c1c4e3fe90dc5f7dcc0430b697888f830fbd899fb2fd8b71bab3118d",
+      "raw_sha256": "72d7a516a3362d3f515ef302da8cdb18c3ed3e7c09230cdfb5e61505c47d6f70",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "wheel-console-help.stdout.json",
+      "sha256": "9c6ac62df0ec1ededdee471ae85c6c512368bc983ac8512e0787fdf8035054ca",
+      "raw_sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-console-help.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "wheel-audit.json",
+      "sha256": "0fd868446eb4fcacc2654900d4ca4af503e885564ab2338f67172b1b36ecba7c",
+      "raw_sha256": "5a6990415b622bef9336d11008814e7b87a0fc6d91f08c394c051a9c25d94536",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "original-cli-validation.json",
+      "sha256": "8a90c281226325d8284b8ea41c068a207435bb077402551cd52f110830776809",
+      "raw_sha256": "4e9e933f553246042b363f39534519ca043419deb0f3677069f8ccdaf0878fc1",
+      "coordinate_fields": 23
+    },
+    {
+      "path": "original-cli-driver.py.json",
+      "sha256": "0a6cdf58e9809c55b8cab188318de34f7f52bec037e74d96e62c174a9aca51ac",
+      "raw_sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "original-cli-wrapper.py.json",
+      "sha256": "6f2eda125fbb8da0d4daa2d6579c65b3d1c325761876152e2790d5a865ccba5c",
+      "raw_sha256": "9f31f68be044329c43b3caa5e7b300de405463870819094b43cd2b0d23e76073",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "original-cli-wrapper.stdout.json",
+      "sha256": "5ad3a7a439cfb156028c929dab2f0c7faf2c7e85c0e7192b95e3d58cd4fee00e",
+      "raw_sha256": "61ae977e67fed5b9cfc0bcfe8255b861f2675615649353e21dd3a0e8aa1d6b3d",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "original-cli-wrapper.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "original-cli-source-execution-1.stdout.json",
+      "sha256": "29551e219f93706802679c911c106ddd67a50b2ac640cec9d8ff1c40cbe01b5c",
+      "raw_sha256": "8b4723617d0fee36986cedd509b97edb749d9d5fb3760a45dbcf3fe9ef43a26d",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "original-cli-source-execution-1.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "original-cli-installed-execution-1.stdout.json",
+      "sha256": "5e9cb98a51783ea1450b37bf77bed35b0ee08322801ebf5ab1fb2e1a0031a579",
+      "raw_sha256": "6b4bd971822f24a99f780cd47bacf90bf24777e616b44ad32395a13e690f1c47",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "original-cli-installed-execution-1.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "six-replay-driver.py.json",
+      "sha256": "f7fe8b88efb0b2d7a2bb7fd4654ba4033066ee392e4d1b2f09ca423d15d2d66e",
+      "raw_sha256": "de2b8cf6596ba171d7ca32af537855fbceb8618f062b0dd78fe1f2f0cf13bd73",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "native-delete-reload-probe.py.json",
+      "sha256": "c8977f898c220a832281414a5026d7950a9b5585a83199446a1d49331cbbc6c3",
+      "raw_sha256": "16c9beb5d541baa4d1ee18ce6a080393cac9acd1b613c3658f429e763d88a628",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "native-delete-reload-raw.json.json",
+      "sha256": "c5358f620eac5b8ca39b988f14df86d42eb6c04373f9ce55c20920b3b866f3e9",
+      "raw_sha256": "d1ab94b36d1393d2e6ef8b6d3c5eaae70809ba65c94c2b162949bd333217835e",
+      "coordinate_fields": 9
+    },
+    {
+      "path": "native-delete-reload-normalized.json.json",
+      "sha256": "cefaa02b8e23b65a2173d52917f4a437e96d064bf2fc33b9dfdfe3c36b2f2700",
+      "raw_sha256": "d2bf5ec5a8a2bfdd11377b39bfd9c3f12fd82127cac831e7fb53bab5e96a14f2",
+      "coordinate_fields": 3
+    },
+    {
+      "path": "native-delete-reload-command.log.json",
+      "sha256": "45bd198e8f3a6f3cbbc990286996629eeb96f83f4cf4eea0c1ec3f04a8dcee3f",
+      "raw_sha256": "2b271173678250ecba5600bd3a3d4142dd2fad847b70400da708f126924f66e6",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "native-project-reuse-probe.py.json",
+      "sha256": "fc3e5f6de3889f705bdbd401fa393a87eb788d4ff04b0f899e0c1df0858075ce",
+      "raw_sha256": "25b2b2305ae1731667d4e4ff60dbf8edec16fe5e289d096b9fe3a621d5e0a34c",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "native-project-reuse-raw.json.json",
+      "sha256": "5b570ccf0094e73d16487a7784a00daf02489f28a475f5101946448d6dec1364",
+      "raw_sha256": "1e095aac3e1ec754e5e744659c382c519b1485c4136c6074d96c0293667a7b2e",
+      "coordinate_fields": 8
+    },
+    {
+      "path": "native-project-reuse-normalized.json.json",
+      "sha256": "2ac611023cf1615384bcfa583a21c3dca580fda7bb2929eb2d779f007ecc0b2c",
+      "raw_sha256": "44bac02d61343450753966828f3bbe72e9223f7ae0e78ebcbe51ea7cfc9b9663",
+      "coordinate_fields": 2
+    },
+    {
+      "path": "native-project-reuse-command.log.json",
+      "sha256": "a71c28d31c8387c2e7f63cba823850b01d8e4085027e8265538803dd7dee57e5",
+      "raw_sha256": "7e451933f2d5d625d6b40e1aba187a5557b62608d674c33af1accd26bf5c6a44",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "legacy-transform-validation.json.json",
+      "sha256": "530d5fb1f8a30e61f4fe32fb32a66a92df4729729eeae763d802e4cb35e204a8",
+      "raw_sha256": "aa385d15b750661563455fed487a2d016ff3df0505c5b5ca1aca2e80620a1d12",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "legacy-transform-current-transform-native.json.json",
+      "sha256": "7651671f7e9ec3f96d76a6bd78b7794e3a4e05292e63f306abb03519256643d8",
+      "raw_sha256": "b3de3d3e0cd294246dfe4c8b7b3f91a2cb9ad8230e7476586f320b3d2c23763e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "legacy-transform-current-transform-versions-native.json.json",
+      "sha256": "b4260804cd5135cb186eac13488c6b6e4414598f1e0b6528dff1d234a8dd6a15",
+      "raw_sha256": "edb2ee2407251ed7762727a7b5e9d8d6e1d10a4cec84ac1425e05c9d2579b034",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "legacy-transform-current-native-tests.log.json",
+      "sha256": "fc1f28b466f92a0621b32a0117e924197cb2920c202c95cc5bf78b64be4b8fa1",
+      "raw_sha256": "135293bbaa14019a5818ec46d9cf4980f13b9a566b7678ca7dd52d19e5a3abfb",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "legacy-transform-guards-hostile-final.log.json",
+      "sha256": "b3d09cbc975b567f224ed7b3779e6cfd8aac2b5cf6ddc3080e4e9ba5e8ff9e40",
+      "raw_sha256": "e453d28d5aa13661e88f4eadf63d210590b1ceae2c962cc8ddb6373199d6c155",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "legacy-transform-guards-final.log.json",
+      "sha256": "243f82d4a0299e990bb52dfd960d54d6b91d4349f1b7e81d3f97228c3c651660",
+      "raw_sha256": "9088ab3778ca9f444a1802d43efefb74d45fb5756d7cd8ee4418bf76df25004e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "six-replay-manifest.json",
+      "sha256": "fe11f52bba291bc684600cebba1bc92deb96732d6f84b5d85bbb0e7604105624",
+      "raw_sha256": "ab977bc43ee66c9e1d0d941408dd2ab5e5dfa2ad8c36c53e75ceab94bac7ba30",
+      "coordinate_fields": 60
+    },
+    {
+      "path": "rust-final-0-after-project-xml.log.json",
+      "sha256": "0373a56ba093fe797c7a56bb6823fedceb68c739fdbca71e5485082aaa33ebc4",
+      "raw_sha256": "3be7f0e5a5b9ce382a70b544681a616542c2785c24fe832c0b1be758adcf4775",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-final-1-after-project-empty-xml.log.json",
+      "sha256": "516a99cd1236b77a2b99505d6926c9a0808ca2f851d500dbaa6d9a84884c330e",
+      "raw_sha256": "464f9c93055949f5245191b8cf554c58f48516e7f46c265c81199b73d6474d25",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-final-2-after-network-xml.log.json",
+      "sha256": "18d743b1ed692d3e5e6b66cdbd27d4a15e09ef5f7a8ea4c799a4befd8fb7ea22",
+      "raw_sha256": "da03589e6c2098e9bff739c9d0f09ede8e119817cd6c893968deadef84d11e0a",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-final-3-after-net-save-db.log.json",
+      "sha256": "0f71ab07f20e8032cc6e7b307fcb956f3ce03b4b17ca145d371167d905ff16dc",
+      "raw_sha256": "a3c74d63b816ebd9c25038e0bc5f47142d01d6eb729ff58e7dd99b3a18829c9e",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-final-4-fmt-1.98.1.log.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "rust-final-5-clippy-1.98.1.log.json",
+      "sha256": "9a9e430b5cb52d284a747ad7053875870e019c896cc15301db3b2404977012c3",
+      "raw_sha256": "50be92478b6e44ed7331f1fa574a008bbe6ca535ccde8cc9ebea24ddf6d0ebc7",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "rust-final-6-release-1.98.1.log.json",
+      "sha256": "a45d27f634802713ca93fbba44ca704698ed04f2bd774ff1b5e8267ea84135a9",
+      "raw_sha256": "877d251fbbd5e6b95c5b051cc6cfae3e5d47e86ffe09f91dcbf7452ea472c0f4",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "previous-integration-receipt.json",
+      "sha256": "52b079355e1cafc2f04c595586090e9cbea536a1e6b0e3ef06281f4e4c12158b",
+      "raw_sha256": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "integration-fix-physical-before.json",
+      "sha256": "5cf930c6fa9911486dcbdcc8842d9775ff898d13e8cf3d8f3c5cf9939554beb7",
+      "raw_sha256": "4c783a5080a77003c61c7f0f61c396feecea8680e8360c61489c8e26fcb4410d",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-physical-after.json",
+      "sha256": "08ef55004da45665e1e80ed1a36b2f49112e29f4348d976dcf1ad03d00123379",
+      "raw_sha256": "4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-physical-source-attestation.json",
+      "sha256": "6b60259c7c83eb5515898a7a016ddaeaecac40e1f58a85df8e68db4c68ce0cf9",
+      "raw_sha256": "b35f8c3e09e6267f1976fe6c697e2440200c03f0a5e72598baf76f7c0f5e15e8",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-oid-before.json",
+      "sha256": "385c8b4e50b014cc8c8d8406d24685139dd3dad4e124c8c285e8a3328d23033e",
+      "raw_sha256": "8fceac65be9e1f000094b7b22655b4390e0d57ccfc2ca26df47bda42bff43ab2",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-pp-before.json",
+      "sha256": "ba8865dd3db496a4b37696f204cd71980542ac32edb0df89e67bae7e88d0e15c",
+      "raw_sha256": "c2be79182b850ab7ce06cb7dd1db62c7a006b7bd97314230f1241ff4ad62be6e",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-oid-pp-intermediate.json",
+      "sha256": "9aff7bc49b6b110375a403d46fa688262b6a51ea48be452dca4d66d4b297bbab",
+      "raw_sha256": "a3096257108d8425910cffcd47d840d956bd40cdc951dcfc15f2a81fd525ad67",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-oid-pp-final.json",
+      "sha256": "36ade07bbe016ac23263bbeb189ca0358a3c75f8630c151b281f3bfd2acb3c99",
+      "raw_sha256": "6e9bc004142e0b09b012854dc6a2bdcb60489007fa18eec5eb43cbc911b1a450",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "integration-fix-clippy-1.98.1.json",
+      "sha256": "76df34725d74fabc79d5c892eabba2803df8a5fbc1ef9130215d3f143987bf6c",
+      "raw_sha256": "030f82324f66303a57d284dfebc9486353d313e6b1c869b86bad19ddf093bf27",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "export-order-cgate_project_export_order.json.json",
+      "sha256": "e6cc9b4ad3b4829824b6c0ce47f7513aa105bd1fce3a12ec9a3dcfd0ce3e62d6",
+      "raw_sha256": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-cgate_project_snapshot.json.json",
+      "sha256": "7e6d7baaad5150cbdf8ab379ae99e6d81f9035d46124d8123c55faef34a336e9",
+      "raw_sha256": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-probe.py.json",
+      "sha256": "6d4bec49ce6e953d8d4e9e75690105dedfe24664d2af335fe0090d9b84d38ee6",
+      "raw_sha256": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "export-order-raw.json.json",
+      "sha256": "f7d1898f93c6e9a19dd93b30c6ed0cf5084bd64a403ae99d7b62e691a69e6b6e",
+      "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+      "coordinate_fields": 36
+    },
+    {
+      "path": "export-order-normalized-private-fixture.json.json",
+      "sha256": "130d8253e6683d564c36ba722082239c4dede3397bea9c8c7b5e6a6c6ec1c0e8",
+      "raw_sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+      "coordinate_fields": 17
+    },
+    {
+      "path": "export-order-summary.json.json",
+      "sha256": "23fe42da2a410931ded51ceed8569f171f1a28853c201083ae94d1c0b240e16e",
+      "raw_sha256": "646b4d3f88f5175ce8db094e321d26afad52e9710f546b73132f29b7b57e8c2e",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-order-proof.json.json",
+      "sha256": "18cb7998da4342bb1ddd6e633cc8cec392fbecc302e5cd369d2af5223a416af6",
+      "raw_sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-process.log.json",
+      "sha256": "a9185a98f64a7463ca6f6ae896b0e827bd84b3f251696f309d1a3df9c28cd31f",
+      "raw_sha256": "8bb6f3aca896ccc58fd8f5d72ea6bf39069cbfdaab373427b06e1e764dec7a0c",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-driver.stdout.json",
+      "sha256": "38a2876b331c8139ae2efa05c6cee702374c9efee60f02cb208de0c60fbd04fe",
+      "raw_sha256": "bad602f062f6095e6cd71599edab459f9f86046612db5107a8747c9b0d59bcb9",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-driver.stderr.json",
+      "sha256": "d157c06798f120d058765dc90d8ccbd3d7ddc26b8270af7f85359e840d693af4",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-validation-before-command.json.json",
+      "sha256": "19e5524078e0347a88fd5d679d1294ddeb2902d10629daf51ce49ef305998453",
+      "raw_sha256": "7dacc2952fdd795626a67320039f66ffd408f2187834e11e3f5eed21106b6905",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-validation-before-project-xml.log.json",
+      "sha256": "ad784b6079adc4656b03c15f7c00967e32f2ac23be371ad190e85f328710bacf",
+      "raw_sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+      "coordinate_fields": 1
+    },
+    {
+      "path": "export-order-validation-test-only-source-diff.patch.json",
+      "sha256": "5521cfb5caa9f7bb245ed879b8a3bec75064ca64ea4b9c9c5ea8d285b2c74588",
+      "raw_sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-validation-source-before.json.json",
+      "sha256": "3f63e6d28c2f53c98e4c9ecf0c99f721c5c4ab11a0e0a18724b3f60177fc978d",
+      "raw_sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+      "coordinate_fields": 0
+    },
+    {
+      "path": "export-order-validation-source-after-correction.json.json",
+      "sha256": "495dbf331c91bb2f45b617a1c494a54c6ff22d68ef21ec11304f4ad00b2265f0",
+      "raw_sha256": "ee17dbf03c4fd33d2d51188e78b9506e6051305a8fed66df6631951f41eeded6",
+      "coordinate_fields": 0
+    }
+  ],
+  "supplemental_native_raw_captures": [
+    {
+      "commands": 15,
+      "current_batch_execution": false,
+      "raw_sha256": "d1ab94b36d1393d2e6ef8b6d3c5eaae70809ba65c94c2b162949bd333217835e",
+      "purpose": "No runtime resurrection after OID tag deletion and runtime deletion, with stale native named XML retained."
+    },
+    {
+      "commands": 19,
+      "current_batch_execution": false,
+      "raw_sha256": "1e095aac3e1ec754e5e744659c382c519b1485c4136c6074d96c0293667a7b2e",
+      "purpose": "Project name reuse starts empty; explicit FILE snapshot recovery survives project deletion."
+    }
+  ],
+  "legacy_transform_carry_forward": {
+    "validation_sha256": "aa385d15b750661563455fed487a2d016ff3df0505c5b5ca1aca2e80620a1d12",
+    "guard_parent_tests": 5,
+    "hostile_mutation_controls": 13,
+    "historical_original_parent_tests": 2,
+    "historical_original_subtests": 12,
+    "current_batch_execution": false,
+    "historical_receipts_unchanged": true,
+    "qualification": "Original source tests were executed before the a33 first-candidate acceptance and were not rerun for this export-order checkpoint. Their exact11sourcebindings remain current. Their counts overlap finalfocusedguardselection and are not added to unique parent counts."
+  },
+  "public_opaque_file_payload_policy": "FILEtransferwire and downloadstdout payloads are explicitly omitted with exact private SHA and byte length records; decoded file digests and full raw report SHA remain bound. UTF8coordinate-role transformations are declared separately.",
+  "historical_integration_review_fix_evidence": {
+    "format": "cbus-net-save-db-integration-fix-evidence-v1",
+    "physical": {
+      "before": {
+        "passed": 1,
+        "failed": 5,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+            "outcome": "FAILED"
+          }
+        ],
+        "parsed_test_results_complete": false,
+        "parsed_test_results_qualification": "Five complete result lines parsed; interleaved output omitted one complete result line. Terminal summary is authoritative for1passed/5failed. The six test identities and full final outcomes are separately pinned by unchanged source and after log."
+      },
+      "after": {
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "source_bindings": [
+        {
+          "path": "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs",
+          "sha256": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5"
+        },
+        {
+          "path": "rust/cbus-cgate/src/service/dali.rs",
+          "sha256": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388"
+        },
+        {
+          "path": "rust/cbus-cgate/src/service.rs",
+          "sha256": "fbb03dc1e2729c41872ba3cf140b4724b177327924bdf9d3b656005b94fcffdc"
+        }
+      ],
+      "before_after_regression_source_identical": true,
+      "before_after_regression_source_sha256": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5",
+      "controlled_endpoint": "tokio::io::duplex only",
+      "real_hardware_or_network_contacted": false,
+      "before_actual_observed_frames": [
+        "\\061400E381DA87 CR",
+        "\\061400E381DA82 CR",
+        "\\460500210193h CR"
+      ],
+      "qualification": "Actual controlled Service.handle PCI frames before fix; six final no-I/O rejection/admission controls passed. No live hardware acceptance."
+    },
+    "oid_pp": {
+      "before_reds": [
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "test_results": [
+            {
+              "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+              "outcome": "FAILED"
+            }
+          ]
+        },
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "test_results": [
+            {
+              "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+              "outcome": "FAILED"
+            }
+          ]
+        }
+      ],
+      "intermediate": {
+        "passed": 18,
+        "failed": 2,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+            "outcome": "FAILED"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "final": {
+        "passed": 20,
+        "failed": 0,
+        "ignored": 0,
+        "test_results": [
+          {
+            "id": "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+            "outcome": "ok"
+          },
+          {
+            "id": "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+            "outcome": "ok"
+          }
+        ],
+        "parsed_test_results_complete": true
+      },
+      "source_bindings": [
+        {
+          "path": "rust/cbus-cgate/src/service/tests/net_save_db.rs",
+          "sha256": "a467c03b9975e156cb35986f5a0fb230dd36a4fb46a988403a42a84374e7fa43"
+        },
+        {
+          "path": "rust/cbus-cgate/src/tag_network.rs",
+          "sha256": "f5297fd069f4303d4f305e54bf5880c2cc41d85140cae25e42e64aec94c8b526"
+        }
+      ],
+      "initial_regression_source_pin_available": false,
+      "before_final_regression_source_identical": false,
+      "qualification": "Initial exact regression source SHA is unavailable. Before logs record actual Application instead of winning Unit selection and 408 PP exact Name/Value refusal. Initial combined post-product run passed18/20 because two assertions needed correction: DBDELETE !shared is the legacy invalidation trigger, and pre/postmaterialization whole Unit serialization differs through the existing mapper. Only final test assertions changed afterward, with no subsequent product edit; final fresh20-pass proof is separately pinned. Final PP test checks semantic decorations after materialization and exact unchanged Unit XML across later TagName edit."
+    },
+    "logs": [
+      {
+        "name": "physical-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/before.log",
+        "sha256": "4c783a5080a77003c61c7f0f61c396feecea8680e8360c61489c8e26fcb4410d",
+        "bytes": 3627
+      },
+      {
+        "name": "physical-after",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/after.log",
+        "sha256": "4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5",
+        "bytes": 1205
+      },
+      {
+        "name": "physical-source-attestation",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/physical/evidence.txt",
+        "sha256": "b35f8c3e09e6267f1976fe6c697e2440200c03f0a5e72598baf76f7c0f5e15e8",
+        "bytes": 2272
+      },
+      {
+        "name": "oid-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/before-oid.log",
+        "sha256": "8fceac65be9e1f000094b7b22655b4390e0d57ccfc2ca26df47bda42bff43ab2",
+        "bytes": 1455
+      },
+      {
+        "name": "pp-before",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/before-pp.log",
+        "sha256": "c2be79182b850ab7ce06cb7dd1db62c7a006b7bd97314230f1241ff4ad62be6e",
+        "bytes": 1196
+      },
+      {
+        "name": "oid-pp-intermediate",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/after-net-save-db.log",
+        "sha256": "a3096257108d8425910cffcd47d840d956bd40cdc951dcfc15f2a81fd525ad67",
+        "bytes": 6975
+      },
+      {
+        "name": "oid-pp-final",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/oid-pp/after-net-save-db-final.log",
+        "sha256": "6e9bc004142e0b09b012854dc6a2bdcb60489007fa18eec5eb43cbc911b1a450",
+        "bytes": 2929
+      },
+      {
+        "name": "clippy-1.98.1",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_INTEGRATION_FIXES_20261001}/clippy-1.98.1.log",
+        "sha256": "030f82324f66303a57d284dfebc9486353d313e6b1c869b86bad19ddf093bf27",
+        "bytes": 648
+      }
+    ],
+    "clippy": {
+      "toolchain": "1.98.1",
+      "argv": [
+        "cargo",
+        "+1.98.1",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "root_observed_exit_status": 0,
+      "log_sha256": "030f82324f66303a57d284dfebc9486353d313e6b1c869b86bad19ddf093bf27"
+    },
+    "source_binding_qualification": "Current final source pins bind final proofs; only physical regression source is attested identical across red/green.",
+    "current_batch_execution": false,
+    "qualification_for_this_checkpoint": "Immutable historical integration red/green evidence for unchanged production fixes; final NET SAVE module is freshly executed in the new Rust validation manifest, with counts credited there only."
+  },
+  "previous_receipt_preserved": true,
+  "original_public_cli_fix_branch_acceptance": false,
+  "historical_native_capture_qualification": "126 boundary commands, delete/reload, project-name reuse, and separate legacy transform captures are unchanged historical evidence; no new execution credit.",
+  "export_order_correction_evidence": {
+    "format": "cbus-project-export-order-correction-evidence-v1",
+    "raw_native_commands": 27,
+    "native_order_projection": [
+      {
+        "address": "254",
+        "tag_name": "Later",
+        "network_number": "254"
+      },
+      {
+        "address": "1",
+        "tag_name": "First",
+        "network_number": "1"
+      }
+    ],
+    "native_stages": [
+      "before NET LOAD DB/NET SAVE DB",
+      "after NET LOAD DB",
+      "after NET SAVE DB",
+      "after PROJECT SAVE/CLOSE/LOAD/USE",
+      "while OTHER selected"
+    ],
+    "native_whole_subtree_direct_xml_byte_equal_checks": 10,
+    "native_optional_children_probed": false,
+    "original_internal_selection_or_state_introspection": false,
+    "minimal_modeled_Installation_wrapper_is_exact_original_document": false,
+    "production_behavior_change": false,
+    "test_only_change_proof": {
+      "after_lib_sha256": "35872a314d191c923f63d2b7c07ec5465a3d39ee2c991432e0671592b112c6cc",
+      "before_lib_sha256": "fe2d5551ddbddacf5c2ec65e7f6de817047aa85241298cf546d050f387ef1798",
+      "before_source_roster_sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+      "diff_log": "test-only-source-diff.patch",
+      "diff_sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+      "production_prefix_and_remaining_suffix_byte_equal": true,
+      "independently_rechecked": true,
+      "before_test_body_sha256": "3f25aa297e1cdaf10e6a80096c33c88426f2450b864e67a3febb369e9f6f72a3",
+      "after_test_body_sha256": "48f7fa935b232a1fbdbc902915707febfe9b8fb92c4edcb3017d80251ea53469",
+      "project_selection_and_model_immutability_assertions_retained": true
+    },
+    "before_focused_test": {
+      "argv": [
+        "cargo",
+        "+1.98.1",
+        "test",
+        "-p",
+        "cbus-cgate",
+        "--lib",
+        "tests::project_xml_composes_networks_without_selection_or_mutation",
+        "--",
+        "--exact",
+        "--nocapture"
+      ],
+      "cwd": "rust",
+      "exit_code": 101,
+      "log": "before-project-xml.log",
+      "log_sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+      "test_results": [
+        {
+          "id": "tests::project_xml_composes_networks_without_selection_or_mutation",
+          "outcome": "FAILED"
+        }
+      ],
+      "scope": "Focused reproduction before assertion correction; no full workspace suite"
+    },
+    "after_focused_test_ids": [
+      "service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures",
+      "service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state",
+      "service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative",
+      "service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate",
+      "service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips",
+      "service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children",
+      "service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity",
+      "service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative",
+      "service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids",
+      "service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable",
+      "service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation",
+      "service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows",
+      "service::tests::net_save_db::net_save_db_preserves_modeled_duplicate_oid_selection_and_delete_invalidation",
+      "service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery",
+      "service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model",
+      "service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors",
+      "service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss",
+      "service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save",
+      "service::tests::net_save_db::net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_decorations",
+      "service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_address_unknown_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_known_is_rejected_before_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_dali_specialized_and_emergency_targets_are_rejected",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_legacy_spellings_still_reach_configured_gateway_and_patch_admission",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_is_rejected_before_manifest_or_wire",
+      "service::tests::net_save_db_physical_alias::net_save_db_physical_alias_pp_patch_with_manifest_is_rejected_before_wire",
+      "tests::network_xml_reports_model_state",
+      "tests::project_xml_composes_networks_without_selection_or_mutation",
+      "tests::project_xml_empty_snapshot_has_bounded_exact_wire_vector"
+    ],
+    "vector_bindings": [
+      {
+        "path": "rust/testdata/vectors/cgate_project_export_order.json",
+        "sha256": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd"
+      },
+      {
+        "path": "rust/testdata/vectors/cgate_project_snapshot.json",
+        "sha256": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa"
+      }
+    ],
+    "empty_snapshot_request_response_and_format_unchanged": true,
+    "old_empty_vector_sha256": "a37b1ef60f3a33477cfdd7b6040a845da064f78938fbf1f390fe6d058c38e2ae",
+    "support": [
+      {
+        "name": "probe.py",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/probe.py",
+        "sha256": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+        "bytes": 9574
+      },
+      {
+        "name": "raw.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/raw.json",
+        "sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+        "bytes": 169924
+      },
+      {
+        "name": "normalized-private-fixture.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/normalized-private-fixture.json",
+        "sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+        "bytes": 52002
+      },
+      {
+        "name": "summary.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/summary.json",
+        "sha256": "646b4d3f88f5175ce8db094e321d26afad52e9710f546b73132f29b7b57e8c2e",
+        "bytes": 2498
+      },
+      {
+        "name": "order-proof.json",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/order-proof.json",
+        "sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+        "bytes": 3945
+      },
+      {
+        "name": "process.log",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/process.log",
+        "sha256": "8bb6f3aca896ccc58fd8f5d72ea6bf39069cbfdaab373427b06e1e764dec7a0c",
+        "bytes": 240
+      },
+      {
+        "name": "driver.stdout",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/driver.stdout",
+        "sha256": "bad602f062f6095e6cd71599edab459f9f86046612db5107a8747c9b0d59bcb9",
+        "bytes": 1654
+      },
+      {
+        "name": "driver.stderr",
+        "path": "${CBUS_OWNED_CBUS_PROJECT_EXPORT_CREATION_ORDER_NATIVE_20261001}/driver.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "name": "validation-before-command.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/before-command.json",
+        "sha256": "7dacc2952fdd795626a67320039f66ffd408f2187834e11e3f5eed21106b6905",
+        "bytes": 607
+      },
+      {
+        "name": "validation-before-project-xml.log",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/before-project-xml.log",
+        "sha256": "30fdbb009093b9a31d9238d643215d761e47b790f8beabe9d9a31f294da81418",
+        "bytes": 1868
+      },
+      {
+        "name": "validation-test-only-source-diff.patch",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/test-only-source-diff.patch",
+        "sha256": "fe56a7de015a8fd7ad3977837f6c864369bdfd235689d8f91dd813d7042ddbb2",
+        "bytes": 1717
+      },
+      {
+        "name": "validation-source-before.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/source-before.json",
+        "sha256": "380f0d38ab61985b064931de78ebc50fda127cf970fb036d5479af79c460e353",
+        "bytes": 29863
+      },
+      {
+        "name": "validation-source-after-correction.json",
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_EXPORT_ORDER_VALIDATION_20261001}/source-after-correction.json",
+        "sha256": "ee17dbf03c4fd33d2d51188e78b9506e6051305a8fed66df6631951f41eeded6",
+        "bytes": 29863
+      }
+    ],
+    "ci_classification": {
+      "base_revision": "6b208d087fd7433c605cc44b97c4c09896ffa0eb",
+      "scope": "Immutable 6b208d CI had one outdated Project-export order assertion failure; Rustfmt/Clippy green, release skipped. This focused local checkpoint is not a terminal CI pass. Earlier a33 CI Clippy failure remains historical."
+    },
+    "full_suite_run": false,
+    "native_release_gate_run": false,
+    "hardware_or_windows_acceptance": false,
+    "qualification": "One legacy test expectation was reconciled with actual original numeric Network creation order. Fresh original27-command proof observes responses and graph order; original internal selection/immutability were not inspected. Local model selection/immutability assertions remain tested. Historical integration physical/OID/PP red-green captures are carried without new execution credit; final module executions are credited by the current Rust manifest only."
+  },
+  "production_behavior_change": false,
+  "current_original_order_capture_commands": 27,
+  "historical_receipts_unchanged": {
+    "integration": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207",
+    "materialization": "26d59868a7f0794af32718e3f0f6da39784f8d5977896a562ae3ae7fbdd9d869"
+  },
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/original_public_cli/source/file_observation/upload/source_file",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "70b446b4db888c4e5089a69ee1aabe734edef978c6b118dca8cc8c71159fb87a"
+    },
+    {
+      "json_pointer": "/original_public_cli/installed/file_observation/upload/source_file",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "cac1f727ecef79bbe1f4ee9ffbd3ab474c09ff5f4b22733c6da38d05337526ff"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/0/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "2f74f88a751a4d0253f581891e15d0882b93cbb546b7b7066d0e463b8c2e24bf"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/1/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "1957e143664db190b9acd8728853ea09b8c1b3bbd47f8d4fb87c7c030cc62d6f"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/2/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "c0b5168bff673d3b48efba66a34b5db924a6c42c7f311da32e701106c93a8b81"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/3/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "16675f4760d8634a3b099ca16d6c1140f6bed71dec420c21771cb31d845ce496"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/4/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "1482dc55dcdbc7873914b542cb092c3014ca875243c29dba8a985d18c5ad33f0"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/5/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "cba0f7302e508decc479bd5469b8595b53f3b185c251f580ebe615ebad88e220"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/6/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "9263be8f029c821c30488eddeed52602c6f90ff2fa3698632faf4953eb6cc153"
+    },
+    {
+      "json_pointer": "/historical_integration_review_fix_evidence/logs/7/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b463e2a59cd5d9dd796a4eb4c3286933063d31eaf1c0cc899b73c498110846c7"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/0/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "5c9283baf7a8ffa369df393afbcdef073b8ca6168f8221d882e74d28c07b0df2"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/1/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "93b6fb6840e935e44663300738fefdba63e31aa2c68b98fefc7ad99ce4e22ca9"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/2/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "9bf9f58dc7dbef26f40e3b55d803281e2281a2a12d5826257ecdf067400c7509"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/3/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a8c24c26365ee2da0e481779435f7ebb6553f7284368ad5a70b55f7d5153f3ae"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/4/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fb94a4b52e1e237438493d8322ebe7371d7428b3fdb98d3bb5059614d4351562"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/5/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "fcbfb50f31749d859fa266b6dde975e75afbf2c60bcb6bca389cc2dd20d6c142"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/6/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b4fe776dd89f5269a58ba3796e52b5e449f4d6d46dbe851698c6ebdc2ebd4a34"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/7/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a8726a9ec1ff5981c8257e2de59277e971947da6324d7c03f3447b81a86b66a1"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/8/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "d1210d215297548f1e6934e1b69d0ef865dcb53317a3854d0c775eaa0e596084"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/9/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "b947b819df6a256b759809e5d8c576681cb24c3813616d6e2f6e91f7c560ab42"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/10/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "75e339477f14dab0d2685bcdc1a1b17544bd76deffaadee6e31a253b59078ff6"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/11/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "328b927d57fe98655aab3f7d10a59b82db0424f2d779bbd46a3a0eb4dcfcd4bf"
+    },
+    {
+      "json_pointer": "/export_order_correction_evidence/support/12/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "e51de2bbf521769c07b581af0a6ac4f31f17a815028c880aa2e3b71f1a6b729c"
+    }
+  ]
+}

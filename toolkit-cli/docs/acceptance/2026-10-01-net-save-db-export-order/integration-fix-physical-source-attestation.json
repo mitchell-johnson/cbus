@@ -1,0 +1,19 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "b35f8c3e09e6267f1976fe6c697e2440200c03f0a5e72598baf76f7c0f5e15e8",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "b35f8c3e09e6267f1976fe6c697e2440200c03f0a5e72598baf76f7c0f5e15e8"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. XML Hostname text also uses the declared host role in every valid UTF-8 hex or base64 field, including object keys. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "Physical lexical-alias integration fix, 2026-10-01\n\nControlled endpoint: tokio::io::duplex only. No real hardware or network endpoint contacted.\nFixture-only NET CREATE interface value 127.0.0.1:1 is retained local tag metadata.\nCommands run from ${CBUS_REPOSITORY_ROOT}/rust with:\nCARGO_TARGET_DIR=${CBUS_CARGO_TARGET}\n\nBefore production guard edits:\ncargo test -p cbus-cgate --lib service::tests::net_save_db_physical_alias -- --nocapture\nExit 101: 1 passed, 5 failed, 0 ignored, 494 filtered.\nCaptured actual PCI frames for independently owned //HARNESS/0254 targets:\nDALI KNOWN EXEC //HARNESS/0254/p/20 B: \\061400E381DA87 CR\nDALI ADDRESS_UNKNOWN EXEC //HARNESS/0254/p/20 B: \\061400E381DA82 CR\nPP WRITE_PATCH //HARNESS/0254/p/5 01 with admitted manifest: \\460500210193h CR\nNo-manifest PP WRITE_PATCH incorrectly reached manifest resolution and returned 408.\n\nAfter the two minimal ownership guard edits and other source-owner completion:\ncargo +1.98.1 test -p cbus-cgate --lib service::tests::net_save_db_physical_alias -- --nocapture\nExit 0: 6 passed, 0 failed, 0 ignored, 494 filtered.\nAll six regression sources unchanged across before/after runs.\nSHA-256 test source: 9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5\nSHA-256 before.log: 4c783a5080a77003c61c7f0f61c396feecea8680e8360c61489c8e26fcb4410d\nSHA-256 after.log: 4a6dd74a2db06c451a2bbf0a46f25b5cbff294a881c768dd320199ffcb1ef1c5\n\nProduction changes:\nrust/cbus-cgate/src/service/dali.rs: shared dali_gateway checks independent_tag_target before split_unit.\nrust/cbus-cgate/src/service.rs: pp_write_patch checks words[2] after authorization and argument-count validation, before split_unit and manifest selection.\nrust/cbus-cgate/src/service/tests.rs: one module declaration.\nrust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs: six actual-Service.handle regressions, PCI observation, no-I/O rejection, legacy alias/OID controls, manifest/auth admission checks.\npp_patch.rs unchanged: patch executor target parsing is actually in service.rs; parent authorized the minimal hunk there.\n\nValidation scope: focused controlled service integration only. Parent owns final broader validation and publication.\n"
+}

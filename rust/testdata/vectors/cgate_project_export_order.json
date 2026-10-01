@@ -1,0 +1,41 @@
+{
+  "format": "cgate-native-project-network-order-v1",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4"
+  },
+  "capture": {
+    "commands": 27,
+    "raw_sha256": "42f025fb9f32e62e59ebbcaa4e7a02239a44bee55145bf7e9633062c029560ee",
+    "normalized_private_fixture_sha256": "5695dff66f37b153f1a8baebc97be58d31dbe02d63f3c581faf8b6c368bc4bc1",
+    "probe_sha256": "28f52ededd0b093c92620577647d27e2f534e7fbaa14edf906afadf4a7014700",
+    "order_proof_sha256": "5f41f8862e5a1345e114c37f3392eeed95522a8d5bed0399d9bcd5fc80be2351",
+    "local_cgate_helper_sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+    "owned_cleanup_verified": true,
+    "trap_connections": 0,
+    "inputs_unchanged": true,
+    "physical_or_windows_acceptance": false
+  },
+  "setup": [
+    "PROJECT NEW SNAP",
+    "PROJECT USE SNAP",
+    "DBCREATENET 254 Later Cni 127.0.0.1:%CNI_TRAP_PORT%",
+    "DBCREATENET 1 First Cni 127.0.0.1:%CNI_TRAP_PORT%"
+  ],
+  "command": "DBGETXML //SNAP",
+  "expected_networks": [
+    {"address": "254", "tag_name": "Later", "network_number": "254"},
+    {"address": "1", "tag_name": "First", "network_number": "1"}
+  ],
+  "native_stages": [
+    "before NET LOAD DB/NET SAVE DB",
+    "after NET LOAD DB",
+    "after NET SAVE DB",
+    "after PROJECT SAVE/CLOSE/LOAD/USE",
+    "while OTHER selected before export"
+  ],
+  "native_xml_terminal_status": 344,
+  "whole_subtree_direct_xml_byte_equal_checks": 10,
+  "scope": "Exact ordered Address/TagName/NetworkNumber projection of five original exports, with ten whole-subtree/direct XML comparisons. Optional Unit/Application children were not probed. Original internal selection or model immutability was not inspected. The service's minimal Installation wrapper is not an exact original project document."
+}

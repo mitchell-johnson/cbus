@@ -13701,7 +13701,36 @@ mod tests {
             .filter(|n| n.has_tag_name("Network"))
             .collect::<Vec<_>>();
         assert_eq!(networks.len(), 2);
-        for (element, address) in networks.iter().zip([1, 254]) {
+        // Original build 2001 exports these numeric Networks in creation order,
+        // before materialization as well as after DB save and project reload.
+        let order: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_project_export_order.json"
+        ))
+        .unwrap();
+        let actual = networks
+            .iter()
+            .map(|element| {
+                let field = |name| {
+                    element
+                        .children()
+                        .find(|child| child.has_tag_name(name))
+                        .unwrap()
+                        .text()
+                        .unwrap()
+                };
+                serde_json::json!({
+                    "address": field("Address"),
+                    "tag_name": field("TagName"),
+                    "network_number": field("NetworkNumber")
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(serde_json::json!(actual), order["expected_networks"]);
+        for (element, expected) in networks
+            .iter()
+            .zip(order["expected_networks"].as_array().unwrap())
+        {
+            let address = expected["address"].as_str().unwrap().parse().unwrap();
             let direct = server.network_xml("", "SNAP", address);
             assert_eq!(
                 &document[element.range()],
