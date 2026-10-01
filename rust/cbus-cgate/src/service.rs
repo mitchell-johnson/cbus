@@ -2982,6 +2982,11 @@ impl Service {
         if let Some(response) = net_lifecycle::help(tag, &words, &upper) {
             return response;
         }
+        if verb == "GET" {
+            if let Some(response) = self.net_definition_get(client, tag, &words).await {
+                return response;
+            }
+        }
         if verb == "PORT" {
             return crate::port::handle(tag, &words, self.port_endpoint.get()).await;
         }

@@ -1,0 +1,9 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "ba0d7956790131afaf26b8cee25db7b352b100afb9f30b1ccdd0b760e8ccfa3d",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": "from pathlib import Path\nimport json\np=Path(__file__).parent\nnamespace={'__file__':str(p/'publish.py')}\nexec(compile((p/'publish.py').read_text().split('assert not PUB.exists();PUB.mkdir(parents=True)')[0],str(p/'publish.py'),'exec'),namespace)\nreceipt=namespace['PUB']/'acceptance.json';value=json.loads(receipt.read_text())\nnamespace['artifacts'].extend(value['artifacts'])\nnamespace['publish'](p/'root-original-boundary-audit.json','root-original-boundary-audit.json')\nnamespace['publish'](Path(__file__),'append-original-audit.py.json')\nvalue['artifacts']=namespace['artifacts']\nvalue['independent_original_literal_audit']='root-original-boundary-audit.json'\nvalue['qualifications'].append('Independent root audit confirms the three actual301 UUID receipts and subsequent200 completions, the literal408 CBusSecond=twoNetwork refusal and clean FILE Options=null in both native source/wheel reports. These are retained-byte audits, not additional executed test nodes.')\nassert not namespace['local_coordinate_fields'](value)\nreceipt.write_text(json.dumps(value,indent=2)+'\\n')\nprint(json.dumps({'receipt_sha256':namespace['sha'](receipt),'artifacts':len(value['artifacts'])}))\n"
+}

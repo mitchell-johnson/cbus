@@ -1,0 +1,165 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "b63921c90d3f25c42a737fecd48e3df3eeaa5e68df3f207c1a670275c4ee6d40",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/4",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "66aae9293262e21611813dba550eb13062db3929489b0e0512971d586ff329fb"
+    },
+    {
+      "json_pointer": "/argv/5",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "5ba84f18d9d3b054bf01db8ad9e02641dd0034e20935d66692df07e3ae514552"
+    },
+    {
+      "json_pointer": "/argv/6",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "e515ac51c4a82554a6eab5878b1fa0297716113e5963ae9a35bd0de7f172cb99"
+    },
+    {
+      "json_pointer": "/argv/7",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "a125ec9701210cd29cbffb0a88d1382d9d5bd36163ae153a03dc30c0f91061ff"
+    },
+    {
+      "json_pointer": "/argv/8",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "512a73688cd0cb32e2967fc64394d8cd1179af605b5f0b8ad80f90c0b5fb6bc4"
+    },
+    {
+      "json_pointer": "/argv/9",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "1544f98f38d5f43eb6d61b30c2fca6b04705276e5d9ba04b9e5b4c4cf591dc06"
+    },
+    {
+      "json_pointer": "/argv/10",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "2c319c265127d8e801bfc95b112a01d01be812039ca7258fd5adc13789cbeb97"
+    },
+    {
+      "json_pointer": "/argv/11",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "d549b6ac82f144b1b2de316f1bf96679e94374ecfeb8eaf017f9c89e3998f254"
+    },
+    {
+      "json_pointer": "/argv/12",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "e73bfba29b4ca8ef9200905bdd5b412a3057d8f9066ff1d04f2a5eaaa2fcbf4d"
+    },
+    {
+      "json_pointer": "/argv/13",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "f0ec550904433bc631e314e2148a14822756f59c078813b0f447f6f360348e2a"
+    },
+    {
+      "json_pointer": "/argv/14",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "00028f01c154416fc3002582889e0bc82fabd4ff6c5312dfa8756ef081363da4"
+    },
+    {
+      "json_pointer": "/argv/15",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "7d4f7a1bb3b895f9704018b99469638071ab1789f246ddf39b16aa4157185826"
+    },
+    {
+      "json_pointer": "/argv/16",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "419a6110059d067f25c41280ebcc970aa673127ecf98bcf69bcdc828e0e4b04b"
+    },
+    {
+      "json_pointer": "/argv/19",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "df2873f8e9d90d24bbbb18389e4633863dcee884da44e81f1519acc45cb68800"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "44883ddd2226dda7c8b1a433cbfeabc9526f13e177ee5fc86235158cdf4e44d7"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_network_definitions.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cmqtt_network_new_cli.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_native.py::NativeGrammarTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_networks.py::NetworksTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cli_network_management.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgl.py::CGLTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgl.py::CommittedNativeCaptureTests",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_skip_census.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_release_gate.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_session_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_tagged_session_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_dbsetxml_unit_differential.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_FINAL_ACCEPTANCE_ROOT}/source-focused.xml"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "35fcc35e25d4c0a74fedfeba7a73ac44298cbb270993f5695fc4b37395cfaa53",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

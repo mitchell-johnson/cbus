@@ -100,6 +100,7 @@ check-cmqtt-interop: compile
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
 		tests/test_cmqtt_dali_commissioning_interop.py \
+		tests/test_cmqtt_network_new_cli.py \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

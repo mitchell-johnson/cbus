@@ -5,13 +5,13 @@
   "purpose": "Evidence-bounded per-path contracts; unresolved fields are explicit and route coverage is not functional acceptance.",
   "sources": {
     "capability_matrix": {
-      "sha256": "128b300cc16fe4f8caad7ff380a1abf298c54c04111a1441b37048ce0df8ff3a"
+      "sha256": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20"
     },
     "manual": {
       "sha256": "44dfe1283e540c4f27de61c23d9cdf2efac50df652241b9ab832bc4121e94f2f"
     },
     "service": {
-      "sha256": "e83fbcc5df5b47b5f3ab9459330efd6aa4f9db0019bf91590b939fe827a2e939"
+      "sha256": "f7de9c887f45aa7c344346310b92d5141dbd1638f80d555ff00861d8b5563a22"
     },
     "event_mode": {
       "sha256": "c57ae1ea50030c4b5c3c3988a85722dffc6dbe9a603f886c186996b172c15ee6"
@@ -67996,7 +67996,7 @@
       "id": "cgate-contract:91984fa54a7b3253",
       "path": "NET LOAD",
       "inventory": "primary",
-      "routing_evidence": "Service::net_lifecycle merges a DB or FILE network-definition snapshot from the atomic cmqttd-json repository, rejects duplicate names with the observed native 408, and never reads a host path or touches the PCI.",
+      "routing_evidence": "Service::net_lifecycle refreshes numeric DB definitions from current tag rows, preserves unrelated runtime names and legacy named DB snapshots, and merges internal FILE snapshots. Missing FILE is a no-op; FILE collisions retain atomic cmqttd rollback (native partial insertion is an explicit deviation). No host path or PCI I/O.",
       "axes": {
         "selector_grammar": {
           "status": "partial",
@@ -68226,7 +68226,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::net_lifecycle merges a DB or FILE network-definition snapshot from the atomic cmqttd-json repository, rejects duplicate names with the observed native 408, and never reads a host path or touches the PCI."
+                "routing_evidence": "Service::net_lifecycle refreshes numeric DB definitions from current tag rows, preserves unrelated runtime names and legacy named DB snapshots, and merges internal FILE snapshots. Missing FILE is a no-op; FILE collisions retain atomic cmqttd rollback (native partial insertion is an explicit deviation). No host path or PCI I/O."
               }
             }
           }
@@ -68258,8 +68258,8 @@
           }
         }
       },
-      "axes_sha256": "d0ebd18dcec13f090d542fd21f8d780f578e40b9caf6e0214bd57cee6b501a02",
-      "contract_sha256": "4a3f78fcbcb6e78fea421639c5f4a86386917fd6a58f2d01046be3ec17bd1177"
+      "axes_sha256": "cb93b3feafcb0af3f6035122bda8730755fb566555a1e9db111a1e825cc4c13f",
+      "contract_sha256": "5f4bb14ad06ea2b043a3a05c09f9322ae09ea7274f774a35f9fdb80567102e17"
     },
     {
       "id": "cgate-contract:c0ce1e9f8ef00891",

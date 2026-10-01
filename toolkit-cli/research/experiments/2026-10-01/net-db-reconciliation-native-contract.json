@@ -1,0 +1,70 @@
+{
+  "format": "cbus-native-net-db-contract-review-v1",
+  "fixture": "rust/testdata/fixtures/native_cgate_net_db_reconciliation.json",
+  "fixture_sha256": "32d0ea53000391dee0ee9d8b9e54496e6df916395fe8e065de78766a5397b596",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+  },
+  "source_pins": {
+    "rust/cbus-cgate/research/native_net_db_reconciliation_probe.py": "b032e26ebae30bd08bcf3aaed64f685d42f38078fcf5108cab9ec0437f782408",
+    "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "command_count": 135,
+  "normalization_audit": {
+    "checks_passed": 17,
+    "checks": {
+      "empty_fresh_repeat_sequential_db": true,
+      "interface_change_refresh": true,
+      "numeric_collision_refresh": true,
+      "GET_aliases": true,
+      "GET_bridge": true,
+      "options_order_and_preservation": true,
+      "missing_file_nonempty": true,
+      "explicit_project_isolation": true,
+      "file_later_collision_partial": true,
+      "deleted_tag_runtime_retained": true,
+      "DBNEW_failed_unchanged": true,
+      "refresh_runtime_type_save": true,
+      "save_persists": true,
+      "source_closure": true,
+      "normalized_OIDs": true,
+      "normalized_owned_paths": true,
+      "normalized_host": true
+    }
+  },
+  "normalization": [
+    "Task-owned absent serial path/root becomes %OWNED_WORK%.",
+    "Reserved Cni port becomes %FIXTURE_CNI_PORT%.",
+    "Native generated OID elements/receipts become stable equality-preserving %OID_N% tokens; no OID allocator parity claimed.",
+    "Modified timestamps, Hostname and OSVersion are explicit tokens.",
+    "The second reserved Cni endpoint becomes %FIXTURE_SECOND_CNI_PORT%.",
+    "Command tags are retained."
+  ],
+  "observed_contract": {
+    "DB_load": "Empty/fresh/repeated/sequential LOAD DB succeeds without a prior NET SAVE. Current tagged definitions refresh matching runtime names/type/address/options; unrelated runtime definitions remain.",
+    "runtime_GET": "Single-property GET Name/Type/InterfaceAddress/Interface/Options uses status300 address: Field=value. Interface and InterfaceAddress are endpoint aliases. Name is runtime name, Type uses Cni/Serial/Bridge spelling. Options preserve space-separated tokens; DB refresh clears unrepresented options on matching names.",
+    "FILE_load": "Absent FILE on empty/nonempty selected project succeeds as no-op. Existing saved name collision returns408. A later collision retains earlier newly inserted definitions; original FILE refusal is not atomic.",
+    "project_isolation": "Explicit LOAD DB into B while A is selected populates B and leaves A unchanged. Missing explicit target401; no selected project400.",
+    "tag_removal": "DBDELETE of one tagged Network followed by LOAD DB retains the previous runtime definition.",
+    "save_db": "NET SAVE DB recreates missing runtime names in tag XML; fresh names get TagName nNAME and NetworkNumber0xff, including numeric42. Typed Cni interface/address survive PROJECT SAVE/CLOSE/LOAD.",
+    "DBNEW": "Original DBNEW returned500 and selected XML remained unchanged. This capture does not establish successful native DBNEW clearing."
+  },
+  "limitations": [
+    "All networks stayed new/InterfaceState closed; no hardware, Windows, or open-interface acceptance.",
+    "Cni endpoints were task-reserved loopback sockets; Serial used an owned absent path.",
+    "Generated OIDs/ports/timestamps/host metadata are explicit normalized tokens, not live-byte parity.",
+    "Earlier exploratory probe source snapshots were not copied; sampled source hashes and private raw captures remain. Final source closure binds version7 only."
+  ],
+  "cleanup": {
+    "final": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    "seven_owned_children_cleaned": true
+  }
+}

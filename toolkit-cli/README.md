@@ -41,6 +41,13 @@ SHA-256. `cgate database set-xml PATH EDITED.xml --project NAME
 reports the server's mapped readback without implicitly saving the project.
 See the [native XML file workflow and limits](docs/native-database-xml-files.md).
 
+Create a closed Cni, Serial or Bridge project network through cmqttd with
+`cgate database network-new PROJECT ADDRESS NAME TYPE INTERFACE`. The separate
+`cgate network definition` commands list, create, rename, delete, flush and
+explicitly save/load the runtime catalogue. They select a named project and
+leave interfaces closed; project save/reopen and interface opening are explicit
+steps. See [network setup and DB/FILE semantics](docs/network-definitions.md).
+
 Run the source, installed-wheel and interoperability gates below for results
 from the current revision. CI retains JUnit reports with the executed tests and
 provisioning skips; those reports are separate from the evidence-derived parity

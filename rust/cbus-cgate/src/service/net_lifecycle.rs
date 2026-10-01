@@ -3,8 +3,9 @@
 //! Network definitions are command-layer state.  They are deliberately kept
 //! separate from the imported tag database and from cmqttd's one live PCI
 //! binding: native `NET RENAME` changes the runtime definition but does not
-//! rename the database object.  The catalogue and its DB/FILE snapshots live
-//! inside the atomic cmqttd JSON repository and never name host files.
+//! rename the database object. DB LOAD refreshes the numeric definitions from
+//! current tag rows; legacy named DB snapshots and FILE snapshots remain in
+//! the atomic cmqttd JSON repository and never name host files.
 
 use super::*;
 use cbus_protocol::sal::network_management::{LearnMode, LocateTarget, NetworkLocate};
@@ -203,6 +204,9 @@ fn imported_definitions(project: &Project) -> Vec<NetDefinition> {
     let mut definitions = project
         .networks
         .iter()
+        // DBNEW retains a non-durable configured PCI shell. It is not a tag
+        // definition, and a DB load must never manufacture it in the database.
+        .filter(|(_, network)| !network.oid.is_empty())
         .map(|(address, network)| NetDefinition {
             name: address.to_string(),
             interface_type: network.iface_type.clone(),
@@ -247,12 +251,62 @@ pub(super) fn seed_catalogs(model: &mut Server) -> io::Result<bool> {
 fn catalog(model: &Server, project: &str) -> Result<Vec<NetDefinition>, String> {
     match model.config_values.get(&active_key(project)) {
         Some(value) => decode_catalog(value),
-        None => model
-            .projects
-            .get(project)
-            .map(imported_definitions)
-            .ok_or_else(|| "project not found".to_string()),
+        None if model.projects.contains_key(project) => Ok(Vec::new()),
+        None => Err("project not found".to_string()),
     }
+}
+
+fn database_definitions(model: &Server, project: &str) -> Result<Vec<NetDefinition>, String> {
+    let mut definitions =
+        imported_definitions(model.projects.get(project).ok_or("project not found")?);
+    // Older cmqttd versions saved the whole runtime catalogue as DB source.
+    // Preserve named definitions from those snapshots, but never resurrect a
+    // deleted numeric tag row or replace its current interface with stale data.
+    if let Some(value) = model.config_values.get(&snapshot_key(project, "db")) {
+        definitions.extend(decode_catalog(value)?.into_iter().filter(|definition| {
+            !definition
+                .name
+                .parse::<u8>()
+                .is_ok_and(|address| address.to_string() == definition.name)
+        }));
+    }
+    Ok(definitions)
+}
+
+fn load_definitions(model: &mut Server, project: &str, source: &str) -> Result<(), String> {
+    let from_db = source.eq_ignore_ascii_case("db");
+    let saved = if from_db {
+        database_definitions(model, project)?
+    } else {
+        model
+            .config_values
+            .get(&snapshot_key(project, source))
+            .map(|value| decode_catalog(value))
+            .transpose()?
+            .unwrap_or_default()
+    };
+    let mut active = catalog(model, project)?;
+    if !from_db
+        && saved.iter().any(|candidate| {
+            active
+                .iter()
+                .any(|definition| definition.name == candidate.name)
+        })
+    {
+        return Err("Problem loading: Network name already in use".to_string());
+    }
+    for mut candidate in saved {
+        if let Some(existing) = active.iter_mut().find(|row| row.name == candidate.name) {
+            // Refresh definition metadata only. The shared PCI, live model
+            // state and caches remain untouched; LOAD never opens an endpoint.
+            candidate.bound_network = existing.bound_network;
+            *existing = candidate;
+        } else {
+            active.push(candidate);
+        }
+    }
+    active.sort_by(|left, right| left.name.cmp(&right.name));
+    put_catalog(model, project, &active)
 }
 
 fn put_catalog(
@@ -332,6 +386,42 @@ fn parse_mode(value: &str) -> Option<u8> {
 }
 
 impl Service {
+    /// The native catalogue owns these definition fields independently of tag
+    /// edits. Restrict this projection to exact network paths and single fields;
+    /// other GET selectors retain their established object/physical dispatch.
+    pub(super) async fn net_definition_get(
+        &self,
+        client: &ClientState,
+        tag: &str,
+        words: &[&str],
+    ) -> Option<Response> {
+        if words.len() != 3
+            || !matches!(
+                words[2].to_ascii_lowercase().as_str(),
+                "name" | "type" | "interfaceaddress" | "interface" | "options"
+            )
+        {
+            return None;
+        }
+        let current = current_project(self, client);
+        split_network_address(words[1], &current)?;
+        let model = self.model.lock().await;
+        let (_, definition) = network_definition(&model, words[1], &current).ok()?;
+        let value = match words[2].to_ascii_lowercase().as_str() {
+            "name" => definition.name,
+            "type" => definition.interface_type,
+            "interfaceaddress" | "interface" => definition.interface_address,
+            "options" => definition.options.join(" "),
+            _ => unreachable!("single definition field checked"),
+        };
+        Some(Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("300 {}: {}={value}", words[1], words[2]),
+            status: 300,
+        })
+    }
+
     /// Deliver one network-management SAL to a bound imported network.
     ///
     /// The direct path retains the existing command-lane behavior. A remote
@@ -834,36 +924,12 @@ impl Service {
                             &format!("401 Bad object or device ID: {target} (Network not found)"),
                         );
                     }
-                    let saved = model
-                        .config_values
-                        .get(&snapshot_key(target, words[2]))
-                        .cloned();
-                    match saved.as_deref().map(decode_catalog) {
-                        None => err(
-                            tag,
-                            408,
-                            "408 Operation failed: Network definitions file not found",
-                        ),
-                        Some(Err(error)) => err(tag, 500, &format!("500 {error}")),
-                        Some(Ok(saved)) => match catalog(&model, target) {
-                            Err(error) => err(tag, 500, &format!("500 {error}")),
-                            Ok(mut active) => {
-                                if saved.iter().any(|candidate| {
-                                    active
-                                        .iter()
-                                        .any(|definition| definition.name == candidate.name)
-                                }) {
-                                    err(tag, 408, "408 Operation failed: Problem loading: Network name already in use")
-                                } else {
-                                    active.extend(saved);
-                                    active.sort_by(|left, right| left.name.cmp(&right.name));
-                                    match put_catalog(&mut model, target, &active) {
-                                        Ok(()) => ok(tag, vec![], "200 OK."),
-                                        Err(error) => err(tag, 500, &format!("500 {error}")),
-                                    }
-                                }
-                            }
-                        },
+                    match load_definitions(&mut model, target, words[2]) {
+                        Ok(()) => ok(tag, vec![], "200 OK."),
+                        Err(error) if error == "Problem loading: Network name already in use" => {
+                            err(tag, 408, &format!("408 Operation failed: {error}"))
+                        }
+                        Err(error) => err(tag, 500, &format!("500 {error}")),
                     }
                 }
             }

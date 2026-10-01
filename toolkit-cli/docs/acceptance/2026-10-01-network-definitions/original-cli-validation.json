@@ -1,0 +1,145 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "7f0b1c6b3dbcdffffbaab5aeb60d0e559997eb97e4ca417fab0a49435e8d33b3",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/runs/0/report",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "87af108de6d19d3e8a5abc3a058abd341af8e3068e3411f7010533b560d8afc7"
+    },
+    {
+      "json_pointer": "/runs/1/report",
+      "action": "role_template",
+      "roles": [
+        "owned_native_output"
+      ],
+      "raw_string_sha256": "84e12749466e7750d48686d6183f13b7c493a0cced970406bc8cf43efeee0a3b"
+    },
+    {
+      "json_pointer": "/retained_logs/0/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "479f2d73d4a2db9c2a51c8b95458460affbfa3d6baa7b2ef8960bc25c7a4bb57"
+    },
+    {
+      "json_pointer": "/retained_logs/1/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "0a2c5be52cdf0b3a29ddfba2f1100a26157b35419ba9d00f9e54fa58a1fbe801"
+    },
+    {
+      "json_pointer": "/retained_logs/2/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "d3ef15d9594ccfb852bd0ba561687021ed86c2717a6790450d865f90cb2218a9"
+    },
+    {
+      "json_pointer": "/retained_logs/3/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "b94802334b83ac5838c0c4f3dcca1b6591325c400b1544c8b4c9262e6b13be7d"
+    },
+    {
+      "json_pointer": "/retained_logs/4/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "efc55c1c2c563807df0674631f4352ec67d906306f5a48fa43a347dd465ab008"
+    },
+    {
+      "json_pointer": "/retained_logs/5/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "fe711972dc919426c5ee9e6c9d0cfb6d4fddf6f5584317c874d60400a028903e"
+    },
+    {
+      "json_pointer": "/retained_logs/6/path",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "46f8c95aabb05b11017a974f74f7fff531cbdd9e39bf540aba7ae6121813a7bc"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "driver_sha256": "e30c857d1149c49472dceccde9394f95af8dce51e67c331ef914d9dfa83687a4",
+    "runs": [
+      {
+        "mode": "source",
+        "report": "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_SOURCE_20261001_6}/report.json",
+        "sha256": "b366aa6dada2fbf800fa50face7cce68b7b0c5faea9b5d712dcfa16e89aeda84",
+        "commands": 79,
+        "completed": true,
+        "source_unchanged": true,
+        "package_unchanged": true,
+        "artifacts_unchanged": true,
+        "cleanup_complete": true
+      },
+      {
+        "mode": "installed",
+        "report": "${CBUS_ORIGINAL_CBUS_ORIGINAL_NETWORK_CLI_WHEEL_20261001_1}/report.json",
+        "sha256": "4b1bd47a4afdd2dd1117a37a2aa2d2a5c8038a26e1c52e3bebf379fb3a60adc9",
+        "commands": 79,
+        "completed": true,
+        "source_unchanged": true,
+        "package_unchanged": true,
+        "artifacts_unchanged": true,
+        "cleanup_complete": true
+      }
+    ],
+    "retained_logs": [
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt1.log",
+        "sha256": "10d7be791dc6ad37372962a8c2b0e0e3f6993c321c7a21b86796c107066a196f"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt2.log",
+        "sha256": "fa14869a1d0e9741c9b3035366bb6e2ff7c51bacff1447ae2c7544855c7b61c2"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt3.log",
+        "sha256": "2ca6f22678533495af81e126c949529bec5222559d4da311dd62d0da2b91d729"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt4.log",
+        "sha256": "fa28fdb71e6221e97842b1dfedad0d7aa5561b8e634050bef024d5756f835893"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt5.log",
+        "sha256": "58ddc6bb1af94a2b2d7518febfc4b1f3634e3952c15289172834543a7fad3cdd"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/source-attempt6.log",
+        "sha256": "ce47a712f97199fd5cfa49000d9764c75241e8098801ec81edee711086ccc7fe"
+      },
+      {
+        "path": "${CBUS_ORIGINAL_CLI_DRIVER}/wheel-attempt1.log",
+        "sha256": "e5a0802a309d4bca98c3f21793ee63567aaf097158016ed63127a4aaf350f9d0"
+      }
+    ],
+    "limitations": [
+      "Original public lowercase cni plus two opaque options FILE restore returns408 CBusSecond=twoNetwork; not supported roundtrip",
+      "Original clean FILE restored Options literal null",
+      "Native FILE partial insertion and arbitrary-name DB projection not cmqttd parity"
+    ],
+    "full_suite_run": false,
+    "repository_edits": false
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "9b0bd45277542f9004f360f948363a8187057ff04d10f54eee9f3fc5cda9386e",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "result": "passed",
+    "scope": "Independent exact literal checks from retained original public CLI connection bytes; no additional test-node or hardware credit.",
+    "runs": [
+      {
+        "mode": "source",
+        "report_sha256": "b366aa6dada2fbf800fa50face7cce68b7b0c5faea9b5d712dcfa16e89aeda84",
+        "audited_literal_cases": [
+          {
+            "label": "network-new-Cni",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "9f3b0021e377d6ccd76980cff9c8a49ec9ba93148b9edf83e3d567605981ae7e"
+          },
+          {
+            "label": "network-new-Serial",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "bf9eb4319ff0f990e1f30de743dc00416ed16d2fd7de8aab85f1132754f521a0"
+          },
+          {
+            "label": "network-new-Bridge",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "eb3e1bc61ae75f05e3f7973a75a69ed1d014a596f55c2b400fe99970aec4bb33"
+          },
+          {
+            "label": "native-option-file-restore-failure",
+            "literal_native_408_class_refusal_verified": true,
+            "server_wire_sha256": "66a2f3717e48f03d2a75f9f909414e68e6be7777c9da634009f240611c9e0313"
+          },
+          {
+            "label": "PUBDEF-Alias-get-Options",
+            "literal_native_restored_options_null_verified": true,
+            "server_wire_sha256": "6d7b00577e87356baecc41b76fce2497d5672241ecd7a654625f77ffe95416fb"
+          }
+        ]
+      },
+      {
+        "mode": "installed",
+        "report_sha256": "4b1bd47a4afdd2dd1117a37a2aa2d2a5c8038a26e1c52e3bebf379fb3a60adc9",
+        "audited_literal_cases": [
+          {
+            "label": "network-new-Cni",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "6a8dd03fdb788c9044bfc31f26ba1e247a8225c65d7407d2b613236020c1b4a2"
+          },
+          {
+            "label": "network-new-Serial",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "6267dc65f8be0709046affc2fbf30c55709983e212480c139ab0bac521b6dcbe"
+          },
+          {
+            "label": "network-new-Bridge",
+            "exact_native_301_uuid_then_200_verified": true,
+            "server_wire_sha256": "c538ce1eae3dd26725f065f88b1d8689378964503f7b7d62c820e20bebb05b8b"
+          },
+          {
+            "label": "native-option-file-restore-failure",
+            "literal_native_408_class_refusal_verified": true,
+            "server_wire_sha256": "66a2f3717e48f03d2a75f9f909414e68e6be7777c9da634009f240611c9e0313"
+          },
+          {
+            "label": "PUBDEF-Alias-get-Options",
+            "literal_native_restored_options_null_verified": true,
+            "server_wire_sha256": "6d7b00577e87356baecc41b76fce2497d5672241ecd7a654625f77ffe95416fb"
+          }
+        ]
+      }
+    ]
+  }
+}

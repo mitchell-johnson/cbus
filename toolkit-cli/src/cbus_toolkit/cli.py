@@ -1688,6 +1688,22 @@ def build_parser():
     netops = network.add_subparsers(dest="remote_action", required=True)
     p = netops.add_parser("list")
     p.add_argument("--project")
+    definitions = netops.add_parser("definition", help="Manage the closed runtime network catalogue explicitly")
+    definition_ops = definitions.add_subparsers(dest="definition_action", required=True)
+    for action in ("list", "create", "delete", "rename", "load", "save", "flush"):
+        p = definition_ops.add_parser(action)
+        p.add_argument("--project", required=True, help="Explicit loaded project; selected on this connection")
+        if action in ("create", "delete", "rename", "flush"):
+            p.add_argument("name", help="Runtime network definition name, not a database path")
+        if action == "create":
+            p.add_argument("interface_type", choices=("serial", "cni", "bridge", "etherlite", "socket", "modem", "wiser"))
+            p.add_argument("interface_address")
+            p.add_argument("--option", dest="options", action="append", default=[], help="One native interface option token; repeat for several")
+        if action == "rename":
+            p.add_argument("new_name")
+            p.add_argument("--no-fix-references", action="store_true")
+        if action in ("load", "save"):
+            p.add_argument("selector", choices=("DB", "FILE"), help="Native DB source or internal FILE snapshot on cmqttd")
     p = netops.add_parser(
         "learn", help="Send one evidenced learn-mode grade on a direct network",
     )
@@ -2732,6 +2748,9 @@ def _cgate(args):
     import ssl
     from .cgate import CGateClient
     timeout = _cgate_timeout(args)
+    if args.action == "network" and args.remote_action == "definition":
+        from .network_definitions import cli_command
+        cli_command(args)
     from .wireless_cli import preflight as wireless_preflight
     wireless_limits = wireless_preflight(args)
     dali_edits = None
@@ -3420,6 +3439,9 @@ def _network(args, client):
     from .networks import NativeNetworks
     network = NativeNetworks(client)
     action = args.remote_action
+    if action == "definition":
+        from .network_definitions import cli_run
+        return cli_run(args, client)
     if action == "list":
         return network.list(args.project)
     if action == "learn":

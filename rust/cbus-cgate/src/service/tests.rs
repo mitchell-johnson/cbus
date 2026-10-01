@@ -2,6 +2,9 @@ use super::*;
 use base64::Engine as _;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 
+#[path = "tests/net_db_load.rs"]
+mod net_db_load;
+
 #[test]
 fn native_command_trace_requires_a_recognized_top_level_family() {
     for entry in crate::capability_matrix::CAPABILITY_MATRIX
@@ -15917,12 +15920,8 @@ async fn cmqttd_replays_native_cgl_capture_without_pci_traffic() {
             nameless.push((step.command.clone(), response));
             continue;
         }
-        // cmqttd networks are always loaded (NET LOAD DB has no network
-        // definitions file to read) and every session defaults to the
-        // configured durable project, so a bare CGL EXPORT exports it.
-        if step.command == "NET LOAD DB" {
-            continue;
-        }
+        // Every cmqttd session defaults to the configured durable project,
+        // so a bare CGL EXPORT exports it. DB LOAD is checked normally.
         if step.command == "CGL EXPORT" {
             assert_eq!(response.status, 344, "{response:?}");
             continue;

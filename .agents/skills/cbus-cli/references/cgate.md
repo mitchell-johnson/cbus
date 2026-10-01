@@ -989,17 +989,28 @@ NET FLUSH //PROJECT/254
 ```
 
 Active definitions and `DB`/`FILE` snapshots are durable atomic
-`cmqttd-json` values. `FILE` is an internal snapshot selector and never a host
-path. LOAD merges and fails with 408 before mutation if a saved name already
-exists. RENAME changes the runtime name only; do not infer that it renamed a
-tag-database network. DELETE of an operating bound definition returns 468.
-CREATE records a definition but does not open another interface. The optional
-fourth SAVE/LOAD project token resolves that named project, including a project
-other than the connection's current selection. Native build-2001 loopback
-probes pin that boundary, and cross-project tests ensure the selected project
-is not silently read or changed. A missing explicit project returns native 401.
-With `--cgate-auth-file`, CREATE, DELETE, FLUSH, LOAD, RENAME, and SAVE require
-LOGIN; LIST and help remain open.
+`cmqttd-json` values. DB LOAD derives current numeric tag-network definitions,
+adds missing names and refreshes matching interface fields while retaining
+immutable existing shared-PCI bindings and unrelated/custom active names.
+An empty DB succeeds; a deleted database row does not delete its already active
+runtime definition. Legacy DB snapshots supply names outside canonical decimal 0..255 only;
+stale numeric snapshot rows cannot resurrect a removed network. Native SAVE DB materialization of runtime-only tag Network rows remains
+outstanding, including numeric runtime names that native projects with
+NetworkNumber 255. cmqttd SAVE DB retains an internal snapshot. FILE is an internal snapshot selector and never a host path. A missing
+FILE snapshot succeeds as an empty load; an existing snapshot merges and fails
+with 408 before mutation if a saved name already exists. Original FILE loads can
+partially add earlier entries before 408; cmqttd's atomic refusal is a documented
+deviation. Original two-option FILE restoration returns 408; clean restored
+Options is literal null. Native option-format parity remains unaccepted.
+RENAME changes the runtime name only; do not infer that it renamed a
+tag-database network or rewrote bridge references. DELETE of an operating bound
+definition returns 468. CREATE records a definition but does not open another
+interface. The optional fourth SAVE/LOAD project token resolves that named
+project, including a project other than the connection's current selection.
+A missing explicit project returns native 401. With `--cgate-auth-file`, CREATE,
+DELETE, FLUSH, LOAD, RENAME, and SAVE require LOGIN; LIST and help remain open.
+The typed CLI exposes these catalogue commands under `cgate network definition`
+with required `--project`; see [closed setup and exact response rules](../../../../toolkit-cli/docs/network-definitions.md).
 
 The two physical forms use the configured shared PCI, directly or through a
 topology-resolved one-to-six-bridge route:

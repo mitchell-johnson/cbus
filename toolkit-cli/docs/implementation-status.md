@@ -48,6 +48,16 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [closed network setup and catalogue batch](feature-batch-2026-10-01-network-definitions.md)
+adds typed runtime definitions and repairs immediate DB LOAD after network creation.
+Current tag fields refresh matching closed definitions while preserving existing
+PCI bindings and unrelated runtime names. Source and fresh wheel each passed
+151 focused tests plus 657 subtests and a separate 114-command cmqttd journey;
+79 public CLI calls per environment ran against original C-Gate. Native creation
+receipts, runtime-to-tag SAVE DB materialization, FILE partial loads and option
+restoration retain their stated limits. This is bounded software delivery for
+issues 27/29/32; the broad ledger and zero fully accepted obligations are unchanged.
+
 The [classic DLT physical workflow](feature-batch-2026-10-01-dlt-physical-workflow.md)
 connects one saved KEYML5 `2.1.00` / `5055DL` Indicators plan to a guarded physical
 save, independent fresh LOAD and read-only recovery. The exact WFDLT/unit-4

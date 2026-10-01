@@ -1,0 +1,44 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "aee245d664b631ff1331680b3c5bea349d3d9f9d7c09b1eceef5f34049c7e619",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/2",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "43608d53338896ad34c97b6ed0be4d0dcc6713177019656c5e797260fd1e8f1b"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "b953eb6fcb7269a13205a6bbefbec4a683fd29a5d86d2f4c165789b73c3a067a"
+    }
+  ],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-c",
+      "import setuptools.build_meta; print(setuptools.build_meta.build_wheel('${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels'))"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/build-input",
+    "exit_status": 0,
+    "stdout_sha256": "428547b7e29443f4662dd755fd811d2961a87f259fd51104877a4c893875ce08",
+    "stderr_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb"
+  }
+}

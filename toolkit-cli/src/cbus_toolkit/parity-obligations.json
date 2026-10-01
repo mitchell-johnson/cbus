@@ -12,21 +12,21 @@
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
     "feature_ledger": "212fb435a9d1440b9c84f5ef8b91fe3e9778f6073233d23d9b1db86bd4ce0e1e",
-    "cgate_capability_matrix": "128b300cc16fe4f8caad7ff380a1abf298c54c04111a1441b37048ce0df8ff3a",
-    "cgate_contract_inventory": "6af2b2b1cb8ea6b8d9ac2ea917176f508f94e9fb7579f0ab49503ac874049ba9",
+    "cgate_capability_matrix": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20",
+    "cgate_contract_inventory": "5375a206b53424cd318ef240126f534b2c5a879099f6099e357dab1b063be8f5",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "480921c3b0d4d6129621b182f4352a28651b1e3bfa7240b7ba5e4e3f9ddbaa91",
-    "cgate_tagged_session_differential_cmqttd": "f7ba720901de80f6f5d6b5dcdfe7f587bbc344eed6458bfb4370c51b453a39eb",
-    "cgate_session_physical_applicability": "680e4ef5c8f15e9b2bafdebdf56a0c0bc15eb9f5625e2df01e663a2988dd80e9",
+    "cgate_session_differential_cmqttd": "06cb84a1899f0c1522a8d4724c0d16cd5500f408ecfb3c5742e509fd3b95c02e",
+    "cgate_tagged_session_differential_cmqttd": "6d241dc6709490b326e4e4528e10e6c0f581d9666af77346dc680276da0ed16e",
+    "cgate_session_physical_applicability": "b7425f00f5f1b62b4ed7b49aca4758347594dab3d284656f38884b8ffcece733",
     "roadmap": "e4239324c06bea061627dc42061626056111fc465f821bd98c3e140c5e63894f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
     "parity_denominator_history": "6743465a137da2241cc1c1adb69cf809ace3238d9c0fbaaa20e19df069b130ca",
     "closure_receipts": "6f055800e712d7e36607b65a9d83321b9bf6e16b34d7e95b8dd733a0d1245398"
   },
-  "evidence_bundle_sha256": "7866c9ccf19e8846bcd97e10d696e6e2eefa9c435decf177af9f926e088aff06",
+  "evidence_bundle_sha256": "29c0a9c75ae4d031e6f46d2eda89d368a6d08c87a2f6f188e78365e2864e974f",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -167644,8 +167644,8 @@
       "source_id": "NET LOAD",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:91984fa54a7b3253",
-      "contract_sha256": "4a3f78fcbcb6e78fea421639c5f4a86386917fd6a58f2d01046be3ec17bd1177",
-      "contract_axes_sha256": "d0ebd18dcec13f090d542fd21f8d780f578e40b9caf6e0214bd57cee6b501a02",
+      "contract_sha256": "5f4bb14ad06ea2b043a3a05c09f9322ae09ea7274f774a35f9fdb80567102e17",
+      "contract_axes_sha256": "cb93b3feafcb0af3f6035122bda8730755fb566555a1e9db111a1e825cc4c13f",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -167875,7 +167875,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::net_lifecycle merges a DB or FILE network-definition snapshot from the atomic cmqttd-json repository, rejects duplicate names with the observed native 408, and never reads a host path or touches the PCI."
+                "routing_evidence": "Service::net_lifecycle refreshes numeric DB definitions from current tag rows, preserves unrelated runtime names and legacy named DB snapshots, and merges internal FILE snapshots. Missing FILE is a no-op; FILE collisions retain atomic cmqttd rollback (native partial insertion is an explicit deviation). No host path or PCI I/O."
               }
             }
           }
@@ -344059,7 +344059,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:91984fa54a7b3253",
       "source_id": "NET LOAD",
       "contract_id": "cgate-contract:91984fa54a7b3253",
-      "contract_sha256": "4a3f78fcbcb6e78fea421639c5f4a86386917fd6a58f2d01046be3ec17bd1177",
+      "contract_sha256": "5f4bb14ad06ea2b043a3a05c09f9322ae09ea7274f774a35f9fdb80567102e17",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",

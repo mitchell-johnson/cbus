@@ -153,6 +153,61 @@ async fn net_lifecycle_is_durable_confirmed_authenticated_and_keeps_mqtt_live() 
     );
 
     let before_frames = sys.pci.frames().len();
+    // This is the public Toolkit network-new seam: database creation followed
+    // by DB runtime refresh, without an implicit SAVE or OPEN. All endpoints
+    // here are synthetic; LOAD must retain the daemon's one fake PCI.
+    for (tag, text) in [
+        ("db-project", "PROJECT NEW NDBSYSTEM"),
+        ("db-use", "PROJECT USE NDBSYSTEM"),
+        ("db-empty", "NET LOAD DB"),
+        ("db-create-cni", "DBCREATENET 254 CniSeed Cni 127.0.0.1:1"),
+        ("db-load-cni", "NET LOAD DB"),
+        ("db-repeat", "NET LOAD DB"),
+        (
+            "db-create-serial",
+            "DBCREATENET 253 SerialSeed Serial /private/tmp/owned-absent-system-port",
+        ),
+        ("db-load-serial", "NET LOAD DB"),
+        (
+            "db-create-bridge",
+            "DBCREATENET 252 BridgeSeed Bridge 254/p/252",
+        ),
+        ("db-load-bridge", "NET LOAD DB"),
+        ("db-load-file", "NET LOAD FILE"),
+    ] {
+        assert!(
+            command(&mut reader, &mut writer, tag, text)
+                .await
+                .last()
+                .unwrap()
+                .starts_with("200 OK"),
+            "{text}"
+        );
+    }
+    let db_list = command(&mut reader, &mut writer, "db-list", "NET LIST").await;
+    assert_eq!(db_list.len(), 3);
+    assert!(db_list
+        .iter()
+        .all(|row| row.contains("State=new InterfaceState=closed")));
+    assert_eq!(sys.pci.frames().len(), before_frames);
+    assert_eq!(sys.pci.connections(), 1);
+    assert_eq!(
+        command(
+            &mut reader,
+            &mut writer,
+            "db-type",
+            "GET //NDBSYSTEM/253 Type"
+        )
+        .await,
+        ["300 //NDBSYSTEM/253: Type=Serial"]
+    );
+    assert!(
+        command(&mut reader, &mut writer, "db-return", "PROJECT USE HARNESS")
+            .await
+            .last()
+            .unwrap()
+            .starts_with("200 OK")
+    );
     for (tag, text) in [
         ("create", "NET CREATE GARAGE cni 127.0.0.1:10001 owned=yes"),
         ("save", "NET SAVE FILE"),

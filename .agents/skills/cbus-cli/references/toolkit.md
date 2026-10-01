@@ -20,6 +20,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | --- | --- | --- |
 | Create, inspect, validate, edit, export XML/CBZ | `project` | Local files |
 | Manage native projects, networks, databases, units | `cgate project`, `network`, `database`, `unit` | C-Gate server |
+| Create a closed project network or manage runtime definitions | `cgate database network-new`, `cgate network definition` | C-Gate or cmqttd; no implicit interface open |
 | Inspect or edit a physical unit through cmqttd PP | `cgate physical-pp` | Shared C-Gate/PCI service; physical reads and optional writes |
 | Control groups, scenes, labels, triggers, Enable | `cgate on`, `off`, `ramp`, `scene`, `label`, `trigger`, `enable` | C-Gate server; may reach hardware |
 | Invoke a stored KEYGL5 scene Trigger binding | `cgate edlt-scene-trigger` | One Trigger event through C-Gate; may reach every listener for the pair |
@@ -33,6 +34,8 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Preferences, CSV, About and update diagnostics | `preferences`, `toolkit-database-csv`, `toolkit-about`, `update-*` | Varies; some require Windows/vendor files |
 | Diagnose firmware or explicitly perform USB DFU | `firmware` | Offline or explicit device, depending on subcommand |
 | Inspect current completeness | `coverage --require-complete` | Packaged functional-obligation and evidence register, with the historical feature ledger included separately |
+
+For closed network setup, read [network-definitions.md](../../../../toolkit-cli/docs/network-definitions.md). `network-new` admits legacy cmqttd creation 200 or native 301 with one UUID OID, and requires exact LOAD 200; after an incomplete load inspect the existing database row and catalogue before explicit recovery. `network definition` validates inputs before connection, requires `--project`, and exposes list/create/delete/rename/load/save/flush with no implicit OPEN or project save. DB load refreshes current numeric database interface fields while preserving immutable physical bindings and unrelated active definitions. FILE is an internal snapshot on cmqttd; a missing snapshot is empty, and existing-name collisions refuse atomically. Original FILE loads can partially add earlier rows before 408, so cmqttd atomic refusal is an explicit deviation. Original two-option FILE restoration returns408 and clean restored Options is literal null; native option-format parity remains unaccepted. Native SAVE DB materialization of runtime-only tag Network rows, including numeric runtime names, remains outstanding.
 
 Inspect each subcommand's `--help` and the matching feature document before constructing parameters. There is no universal `--dry-run`; use it only where the chosen workflow exposes it.
 

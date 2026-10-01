@@ -114,6 +114,7 @@ class NativeDatabase:
 
     def create_network(self, project, address, name, interface_type, interface_address):
         """Create all required network fields, then load its closed runtime model."""
+        interface_type = _token(interface_type, "interface type")
         if interface_type.lower() not in ("serial", "cni", "bridge"):
             raise ValueError("Interface type must be Serial, Cni or Bridge")
         project = _project(project)
@@ -121,7 +122,15 @@ class NativeDatabase:
                    f"{interface_type} {_token(interface_address, 'interface address')}")
         NativeProjects(self.client).operation("use", project)
         created = _command(self.client, command)
-        _command(self.client, "NET LOAD DB")
+        creation_code = getattr(created, "code", 200)
+        native_oid = (creation_code == 301 and re.fullmatch(
+            r"301 OID=[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", created.final,
+        ))
+        if creation_code != 200 and not native_oid:
+            raise RuntimeError("Native network creation did not complete: " + created.final)
+        loaded = _command(self.client, "NET LOAD DB")
+        if getattr(loaded, "code", 200) != 200:
+            raise RuntimeError("Native network definition load did not complete: " + loaded.final)
         return created
 
     def create_unit(self, network, address, name, unit_type, firmware, *, catalog_number=None):

@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 611,
-    "modules_without_skip_sites": 320,
-    "modules_with_skip_sites": 291,
+    "test_modules": 613,
+    "modules_without_skip_sites": 321,
+    "modules_with_skip_sites": 292,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -66,7 +66,7 @@
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
-      "rust_binaries": 12,
+      "rust_binaries": 13,
       "unclassified": 25,
       "unit_specs": 148,
       "vendor_firmware": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 139,
       "partial": 20,
-      "none": 132
+      "none": 133
     },
     "native_runnable_tests": 258,
     "native_selected_required_tests": 258,
@@ -2398,6 +2398,41 @@
             "test_real_cli_network_diagnose_through_cmqttd",
             "test_real_cli_programs_direct_physical_parameter_and_freshly_reloads_it",
             "test_real_cli_reads_all_edlt_labels_through_cmqttd"
+          ]
+        }
+      ]
+    },
+    "tests/test_cmqtt_network_new_cli.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cmqtt_network_new_cli.py::OwnedNetworkCatalogueCLITests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CMQTTD_BIN')",
+          "reason": "Select CBUS_CMQTTD_BIN for owned public network catalogue acceptance",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "OwnedNetworkCatalogueCLITests::test_public_cli_network_new_and_definition_saved_closed_lifecycle_without_pci_io"
           ]
         }
       ]

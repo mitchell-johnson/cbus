@@ -1,0 +1,9 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "35fcc35e25d4c0a74fedfeba7a73ac44298cbb270993f5695fc4b37395cfaa53",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes are privately archived by SHA-256. Declared runtime coordinates are role templates. CLI JSON text and corresponding UTF-8 hex use the same roles; packet wire hex is preserved. Projection is explicitly declared where used.",
+  "content": ".............................................. [ 30%]\n............................................................................. [ 81%]\n....................... [ 96%]\n.....                                                         [100%]\n151 passed, 657 subtests passed in 56.44s\n"
+}
