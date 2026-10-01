@@ -40,6 +40,17 @@ MMI_REQUEST=b'\\05FF00FAFF00g\r'
 def manager(endpoint,**options): return SelectedSerialCoordinator(*endpoint,**(SETTINGS|options))
 
 
+def failure_diagnostic(evidence):
+    """Keep failed live exchanges useful without disclosing journal/endpoint paths."""
+    value=evidence or {};exchange=value.get('exchange') or {};receipt=exchange.get('receipt') or {}
+    return json.dumps({'outcome':value.get('outcome'),
+        'errors':[{'type':item.get('type')} for item in value.get('errors',[])],
+        'exchange':{'termination':exchange.get('termination'),
+            'capture_complete':exchange.get('capture_complete'),
+            'bytes_received':exchange.get('bytes_received'),
+            'receipt_status':receipt.get('status'),'pending_hex':receipt.get('pending_hex')}},sort_keys=True)
+
+
 def after_responses():
     full=FIRST_MOVED+MIDDLE+LAST
     return [b'g.'+full,b'g.'+SERIAL_A_AT6,b'g.'+BARE_PCI,b'g.'+SERIAL_B,b'g.'+full]
@@ -225,10 +236,10 @@ class SelectedSerialTests(unittest.TestCase):
             self.assertEqual(list(Path(tmp).iterdir()),[])
 
     def test_rust_vector_plan_applies_live_cross_implementation(self):
-        # The committed Rust vector plan executes end to end under the
-        # Python coordinator against the simulator fixture: validation,
-        # settings, lease, marker, guards, send and independent
-        # post-observation all interoperate, and the fixture proves the move.
+        # Keep the shared vector unchanged; its exact settings and canonical
+        # marker are covered above. Adapt only this copied execution plan to
+        # the fixture's real TCP/scheduler/persistence headroom, then exercise
+        # validation, lease, marker, guards, send and independent observation.
         rows=(Path(__file__).resolve().parents[2]/'rust'/'testdata'/'vectors'
               /'selected_serial_plan.jsonl').read_text().splitlines()
         with tempfile.TemporaryDirectory() as tmp:
@@ -237,15 +248,51 @@ class SelectedSerialTests(unittest.TestCase):
                 document=json.loads(rows[0])['document']
                 document['endpoint']={'host':endpoint[0],'port':endpoint[1]}
                 document['before']['endpoint']={'host':endpoint[0],'port':endpoint[1]}
+                document['settings'].update({key:value for key,value in SETTINGS.items()
+                    if key not in ('local_unit','expected_local_serial')})
                 plan=SelectedSerialPlan.from_dict(document)
                 subject=SelectedSerialCoordinator(endpoint[0],endpoint[1],local_unit=document['local_unit'],
                     expected_local_serial=document['expected_local_serial'],**document['settings'])
-                self.assertEqual(subject.verify(plan).outcome,'observed_unchanged')
-                result=subject.apply(plan,recovery_path=Path(tmp)/'journal.json')
-                self.assertEqual(result.outcome,'observed_expected_change')
+                verified=subject.verify(plan)
+                self.assertEqual(verified.outcome,'observed_unchanged',failure_diagnostic(verified.as_dict()))
+                try:result=subject.apply(plan,recovery_path=Path(tmp)/'journal.json')
+                except SelectedSerialUncertain as error:
+                    self.fail(failure_diagnostic(error.selected_serial_evidence))
+                self.assertEqual(result.outcome,'observed_expected_change',failure_diagnostic(result.as_dict()))
                 self.assertEqual(sim.nodes[A].address,6);self.assertEqual(sim.nodes[B].address,255)
+                self.assertEqual(len(sim.co_operations),1)
                 self.assertEqual(Path(result.as_dict()['attempt_identity']).name,
                     implementation.attempt_identity_path(document,Path(tmp)/'journal.json').name)
+
+    def test_partial_receipt_preserves_durable_move_journal_without_followup_io(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state_path=Path(tmp)/'fixture.json';journal=Path(tmp)/'journal.json'
+            sim=fixture(state_path=state_path);native_command=sim._command
+
+            def partial_receipt(line,context):
+                response,reason=native_command(line,context)
+                # Persist the actual move, then expose a bounded partial frame.
+                # No scheduler race is needed to exercise the uncertainty fence.
+                return (response[:8],reason) if line==CO_A.rstrip(b'\r') else (response,reason)
+
+            sim._command=partial_receipt
+            with sim.running() as endpoint:
+                subject=manager(endpoint);plan=subject.plan(A,6)
+                with self.assertRaises(SelectedSerialUncertain) as caught:
+                    subject.apply(plan,recovery_path=journal)
+                evidence=caught.exception.selected_serial_evidence
+                self.assertEqual(evidence['outcome'],'uncertain')
+                self.assertEqual(evidence['exchange']['received_hex'],RECEIPT_A[:8].hex())
+                self.assertEqual(evidence['exchange']['receipt']['pending_hex'],b'860610'.hex())
+                self.assertIsNone(evidence['after']);self.assertFalse(evidence['after_collection_complete'])
+                self.assertEqual(len(sim.co_operations),1)
+                requests=[row['hex'] for row in sim.wire_log if row['direction']=='rx']
+                self.assertEqual(requests.count(CO_A.hex()),1);self.assertEqual(requests[-1],CO_A.hex())
+                self.assertTrue(Path(evidence['attempt_identity']).exists())
+                saved=json.loads(journal.read_text())
+                self.assertEqual(saved['outcome'],'uncertain');self.assertEqual(saved['exchange'],evidence['exchange'])
+            restarted=SerialAddressFixture.from_state(state_path)
+            self.assertEqual(restarted.nodes[A].address,6);self.assertEqual(restarted.nodes[B].address,255)
 
     def test_independent_literal_peer_full_sequence_and_recovery_do_not_replay(self):
         initial=successful_responses()+[b'g.'+BARE_PCI,OPTIONS]

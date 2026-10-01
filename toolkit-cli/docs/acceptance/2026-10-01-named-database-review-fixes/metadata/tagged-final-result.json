@@ -1,0 +1,55 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "research/cgate_tagged_session_differential.py",
+      "--mock-bin",
+      "${CBUS_CARGO_TARGET}/release/cgate-mock",
+      "--cmqttd-bin",
+      "${CBUS_CARGO_TARGET}/release/cmqttd",
+      "--output-dir",
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/metadata-final/retained-differentials"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5508d2f08c3f65d5a668214e3f774bd8000d85d8dc6bfa3dd018dbe90c8b3a68"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/3",
+        "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/5",
+        "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/7",
+        "raw_string_sha256": "9e7cb8d7d54f9f5f6b7ed1f119b4995e82bc0993f4935fc4aaaca67e1f07ba41"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 728,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "metadata/tagged-final-result",
+    "sha256": "2f056e5beda615ba251a4b8b1e79d542ab7907895a7fe4fd8e1886717eefb58e"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

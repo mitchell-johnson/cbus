@@ -342,6 +342,514 @@ async fn named_safe_add_and_copy_collisions_wrong_parents_and_group_bounds_are_a
 }
 
 #[tokio::test]
+async fn named_independent_interface_delete_retains_graph_and_missing_alias_lifecycle() {
+    for by_oid in [false, true] {
+        let path = state_path();
+        let (pci_client, mut remote) = pci();
+        let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+        let mut client = ClientState::default();
+        setup(&service, &mut client).await;
+        let interface = scalar(&service, &mut client, "//NAMED/CustomA/Interface/OID").await;
+        let root = scalar(&service, &mut client, "//NAMED/CustomA/OID").await;
+        let neighbor = xml(&service, &mut client, "//NAMED/Neighbor").await;
+        let app = created(
+            &service,
+            &mut client,
+            "DBADDSAFE //NAMED/CustomA Application 61 Retained",
+        )
+        .await;
+        let target = if by_oid {
+            format!("!{interface}")
+        } else {
+            "//NAMED/CustomA/Interface".to_string()
+        };
+        ok_command(&service, &mut client, &format!("DBDELETE {target}")).await;
+        let document = xml(&service, &mut client, "//NAMED/CustomA").await;
+        assert!(!document.contains("<Interface>"));
+        assert_eq!(
+            scalar(&service, &mut client, "//NAMED/CustomA/OID").await,
+            root
+        );
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{app}/Address")).await,
+            "61"
+        );
+        assert_eq!(
+            run(&service, &mut client, &format!("DBGET !{interface}/OID"))
+                .await
+                .status,
+            401
+        );
+        let before = Database::from_server(&*service.model.lock().await);
+        let bytes = std::fs::read(&path).unwrap();
+        for field in ["InterfaceType", "InterfaceAddress"] {
+            for prefix in ["//NAMED/CustomA".to_string(), format!("!{root}")] {
+                let response = run(&service, &mut client, &format!("DBGET {prefix}/{field}")).await;
+                assert_eq!(response.status, 401, "{response:?}");
+                assert!(response
+                    .final_text
+                    .contains(&format!("Element {field} not found")));
+                for verb in ["DBSETSAFE", "DBSET"] {
+                    let response = run(
+                        &service,
+                        &mut client,
+                        &format!("{verb} {prefix}/{field} Replacement"),
+                    )
+                    .await;
+                    assert_eq!(response.status, 401, "{response:?}");
+                    assert!(response.final_text.contains("Field not found"));
+                }
+            }
+        }
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(
+            run(&service, &mut client, "DBVALIDATE //NAMED/CustomA")
+                .await
+                .status,
+            233
+        );
+        for command in [
+            "PROJECT SAVE NAMED",
+            "PROJECT CLOSE NAMED",
+            "PROJECT LOAD NAMED",
+            "PROJECT USE NAMED",
+            "NET LOAD DB",
+        ] {
+            ok_command(&service, &mut client, command).await;
+        }
+        assert_eq!(
+            xml(&service, &mut client, "//NAMED/CustomA").await,
+            document
+        );
+        assert_eq!(
+            xml(&service, &mut client, "//NAMED/Neighbor").await,
+            neighbor
+        );
+        let before = Database::from_server(&*service.model.lock().await);
+        let bytes = std::fs::read(&path).unwrap();
+        // Original NET SAVE after deletion reports internal error. The local
+        // controlled 408 preserves graph/catalog/repository and session life.
+        assert_eq!(run(&service, &mut client, "NET SAVE DB").await.status, 408);
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        no_io(&mut remote).await;
+        drop(service);
+        let (pci_client, mut remote) = pci();
+        let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+        ok_command(&restarted, &mut client, "PROJECT USE NAMED").await;
+        ok_command(&restarted, &mut client, "NET LOAD DB").await;
+        assert_eq!(
+            xml(&restarted, &mut client, "//NAMED/CustomA").await,
+            document
+        );
+        assert_eq!(
+            xml(&restarted, &mut client, "//NAMED/Neighbor").await,
+            neighbor
+        );
+        assert_eq!(
+            run(
+                &restarted,
+                &mut client,
+                "DBGET //NAMED/CustomA/InterfaceType"
+            )
+            .await
+            .status,
+            401
+        );
+        let before = Database::from_server(&*restarted.model.lock().await);
+        let bytes = std::fs::read(&path).unwrap();
+        assert_eq!(
+            run(&restarted, &mut client, "NET SAVE DB").await.status,
+            408
+        );
+        assert!(Database::from_server(&*restarted.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        no_io(&mut remote).await;
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[tokio::test]
+async fn named_independent_numeric_key_without_interface_does_not_fence_other_xml() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "PROJECT USE HARNESS",
+        "DBNEW",
+        "NET SAVE DB",
+        "NET CREATE Other Cni 127.0.0.1:1",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    {
+        let model = service.model.lock().await;
+        assert!(model.projects["HARNESS"].networks[&254].oid.is_empty());
+        assert_eq!(
+            model.projects["HARNESS"].tag_networks["254"].database_network,
+            None
+        );
+    }
+    ok_command(&service, &mut client, "DBDELETE //HARNESS/254/Interface").await;
+    let missing = xml(&service, &mut client, "//HARNESS/254").await;
+    assert!(!missing.contains("<Interface>"));
+    let runtime = service.model.lock().await.projects["HARNESS"].networks[&254].clone();
+    let document = xml(&service, &mut client, "//HARNESS/Other").await;
+    assert!(document.contains("<TagName>nOther</TagName>"));
+    let edited = document.replace(
+        "<TagName>nOther</TagName>",
+        "<TagName>Other edited</TagName>",
+    );
+    let bytes = std::fs::read(&path).unwrap();
+    let response = service
+        .handle_document(&mut client, "[named-db] DBSETXML //HARNESS/Other", &edited)
+        .await;
+    assert_eq!(response.status, 301, "{response:?}");
+    assert_eq!(
+        scalar(&service, &mut client, "//HARNESS/Other/TagName").await,
+        "Other edited"
+    );
+    assert_eq!(xml(&service, &mut client, "//HARNESS/254").await, missing);
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254],
+        runtime
+    );
+    assert_ne!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(
+        run(&service, &mut client, "DBGET //HARNESS/254/InterfaceType")
+            .await
+            .status,
+        401
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn named_associated_configured_owner_keeps_document_binding_immutable() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "PROJECT USE HARNESS",
+        "DBSETSAFE //HARNESS/254/p/5/UnitName Fixture eDLT",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].tag_networks["254"].database_network,
+        Some(254)
+    );
+    let document = xml(&service, &mut client, "//HARNESS/254").await;
+    let accepted = service
+        .handle_document(&mut client, "[named-db] DBSETXML //HARNESS/254", &document)
+        .await;
+    assert_eq!(accepted.status, 301, "{accepted:?}");
+    let document = xml(&service, &mut client, "//HARNESS/254").await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    let original_number = scalar(&service, &mut client, "//HARNESS/254/NetworkNumber").await;
+    let original_type = scalar(&service, &mut client, "//HARNESS/254/InterfaceType").await;
+    let original_address = scalar(&service, &mut client, "//HARNESS/254/InterfaceAddress").await;
+    for (old, new) in [
+        (
+            "<Address>254</Address>".to_string(),
+            "<Address>253</Address>".to_string(),
+        ),
+        (
+            format!("<NetworkNumber>{original_number}</NetworkNumber>"),
+            "<NetworkNumber>253</NetworkNumber>".to_string(),
+        ),
+        (
+            format!("<InterfaceType>{original_type}</InterfaceType>"),
+            "<InterfaceType>Serial</InterfaceType>".to_string(),
+        ),
+        (
+            format!("<InterfaceAddress>{original_address}</InterfaceAddress>"),
+            "<InterfaceAddress>127.0.0.1:1</InterfaceAddress>".to_string(),
+        ),
+    ] {
+        assert!(document.contains(&old));
+        let replacement = document.replacen(&old, &new, 1);
+        let response = service
+            .handle_document(
+                &mut client,
+                "[named-db] DBSETXML //HARNESS/254",
+                &replacement,
+            )
+            .await;
+        assert_eq!(response.status, 408, "{old}: {response:?}");
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(xml(&service, &mut client, "//HARNESS/254").await, document);
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn named_associated_interface_delete_keeps_complete_numeric_invariant_atomic() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    for command in [
+        "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
+        "NET LOAD DB",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(
+        service.model.lock().await.projects["NAMED"].tag_networks["11"].database_network,
+        Some(11)
+    );
+    let interface = scalar(&service, &mut client, "//NAMED/11/Interface/OID").await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    for target in ["//NAMED/11/Interface".to_string(), format!("!{interface}")] {
+        assert_eq!(
+            run(&service, &mut client, &format!("DBDELETE {target}"))
+                .await
+                .status,
+            408
+        );
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    }
+    assert_eq!(
+        scalar(&service, &mut client, "//NAMED/11/InterfaceType").await,
+        "Cni"
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn named_safe_network_rename_collision_refuses_without_losing_either_owner() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    for command in [
+        "NET CREATE 1 Cni 127.0.0.1:1",
+        "NET CREATE 2 Cni 127.0.0.1:1",
+        "NET SAVE DB",
+        "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
+        "DBCREATENET 12 Twelve Cni 127.0.0.1:1",
+        "NET LOAD DB",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    {
+        let model = service.model.lock().await;
+        assert_eq!(
+            model.projects["NAMED"].tag_networks["1"].database_network,
+            None
+        );
+        assert_eq!(
+            model.projects["NAMED"].tag_networks["2"].database_network,
+            None
+        );
+        assert_eq!(
+            model.projects["NAMED"].tag_networks["11"].database_network,
+            Some(11)
+        );
+        assert_eq!(
+            model.projects["NAMED"].tag_networks["12"].database_network,
+            Some(12)
+        );
+    }
+    let first = scalar(&service, &mut client, "//NAMED/1/OID").await;
+    let custom = scalar(&service, &mut client, "//NAMED/CustomA/OID").await;
+    let neighbor = scalar(&service, &mut client, "//NAMED/Neighbor/OID").await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    for command in [
+        "DBRENAMENETSAFE 1 2".to_string(),
+        "DBRENAMENETSAFE //NAMED/1 2".to_string(),
+        format!("DBRENAMENETSAFE !{first} 2"),
+        "DBRENAMENETSAFE 11 12".to_string(),
+        "DBRENAMENETSAFE CustomA Neighbor".to_string(),
+    ] {
+        let response = run(&service, &mut client, &command).await;
+        assert_eq!(response.status, 408, "{command}: {response:?}");
+        assert!(Database::from_server(&*service.model.lock().await) == before);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    }
+    // The captured unsafe scalar Address operation deliberately permits
+    // duplicate lexical identities. SAFE rename must not remove that route.
+    ok_command(
+        &service,
+        &mut client,
+        "DBSET //NAMED/CustomA/Address Neighbor",
+    )
+    .await;
+    for oid in [&custom, &neighbor] {
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{oid}/Address")).await,
+            "Neighbor"
+        );
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE NAMED").await;
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn named_raw_safe_and_unsafe_scalar_writes_preserve_native_literal_values() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let graph = graph(&service, &mut client).await;
+    assert_eq!(
+        service.model.lock().await.projects["NAMED"].tag_networks["CustomA"].database_network,
+        None
+    );
+    let neighbor = xml(&service, &mut client, "//NAMED/Neighbor").await;
+    // The owned original scalar capture admits these exact lexemes for both
+    // commands. This independent record does not delegate to numeric Value
+    // parsing; complete external XML and typed CLI validation are separate.
+    for verb in ["DBSETSAFE", "DBSET"] {
+        for value in ["255", "0xff", "999", "oops", "-1"] {
+            ok_command(
+                &service,
+                &mut client,
+                &format!("{verb} //NAMED/CustomA/NetworkNumber {value}"),
+            )
+            .await;
+            ok_command(
+                &service,
+                &mut client,
+                &format!("{verb} !{}/Value {value}", graph.level),
+            )
+            .await;
+            assert_eq!(
+                scalar(&service, &mut client, "//NAMED/CustomA/NetworkNumber").await,
+                value
+            );
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{}/Value", graph.level)).await,
+                value
+            );
+            let document = xml(&service, &mut client, "//NAMED/CustomA").await;
+            let parsed = roxmltree::Document::parse(&document).unwrap();
+            assert_eq!(
+                parsed
+                    .root_element()
+                    .children()
+                    .find(|node| node.has_tag_name("NetworkNumber"))
+                    .unwrap()
+                    .text(),
+                Some(value)
+            );
+            assert_eq!(
+                parsed
+                    .descendants()
+                    .find(|node| node.has_tag_name("Level")
+                        && node.children().any(|child| child.has_tag_name("OID")
+                            && child.text() == Some(graph.level.as_str())))
+                    .unwrap()
+                    .attribute("Value"),
+                Some(value)
+            );
+            assert_eq!(
+                xml(&service, &mut client, "//NAMED/Neighbor").await,
+                neighbor
+            );
+        }
+    }
+    assert_eq!(
+        run(&service, &mut client, "DBVALIDATE //NAMED/CustomA")
+            .await
+            .status,
+        233
+    );
+    for command in [
+        "PROJECT SAVE NAMED",
+        "PROJECT CLOSE NAMED",
+        "PROJECT LOAD NAMED",
+        "PROJECT USE NAMED",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(
+        scalar(&service, &mut client, "//NAMED/CustomA/NetworkNumber").await,
+        "-1"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{}/Value", graph.level)).await,
+        "-1"
+    );
+    assert_eq!(
+        xml(&service, &mut client, "//NAMED/Neighbor").await,
+        neighbor
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn named_complete_external_xml_keeps_strict_scalar_admission_atomic() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let graph = graph(&service, &mut client).await;
+    let document = xml(&service, &mut client, "//NAMED/CustomA").await;
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(&path).unwrap();
+    assert!(document.contains("<NetworkNumber>0xff</NetworkNumber>"));
+    let level_document = xml(&service, &mut client, &format!("!{}", graph.level)).await;
+    assert!(level_document.contains("Value=\"77\""));
+    // Local complete-document admission is deliberately stricter than owned
+    // raw scalar editing. A refusal must not replace or persist any subtree.
+    for value in ["999", "oops", "-1"] {
+        for (target, replacement) in [
+            (
+                "//NAMED/CustomA".to_string(),
+                document.replace(
+                    "<NetworkNumber>0xff</NetworkNumber>",
+                    &format!("<NetworkNumber>{value}</NetworkNumber>"),
+                ),
+            ),
+            (
+                format!("!{}", graph.level),
+                level_document.replace("Value=\"77\"", &format!("Value=\"{value}\"")),
+            ),
+        ] {
+            let response = service
+                .handle_document(
+                    &mut client,
+                    &format!("[named-db] DBSETXML {target}"),
+                    &replacement,
+                )
+                .await;
+            assert_eq!(response.status, 408, "{target} {value}: {response:?}");
+            assert!(Database::from_server(&*service.model.lock().await) == before);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+            assert_eq!(
+                xml(&service, &mut client, "//NAMED/CustomA").await,
+                document
+            );
+        }
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn named_safe_copy_refreshes_entire_oid_closure_and_retains_values_and_source_xml() {
     let path = state_path();
     let (pci_client, mut remote) = pci();

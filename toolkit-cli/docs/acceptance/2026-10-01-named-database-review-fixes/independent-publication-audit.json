@@ -1,0 +1,856 @@
+{
+  "audited_receipt_sha256": "88cebaa5b0debd391813fdcddcbde558eeddd022afd5b3dd57f99fb8dac3a6e5",
+  "data": {
+    "artifact_reconstruction": [
+      {
+        "public_sha256": "3b7269a9462741014f011cad8381a9de55cd354960e33428a8081f4b56d2899b",
+        "raw_sha256": "78065ff1af01c3407be33a5fdb7aaa1fdfa5f03a46615b9b6d2ed30514f26cd8",
+        "result": "exact",
+        "role": "python/component-validation",
+        "transformations": 83
+      },
+      {
+        "public_sha256": "dd626a039e464f3f2d6cdb8b967b0ea8c0b1a0dfe3aba7237ef8642146d7c37e",
+        "raw_sha256": "32cd02d51e718e2494c2f70f4ded99bf1bdc463c01c5a12e8f71bccfd055766a",
+        "result": "exact",
+        "role": "python/package-audit",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "468fd03587b37465eb144c2fb5cc0b4b4d3fd71f742e72dfdad24de6bd373fda",
+        "raw_sha256": "2f8e5581c0a2d6fb7a54055efe1b6b1acc1c68eaf0ac031a9c2c8dec4da48cc3",
+        "result": "exact",
+        "role": "python/frozen-bindings",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "272f38605f90293b29e3fe0de09ccfc7b513e9076d9a3772b4c9b6e795fef769",
+        "raw_sha256": "80183b54da3d32a11907615809e766aa35154d8d2a836e42880df5fec95c40fd",
+        "result": "exact",
+        "role": "python/authorization",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "586008a01597958c0bcd345263c0698b381569f5aabc59df3746df2e125f3ab7",
+        "raw_sha256": "7af0ea6a4a911e78c3c639a77d13adcb22d145d0e034bb6c98d148b4bf984aca",
+        "result": "exact",
+        "role": "python/deferred-original",
+        "transformations": 2
+      },
+      {
+        "public_sha256": "09c10fad538f2ed7dd21826f99dd71795648beb15d932ed86642581bc211da5f",
+        "raw_sha256": "0b6f8593c017b56e625da18e423625891e41cb0ed6a9e754f94758c0d4be0b62",
+        "result": "exact",
+        "role": "python/selection-correction",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "87927068cee131eabbc614049ba92407908b3d6d3fb2591b98a288f845565d4e",
+        "raw_sha256": "e8b7da003c746f9724805a03fb7c8176d93539d8f81504568a22f494e103fed8",
+        "result": "exact",
+        "role": "python/source-peer-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "420591b47f8b5a47fd6cad4663212b3bf09b7b9411fca32ba42cac1a272ac826",
+        "raw_sha256": "d53cedb7d59d843ac231b05d0fcaeecc4bc34612d93eea6724c4b3b23361375a",
+        "result": "exact",
+        "role": "python/source-peer-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "c571badf94e228e49ea6908f43edec0da8d76f2dd3ae0613926573aa5efe6783",
+        "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
+        "result": "exact",
+        "role": "python/source-peer-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "0f976cb35003b39ea732989642dfb8b1ddc0c9f3b998ecfe29406d2820a71917",
+        "raw_sha256": "68746d8237277b19ebb0aa2a70d8a731b9c700d37ea201ac4e06ab43457903fe",
+        "result": "exact",
+        "role": "python/source-adjacent-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "15904ad5ee061a5bea29370f5cf4ab17412f5a7927052e86dfa00c079c4e55cb",
+        "raw_sha256": "ce3257c54f941ce03c78929d2c5b8fa7cbcbcb97e4124d6e17360a32846b247a",
+        "result": "exact",
+        "role": "python/source-adjacent-command",
+        "transformations": 6
+      },
+      {
+        "public_sha256": "5a9e9c3fa4de0da7e508cfce7a52c0171b1bff26205f839ef38a3f70417fe7b5",
+        "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
+        "result": "exact",
+        "role": "python/source-adjacent-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "e1d1a0d0be22823e62dce97312a8ac771fa4ac16cb70f70daf149eb37be799cf",
+        "raw_sha256": "46c6557768dd0a0b1f13bd51b0351c2934b5fa72f568d1db6f55fb1c41ce6fec",
+        "result": "exact",
+        "role": "python/source-guards-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "f44a6e7cab4d352e181ab0a6038923ca4dded835192887472ddc5cc662baacbf",
+        "raw_sha256": "8149daca94e1d634649b11a577021766be76819739f95ebe4cf7d8797fd32b0c",
+        "result": "exact",
+        "role": "python/source-guards-command",
+        "transformations": 8
+      },
+      {
+        "public_sha256": "64f7284dd5012c59240d7042488efae9b3a9ed822f52e560ab3ff7383de656a6",
+        "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
+        "result": "exact",
+        "role": "python/source-guards-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "46ecf6494425db28ec5b62bcde15822b478d69e320e02b1d401165c58de2c853",
+        "raw_sha256": "e385fc3f4caa6623a8ec0c92ec8b75ea17771436fc79e20469a419502caff120",
+        "result": "exact",
+        "role": "python/source-selected-serial-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "a0f5a3f54e8f405c1effa1a5566987bfcee46a33672e3a910d2238d0c99c2a39",
+        "raw_sha256": "24b4ca050696b7d4b73c12a61cbf39adbc8322408dd38ae10f88768cb49e887f",
+        "result": "exact",
+        "role": "python/source-selected-serial-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "e5212c6274cd3fe6be83f7953bf6e4967d3a68a23cf0471ca37e5f52af1c6294",
+        "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
+        "result": "exact",
+        "role": "python/source-selected-serial-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "6ee65175458192940876cbb29c6e6d612b2d88d46916ae183184a03c2c533a7a",
+        "raw_sha256": "3a49450a57f4af4c4f5b914e67ab11dcdcc3623ad60bc059dfa6d4a727e9c26a",
+        "result": "exact",
+        "role": "python/source-sanitizer-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "0706f3993916eb3ce484a066aa82dbafb1e12946b77c6945dc6d53d5141b98e5",
+        "raw_sha256": "9b00852ea2513723a7f62a6c732475f74ba534b45d463878f885ce7301bf7118",
+        "result": "exact",
+        "role": "python/source-sanitizer-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "b301479727797c1f252151d5b6e85c5248100f474af55eee322b854ffa389208",
+        "raw_sha256": "8476498776248859ead793d1fc0c85a9d59787b62d73f684b73983f3e94245b4",
+        "result": "exact",
+        "role": "python/source-sanitizer-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "183df30b75257a7d5bdce7756129a60e7c8e61c794fd5144fc0c71bb198d705f",
+        "raw_sha256": "6390400ce9ac6ad1f9422425fcd3fcdcbbdce996995eb228c4c9bb3865b30ac9",
+        "result": "exact",
+        "role": "python/source-modeled-report",
+        "transformations": 277
+      },
+      {
+        "public_sha256": "7bd7999849d48a632257f2c1e75a7ef8f21c91e558af81733fc02b17811ebe41",
+        "raw_sha256": "3eab23e9bc310433bad038c9e3d6be098b5030156a4a2b2b386a9e62087061c7",
+        "result": "exact",
+        "role": "python/source-modeled-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "0a146791ea1c19390c65d3be26bb33025dccf6626c32d2f1ce90075e782f8b63",
+        "raw_sha256": "11aac15f8850b4aa8208e505a8a973377632ec3a20ce3fb4d348f8b212a47727",
+        "result": "exact",
+        "role": "python/installed-peer-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "d2972d7a959f165ef17b67ab603f83163e6a2cdcdb77baaf7581f1b5217f0171",
+        "raw_sha256": "ffc27deabaf7803ef34bd4addce2e67480882ca1cf7bda11dd9355b91dbe6740",
+        "result": "exact",
+        "role": "python/installed-peer-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "fcb964f40915caf2f5048c40f0549246a016f33aee2f917309d345251de3aac6",
+        "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
+        "result": "exact",
+        "role": "python/installed-peer-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "ffd8b42ba0007d2055ca0f7737e88d2d73f042c9aabe96ccb10ac6d3c25002d8",
+        "raw_sha256": "78f974fe0ebf269207ce13ad575226e130cb44cbf4e9f47ee3b30d8b40666d26",
+        "result": "exact",
+        "role": "python/installed-adjacent-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "a1635baa6b7adc99bf85eedb2ca4ba1332bb016adc241421661329cc3a346f85",
+        "raw_sha256": "14dae90adba4b52bd1c794636f580a28f10e32f5af23b6f853c890ef3fdeace1",
+        "result": "exact",
+        "role": "python/installed-adjacent-command",
+        "transformations": 6
+      },
+      {
+        "public_sha256": "36cd79c5aa056bcf20ebdd02af8bf4155961f1012b5de83eb50f11bd1a1174af",
+        "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
+        "result": "exact",
+        "role": "python/installed-adjacent-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "dbaa2503a184a4c903e82bc2045f7f1fbd7a4e040e5bf9901af84f4589a19a85",
+        "raw_sha256": "5c45c727178b6281261737ce4db77cab2f47b6a22b1a229cac5d7e74c541b27c",
+        "result": "exact",
+        "role": "python/installed-guards-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "439a43da448b18a6dcafff9f7692323a657d4ea1b1d6b176a56790140ce2de90",
+        "raw_sha256": "00cce50e1212c149006ccd3573b62d516aa221b94ebc9530eae28be1bddf8b4b",
+        "result": "exact",
+        "role": "python/installed-guards-command",
+        "transformations": 8
+      },
+      {
+        "public_sha256": "326626d6c1c48b9ab7bca595069fde0f6b438a11c622a1e02c3e8097ad6b1100",
+        "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
+        "result": "exact",
+        "role": "python/installed-guards-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "ef900725f4e1b63835c6fc8565ea66702bedb64541816d575926cca3412c3656",
+        "raw_sha256": "6b4f29299968b8643042452ad2cc6937633b25ca8206d7006956cd98491c9383",
+        "result": "exact",
+        "role": "python/installed-selected-serial-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "18cfb1ace42e7f5356d384f3da3f35fc35b2867ee7aded5625acad4114d9b5e8",
+        "raw_sha256": "794ef9fbb88d611c784597c4e83e24489a51233c12dae9cca1cd5a558892f65f",
+        "result": "exact",
+        "role": "python/installed-selected-serial-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "9a83b301dd1d5306483f55fb6206ba1b924d29690ee567b75fcf6f630ad227f3",
+        "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
+        "result": "exact",
+        "role": "python/installed-selected-serial-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "f37d52f3ad0705acd1d81cab15ff5bf1bcee311c745ba82dfcb4b52608d31c98",
+        "raw_sha256": "6b308d0797376ed5d375732f73b39013ea12fb9763ec2470748d94cb0cd11b0f",
+        "result": "exact",
+        "role": "python/installed-sanitizer-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "848cbb584a8c7f47121851d26a70d2ad5b3eb3784276fce0625b781f09fe0fbe",
+        "raw_sha256": "ec8393a247326a372341c09b3af6ef5547dbeb8a0113a52a322ef90e7b649b3a",
+        "result": "exact",
+        "role": "python/installed-sanitizer-command",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "432f4af088d7e665f87faef7eaf7a3ed2af0fa67468f2ed2595d3f3702edf38d",
+        "raw_sha256": "a6afc47f368450e97e3dc1692dc3aaa6055c0651bd41c596179b061ef1f3a510",
+        "result": "exact",
+        "role": "python/installed-sanitizer-bindings",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "1a2058255d7b19138e2a79a46c8b4d1af8d1873650504d77b628d43c5c4ccf70",
+        "raw_sha256": "843198840da31393e11519f7abf8d7785f3727724d30e83fc40cb75af94155ba",
+        "result": "exact",
+        "role": "python/installed-modeled-report",
+        "transformations": 289
+      },
+      {
+        "public_sha256": "dbc0eb489536b56be6af1912e9cb0d4c36b28729badddc683eb4ee3c5c47bbfc",
+        "raw_sha256": "0a05b228b40e33659f5ff050d542b7500905481c3165ddb246c818d592fee802",
+        "result": "exact",
+        "role": "python/installed-modeled-junit",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "e24ca9b1fd5790591f70c1820eca60d4fcb2c0f0f8a1290fd10b7ad940298554",
+        "raw_sha256": "6e0eb9f50eebc743453443864c02dd39f3cb5c80b179364e33878d9fe856f528",
+        "result": "exact",
+        "role": "rust/named-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "fb246b17ed6f823cf16b41d9992d482824d1b1c3f25c6d732ce574dad0ef35e7",
+        "raw_sha256": "bbfed637ac2e6ab35b5ab54072331aea02ec888d30f579adb105a579aca7d3ef",
+        "result": "exact",
+        "role": "rust/net-save-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "ee75083b2890714c56d609bb5e7a370e1d32bb6c4632d35a45027e3ff45a5a6c",
+        "raw_sha256": "e7f75e741d35b2da11bf46b30d18952804ca62f30c3e0820b682a145dc7e8041",
+        "result": "exact",
+        "role": "rust/mock-archive-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "fe32ff284c4a8a1bbb494f022ad98b3b90725bbbd874c0b41cfe8f3c47f7bdea",
+        "raw_sha256": "bccd8de1f6fd148bc65ddfa652b9156a4056351b961ea411ab1f3fdaed074ccc",
+        "result": "exact",
+        "role": "rust/numeric-server-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "8ee81afda6a41a1a6755662aa2dc955dd75620ec969b113e11ddc858d9814c3a",
+        "raw_sha256": "0af2e816d5f52e96b559eb635fef73b50ac962479f10cca5221f922f2a541e07",
+        "result": "exact",
+        "role": "rust/numeric-tcp-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "887c34124863a4223ddac26742d240a29c42c42f4346f54c19009b4015ca3017",
+        "raw_sha256": "f2c75f3edc573243a447bcfb98853616666da38fe3cf93f17cc4444a40d8c969",
+        "result": "exact",
+        "role": "rust/fmt-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "eb171ddd0e0e289509dd86c1be9f8ba1b414f01a80adc9280e35f0261b6148b9",
+        "raw_sha256": "e68f299f6b3652208776476813d66f2595f11d4afb9d51a4f9a8827ad11c53f5",
+        "result": "exact",
+        "role": "rust/clippy-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "977146c6ad473368d5d5e9e274470717eadf2137148972eed32709adf4bfa308",
+        "raw_sha256": "2b06d6cdebb2b1dc9b8f4767d8ab99f681efe178d81df61a42a80c130519c780",
+        "result": "exact",
+        "role": "rust/release-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "e4071354d90d495e97d3c1c956fd4a5b8d1e028ab1f67b3d469a0a90731cc916",
+        "raw_sha256": "7a5a0aa33bd9c5bdcb3fc9de886e34de00cf9d131e16030beffff23b6eae7c91",
+        "result": "exact",
+        "role": "rust/required-workspace-result",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "f3a844388fe33c3809f25d891eb227908af0c0d1c25d02225a8e9274be7886c3",
+        "raw_sha256": "0e7c072ca188702a2ce70c9815f68817414005b088f35e52dbdb58f633f421e1",
+        "result": "exact",
+        "role": "rust/required-workspace-log",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "31bb801e6280beb8a7ff62c7be1157106f5ecc1ea68fee4ab4e16d723a5f6ac6",
+        "raw_sha256": "ccdef3b56b4f72e7c98d6164d37e42f0373b3259e8c5ae5cf250fd4449332f3e",
+        "result": "exact",
+        "role": "rust/release-binaries",
+        "transformations": 3
+      },
+      {
+        "public_sha256": "358d7b13a76597df7bce0cf0ef9087061806059757670206007b466323f4003c",
+        "raw_sha256": "4f52bd56b493481d325b3c7828faf4ab8abe82c3721c0e64daea1bad5579259b",
+        "result": "exact",
+        "role": "metadata/final-six-sanitization",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "526b56535ac723f46d7570b44bff28a6d7139e82e400f697d679e87b0f9819d6",
+        "raw_sha256": "7940e59c4e0c4bffb7506c9af65689065c9a96dcb5359178bb6c82453735da41",
+        "result": "exact",
+        "role": "metadata/session-mock-final-result",
+        "transformations": 3
+      },
+      {
+        "public_sha256": "e6f6c3435a012b615e50ecf6c6429fcef00f343f1de639f090d5a578642aebdc",
+        "raw_sha256": "5753ac7234116e89dbed41c50b985106fd5511c5160efe32cf9f6e7d37871ce8",
+        "result": "exact",
+        "role": "metadata/session-daemon-final-result",
+        "transformations": 3
+      },
+      {
+        "public_sha256": "6baee2f9950b2f7d225f9fd96ad5bab90f99409769e1aa9a330e4ff83bd36b22",
+        "raw_sha256": "2f056e5beda615ba251a4b8b1e79d542ab7907895a7fe4fd8e1886717eefb58e",
+        "result": "exact",
+        "role": "metadata/tagged-final-result",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "99f4b6e8bbfca171114bc9232d2598125c9d419b813d43696727478d362e7b62",
+        "raw_sha256": "9d86b3c0078dda42c1fb02694b2701ff68dfe8d6d951562d25e76703d13a682f",
+        "result": "exact",
+        "role": "metadata/unit-mapper-final-result",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "0d3cc4505f5d7eb924072a67d8371818bad8cbd934c63364fb66def7010a8073",
+        "raw_sha256": "284f6d902b98f408c03bf955316d9d375f1c41198c04f28377c7d693f87332a0",
+        "result": "exact",
+        "role": "metadata/skip-census-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "708374e290b963971c45c1a1d97866c4147cf8d036e0f962c774a6c703f5190f",
+        "raw_sha256": "6d6fb13d13aa340355530902dc27575b0aca05de7fdbbc37eca945c1c3da0651",
+        "result": "exact",
+        "role": "metadata/inventory-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "d7e6b17d11e539f01dc985795270ce624429a48faaeb2fa61543613547f82eed",
+        "raw_sha256": "3112cec1fca9c45c33ae1a18aaedb9c2959c5379de5521edbcabf812218059dc",
+        "result": "exact",
+        "role": "metadata/physical-applicability-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "76f0cb1fe5a9791915630f7bb3753516784713965117e3a9e689c939f9b575d1",
+        "raw_sha256": "20739d9f6136f37be04fd0835f6419e45e082a04ccca9d6de161f79b2fe794ff",
+        "result": "exact",
+        "role": "metadata/parity-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "6373d4c7207325193d68fcf14d278356dfe9b088439efd5ce488ca267ef09269",
+        "raw_sha256": "aef9ecd5b69ad61aa9f3214aa98f5c1c3de20e1c4a8ec22525dc2c323b65d09d",
+        "result": "exact",
+        "role": "metadata/skip-census-check-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "a27d03a807647c2b2a82ad28c9257ff1871253cd4e08dba869812a784b56955e",
+        "raw_sha256": "9f9b0b3018ea1b94ab7dad80615b584f7b889fc962859f6d6b8c5f079250cbff",
+        "result": "exact",
+        "role": "metadata/inventory-check-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "11e8280285912f5242f3af9d13645b8a1c902178f3d4b3e062b65ba9f84ad368",
+        "raw_sha256": "81ba8beb7bbdcd03a7f339576a1b7d0310679b8da35ef2f8c1f829a41c1cc03a",
+        "result": "exact",
+        "role": "metadata/parity-check-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "25021d2ba26b96fec886487001346a763f13bb919ed126d8f5813a558c3b53de",
+        "raw_sha256": "5fa3f9d9985621bc783b570391ff608dd769ef6ca3bfe8177d7253dea64d2751",
+        "result": "exact",
+        "role": "metadata/coverage-result",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "c90eb8bf924b1cc23fc0f3cdda2e3bdcd6a70920e3db07f9532789b07ae6e256",
+        "raw_sha256": "d0e182e3824a92ea7bcd12d6c63dc9478ece92a022b44e0ce58e3c1338112239",
+        "result": "exact",
+        "role": "metadata/coverage-output",
+        "transformations": 0
+      },
+      {
+        "public_sha256": "84d9d899c3184fbb4c5f5cecce58ef552d000b3d67d9e9b937131c82744bc4f6",
+        "raw_sha256": "1ab80c46908b21de86043dbfb3d3844fee05c56d073fe74ce39caa81b5ebc3c9",
+        "result": "exact",
+        "role": "review/source-review",
+        "transformations": 1
+      },
+      {
+        "public_sha256": "ce39e396015974ef04e621da540ec3f6aabe5f902a1796a2b5f306936f9d3a5f",
+        "raw_sha256": "c45500aea56154db274d9feb1fc4cbd8ba14a328bc6d2448b19e55e8fcf861e1",
+        "result": "exact",
+        "role": "historical-original/independent-native-proof",
+        "transformations": 66
+      },
+      {
+        "public_sha256": "486e4664cf41a944290981a48cc585feaae88b8c5c5c75a34ab22d004fa0f5a5",
+        "raw_sha256": "4701492b9d9fd3f3a2af34261c047601e210e16d8ba1c8001d6b143fbcc54870",
+        "result": "exact",
+        "role": "historical-original/scalar-byte-fields-attempt2",
+        "transformations": 34
+      },
+      {
+        "public_sha256": "d12140a7c47396eda8311291b0d4ec264c1a71af7fbf581015cc1825cf4cc427",
+        "raw_sha256": "8cf21dbf2fc43b1b5f0f86720c66c6513c7e2efbfc46bdd052a30befa83328a7",
+        "result": "exact",
+        "role": "historical-original/scalar-literal-storage-reload",
+        "transformations": 30
+      },
+      {
+        "public_sha256": "77b7a099382cd9f2b34be6be35377c8f5598bcf45503a8fba4eeeb0244328f8a",
+        "raw_sha256": "0084bbae1cca3d9d302b035d9f3c16b62df99a7e2417a8f2ee7481adf9cb1445",
+        "result": "exact",
+        "role": "historical-original/interface-and-safe-rename-invariants",
+        "transformations": 30
+      },
+      {
+        "public_sha256": "0af6e8f82b429720b276845675384539fe4566b8f2f0b7422389e9057989d3d9",
+        "raw_sha256": "6db39e1b8e48f1495682cefa5b21a170e37ca1440b8f98398cbe88e52062c2c7",
+        "result": "exact",
+        "role": "historical-original/interface-delete-lifecycle",
+        "transformations": 30
+      },
+      {
+        "public_sha256": "ed9581801da91e7c33c3c0dedaa4f9b15b42942ccf4f6bbde08f81c0f713bb37",
+        "raw_sha256": "b6807b1e556f3f8c264adca637e1ab549c69fa0ae6991dcf8058b395f8ecf645",
+        "result": "exact",
+        "role": "historical-original/interface-delete-load",
+        "transformations": 30
+      },
+      {
+        "public_sha256": "7012a9ec6a155f70a1167380fa04dc7d707a1a5a27ab70548e112b42b57dc90c",
+        "raw_sha256": "95511f99f0f9567bdb522eaca5cb59d06c56e84f51b9d8cd84d3defeb0c76843",
+        "result": "exact",
+        "role": "historical-original/interface-delete-save",
+        "transformations": 30
+      },
+      {
+        "public_sha256": "638735cada5be81eb4253d621894c1cfbf4b381f4a6a763e593c707f1329cb65",
+        "raw_sha256": "3c609a7819b91748541cd20eaf549a61b4425ff4d79add8788125ca079ec6887",
+        "result": "exact",
+        "role": "selected-serial/diagnosis-proof",
+        "transformations": 4
+      },
+      {
+        "public_sha256": "bbc96acd7790accb8a9e50a778d4daf7e361c413f8532ed824730e09bf8e7470",
+        "raw_sha256": "e312d2a1b671db0819178836549fc1cc87758f61209b10d85eda50ec7704f3e9",
+        "result": "exact",
+        "role": "selected-serial/validation-summary",
+        "transformations": 2
+      }
+    ],
+    "audit_script": {
+      "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit.py",
+      "sha256": "448bee187f3cf6042cb13e3b278e7eb96705da70a6a37ae8b297bd576bc5b388"
+    },
+    "audit_support": {
+      "audit-core.json": {
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit/audit-core.json",
+        "sha256": "a45883ccc4643c86c7b84a529191a69e3b42b8f8b9d92b7f72513b4044d2a6f3"
+      },
+      "privacy-checkpoint.json": {
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit/privacy-checkpoint.json",
+        "sha256": "e60b6eb5af555d0c1404f606b9ca448cb21bf7d6cdf764e82c66cf12efc5804a"
+      },
+      "run.log": {
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit/run.log",
+        "sha256": "153155fc543238da75a71c95f31dc254b955dd3909ca646df09e5bf3bdde6b16"
+      },
+      "scope-extra.json": {
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit/scope-extra.json",
+        "sha256": "736d3af0975c5af8d4e3864fa68e1c3b584eb3919dd490d9dd475469d844ba8a"
+      },
+      "six-family-validation.json": {
+        "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/independent-publication-audit/six-family-validation.json",
+        "sha256": "e8acc41977a3cfbf402adda0898970e6fa85f43d553acc5e48e9a17e0a7f0991"
+      }
+    },
+    "authorship_qualifications": {
+      "historical_tag_network_backend_self_authored": true,
+      "new_other_author_rust_and_sanitizer_delta_reviewed_independently": true,
+      "selected_serial_independent_review_claimed": false,
+      "selected_serial_self_authored": true
+    },
+    "current_inputs": 647,
+    "derivatives": 75,
+    "doc_findings": [
+      {
+        "finding": "Report called per-environment combined168CLI/217tagged/78connections counts per backend",
+        "source_changes_required": false,
+        "status": "owner corrected before final audit"
+      }
+    ],
+    "expanded_guards_excluded_each": {
+      "parents": 259,
+      "skips": 3,
+      "subtests": 777
+    },
+    "final_docs_quiet": true,
+    "final_receipt_and647source_pins_quiet": true,
+    "final_scope_review": {
+      "archive_versions": 9,
+      "authoring_qualification": "Auditor authored historical native proof, earlier TagNetwork backend and selected-serial test module; this audit independently reconstructs publisher artifacts but does not relabel those authored components independent source/native executions.",
+      "doc_review": "Current report correctly distinguishes per-environment217 tagged/78 connections across both backends, required Rust overlaps focused50, current modeled/offline versus historical original, manual#72 and self-authorship. Network definitions retains complete external parsing/configured binding guard and qualified safety deviations.",
+      "docs": {
+        "${CBUS_TOOLKIT_ROOT}/docs/feature-batch-2026-10-01-named-database-workflows.md": "d57d89d784a4d9e696f49d38968115f6af6ed6f3f142803be4922122558714a5",
+        "${CBUS_TOOLKIT_ROOT}/docs/network-definitions.md": "4c48298050663cd5e23acbb67878b09acc2e4475808707dc24e63126173b0358"
+      },
+      "historical_scope": "262 successful terminal commands,6phases;17 failed prerequisite excluded; zero current original execution credit",
+      "native_contract_scope": [
+        "Raw SAFE/unsafe Number and Level Value lexemes; SAFE999/oops reload only, no all-lexeme persistence claim.",
+        "Original deficient NETSAVE and numeric SAFE collision500 contrasted with local controlled atomic408.",
+        "Empty native TagsDLT additions qualified; no whole graph XML byte-equivalence."
+      ],
+      "native_proof_sha256": "c45500aea56154db274d9feb1fc4cbd8ba14a328bc6d2448b19e55e8fcf861e1",
+      "no_vendor_or_tests_executed": true,
+      "result": "pass",
+      "reviewed_rust_source_cargo_roster": 209
+    },
+    "focused_rust_distinct": 50,
+    "format": "cbus-independent-publication-audit-v1",
+    "historical_original": {
+      "contract_terminals": 262,
+      "controlled_408_vs_native_500_is_deliberate_liveness_difference": true,
+      "current_candidate_execution_credit": 0,
+      "e8a_original_47_cli_per_environment_historical_only": true,
+      "failed_initial_17_terminals_excluded": true,
+      "phases": 6,
+      "whole_graph_native_xml_equality_claimed": false
+    },
+    "independent_privacy": {
+      "decoded_utf8_candidates": 9500,
+      "findings": [],
+      "masked_xml_hostname_occurrences": 92,
+      "scope": "all public receipt and75 derivatives; keys/values/embedded canonical UTF8 hex/base64 through6 layers, limit refusal"
+    },
+    "input_sha256_before": {
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/coordinate-roles-v2.private.json": "d9c9adec7b67b03f79d914207f0ad801b40435b31e86f9e354ae8eddd5359d13",
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/normalize_evidence.py": "d2b711dfc5b67f8523c3fde73fd95c40fa175d740e76f094395e260652b50482",
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/publication-private-manifest.json": "aaead10255122e100fe7914e76d8747a5c6f7086574804e966bfd2b736aa2211",
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/publish_review_fixes.py": "f5a0dbb2bdbc4f10b4cbed175d0e01947a66990a0500364de1991d6d857a69dc",
+      "${CBUS_TOOLKIT_ROOT}/docs/acceptance/2026-10-01-named-database-review-fixes/acceptance.json": "88cebaa5b0debd391813fdcddcbde558eeddd022afd5b3dd57f99fb8dac3a6e5"
+    },
+    "known_blockers": [],
+    "matrix": {
+      "installed": {
+        "errors": 0,
+        "failures": 0,
+        "parents": 287,
+        "skips": 0,
+        "subtests": 680
+      },
+      "source": {
+        "errors": 0,
+        "failures": 0,
+        "parents": 287,
+        "skips": 0,
+        "subtests": 680
+      }
+    },
+    "modeled": {
+      "installed": {
+        "cgate-mock": {
+          "cleanup_and_no_contact": "verified recorded receipts",
+          "cli_processes": 38,
+          "connections": 39,
+          "expected_refusals": 3,
+          "expected_successes": 35,
+          "owned_process_exit": -15,
+          "pci_initialization_frames": 0,
+          "post_initialization_pci": 0,
+          "tagged_commands": 108
+        },
+        "cmqttd": {
+          "cleanup_and_no_contact": "verified recorded receipts",
+          "cli_processes": 38,
+          "connections": 39,
+          "expected_refusals": 3,
+          "expected_successes": 35,
+          "owned_process_exit": 0,
+          "pci_initialization_frames": 8,
+          "post_initialization_pci": 0,
+          "tagged_commands": 109
+        }
+      },
+      "source": {
+        "cgate-mock": {
+          "cleanup_and_no_contact": "verified recorded receipts",
+          "cli_processes": 38,
+          "connections": 39,
+          "expected_refusals": 3,
+          "expected_successes": 35,
+          "owned_process_exit": -15,
+          "pci_initialization_frames": 0,
+          "post_initialization_pci": 0,
+          "tagged_commands": 108
+        },
+        "cmqttd": {
+          "cleanup_and_no_contact": "verified recorded receipts",
+          "cli_processes": 38,
+          "connections": 39,
+          "expected_refusals": 3,
+          "expected_successes": 35,
+          "owned_process_exit": 0,
+          "pci_initialization_frames": 8,
+          "post_initialization_pci": 0,
+          "tagged_commands": 109
+        }
+      }
+    },
+    "package": {
+      "files_equal": 326,
+      "wheel_sha256": "393903920c25dee9b1ae60600bf93317a5539cdbef615bdf2cb680da2976d689"
+    },
+    "preserved_rejected_e8a": {
+      "all_manifest_hashes_verified": true,
+      "private_files": 70,
+      "receipt_sha256": "44c3d342b160d715bf8b175cf9dc8b39924eb5f5027e995694211085c09636b1",
+      "scope": "rejected historical branch candidate; not accepted-main artifact"
+    },
+    "prior_draft": {
+      "result": "rejected; no clearance",
+      "sha256": "b4fbd35a255ef2ca9bae8f48dd8f71582aefca99d2da947987d58090dfeafa5a"
+    },
+    "private_raw_modes": "all75 bound raw artifacts0600; owned audit/public directories0700",
+    "public_files": 76,
+    "quiet": true,
+    "receipt_sha256": "88cebaa5b0debd391813fdcddcbde558eeddd022afd5b3dd57f99fb8dac3a6e5",
+    "repo_mutations": false,
+    "required_rust": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 8621,
+      "summary_rows": 97
+    },
+    "result": "pass",
+    "reviewed_rust_source_cargo_roster": 209,
+    "six_current_source_bindings": 1111,
+    "six_family_validation": {
+      "bindings": 1111,
+      "mode": "Read-only receipt validators; no run/main/server/native/test functions called",
+      "result": "pass",
+      "rows": [
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+          "release_binary_sha256": "18e857b92188df8ef3e708f152282fc0e3cc47a12367569c7e22730df048e548",
+          "source_bindings": 172
+        },
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+          "release_binary_sha256": "8f0779106f68a5b43f59d8272b3cffe4a986328437bbd745a36ab4b20766eb6b",
+          "source_bindings": 192
+        },
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+          "release_binary_sha256": "18e857b92188df8ef3e708f152282fc0e3cc47a12367569c7e22730df048e548",
+          "source_bindings": 174
+        },
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+          "release_binary_sha256": "8f0779106f68a5b43f59d8272b3cffe4a986328437bbd745a36ab4b20766eb6b",
+          "source_bindings": 194
+        },
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+          "release_binary_sha256": "18e857b92188df8ef3e708f152282fc0e3cc47a12367569c7e22730df048e548",
+          "source_bindings": 180
+        },
+        {
+          "family_validator": "passed",
+          "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+          "release_binary_sha256": "8f0779106f68a5b43f59d8272b3cffe4a986328437bbd745a36ab4b20766eb6b",
+          "source_bindings": 199
+        }
+      ]
+    },
+    "source_execution": "none; reconstruction imports reviewed normalizer only, publisher/selfchecks/server/tests/Cargo/native not executed",
+    "supporting_raw_artifacts": 471,
+    "unchanged_accepted_main_receipts": {
+      "net_save_export_order": "572004ed257ca8dbeb101489fbf15d9b8fc60e4a68d5234dd305f6eb1cc7e02c",
+      "net_save_integration": "6fb35550d9db3f3fe28af51af5ee64d0a6378b3223a446567852e9fafa5f7207"
+    }
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "normalizer_sha256": "d2b711dfc5b67f8523c3fde73fd95c40fa175d740e76f094395e260652b50482",
+    "private_frozen_role_table_sha256": "d9c9adec7b67b03f79d914207f0ad801b40435b31e86f9e354ae8eddd5359d13",
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_script/path",
+        "raw_string_sha256": "7f45b4d227a32b526519fd7db3b892deb9071b66b0a383ebe7519e3cda9e29b5"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_support/audit-core.json/path",
+        "raw_string_sha256": "2d9a29e0ef73b9d9d24339902984cfde87e2d5f505ad54450ef971bce67a16a0"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_support/privacy-checkpoint.json/path",
+        "raw_string_sha256": "273f9908c4c2996925a7831041ac660dc3177aa7a3e3e5835e8ed01a13e05b51"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_support/run.log/path",
+        "raw_string_sha256": "5be35dbe1b8fd0988c2da0832a0ddf3a7174288eda91f7e7e885c39e8b9db872"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_support/scope-extra.json/path",
+        "raw_string_sha256": "ab0ff400ba450a8d31bbf08b0f620f5efbdb268110cba9dadf80e3e092d35463"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/audit_support/six-family-validation.json/path",
+        "raw_string_sha256": "fb33085dbee1429ae493898e3ffe4ad3b3cb01577c72b1396fb2064d3defd0d8"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/final_scope_review/docs",
+        "raw_string_sha256": "11f66847f2343dfa4dcc91186bf12e115b32f8366f168856b3e35e27d2544868",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/final_scope_review/docs",
+        "raw_string_sha256": "0b7bd55aad217559a609d4c963e5ec53e947f1650be51a29dbea3f8548226905",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/input_sha256_before",
+        "raw_string_sha256": "531cecfdcf6f7f57025d346a2971d30c3c4c779d26871715aada8426f0a32f32",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/input_sha256_before",
+        "raw_string_sha256": "170ede5f71018928ac6e79421f9f188270cb16ee52e8c6f0c8af30f565362232",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/input_sha256_before",
+        "raw_string_sha256": "4d2c8fd647450bd830d6bf52346206708820a7f0ee39c2be65482b202435fef5",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/input_sha256_before",
+        "raw_string_sha256": "7ebf5142861c44867c7a88e4e12f1ac91fd5fbc10e49c9e83871430b5d1cd8d6",
+        "target": "object_key"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/input_sha256_before",
+        "raw_string_sha256": "b0e2b98fe0d6f655c95712794ed5b90971bba73dc4075cd4a5e8096643d84583",
+        "target": "object_key"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value",
+  "raw": {
+    "bytes": 32483,
+    "encoding": "json",
+    "retained_privately": true,
+    "role": "independent-publication-audit",
+    "sha256": "a4ab813d1f6aebc323d961cfa8f41eeccc75552b8fa63a13ee3a943d5a99ce89"
+  },
+  "scope": "Independent read-only publication audit; no tests/server/native execution"
+}

@@ -1,0 +1,122 @@
+{
+  "data": {
+    "authorized_edit": "toolkit-cli/tests/test_pci_selected_serial.py",
+    "changed_roster_paths": [
+      "toolkit-cli/tests/test_pci_selected_serial.py"
+    ],
+    "changes": [
+      "Adapt copied live vector operational settings to existing fixture-helper200ms profile; exact golden and canonical-marker tests retained.",
+      "Preserve unchanged/move/second-node/marker assertions and require exactly1co.",
+      "Whitelisted failure evidence: outcome, error types and bounded exchange/receipt fields; omit journal/endpoint paths.",
+      "Deterministic partial receipt on durable fixture verifies uncertainty, journal+marker, exact pending bytes, no follow-up and restart-persisted move."
+    ],
+    "diagnosis_proof": {
+      "fresh_attempts": 5,
+      "path": "diagnosis-proof.json",
+      "prior_ci_exact_cause_proven": false,
+      "sha256": "3c609a7819b91748541cd20eaf549a61b4425ff4d79add8788125ca079ec6887"
+    },
+    "format": "cbus-selected-serial-test-correction-v1",
+    "production_python_unchanged": true,
+    "scope": {
+      "cargo": false,
+      "git_or_ci_writes": false,
+      "hardware": false,
+      "native_commands": false,
+      "noconftest": true,
+      "only_selected_serial_module_executed_after_edit": true,
+      "prior_ci_acceptance_credit": false
+    },
+    "shared_vector_unchanged": true,
+    "source_after": {
+      "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+      "toolkit-cli/src/cbus_toolkit/pci_full_inventory.py": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615",
+      "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+      "toolkit-cli/src/cbus_toolkit/simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
+      "toolkit-cli/src/cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+      "toolkit-cli/tests/test_pci_selected_serial.py": "f7819372fab5f3e0abcac5d8a557ebab7fd3eb90a87b2a5f5c0c523f041b4f98",
+      "toolkit-cli/tests/test_simulator_duplicate_addressing.py": "60a8f30d8a2ff7c8c839847c99a70ea9aa6cbef1d05bc99ff2d5770847a2cf28",
+      "toolkit-cli/tests/test_simulator_duplicates.py": "79068602e6f484c2a8f6b240e15aedf7424871ca5b46281b4a6624f8026518f3"
+    },
+    "source_before": {
+      "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+      "toolkit-cli/src/cbus_toolkit/pci_full_inventory.py": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615",
+      "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+      "toolkit-cli/src/cbus_toolkit/simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
+      "toolkit-cli/src/cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+      "toolkit-cli/tests/test_pci_selected_serial.py": "e4a85428106f1d854d51e40112571fb6dc37766bafedba1e8c969495489e3a3c",
+      "toolkit-cli/tests/test_simulator_duplicate_addressing.py": "60a8f30d8a2ff7c8c839847c99a70ea9aa6cbef1d05bc99ff2d5770847a2cf28",
+      "toolkit-cli/tests/test_simulator_duplicates.py": "79068602e6f484c2a8f6b240e15aedf7424871ca5b46281b4a6624f8026518f3"
+    },
+    "validation": {
+      "argv": [
+        "toolkit-cli/.venv/bin/python",
+        "-m",
+        "pytest",
+        "--noconftest",
+        "toolkit-cli/tests/test_pci_selected_serial.py",
+        "-q",
+        "--junitxml=${CBUS_OWNED_CBUS_SELECTED_SERIAL_VECTOR_DIAGNOSIS_20261001}/focused-module.xml"
+      ],
+      "cwd": "${CBUS_REPOSITORY_ROOT}",
+      "duration_seconds": 51.23,
+      "exit_code": 0,
+      "failed": 0,
+      "junit": {
+        "path": "focused-module.xml",
+        "sha256": "b1516bc1f867bc919c103bfdcc2432dc1cdcf27156ade8cff35698a9c61a1534"
+      },
+      "junit_suites": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "hostname": "unifi",
+          "name": "pytest",
+          "skipped": "0",
+          "tests": "93",
+          "time": "51.229",
+          "timestamp": "2026-10-01T22:05:37.310107+13:00"
+        }
+      ],
+      "log": {
+        "path": "focused-module.log",
+        "sha256": "fcd879f37cf60b5ba3d7603ae006be2c33baf6a0ec76780430b4d50c311e9d3e"
+      },
+      "parents_passed": 32,
+      "skipped": 0,
+      "subtests_passed": 61
+    }
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/validation/argv/6",
+        "raw_string_sha256": "831f2ee89b46afa0368e234185da183b45305364e3658f859c37453bc4821290"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/validation/cwd",
+        "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 4895,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "selected-serial/validation-summary",
+    "sha256": "e312d2a1b671db0819178836549fc1cc87758f61209b10d85eda50ec7704f3e9"
+  },
+  "scope": "Earlier focused authored-test correction; final source/wheel selected module executions are recorded separately"
+}

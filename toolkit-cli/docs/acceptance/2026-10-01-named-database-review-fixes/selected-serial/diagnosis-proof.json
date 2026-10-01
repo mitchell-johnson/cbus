@@ -1,0 +1,623 @@
+{
+  "data": {
+    "all_fixture_threads_joined": true,
+    "all_listeners_closed": true,
+    "all_source_pins_unchanged": true,
+    "attempts": [
+      {
+        "address_after": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "apply_outcome": "observed_expected_change",
+        "assertions_passed": true,
+        "automatic_retries": 0,
+        "co_command_count": 1,
+        "endpoint": [
+          "127.0.0.1",
+          62447
+        ],
+        "fixture_only": true,
+        "fixture_threads_remaining": [],
+        "injected_post_persistence_delay": 0,
+        "listener_closed": true,
+        "number": 1,
+        "pid": 19691,
+        "profile": "exact_vector",
+        "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "source_quiet": true,
+        "verify_outcome": "observed_unchanged"
+      },
+      {
+        "address_after": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "apply_outcome": "observed_expected_change",
+        "assertions_passed": true,
+        "automatic_retries": 0,
+        "co_command_count": 1,
+        "endpoint": [
+          "127.0.0.1",
+          62467
+        ],
+        "fixture_only": true,
+        "fixture_threads_remaining": [],
+        "injected_post_persistence_delay": 0,
+        "listener_closed": true,
+        "number": 2,
+        "pid": 19691,
+        "profile": "exact_vector",
+        "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "source_quiet": true,
+        "verify_outcome": "observed_unchanged"
+      },
+      {
+        "address_after": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "apply_outcome": "observed_expected_change",
+        "assertions_passed": true,
+        "automatic_retries": 0,
+        "co_command_count": 1,
+        "endpoint": [
+          "127.0.0.1",
+          62485
+        ],
+        "fixture_only": true,
+        "fixture_threads_remaining": [],
+        "injected_post_persistence_delay": 0.03,
+        "listener_closed": true,
+        "number": 3,
+        "pid": 19691,
+        "profile": "exact_vector",
+        "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "source_quiet": true,
+        "verify_outcome": "observed_unchanged"
+      },
+      {
+        "address_after": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "apply_outcome": "observed_expected_change",
+        "assertions_passed": true,
+        "automatic_retries": 0,
+        "co_command_count": 1,
+        "endpoint": [
+          "127.0.0.1",
+          62503
+        ],
+        "fixture_only": true,
+        "fixture_threads_remaining": [],
+        "injected_post_persistence_delay": 0.03,
+        "listener_closed": true,
+        "number": 4,
+        "pid": 19691,
+        "profile": "helper_headroom_control",
+        "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "source_quiet": true,
+        "verify_outcome": "observed_unchanged"
+      },
+      {
+        "address_after": {
+          "101136.1558": 6,
+          "101136.1559": 255
+        },
+        "assertions_passed": false,
+        "automatic_retries": 0,
+        "co_command_count": 1,
+        "endpoint": [
+          "127.0.0.1",
+          62756
+        ],
+        "exception_message": "Address request outcome is uncertain; no replay or follow-up I/O was attempted",
+        "exception_type": "SelectedSerialUncertain",
+        "failed_phase": "apply",
+        "fixture_only": true,
+        "fixture_threads_remaining": [],
+        "injected_post_persistence_delay": 0,
+        "listener_closed": true,
+        "number": 5,
+        "pid": 20615,
+        "profile": "partial_receipt_delay_control",
+        "python": "3.13.14 (main, Jun 10 2026, 12:24:04) [Clang 17.0.0 (clang-1700.6.4.2)]",
+        "source_quiet": true,
+        "verify_outcome": "observed_unchanged"
+      }
+    ],
+    "cargo_executed": false,
+    "ci_acceptance_credit": false,
+    "commands": [
+      {
+        "argv": [
+          "toolkit-cli/.venv/bin/python",
+          "${CBUS_OWNED_CBUS_SELECTED_SERIAL_VECTOR_DIAGNOSIS_20261001}/diagnose.py"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}",
+        "exit": 0
+      },
+      {
+        "argv": [
+          "toolkit-cli/.venv/bin/python",
+          "${CBUS_OWNED_CBUS_SELECTED_SERIAL_VECTOR_DIAGNOSIS_20261001}/diagnose-final-control.py"
+        ],
+        "cwd": "${CBUS_REPOSITORY_ROOT}",
+        "exit": 0
+      }
+    ],
+    "exchanges": [
+      {
+        "after_collection_complete": true,
+        "attempt": 1,
+        "exchange": {
+          "automatic_retries": 0,
+          "bytes_received": 30,
+          "capture_complete": true,
+          "connection_closed": true,
+          "correlation_status": "matched",
+          "database_updated": false,
+          "errors": [],
+          "format": "cbus-pci-serial-address-exchange-v1",
+          "inventory_performed": false,
+          "max_bytes": 4096,
+          "movement_verified": false,
+          "persistence_verified": false,
+          "receipt": {
+            "confirmations": [
+              {
+                "code": "g",
+                "status": "."
+              }
+            ],
+            "errors": [],
+            "expected_confirmation": "g",
+            "expected_destination": 6,
+            "expected_serial": "101136.1558",
+            "format": "cbus-pci-serial-address-receipt-v1",
+            "frames": [
+              {
+                "bare": false,
+                "destination": 16,
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "source": 6
+              }
+            ],
+            "io_performed": false,
+            "issues": [],
+            "local_unit": 16,
+            "movement_verified": false,
+            "notifications": [],
+            "pending_hex": "",
+            "persistence_verified": false,
+            "raw_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+            "receipt_matches_request": true,
+            "replies": [
+              {
+                "destination": 16,
+                "header": 134,
+                "opaque_tail_hex": "0000",
+                "opaque_tail_interpreted": false,
+                "packed_serial_hex": "18b10616",
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "serial": "101136.1558",
+                "serial_known": true,
+                "source": 6
+              }
+            ],
+            "requires_independent_verification": true,
+            "status": "matched"
+          },
+          "received_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+          "request_has_source_address": false,
+          "request_hex": "5c30354646303030463030313842313036313630363135670d",
+          "requires_independent_verification": true,
+          "retained_bytes": 30,
+          "retained_receipt_matches_request": true,
+          "send_attempted": true,
+          "send_completed": true,
+          "sent_byte_count": null,
+          "termination": "response_window_elapsed",
+          "timing": {
+            "elapsed_seconds": 0.0225946249847766,
+            "native_response_timeout": false,
+            "overall_timeout_seconds": 0.5,
+            "response_elapsed_seconds": 0.022478792001493275,
+            "response_timeout_seconds": 0.02
+          }
+        },
+        "journal_sha256": "f088d05c873f389bd9ffcdb3bd9b04e87467d407b278efbf6236279276049900",
+        "outcome": "observed_expected_change",
+        "plan_sha256": "c3c16ef1bed2c2284f60cc33d76d216d6b6784b6c6795cab2746d0ddc079d70a",
+        "wire_sha256": "dca27c9e2cbb58574c51dfaed9bb3af55cf2ea406a8d06b0617a8618bd22d9fb"
+      },
+      {
+        "after_collection_complete": true,
+        "attempt": 2,
+        "exchange": {
+          "automatic_retries": 0,
+          "bytes_received": 30,
+          "capture_complete": true,
+          "connection_closed": true,
+          "correlation_status": "matched",
+          "database_updated": false,
+          "errors": [],
+          "format": "cbus-pci-serial-address-exchange-v1",
+          "inventory_performed": false,
+          "max_bytes": 4096,
+          "movement_verified": false,
+          "persistence_verified": false,
+          "receipt": {
+            "confirmations": [
+              {
+                "code": "g",
+                "status": "."
+              }
+            ],
+            "errors": [],
+            "expected_confirmation": "g",
+            "expected_destination": 6,
+            "expected_serial": "101136.1558",
+            "format": "cbus-pci-serial-address-receipt-v1",
+            "frames": [
+              {
+                "bare": false,
+                "destination": 16,
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "source": 6
+              }
+            ],
+            "io_performed": false,
+            "issues": [],
+            "local_unit": 16,
+            "movement_verified": false,
+            "notifications": [],
+            "pending_hex": "",
+            "persistence_verified": false,
+            "raw_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+            "receipt_matches_request": true,
+            "replies": [
+              {
+                "destination": 16,
+                "header": 134,
+                "opaque_tail_hex": "0000",
+                "opaque_tail_interpreted": false,
+                "packed_serial_hex": "18b10616",
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "serial": "101136.1558",
+                "serial_known": true,
+                "source": 6
+              }
+            ],
+            "requires_independent_verification": true,
+            "status": "matched"
+          },
+          "received_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+          "request_has_source_address": false,
+          "request_hex": "5c30354646303030463030313842313036313630363135670d",
+          "requires_independent_verification": true,
+          "retained_bytes": 30,
+          "retained_receipt_matches_request": true,
+          "send_attempted": true,
+          "send_completed": true,
+          "sent_byte_count": null,
+          "termination": "response_window_elapsed",
+          "timing": {
+            "elapsed_seconds": 0.02239383402047679,
+            "native_response_timeout": false,
+            "overall_timeout_seconds": 0.5,
+            "response_elapsed_seconds": 0.022102000017184764,
+            "response_timeout_seconds": 0.02
+          }
+        },
+        "journal_sha256": "83ed86a82eaefb719a2e3c0b51398df30c10e454064dadcde3a331884e3c319b",
+        "outcome": "observed_expected_change",
+        "plan_sha256": "fcabe34c861ca1c800528792de53b9d5d50ed39d0fe0448f160318564931a9b3",
+        "wire_sha256": "dca27c9e2cbb58574c51dfaed9bb3af55cf2ea406a8d06b0617a8618bd22d9fb"
+      },
+      {
+        "after_collection_complete": true,
+        "attempt": 3,
+        "exchange": {
+          "automatic_retries": 0,
+          "bytes_received": 0,
+          "capture_complete": true,
+          "connection_closed": true,
+          "correlation_status": "incomplete",
+          "database_updated": false,
+          "errors": [],
+          "format": "cbus-pci-serial-address-exchange-v1",
+          "inventory_performed": false,
+          "max_bytes": 4096,
+          "movement_verified": false,
+          "persistence_verified": false,
+          "receipt": {
+            "confirmations": [],
+            "errors": [],
+            "expected_confirmation": "g",
+            "expected_destination": 6,
+            "expected_serial": "101136.1558",
+            "format": "cbus-pci-serial-address-receipt-v1",
+            "frames": [],
+            "io_performed": false,
+            "issues": [
+              "missing_confirmation",
+              "missing_receipt"
+            ],
+            "local_unit": 16,
+            "movement_verified": false,
+            "notifications": [],
+            "pending_hex": "",
+            "persistence_verified": false,
+            "raw_hex": "",
+            "receipt_matches_request": false,
+            "replies": [],
+            "requires_independent_verification": true,
+            "status": "incomplete"
+          },
+          "received_hex": "",
+          "request_has_source_address": false,
+          "request_hex": "5c30354646303030463030313842313036313630363135670d",
+          "requires_independent_verification": true,
+          "retained_bytes": 0,
+          "retained_receipt_matches_request": false,
+          "send_attempted": true,
+          "send_completed": true,
+          "sent_byte_count": null,
+          "termination": "response_window_elapsed",
+          "timing": {
+            "elapsed_seconds": 0.02125966700259596,
+            "native_response_timeout": false,
+            "overall_timeout_seconds": 0.5,
+            "response_elapsed_seconds": 0.021214667009189725,
+            "response_timeout_seconds": 0.02
+          }
+        },
+        "journal_sha256": "3da9f47a4b68cc3d7fac28460b57bcd98a5980e3df1bb152cdd5136e721a24a2",
+        "outcome": "observed_expected_change",
+        "plan_sha256": "ff412c143211547cf8c470efb7190268062cbf29292559abbf4fc669c141d5b4",
+        "wire_sha256": "901e03c6d874724f5bf10dc31a4e1ac4663d525a4a8c00a06052a17c6f644131"
+      },
+      {
+        "after_collection_complete": true,
+        "attempt": 4,
+        "exchange": {
+          "automatic_retries": 0,
+          "bytes_received": 30,
+          "capture_complete": true,
+          "connection_closed": true,
+          "correlation_status": "matched",
+          "database_updated": false,
+          "errors": [],
+          "format": "cbus-pci-serial-address-exchange-v1",
+          "inventory_performed": false,
+          "max_bytes": 4096,
+          "movement_verified": false,
+          "persistence_verified": false,
+          "receipt": {
+            "confirmations": [
+              {
+                "code": "g",
+                "status": "."
+              }
+            ],
+            "errors": [],
+            "expected_confirmation": "g",
+            "expected_destination": 6,
+            "expected_serial": "101136.1558",
+            "format": "cbus-pci-serial-address-receipt-v1",
+            "frames": [
+              {
+                "bare": false,
+                "destination": 16,
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "source": 6
+              }
+            ],
+            "io_performed": false,
+            "issues": [],
+            "local_unit": 16,
+            "movement_verified": false,
+            "notifications": [],
+            "pending_hex": "",
+            "persistence_verified": false,
+            "raw_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+            "receipt_matches_request": true,
+            "replies": [
+              {
+                "destination": 16,
+                "header": 134,
+                "opaque_tail_hex": "0000",
+                "opaque_tail_interpreted": false,
+                "packed_serial_hex": "18b10616",
+                "raw_hex": "3836303631303030383730303138423130363136303030304638",
+                "route_hex": "00",
+                "serial": "101136.1558",
+                "serial_known": true,
+                "source": 6
+              }
+            ],
+            "requires_independent_verification": true,
+            "status": "matched"
+          },
+          "received_hex": "672e38363036313030303837303031384231303631363030303046380d0a",
+          "request_has_source_address": false,
+          "request_hex": "5c30354646303030463030313842313036313630363135670d",
+          "requires_independent_verification": true,
+          "retained_bytes": 30,
+          "retained_receipt_matches_request": true,
+          "send_attempted": true,
+          "send_completed": true,
+          "sent_byte_count": null,
+          "termination": "response_window_elapsed",
+          "timing": {
+            "elapsed_seconds": 0.20285166599205695,
+            "native_response_timeout": false,
+            "overall_timeout_seconds": 0.5,
+            "response_elapsed_seconds": 0.20269224999356084,
+            "response_timeout_seconds": 0.2
+          }
+        },
+        "journal_sha256": "802b2ef8d40c88d23ffde655ee703aea7ce8120161f52eb837a3dc83583ecaab",
+        "outcome": "observed_expected_change",
+        "plan_sha256": "f00e04ba2f196778ccc17c602966d7d0a3fbf707eb084d072bdc13926967f6df",
+        "wire_sha256": "dca27c9e2cbb58574c51dfaed9bb3af55cf2ea406a8d06b0617a8618bd22d9fb"
+      },
+      {
+        "after_collection_complete": false,
+        "attempt": 5,
+        "exchange": {
+          "automatic_retries": 0,
+          "bytes_received": 8,
+          "capture_complete": true,
+          "connection_closed": true,
+          "correlation_status": "incomplete",
+          "database_updated": false,
+          "errors": [],
+          "format": "cbus-pci-serial-address-exchange-v1",
+          "inventory_performed": false,
+          "max_bytes": 4096,
+          "movement_verified": false,
+          "persistence_verified": false,
+          "receipt": {
+            "confirmations": [
+              {
+                "code": "g",
+                "status": "."
+              }
+            ],
+            "errors": [],
+            "expected_confirmation": "g",
+            "expected_destination": 6,
+            "expected_serial": "101136.1558",
+            "format": "cbus-pci-serial-address-receipt-v1",
+            "frames": [],
+            "io_performed": false,
+            "issues": [
+              "missing_receipt",
+              "truncated_input"
+            ],
+            "local_unit": 16,
+            "movement_verified": false,
+            "notifications": [],
+            "pending_hex": "383630363130",
+            "persistence_verified": false,
+            "raw_hex": "672e383630363130",
+            "receipt_matches_request": false,
+            "replies": [],
+            "requires_independent_verification": true,
+            "status": "incomplete"
+          },
+          "received_hex": "672e383630363130",
+          "request_has_source_address": false,
+          "request_hex": "5c30354646303030463030313842313036313630363135670d",
+          "requires_independent_verification": true,
+          "retained_bytes": 8,
+          "retained_receipt_matches_request": false,
+          "send_attempted": true,
+          "send_completed": true,
+          "sent_byte_count": null,
+          "termination": "response_window_elapsed",
+          "timing": {
+            "elapsed_seconds": 0.022468999988632277,
+            "native_response_timeout": false,
+            "overall_timeout_seconds": 0.5,
+            "response_elapsed_seconds": 0.02241579198744148,
+            "response_timeout_seconds": 0.02
+          }
+        },
+        "journal_sha256": "89fd2b779dcee8002ce9252083d5d4cad7b8af602750f547de3f44ab60b6c81e",
+        "outcome": "uncertain",
+        "plan_sha256": "4130ae1d506850c96978bcd62cd8a88a126647eaf4b0ebdd2f599cd36c637c8a",
+        "wire_sha256": "897c77c4e936fac728749e7d55fb98f3ea5782661d99461c9b061b0172b78546"
+      }
+    ],
+    "executed_fresh_attempts": 5,
+    "format": "cbus-selected-serial-private-diagnosis-v1",
+    "no_hardware_or_native_execution": true,
+    "no_uncertain_replay": true,
+    "observed_uncertain_control": {
+      "after_collection_complete": false,
+      "attempt": 5,
+      "classification": "incomplete",
+      "exception": "SelectedSerialUncertain",
+      "fixture_move_durable": true,
+      "fragment_delay": 0.03,
+      "receipt_pending_hex": "383630363130",
+      "received_hex": "672e383630363130",
+      "response_timeout": 0.02,
+      "termination": "response_window_elapsed"
+    },
+    "owned_loopback_only": true,
+    "prior_ci": {
+      "exact_prior_ci_cause_proven": false,
+      "missing_evidence": "CI apply journal and child exchange are unavailable locally",
+      "reported_test": "tests/test_pci_selected_serial.py::SelectedSerialTests::test_rust_vector_plan_applies_live_cross_implementation",
+      "run": 36826365004
+    },
+    "production_edits": false,
+    "sandbox_preflight": {
+      "exit": 1,
+      "listener_bind_denied_before_any_network_command": true,
+      "log": "sandbox-bind-preflight.log"
+    },
+    "scope": "Diagnostic fixture controls establish the deadline/partial-frame mechanism. They do not assert this was the exact cause of the prior CI failure.",
+    "single_address_command_per_attempt": true,
+    "source_roster": {
+      "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+      "toolkit-cli/src/cbus_toolkit/pci_full_inventory.py": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615",
+      "toolkit-cli/src/cbus_toolkit/pci_selected_serial.py": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+      "toolkit-cli/src/cbus_toolkit/pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+      "toolkit-cli/src/cbus_toolkit/simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
+      "toolkit-cli/src/cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+      "toolkit-cli/tests/test_pci_selected_serial.py": "e4a85428106f1d854d51e40112571fb6dc37766bafedba1e8c969495489e3a3c",
+      "toolkit-cli/tests/test_simulator_duplicate_addressing.py": "60a8f30d8a2ff7c8c839847c99a70ea9aa6cbef1d05bc99ff2d5770847a2cf28",
+      "toolkit-cli/tests/test_simulator_duplicates.py": "79068602e6f484c2a8f6b240e15aedf7424871ca5b46281b4a6624f8026518f3"
+    }
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/commands/0/argv/1",
+        "raw_string_sha256": "1f84d9c53fa622507d31ab736e668065659c79487f9618d20d4ad1ea1eb3a8a3"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/commands/0/cwd",
+        "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/commands/1/argv/1",
+        "raw_string_sha256": "3acc927faed4bf86bc17b157195802c3aca635673ca5d69e0ad6b5eae1fb43b8"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/commands/1/cwd",
+        "raw_string_sha256": "0438e92f88fee00a3d6b5048c18e5ef9043f7511307423486b4c44956494e568"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 21012,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "selected-serial/diagnosis-proof",
+    "sha256": "3c609a7819b91748541cd20eaf549a61b4425ff4d79add8788125ca079ec6887"
+  },
+  "scope": "Bounded fixture diagnosis; exact prior CI cause remains unproven without original journal"
+}

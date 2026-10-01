@@ -232,13 +232,13 @@ fn imported_definitions(project: &Project) -> Vec<NetDefinition> {
         NetDefinition {
             name: name.clone(),
             interface_type: record
-                .interface()
-                .field("InterfaceType")
+                .optional_interface()
+                .and_then(|interface| interface.field("InterfaceType"))
                 .unwrap_or_default()
                 .to_string(),
             interface_address: record
-                .interface()
-                .field("InterfaceAddress")
+                .optional_interface()
+                .and_then(|interface| interface.field("InterfaceAddress"))
                 .unwrap_or_default()
                 .to_string(),
             options: record.options(),

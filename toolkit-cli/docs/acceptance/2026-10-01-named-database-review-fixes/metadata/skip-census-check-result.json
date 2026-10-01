@@ -1,0 +1,35 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "research/skip_census.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "6fc76a50a7b1ee2f5fc15d5b7cf104d3d77eef439aa2c72c5b08932b012c0832"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 321,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "metadata/skip-census-check-result",
+    "sha256": "aef9ecd5b69ad61aa9f3214aa98f5c1c3de20e1c4a8ec22525dc2c323b65d09d"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

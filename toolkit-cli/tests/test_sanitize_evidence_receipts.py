@@ -271,3 +271,22 @@ def test_scan_preserves_synthetic_loopback_and_public_provenance():
     assert sanitizer.local_coordinate_fields({"/tmp/private-key": "/tmp/private-value"}) == [
         "/<private-key>", "/<private-key>",
     ]
+
+
+@pytest.mark.parametrize("residue", [
+    "${CBUS_HOST_TEMP_ROOT}/ab/private_bucket/T/owned-scratch",
+    "${CBUS_HOST_TEMP_ROOT}/ab/private_bucket/C/cache",
+    "${CBUS_HOST_TEMP_ROOT}/pytest-of-synthetic/pytest-1/test_one/state.json",
+    "${CBUS_TEST_ROOT}/pytest-of-synthetic/pytest-1/test_one/state.json",
+])
+def test_scan_rejects_account_coordinates_left_below_a_role(residue):
+    assert sanitizer.local_coordinate_fields({"metadata": [residue]}) == ["/metadata/0"]
+    assert sanitizer.local_coordinate_fields({residue: "public"}) == ["/<private-key>"]
+
+
+def test_scan_accepts_complete_temporary_directory_roles():
+    assert not sanitizer.local_coordinate_fields({
+        "scratch": "${CBUS_NATIVE_WORK_ROOT}/tmp",
+        "fixture": "${CBUS_TEST_WORK_ROOT}/test_one/state.json",
+        "host_temp": "${CBUS_HOST_TEMP_ROOT}/owned-scratch",
+    })

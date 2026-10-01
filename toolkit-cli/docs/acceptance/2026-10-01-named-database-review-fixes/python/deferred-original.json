@@ -1,0 +1,48 @@
+{
+  "data": {
+    "executed_for_current_candidate": false,
+    "historical_only": {
+      "installed": {
+        "qualification": "Earlier e8a original47 historical component evidence only; no current execution credit",
+        "report_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_PROJECT_CLI_WHEEL_VALIDATION_20261001}/attempt2/installed-original/report.json",
+        "sha256": "b0841ae858c49ac492455720a949747944c354ac328a2a494e012f2c8a88053a"
+      },
+      "source": {
+        "qualification": "Earlier e8a original47 historical component evidence only; no current execution credit",
+        "report_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_PROJECT_CLI_WHEEL_VALIDATION_20261001}/attempt2/source-original/report.json",
+        "sha256": "da81da99f1d40c2420350dcb514c2a0375033a4d4708d5ae9649e0cd72fa79e0"
+      }
+    },
+    "manual_issue_url": "https://github.com/mitchell-johnson/cbus/issues/72",
+    "reason": "Human steering defers cyber-protected original Java/vendor oracle work to separate GitHub manual acceptance issue. No original, Windows, VM, or native executor is authorized for this checkpoint.",
+    "status": "deferred_manual_acceptance"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/historical_only/source/report_path",
+        "raw_string_sha256": "f949247a3865aa80b38821bfb46348327b7b5bc7f8d2d40889fed28e09123227"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/historical_only/installed/report_path",
+        "raw_string_sha256": "79ac7d61b87b9182f3ae3144c0054ca401ea53c0f814a7b59f2823469e885557"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 1109,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/deferred-original",
+    "sha256": "7af0ea6a4a911e78c3c639a77d13adcb22d145d0e034bb6c98d148b4bf984aca"
+  },
+  "scope": "Manual original acceptance deferred under GitHub issue #72; zero current original execution credit"
+}

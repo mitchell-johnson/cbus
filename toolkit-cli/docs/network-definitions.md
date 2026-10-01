@@ -152,9 +152,10 @@ Projects with an explicit older DBVersion retain numeric address aliases.
 An unversioned Network with NetworkNumber `255` also selects the native lexical
 address profile. This includes a Network added to the unversioned Installation
 created by `project new`: Address `254` with NetworkNumber `255` resolves as
-exact `254`, and its numeric alias `0xfe` does not resolve. NetworkNumber remains
-an independently validated byte; changing it does not rename Address or
-authorize physical traffic to that value.
+exact `254`, and its numeric alias `0xfe` does not resolve. Offline project
+validation and complete external DBSETXML require an independent byte
+NetworkNumber (including the supported `0xff` spelling). Changing it does not
+rename Address or authorize physical traffic to that value.
 Independent named database Networks support SAFE Application, Group, NetVar
 and Level construction/copy. Group and NetVar can contain Levels; NetVar is an
 Application child and has no Value field of its own. The admitted copies issue
@@ -169,6 +170,24 @@ Interface/Property metadata and Level Values. Missing TagName causes XML export
 Level additionally needs Value. Child completion preserves creation order and
 the issued OIDs. Unsafe Address writes retain literal values and duplicates;
 SAFE byte/collision checks are a separate admission boundary.
+
+Raw DBSET and DBSETSAFE on an independently owned named Network retain scalar
+lexemes for NetworkNumber and Level Value. Original C-Gate accepts `255`,
+`0xff`, `999`, `oops` and `-1`; the captured SAFE `999`/`oops` pair also validates,
+saves and reloads. cmqttd preserves this raw metadata behavior. Typed child
+creation still validates the requested address and initializes Level Value to
+a byte, and complete external XML admission remains strict. This does not
+extend raw scalar admission on numeric-associated or configured physical rows.
+
+Deleting an independent Network's Interface removes that metadata and its OID.
+The remaining tree can validate, save/reload internally and load as a closed
+runtime definition with empty interface metadata. Missing InterfaceType and
+InterfaceAddress aliases return `401` for reads and writes. NET SAVE DB refuses
+atomically with `408` until the required metadata exists; the captured original
+returns `500` for this case. SAFE rename to an occupied Network address also
+refuses atomically with `408`, where the original returns `500` without changing
+either owner. These controlled error responses are deliberate liveness repairs.
+Numeric-associated/configured rows retain their complete Interface requirement.
 
 Incomplete graphs survive cmqttd's internal JSON restart and explicit project
 baseline reload. They do not widen complete external DBSETXML or native archive

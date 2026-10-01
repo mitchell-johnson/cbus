@@ -1,0 +1,94 @@
+{
+  "data": {
+    "corrected_selection": [
+      "test_skip_census.py",
+      "test_cgate_contract_inventory.py",
+      "test_parity_register.py",
+      "test_project_legacy_transform_receipt.py",
+      "test_project_legacy_transform_versions_receipt.py"
+    ],
+    "excluded_attempt": {
+      "actual_parent_tests": 259,
+      "actual_passed_parent_tests": 256,
+      "actual_skips": 3,
+      "actual_subtests": 777,
+      "eligible_for_current_acceptance": false,
+      "junit": "source-guards.xml",
+      "stdout": "source-guards.stdout"
+    },
+    "excluded_attempts": {
+      "installed": {
+        "counts": {
+          "errors": 0,
+          "failures": 0,
+          "passed_parent_tests": 256,
+          "skips": 3,
+          "subtests": 777,
+          "unique_parent_tests": 259
+        },
+        "eligible_for_current_acceptance": false,
+        "junit": "installed-guards.xml",
+        "stdout": "installed-guards.stdout"
+      },
+      "source": {
+        "counts": {
+          "errors": 0,
+          "failures": 0,
+          "passed_parent_tests": 256,
+          "skips": 3,
+          "subtests": 777,
+          "unique_parent_tests": 259
+        },
+        "eligible_for_current_acceptance": false,
+        "junit": "source-guards.xml",
+        "stdout": "source-guards.stdout"
+      }
+    },
+    "historical_runner": {
+      "path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/historical-misselected-run.py",
+      "qualification": "Exact original bytes reconstructed from retained prior driver and logged private preparation transforms; digest equals preexecution recorded SHA",
+      "sha256": "0cab27296cec6e83e58a2c0eba913d38e42e619f95d7e0f4fcbaf22d35626bc5"
+    },
+    "installed_corrected_namespace": "installed-guards-retry",
+    "installed_namespace": "installed-guards",
+    "old_selection": [
+      "test_skip_census.py",
+      "test_cgate_contract_inventory.py",
+      "test_parity_register.py",
+      "test_project_legacy_transform_receipt.py",
+      "test_project_legacy_transform_versions_receipt.py",
+      "test_pci_selected_serial.py",
+      "test_sanitize_evidence_receipts.py",
+      "test_simulator_duplicate_addressing.py",
+      "test_pci_full_inventory.py",
+      "test_pci_serials.py",
+      "test_pci_serial_address_transport.py"
+    ],
+    "reason": "Private preparation replacement expanded guard selection unintentionally. Only private selection changed; no source/package changes.",
+    "run_sha256": "0146d2ee800b7e960d497d38109e185f4aaf3c7ae74cf84226abc4ec8b51b171",
+    "source_corrected_namespace": "source-guards-retry"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/historical_runner/path",
+        "raw_string_sha256": "7bedb28d0c54ffa4fc88b99b90ddee0e1901bfcce6147c021c53f7f4152370e4"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 2451,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/selection-correction",
+    "sha256": "0b6f8593c017b56e625da18e423625891e41cb0ed6a9e754f94758c0d4be0b62"
+  },
+  "scope": "Private harness selection correction; expanded source and installed guard attempts are excluded, not retried wholesale"
+}

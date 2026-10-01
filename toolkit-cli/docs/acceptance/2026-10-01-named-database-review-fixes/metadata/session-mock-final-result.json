@@ -1,0 +1,48 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "research/cgate_session_differential.py",
+      "--mock-bin",
+      "${CBUS_CARGO_TARGET}/release/cgate-mock",
+      "--output",
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/metadata-final/retained-differentials/cgate-session-differential-fixed.json"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "ebdc640949e118aa6f00f577545ef25e5500515c02c0c4483d8a1bc9bd7aaac8"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/3",
+        "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/5",
+        "raw_string_sha256": "127f741853a0fc964952b84faeab8b92b1d18fde37f54eb81def45871adfc1f1"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 616,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "metadata/session-mock-final-result",
+    "sha256": "7940e59c4e0c4bffb7506c9af65689065c9a96dcb5359178bb6c82453735da41"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

@@ -1,0 +1,1528 @@
+{
+  "data": {
+    "contracts": {
+      "interface": {
+        "interface-and-safe-rename-invariants": {
+          "rows": [
+            {
+              "command": "DBDELETE //LAB/CustomA/Interface",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007607500010635704,
+              "final": "[n25] 200 OK.",
+              "label": "delete-interface",
+              "request_hex": "5b6e32355d20444244454c455445202f2f4c41422f437573746f6d412f496e746572666163650d0a",
+              "response": [
+                "[n25] 200 OK."
+              ],
+              "response_hex": "5b6e32355d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180612.898506583,
+              "status": 200,
+              "tag": "n25",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceType",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0008421660168096423,
+              "final": "[n26] 401 Bad object or device ID: Element InterfaceType not found.",
+              "label": "interface-alias",
+              "request_hex": "5b6e32365d204442474554202f2f4c41422f437573746f6d412f496e74657266616365547970650d0a",
+              "response": [
+                "[n26] 401 Bad object or device ID: Element InterfaceType not found."
+              ],
+              "response_hex": "5b6e32365d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636554797065206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180612.899559875,
+              "status": 401,
+              "tag": "n26",
+              "terminal_complete": true
+            }
+          ]
+        },
+        "interface-delete-lifecycle": {
+          "rows": [
+            {
+              "command": "DBDELETE //LAB/CustomA/Interface",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0010243330034427345,
+              "final": "[n17] 200 OK.",
+              "label": "delete-interface",
+              "request_hex": "5b6e31375d20444244454c455445202f2f4c41422f437573746f6d412f496e746572666163650d0a",
+              "response": [
+                "[n17] 200 OK."
+              ],
+              "response_hex": "5b6e31375d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.45610225,
+              "status": 200,
+              "tag": "n17",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceType",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007313330133911222,
+              "final": "[n18] 401 Bad object or device ID: Element InterfaceType not found.",
+              "label": "missing-type",
+              "request_hex": "5b6e31385d204442474554202f2f4c41422f437573746f6d412f496e74657266616365547970650d0a",
+              "response": [
+                "[n18] 401 Bad object or device ID: Element InterfaceType not found."
+              ],
+              "response_hex": "5b6e31385d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636554797065206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.457386125,
+              "status": 401,
+              "tag": "n18",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceAddress",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007222089916467667,
+              "final": "[n19] 401 Bad object or device ID: Element InterfaceAddress not found.",
+              "label": "missing-address",
+              "request_hex": "5b6e31395d204442474554202f2f4c41422f437573746f6d412f496e74657266616365416464726573730d0a",
+              "response": [
+                "[n19] 401 Bad object or device ID: Element InterfaceAddress not found."
+              ],
+              "response_hex": "5b6e31395d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636541646472657373206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.458361541,
+              "status": 401,
+              "tag": "n19",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBSETSAFE //LAB/CustomA/InterfaceType Cni",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.000708041014149785,
+              "final": "[n20] 401 Bad object or device ID: Field not found",
+              "label": "missing-type-set",
+              "request_hex": "5b6e32305d20444253455453414645202f2f4c41422f437573746f6d412f496e746572666163655479706520436e690d0a",
+              "response": [
+                "[n20] 401 Bad object or device ID: Field not found"
+              ],
+              "response_hex": "5b6e32305d2034303120426164206f626a656374206f72206465766963652049443a204669656c64206e6f7420666f756e640d0a",
+              "sent": true,
+              "started_monotonic": 180764.459461875,
+              "status": 401,
+              "tag": "n20",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBSETSAFE //LAB/CustomA/InterfaceAddress 127.0.0.1:63675",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0006851660145912319,
+              "final": "[n21] 401 Bad object or device ID: Field not found",
+              "label": "missing-address-set",
+              "request_hex": "5b6e32315d20444253455453414645202f2f4c41422f437573746f6d412f496e7465726661636541646472657373203132372e302e302e313a36333637350d0a",
+              "response": [
+                "[n21] 401 Bad object or device ID: Field not found"
+              ],
+              "response_hex": "5b6e32315d2034303120426164206f626a656374206f72206465766963652049443a204669656c64206e6f7420666f756e640d0a",
+              "sent": true,
+              "started_monotonic": 180764.46043875,
+              "status": 401,
+              "tag": "n21",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBVALIDATE //LAB/CustomA",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0017139999836217612,
+              "final": "[n22] 233 Network: Valid",
+              "label": "validate",
+              "request_hex": "5b6e32325d20444256414c4944415445202f2f4c41422f437573746f6d410d0a",
+              "response": [
+                "[n22] 233 Network: Valid"
+              ],
+              "response_hex": "5b6e32325d20323333204e6574776f726b3a2056616c69640d0a",
+              "sent": true,
+              "started_monotonic": 180764.461365583,
+              "status": 233,
+              "tag": "n22",
+              "terminal_complete": true
+            },
+            {
+              "command": "PROJECT SAVE LAB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.019060499995248392,
+              "final": "[n24] 200 OK.",
+              "label": "explicit-save",
+              "request_hex": "5b6e32345d2050524f4a4543542053415645204c41420d0a",
+              "response": [
+                "[n24] 200 OK."
+              ],
+              "response_hex": "5b6e32345d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.466410708,
+              "status": 200,
+              "tag": "n24",
+              "terminal_complete": true
+            },
+            {
+              "command": "PROJECT CLOSE LAB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007262089930009097,
+              "final": "[n25] 200 OK.",
+              "label": "close",
+              "request_hex": "5b6e32355d2050524f4a45435420434c4f5345204c41420d0a",
+              "response": [
+                "[n25] 200 OK."
+              ],
+              "response_hex": "5b6e32355d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.485871541,
+              "status": 200,
+              "tag": "n25",
+              "terminal_complete": true
+            },
+            {
+              "command": "PROJECT LOAD LAB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.014058333996217698,
+              "final": "[n26] 200 OK.",
+              "label": "load",
+              "request_hex": "5b6e32365d2050524f4a454354204c4f4144204c41420d0a",
+              "response": [
+                "[n26] 200 OK."
+              ],
+              "response_hex": "5b6e32365d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.486863291,
+              "status": 200,
+              "tag": "n26",
+              "terminal_complete": true
+            },
+            {
+              "command": "PROJECT USE LAB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007516670157201588,
+              "final": "[n27] 200 OK.",
+              "label": "use",
+              "request_hex": "5b6e32375d2050524f4a45435420555345204c41420d0a",
+              "response": [
+                "[n27] 200 OK."
+              ],
+              "response_hex": "5b6e32375d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.501714333,
+              "status": 200,
+              "tag": "n27",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceType",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0016912920109461993,
+              "final": "[n28] 401 Bad object or device ID: Element InterfaceType not found.",
+              "label": "type-after-reload",
+              "request_hex": "5b6e32385d204442474554202f2f4c41422f437573746f6d412f496e74657266616365547970650d0a",
+              "response": [
+                "[n28] 401 Bad object or device ID: Element InterfaceType not found."
+              ],
+              "response_hex": "5b6e32385d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636554797065206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.502789333,
+              "status": 401,
+              "tag": "n28",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceAddress",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007090830185916275,
+              "final": "[n29] 401 Bad object or device ID: Element InterfaceAddress not found.",
+              "label": "address-after-reload",
+              "request_hex": "5b6e32395d204442474554202f2f4c41422f437573746f6d412f496e74657266616365416464726573730d0a",
+              "response": [
+                "[n29] 401 Bad object or device ID: Element InterfaceAddress not found."
+              ],
+              "response_hex": "5b6e32395d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636541646472657373206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180764.504748708,
+              "status": 401,
+              "tag": "n29",
+              "terminal_complete": true
+            }
+          ]
+        },
+        "interface-delete-load": {
+          "rows": [
+            {
+              "command": "DBDELETE //LAB/CustomA/Interface",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0008569589990656823,
+              "final": "[n16] 200 OK.",
+              "label": "delete-interface",
+              "request_hex": "5b6e31365d20444244454c455445202f2f4c41422f437573746f6d412f496e746572666163650d0a",
+              "response": [
+                "[n16] 200 OK."
+              ],
+              "response_hex": "5b6e31365d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180838.011863041,
+              "status": 200,
+              "tag": "n16",
+              "terminal_complete": true
+            },
+            {
+              "command": "NET LOAD DB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0009691249870229512,
+              "final": "[n18] 200 OK.",
+              "label": "runtime-after-delete",
+              "request_hex": "5b6e31385d204e4554204c4f41442044420d0a",
+              "response": [
+                "[n18] 200 OK."
+              ],
+              "response_hex": "5b6e31385d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180838.016974791,
+              "status": 200,
+              "tag": "n18",
+              "terminal_complete": true
+            },
+            {
+              "command": "NET LIST",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0008866249991115183,
+              "final": "[n19] 131 network=Neighbor State=new InterfaceState=closed",
+              "label": "runtime-list",
+              "request_hex": "5b6e31395d204e4554204c4953540d0a",
+              "response": [
+                "[n19] 131-network=CustomA State=new InterfaceState=closed",
+                "[n19] 131 network=Neighbor State=new InterfaceState=closed"
+              ],
+              "response_hex": "5b6e31395d203133312d6e6574776f726b3d437573746f6d412053746174653d6e657720496e7465726661636553746174653d636c6f7365640d0a5b6e31395d20313331206e6574776f726b3d4e65696768626f722053746174653d6e657720496e7465726661636553746174653d636c6f7365640d0a",
+              "sent": true,
+              "started_monotonic": 180838.018209333,
+              "status": 131,
+              "tag": "n19",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceType",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0008116669778246433,
+              "final": "[n20] 401 Bad object or device ID: Element InterfaceType not found.",
+              "label": "type-after-runtime",
+              "request_hex": "5b6e32305d204442474554202f2f4c41422f437573746f6d412f496e74657266616365547970650d0a",
+              "response": [
+                "[n20] 401 Bad object or device ID: Element InterfaceType not found."
+              ],
+              "response_hex": "5b6e32305d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636554797065206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180838.019382416,
+              "status": 401,
+              "tag": "n20",
+              "terminal_complete": true
+            }
+          ]
+        },
+        "interface-delete-save": {
+          "rows": [
+            {
+              "command": "DBDELETE //LAB/CustomA/Interface",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007901249919086695,
+              "final": "[n16] 200 OK.",
+              "label": "delete-interface",
+              "request_hex": "5b6e31365d20444244454c455445202f2f4c41422f437573746f6d412f496e746572666163650d0a",
+              "response": [
+                "[n16] 200 OK."
+              ],
+              "response_hex": "5b6e31365d20323030204f4b2e0d0a",
+              "sent": true,
+              "started_monotonic": 180839.191128041,
+              "status": 200,
+              "tag": "n16",
+              "terminal_complete": true
+            },
+            {
+              "command": "NET SAVE DB",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0006805409793742001,
+              "final": "[n18] 500 Internal error.",
+              "label": "runtime-after-delete",
+              "request_hex": "5b6e31385d204e455420534156452044420d0a",
+              "response": [
+                "[n18] 500 Internal error."
+              ],
+              "response_hex": "5b6e31385d2035303020496e7465726e616c206572726f722e0d0a",
+              "sent": true,
+              "started_monotonic": 180839.195023125,
+              "status": 500,
+              "tag": "n18",
+              "terminal_complete": true
+            },
+            {
+              "command": "NET LIST",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.001000457996269688,
+              "final": "[n19] 131 network=Neighbor State=new InterfaceState=closed",
+              "label": "runtime-list",
+              "request_hex": "5b6e31395d204e4554204c4953540d0a",
+              "response": [
+                "[n19] 131-network=CustomA State=new InterfaceState=closed",
+                "[n19] 131 network=Neighbor State=new InterfaceState=closed"
+              ],
+              "response_hex": "5b6e31395d203133312d6e6574776f726b3d437573746f6d412053746174653d6e657720496e7465726661636553746174653d636c6f7365640d0a5b6e31395d20313331206e6574776f726b3d4e65696768626f722053746174653d6e657720496e7465726661636553746174653d636c6f7365640d0a",
+              "sent": true,
+              "started_monotonic": 180839.1965015,
+              "status": 131,
+              "tag": "n19",
+              "terminal_complete": true
+            },
+            {
+              "command": "DBGET //LAB/CustomA/InterfaceType",
+              "connection_role": "selected-owner",
+              "duration_seconds": 0.0007477909966837615,
+              "final": "[n20] 401 Bad object or device ID: Element InterfaceType not found.",
+              "label": "type-after-runtime",
+              "request_hex": "5b6e32305d204442474554202f2f4c41422f437573746f6d412f496e74657266616365547970650d0a",
+              "response": [
+                "[n20] 401 Bad object or device ID: Element InterfaceType not found."
+              ],
+              "response_hex": "5b6e32305d2034303120426164206f626a656374206f72206465766963652049443a20456c656d656e7420496e7465726661636554797065206e6f7420666f756e642e0d0a",
+              "sent": true,
+              "started_monotonic": 180839.197792,
+              "status": 401,
+              "tag": "n20",
+              "terminal_complete": true
+            }
+          ]
+        }
+      },
+      "literal_reload": {
+        "exact_observed_xml_delta": "one empty Level TagsDLT appended; remaining XML structurally equal",
+        "phase": "scalar-literal-storage-reload",
+        "qualifier": "Raw scalar GET proves Value=oops; Level XML does not include a Value child, so no XML Value-field serialization claim.",
+        "safe_number_999": "[n27] 342 CustomA/NetworkNumber=999",
+        "safe_value_oops": "[n28] 342 CustomA/56/1/7/Value=oops",
+        "validate_after": "[n29] 233 Network: Valid",
+        "validate_before": "[n21] 233 Network: Valid",
+        "whole_tree_byte_equal": false
+      },
+      "literal_sets": [
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n23] 342 CustomA/NetworkNumber=255",
+          "get_tag": "n23",
+          "lexeme": "255",
+          "set_status": 200,
+          "set_tag": "n22",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "NetworkNumber-DBSETSAFE-255-after",
+          "xml_before_label": "NetworkNumber-DBSETSAFE-255-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n28] 342 CustomA/NetworkNumber=0xff",
+          "get_tag": "n28",
+          "lexeme": "0xff",
+          "set_status": 200,
+          "set_tag": "n27",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "NetworkNumber-DBSETSAFE-0xff-after",
+          "xml_before_label": "NetworkNumber-DBSETSAFE-0xff-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n33] 342 CustomA/NetworkNumber=999",
+          "get_tag": "n33",
+          "lexeme": "999",
+          "set_status": 200,
+          "set_tag": "n32",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "NetworkNumber-DBSETSAFE-999-after",
+          "xml_before_label": "NetworkNumber-DBSETSAFE-999-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n38] 342 CustomA/NetworkNumber=oops",
+          "get_tag": "n38",
+          "lexeme": "oops",
+          "set_status": 200,
+          "set_tag": "n37",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "NetworkNumber-DBSETSAFE-oops-after",
+          "xml_before_label": "NetworkNumber-DBSETSAFE-oops-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n43] 342 CustomA/NetworkNumber=-1",
+          "get_tag": "n43",
+          "lexeme": "-1",
+          "set_status": 200,
+          "set_tag": "n42",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "NetworkNumber-DBSETSAFE--1-after",
+          "xml_before_label": "NetworkNumber-DBSETSAFE--1-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n48] 342 CustomA/NetworkNumber=255",
+          "get_tag": "n48",
+          "lexeme": "255",
+          "set_status": 200,
+          "set_tag": "n47",
+          "verb": "DBSET",
+          "xml_after_label": "NetworkNumber-DBSET-255-after",
+          "xml_before_label": "NetworkNumber-DBSET-255-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n53] 342 CustomA/NetworkNumber=0xff",
+          "get_tag": "n53",
+          "lexeme": "0xff",
+          "set_status": 200,
+          "set_tag": "n52",
+          "verb": "DBSET",
+          "xml_after_label": "NetworkNumber-DBSET-0xff-after",
+          "xml_before_label": "NetworkNumber-DBSET-0xff-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n58] 342 CustomA/NetworkNumber=999",
+          "get_tag": "n58",
+          "lexeme": "999",
+          "set_status": 200,
+          "set_tag": "n57",
+          "verb": "DBSET",
+          "xml_after_label": "NetworkNumber-DBSET-999-after",
+          "xml_before_label": "NetworkNumber-DBSET-999-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n63] 342 CustomA/NetworkNumber=oops",
+          "get_tag": "n63",
+          "lexeme": "oops",
+          "set_status": 200,
+          "set_tag": "n62",
+          "verb": "DBSET",
+          "xml_after_label": "NetworkNumber-DBSET-oops-after",
+          "xml_before_label": "NetworkNumber-DBSET-oops-before"
+        },
+        {
+          "field": "NetworkNumber",
+          "get_final": "[n68] 342 CustomA/NetworkNumber=-1",
+          "get_tag": "n68",
+          "lexeme": "-1",
+          "set_status": 200,
+          "set_tag": "n67",
+          "verb": "DBSET",
+          "xml_after_label": "NetworkNumber-DBSET--1-after",
+          "xml_before_label": "NetworkNumber-DBSET--1-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n73] 342 CustomA/56/1/7/Value=255",
+          "get_tag": "n73",
+          "lexeme": "255",
+          "set_status": 200,
+          "set_tag": "n72",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "Value-DBSETSAFE-255-after",
+          "xml_before_label": "Value-DBSETSAFE-255-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n78] 342 CustomA/56/1/7/Value=0xff",
+          "get_tag": "n78",
+          "lexeme": "0xff",
+          "set_status": 200,
+          "set_tag": "n77",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "Value-DBSETSAFE-0xff-after",
+          "xml_before_label": "Value-DBSETSAFE-0xff-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n83] 342 CustomA/56/1/7/Value=999",
+          "get_tag": "n83",
+          "lexeme": "999",
+          "set_status": 200,
+          "set_tag": "n82",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "Value-DBSETSAFE-999-after",
+          "xml_before_label": "Value-DBSETSAFE-999-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n88] 342 CustomA/56/1/7/Value=oops",
+          "get_tag": "n88",
+          "lexeme": "oops",
+          "set_status": 200,
+          "set_tag": "n87",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "Value-DBSETSAFE-oops-after",
+          "xml_before_label": "Value-DBSETSAFE-oops-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n93] 342 CustomA/56/1/7/Value=-1",
+          "get_tag": "n93",
+          "lexeme": "-1",
+          "set_status": 200,
+          "set_tag": "n92",
+          "verb": "DBSETSAFE",
+          "xml_after_label": "Value-DBSETSAFE--1-after",
+          "xml_before_label": "Value-DBSETSAFE--1-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n98] 342 CustomA/56/1/7/Value=255",
+          "get_tag": "n98",
+          "lexeme": "255",
+          "set_status": 200,
+          "set_tag": "n97",
+          "verb": "DBSET",
+          "xml_after_label": "Value-DBSET-255-after",
+          "xml_before_label": "Value-DBSET-255-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n103] 342 CustomA/56/1/7/Value=0xff",
+          "get_tag": "n103",
+          "lexeme": "0xff",
+          "set_status": 200,
+          "set_tag": "n102",
+          "verb": "DBSET",
+          "xml_after_label": "Value-DBSET-0xff-after",
+          "xml_before_label": "Value-DBSET-0xff-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n108] 342 CustomA/56/1/7/Value=999",
+          "get_tag": "n108",
+          "lexeme": "999",
+          "set_status": 200,
+          "set_tag": "n107",
+          "verb": "DBSET",
+          "xml_after_label": "Value-DBSET-999-after",
+          "xml_before_label": "Value-DBSET-999-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n113] 342 CustomA/56/1/7/Value=oops",
+          "get_tag": "n113",
+          "lexeme": "oops",
+          "set_status": 200,
+          "set_tag": "n112",
+          "verb": "DBSET",
+          "xml_after_label": "Value-DBSET-oops-after",
+          "xml_before_label": "Value-DBSET-oops-before"
+        },
+        {
+          "field": "Value",
+          "get_final": "[n118] 342 CustomA/56/1/7/Value=-1",
+          "get_tag": "n118",
+          "lexeme": "-1",
+          "set_status": 200,
+          "set_tag": "n117",
+          "verb": "DBSET",
+          "xml_after_label": "Value-DBSET--1-after",
+          "xml_before_label": "Value-DBSET--1-before"
+        }
+      ],
+      "numeric_safe_collision": {
+        "destination_xml_exact": true,
+        "phase": "interface-and-safe-rename-invariants",
+        "row": {
+          "command": "DBRENAMENETSAFE 1 2",
+          "connection_role": "selected-owner",
+          "duration_seconds": 0.0007602080004289746,
+          "final": "[n21] 500 Internal error.",
+          "label": "safe-numeric-collision",
+          "request_hex": "5b6e32315d20444252454e414d454e455453414645203120320d0a",
+          "response": [
+            "[n21] 500 Internal error."
+          ],
+          "response_hex": "5b6e32315d2035303020496e7465726e616c206572726f722e0d0a",
+          "sent": true,
+          "started_monotonic": 180612.888624208,
+          "status": 500,
+          "tag": "n21",
+          "terminal_complete": true
+        },
+        "source_xml_exact": true
+      }
+    },
+    "eligible_phases": 6,
+    "eligible_terminals": 262,
+    "excluded_failed_phases": 1,
+    "excluded_failed_terminals": 17,
+    "failures": [],
+    "format": "cbus-private-independent-native-scalar-audit-v1",
+    "pass": true,
+    "phases": [
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": null,
+          "neighbor_subtree_exact": null,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "8717f62fe7e3e49ae057b0328e15441eb128b4e53181c4893ad4cf841ea95e68",
+        "phase": "interface-and-safe-rename-invariants",
+        "raw_mode": "0o600",
+        "raw_sha256": "0084bbae1cca3d9d302b035d9f3c16b62df99a7e2417a8f2ee7481adf9cb1445",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/aa1c24689581bfb895d648d988ad37ddacd72a583afb07312e9ff536e2edef39-probe-invariants.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-invariants.py",
+            "sha256": "aa1c24689581bfb895d648d988ad37ddacd72a583afb07312e9ff536e2edef39",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-invariants.py"
+          }
+        ],
+        "snapshot_count": 11,
+        "status_histogram": {
+          "200": 16,
+          "344": 11,
+          "401": 1,
+          "500": 1
+        },
+        "terminals": 29
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": null,
+          "neighbor_subtree_exact": null,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "fcffcde7e5b88df93988a4ed73e643ac2108f9ed52fa4328db693b70387428c2",
+        "phase": "interface-delete-lifecycle",
+        "raw_mode": "0o600",
+        "raw_sha256": "6db39e1b8e48f1495682cefa5b21a170e37ca1440b8f98398cbe88e52062c2c7",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/afdfb047d9f87238bf990399b46cf03fbd6b619c9f2013d1b844af4ddbfc7889-probe-interface-lifecycle.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-lifecycle.py",
+            "sha256": "afdfb047d9f87238bf990399b46cf03fbd6b619c9f2013d1b844af4ddbfc7889",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-lifecycle.py"
+          }
+        ],
+        "snapshot_count": 8,
+        "status_histogram": {
+          "200": 17,
+          "233": 1,
+          "344": 8,
+          "401": 6
+        },
+        "terminals": 32
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": true,
+          "neighbor_subtree_exact": null,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "4c7fa38faf7b0752ca738522243b184af570f5951b6912550366739199c0b852",
+        "phase": "interface-delete-load",
+        "raw_mode": "0o600",
+        "raw_sha256": "b6807b1e556f3f8c264adca637e1ab549c69fa0ae6991dcf8058b395f8ecf645",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878-probe-interface-runtime.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-runtime.py",
+            "sha256": "40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-runtime.py"
+          }
+        ],
+        "snapshot_count": 7,
+        "status_histogram": {
+          "131": 1,
+          "200": 14,
+          "344": 7,
+          "401": 1
+        },
+        "terminals": 23
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": true,
+          "neighbor_subtree_exact": null,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "f379483c4253ba67b321ece373d4a532d6a4c16bb04fbb0bc507e90f4e019827",
+        "phase": "interface-delete-save",
+        "raw_mode": "0o600",
+        "raw_sha256": "95511f99f0f9567bdb522eaca5cb59d06c56e84f51b9d8cd84d3defeb0c76843",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878-probe-interface-runtime.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-runtime.py",
+            "sha256": "40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-interface-runtime.py"
+          }
+        ],
+        "snapshot_count": 7,
+        "status_histogram": {
+          "131": 1,
+          "200": 13,
+          "344": 7,
+          "401": 1,
+          "500": 1
+        },
+        "terminals": 23
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": null,
+          "neighbor_subtree_exact": null,
+          "other_exact": null
+        },
+        "eligible_successful_phase": false,
+        "failed_prerequisite": {
+          "message": "Prerequisite did not complete: add-app",
+          "type": "PhaseStop"
+        },
+        "log_sha256": "3830cad279a7b1ada2667de0aef4b6920ab67148626445c074b21f7b9d78ff61",
+        "phase": "scalar-byte-fields",
+        "raw_mode": "0o600",
+        "raw_sha256": "c831a2e8cf3ddb24de784b948d23e4aad92c36b92a74ecf386cbfbbec60451d4",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/d63a981eb3b4c1c60dee08b223b85ceeceecc5290a1ddf910c7a59a56ee5f124-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "d63a981eb3b4c1c60dee08b223b85ceeceecc5290a1ddf910c7a59a56ee5f124",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-attempt1.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          }
+        ],
+        "snapshot_count": 4,
+        "status_histogram": {
+          "200": 12,
+          "301": 1,
+          "344": 4
+        },
+        "terminals": 17
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": null,
+          "neighbor_subtree_exact": true,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "17a969f43f508f7d790c092bd3d9fd8e47d9b406a74952d8240ad384d830976e",
+        "phase": "scalar-byte-fields-attempt2",
+        "raw_mode": "0o600",
+        "raw_sha256": "4701492b9d9fd3f3a2af34261c047601e210e16d8ba1c8001d6b143fbcc54870",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          }
+        ],
+        "snapshot_count": 47,
+        "status_histogram": {
+          "200": 53,
+          "301": 3,
+          "342": 20,
+          "344": 47
+        },
+        "terminals": 123
+      },
+      {
+        "checks": {
+          "archived_script_bindings_exact": true,
+          "closed_synthetic_no_adoption": true,
+          "inputs_before_after_identical": true,
+          "log_digest": true,
+          "owned_cleanup": true,
+          "proxy_reply_bytes_exact": true,
+          "proxy_request_bytes_exact": true,
+          "snapshot_digest_and_wire_binding": true,
+          "tagged_requests": true,
+          "terminal_records": true,
+          "wire_closed": true
+        },
+        "controls": {
+          "neighbor_runtime_closed": null,
+          "neighbor_subtree_exact": null,
+          "other_exact": true
+        },
+        "eligible_successful_phase": true,
+        "failed_prerequisite": null,
+        "log_sha256": "3099124a3da30b3575c271751c2a40b2336b116aadac28d7f0c165bca7a0caf5",
+        "phase": "scalar-literal-storage-reload",
+        "raw_mode": "0o600",
+        "raw_sha256": "8cf21dbf2fc43b1b5f0f86720c66c6513c7e2efbfc46bdd052a30befa83328a7",
+        "script_bindings": [
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py",
+            "sha256": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py",
+            "captured_path": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py",
+            "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+            "source_snapshot": "${CBUS_TOOLKIT_ROOT}/research/local_cgate.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py",
+            "captured_path": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py",
+            "sha256": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+            "source_snapshot": "${CBUS_OWNED_CBUS_ORIGINAL_NET_SAVE_INTEGRATION_CLI_DRIVER_20261001}/driver.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py",
+            "sha256": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/owned-phase.py"
+          },
+          {
+            "archive_mode": "0o600",
+            "archive_path": "script-versions/9e87e2a086809b6c628f6a877e35755bec0091acd884a7aa82912084eb259387-probe-reload.py",
+            "captured_path": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-reload.py",
+            "sha256": "9e87e2a086809b6c628f6a877e35755bec0091acd884a7aa82912084eb259387",
+            "source_snapshot": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEW_FIXES_20261001}/scalar-original/probe-reload.py"
+          }
+        ],
+        "snapshot_count": 7,
+        "status_histogram": {
+          "200": 18,
+          "233": 2,
+          "301": 3,
+          "342": 2,
+          "344": 7
+        },
+        "terminals": 32
+      }
+    ],
+    "qualifications": [
+      "Initial17 rows stopped on wrongly expected200 versus actual301 add; no successful scalar phase credit.",
+      "Neighbor full XML after-state was captured only via attempt2 final whole-LAB export; other phases have baseline only, with closed runtime Neighbor listed in NETLOAD/NETSAVE controls.",
+      "123-row scalar phase admits255,0xff,999,oops,-1;0 was not probed.",
+      "Durable reload proves SAFE Number999 and LevelValueoops only; do not widen to all unsafe/lexeme combinations.",
+      "Reload adds one empty TagsDLT to Level; no whole XML byte-equality claim.",
+      "Network numeric SAFE collision500 was observed with exact source/destination XML preservation; no broad native atomicity claim.",
+      "NETSAVE after Interface deletion returns500 and leaves captured Network XML unchanged; Rust controlled refusal is separately qualified."
+    ],
+    "scope": {
+      "audit_read_only": true,
+      "candidate_acceptance_credit": false,
+      "cargo_or_tests": false,
+      "current_rust_source_quiet_asserted": false,
+      "git_or_ci_writes": false,
+      "original_executed_by_auditor": false,
+      "private_contract_preparation_only": true,
+      "repo_edits": false
+    },
+    "script_archive_roster": {
+      "script-versions/02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9-probe.py": "02e116adb30a30fffb94c0e9c878505fe006b24f961fd3e1f1030f5f41ef00e9",
+      "script-versions/3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111-local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111",
+      "script-versions/40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878-probe-interface-runtime.py": "40baf5f2d6c838f4a731cbc564f9058430aca9127216bba889b95c8ac1d50878",
+      "script-versions/5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec-driver.py": "5bf5c39578594cf3551898f3db4227579a5338104037491ae4dcb25ab9bf94ec",
+      "script-versions/9e87e2a086809b6c628f6a877e35755bec0091acd884a7aa82912084eb259387-probe-reload.py": "9e87e2a086809b6c628f6a877e35755bec0091acd884a7aa82912084eb259387",
+      "script-versions/aa1c24689581bfb895d648d988ad37ddacd72a583afb07312e9ff536e2edef39-probe-invariants.py": "aa1c24689581bfb895d648d988ad37ddacd72a583afb07312e9ff536e2edef39",
+      "script-versions/afdfb047d9f87238bf990399b46cf03fbd6b619c9f2013d1b844af4ddbfc7889-probe-interface-lifecycle.py": "afdfb047d9f87238bf990399b46cf03fbd6b619c9f2013d1b844af4ddbfc7889",
+      "script-versions/bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50-owned-phase.py": "bff52837ac71f50672a91f483ae7d977dbec646be1b68cd08031c4378a377a50",
+      "script-versions/d63a981eb3b4c1c60dee08b223b85ceeceecc5290a1ddf910c7a59a56ee5f124-probe.py": "d63a981eb3b4c1c60dee08b223b85ceeceecc5290a1ddf910c7a59a56ee5f124"
+    }
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/4/captured_path",
+        "raw_string_sha256": "04c983ac62ed6dfdb887a2627175d065664f6e97b553260cd717793bb64f1468"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/0/script_bindings/4/source_snapshot",
+        "raw_string_sha256": "04c983ac62ed6dfdb887a2627175d065664f6e97b553260cd717793bb64f1468"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/4/captured_path",
+        "raw_string_sha256": "e6ecd512fb9d2602f719b19d84bf571603857adf6886b142f80597b89d7cf0e1"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/1/script_bindings/4/source_snapshot",
+        "raw_string_sha256": "e6ecd512fb9d2602f719b19d84bf571603857adf6886b142f80597b89d7cf0e1"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/4/captured_path",
+        "raw_string_sha256": "7ab0f33fe3b098b1f22e2fa5a38e48dfa91d5bfe1dab969e6248f6ff9a326102"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/2/script_bindings/4/source_snapshot",
+        "raw_string_sha256": "7ab0f33fe3b098b1f22e2fa5a38e48dfa91d5bfe1dab969e6248f6ff9a326102"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/4/captured_path",
+        "raw_string_sha256": "7ab0f33fe3b098b1f22e2fa5a38e48dfa91d5bfe1dab969e6248f6ff9a326102"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/3/script_bindings/4/source_snapshot",
+        "raw_string_sha256": "7ab0f33fe3b098b1f22e2fa5a38e48dfa91d5bfe1dab969e6248f6ff9a326102"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "27d6383c96231e43ab51567f7f9d429d8f86f625538674e6344c6d9efb21ced4"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/4/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/5/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/0/captured_path",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/0/source_snapshot",
+        "raw_string_sha256": "03c4d3ef9e3880c86ccbd2eaf40fb34756700ce983f445165e47aa498733904c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/1/captured_path",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/1/source_snapshot",
+        "raw_string_sha256": "02957804cecbb682e00ab1c4b610cd037fead673eebe0cfe1618ef0ad2e0b718"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/2/captured_path",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/2/source_snapshot",
+        "raw_string_sha256": "a2a5f3531479ea74bca6d55a281d68ce9b2a709bd44842db83ad091ea087345d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/3/captured_path",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/3/source_snapshot",
+        "raw_string_sha256": "8faf3c13c6bc7627f2656f25f3e6c9e17532cddc65a59c2b76d960d9f60ab76d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/4/captured_path",
+        "raw_string_sha256": "ac0f56d9cb4a39cdf8b322a5ee2413a975d286a056faef13bc5d04e0cca0beaa"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/phases/6/script_bindings/4/source_snapshot",
+        "raw_string_sha256": "ac0f56d9cb4a39cdf8b322a5ee2413a975d286a056faef13bc5d04e0cca0beaa"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 53205,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "historical-original/independent-native-proof",
+    "sha256": "c45500aea56154db274d9feb1fc4cbd8ba14a328bc6d2448b19e55e8fcf861e1"
+  },
+  "scope": "Historical contract preparation only; zero current corrected-candidate original execution credit"
+}

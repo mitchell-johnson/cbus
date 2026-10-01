@@ -1,0 +1,36 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "research/cgate_session_physical_applicability.py",
+      "--output",
+      "research/fixtures/cgate-session-physical-applicability.json"
+    ],
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "de2fd13c4d0538b0dcbce5548e78dba803eae44c758165126ccfadf4c063df14"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 414,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "metadata/physical-applicability-result",
+    "sha256": "3112cec1fca9c45c33ae1a18aaedb9c2959c5379de5521edbcabf812218059dc"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

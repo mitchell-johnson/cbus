@@ -1,0 +1,56 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/fresh-wheel/installed-env/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_pci_selected_serial.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/installed-selected-serial.xml"
+    ],
+    "cwd": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}",
+    "exit_status": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "3fb5a0a75632d45395ccec6c03f7fdd42c74e9a70792e6e05808df02468afbe8"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "dfe0ce1554650a6d5e5cd1597a3d1d6eabf2306d28205ec8384e036c6abf569f"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/4",
+        "raw_string_sha256": "006b8107c7089b671f241ec1462d1e556a9be44f9f609faa4b2029b639120113"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/7",
+        "raw_string_sha256": "599ab84f3e1f6222d4ea3da6fb7d87c0811a11a502c37788435d3fc3a34ed9b5"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/cwd",
+        "raw_string_sha256": "446ccf3a5144474c9718a178b263c0ce35316c038e86bdbc732dbb84e6a80989"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 670,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/installed-selected-serial-command",
+    "sha256": "794ef9fbb88d611c784597c4e83e24489a51233c12dae9cca1cd5a558892f65f"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

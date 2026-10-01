@@ -1,0 +1,63 @@
+{
+  "data": {
+    "all_validated_before_and_after": true,
+    "raw_bytes_retained_privately": true,
+    "receipts": [
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+        "raw_sha256": "0b3365c8a572c4979f30c277b891dc0bbf198131bee7d53639b0c25035de3312",
+        "sha256": "d2d0a2cc1be5c10818721f05eb9dcc5ddc314884e2545ee84664168cde9c3355",
+        "source_bindings": 172
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+        "raw_sha256": "d29f9a777df5e587275c0bfad52408720f529fd1461ef87aa0117e9bea325b16",
+        "sha256": "aa45901c62c89d8b07622ffd86d49dd980835c450eee322ee7add1d66ae26c83",
+        "source_bindings": 192
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "raw_sha256": "90a4dfa85d2b49715d487bdd5d2b073153d3020798c659ade2b1969da019a393",
+        "sha256": "1e0e383523715d19ae4df65b099411a4e71f66600c5f699f1c49eb7c0f49e8c1",
+        "source_bindings": 174
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "raw_sha256": "e31d6ec86cbc21cf79e18f6c4eea32ad0d10d9001d729e638fd5ccc222888851",
+        "sha256": "a3051add7bea1473e5253aa3c686f2d8833059b0df338b4b4661fdf7688446cb",
+        "source_bindings": 194
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "raw_sha256": "4fcbd0a40a510618f41a4d617e189847af0734d66a6752541683d08144c04c90",
+        "sha256": "99aa236690ef8cc0851e05bcc52e3970a9633b549e2776a8b981c05d3125d0ae",
+        "source_bindings": 180
+      },
+      {
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "raw_sha256": "5730a8ef462c0cd07a75362551c67f59881dc829ab4c715921640a379e1b8b10",
+        "sha256": "edcbe27c0a8a48a35bd4b8bdcb9da448dc8b269bfaca35f990ddf30979aba176",
+        "source_bindings": 199
+      }
+    ],
+    "result": "passed",
+    "source_bindings": 1111
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": []
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 1981,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "metadata/final-six-sanitization",
+    "sha256": "4f52bd56b493481d325b3c7828faf4ab8abe82c3721c0e64daea1bad5579259b"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

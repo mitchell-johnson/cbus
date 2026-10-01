@@ -610,18 +610,22 @@ impl TagNetwork {
         })
     }
 
+    #[cfg(test)]
     pub(crate) fn interface(&self) -> &TagNode {
+        self.optional_interface().expect("validated Interface")
+    }
+
+    pub(crate) fn optional_interface(&self) -> Option<&TagNode> {
         self.root
             .children
             .iter()
             .find(|child| child.element == "Interface")
-            .expect("validated Interface")
     }
 
     pub(crate) fn options(&self) -> Vec<String> {
-        self.interface()
-            .children
-            .iter()
+        self.optional_interface()
+            .into_iter()
+            .flat_map(|interface| &interface.children)
             .map(|property| {
                 format!(
                     "{}={}",
@@ -983,7 +987,7 @@ impl Server {
             .children
             .iter_mut()
             .find(|node| node.element == "Interface")
-            .expect("Interface");
+            .ok_or("Network Interface is missing")?;
         interface.set("InterfaceType", interface_type.to_string());
         interface.set("InterfaceAddress", interface_address.to_string());
         // Native tokenization splits whitespace and '=' into sequential pairs;
@@ -1182,7 +1186,12 @@ impl Server {
                         .field("OID")
                         .into_iter()
                         .map(str::to_string)
-                        .chain(record.interface().oids())
+                        .chain(
+                            record
+                                .optional_interface()
+                                .into_iter()
+                                .flat_map(TagNode::oids),
+                        )
                         .collect::<Vec<_>>()
                 } else {
                     record.root.oids()
@@ -1639,7 +1648,20 @@ impl Server {
                 selected.field.as_deref(),
                 Some("InterfaceType" | "InterfaceAddress")
             ) {
-            record.interface()
+            let Some(interface) = record.optional_interface() else {
+                return Some(err(
+                    tag,
+                    401,
+                    if matches!(verb.as_str(), "DBSET" | "DBSETSAFE") {
+                        "401 Bad object or device ID: Field not found"
+                    } else if selected.field.as_deref() == Some("InterfaceType") {
+                        "401 Bad object or device ID: Element InterfaceType not found"
+                    } else {
+                        "401 Bad object or device ID: Element InterfaceAddress not found"
+                    },
+                ));
+            };
+            interface
         } else {
             record.root.at(&selected.indices)
         };
@@ -1967,6 +1989,23 @@ impl Server {
                     || !valid_address(words[2])
                 {
                     Err("Invalid network rename".to_string())
+                } else if verb == "DBRENAMENETSAFE"
+                    && record.root.field("Address") != Some(words[2])
+                    && (staged.projects[&selected.project]
+                        .tag_networks
+                        .values()
+                        .any(|other| {
+                            other.root.field("Address") == Some(words[2])
+                                && other.root.field("OID") != record.root.field("OID")
+                        })
+                        || canonical_address(words[2]).is_some_and(|address| {
+                            record.database_network != Some(address)
+                                && staged.projects[&selected.project]
+                                    .networks
+                                    .contains_key(&address)
+                        }))
+                {
+                    Err("Destination Network already exists".to_string())
                 } else {
                     let mut replacement = record.clone();
                     replacement.root.set("Address", words[2].to_string());

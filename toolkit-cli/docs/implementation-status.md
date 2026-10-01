@@ -56,7 +56,12 @@ and durable Project identity index repair. Typed scalar database commands select
 initialization. Targeted service and public CLI journeys cover save/reload,
 internal restart, source preservation, refusals and uncertain mutation handling.
 The report distinguishes original C-Gate component evidence from owned mock and
-daemon journeys. Broader Project-OID operations, numeric-associated Level
+daemon journeys. Its review fixes preserve independent Interface absence and
+literal scalar writes, and resolve configured-network protection by explicit
+runtime ownership rather than a coincidentally numeric database key. Fresh
+source/wheel component checks are separate from historical native captures;
+current original acceptance is deferred under [issue #72](https://github.com/mitchell-johnson/cbus/issues/72).
+Broader Project-OID operations, numeric-associated Level
 delegation, mixed retained-XML copies and full native/hardware gates remain open;
 the broad ledger and fully accepted obligation counts are unchanged.
 

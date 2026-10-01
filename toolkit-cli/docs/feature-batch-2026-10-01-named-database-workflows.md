@@ -1,4 +1,4 @@
-# Named database construction and selected CLI sessions
+# Named database workflows and ownership review
 
 This batch adds closed database workflows to the Python Toolkit CLI and cmqttd.
 It does not establish full Toolkit, GUI, vendor-repository or hardware parity.
@@ -31,9 +31,27 @@ an earlier unsupported `0xff` inference remains in corrected private history.
 
 NULL TagName makes direct/ancestor XML export return `444` and project save
 return `408`. Named objects without Address can save; a Level also needs Value.
-Unsafe Address writes retain literal nonbyte values and duplicates. SAFE
-collision checks are separate from these unsafe semantics. Complete external
+Raw DBSET and DBSETSAFE preserve literal NetworkNumber and Level Value strings,
+including `0xff`, `999`, `oops` and `-1`; SAFE is not a general byte parser.
+Unsafe Address writes retain literals and duplicates. Typed byte admission and
+SAFE collision checks are separate from these raw scalar semantics. Complete external
 DBSETXML admission stays strict; an internal incomplete graph does not relax it.
+
+Deleting an independent Interface by path or OID returns `200`. The graph can
+validate, save/reload and restart with the Interface absent. Root InterfaceType
+and InterfaceAddress aliases then return `401`; lifecycle operations do not
+panic or silently recreate it. Closed `NET LOAD DB` retains the state;
+`NET SAVE DB` returns controlled `408` without model, saved-data or PCI changes.
+SAFE Network rename to another owned address also refuses atomically. Original
+C-Gate returned `500` for the captured deficient SAVE and SAFE collision cases;
+local `408` is a deliberate liveness repair, not exact error-code parity.
+
+Configured physical binding is protected by explicit `database_network`
+ownership. An independent row keyed `254` does not become the configured owner
+because its key matches the transport NetworkNumber. A complete configured-owner
+DBSETXML can replace the database tree, but moving its Address/NetworkNumber or
+rebinding InterfaceType/Address returns atomic `408`. Positive replacement can
+canonicalize Unit XML; refusal preservation uses that accepted baseline.
 
 Project identity has one existing envelope owner. The global index is rebuilt
 and persisted on legacy restart, retained when a Network is deleted and retired
@@ -46,82 +64,85 @@ mock retains internal snapshot archives. Neither option supplies host-file
 access or durable storage, and mock NET SAVE DB still does not materialize
 runtime definitions like cmqttd.
 
-## Current validation
+## Current corrected-candidate checks
 
-- **43 distinct focused Rust tests passed:** 14 named-graph service tests,
-  26 retained NET SAVE tests (including six physical-alias controls), one mock
-  archive opt-in test and two retained numeric database server/TCP regressions.
-  Format, workspace Clippy with warnings denied and release build passed.
-- **Source and installed-wheel checks each passed 222 parent tests and 619
-  subtests, with no selected skips:** 66 command-peer tests, 35 adjacent grammar/
-  transport/file tests, 118 metadata/retained-receipt guards, one original-server
-  journey and two modeled backend journeys. Source metadata guards were run by
-  the root; the other checks and installed guards were run by the CLI agent.
-  These are overlapping environment comparisons, not feature counts.
-- Each environment ran **123 public CLI processes**: 47 against owned original
-  C-Gate 3.4.0.2001 and 38 each against the Rust mock and daemon. Every process
-  used one connection and an exact successful project selection before its
-  dependent database commands. The source modeled journey preceded metadata
-  regeneration; its exact production/helper/test/binary pins remain unchanged.
-  Fresh source original and all installed journeys use the regenerated package.
-- Original journeys each recorded 102 CLI commands, 127 total tagged commands
-  and 48 connections. Two CLI invocations deliberately received deleted-OID
-  `401` refusals. Modeled journeys each recorded 168 CLI commands, 217 total
-  tagged commands and 78 connections; six deliberate refusals are included.
-  An owner connection performs explicit save/close/load.
-- Both fresh original journeys used `--noconftest` and exactly one directly
-  owned oracle process, with a per-instance PID/listener/proxy/terminal-log
-  roster. They preserve the source Group across copy and unrelated Neighbor
-  Network/OTHER project XML; persisted child checks cover OID, Address, TagName
-  and Value rather than whole-graph XML byte equivalence.
-- All owned processes, proxies, command/event listeners, PCI peers, inert
-  brokers and CNI traps cleaned up. Trap contact counts are zero. Each daemon
-  journey sent exactly eight PCI initialization frames and no later PCI traffic.
-- Six maintained session/tagged/Unit differentials were freshly rerun against
-  the final binaries. Their 1,111 current source bindings were checked before
-  and after declared privacy sanitation. These replays compare retained
-  original captures; they are separate from newly executed original CLI journeys.
-- Unconfigured controls explicitly skipped one original test and two modeled
-  nodes. They receive no configured pass credit. Native release selection now
-  includes the new original test; both interop selections require the new
-  backend journey in their CI execution audits. Complete native/Windows and
-  hardware gates remain unexecuted for this batch.
+- **50 distinct focused Rust tests passed:** 21 named-graph service tests,
+  26 retained NET SAVE tests, one mock archive opt-in test and two retained
+  numeric database server/TCP regressions. Format, workspace Clippy with
+  warnings denied and release build passed.
+- The required final Rust workspace run passed **8,621 tests, zero failures
+  and one ignored private-project fixture**. It overlaps the focused tests;
+  their counts are not added together.
+- Source and noneditable installed-wheel checks each passed **287 parent tests
+  and 680 subtests**, with zero eligible failures, errors or skips: 66 peer,
+  35 adjacent grammar/transport/file, 118 metadata/receipt guards, 32 selected
+  serial, 34 sanitizer and two modeled backend journeys. These are overlapping
+  environment comparisons, not functionality counts.
+- Each environment executed **76 public CLI processes**, 38 against the mock
+  and 38 against cmqttd. Every process selected its project successfully on its
+  own connection before dependent commands, including copy reads and Level
+  initialization. Each environment recorded 168 CLI commands, 217 total tagged
+  commands and 78 connections across both backends, including expected refusals and an explicit
+  owner SAVE/CLOSE/LOAD sequence.
+- All owned processes, proxies, listeners, PCI peers, inert brokers and CNI traps
+  cleaned up. Traps received zero contacts. Each daemon journey sent exactly
+  eight PCI initialization frames and no later PCI traffic; the mock used no PCI.
+- Six maintained session/tagged/Unit comparisons were rerun against the final
+  release binaries. Their **1,111 current source bindings** were checked before
+  and after declared sanitation. They replay retained original captures and
+  do not constitute newly executed original-server journeys.
 
-The final wheel has SHA-256
-`26a64e495bf038ea706da880a0983312a58b8c4f25a1a3dc11ea84ea4e3603b8`.
-All 326 Python/JSON package files are byte-identical between source, wheel and
-isolated installed package. No editable package path is used for installed tests.
-The [scoped acceptance receipt](acceptance/2026-10-01-named-database-workflows/acceptance.json)
-binds 564 current input files, binaries, tests and 69 normalized wire/output derivatives.
-Its SHA-256 is `44c3d342b160d715bf8b175cf9dc8b39924eb5f5027e995694211085c09636b1`.
-Aggregate CI and publication status are tracked separately on GitHub.
+The wheel SHA-256 is
+`393903920c25dee9b1ae60600bf93317a5539cdbef615bdf2cb680da2976d689`.
+All **326 Python/JSON package files** match between source, wheel and isolated
+installation. The [corrected scoped receipt](acceptance/2026-10-01-named-database-review-fixes/acceptance.json)
+binds current inputs, release binaries, package checks, test results and declared
+normalized derivatives. Independent publication audit and exact-head CI remain
+separate from these local results; GitHub tracks their terminal status.
 
-The one required Rust workspace run passed **8,614 tests, with zero failures
-and one ignored private-project fixture**. It is recorded separately from the
-43 focused tests; their overlapping counts are not added together. No full local
-Python, native release, Windows or hardware suite ran.
+No full local Python suite, complete native/Windows gate, hardware test or house
+deployment ran for this correction.
 
-## Review and retained history
+## Original acceptance and review history
 
-Read-only production review identified and repaired root-key collision data
-loss, an OID-less collection panic and missing Project identity census/restore
-ownership. Local safety regressions are not newly captured native selector
-semantics. Review distinguishes the agent's authored files from separately
-owned implementation/tests.
+Current original Toolkit/C-Gate acceptance is **deferred**, with zero current
+original CLI execution credit. [Issue #72](https://github.com/mitchell-johnson/cbus/issues/72)
+records the work, intended outcome and manual acceptance checklist. Historical
+source and wheel journeys against original C-Gate each ran 47 CLI processes;
+those belong to the preceding candidate and do not validate the corrected one.
 
-A 46-command scalar vector derives from digest-bound original observations,
-with only request-tag removal and equality-preserving OID substitution. It
-checks exact responses, not full XML equivalence. Original private preparations
-contain 5,318 commands across completed and deliberately bounded partial phases;
-they are research history, never candidate-wide pass or feature-percentage counts.
+Six independently audited native preparation phases contain **262 terminal
+commands**. They support the literal scalar, absent Interface and collision
+contracts above. The failed initial 17-command prerequisite phase is excluded.
+Only the SAFE `999`/`oops` reload case is established; native reload adds empty
+TagsDLT nodes. No whole-graph XML byte equivalence, all-lexeme reload or broad
+GUI/hardware conclusion follows from this preparation.
 
-Earlier failures remain separately preserved: a wrong Service document test
-entry point, an empty-record normalization regression, two justified legacy
-assertion corrections, owner selection and listener-census fixture failures,
-the mock's formerly unexposed archive route, and metadata bootstrap/filename
-corrections. The first wheel predates regenerated metadata and receives no
-final package credit. Fresh original captures also replace the earlier singleton
-process report that could be overwritten by conftest's extra owned host.
+Read-only source review found the numeric-key/ownership panic and confirmed its
+repair and strict configured binding controls. It records historical backend
+self-authorship and the reviewer's authored selected-serial tests explicitly;
+execution evidence and independent publication audit are separate records.
+
+The selected-serial correction changes the **live test fixture only**. It copies
+the unchanged golden plan and gives the OS-backed receipt the existing 200 ms
+fixture headroom. A deterministic eight-byte partial receipt persists the actual
+move, then requires durable uncertainty, one send, no later I/O and no replay.
+The prior CI failure's exact cause remains unproven without its journal.
+
+Both accidentally expanded guard selections are retained as excluded private
+history: each had 259 parent cases, including three unconfigured skips, and
+777 subtests. Only the corrected exact five-module guard attempts receive final
+credit (118 parents/550 subtests each); completed other phases were not repeated.
+
+The preceding public receipt failed publication privacy review because partial
+roles retained macOS user-bucket and pytest-account suffixes. Its branch history
+and private copy remain preserved. The corrected receipt uses a frozen private
+role table, declared transformations and recursive decoded-coordinate/hostname
+checks. The first corrected draft was also rejected before publication for an
+incomplete nested-hostname scan. Accepted main receipts remain untouched.
+
+Other earlier preparation failures, interrupted pre-fix workspace execution and
+source-drift review attempts remain preserved without current acceptance credit.
 No uncertain mutation was replayed.
 
 ## Remaining work

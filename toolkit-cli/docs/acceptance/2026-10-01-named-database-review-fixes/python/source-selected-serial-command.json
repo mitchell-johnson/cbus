@@ -1,0 +1,56 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_pci_selected_serial.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/source-selected-serial.xml"
+    ],
+    "cwd": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}",
+    "exit_status": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "af2ad718dd96593dd4a4f37826691280b76ac21dc493185bb9e8d613aad3108b"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/4",
+        "raw_string_sha256": "006b8107c7089b671f241ec1462d1e556a9be44f9f609faa4b2029b639120113"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/7",
+        "raw_string_sha256": "0c01b3e6c4bd198eeef6756dfb7ddb72403fd4d4899e20e4874dd67fcdcf470c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/cwd",
+        "raw_string_sha256": "446ccf3a5144474c9718a178b263c0ce35316c038e86bdbc732dbb84e6a80989"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 619,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/source-selected-serial-command",
+    "sha256": "24b4ca050696b7d4b73c12a61cbf39adbc8322408dd38ae10f88768cb49e887f"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

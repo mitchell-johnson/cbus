@@ -1,0 +1,56 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_database_project_cli.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/source-peer.xml"
+    ],
+    "cwd": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}",
+    "exit_status": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "1d469b37b7cdb6da20fe514421f79ef8ec7d843d1f5ebf3f95b9df501f5d4480"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/4",
+        "raw_string_sha256": "4b305045b303600ed61fd2a06018ee863b76a8d9f200a0a04c972d79075d3556"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/7",
+        "raw_string_sha256": "21963fee85517c25e25fe76b0caf53195dd7062673f21f88057dd09342461b4c"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/cwd",
+        "raw_string_sha256": "446ccf3a5144474c9718a178b263c0ce35316c038e86bdbc732dbb84e6a80989"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 615,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/source-peer-command",
+    "sha256": "d53cedb7d59d843ac231b05d0fcaeecc4bc34612d93eea6724c4b3b23361375a"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

@@ -1,0 +1,80 @@
+{
+  "data": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_skip_census.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_cgate_contract_inventory.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_parity_register.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_project_legacy_transform_receipt.py",
+      "${CBUS_TOOLKIT_ROOT}/tests/test_project_legacy_transform_versions_receipt.py",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}/source-guards-retry.xml"
+    ],
+    "cwd": "${CBUS_OWNED_CBUS_NAMED_DATABASE_REVIEWED_WHEEL_VALIDATION_20261001}",
+    "exit_status": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "da0949d06c9ad4f3491b3bbcc54e0c87dd5d21c30765109e72c8c100a908716d"
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/0",
+        "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/4",
+        "raw_string_sha256": "d549b6ac82f144b1b2de316f1bf96679e94374ecfeb8eaf017f9c89e3998f254"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/5",
+        "raw_string_sha256": "af1e9dedf11a95ae196eedbac22501ce253b9166bb38da47fda63345990a70a2"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/6",
+        "raw_string_sha256": "419a6110059d067f25c41280ebcc970aa673127ecf98bcf69bcdc828e0e4b04b"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/7",
+        "raw_string_sha256": "a7b83aea348eb9dcb2c5c702f6cf520b74626a0c81c9f1cbc407a60f3454be9b"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/8",
+        "raw_string_sha256": "0fbe5efb22efe23b46365dc4ab39b260278e592660c99bb49eb77a1c752c0d6e"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/argv/11",
+        "raw_string_sha256": "0b4b5f8382f8ed00ffc02729cd361be09863afe54de50bbd3fc710dff128e3e0"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/cwd",
+        "raw_string_sha256": "446ccf3a5144474c9718a178b263c0ce35316c038e86bdbc732dbb84e6a80989"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 968,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "python/source-guards-command",
+    "sha256": "8149daca94e1d634649b11a577021766be76819739f95ebe4cf7d8797fd32b0c"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

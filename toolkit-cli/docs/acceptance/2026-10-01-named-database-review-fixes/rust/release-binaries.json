@@ -1,0 +1,54 @@
+{
+  "data": {
+    "binaries": [
+      {
+        "binary": "cmqttd",
+        "path": "${CBUS_CARGO_TARGET}/release/cmqttd",
+        "sha256": "8f0779106f68a5b43f59d8272b3cffe4a986328437bbd745a36ab4b20766eb6b"
+      },
+      {
+        "binary": "cgate-mock",
+        "path": "${CBUS_CARGO_TARGET}/release/cgate-mock",
+        "sha256": "18e857b92188df8ef3e708f152282fc0e3cc47a12367569c7e22730df048e548"
+      },
+      {
+        "binary": "cbus-tools",
+        "path": "${CBUS_CARGO_TARGET}/release/cbus-tools",
+        "sha256": "e3bbfcaadcdd4da3ddfdb97fcfde6609d3e24ed4b631997890b8886853ac5108"
+      }
+    ]
+  },
+  "format": "cbus-declared-private-evidence-derivative-v2",
+  "normalization": {
+    "preserves_noncoordinate_wire_values": true,
+    "raw_coordinates_not_published": true,
+    "scheme": "coordinate_roles_v2",
+    "transformations": [
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/binaries/0/path",
+        "raw_string_sha256": "cfa21f7e1c3a38924a0cb0455668574dea4118813994b34d3e87b975a0446352"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/binaries/1/path",
+        "raw_string_sha256": "24659ab31ddf2b9038ae62a54fba611a506ae00c0530754f9a9e79bc8639342d"
+      },
+      {
+        "action": "coordinate_roles_v2",
+        "json_pointer": "/binaries/2/path",
+        "raw_string_sha256": "27b338b7823c45c9f0cb3f5df3f92303682771a53654ff65a21096d27973877b"
+      }
+    ]
+  },
+  "payload_projection": "complete parsed JSON value or complete UTF-8 text",
+  "raw": {
+    "bytes": 792,
+    "encoding": "json",
+    "mode_0600_verified": true,
+    "retained_privately": true,
+    "role": "rust/release-binaries",
+    "sha256": "ccdef3b56b4f72e7c98d6164d37e42f0373b3259e8c5ae5cf250fd4449332f3e"
+  },
+  "scope": "Current corrected candidate: focused component execution only; no native original/GUI/hardware/full Toolkit acceptance"
+}

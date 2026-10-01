@@ -42,6 +42,10 @@ Networks, with fresh identities on copies and explicit save/reload. Typed
 `--project NAME` and select that project on the command's own connection.
 The [operator guide](toolkit-cli/docs/network-definitions.md) explains Level
 initialization, incomplete-object constraints and the remaining native limits.
+The latest review fixes preserve raw scalar values and optional Interface
+deletion in independent database graphs, while keeping the configured physical
+Network's address and interface binding protected. Original Toolkit/C-Gate
+acceptance is tracked separately in [the manual handoff](https://github.com/mitchell-johnson/cbus/issues/72).
 
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,

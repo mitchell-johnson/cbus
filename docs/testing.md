@@ -211,6 +211,13 @@ explicitly; these provisioning skips are separate from configured passes. The
 original C-Gate component test is independently provisioned and does not replace
 the complete native or hardware release gates. See the
 [named workflow report](../toolkit-cli/docs/feature-batch-2026-10-01-named-database-workflows.md).
+The latest corrected candidate uses focused source and noneditable installed-wheel
+checks against owned Rust peers. Original Toolkit/C-Gate acceptance is deferred
+to [issue #72](https://github.com/mitchell-johnson/cbus/issues/72); historical
+native captures support bounded contracts and receive no current execution credit.
+The selected-serial live fixture copies the immutable golden plan before giving
+its OS-backed receipt the existing 200 ms fixture window. A separate partial
+receipt test requires durable uncertainty, one send and no automatic replay.
 
 `rust/testdata/vectors/` contains JSONL compatibility vectors for checksums,
 frame encoding and decoding, ramp rates, MQTT topics, Home Assistant discovery,

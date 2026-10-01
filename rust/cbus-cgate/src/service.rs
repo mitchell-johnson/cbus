@@ -4892,10 +4892,17 @@ impl Service {
                 .get(&self.project)
                 .and_then(|project| project.networks.get(&self.network))
                 .cloned();
+            // A numeric-looking key can be independently owned after DBNEW;
+            // only the explicit association identifies the configured owner.
             let configured_tag = model
                 .projects
                 .get(&self.project)
-                .and_then(|project| project.tag_networks.get(&self.network.to_string()))
+                .and_then(|project| {
+                    project
+                        .tag_networks
+                        .values()
+                        .find(|record| record.database_network == Some(self.network))
+                })
                 .cloned();
             let configured_path = format!("//{}/{}", self.project, self.network);
             let configured_target = if let Some(oid) = target
@@ -4927,18 +4934,25 @@ impl Service {
             }
             {
                 if let Some(original_tag) = &configured_tag {
-                    let replacement_tag = model
-                        .projects
-                        .get(&self.project)
-                        .and_then(|project| project.tag_networks.get(&self.network.to_string()));
+                    let replacement_tag = model.projects.get(&self.project).and_then(|project| {
+                        project
+                            .tag_networks
+                            .values()
+                            .find(|record| record.database_network == Some(self.network))
+                    });
                     let unchanged = replacement_tag.is_some_and(|replacement| {
                         replacement.root.field("Address") == original_tag.root.field("Address")
                             && replacement.root.field("NetworkNumber")
                                 == original_tag.root.field("NetworkNumber")
-                            && replacement.interface().field("InterfaceType")
-                                == original_tag.interface().field("InterfaceType")
-                            && replacement.interface().field("InterfaceAddress")
-                                == original_tag.interface().field("InterfaceAddress")
+                            && replacement
+                                .optional_interface()
+                                .zip(original_tag.optional_interface())
+                                .is_some_and(|(replacement, original)| {
+                                    replacement.field("InterfaceType")
+                                        == original.field("InterfaceType")
+                                        && replacement.field("InterfaceAddress")
+                                            == original.field("InterfaceAddress")
+                                })
                     });
                     if !unchanged {
                         *model = before;

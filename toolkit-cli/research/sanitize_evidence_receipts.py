@@ -28,6 +28,8 @@ LOCAL_COORDINATE = re.compile(
     r"/(?:Users|Volumes|home|root|tmp|Applications|Library|System|opt|usr|srv|mnt|media|workspace)/"
     r"|/private/(?:tmp|var)/|/var/(?:folders|tmp)/"
     r"|/run/user/|~/|(?<![A-Za-z0-9])[A-Za-z]:[\\/]"
+    r"|\$\{CBUS_HOST_TEMP_ROOT\}/[A-Za-z0-9_-]{2}/[^/\s]+/(?:T|C|0)(?:/|$)"
+    r"|(?:^|/)pytest-of-[^/\s]+(?:/|$)"
 )
 FORMATS = {
     "session": "cgate-session-differential-v2",
