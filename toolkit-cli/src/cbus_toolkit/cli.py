@@ -1492,7 +1492,8 @@ def build_parser():
             p.add_argument("--recursive", action="store_true")
         if action in ("add", "copy", "move"):
             p.add_argument("--parent", default="/" if action == "add" else None, required=action != "add")
-            p.add_argument("--address", type=_byte, required=action == "add")
+            p.add_argument("--address", required=action == "add",
+                           help="Native Network Address or numeric 0..255 for legacy/other entities")
             p.add_argument("--name", default="" if action == "add" else None)
         if action in ("add", "set"):
             p.add_argument("--field", action="append", default=[])
@@ -1564,6 +1565,10 @@ def build_parser():
     )
     from .repositories_cli import register as repository_options
     repository_options(cgops)
+    file_upload = cgops.add_parser("file-upload", help="Upload one bounded local file to the server FILE namespace")
+    file_upload.add_argument("server_path")
+    file_upload.add_argument("source", type=Path)
+    file_upload.add_argument("--project", help="Select this project before upload; no project save")
     from .thermostat_schedule_cli import compose_options, options as schedule_options
     schedule_parser = cgops.add_parser("thermostat-schedule-levels", help="Preview or create thermostat scheduling levels in a closed project")
     schedule_options(schedule_parser)
@@ -2796,7 +2801,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups"):
+    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups", "file-upload"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2811,6 +2816,10 @@ def _cgate(args):
         commands = []
     database_xml_document = None
     database_xml_sha256 = None
+    file_upload_plan = None
+    if args.action == "file-upload":
+        from .file_transfer import prepare_upload
+        file_upload_plan = prepare_upload(args.server_path, args.source, project=args.project)
     if args.action == "conversion" and args.remote_action in ("plan-move", "apply-move", "recover"):
         from .conversion_workflow_cli import prepare
         prepare(args)
@@ -2836,6 +2845,9 @@ def _cgate(args):
     connection_limits.update(wireless_limits)
     with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
+        if args.action == "file-upload":
+            from .file_transfer import upload
+            return upload(file_upload_plan, client), 0
         if args.action == "edlt-labels":
             from .cmqtt import edlt_label_inventory, edlt_labels
             if args.network is not None:

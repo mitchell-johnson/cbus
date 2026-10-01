@@ -199,13 +199,13 @@ class CGateClient:
     def command_document(self, command: str, document: str) -> CGateResponse:
         """Send one C-Gate here document under the command's response ID.
 
-        Only documented document-consuming commands are allowed: an ordinary
+        Only documented CGL, DBSETXML and FILE UPLOAD consumers are allowed: an ordinary
         command would otherwise interpret document lines as more commands.
         Limits and the whole document are checked before any bytes are sent.
         """
         if not isinstance(command, str) or not re.fullmatch(
-                r"(?:CGL IMPORT|DBSETXML) [^\s<>]+", command, re.IGNORECASE):
-            raise ValueError("Document command must be CGL IMPORT project or DBSETXML path")
+                r"(?:CGL IMPORT|DBSETXML|FILE UPLOAD) [^\s<>]+", command, re.IGNORECASE):
+            raise ValueError("Document command must be CGL IMPORT project, DBSETXML path or FILE UPLOAD path")
         if not isinstance(document, str) or not document:
             raise ValueError("C-Gate document must be nonempty text")
         document = document.replace("\r\n", "\n")

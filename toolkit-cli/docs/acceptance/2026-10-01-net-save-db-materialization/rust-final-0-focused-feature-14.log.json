@@ -1,0 +1,19 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "6934cb7f426b380181446c7d1814250cdcc314bf41f75fd6aedde420388d7f4f",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target",
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "6934cb7f426b380181446c7d1814250cdcc314bf41f75fd6aedde420388d7f4f"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.44s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 18 tests\ntest service::tests::net_save_db::net_save_db_independent_lexical_aliases_cannot_reach_physical_interface_or_numeric_database_children ... ok\ntest service::tests::net_save_db::net_save_db_commit_failure_rolls_back_all_tag_and_oid_state ... ok\ntest service::tests::net_save_db::net_save_db_existing_configured_tag_refresh_never_rebinds_and_xml_roundtrips ... ok\ntest service::tests::net_save_db::net_save_db_named_safe_copy_refuses_invalid_address_atomically_and_valid_copy_remains_readable ... ok\ntest service::tests::net_save_db::net_save_db_deleted_named_rows_do_not_resurrect_from_materialized_snapshot_but_legacy_snapshots_migrate ... ok\ntest service::tests::net_save_db::net_save_db_materializes_complete_native_names_properties_and_fresh_property_oids ... ok\ntest service::tests::net_save_db::net_save_db_native_literal_number_vectors_and_generic_get_preservation ... ok\ntest service::tests::net_save_db::net_save_db_database_fields_children_copy_archive_and_oid_delete_are_authoritative ... ok\ntest service::tests::net_save_db::net_save_db_keeps_explicit_project_save_boundary_and_restart_identity ... ok\ntest service::tests::net_save_db::net_save_db_project_name_reuse_retires_runtime_db_ownership_atomically_but_keeps_explicit_file_recovery ... ok\ntest service::tests::net_save_db::net_save_db_later_numeric_unit_pp_application_and_level_edits_remain_authoritative ... ok\ntest service::tests::net_save_db::net_save_db_rename_lexemes_order_and_oid_mutation_guards_preserve_complete_model ... ok\ntest service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss ... ok\ntest service::tests::net_save_db::net_save_db_native_xml_import_archive_and_legacy_repository_migration_keep_logical_rows ... ok\ntest service::tests::net_save_db::net_save_db_associated_network_oid_delete_retires_complete_subtree_sidecars_and_rolls_back_failures ... ok\ntest service::tests::net_save_db::net_save_db_safe_application_group_creation_has_one_authoritative_tree_before_and_after_save ... ok\ntest service::tests::net_save_db::net_save_db_unselected_known_tag_mutations_refuse_without_opaque_success ... ok\ntest service::tests::net_save_db::net_save_db_replays_fifteen_source_bound_literal_vectors ... ok\n\ntest result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 474 filtered out; finished in 2.02s\n\n"
+}

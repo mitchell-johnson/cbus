@@ -1,0 +1,1116 @@
+{
+  "format": "cbus-native-net-save-db-materialization-v1",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+  },
+  "source_pins": {
+    "rust/cbus-cgate/research/native_net_save_db_materialization_probe.py": "af2db73435bd5b9ff5ddd5800dce4844f2a10386998ef48332d6d47b9712e8d3",
+    "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "closed_model_only": true,
+  "physical_or_windows_acceptance": false,
+  "qualifications": [
+    "Fresh owned Program-role Java11 original process; raw boundary probe uses system Python, no Toolkit package imports.",
+    "All exact failed commands are retained; no hardware or Windows acceptance."
+  ],
+  "normalization": [
+    "Task-owned absent serial path/root becomes %OWNED_WORK%.",
+    "Reserved Cni port becomes %FIXTURE_CNI_PORT%.",
+    "Native generated OID elements/receipts become stable equality-preserving %OID_N% tokens; no OID allocator parity claimed.",
+    "Modified timestamps, Hostname and OSVersion are explicit tokens.",
+    "The second reserved Cni endpoint becomes %FIXTURE_SECOND_CNI_PORT%.",
+    "All UUID appearances including OID selectors/scalar summaries use the same equality-preserving OID map. Command tags are retained."
+  ],
+  "commands": [
+    {
+      "label": "new",
+      "command": "PROJECT NEW NSAVE",
+      "response": [
+        "[probe0] 200 OK."
+      ]
+    },
+    {
+      "label": "use",
+      "command": "PROJECT USE NSAVE",
+      "response": [
+        "[probe1] 200 OK."
+      ]
+    },
+    {
+      "label": "tag254",
+      "command": "DBCREATENET 254 OriginalTag Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe2] 301 OID=%OID_1%"
+      ]
+    },
+    {
+      "label": "tag254-before",
+      "command": "DBGETXML //NSAVE/254",
+      "response": [
+        "[probe3] 343-Begin XML snippet",
+        "[probe3] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe3] 347-<Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe3] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "baseline-project-save",
+      "command": "PROJECT SAVE NSAVE",
+      "response": [
+        "[probe4] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-conflict",
+      "command": "NET CREATE 254 Serial %OWNED_WORK%/tmp/absent-serial-interface flag duplicate=one duplicate=two",
+      "response": [
+        "[probe5] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime42",
+      "command": "NET CREATE 42 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe6] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime0254",
+      "command": "NET CREATE 0254 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe7] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime256",
+      "command": "NET CREATE 256 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe8] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime255",
+      "command": "NET CREATE 255 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe9] 200 OK."
+      ]
+    },
+    {
+      "label": "runtimehex",
+      "command": "NET CREATE 0xff Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe10] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-flag-only",
+      "command": "NET CREATE FlagOnly Cni 127.0.0.1:%FIXTURE_CNI_PORT% flag",
+      "response": [
+        "[probe11] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-duplicates",
+      "command": "NET CREATE Duplicates Cni 127.0.0.1:%FIXTURE_CNI_PORT% duplicate=one duplicate=two",
+      "response": [
+        "[probe12] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-escaped-name",
+      "command": "NET CREATE EscapedName Cni 127.0.0.1:%FIXTURE_CNI_PORT% a&b=x<y",
+      "response": [
+        "[probe13] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-escaped",
+      "command": "NET CREATE Escaped Cni 127.0.0.1:%FIXTURE_CNI_PORT% escaped=hello\\world",
+      "response": [
+        "[probe14] 200 OK."
+      ]
+    },
+    {
+      "label": "runtimecustom",
+      "command": "NET CREATE CustomA Cni 127.0.0.1:%FIXTURE_CNI_PORT% flag duplicate=one duplicate=two escaped=hello\\world",
+      "response": [
+        "[probe15] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-case-variant",
+      "command": "NET CREATE Customa Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe16] 200 OK."
+      ]
+    },
+    {
+      "label": "save1",
+      "command": "NET SAVE DB",
+      "response": [
+        "[probe17] 200 OK."
+      ]
+    },
+    {
+      "label": "project-save1",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe18] 343-Begin XML snippet",
+        "[probe18] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe18] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>%OWNED_WORK%/tmp/absent-serial-interface</InterfaceAddress><Property><OID>%OID_5%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_6%</OID><Name>one</Name><Value>duplicate</Value></Property></Interface></Network><Network><OID>%OID_7%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_8%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_9%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_10%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_11%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_12%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_13%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_14%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_15%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_16%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_17%</OID><TagName>nFlagOnly</TagName><Address>FlagOnly</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_18%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_19%</OID><TagName>nDuplicates</TagName><Address>Duplicates</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_20%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_21%</OID><Name>duplicate</Name><Value>one</Value></Property><Property><OID>%OID_22%</OID><Name>duplicate</Name><Value>two</Value></Property></Interface></Network><Network><OID>%OID_23%</OID><TagName>nEscapedName</TagName><Address>EscapedName</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_24%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_25%</OID><Name>a&amp;b</Name><Value>x&lt;y</Value></Property></Interface></Network><Network><OID>%OID_26%</OID><TagName>nEscaped</TagName><Address>Escaped</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_27%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_28%</OID><Name>escaped</Name><Value>hello\\world</Value></Property></Interface></Network><Network><OID>%OID_29%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_30%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_31%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_32%</OID><Name>one</Name><Value>duplicate</Value></Property><Property><OID>%OID_33%</OID><Name>two</Name><Value>escaped</Value></Property></Interface></Network><Network><OID>%OID_34%</OID><TagName>nCustoma</TagName><Address>Customa</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_35%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_36%</OID><Application>cgate</Application><Property><OID>%OID_37%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_38%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_43%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_44%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_47%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_48%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_49%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_50%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_51%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_52%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_53%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_54%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_56%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_58%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_59%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_60%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_61%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_62%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_63%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_64%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_65%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_66%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_67%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_68%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_69%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_70%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_71%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_72%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_73%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_74%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_75%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_76%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_77%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_78%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_79%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_80%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_81%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_82%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_83%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_84%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_85%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_86%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_87%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe18] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "save2",
+      "command": "NET SAVE DB",
+      "response": [
+        "[probe19] 200 OK."
+      ]
+    },
+    {
+      "label": "project-save2",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe20] 343-Begin XML snippet",
+        "[probe20] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe20] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>%OWNED_WORK%/tmp/absent-serial-interface</InterfaceAddress><Property><OID>%OID_90%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_91%</OID><Name>one</Name><Value>duplicate</Value></Property></Interface></Network><Network><OID>%OID_7%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_8%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_9%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_10%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_11%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_12%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_13%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_14%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_15%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_16%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_17%</OID><TagName>nFlagOnly</TagName><Address>FlagOnly</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_18%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_19%</OID><TagName>nDuplicates</TagName><Address>Duplicates</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_20%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_92%</OID><Name>duplicate</Name><Value>one</Value></Property><Property><OID>%OID_93%</OID><Name>duplicate</Name><Value>two</Value></Property></Interface></Network><Network><OID>%OID_23%</OID><TagName>nEscapedName</TagName><Address>EscapedName</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_24%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_94%</OID><Name>a&amp;b</Name><Value>x&lt;y</Value></Property></Interface></Network><Network><OID>%OID_26%</OID><TagName>nEscaped</TagName><Address>Escaped</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_27%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_95%</OID><Name>escaped</Name><Value>hello\\world</Value></Property></Interface></Network><Network><OID>%OID_29%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_30%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_96%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_97%</OID><Name>one</Name><Value>duplicate</Value></Property><Property><OID>%OID_98%</OID><Name>two</Name><Value>escaped</Value></Property></Interface></Network><Network><OID>%OID_34%</OID><TagName>nCustoma</TagName><Address>Customa</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_35%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_36%</OID><Application>cgate</Application><Property><OID>%OID_37%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_38%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_43%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_44%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_47%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_48%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_49%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_50%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_51%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_52%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_53%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_54%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_56%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_58%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_59%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_60%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_61%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_62%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_63%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_64%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_65%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_66%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_67%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_68%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_69%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_70%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_71%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_72%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_73%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_74%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_75%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_76%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_77%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_78%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_79%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_80%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_81%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_82%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_83%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_84%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_85%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_86%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_87%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe20] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-named-254",
+      "command": "DBGETXML //NSAVE/254",
+      "response": [
+        "[probe21] 343-Begin XML snippet",
+        "[probe21] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe21] 347-<Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>%OWNED_WORK%/tmp/absent-serial-interface</InterfaceAddress><Property><OID>%OID_90%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_91%</OID><Name>one</Name><Value>duplicate</Value></Property></Interface></Network>",
+        "[probe21] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-254",
+      "command": "DBGETXML !%OID_1%",
+      "response": [
+        "[probe22] 343-Begin XML snippet",
+        "[probe22] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe22] 347-<Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Serial</InterfaceType><InterfaceAddress>%OWNED_WORK%/tmp/absent-serial-interface</InterfaceAddress><Property><OID>%OID_90%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_91%</OID><Name>one</Name><Value>duplicate</Value></Property></Interface></Network>",
+        "[probe22] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-254",
+      "command": "GET !%OID_1% NetworkNumber",
+      "response": [
+        "[probe23] 402 Operation not supported by: //NSAVE/254 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-254",
+      "command": "GET //NSAVE/254 NetworkNumber",
+      "response": [
+        "[probe24] 402 Operation not supported by: //NSAVE/254 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-254",
+      "command": "GET //NSAVE/254 Options",
+      "response": [
+        "[probe25] 300 //NSAVE/254: Options=flag duplicate=one duplicate=two"
+      ]
+    },
+    {
+      "label": "read-named-42",
+      "command": "DBGETXML //NSAVE/42",
+      "response": [
+        "[probe26] 343-Begin XML snippet",
+        "[probe26] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe26] 347-<Network><OID>%OID_7%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_8%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe26] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-42",
+      "command": "DBGETXML !%OID_7%",
+      "response": [
+        "[probe27] 343-Begin XML snippet",
+        "[probe27] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe27] 347-<Network><OID>%OID_7%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_8%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe27] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-42",
+      "command": "GET !%OID_7% NetworkNumber",
+      "response": [
+        "[probe28] 402 Operation not supported by: //NSAVE/42 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-42",
+      "command": "GET //NSAVE/42 NetworkNumber",
+      "response": [
+        "[probe29] 402 Operation not supported by: //NSAVE/42 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-42",
+      "command": "GET //NSAVE/42 Options",
+      "response": [
+        "[probe30] 300 //NSAVE/42: Options=null"
+      ]
+    },
+    {
+      "label": "read-named-0254",
+      "command": "DBGETXML //NSAVE/0254",
+      "response": [
+        "[probe31] 343-Begin XML snippet",
+        "[probe31] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe31] 347-<Network><OID>%OID_9%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_10%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe31] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-0254",
+      "command": "DBGETXML !%OID_9%",
+      "response": [
+        "[probe32] 343-Begin XML snippet",
+        "[probe32] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe32] 347-<Network><OID>%OID_9%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_10%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe32] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-0254",
+      "command": "GET !%OID_9% NetworkNumber",
+      "response": [
+        "[probe33] 402 Operation not supported by: //NSAVE/0254 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-0254",
+      "command": "GET //NSAVE/0254 NetworkNumber",
+      "response": [
+        "[probe34] 402 Operation not supported by: //NSAVE/0254 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-0254",
+      "command": "GET //NSAVE/0254 Options",
+      "response": [
+        "[probe35] 300 //NSAVE/0254: Options=null"
+      ]
+    },
+    {
+      "label": "read-named-256",
+      "command": "DBGETXML //NSAVE/256",
+      "response": [
+        "[probe36] 343-Begin XML snippet",
+        "[probe36] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe36] 347-<Network><OID>%OID_11%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_12%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe36] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-256",
+      "command": "DBGETXML !%OID_11%",
+      "response": [
+        "[probe37] 343-Begin XML snippet",
+        "[probe37] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe37] 347-<Network><OID>%OID_11%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_12%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe37] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-256",
+      "command": "GET !%OID_11% NetworkNumber",
+      "response": [
+        "[probe38] 402 Operation not supported by: //NSAVE/256 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-256",
+      "command": "GET //NSAVE/256 NetworkNumber",
+      "response": [
+        "[probe39] 402 Operation not supported by: //NSAVE/256 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-256",
+      "command": "GET //NSAVE/256 Options",
+      "response": [
+        "[probe40] 300 //NSAVE/256: Options=null"
+      ]
+    },
+    {
+      "label": "read-named-255",
+      "command": "DBGETXML //NSAVE/255",
+      "response": [
+        "[probe41] 343-Begin XML snippet",
+        "[probe41] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe41] 347-<Network><OID>%OID_13%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_14%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe41] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-255",
+      "command": "DBGETXML !%OID_13%",
+      "response": [
+        "[probe42] 343-Begin XML snippet",
+        "[probe42] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe42] 347-<Network><OID>%OID_13%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_14%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe42] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-255",
+      "command": "GET !%OID_13% NetworkNumber",
+      "response": [
+        "[probe43] 402 Operation not supported by: //NSAVE/255 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-255",
+      "command": "GET //NSAVE/255 NetworkNumber",
+      "response": [
+        "[probe44] 402 Operation not supported by: //NSAVE/255 (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-255",
+      "command": "GET //NSAVE/255 Options",
+      "response": [
+        "[probe45] 300 //NSAVE/255: Options=null"
+      ]
+    },
+    {
+      "label": "read-named-0xff",
+      "command": "DBGETXML //NSAVE/0xff",
+      "response": [
+        "[probe46] 343-Begin XML snippet",
+        "[probe46] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe46] 347-<Network><OID>%OID_15%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_16%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe46] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-0xff",
+      "command": "DBGETXML !%OID_15%",
+      "response": [
+        "[probe47] 343-Begin XML snippet",
+        "[probe47] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe47] 347-<Network><OID>%OID_15%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_16%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe47] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-0xff",
+      "command": "GET !%OID_15% NetworkNumber",
+      "response": [
+        "[probe48] 402 Operation not supported by: //NSAVE/0xff (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-0xff",
+      "command": "GET //NSAVE/0xff NetworkNumber",
+      "response": [
+        "[probe49] 402 Operation not supported by: //NSAVE/0xff (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-0xff",
+      "command": "GET //NSAVE/0xff Options",
+      "response": [
+        "[probe50] 300 //NSAVE/0xff: Options=null"
+      ]
+    },
+    {
+      "label": "read-named-FlagOnly",
+      "command": "DBGETXML //NSAVE/FlagOnly",
+      "response": [
+        "[probe51] 343-Begin XML snippet",
+        "[probe51] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe51] 347-<Network><OID>%OID_17%</OID><TagName>nFlagOnly</TagName><Address>FlagOnly</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_18%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe51] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-FlagOnly",
+      "command": "DBGETXML !%OID_17%",
+      "response": [
+        "[probe52] 343-Begin XML snippet",
+        "[probe52] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe52] 347-<Network><OID>%OID_17%</OID><TagName>nFlagOnly</TagName><Address>FlagOnly</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_18%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe52] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-FlagOnly",
+      "command": "GET !%OID_17% NetworkNumber",
+      "response": [
+        "[probe53] 402 Operation not supported by: //NSAVE/FlagOnly (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-FlagOnly",
+      "command": "GET //NSAVE/FlagOnly NetworkNumber",
+      "response": [
+        "[probe54] 402 Operation not supported by: //NSAVE/FlagOnly (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-FlagOnly",
+      "command": "GET //NSAVE/FlagOnly Options",
+      "response": [
+        "[probe55] 300 //NSAVE/FlagOnly: Options=flag"
+      ]
+    },
+    {
+      "label": "read-named-Duplicates",
+      "command": "DBGETXML //NSAVE/Duplicates",
+      "response": [
+        "[probe56] 343-Begin XML snippet",
+        "[probe56] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe56] 347-<Network><OID>%OID_19%</OID><TagName>nDuplicates</TagName><Address>Duplicates</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_20%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_92%</OID><Name>duplicate</Name><Value>one</Value></Property><Property><OID>%OID_93%</OID><Name>duplicate</Name><Value>two</Value></Property></Interface></Network>",
+        "[probe56] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-Duplicates",
+      "command": "DBGETXML !%OID_19%",
+      "response": [
+        "[probe57] 343-Begin XML snippet",
+        "[probe57] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe57] 347-<Network><OID>%OID_19%</OID><TagName>nDuplicates</TagName><Address>Duplicates</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_20%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_92%</OID><Name>duplicate</Name><Value>one</Value></Property><Property><OID>%OID_93%</OID><Name>duplicate</Name><Value>two</Value></Property></Interface></Network>",
+        "[probe57] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-Duplicates",
+      "command": "GET !%OID_19% NetworkNumber",
+      "response": [
+        "[probe58] 402 Operation not supported by: //NSAVE/Duplicates (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-Duplicates",
+      "command": "GET //NSAVE/Duplicates NetworkNumber",
+      "response": [
+        "[probe59] 402 Operation not supported by: //NSAVE/Duplicates (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-Duplicates",
+      "command": "GET //NSAVE/Duplicates Options",
+      "response": [
+        "[probe60] 300 //NSAVE/Duplicates: Options=duplicate=one duplicate=two"
+      ]
+    },
+    {
+      "label": "read-named-EscapedName",
+      "command": "DBGETXML //NSAVE/EscapedName",
+      "response": [
+        "[probe61] 343-Begin XML snippet",
+        "[probe61] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe61] 347-<Network><OID>%OID_23%</OID><TagName>nEscapedName</TagName><Address>EscapedName</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_24%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_94%</OID><Name>a&amp;b</Name><Value>x&lt;y</Value></Property></Interface></Network>",
+        "[probe61] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-EscapedName",
+      "command": "DBGETXML !%OID_23%",
+      "response": [
+        "[probe62] 343-Begin XML snippet",
+        "[probe62] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe62] 347-<Network><OID>%OID_23%</OID><TagName>nEscapedName</TagName><Address>EscapedName</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_24%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_94%</OID><Name>a&amp;b</Name><Value>x&lt;y</Value></Property></Interface></Network>",
+        "[probe62] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-EscapedName",
+      "command": "GET !%OID_23% NetworkNumber",
+      "response": [
+        "[probe63] 402 Operation not supported by: //NSAVE/EscapedName (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-EscapedName",
+      "command": "GET //NSAVE/EscapedName NetworkNumber",
+      "response": [
+        "[probe64] 402 Operation not supported by: //NSAVE/EscapedName (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-EscapedName",
+      "command": "GET //NSAVE/EscapedName Options",
+      "response": [
+        "[probe65] 300 //NSAVE/EscapedName: Options=a&b=x<y"
+      ]
+    },
+    {
+      "label": "read-named-Escaped",
+      "command": "DBGETXML //NSAVE/Escaped",
+      "response": [
+        "[probe66] 343-Begin XML snippet",
+        "[probe66] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe66] 347-<Network><OID>%OID_26%</OID><TagName>nEscaped</TagName><Address>Escaped</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_27%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_95%</OID><Name>escaped</Name><Value>hello\\world</Value></Property></Interface></Network>",
+        "[probe66] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-Escaped",
+      "command": "DBGETXML !%OID_26%",
+      "response": [
+        "[probe67] 343-Begin XML snippet",
+        "[probe67] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe67] 347-<Network><OID>%OID_26%</OID><TagName>nEscaped</TagName><Address>Escaped</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_27%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_95%</OID><Name>escaped</Name><Value>hello\\world</Value></Property></Interface></Network>",
+        "[probe67] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-Escaped",
+      "command": "GET !%OID_26% NetworkNumber",
+      "response": [
+        "[probe68] 402 Operation not supported by: //NSAVE/Escaped (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-Escaped",
+      "command": "GET //NSAVE/Escaped NetworkNumber",
+      "response": [
+        "[probe69] 402 Operation not supported by: //NSAVE/Escaped (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-Escaped",
+      "command": "GET //NSAVE/Escaped Options",
+      "response": [
+        "[probe70] 300 //NSAVE/Escaped: Options=escaped=hello\\world"
+      ]
+    },
+    {
+      "label": "read-named-CustomA",
+      "command": "DBGETXML //NSAVE/CustomA",
+      "response": [
+        "[probe71] 343-Begin XML snippet",
+        "[probe71] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe71] 347-<Network><OID>%OID_29%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_30%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_96%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_97%</OID><Name>one</Name><Value>duplicate</Value></Property><Property><OID>%OID_98%</OID><Name>two</Name><Value>escaped</Value></Property></Interface></Network>",
+        "[probe71] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-CustomA",
+      "command": "DBGETXML !%OID_29%",
+      "response": [
+        "[probe72] 343-Begin XML snippet",
+        "[probe72] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe72] 347-<Network><OID>%OID_29%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_30%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress><Property><OID>%OID_96%</OID><Name>flag</Name><Value>duplicate</Value></Property><Property><OID>%OID_97%</OID><Name>one</Name><Value>duplicate</Value></Property><Property><OID>%OID_98%</OID><Name>two</Name><Value>escaped</Value></Property></Interface></Network>",
+        "[probe72] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-CustomA",
+      "command": "GET !%OID_29% NetworkNumber",
+      "response": [
+        "[probe73] 402 Operation not supported by: //NSAVE/CustomA (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-CustomA",
+      "command": "GET //NSAVE/CustomA NetworkNumber",
+      "response": [
+        "[probe74] 402 Operation not supported by: //NSAVE/CustomA (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-CustomA",
+      "command": "GET //NSAVE/CustomA Options",
+      "response": [
+        "[probe75] 300 //NSAVE/CustomA: Options=flag duplicate=one duplicate=two escaped=hello\\world"
+      ]
+    },
+    {
+      "label": "read-named-Customa",
+      "command": "DBGETXML //NSAVE/Customa",
+      "response": [
+        "[probe76] 343-Begin XML snippet",
+        "[probe76] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe76] 347-<Network><OID>%OID_34%</OID><TagName>nCustoma</TagName><Address>Customa</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_35%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe76] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "read-oid-Customa",
+      "command": "DBGETXML !%OID_34%",
+      "response": [
+        "[probe77] 343-Begin XML snippet",
+        "[probe77] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe77] 347-<Network><OID>%OID_34%</OID><TagName>nCustoma</TagName><Address>Customa</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_35%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe77] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-oid-number-Customa",
+      "command": "GET !%OID_34% NetworkNumber",
+      "response": [
+        "[probe78] 402 Operation not supported by: //NSAVE/Customa (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-named-number-Customa",
+      "command": "GET //NSAVE/Customa NetworkNumber",
+      "response": [
+        "[probe79] 402 Operation not supported by: //NSAVE/Customa (Parameter networknumber not found)"
+      ]
+    },
+    {
+      "label": "get-options-Customa",
+      "command": "GET //NSAVE/Customa Options",
+      "response": [
+        "[probe80] 300 //NSAVE/Customa: Options=null"
+      ]
+    },
+    {
+      "label": "close-unsaved",
+      "command": "PROJECT CLOSE NSAVE",
+      "response": [
+        "[probe81] 200 OK."
+      ]
+    },
+    {
+      "label": "load-unsaved",
+      "command": "PROJECT LOAD NSAVE",
+      "response": [
+        "[probe82] 200 OK."
+      ]
+    },
+    {
+      "label": "use-reloaded",
+      "command": "PROJECT USE NSAVE",
+      "response": [
+        "[probe83] 200 OK."
+      ]
+    },
+    {
+      "label": "project-after-unsaved-close",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe84] 343-Begin XML snippet",
+        "[probe84] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe84] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_36%</OID><Application>cgate</Application><Property><OID>%OID_37%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_38%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_43%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_44%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_47%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_48%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_49%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_50%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_51%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_52%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_53%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_54%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_56%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_58%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_59%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_60%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_61%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_62%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_63%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_64%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_65%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_66%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_67%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_68%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_69%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_70%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_71%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_72%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_73%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_74%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_75%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_76%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_77%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_78%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_79%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_80%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_81%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_82%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_83%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_84%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_85%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_86%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_87%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe84] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "list-after-unsaved-close",
+      "command": "NET LIST",
+      "response": [
+        "[probe85] 131 network=254 State=new InterfaceState=closed"
+      ]
+    },
+    {
+      "label": "runtime-conflict-after-close",
+      "command": "NET CREATE 254 Serial %OWNED_WORK%/tmp/absent-serial-interface flag duplicate=one duplicate=two",
+      "response": [
+        "[probe86] 408 Operation failed: Network name already in use"
+      ]
+    },
+    {
+      "label": "runtime-recreate-42",
+      "command": "NET CREATE 42 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe87] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-recreate-0254",
+      "command": "NET CREATE 0254 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe88] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-recreate-256",
+      "command": "NET CREATE 256 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe89] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-recreate-255",
+      "command": "NET CREATE 255 Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe90] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-recreate-0xff",
+      "command": "NET CREATE 0xff Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe91] 200 OK."
+      ]
+    },
+    {
+      "label": "runtime-recreate-CustomA",
+      "command": "NET CREATE CustomA Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+      "response": [
+        "[probe92] 200 OK."
+      ]
+    },
+    {
+      "label": "save-after-close",
+      "command": "NET SAVE DB",
+      "response": [
+        "[probe93] 200 OK."
+      ]
+    },
+    {
+      "label": "project-after-second-materialization",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe94] 343-Begin XML snippet",
+        "[probe94] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe94] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_101%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_102%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_103%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_104%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_105%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_106%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_107%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_108%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_109%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_36%</OID><Application>cgate</Application><Property><OID>%OID_37%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_38%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_41%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_43%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_44%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_46%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_47%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_48%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_49%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_50%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_51%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_52%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_53%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_54%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_56%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_58%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_59%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_60%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_61%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_62%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_63%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_64%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_65%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_66%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_67%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_68%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_69%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_70%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_71%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_72%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_73%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_74%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_75%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_76%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_77%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_78%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_79%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_80%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_81%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_82%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_83%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_84%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_85%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_86%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_87%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe94] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "project-save",
+      "command": "PROJECT SAVE NSAVE",
+      "response": [
+        "[probe95] 200 OK."
+      ]
+    },
+    {
+      "label": "project-close",
+      "command": "PROJECT CLOSE NSAVE",
+      "response": [
+        "[probe96] 200 OK."
+      ]
+    },
+    {
+      "label": "project-load",
+      "command": "PROJECT LOAD NSAVE",
+      "response": [
+        "[probe97] 200 OK."
+      ]
+    },
+    {
+      "label": "project-use",
+      "command": "PROJECT USE NSAVE",
+      "response": [
+        "[probe98] 200 OK."
+      ]
+    },
+    {
+      "label": "project-persisted",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe99] 343-Begin XML snippet",
+        "[probe99] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe99] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_101%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_102%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_103%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_104%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_105%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_106%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_107%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_108%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_109%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_111%</OID><Application>cgate</Application><Property><OID>%OID_112%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_113%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_114%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_115%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_116%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_117%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_118%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_119%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_120%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_121%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_122%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_123%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_124%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_125%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_126%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_127%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_128%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_129%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_130%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_131%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_132%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_133%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_134%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_135%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_136%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_137%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_138%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_139%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_140%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_141%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_142%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_143%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_144%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_145%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_146%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_147%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_148%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_149%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_150%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_151%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_152%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_153%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_154%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_155%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_156%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_157%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_158%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_159%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_160%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_161%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_162%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe99] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "help-dbset",
+      "command": "HELP DBSET",
+      "response": [
+        "[probe100] 101 Help: No help is available for this command."
+      ]
+    },
+    {
+      "label": "set-custom-name",
+      "command": "DBSET //NSAVE/CustomA/TagName ChangedCustom",
+      "response": [
+        "[probe101] 200 OK."
+      ]
+    },
+    {
+      "label": "custom-after-name",
+      "command": "DBGETXML //NSAVE/CustomA",
+      "response": [
+        "[probe102] 343-Begin XML snippet",
+        "[probe102] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe102] 347-<Network><OID>%OID_109%</OID><TagName>ChangedCustom</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe102] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "set-oid-name",
+      "command": "DBSET !%OID_109%/TagName OidChanged",
+      "response": [
+        "[probe103] 200 OK."
+      ]
+    },
+    {
+      "label": "custom-after-oid",
+      "command": "DBGETXML !%OID_109%",
+      "response": [
+        "[probe104] 343-Begin XML snippet",
+        "[probe104] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe104] 347-<Network><OID>%OID_109%</OID><TagName>OidChanged</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe104] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "set-custom-xml",
+      "command": "DBSETXML //NSAVE/CustomA << ENDPROBE\n<Network><OID>%OID_109%</OID><TagName>XmlChanged</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>\nENDPROBE",
+      "response": [
+        "[probe105] 301 OID=%OID_109%"
+      ]
+    },
+    {
+      "label": "custom-after-xml",
+      "command": "DBGETXML //NSAVE/CustomA",
+      "response": [
+        "[probe106] 343-Begin XML snippet",
+        "[probe106] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe106] 347-<Network><OID>%OID_109%</OID><TagName>XmlChanged</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe106] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "delete-custom-oid",
+      "command": "DBDELETE !%OID_109%",
+      "response": [
+        "[probe107] 200 OK."
+      ]
+    },
+    {
+      "label": "custom-after-oid-delete",
+      "command": "DBGETXML //NSAVE/CustomA",
+      "response": [
+        "[probe108] 343-Begin XML snippet",
+        "[probe108] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe108] 347-<Network><OID>%OID_109%</OID><TagName>XmlChanged</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_110%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe108] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "whole-after-oid-delete",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe109] 343-Begin XML snippet",
+        "[probe109] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe109] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_101%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_102%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_103%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_104%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_105%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_106%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_107%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_108%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_111%</OID><Application>cgate</Application><Property><OID>%OID_112%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_113%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_114%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_115%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_116%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_117%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_118%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_119%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_120%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_121%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_122%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_123%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_124%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_125%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_126%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_127%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_128%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_129%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_130%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_131%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_132%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_133%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_134%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_135%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_136%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_137%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_138%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_139%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_140%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_141%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_142%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_143%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_144%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_145%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_146%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_147%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_148%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_149%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_150%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_151%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_152%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_153%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_154%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_155%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_156%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_157%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_158%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_159%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_160%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_161%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_162%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe109] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "delete-custom-named",
+      "command": "DBDELETE //NSAVE/CustomA",
+      "response": [
+        "[probe110] 401 Bad object or device ID: Unable to delete element: null"
+      ]
+    },
+    {
+      "label": "whole-after-named-delete",
+      "command": "DBGETXML //NSAVE",
+      "response": [
+        "[probe111] 343-Begin XML snippet",
+        "[probe111] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe111] 347-<Installation><OID>%OID_3%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_4%</OID><TagName>NSAVE</TagName><Address>NSAVE</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_1%</OID><TagName>OriginalTag</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>%OID_2%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_101%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_102%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_103%</OID><TagName>n256</TagName><Address>256</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_104%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_105%</OID><TagName>n255</TagName><Address>255</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_106%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Network><OID>%OID_107%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_108%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network><Config><OID>%OID_111%</OID><Application>cgate</Application><Property><OID>%OID_112%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_113%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_114%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_115%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_116%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_117%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_118%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_119%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_120%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_121%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_122%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_123%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_124%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_125%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_126%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_127%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_128%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_129%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_130%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_131%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_132%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_133%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_134%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_135%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_136%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_137%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_138%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_139%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_140%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_141%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_142%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_143%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_144%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_145%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_146%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_147%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_148%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_149%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_150%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_151%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_152%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_153%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_154%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_155%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_156%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_157%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_158%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_159%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_160%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_161%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_162%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_88%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_89%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+        "[probe111] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "delete-0254",
+      "command": "DBDELETE //NSAVE/0254",
+      "response": [
+        "[probe112] 200 OK."
+      ]
+    },
+    {
+      "label": "0254-after-delete",
+      "command": "DBGETXML //NSAVE/0254",
+      "response": [
+        "[probe113] 343-Begin XML snippet",
+        "[probe113] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe113] 347-<Network><OID>%OID_101%</OID><TagName>n0254</TagName><Address>0254</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_102%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe113] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "delete-hex",
+      "command": "DBDELETE //NSAVE/0xff",
+      "response": [
+        "[probe114] 200 OK."
+      ]
+    },
+    {
+      "label": "hex-after-delete",
+      "command": "DBGETXML //NSAVE/0xff",
+      "response": [
+        "[probe115] 343-Begin XML snippet",
+        "[probe115] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe115] 347-<Network><OID>%OID_107%</OID><TagName>n0xff</TagName><Address>0xff</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_108%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe115] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-number-field-before",
+      "command": "DBGET //NSAVE/42/NetworkNumber",
+      "response": [
+        "[probe116] 342 42/NetworkNumber=0xff"
+      ]
+    },
+    {
+      "label": "set-number-decimal255",
+      "command": "DBSET //NSAVE/42/NetworkNumber 255",
+      "response": [
+        "[probe117] 200 OK."
+      ]
+    },
+    {
+      "label": "number-decimal255-xml",
+      "command": "DBGETXML //NSAVE/42",
+      "response": [
+        "[probe118] 343-Begin XML snippet",
+        "[probe118] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe118] 347-<Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>255</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe118] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-number-field-decimal",
+      "command": "DBGET //NSAVE/42/NetworkNumber",
+      "response": [
+        "[probe119] 342 42/NetworkNumber=255"
+      ]
+    },
+    {
+      "label": "set-number-hex",
+      "command": "DBSET //NSAVE/42/NetworkNumber 0xff",
+      "response": [
+        "[probe120] 200 OK."
+      ]
+    },
+    {
+      "label": "number-hex-xml",
+      "command": "DBGETXML //NSAVE/42",
+      "response": [
+        "[probe121] 343-Begin XML snippet",
+        "[probe121] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe121] 347-<Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe121] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "get-number-field-hex",
+      "command": "DBGET //NSAVE/42/NetworkNumber",
+      "response": [
+        "[probe122] 342 42/NetworkNumber=0xff"
+      ]
+    },
+    {
+      "label": "save-after-number-edit",
+      "command": "NET SAVE DB",
+      "response": [
+        "[probe123] 200 OK."
+      ]
+    },
+    {
+      "label": "number-after-save",
+      "command": "DBGETXML //NSAVE/42",
+      "response": [
+        "[probe124] 343-Begin XML snippet",
+        "[probe124] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "[probe124] 347-<Network><OID>%OID_99%</OID><TagName>n42</TagName><Address>42</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_100%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+        "[probe124] 344 End XML snippet"
+      ]
+    },
+    {
+      "label": "project-final",
+      "command": "PROJECT SAVE NSAVE",
+      "response": [
+        "[probe125] 200 OK."
+      ]
+    }
+  ],
+  "network_summaries": [
+    {
+      "OID": "%OID_1%",
+      "TagName": "OriginalTag",
+      "Address": "254",
+      "NetworkNumber": "254"
+    },
+    {
+      "OID": "%OID_7%",
+      "TagName": "n42",
+      "Address": "42",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_9%",
+      "TagName": "n0254",
+      "Address": "0254",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_11%",
+      "TagName": "n256",
+      "Address": "256",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_13%",
+      "TagName": "n255",
+      "Address": "255",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_15%",
+      "TagName": "n0xff",
+      "Address": "0xff",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_17%",
+      "TagName": "nFlagOnly",
+      "Address": "FlagOnly",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_19%",
+      "TagName": "nDuplicates",
+      "Address": "Duplicates",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_23%",
+      "TagName": "nEscapedName",
+      "Address": "EscapedName",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_26%",
+      "TagName": "nEscaped",
+      "Address": "Escaped",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_29%",
+      "TagName": "nCustomA",
+      "Address": "CustomA",
+      "NetworkNumber": "0xff"
+    },
+    {
+      "OID": "%OID_34%",
+      "TagName": "nCustoma",
+      "Address": "Customa",
+      "NetworkNumber": "0xff"
+    }
+  ],
+  "repeated_xml_identical": false,
+  "cleanup": {
+    "listener_ownership_verified": true,
+    "cleanup_complete": true,
+    "process_exit_confirmed": true,
+    "work_removed": true
+  },
+  "raw_receipt_sha256": "08e2fd9d119b34ba8e510f11e5fbfb6c28012598c96030e34f8cc148d295be08"
+}

@@ -120,7 +120,7 @@ class OwnedNetworkCatalogueCLITests(unittest.TestCase):
             self.assertEqual(receipt['cni_trap_connections'], 0)
             self.assertEqual(len(receipt['network_new_cases']), 3)
             for field in ('empty_db_and_missing_file_loads_are_noop', 'missing_file_nonempty_noop',
-                          'db_load_idempotent_graph', 'legacy_custom_snapshot_restored',
+                          'db_load_idempotent_graph', 'tagged_custom_network_restored', 'net_save_db_materializes_custom_tag_row',
                           'renamed_definition_retained', 'conflicting_numeric_runtime_refreshed_from_db',
                           'runtime_refresh_requires_explicit_db_load', 'deleted_db_row_preserves_active_runtime',
                           'stale_numeric_snapshot_not_resurrected', 'file_collision_atomic_refusal',

@@ -82,6 +82,13 @@ def closure():
                      'rust/testdata/fixtures/native_cgate_net_lifecycle.json',
                      'rust/testdata/fixtures/native_cgate_net_db_reconciliation.json',
                      'rust/cbus-cgate/research/native_net_db_reconciliation_probe.py',
+                     'rust/testdata/fixtures/native_cgate_net_save_db_materialization.json',
+                     'rust/testdata/vectors/cgate_net_save_db_materialization.jsonl',
+                     'rust/cbus-cgate/research/native_net_save_db_materialization_probe.py',
+                     'toolkit-cli/research/experiments/2026-10-01/net-save-db-materialization-native-contract.json',
+                     'toolkit-cli/research/network_save_db_cli_acceptance.py',
+                     'toolkit-cli/tests/test_cmqtt_network_save_db_cli.py',
+                     'toolkit-cli/research/fixtures/project-legacy-transform-historical-native-d217b0d2.zip',
                      'toolkit-cli/research/local_cgate.py',
                      'toolkit-cli/research/experiments/2026-10-01/net-db-reconciliation-native-contract.json',
                      'rust/testdata/fixtures/native_cgate_cgl_routes.json',
@@ -367,13 +374,46 @@ def execute(args, report, output):
             definition('flush', ['Alias'])
             definition('save', ['DB'])
             db_saved = export(project, 'after-definition-save-db')
-            require(db_saved == reopened, 'cmqttd NET SAVE DB changed tag database XML')
+            from research.network_save_db_cli_acceptance import element_model, materialized_rows, native_binding
+            report['native_materialization_fixture_binding'] = native_binding()
+            actual_tree = ET.fromstring(db_saved)
+            original_tree = ET.fromstring(reopened)
+            alias = actual_tree.find("Project/Network[Address='Alias']")
+            require(alias is not None, 'NET SAVE DB did not materialize custom Alias')
+            alias_document = '<Installation><Project>' + ET.tostring(alias, encoding='unicode') + '</Project></Installation>'
+            alias_facts = materialized_rows(alias_document, {'Alias': dict(type='cni', address=trap_endpoint,
+                                             properties=[('alpha', 'beta'), ('baud', '9600')])})['Alias']
+            prior_oids = {node.text for node in original_tree.iter('OID')}
+            require(not prior_oids.intersection([alias_facts['network_oid'], alias_facts['interface_oid'], *alias_facts['property_oids']]),
+                    'New materialization reused an existing project OID')
+            # Build the complete expected projection independently: all old
+            # model nodes remain, the newly explicit native schema marker is
+            # known, and only the fully validated generated Alias is appended.
+            expected_tree = ET.fromstring(reopened)
+            if expected_tree.find('DBVersion') is None:
+                schema = ET.Element('DBVersion'); schema.text = '2.3'
+                expected_tree.insert(1 if expected_tree.find('OID') is not None else 0, schema)
+            expected_alias = ET.Element('Network')
+            for field, value in (('OID', alias_facts['network_oid']), ('TagName', 'nAlias'), ('Address', 'Alias'), ('NetworkNumber', '0xff')):
+                ET.SubElement(expected_alias, field).text = value
+            expected_interface = ET.SubElement(expected_alias, 'Interface')
+            for field, value in (('OID', alias_facts['interface_oid']), ('InterfaceType', alias.findtext('Interface/InterfaceType')),
+                                 ('InterfaceAddress', trap_endpoint)):
+                ET.SubElement(expected_interface, field).text = value
+            for oid, (name, value) in zip(alias_facts['property_oids'], [('alpha', 'beta'), ('baud', '9600')]):
+                prop = ET.SubElement(expected_interface, 'Property')
+                for field, text in (('OID', oid), ('Name', name), ('Value', value)):
+                    ET.SubElement(prop, field).text = text
+            expected_tree.find('Project').append(expected_alias)
+            require(element_model(actual_tree) == element_model(expected_tree),
+                    'NET SAVE DB whole-project projection changed existing or unexpected model data')
             report['definition_save_db_preserves_existing_network_fields'] = True
-            report['save_db_scope'] = 'cmqttd internal snapshot; arbitrary named native Network XML projection is unimplemented'
+            report['net_save_db_materializes_custom_tag_row'] = True
+            report['save_db_scope'] = 'Complete named Network/Interface/Property materialization; explicit PROJECT SAVE remains separate'
             definition('delete', ['Alias'], label='delete-saved-custom')
             require('Alias' not in names(), 'Deleted custom definition remains active')
-            definition('load', ['DB'], label='restore-legacy-custom-db-snapshot')
-            require('Alias' in names(), 'Legacy custom DB snapshot was not restored')
+            definition('load', ['DB'], label='restore-current-custom-tag-network')
+            require('Alias' in names(), 'Materialized custom tag Network was not restored')
             property_value('Alias', 'Options', 'alpha=beta baud=9600')
             stable_names = names(label='before-repeated-db')
             definition('load', ['DB'], label='repeated-db-load-1')
@@ -382,7 +422,7 @@ def execute(args, report, output):
             require(names() == stable_names and export(project, 'after-repeated-db') == db_saved,
                     'Repeated DB load changed catalogue/tag graph')
             report['db_load_idempotent_graph'] = True
-            report['legacy_custom_snapshot_restored'] = True
+            report['tagged_custom_network_restored'] = True
 
             definition('rename', ['240', 'RenamedLocal'], label='rename-numeric-default-fixrefs')
             definition('load', ['DB'], label='db-load-after-numeric-rename')

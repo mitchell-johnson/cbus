@@ -49,6 +49,7 @@ const DEFAULT_VERSION: &str = "1.0";
 const OID_ELEMENTS: &[&str] = &[
     "Network",
     "Interface",
+    "Property",
     "Application",
     "Group",
     "NetVar",
@@ -123,7 +124,10 @@ pub(crate) fn archive(server: &mut Server, tag: &str, project: &str, token: &str
         Ok(false) => {}
         Err(error) => return failed(tag, error),
     }
-    let document = installation_document(server, project);
+    let document = match installation_document(server, project) {
+        Ok(document) => document,
+        Err(error) => return failed(tag, error),
+    };
     let bytes = match encode(container(token), document.as_bytes()) {
         Ok(bytes) => bytes,
         Err(error) => return failed(tag, error),
@@ -162,6 +166,7 @@ pub(crate) fn restore(server: &mut Server, tag: &str, project: &str, token: &str
     staged.projects.insert(
         project.to_string(),
         Project {
+            tag_networks: Default::default(),
             name: project.to_string(),
             networks: Default::default(),
         },
@@ -171,18 +176,53 @@ pub(crate) fn restore(server: &mut Server, tag: &str, project: &str, token: &str
         .retain(|(name, _)| name != project);
     staged.current = Some(project.to_string());
     for (address, document) in &imported.networks {
-        let created = staged.handle(&format!(
-            "[restore] DBCREATENET {address} RESTORE{address} Cni 127.0.0.1:1"
-        ));
-        if created.status >= 400 {
-            return failed(tag, format!("Network {address}: {}", created.final_text));
-        }
-        let replaced = staged.handle_document(
-            &format!("[restore] DBSETXML //{project}/{address}"),
+        let mut parsed = match crate::TagNetwork::parse(
             document,
-        );
-        if replaced.status != 301 {
-            return failed(tag, format!("Network {address}: {}", replaced.final_text));
+            None,
+            crate::next_network_seq(&staged.projects[project]),
+        ) {
+            Ok(record) => record,
+            Err(error) => {
+                // Assigned legacy rows retain the historical DBSETXML error
+                // envelope. New string records have no numeric owner and use
+                // the complete tag-record admission error directly.
+                if let Ok(number) = address.parse::<u8>() {
+                    if number.to_string() == *address {
+                        let _ = staged.handle(&format!(
+                            "[restore] DBCREATENET {number} RESTORE{number} Cni 127.0.0.1:1"
+                        ));
+                        let legacy = staged.handle_document(
+                            &format!("[restore] DBSETXML //{project}/{address}"),
+                            document,
+                        );
+                        if legacy.status >= 400 {
+                            return failed(
+                                tag,
+                                format!("Network {address}: {}", legacy.final_text),
+                            );
+                        }
+                    }
+                }
+                return failed(tag, error);
+            }
+        };
+        let assigned = address.parse::<u8>().ok().filter(|number| {
+            number.to_string() == *address && parsed.root.field("NetworkNumber") == Some(address)
+        });
+        if let Some(number) = assigned {
+            let created = staged.handle(&format!(
+                "[restore] DBCREATENET {number} RESTORE{number} Cni 127.0.0.1:1"
+            ));
+            if created.status >= 400 {
+                return failed(tag, format!("Network {address}: {}", created.final_text));
+            }
+            parsed.database_network = Some(number);
+            staged.register_tag_network(project, parsed);
+            if let Err(error) = staged.sync_tag_database_children(project, address) {
+                return failed(tag, format!("Network {address}: {error}"));
+            }
+        } else {
+            staged.register_tag_network(project, parsed);
         }
     }
     if imported.envelope != DbXmlExtras::default() {
@@ -310,7 +350,7 @@ fn bounded_read(reader: impl Read, limit: u64) -> Result<Vec<u8>, String> {
 
 #[derive(Debug, Default)]
 struct ImportedProject {
-    networks: Vec<(u8, String)>,
+    networks: Vec<(String, String)>,
     envelope: DbXmlExtras,
 }
 
@@ -396,7 +436,8 @@ fn parse_project(
                     .children()
                     .find(|node| node.has_tag_name("Address"))
                     .and_then(|node| node.text())
-                    .and_then(|text| text.trim().parse::<u8>().ok())
+                    .filter(|text| crate::tag_network::valid_address(text))
+                    .map(str::to_string)
                     .ok_or_else(|| "project XML Network has no valid Address".to_string())?;
                 if imported.networks.iter().any(|(known, _)| *known == address) {
                     return Err(format!("project XML repeats Network {address}"));
@@ -441,7 +482,10 @@ fn retain_scalar(
 /// Detach one Network and give every modeled object without an OID a fresh
 /// identity. The native `file` repository omits OIDs from saved XML and
 /// assigns new ones on load; present OIDs are kept exactly.
-fn with_generated_oids(network: roxmltree::Node<'_, '_>, source: &str) -> Result<String, String> {
+pub(crate) fn with_generated_oids(
+    network: roxmltree::Node<'_, '_>,
+    source: &str,
+) -> Result<String, String> {
     let fragment = xml_fragment_with_inherited_namespaces(network, source)?;
     let parsed = roxmltree::Document::parse(&fragment)
         .map_err(|_| "detached Network is not well-formed".to_string())?;
@@ -474,7 +518,7 @@ fn with_generated_oids(network: roxmltree::Node<'_, '_>, source: &str) -> Result
 }
 
 /// Native `file` repository Installation XML for one cmqttd project.
-fn installation_document(server: &Server, project: &str) -> String {
+fn installation_document(server: &Server, project: &str) -> Result<String, String> {
     let envelope = server
         .db_xml_extras
         .get(&Server::unit_document_key(project, ENVELOPE_KEY))
@@ -505,22 +549,8 @@ fn installation_document(server: &Server, project: &str) -> String {
         ));
     }
     output.push('\n');
-    if let Some(record) = server.projects.get(project) {
-        let mut addresses = record
-            .networks
-            .iter()
-            // An empty OID marks the non-durable runtime shell kept after DBNEW.
-            .filter(|(_, network)| !network.oid.is_empty())
-            .map(|(address, _)| *address)
-            .collect::<Vec<_>>();
-        addresses.sort_unstable();
-        for address in addresses {
-            output.push_str(&server.network_xml_document(
-                project,
-                address,
-                &record.networks[&address],
-            ));
-        }
+    for network in server.project_network_documents(project)? {
+        output.push_str(&network);
     }
     let mut detail = None;
     for fragment in &envelope.children {
@@ -533,7 +563,7 @@ fn installation_document(server: &Server, project: &str) -> String {
     output.push_str("</Project>\n");
     output.push_str(detail.unwrap_or(DEFAULT_INSTALLATION_DETAIL));
     output.push_str("</Installation>\n");
-    output
+    Ok(output)
 }
 
 // ---------------------------------------------------------------------------

@@ -8,7 +8,8 @@ from pathlib import Path
 
 
 from project_legacy_transform_receipt_source import (CLI_SHA256, historical_cli,
-                                                     assert_current_project_carry_forward)
+                                                     assert_current_project_carry_forward, NATIVE_SHA256,
+                                                     historical_native, assert_current_native_carry_forward)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,8 +39,12 @@ def test_native_legacy_transform_receipt_is_source_bound() -> None:
     assert receipt["sources"]["cli_dispatch_sha256"] == CLI_SHA256
     historical_cli()
     assert_current_project_carry_forward()
+    assert receipt["sources"]["native_module_sha256"] == NATIVE_SHA256
+    historical_native()
+    assert_current_native_carry_forward()
     for field, path in SOURCES.items():
-        assert receipt["sources"][field] == digest(ROOT / path)
+        if field != "native_module_sha256":
+            assert receipt["sources"][field] == digest(ROOT / path)
     assert receipt["preview"]["backup_absent_before_test"] is True
     assert receipt["preview"]["creates_backup_without_changing_xml"] is True
     cases = receipt["cases"]
@@ -70,3 +75,42 @@ def test_project_source_carry_forward_detects_argument_and_forwarding_changes() 
                           b'project_legacy_transform_run(None)')):
         assert source.count(old) == 1
         assert project_source_contract(source.replace(old, changed)) != expected
+
+
+def test_native_source_carry_forward_detects_route_and_transitive_changes() -> None:
+    from project_legacy_transform_receipt_source import native_source_contract, historical_native
+
+    source = historical_native()
+    expected = native_source_contract(source)
+    mutations = (
+        (b'self.client = client', b'self.client = None'),
+        (b'action = action.lower()', b'action = action.upper()'),
+        (b'getattr(response, "code", 200) >= 400', b'getattr(response, "code", 200) >= 500'),
+        (b'[A-Za-z0-9_]{1,8}', b'[A-Za-z0-9_]{1,9}'),
+        (b'if value is None or isinstance(value, bool):', b'if value is None:'),
+        (b'import re', b'import json as re'),
+        (b'from __future__ import annotations', b'from __future__ import division'),
+    )
+    for old, changed in mutations:
+        assert old in source
+        assert native_source_contract(source.replace(old, changed)) != expected
+
+
+def test_native_source_carry_forward_rejects_shadowing_and_module_monkeypatches() -> None:
+    from project_legacy_transform_receipt_source import native_source_contract, historical_native
+
+    source = historical_native()
+    expected = native_source_contract(source)
+    for suffix in (b'\nclass NativeProjects: pass\n',
+                   b'\ndef _token(value): return value\n',
+                   b'\nimport json as re\n'):
+        try:
+            native_source_contract(source + suffix)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('Duplicate scoped binding was accepted')
+    for suffix in (b'\nNativeProjects.operation = lambda *a, **k: None\n',
+                   b'\nsetattr(NativeProjects, "operation", lambda *a: None)\n',
+                   b'\nexec("NativeProjects.operation = None")\n'):
+        assert native_source_contract(source + suffix) != expected

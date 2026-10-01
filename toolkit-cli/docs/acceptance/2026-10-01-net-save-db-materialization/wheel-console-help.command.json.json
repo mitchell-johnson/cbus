@@ -1,0 +1,35 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "f2afd43d236288bc7588091911b1bd1a75defd1d694c46877908b83f570f6968",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "6d236ecb268842c2ebec70d5a5c85b0f50a6f0e4088f5b9f04338c9633e097c5"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "3abc51d6d9ae3b4fb6541667cc568253b1d12172c64b751f701c7c7c19a01268"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/installed-env/bin/cbus-toolkit",
+      "--help"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}",
+    "exit_status": 0,
+    "stdout_sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

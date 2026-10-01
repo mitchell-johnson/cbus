@@ -1,0 +1,58 @@
+{
+  "format": "cbus-native-net-save-db-materialization-contract-v1",
+  "oracle": {
+    "version": "3.4.0.2001",
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+    "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+    "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+  },
+  "fixture": {
+    "path": "rust/testdata/fixtures/native_cgate_net_save_db_materialization.json",
+    "sha256": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b"
+  },
+  "probe": {
+    "path": "rust/cbus-cgate/research/native_net_save_db_materialization_probe.py",
+    "sha256": "af2db73435bd5b9ff5ddd5800dce4844f2a10386998ef48332d6d47b9712e8d3"
+  },
+  "helper": {
+    "path": "toolkit-cli/research/local_cgate.py",
+    "sha256": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+  },
+  "capture": {
+    "commands": 126,
+    "raw_sha256": "08e2fd9d119b34ba8e510f11e5fbfb6c28012598c96030e34f8cc148d295be08",
+    "runtime": "system Python3.9 raw socket boundary probe; no Toolkit imports",
+    "closed_model_only": true,
+    "cleanup_verified": true
+  },
+  "contract": [
+    "Existing Network and Interface OIDs, TagName and NetworkNumber survive runtime metadata SAVE refresh without LOAD.",
+    "Never-tagged numeric and arbitrary names materialize Address exact lexeme, TagName n+name and lexical NetworkNumber0xff. Names0254,254,256,255,0xff,CustomA,Customa remain distinct.",
+    "Repeated SAVE preserves Network/Interface OIDs but regenerates all option Property OIDs. Duplicate option keys create ordered duplicate Property siblings; lone flag creates no Property; mixed flag/equal tokens pair in observed token order.",
+    "Backslash values and XML-special option names/values are preserved with XML escaping.",
+    "NET SAVE DB is model-only: saved baseline followed unsaved materialization then CLOSE/LOAD restores only baseline254; never saved project LOAD408 missing db captured in private v3.",
+    "Named and OID DBGETXML read materialized rows; GET NetworkNumber402 while DBGET parameter path342 exposes exact lexical number.",
+    "DBSET named/OID parameter paths200; DBSETXML named301 retainsOID. DBDELETE OID200 removes whole-tree Network, while native direct named DBGETXML can retain stale cached snippet; following named delete401.",
+    "DBSET NetworkNumber255 and0xff preserves each exact lexical spelling."
+  ],
+  "failures_retained": [
+    "Private v1 syntax failure before process",
+    "Private v2 XML declaration extraction failure after SAVE2; owned cleanup",
+    "Private v3 unsaved initial project CLOSE then LOAD408; subsequent reads/mutations failed and parser stopped; owned cleanup",
+    "Private v4 wrong DBSET grammar401 retained; corrected parameter paths in finalcapture",
+    "Every final native402/401/refusal retained in fixture"
+  ],
+  "normalization": [
+    "Task-owned absent serial path/root becomes %OWNED_WORK%.",
+    "Reserved Cni port becomes %FIXTURE_CNI_PORT%.",
+    "Native generated OID elements/receipts become stable equality-preserving %OID_N% tokens; no OID allocator parity claimed.",
+    "Modified timestamps, Hostname and OSVersion are explicit tokens.",
+    "The second reserved Cni endpoint becomes %FIXTURE_SECOND_CNI_PORT%.",
+    "All UUID appearances including OID selectors/scalar summaries use the same equality-preserving OID map. Command tags are retained."
+  ],
+  "claims": {
+    "hardware": false,
+    "windows": false,
+    "full_toolkit_parity": false
+  }
+}

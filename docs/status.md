@@ -37,6 +37,14 @@ turns the remaining scope into 59 tracked work items across 12 packages, with
 a first delivery batch and explicit acceptance gates through deployment. It also explains why category counts and command routing
 cannot establish a percentage of full Toolkit functionality.
 
+The [NET SAVE DB milestone](../toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-materialization.md)
+adds complete runtime-to-tag materialization, exact named Network addresses,
+current database/OID editing and project/repository persistence. The Python CLI
+can edit those XML/CBZ rows offline and upload a bounded file through FILE.
+Its acceptance remains a closed model workflow; interface opening, native
+FILE option restoration, physical results and the complete Toolkit workflow
+denominator remain separate work.
+
 - `cgate-mock` is an in-memory compatibility server. The separate C-Gate service embedded in `cmqttd` persists its database and routes every non-obsolete primary inventory path as listed in [its replacement ledger](cmqttd-cgate.md).
 - Complete primary routing means every maintained inventory path has a physical or local/session handler. Selector-specific unsupported forms can still refuse before I/O, and this does not establish every native format, device-specific side effect, timing characteristic, topology, or physical result.
 - The PCI simulator models the protocol behavior needed by the workspace and test suite. It is not a complete electrical or timing simulation of every C-Bus unit.

@@ -200,6 +200,13 @@ fn snapshot_key(project: &str, source: &str) -> String {
     )
 }
 
+fn materialized_db_key(project: &str) -> String {
+    format!(
+        "{CATALOG_PREFIX}{}/db-source-materialized",
+        project_component(project)
+    )
+}
+
 fn imported_definitions(project: &Project) -> Vec<NetDefinition> {
     let mut definitions = project
         .networks
@@ -207,6 +214,12 @@ fn imported_definitions(project: &Project) -> Vec<NetDefinition> {
         // DBNEW retains a non-durable configured PCI shell. It is not a tag
         // definition, and a DB load must never manufacture it in the database.
         .filter(|(_, network)| !network.oid.is_empty())
+        .filter(|(address, _)| {
+            !project
+                .tag_networks
+                .values()
+                .any(|record| record.database_network == Some(**address))
+        })
         .map(|(address, network)| NetDefinition {
             name: address.to_string(),
             interface_type: network.iface_type.clone(),
@@ -215,7 +228,39 @@ fn imported_definitions(project: &Project) -> Vec<NetDefinition> {
             bound_network: Some(*address),
         })
         .collect::<Vec<_>>();
-    definitions.sort_by(|left, right| left.name.cmp(&right.name));
+    definitions.extend(project.tag_networks.iter().map(|(name, record)| {
+        NetDefinition {
+            name: name.clone(),
+            interface_type: record
+                .interface()
+                .field("InterfaceType")
+                .unwrap_or_default()
+                .to_string(),
+            interface_address: record
+                .interface()
+                .field("InterfaceAddress")
+                .unwrap_or_default()
+                .to_string(),
+            options: record.options(),
+            bound_network: record.database_network,
+        }
+    }));
+    definitions.sort_by_key(|definition| {
+        let sequence = project
+            .tag_networks
+            .get(&definition.name)
+            .map(|record| record.created_seq)
+            .or_else(|| {
+                definition.bound_network.and_then(|address| {
+                    project
+                        .networks
+                        .get(&address)
+                        .map(|network| network.created_seq)
+                })
+            })
+            .unwrap_or_default();
+        (sequence == 0, sequence)
+    });
     definitions
 }
 
@@ -238,9 +283,15 @@ pub(super) fn seed_catalogs(model: &mut Server) -> io::Result<bool> {
     for (project, definitions) in projects {
         let encoded = encode_catalog(&definitions)?;
         for key in [active_key(&project), snapshot_key(&project, "db")] {
+            let is_db = key == snapshot_key(&project, "db");
             if let std::collections::hash_map::Entry::Vacant(entry) = model.config_values.entry(key)
             {
                 entry.insert(encoded.clone());
+                if is_db {
+                    model
+                        .config_values
+                        .insert(materialized_db_key(&project), "true".to_string());
+                }
                 changed = true;
             }
         }
@@ -262,12 +313,23 @@ fn database_definitions(model: &Server, project: &str) -> Result<Vec<NetDefiniti
     // Older cmqttd versions saved the whole runtime catalogue as DB source.
     // Preserve named definitions from those snapshots, but never resurrect a
     // deleted numeric tag row or replace its current interface with stale data.
-    if let Some(value) = model.config_values.get(&snapshot_key(project, "db")) {
+    if let Some(value) = model
+        .config_values
+        .get(&snapshot_key(project, "db"))
+        .filter(|_| {
+            !model
+                .config_values
+                .contains_key(&materialized_db_key(project))
+        })
+    {
         definitions.extend(decode_catalog(value)?.into_iter().filter(|definition| {
-            !definition
-                .name
-                .parse::<u8>()
-                .is_ok_and(|address| address.to_string() == definition.name)
+            !model.projects[project]
+                .tag_networks
+                .contains_key(&definition.name)
+                && !definition
+                    .name
+                    .parse::<u8>()
+                    .is_ok_and(|address| address.to_string() == definition.name)
         }));
     }
     Ok(definitions)
@@ -305,8 +367,33 @@ fn load_definitions(model: &mut Server, project: &str, source: &str) -> Result<(
             active.push(candidate);
         }
     }
-    active.sort_by(|left, right| left.name.cmp(&right.name));
     put_catalog(model, project, &active)
+}
+
+/// A successful explicit project close/load restores the tag database's
+/// runtime definitions, rather than retaining unsaved materialized names.
+/// FILE snapshots are separate and are never erased here.
+pub(super) fn reset_project_catalog(model: &mut Server, project: &str) -> Result<(), String> {
+    let mut restored = database_definitions(model, project)?;
+    let prior = catalog(model, project)?;
+    for definition in &mut restored {
+        if let Some(existing) = prior.iter().find(|row| row.name == definition.name) {
+            definition.bound_network = existing.bound_network;
+        }
+    }
+    put_catalog(model, project, &restored)
+}
+
+/// DELETE/NEW discard implicit runtime/DB ownership. The explicit NET FILE
+/// recovery snapshot survives native project deletion and same-name reuse.
+pub(super) fn retire_project_catalog(model: &mut Server, project: &str) {
+    for key in [
+        active_key(project),
+        snapshot_key(project, "db"),
+        materialized_db_key(project),
+    ] {
+        model.config_values.remove(&key);
+    }
 }
 
 fn put_catalog(
@@ -754,7 +841,6 @@ impl Service {
                                         .collect(),
                                     bound_network: None,
                                 });
-                                definitions.sort_by(|left, right| left.name.cmp(&right.name));
                                 match put_catalog(&mut model, &current, &definitions) {
                                     Ok(()) => ok(tag, vec![], "200 OK."),
                                     Err(error) => err(tag, 500, &format!("500 {error}")),
@@ -863,8 +949,6 @@ impl Service {
                                         .find(|definition| definition.name == name)
                                     {
                                         definition.name = words[3].to_string();
-                                        definitions
-                                            .sort_by(|left, right| left.name.cmp(&right.name));
                                         match put_catalog(&mut model, &project, &definitions) {
                                             Ok(()) => ok(tag, vec![], "200 OK."),
                                             Err(error) => err(tag, 500, &format!("500 {error}")),
@@ -901,6 +985,27 @@ impl Service {
                         Ok(definitions) => match serde_json::to_string(&definitions) {
                             Err(error) => err(tag, 500, &format!("500 {error}")),
                             Ok(value) => {
+                                if words[2].eq_ignore_ascii_case("DB") {
+                                    for definition in &definitions {
+                                        if let Err(error) = model.save_tag_definition(
+                                            target,
+                                            &definition.name,
+                                            &definition.interface_type,
+                                            &definition.interface_address,
+                                            &definition.options,
+                                        ) {
+                                            *model = before;
+                                            return err(
+                                                tag,
+                                                408,
+                                                &format!("408 Operation failed: {error}"),
+                                            );
+                                        }
+                                    }
+                                    model
+                                        .config_values
+                                        .insert(materialized_db_key(target), "true".to_string());
+                                }
                                 model
                                     .config_values
                                     .insert(snapshot_key(target, words[2]), value);

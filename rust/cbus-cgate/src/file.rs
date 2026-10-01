@@ -720,6 +720,7 @@ mod tests {
         server.projects.insert(
             "TEST".to_string(),
             crate::Project {
+                tag_networks: Default::default(),
                 name: "TEST".to_string(),
                 networks: std::collections::HashMap::new(),
             },

@@ -1,0 +1,324 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4958cd02cc652373099c3b40ba3869a855f20c4045d5592384f5bbbdf35fe0d0",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-save-db-preparation-history-v1",
+    "rows": [
+      {
+        "role": "project-address-focused.xml",
+        "sha256": "669a59203e14268736b1cee959fef5e3947b3926a01b3c95a85247abd640e7d4",
+        "parents": 54,
+        "failure_or_error_count": 3,
+        "reason": "Initial new test fixture expected Extra from the old135 fixture; the new126 fixture uses Duplicates. Three harness assertions failed; later corrected runs are separate.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "project-address-focused-fixed1.xml",
+        "sha256": "ab09c044ef9ac89d893812a9338ec3e5c094ae2df3073629d0e571b9179c7767",
+        "parents": 54,
+        "failure_or_error_count": 0,
+        "reason": "Corrected fixture assertions passed54parents/49subtests; superseded by explicit legacy255 alias preservation.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "project-address-focused-fixed2.xml",
+        "sha256": "ad443c6247b7215a834c0af303bf223949ee41e0252acb2be52a0f1bc8538acb",
+        "parents": 54,
+        "failure_or_error_count": 0,
+        "reason": "Legacy grammar refinement passed54parents/49subtests; preparatory, not final source/wheel acceptance.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "genuine-before-binary-public-cli",
+        "raw_sha256": "f6db7cd4a815f21e979bb62d7b4578cba4871fe2894201df90075eaf7353096d",
+        "result": "failed",
+        "cli_calls": 7,
+        "reason": "Preserved62 daemon completed SAVE200 but exported zero Networks after runtimeCREATE. Current producer overlay provenance retained; no fresh-build claim.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "cbus-net-save-db-new-producer-old-binary-red-20261001",
+        "raw_sha256": "959a4e34a29e8bc832a29cec80dfc2f0e22f4b19dbdf0c61bc2a9c432e83ac53",
+        "result": "failed",
+        "cli_calls": 1,
+        "reason": "Preparatory harness refusal: missing explicit zero-group Lighting fixture triggered ordinary MQTT application resynchronization, violating the strict eight-write startup. The fixture was corrected; no guard was relaxed.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "cbus-net-save-db-new-producer-old-binary-red2-20261001",
+        "raw_sha256": "d5c1c994607fd930221dd1f9dd4160ed32afcd1af7b91b07ee39cd93458070fa",
+        "result": "failed",
+        "cli_calls": 14,
+        "reason": "Genuine preserved old-binary materialization failure: SAVE200 exported zero expected named rows. Corrected synthetic fixture retained exact eight startup writes and no later PCI writes.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "cbus-net-save-db-new-producer-old-binary-red3-20261001",
+        "raw_sha256": "ea681623135fbb33ec3f7c04664db444c16a4bc1ee62e1ba60f3ce48d4fea4df",
+        "result": "failed",
+        "cli_calls": 14,
+        "reason": "Genuine old-binary failure with final preparation audit: fourteen public CLI calls, zero expected named rows, immutable inputs, zero CNI connections, serial absence and owned cleanup.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-archive-service-final.log",
+        "raw_sha256": "5b269260ed3e8efeb4063ebbd5b6f8eab7473c04abd65e6fb02436c8f0948dbe",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.32s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-archive-service.log",
+        "raw_sha256": "96c046e39809a1690fa6ad2590ab41521d8170bf97fa95ef062cdecf8a8951ea",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 486 filtered out; finished in 0.09s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 31 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s",
+          "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+          "test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.05s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-clippy-1.log",
+        "raw_sha256": "bf09159181b9733fb446dc3605050d812b3a1cde8206152d7577e2c36b250dc4",
+        "result": "failed",
+        "rust_test_results": [],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-1.log",
+        "raw_sha256": "ddc924882f8fc7d40d7622788b6fa394930c5ae979c08b4290ac9c1d34c72820",
+        "result": "failed",
+        "rust_test_results": [],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-2.log",
+        "raw_sha256": "60bbd99de9102fe3fc7a993efbf56c54dd9f856c148d3bb171759f9b35335314",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 8 passed; 4 failed; 0 ignored; 0 measured; 474 filtered out; finished in 1.54s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-3.log",
+        "raw_sha256": "6e9530625a8b653fe7ba51507ac5539b2516e2f1c8c5bf2e916bf97262167603",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 9 passed; 3 failed; 0 ignored; 0 measured; 474 filtered out; finished in 1.61s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-4.log",
+        "raw_sha256": "63634c10c3a6a4f08573c276e6bff7acc58b3062d2babc085dd9e4e0d62a99b6",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 10 passed; 2 failed; 0 ignored; 0 measured; 474 filtered out; finished in 1.56s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-5.log",
+        "raw_sha256": "8d529f977c95d00666a11e2da562451902169c0c58ad27add5102dfdabdfefc2",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 12 passed; 1 failed; 0 ignored; 0 measured; 474 filtered out; finished in 1.73s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-focused-feature-7.log",
+        "raw_sha256": "4e6e57dd461bd3d281c37ce49c419bcce1da2d3274bd245f546f50e0c7888c7a",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 12 passed; 1 failed; 0 ignored; 0 measured; 474 filtered out; finished in 1.68s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-net-db-load-final.log",
+        "raw_sha256": "61ac533dd993f6eb26e1504aa4c1396518c91a8892031e511042e4bbaf068beb",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 476 filtered out; finished in 2.31s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-net-db-load.log",
+        "raw_sha256": "8710222c53c45ca405fa64874cf670b08900b849cb69074640c7782a6585a72a",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 9 passed; 2 failed; 0 ignored; 0 measured; 476 filtered out; finished in 2.08s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-net-db-load-final-3.log",
+        "raw_sha256": "ff9d3aa0632c20cf971b87cad30e37c8e75218b416c756325828265ac5807c33",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 9 passed; 2 failed; 0 ignored; 0 measured; 476 filtered out; finished in 2.08s"
+        ],
+        "reason": "Preparatory compile, compatibility, or regression failure; exact private log retained. The separate final validation records the corrected source and successful commands.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "historical62-producer-newbinary-semantic-expectation-red",
+        "raw_sha256": "21e7566bbfd9b3ee639ed4f2768a78be9554ad50098778beb708d1729d22bf4e",
+        "result": "failed",
+        "cli_calls": 78,
+        "reason": "The byte-identical old62 producer rejects native materialization after78 calls because it expected SAVE DB not to change tag XML. Existing producer/test bytes and receipts are preserved. The maintained assertion now checks complete native materialization, not an unchanged snapshot.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "current-catalogue-exploratory-green-superseded",
+        "raw_sha256": "0e251cf33245f0e68cf4bf755c14c72f1924984a234367044976e99e0a3b0b6b",
+        "result": "passed",
+        "cli_calls": 147,
+        "reason": "147-call current catalogue pass is superseded by later lifecycle repair; no final acceptance credit.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "materialization-exploratory-lifecycle-red",
+        "raw_sha256": "c9f0690150c40b344c5f55c30537b7dc2c63ce7fb1251e1e4bdc5fbe188c928d",
+        "result": "failed",
+        "cli_calls": 20,
+        "reason": "Genuine20-call lifecycle failure: complete eight-row/repeated Property OID assertions passed, unsaved DB restored but stale runtime definitions remained after CLOSE/LOAD, causing recreation408. No harness assertion waiver.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "first-six-current-differentials-superseded",
+        "raw_sha256": "4436e71e3246a68e1f0c76ef4ad0d8f762991649889ced2a8beb7a5fb6084209",
+        "result": "passed",
+        "reason": "Six passed receipts bind pre-lifecycle-repair source and binary. Fresh six replays are required after the genuine public CLI lifecycle failure.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "v3-historical62-expectation-red",
+        "raw_sha256": "29e5eb2d3afd4e4b3d04b5db5667aac3b4ae6aa07249cd8ec10646228371ab54",
+        "result": "failed",
+        "cli_calls": 78,
+        "reason": "Byte-identical old62producer rejects materialization after78calls on v3binary. Explicit current source overlay and independent execution receipt preserved.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "v3-current-catalogue-green-superseded",
+        "raw_sha256": "fc98a24e72f8bbaa7d13268d4d16df3e812318c9acdbacbed0becc7965701553",
+        "result": "passed",
+        "cli_calls": 147,
+        "reason": "147-call current catalogue pass superseded by Astra deletion/copy validation fixes; no final acceptance credit.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "v3-materialization-mac-filename-harness-red",
+        "raw_sha256": "cf33cc999ff68892efea0661607c9089ab6b428bf21055b70778f255983bacb9",
+        "result": "failed",
+        "cli_calls": 57,
+        "reason": "57-call honest harness failure: case-insensitive macOS output filenames CustomA/Customa collided. CLI correctly refused existing destination before connection. Correction prefixes command sequence and preserves exact entity identities/metadata/wire guards.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "materialization-v4-unselected-safe-silent-success",
+        "raw_sha256": "5295c6a3f147221152abb7e0a30a73c9561fe7087a4e12d7b7d531edaa2e8ef3",
+        "result": "failed",
+        "cli_calls": 76,
+        "reason": "76-call genuine unselected SAFE mutation silently acknowledged without changing the tag tree. Native126 selects the project before DBSET. v5 adds a fail-closed refusal; final producer retains a public refusal/no-mutation regression before selected native-bound success.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "catalogue-v4-green-superseded",
+        "raw_sha256": "907b8ab25246d95a6122126b63d630d4556183d3b2cd04c5471373a3f2e65cd9",
+        "result": "passed",
+        "cli_calls": 147,
+        "reason": "147-call exploratory green bound to v4; superseded by final v5 binary and current producer closure.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "six-v3-green-superseded",
+        "raw_sha256": "f3abd898ff4ec7f37b0115ade3b257af14014d6e2eca6c06a0894e6d698c3ad5",
+        "result": "passed",
+        "cli_calls": null,
+        "reason": "Six exact retained-original differentials passed on v3; final v5 runs are separate. This is not credited as final current-source acceptance.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-subtree-delete-v4-2.log",
+        "raw_sha256": "281cfabb3bc3ce260f9103be7c01ebd97e1cb1d34e292628a8280e01aea34ebe",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 490 filtered out; finished in 0.17s"
+        ],
+        "reason": "Preparatory expanded test incorrectly required global retirement of an identity also explicitly owned by HARNESS Unit5. Read-only trace confirmed AUX ownership/read removal and legitimate foreign preservation. Final assertions check selected ownership retirement plus unchanged foreign owner; no global deletion was introduced.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "rust-subtree-delete-v4.log",
+        "raw_sha256": "45bea6a758278e91156b54404546d411bb6c0352667685dd13dd19d80d727c9b",
+        "result": "failed",
+        "rust_test_results": [
+          "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 490 filtered out; finished in 0.15s"
+        ],
+        "reason": "Preparatory expanded test incorrectly required global retirement of an identity also explicitly owned by HARNESS Unit5. Read-only trace confirmed AUX ownership/read removal and legitimate foreign preservation. Final assertions check selected ownership retirement plus unchanged foreign owner; no global deletion was introduced.",
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "actual-original-public-cli-source-execution-1-harness-failure",
+        "raw_sha256": "e7b59fdcbd83b96d5be722b28d0df238303b23ba460ce7784beeb6434f3e2012",
+        "driver_sha256": "75b0d2e219f56d9bea349b51b1496317d5650eb68978859642ae2f6741bcdd39",
+        "cli_calls": 35,
+        "result": "failed",
+        "reason": "Case-insensitive host filenames CustomA/Customa collided; no native or product assertion was relaxed. Indexed output filenames corrected the private harness.",
+        "cleanup_verified": true,
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "actual-original-public-cli-source-execution-2-harness-failure",
+        "raw_sha256": "6f36a7833f0eaa6b6e98ac12e6a85b881d2f58781dd134447b97d8f56fa33a9b",
+        "driver_sha256": "8164fda17d11194538ed401c7d3363d1370430c586c402fe9edd7297e4abde43",
+        "cli_calls": 64,
+        "result": "failed",
+        "reason": "Indexed native export succeeded but offline-inspect referenced the superseded fixed durable-reopen filename. Corrected only that private output reference; all cleanup and source/package/artifact bindings passed.",
+        "cleanup_verified": true,
+        "credited_as_final_acceptance": false
+      },
+      {
+        "role": "original-public-wrapper-first-package-schema-failure",
+        "raw_sha256": "5827c4c94238e06cb9c0d549e435634d1997bd16381d7f18ae5295ea84df4a00",
+        "result": "failed",
+        "reason": "Wrapper used package_before.root instead of package_root after the failed source run. Exact stderr/wrapper bytes retained; terminal final wrapper schema is separate.",
+        "credited_as_final_acceptance": false
+      }
+    ],
+    "qualification": "Preparatory, failed and superseded runs remain immutable private originals; none is credited as final acceptance. More final preparation rows are appended before publication."
+  }
+}

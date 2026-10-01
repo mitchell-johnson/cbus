@@ -1,0 +1,32 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "094e87000bc6ef6ff8d46665809475d8b8882a1037175442e434114b4705ecfc",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/receipt_path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "65a04c0656b2b64a0bc90d2648602b464c4dde48d16ffdaaff73afc64dcc7bad"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "private-failed-journey-cleanup-audit-v1",
+    "receipt_path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_MATERIALIZATION_V4_EXPLORATORY_20261001}/acceptance.json",
+    "receipt_sha256": "5295c6a3f147221152abb7e0a30a73c9561fe7087a4e12d7b7d531edaa2e8ef3",
+    "raw_wire_sha256": "65bbc8101eaa3525accf8dd7da97deb34d8d0c11e97da219e69cb189d0828ac8",
+    "startup_literal_frames": 8,
+    "all_frames_exact_rx_startup": true,
+    "cni_trap_connections": 0,
+    "serial_path_absent": true,
+    "serial_syscalls_assessed": false,
+    "owned_resource_cleanup": true,
+    "inputs_unchanged": true,
+    "cli_calls": 76,
+    "completed_journey": false
+  }
+}

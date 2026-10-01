@@ -988,15 +988,25 @@ NET LOAD FILE
 NET FLUSH //PROJECT/254
 ```
 
-Active definitions and `DB`/`FILE` snapshots are durable atomic
-`cmqttd-json` values. DB LOAD derives current numeric tag-network definitions,
-adds missing names and refreshes matching interface fields while retaining
-immutable existing shared-PCI bindings and unrelated/custom active names.
-An empty DB succeeds; a deleted database row does not delete its already active
-runtime definition. Legacy DB snapshots supply names outside canonical decimal 0..255 only;
-stale numeric snapshot rows cannot resurrect a removed network. Native SAVE DB materialization of runtime-only tag Network rows remains
-outstanding, including numeric runtime names that native projects with
-NetworkNumber 255. cmqttd SAVE DB retains an internal snapshot. FILE is an internal snapshot selector and never a host path. A missing
+Active definitions and repository state are durable atomic `cmqttd-json`
+values. DB LOAD derives definitions from current numeric and exact string-addressed
+tag Network rows, adds missing names and refreshes interface metadata while
+retaining immutable existing shared-PCI bindings and unrelated active names.
+An empty DB succeeds; removing a tag row does not delete its active definition.
+Legacy snapshots cannot resurrect deleted numeric rows.
+NET SAVE DB materializes active definitions into complete Network/Interface/
+Property trees. Missing rows retain the exact runtime Address and get TagName
+`nNAME`, NetworkNumber `0xff` and fresh OIDs. Existing Network/Interface OIDs,
+TagName and NetworkNumber are preserved; each repeated SAVE regenerates Property
+OIDs. Options split on whitespace and `=` into ordered sequential pairs;
+duplicates stay distinct and a lone flag creates no Property. Exact `0254`,
+`254`, `255`, `0xff`, `CustomA` and `Customa` addresses are independent identities,
+not physical binding requests. DBGETXML/DBSETXML, DBGET/DBSET and OID mutations,
+project copy/archive and restart retain the authoritative local tree. NET SAVE
+DB edits the loaded database; explicit PROJECT SAVE commits its baseline.
+CLOSE/LOAD discards unsaved materialization. See the materialization batch and
+operator guide for captured profiles, current source/wheel evidence and remaining
+native/physical acceptance. FILE is an internal snapshot selector and never a host path. A missing
 FILE snapshot succeeds as an empty load; an existing snapshot merges and fails
 with 408 before mutation if a saved name already exists. Original FILE loads can
 partially add earlier entries before 408; cmqttd's atomic refusal is a documented

@@ -2807,6 +2807,7 @@ impl Server {
         self.clear_project_database(&project);
         if let Some(record) = self.projects.get_mut(&project) {
             record.networks.clear();
+            record.tag_networks.clear();
         }
         ok(tag, vec![], "200 OK.")
     }
@@ -2873,6 +2874,7 @@ impl Server {
         self.projects.insert(
             project_name.clone(),
             super::Project {
+                tag_networks: Default::default(),
                 name: project_name,
                 networks,
             },
@@ -3789,6 +3791,9 @@ impl Server {
                         .chain(network.units.values().map(|unit| unit.oid.clone()))
                 }),
         );
+        if let Some(record) = self.projects.get(project) {
+            removed_oids.extend(Self::tag_network_oids(record));
+        }
         for (key, _) in &removed_pending {
             self.db_pending.remove(key);
         }
@@ -3796,6 +3801,7 @@ impl Server {
             .retain(|_, level| database_path_project(&level.parent) != Some(project));
         if let Some(record) = self.projects.get_mut(project) {
             record.networks.clear();
+            record.tag_networks.clear();
         }
         for oid in removed_oids {
             if !self.oid_used_anywhere(&oid) {
@@ -3812,14 +3818,20 @@ impl Server {
         self.db_pending.values().any(|object| object.oid == oid)
             || self.db_levels.values().any(|level| level.oid == oid)
             || self.projects.values().any(|project| {
-                project.networks.values().any(|network| {
-                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
-                })
+                Self::tag_network_oids(project)
+                    .iter()
+                    .any(|candidate| candidate == oid)
+                    || project.networks.values().any(|network| {
+                        network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                    })
             })
             || self.database_files.values().any(|project| {
-                project.networks.values().any(|network| {
-                    network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
-                })
+                Self::tag_network_oids(project)
+                    .iter()
+                    .any(|candidate| candidate == oid)
+                    || project.networks.values().any(|network| {
+                        network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
+                    })
             })
     }
 
@@ -3978,6 +3990,13 @@ impl Server {
         let mut networks = project.networks.iter().collect::<Vec<_>>();
         networks.sort_by_key(|(address, _)| std::cmp::Reverse(**address));
         for (net, network) in networks {
+            if project
+                .tag_networks
+                .values()
+                .any(|tag| tag.database_network == Some(*net))
+            {
+                continue;
+            }
             if !network.name.is_empty() {
                 push(format!("{net}/TagName={}", network.name));
             }
@@ -4017,6 +4036,34 @@ impl Server {
                 }
             }
             for row in descendants {
+                push(row);
+            }
+        }
+        fn tag_rows(node: &crate::TagNode, path: &str, rows: &mut Vec<String>) {
+            if let Some(name) = node.field("TagName").or_else(|| node.field("UnitName")) {
+                if !name.is_empty() {
+                    rows.push(format!("{path}/TagName={name}"));
+                }
+            }
+            for child in &node.children {
+                if let Some(address) = child.field("Address") {
+                    let child_path = if child.element == "Unit" {
+                        format!("{path}/p/{address}")
+                    } else {
+                        format!("{path}/{address}")
+                    };
+                    tag_rows(child, &child_path, rows);
+                }
+            }
+        }
+        for address in project.tag_networks.keys() {
+            let record = match self.current_tag_record(project_name, address) {
+                Ok(record) => record,
+                Err(error) => return err(tag, 408, &format!("408 Operation failed: {error}")),
+            };
+            let mut tagged = Vec::new();
+            tag_rows(&record.root, address, &mut tagged);
+            for row in tagged {
                 push(row);
             }
         }

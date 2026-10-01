@@ -60,22 +60,77 @@ do not become a success receipt, and no operation is replayed.
 
 ## DB and FILE are different sources
 
-On cmqttd, `NET LOAD DB` obtains numeric-address definitions from the current
-tag database. Loading an empty project succeeds with an empty catalogue;
-repeated loads add missing numeric names and refresh matching definitions'
+On cmqttd, `NET LOAD DB` obtains definitions from the current tag database,
+including Network rows with exact string addresses. Loading an empty project
+succeeds with an empty catalogue; repeated loads add missing names and refresh matching definitions'
 interface fields from those database rows. cmqttd preserves an existing
 definition's immutable shared-PCI binding. Newly added database networks become
 available without an earlier `NET SAVE DB`. Existing custom and renamed
 definitions remain present, as do already loaded definitions whose database
 row was later removed.
 
-Legacy cmqttd DB snapshots retain names outside canonical decimal 0..255 for
-backward compatibility. Numeric definitions are taken from current database
-rows, so an old snapshot cannot resurrect a removed numeric network. Native
-`NET SAVE DB` can also create missing tag Network rows from runtime definitions,
-including a numeric name with NetworkNumber 255. That runtime-to-tag database
-projection is outside this batch and remains outstanding in cmqttd; its current
-SAVE DB stores an internal snapshot.
+`NET SAVE DB` writes every current runtime definition into the loaded tag
+database. A missing row gets Address equal to its exact runtime name, TagName
+`n` followed by that name, and NetworkNumber `0xff`. Names such as `0254`, `254`,
+`255`, `0xff`, `CustomA` and `Customa` remain distinct. A tag Network is therefore
+not necessarily a physical network with an address in the range 0..255.
+Existing rows retain their Network and Interface OIDs, TagName and NetworkNumber.
+SAVE replaces interface metadata from the runtime definition and creates fresh
+Property OIDs on each save. It does not move the shared PCI binding or open an
+interface. Preserve the Network and Interface OIDs when comparing repeated saves;
+do not expect Property OIDs to remain stable.
+
+Native options are parsed as ordered key/value pairs after splitting on spaces
+and `=`. Duplicate keys become separate Property rows, and a lone flag does not
+create a Property. Inspect the saved XML rather than assuming that opaque runtime
+option tokens map one-to-one to Properties.
+
+```sh
+cbus-toolkit cgate network definition create --project LAB \
+  CustomA cni 127.0.0.1:10002 --option duplicate=one --option duplicate=two
+cbus-toolkit cgate network definition save --project LAB DB
+cbus-toolkit cgate database get-xml //LAB/CustomA --project LAB --output CustomA.xml
+cbus-toolkit cgate project save LAB
+cbus-toolkit cgate project close LAB
+cbus-toolkit cgate project load LAB
+```
+
+For a named or OID scalar edit, select the loaded project on the same
+connection. The command file below edits only the tag database:
+
+```sh
+cat > edit-network.cgate <<'EOF'
+PROJECT USE LAB
+DBSET //LAB/CustomA/TagName Workshop
+PROJECT SAVE LAB
+EOF
+cbus-toolkit cgate run edit-network.cgate
+cbus-toolkit cgate database get-xml //LAB/CustomA --project LAB --output Workshop.xml
+```
+
+Known tag mutations outside the selected project return 401 before changing
+state. In particular, a separate `project use` CLI invocation cannot select a
+later invocation's connection. This refusal is cmqttd's selected-project safety
+boundary; the original SAVE experiment pins the selected DBSET sequence.
+
+`NET SAVE DB` updates the loaded database. `PROJECT SAVE` commits that database
+to the project baseline; CLOSE/LOAD discards unsaved materialization. cmqttd
+also persists its repository state across daemon restart. These are separate
+boundaries, and a successful catalogue save is not a project-save receipt.
+Legacy cmqttd snapshots retain custom names for backward compatibility, while
+current tag rows are authoritative. A stale numeric snapshot cannot resurrect
+a deleted numeric database row.
+
+The offline `project` commands accept these native string addresses in XML/CBZ
+projects marked DBVersion 2.3, or the supported native Project/OID profile.
+They retain exact case and spelling, duplicate Properties and complete subtrees.
+Legacy projects retain their numeric address grammar. NetworkNumber remains an
+independently validated byte; changing it does not rename Address or authorize
+physical traffic to that value.
+Complete cross-project copies allocate fresh OIDs. Unsafe same-project copies
+of these named rows, and incomplete unsafe child additions, remain unsupported;
+cmqttd refuses them before mutation. It does not report a successful copy with
+the native pending-null semantics missing.
 
 `cgate get //PROJECT/NAME Name`, `Type`, `InterfaceAddress`, `Interface` and
 `Options` inspect an existing runtime definition. Interface and InterfaceAddress
@@ -95,10 +150,15 @@ noncolliding names before a later 408. cmqttd's atomic refusal is an intentional
 deviation from that observed partial-load behavior. Original testing also found FILE restoration with two opaque option tokens
 returning 408; clean restored definitions return literal `null` for Options.
 Native option restoration and FILE-format parity are outside this contract.
-No CLI command here accepts an arbitrary file path or silently switches repositories.
+The FILE catalogue selector does not accept a file path. The separate
+`cgate file-upload PATH SOURCE` command uploads a bounded local binary file to
+the selected server's FILE service. It requires a relative server path; cmqttd
+uses its virtual repository namespace. This is useful for its portable XML/SQL
+conversion workflow, and does not establish native SQL-format interchange or
+permission to read or write arbitrary server host files.
 
-`NET SAVE DB`/`FILE` and catalogue mutations persist cmqttd's internal catalogue
-state; `PROJECT SAVE` separately persists the project database. Explicit
+`NET SAVE DB`/`FILE` and catalogue mutations persist cmqttd's repository state;
+`PROJECT SAVE` separately commits the project database baseline. Explicit
 `PROJECT CLOSE`/`LOAD` verifies saved database state. Catalogue completion alone
 does not prove a native interchange format, a successful interface open, device
 readback or hardware persistence. Authentication and secure-deployment rules
@@ -110,10 +170,12 @@ The acceptance batch uses disposable projects, owned loopback services and
 independent no-contact interface traps. It checks native DB-versus-FILE rules,
 public CLI creation, duplicate and uncertain replies, saved/reopened project
 fields, runtime catalogue preservation and no post-startup PCI traffic.
-See [the batch report](feature-batch-2026-10-01-network-definitions.md) for exact
-artifacts, cases, prior failures and source/wheel acceptance.
+See [the materialization batch report](feature-batch-2026-10-01-net-save-db-materialization.md)
+for current artifacts and source/wheel acceptance, and
+[the preceding catalogue report](feature-batch-2026-10-01-network-definitions.md)
+for its historical evidence and GET dispatch correction.
 
-Real adapters, opening additional interfaces, arbitrary named native tag
-networks, Toolkit dialog behavior, bridge reference rewrites and physical
+Real adapters, opening additional interfaces, Toolkit dialog behavior,
+bridge reference rewrites and physical
 commissioning remain separate acceptance requirements. This does not change
 the broad ledger or establish full Toolkit/C-Gate parity.

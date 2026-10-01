@@ -8,6 +8,8 @@ projects or decode device-specific programming parameters.
 Entity paths are ``/network/254/application/56/group/1/level/255`` and
 ``/network/254/unit/12``; ``/`` addresses the project. Numeric compact paths such
 as ``/254/56/1`` are accepted for networks/applications/groups/levels.
+Native database networks also retain string Address identities, independently
+of NetworkNumber: ``/network/CustomA`` and ``/network/0254`` are distinct paths.
 """
 from __future__ import annotations
 
@@ -109,6 +111,49 @@ def _xml_string(value: Any) -> str:
     if any(ord(c) < 32 and c not in "\t\n\r" or 0xD800 <= ord(c) <= 0xDFFF or ord(c) in (0xFFFE, 0xFFFF) for c in value):
         raise ProjectError("Value contains characters forbidden by XML 1.0")
     return value
+
+
+def _native_network_address(node: Node, *, number: Any = None) -> bool:
+    """Recognize the native string-addressed Network database representation.
+
+    Ordinary legacy numeric entities retain their numeric path aliases. The
+    captured build-2001 Installation schema is 2.3; direct native Project
+    fragments carry a child OID. An unknown-number Network is also explicit
+    evidence that its Address is a catalogue identity, not a physical byte.
+    """
+    if _name(node) != "Network":
+        return False
+    if number is None:
+        child = _child(node, "NetworkNumber")
+        if child is None:
+            return False
+        number = _text(child)
+    root = node.ownerDocument.documentElement
+    if _name(root) == "Installation" and _field(root, "DBVersion"):
+        return _field(root, "DBVersion") == "2.3"
+    if _name(root) == "Project" and _child(root, "OID") is not None:
+        return True
+    try:
+        return _address(number) == 255
+    except ProjectError:
+        return False
+
+
+def _named_address(value: Any) -> str:
+    if value is None or isinstance(value, bool):
+        raise ProjectError("Native Network Address must be a nonempty path component")
+    value = _xml_string(value)
+    if not value or "/" in value or any(ord(c) < 32 for c in value):
+        raise ProjectError("Native Network Address must be a nonempty path component")
+    return value
+
+
+def _entity_address(node: Node, value: Any) -> tuple[str, str | int]:
+    if _native_network_address(node):
+        _address(_field(node, "NetworkNumber"))
+        return ("network", _named_address(value))
+    numeric = _address(value)
+    return ("network", str(numeric)) if _name(node) == "Network" else ("numeric", numeric)
 
 
 def _parse_xml(data: bytes) -> minidom.Document:
@@ -307,8 +352,17 @@ class ProjectDocument:
             tag = KINDS.get(kind.lower())
             if tag is None or PARENTS[tag] != _name(current):
                 raise ProjectError(f"Invalid entity hierarchy at {kind!r}")
-            address = _address(value)
-            matches = [e for e in _elements(current, tag) if _is_entity(e) and _address(_field(e, "Address")) == address]
+            matches = []
+            for candidate in _elements(current, tag):
+                if not _is_entity(candidate):
+                    continue
+                try:
+                    if _entity_address(candidate, _field(candidate, "Address")) == _entity_address(candidate, value):
+                        matches.append(candidate)
+                except ProjectError:
+                    # Another sibling can use a different address grammar;
+                    # its invalid selector does not erase an exact match.
+                    continue
             if len(matches) != 1:
                 raise ProjectError(f"Path {path!r} does not identify exactly one entity")
             current = matches[0]
@@ -365,25 +419,25 @@ class ProjectDocument:
                 if node.parentNode.nodeType != Node.ELEMENT_NODE or _name(node.parentNode) != PARENTS[tag]:
                     issue("invalid-parent", node, f"{tag} must be a child of {PARENTS[tag]}")
                 try:
-                    _address(_field(node, "Address"))
-                except ProjectError:
-                    issue("invalid-address", node, f"{tag} Address must be an integer from 0 to 255")
+                    _entity_address(node, _field(node, "Address"))
+                except ProjectError as error:
+                    issue("invalid-address", node, str(error))
             if _is_entity(node) and tag == "Level" and node.hasAttribute("Value"):
                 try:
                     _address(node.getAttribute("Value"))
                 except ProjectError:
                     issue("invalid-level", node, "Level Value must be an integer from 0 to 255")
             for child_tag in PARENTS:
-                seen: set[int] = set()
+                seen: set[tuple[str, str | int]] = set()
                 for child in _elements(node, child_tag):
                     if not _is_entity(child):
                         continue
                     try:
-                        address = _address(_field(child, "Address"))
+                        address = _entity_address(child, _field(child, "Address"))
                     except ProjectError:
                         continue
                     if address in seen:
-                        issue("duplicate-address", child, f"Duplicate {child_tag} address {address} in one parent")
+                        issue("duplicate-address", child, f"Duplicate {child_tag} address {address[1]} in one parent")
                     seen.add(address)
             if _is_entity(node) and tag == "Unit":
                 seen_names: set[str] = set()
@@ -515,17 +569,19 @@ class ProjectDocument:
                     raise IntegrityError("Cannot remove a referenced OID")
                 target.parentNode.removeChild(target)
 
-    def add(self, kind: str, parent: str = "/", *, address: int, name: str = "", description: str | None = None, fields: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    def add(self, kind: str, parent: str = "/", *, address: int | str, name: str = "", description: str | None = None, fields: Mapping[str, Any] | None = None) -> dict[str, Any]:
         tag = KINDS.get(kind.lower())
         if tag is None:
             raise ProjectError(f"Unknown entity kind {kind!r}")
-        address = _address(address)
         with self._transaction():
             parent_node = self.resolve(parent)
             if _name(parent_node) != PARENTS[tag]:
                 raise ProjectError(f"{tag} requires a {PARENTS[tag]} parent")
             node = self._create(parent_node, tag)
             parent_node.appendChild(node)
+            number = (fields or {}).get("NetworkNumber") if tag == "Network" else None
+            address = (_named_address(address) if _native_network_address(node, number=number)
+                       else _address(address))
             # Follow the existing project's OID representation when it has one.
             example = next((e for e in _all_elements(self.project) if _oid(e)), None)
             if example is not None:
@@ -585,13 +641,13 @@ class ProjectDocument:
                 self._set_text(element, mapping[_text(element)])
         return clone
 
-    def copy(self, source: str, parent: str, *, address: int | None = None, name: str | None = None) -> dict[str, Any]:
+    def copy(self, source: str, parent: str, *, address: int | str | None = None, name: str | None = None) -> dict[str, Any]:
         return self._transfer(source, parent, address=address, name=name, move=False)
 
-    def move(self, source: str, parent: str, *, address: int | None = None, name: str | None = None) -> dict[str, Any]:
+    def move(self, source: str, parent: str, *, address: int | str | None = None, name: str | None = None) -> dict[str, Any]:
         return self._transfer(source, parent, address=address, name=name, move=True)
 
-    def _transfer(self, source: str, parent: str, *, address: int | None, name: str | None, move: bool) -> dict[str, Any]:
+    def _transfer(self, source: str, parent: str, *, address: int | str | None, name: str | None, move: bool) -> dict[str, Any]:
         with self._transaction():
             original = self.resolve(source)
             destination = self.resolve(parent)
@@ -613,7 +669,7 @@ class ProjectDocument:
                 original.parentNode.removeChild(original)
             destination.appendChild(node)
             if address is not None:
-                self._set_field(node, "Address", str(_address(address)))
+                self._set_field(node, "Address", str(_entity_address(node, address)[1]))
             if name is not None:
                 self._set_field(node, "TagName", name)
             result = self.get(self.path_of(node))

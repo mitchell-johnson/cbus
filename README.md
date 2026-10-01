@@ -19,6 +19,15 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+The [network definition workflow](toolkit-cli/docs/network-definitions.md)
+now carries closed runtime definitions into the project with `NET SAVE DB`.
+The CLI and cmqttd preserve exact native tag addresses such as `0254`, `0xff`
+and `CustomA`, independent of the NetworkNumber byte. The same rows can be
+edited by name or OID, saved, reopened and exported as XML/CBZ. Project saving
+and physical interface binding remain separate operations. The
+[materialization report](toolkit-cli/docs/feature-batch-2026-10-01-net-save-db-materialization.md)
+records the software and original C-Gate acceptance boundaries.
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the
@@ -87,7 +96,8 @@ retains its separate source-bound acceptance record.
 | Extract or deploy supported DALI device and gateway settings | `cbus-toolkit cgate dali` through cmqttd, including its 133 advertised global gateway fields ([workflow](toolkit-cli/docs/dali-commissioning.md)) |
 | Preview or save database thermostat settings, explicit Celsius/Fahrenheit form normalization and supported templates | `cbus-toolkit thermostat settings` and `thermostat template` ([settings](toolkit-cli/docs/thermostat-settings.md), [template allocation](toolkit-cli/docs/thermostat-templates.md)) |
 | Manage native C-Gate projects, configure supported units, control groups, or commission a network | `cbus-toolkit cgate` |
-| Create a closed database network, inspect runtime definitions, or explicitly save/load their catalogue | `cbus-toolkit cgate database network-new` and `cgate network definition` ([setup and lifecycle](toolkit-cli/docs/network-definitions.md)) |
+| Create a closed database network, inspect runtime definitions, or save them into the project | `cbus-toolkit cgate database network-new` and `cgate network definition` ([setup and lifecycle](toolkit-cli/docs/network-definitions.md)) |
+| Upload a local file for the server's FILE service and portable conversions | `cbus-toolkit cgate file-upload PATH SOURCE [--project PROJECT]`; cmqttd uses a virtual repository namespace |
 | Review a supported database unit move, retain a backup, save/reopen and inspect an interrupted attempt | `cbus-toolkit cgate conversion plan-move`, `apply-move`, `recover` ([workflow and bounds](toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery)) |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Deliver a reviewed KEYML5 Indicators plan to the physical unit and inspect an interrupted attempt | `cbus-toolkit cgate physical-pp dlt-indicators` and `recover` ([complete command sequence](toolkit-cli/docs/classic-dlt-physical-workflow.md)) |

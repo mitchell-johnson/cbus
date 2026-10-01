@@ -1,0 +1,22 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "a7a42c787c1866b94c6ec0092207e9931205e3cfa5287e07b4470314c60be1ba",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "toolkit-cli/src/cbus_toolkit/cli.py": "99c97254c36ea1826f0af7c1a74214455d37ad3019b0cc1433fcb3954837dc6e",
+    "toolkit-cli/src/cbus_toolkit/cgate.py": "eb3c11c9cb04d16d1f1cd754fd8d58bc6ad01dc3f7be31f2addd820279edf530",
+    "toolkit-cli/src/cbus_toolkit/file_transfer.py": "c02f4be2536204c9a28739ac2fb848fad6a98651a3ffb813f2eee315dc72db22",
+    "toolkit-cli/research/network_save_db_cli_acceptance.py": "0e9763c02baac0bca17d83286cc9c98bba76640192602a988347ea710bbb792f",
+    "toolkit-cli/research/network_definition_cli_acceptance.py": "664054445c4410d8b302f5b73b321eb62853a87161d6a8cdca73f28786d402c1",
+    "toolkit-cli/tests/test_cmqtt_network_save_db_cli.py": "c5bb5920abc025d23e996bfedbb9df64c907b53f143f91d868b87408333b7eba",
+    "toolkit-cli/tests/test_cgate_file_upload.py": "7ad5345858f00a2686dbb2fc818af8f1cd32176c1212371cb1f52d010d776e9c",
+    "toolkit-cli/tests/test_cmqtt_network_new_cli.py": "19fe59cbc1344f2ebe6bcecf01b6a6ccda873ab94f12574a6bfbb0e9959552a5",
+    "toolkit-cli/Makefile": "7e2c64533c0b5476504dab1e9f220a994c51a7f9fab85ff4b6f059e14bb91a44",
+    ".github/workflows/ci.yml": "b3153b928deaa3547c7b8f0d4dd9c067b1b9f50541d7301706d87cc5ddf00afa",
+    "rust/testdata/vectors/cgate_net_save_db_materialization.jsonl": "5edc6290ffa76d9e2abc77429a30cb0a3644e14953b539a60056ebf857b3f207",
+    "toolkit-cli/research/fixtures/project-legacy-transform-historical-native-d217b0d2.zip": "bf3d03465dd59196b3f518693e640b5bf6d33619dc38e65d56bc0705852eeb80"
+  }
+}

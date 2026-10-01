@@ -118,6 +118,8 @@ jobs:
           --require-module tests/test_cmqtt_programming_methods_interop.py
           --require-module tests/test_cmqtt_dali_commissioning_interop.py
           --require-module tests/test_cmqtt_network_new_cli.py
+          --require-module tests/test_cmqtt_network_save_db_cli.py
+          --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain executed Toolkit tests and skips

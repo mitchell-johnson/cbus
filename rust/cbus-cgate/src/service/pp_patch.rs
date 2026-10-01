@@ -411,6 +411,7 @@ mod tests {
         model.projects.insert(
             "P".into(),
             Project {
+                tag_networks: Default::default(),
                 name: "P".into(),
                 networks: HashMap::new(),
             },

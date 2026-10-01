@@ -7,7 +7,8 @@ from pathlib import Path
 
 
 from project_legacy_transform_receipt_source import (CLI_SHA256, historical_cli,
-                                                     assert_current_project_carry_forward)
+                                                     assert_current_project_carry_forward, NATIVE_SHA256,
+                                                     historical_native, assert_current_native_carry_forward)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,8 +44,12 @@ def test_earlier_versions_receipt_is_source_bound() -> None:
     assert receipt["sources"]["cli_dispatch_sha256"] == CLI_SHA256
     historical_cli()
     assert_current_project_carry_forward()
+    assert receipt["sources"]["native_module_sha256"] == NATIVE_SHA256
+    historical_native()
+    assert_current_native_carry_forward()
     for field, path in SOURCE_FILES.items():
-        assert receipt["sources"][field] == digest(ROOT / path)
+        if field != "native_module_sha256":
+            assert receipt["sources"][field] == digest(ROOT / path)
     cases = receipt["cases"]
     assert len(cases) == 8
     assert {case["source_version"] for case in cases} == {"1", "2", "2.1", "2.4"}

@@ -48,6 +48,19 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [runtime-to-tag materialization batch](feature-batch-2026-10-01-net-save-db-materialization.md)
+implements NET SAVE DB as complete Network/Interface/Property trees, including
+exact string addresses and independent NetworkNumber. It preserves existing
+Network/Interface OIDs, refreshes Property OIDs, keeps subsequent database
+children current, and retains the project-save boundary across reopening and
+daemon restart. The Python CLI edits these native XML/CBZ rows and provides a
+bounded typed FILE upload. Its original 126-command contract and public
+source/wheel evidence are separate from full Toolkit and physical acceptance.
+The batch also repairs two historical native.py binding guards without changing
+their original receipts, with strict scoped carry-forward and fresh owned
+original transform tests. Unsafe named-row copy/addition forms retain explicit
+refusals. Broad ledger and fully accepted obligation counts remain unchanged.
+
 The [closed network setup and catalogue batch](feature-batch-2026-10-01-network-definitions.md)
 adds typed runtime definitions and repairs immediate DB LOAD after network creation.
 Current tag fields refresh matching closed definitions while preserving existing
@@ -64,7 +77,7 @@ cmqttd journey in each environment. Eight complete generic response comparisons
 preserve actual failure baselines; they do not establish successful generic OID
 lookup or broad native GET parity. Sixteen focused Rust tests and 30 native
 literal cases passed; no full suite ran. Fresh corrected-package original
-C-Gate journeys each completed 79 public CLI calls. Native creation
+C-Gate journeys each completed 79 public CLI calls. At that historical checkpoint, native creation
 receipts, runtime-to-tag SAVE DB materialization, FILE partial loads and option
 restoration retain their stated limits. This is bounded software delivery for
 issues 27/29/32; the broad ledger and zero fully accepted obligations are unchanged.

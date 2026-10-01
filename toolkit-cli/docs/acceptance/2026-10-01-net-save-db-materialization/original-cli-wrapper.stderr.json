@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "5827c4c94238e06cb9c0d549e435634d1997bd16381d7f18ae5295ea84df4a00",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "native_cli_driver"
+      ],
+      "raw_string_sha256": "5827c4c94238e06cb9c0d549e435634d1997bd16381d7f18ae5295ea84df4a00"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "Traceback (most recent call last):\n  File \"${CBUS_ORIGINAL_CLI_DRIVER}/run-frozen.py\", line 15, in <module>\n    run={'mode':mode,'argv':argv,'cwd':str(repo),'exit_status':result.returncode,'stdout':{'path':str(stdout),'sha256':sha(stdout),'bytes':stdout.stat().st_size},'stderr':{'path':str(stderr),'sha256':sha(stderr),'bytes':stderr.stat().st_size},'report':str(report),'report_sha256':sha(report),'driver_sha256':sha(driver),'terminal_checks':checks,'commands':len(v['commands']),'package_root':v['package_before']['root'],'wheel_sha256':sha(wheel) if mode=='installed' else None}\n                                                                                                                                                                                                                                                                                                                                                                                                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^\nKeyError: 'root'\n"
+}

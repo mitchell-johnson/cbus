@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "3361cd9bc280e3ad0f7766ed250305e76074c8c79dd27e9ea4524df27eb12478",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "repository_checkout"
+      ],
+      "raw_string_sha256": "3361cd9bc280e3ad0f7766ed250305e76074c8c79dd27e9ea4524df27eb12478"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "   Compiling cbus-cgate v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-cgate)\n   Compiling cbus-vector-check v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cbus-vector-check)\n   Compiling cmqttd v0.1.0 (${CBUS_REPOSITORY_ROOT}/rust/cmqttd)\n    Finished `release` profile [optimized] target(s) in 1m 39s\n"
+}

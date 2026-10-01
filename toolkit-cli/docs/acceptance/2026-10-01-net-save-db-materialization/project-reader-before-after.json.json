@@ -1,0 +1,46 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "9e9c86bf59aa326c1d98a2375c5a171cd7f88667ab31c4d0e9f4508393a905bf",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "scope": "Executed old published Python project module and corrective current module against frozen sanitized original materialization fixture; no new native/software/hardware acceptance credited.",
+    "old_revision": "62edbee6f15e7cc7dea5c9815f764e9d050e8c38",
+    "old_module_sha256": "631140325f242dfb3b61a7cd2c6489af5025d4d891b6f774142ed22f0227fbe5",
+    "current_module_sha256": "491f948dd391a2b29014f10393dd1c74227345b8c181a84a0557ebcf8cb3a7fc",
+    "fixture_sha256": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b",
+    "old_validation_errors": 9,
+    "corrected_validation_errors": 0,
+    "cases": [
+      {
+        "path": "/network/CustomA",
+        "old": {
+          "result": "error",
+          "message": "Address must be an integer from 0 to 255"
+        },
+        "corrected_address": "CustomA",
+        "corrected_number": "0xff"
+      },
+      {
+        "path": "/network/42",
+        "old": {
+          "result": "error",
+          "message": "Address must be an integer from 0 to 255"
+        },
+        "corrected_address": "42",
+        "corrected_number": "0xff"
+      },
+      {
+        "path": "/network/0254",
+        "old": {
+          "result": "error",
+          "message": "Address must be an integer from 0 to 255"
+        },
+        "corrected_address": "0254",
+        "corrected_number": "0xff"
+      }
+    ]
+  }
+}

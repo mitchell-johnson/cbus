@@ -1,0 +1,268 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4c0fd2c7448f92d60eadcaf202e082139052ce74d1c60cab8134e4e33271f29d",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/entries/0/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "91ec0f9582c944992fa3664621eda2394fb622bec3485e6eb9874a79c0825d6f"
+    },
+    {
+      "json_pointer": "/entries/1/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "a4c3fd517182c3f009ce2d4e4475c6e40ba00765a20c19e0bab6bcc7f85b96b8"
+    },
+    {
+      "json_pointer": "/entries/2/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "305840f97e2700e915ef6a940a305743a1486b7bb0d52a353a1cab95b5a9a91f"
+    },
+    {
+      "json_pointer": "/entries/3/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "044542a764d8cae1d93ad946db84f90bed134637b621ab9ef9802b313b1291fc"
+    },
+    {
+      "json_pointer": "/entries/4/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "6ad38b934c77cacbd7f398477d417413ed87c9a23307b78ec1c29b0d15eb5f8e"
+    },
+    {
+      "json_pointer": "/entries/5/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "01b496b955b6c895b23fd042881efe9d0f737b1d4d840b62700ab0a9e406ca87"
+    },
+    {
+      "json_pointer": "/entries/6/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "bdd534561f09e3963530778da8a4336748eb05a9c09e98ea13499666cd97bc38"
+    },
+    {
+      "json_pointer": "/entries/7/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "50ceb6a4b619d327ef9d17e4087881720dad3e6007594adce3565f4ef2d2de60"
+    },
+    {
+      "json_pointer": "/entries/8/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "98654d173455506220d31d691d53ae0e47b17487ba30d684bbfd12dbe4f589e8"
+    },
+    {
+      "json_pointer": "/entries/9/path",
+      "action": "role_template",
+      "roles": [
+        "owned_output"
+      ],
+      "raw_string_sha256": "e46b81cf8f8d9f142395b363d3926877aef37367b5142758b801d6e198ef2210"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "private-acceptance-history-v1",
+    "entries": [
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_OLD_RED_20261001}/acceptance.json",
+        "sha256": "f6db7cd4a815f21e979bb62d7b4578cba4871fe2894201df90075eaf7353096d",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "NET SAVE DB returned200 without materializing runtime definitions into tag Network rows"
+        },
+        "cli_calls": 7,
+        "source_bindings": 1128,
+        "inputs_unchanged": null,
+        "binary_sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445",
+        "cni_trap_connections": null,
+        "serial_path_absent": null,
+        "serial_path_created": null,
+        "process_cleanup": true
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_NEW_PRODUCER_OLD_BINARY_RED_20261001}/acceptance.json",
+        "sha256": "959a4e34a29e8bc832a29cec80dfc2f0e22f4b19dbdf0c61bc2a9c432e83ac53",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "Exact owned initialization did not complete"
+        },
+        "cli_calls": 1,
+        "source_bindings": 1140,
+        "inputs_unchanged": true,
+        "binary_sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445",
+        "cni_trap_connections": null,
+        "serial_path_absent": null,
+        "serial_path_created": null,
+        "process_cleanup": [
+          true
+        ]
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_NEW_PRODUCER_OLD_BINARY_RED2_20261001}/acceptance.json",
+        "sha256": "d5c1c994607fd930221dd1f9dd4160ed32afcd1af7b91b07ee39cd93458070fa",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "Materialized Network rows do not match unique runtime names"
+        },
+        "cli_calls": 14,
+        "source_bindings": 1140,
+        "inputs_unchanged": true,
+        "binary_sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445",
+        "cni_trap_connections": null,
+        "serial_path_absent": null,
+        "serial_path_created": null,
+        "process_cleanup": [
+          true
+        ]
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_NEW_PRODUCER_OLD_BINARY_RED3_20261001}/acceptance.json",
+        "sha256": "ea681623135fbb33ec3f7c04664db444c16a4bc1ee62e1ba60f3ce48d4fea4df",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "Materialized Network rows do not match unique runtime names"
+        },
+        "cli_calls": 14,
+        "source_bindings": 1140,
+        "inputs_unchanged": true,
+        "binary_sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445",
+        "cni_trap_connections": 0,
+        "serial_path_absent": true,
+        "serial_path_created": null,
+        "process_cleanup": [
+          true
+        ]
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_OLD62_EXPECTATION_RED_20261001}/raw/acceptance.json",
+        "sha256": "21e7566bbfd9b3ee639ed4f2768a78be9554ad50098778beb708d1729d22bf4e",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "cmqttd NET SAVE DB changed tag database XML"
+        },
+        "cli_calls": 78,
+        "source_bindings": 1136,
+        "inputs_unchanged": null,
+        "binary_sha256": "0ac5235daa072dfaab69100f72fc561c9acb5fd60d490d9c977c4d1aad046e20",
+        "cni_trap_connections": null,
+        "serial_path_absent": null,
+        "serial_path_created": null,
+        "process_cleanup": true
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_CURRENT_CATALOGUE_EXPLORATORY_20261001}/acceptance.json",
+        "sha256": "0e251cf33245f0e68cf4bf755c14c72f1924984a234367044976e99e0a3b0b6b",
+        "result": "passed",
+        "error": null,
+        "cli_calls": 147,
+        "source_bindings": 1140,
+        "inputs_unchanged": null,
+        "binary_sha256": "0ac5235daa072dfaab69100f72fc561c9acb5fd60d490d9c977c4d1aad046e20",
+        "cni_trap_connections": 0,
+        "serial_path_absent": null,
+        "serial_path_created": false,
+        "process_cleanup": true
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_MATERIALIZATION_EXPLORATORY_20261001}/acceptance.json",
+        "sha256": "c9f0690150c40b344c5f55c30537b7dc2c63ce7fb1251e1e4bdc5fbe188c928d",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "CLI 19 (initial-definition-create) returned 1, expected 0: {\"error\": \"C-Gate error: 408 Operation failed: Network name already in use\", \"type\": \"CGateError\"}\n "
+        },
+        "cli_calls": 20,
+        "source_bindings": 1141,
+        "inputs_unchanged": true,
+        "binary_sha256": "0ac5235daa072dfaab69100f72fc561c9acb5fd60d490d9c977c4d1aad046e20",
+        "cni_trap_connections": 0,
+        "serial_path_absent": true,
+        "serial_path_created": null,
+        "process_cleanup": [
+          true
+        ]
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_OLD62_V3_EXPECTATION_RED_20261001}/raw/acceptance.json",
+        "sha256": "29e5eb2d3afd4e4b3d04b5db5667aac3b4ae6aa07249cd8ec10646228371ab54",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "cmqttd NET SAVE DB changed tag database XML"
+        },
+        "cli_calls": 78,
+        "source_bindings": 1136,
+        "inputs_unchanged": null,
+        "binary_sha256": "cf39c6bb5db9b4f43ab73764bae7ffcc292994c153853df67e8cace312ab7507",
+        "cni_trap_connections": null,
+        "serial_path_absent": null,
+        "serial_path_created": null,
+        "process_cleanup": true
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_CURRENT_CATALOGUE_V3_EXPLORATORY_20261001}/acceptance.json",
+        "sha256": "fc98a24e72f8bbaa7d13268d4d16df3e812318c9acdbacbed0becc7965701553",
+        "result": "passed",
+        "error": null,
+        "cli_calls": 147,
+        "source_bindings": 1140,
+        "inputs_unchanged": null,
+        "binary_sha256": "cf39c6bb5db9b4f43ab73764bae7ffcc292994c153853df67e8cace312ab7507",
+        "cni_trap_connections": 0,
+        "serial_path_absent": null,
+        "serial_path_created": false,
+        "process_cleanup": true
+      },
+      {
+        "path": "${CBUS_OWNED_CBUS_NET_SAVE_DB_MATERIALIZATION_V3_EXPLORATORY_20261001}/acceptance.json",
+        "sha256": "cf33cc999ff68892efea0661607c9089ab6b428bf21055b70778f255983bacb9",
+        "result": "failed",
+        "error": {
+          "type": "AssertionError",
+          "message": "CLI 56 (direct-Customa) returned 1, expected 0: {\"error\": \"XML export destination already exists\", \"type\": \"ValueError\"}\n "
+        },
+        "cli_calls": 57,
+        "source_bindings": 1141,
+        "inputs_unchanged": true,
+        "binary_sha256": "cf39c6bb5db9b4f43ab73764bae7ffcc292994c153853df67e8cace312ab7507",
+        "cni_trap_connections": 0,
+        "serial_path_absent": true,
+        "serial_path_created": null,
+        "process_cleanup": [
+          true
+        ]
+      }
+    ]
+  }
+}

@@ -540,6 +540,7 @@ impl Database {
         let original_known_oids = self.known_oids.clone();
         let mut used_oids = self.known_oids.iter().cloned().collect::<HashSet<_>>();
         for project in self.projects.values().chain(self.database_files.values()) {
+            used_oids.extend(Server::tag_network_oids(project));
             for network in project.networks.values() {
                 if !network.oid.is_empty() {
                     used_oids.insert(network.oid.clone());
@@ -565,6 +566,7 @@ impl Database {
                 .map(|object| object.oid.clone()),
         );
         for image in self.saved_projects.iter().flat_map(HashMap::values) {
+            used_oids.extend(Server::tag_network_oids(&image.project));
             for network in image.project.networks.values() {
                 used_oids.insert(network.oid.clone());
                 used_oids.insert(network.interface_oid.clone());
@@ -1919,6 +1921,7 @@ impl Service {
                 .projects
                 .entry(project.clone())
                 .or_insert_with(|| Project {
+                    tag_networks: Default::default(),
                     name: project.clone(),
                     networks: HashMap::new(),
                 })
@@ -2985,6 +2988,33 @@ impl Service {
         if verb == "GET" {
             if let Some(response) = self.net_definition_get(client, tag, &words).await {
                 return response;
+            }
+        }
+        // A string-addressed tag row is never a transport alias. Legacy
+        // decimal aliases remain admitted only when no independent row owns
+        // that exact spelling. Database commands resolve through the tree.
+        if let Some(target_index) = independent_network_target_index(verb, sub) {
+            let mut model = self.model.lock().await;
+            model.current = Some(
+                client
+                    .current
+                    .clone()
+                    .unwrap_or_else(|| self.project.clone()),
+            );
+            if verb == "GET" {
+                if let Some(response) = model.tag_database_command(tag, &words) {
+                    return response;
+                }
+            }
+            if words
+                .get(target_index)
+                .is_some_and(|target| model.independent_tag_target(target))
+            {
+                return err(
+                    tag,
+                    404,
+                    "404 Named database Network is not connected to a physical interface",
+                );
             }
         }
         if verb == "PORT" {
@@ -4590,7 +4620,7 @@ impl Service {
         // PROJECT CLOSE restores the last saved tree. For the configured
         // project, that tree must still hold the hardware Network with the
         // same address and interface binding as the running service.
-        if verb == "PROJECT" && sub == "CLOSE" && response.status < 400 {
+        if verb == "PROJECT" && matches!(sub, "CLOSE" | "LOAD") && response.status < 400 {
             let binding = |server: &Server| {
                 server
                     .projects
@@ -4610,6 +4640,19 @@ impl Service {
                     408,
                     "408 Operation failed: saved project does not retain the configured network binding; PROJECT SAVE first",
                 );
+            }
+        }
+        if verb == "PROJECT" && matches!(sub, "CLOSE" | "LOAD") && response.status < 400 {
+            if let Some(project) = words.get(2).copied().or(before.current.as_deref()) {
+                if let Err(error) = net_lifecycle::reset_project_catalog(&mut model, project) {
+                    *model = before;
+                    return err(tag, 408, &format!("408 Operation failed: {error}"));
+                }
+            }
+        }
+        if verb == "PROJECT" && matches!(sub, "DELETE" | "NEW") && response.status < 400 {
+            if let Some(project) = words.get(2) {
+                net_lifecycle::retire_project_catalog(&mut model, project);
             }
         }
         let retained_application_creation = response.status == status::ABSENT
@@ -4656,6 +4699,7 @@ impl Service {
                     .projects
                     .entry(self.project.clone())
                     .or_insert_with(|| Project {
+                        tag_networks: Default::default(),
                         name: self.project.clone(),
                         networks: HashMap::new(),
                     })
@@ -4809,6 +4853,11 @@ impl Service {
                 .get(&self.project)
                 .and_then(|project| project.networks.get(&self.network))
                 .cloned();
+            let configured_tag = model
+                .projects
+                .get(&self.project)
+                .and_then(|project| project.tag_networks.get(&self.network.to_string()))
+                .cloned();
             let configured_path = format!("//{}/{}", self.project, self.network);
             let configured_target = if let Some(oid) = target
                 .strip_prefix('!')
@@ -4836,6 +4885,27 @@ impl Service {
             if response.status >= 400 {
                 *model = before;
                 return response;
+            }
+            {
+                if let Some(original_tag) = &configured_tag {
+                    let replacement_tag = model
+                        .projects
+                        .get(&self.project)
+                        .and_then(|project| project.tag_networks.get(&self.network.to_string()));
+                    let unchanged = replacement_tag.is_some_and(|replacement| {
+                        replacement.root.field("Address") == original_tag.root.field("Address")
+                            && replacement.root.field("NetworkNumber")
+                                == original_tag.root.field("NetworkNumber")
+                            && replacement.interface().field("InterfaceType")
+                                == original_tag.interface().field("InterfaceType")
+                            && replacement.interface().field("InterfaceAddress")
+                                == original_tag.interface().field("InterfaceAddress")
+                    });
+                    if !unchanged {
+                        *model = before;
+                        return err(tag,408,"408 Operation failed: configured database interface binding is immutable; use NET SAVE DB for runtime metadata");
+                    }
+                }
             }
             if configured_target {
                 let Some(replacement) = model
@@ -16995,6 +17065,28 @@ fn dali_requires_programming_auth(words: &[String]) -> bool {
     )
 }
 
+// Positions belong to address operands, never to payloads, option values or
+// local event/session strings. Both qualified and admitted bare paths matter.
+fn independent_network_target_index(verb: &str, sub: &str) -> Option<usize> {
+    match verb {
+        "GET" | "GETSTATE" | "SET" | "SHOW" | "TREE" | "TREEXML" | "TREEXMLDETAIL" | "DO"
+        | "ON" | "OFF" | "RAMP" | "TERMINATERAMP" => Some(1),
+        "LIGHTING" | "TRIGGER" | "ENABLE" | "LABEL" | "ACCESS_CONTROL" | "ACCESSCONTROL"
+        | "AIRCON" | "AUDIO" | "CLOCK" | "TEMPERATURE" | "MEASUREMENT" | "MEDIATRANSPORT"
+        | "SECURITY" | "SHORTMESSAGE" | "TELEPHONY" | "EREPORT" | "IDENTIFY" | "UNIT" => Some(2),
+        "NET" | "NETWORK"
+            if !matches!(
+                sub,
+                "CREATE" | "DELETE" | "RENAME" | "LOAD" | "SAVE" | "LIST" | "LIST_ALL" | "?"
+            ) =>
+        {
+            Some(2)
+        }
+        "PP" if matches!(sub, "LOAD" | "SAVE" | "LOCK") => Some(3),
+        _ => None,
+    }
+}
+
 fn local_command(words: &[&str], upper: &[String], model: &Server) -> bool {
     let verb = upper.first().map(String::as_str).unwrap_or("");
     let sub = upper.get(1).map(String::as_str).unwrap_or("");
@@ -17480,7 +17572,14 @@ fn seed_project_xml_metadata(model: &mut Server, xml: &str, project_name: &str) 
     };
     let project = document
         .descendants()
-        .find(|node| node.has_tag_name("Project") && field(*node, "TagName") == project_name)
+        .find(|node| {
+            node.has_tag_name("Project")
+                && if node.children().any(|child| child.has_tag_name("TagName")) {
+                    field(*node, "TagName") == project_name
+                } else {
+                    field(*node, "Address") == project_name
+                }
+        })
         .ok_or_else(|| io::Error::other("configured project absent from project XML"))?;
     let mut object_count = 0;
     let mut complete = true;
@@ -17488,9 +17587,15 @@ fn seed_project_xml_metadata(model: &mut Server, xml: &str, project_name: &str) 
         .children()
         .filter(|node| node.has_tag_name("Network"))
     {
-        let address = field(network, "Address")
-            .parse::<u8>()
-            .map_err(io::Error::other)?;
+        let key = field(network, "Address");
+        if model
+            .projects
+            .get(project_name)
+            .is_some_and(|project| project.tag_networks.contains_key(&key))
+        {
+            continue;
+        }
+        let address = key.parse::<u8>().map_err(io::Error::other)?;
         let Some(stored_network) = model
             .projects
             .get(project_name)
@@ -17717,13 +17822,26 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
         .descendants()
         .find(|n| n.has_tag_name("Project"))
         .ok_or_else(|| io::Error::other("project XML has no Project"))?;
-    let name = field(p, "TagName");
+    let name = if p.children().any(|n| n.has_tag_name("TagName")) {
+        field(p, "TagName")
+    } else {
+        field(p, "Address")
+    };
     if !valid_name(&name) {
         return Err(io::Error::other("invalid project name"));
     }
+    let native_tag_schema = field(doc.root_element(), "DBVersion") == "2.3";
+    let physical_candidate = |n: roxmltree::Node<'_, '_>| {
+        let address = field(n, "Address");
+        let number = field(n, "NetworkNumber");
+        address
+            .parse::<u8>()
+            .is_ok_and(|a| a.to_string() == address)
+            && (!native_tag_schema || number.is_empty() || number == address)
+    };
     let selected = p
         .children()
-        .filter(|n| n.has_tag_name("Network"))
+        .filter(|n| n.has_tag_name("Network") && physical_candidate(*n))
         .find(|n| network_name.is_none_or(|wanted| field(*n, "TagName") == wanted))
         .ok_or_else(|| io::Error::other("configured network absent from project"))?;
     let address = field(selected, "Address")
@@ -17731,7 +17849,27 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
         .map_err(io::Error::other)?;
     let mut model = Server::new(AccessLevel::Program).with_programming(true);
     let mut networks = HashMap::new();
-    for node in p.children().filter(|n| n.has_tag_name("Network")) {
+    let mut tag_networks = BTreeMap::new();
+    for (network_index, node) in p
+        .children()
+        .filter(|n| n.has_tag_name("Network"))
+        .enumerate()
+    {
+        if !physical_candidate(node) {
+            let document =
+                crate::native_archive::with_generated_oids(node, xml).map_err(io::Error::other)?;
+            let record = crate::TagNetwork::parse(&document, None, network_index as u64 + 1)
+                .map_err(io::Error::other)?;
+            let key = record
+                .root
+                .field("Address")
+                .expect("validated Address")
+                .to_string();
+            if tag_networks.insert(key.clone(), record).is_some() {
+                return Err(io::Error::other(format!("Duplicate Network Address {key}")));
+            }
+            continue;
+        }
         let net = field(node, "Address")
             .parse::<u8>()
             .map_err(io::Error::other)?;
@@ -17763,6 +17901,10 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
             let oid = u
                 .attribute("oid")
                 .map(str::to_string)
+                .or_else(|| {
+                    let value = field(u, "OID");
+                    (!value.is_empty()).then_some(value)
+                })
                 .unwrap_or_else(fresh_oid);
             let document_key = Server::unit_document_key(&name, &oid);
             model
@@ -17806,13 +17948,28 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
         let network_oid = node
             .attribute("oid")
             .map(str::to_string)
+            .or_else(|| {
+                let value = field(node, "OID");
+                (!value.is_empty()).then_some(value)
+            })
             .unwrap_or_else(fresh_oid);
         let interface_oid = interface
-            .and_then(|node| node.attribute("oid"))
-            .map(str::to_string)
+            .map(|node| {
+                node.attribute("oid")
+                    .map(str::to_string)
+                    .unwrap_or_else(|| field(node, "OID"))
+            })
+            .filter(|value| !value.is_empty())
             .unwrap_or_else(fresh_oid);
         model.known_oids.insert(network_oid.clone());
         model.known_oids.insert(interface_oid.clone());
+        if native_tag_schema {
+            let document =
+                crate::native_archive::with_generated_oids(node, xml).map_err(io::Error::other)?;
+            let record = crate::TagNetwork::parse(&document, Some(net), network_index as u64 + 1)
+                .map_err(io::Error::other)?;
+            tag_networks.insert(field(node, "Address"), record);
+        }
         networks.insert(
             net,
             Network {
@@ -17831,7 +17988,7 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 units,
                 unit_xml_order: Vec::new(),
                 // The project file lists Networks in native list order.
-                created_seq: networks.len() as u64 + 1,
+                created_seq: network_index as u64 + 1,
                 physical: HashMap::new(),
                 levels: HashMap::new(),
             },
@@ -17840,10 +17997,38 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
     model.projects.insert(
         name.clone(),
         Project {
+            tag_networks: Default::default(),
             name: name.clone(),
             networks,
         },
     );
+    model.current = Some(name.clone());
+    for record in tag_networks.into_values() {
+        if let Some(address) = record.database_network {
+            let mut normalized = record.root.clone();
+            normalized
+                .fields
+                .retain(|(field, _)| field != "Description");
+            let interface = normalized
+                .children
+                .iter_mut()
+                .find(|node| node.element == "Interface")
+                .expect("Interface");
+            interface.children.clear();
+            let document = normalized.document();
+            let parsed = roxmltree::Document::parse(&document).map_err(io::Error::other)?;
+            let object =
+                crate::parse_db_xml_object(parsed.root_element()).map_err(io::Error::other)?;
+            let target = model
+                .resolve_db_xml_target(&format!("//{name}/{address}"))
+                .map_err(|(_, error)| io::Error::other(error))?;
+            model
+                .apply_db_xml_replacement(&target, &object)
+                .map_err(|(_, error)| io::Error::other(error))?;
+        }
+        model.register_tag_network(&name, record);
+    }
+
     model.current = Some(name.clone());
     Ok((model, name, address))
 }

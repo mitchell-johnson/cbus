@@ -1,0 +1,18 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "514426779f7e1f1589343dec8c93799f73c6a8fbba7a9ffe5c2fa731c9ff5d63",
+  "content_kind": "text",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "",
+      "action": "role_template",
+      "roles": [
+        "cargo_target"
+      ],
+      "raw_string_sha256": "514426779f7e1f1589343dec8c93799f73c6a8fbba7a9ffe5c2fa731c9ff5d63"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running unittests src/lib.rs (${CBUS_CARGO_TARGET}/debug/deps/cbus_cgate-ef334fbad4efdf06)\n\nrunning 1 test\ntest service::tests::net_save_db::net_save_db_retains_opaque_metadata_and_refuses_corrupt_current_projection_without_loss ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 491 filtered out; finished in 0.10s\n\n"
+}

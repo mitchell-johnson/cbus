@@ -40,6 +40,8 @@ mod port;
 mod pp_namespace_tests;
 pub mod service;
 mod show;
+mod tag_network;
+pub use tag_network::{TagNetwork, TagNode};
 pub mod unitspec;
 
 /// C-Gate service-ready greeting prefix.
@@ -2061,6 +2063,12 @@ pub(crate) fn next_network_seq(project: &Project) -> u64 {
         .networks
         .values()
         .map(|network| network.created_seq)
+        .chain(
+            project
+                .tag_networks
+                .values()
+                .map(|network| network.created_seq),
+        )
         .max()
         .unwrap_or(0)
         + 1
@@ -2073,6 +2081,10 @@ pub struct Project {
     pub name: String,
     /// Networks keyed by address.
     pub networks: HashMap<u8, Network>,
+    /// Complete string-addressed database definitions. These never create or
+    /// rebind a physical network, even when Address is a decimal byte.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub tag_networks: BTreeMap<String, TagNetwork>,
 }
 
 /// Resolve the native bridge-network path from `start` to `end`.
@@ -2816,6 +2828,9 @@ impl Server {
         if starts_with(&upper, "APPLICATIONS GET_CATALOG") {
             return service::applications_get_catalog(self, &cmd.tag, &words);
         }
+        if let Some(response) = self.tag_database_command(&cmd.tag, &words) {
+            return response;
+        }
         if let Some(response) = self.handle_manual_command(&cmd.tag, &words, &cmd.body) {
             return response;
         }
@@ -2994,6 +3009,7 @@ impl Server {
         self.projects.insert(
             name.clone(),
             Project {
+                tag_networks: Default::default(),
                 name: name.clone(),
                 networks: HashMap::new(),
             },
@@ -3179,6 +3195,10 @@ impl Server {
                     .chain(std::iter::once(network.interface_oid.clone()))
                     .chain(network.units.values().map(|unit| unit.oid.clone()))
             })
+            .collect();
+        let project_oids = project_oids
+            .into_iter()
+            .chain(Self::tag_network_oids(&project))
             .collect();
         self.delete_project_prefix(name, project_oids);
         self.invalidated_unit_oid_lookups
@@ -3584,11 +3604,12 @@ impl Server {
             .collect();
         for oid in removed_oids {
             let object_in_use = self.projects.values().any(|project| {
-                project.networks.values().any(|network| {
-                    network.oid == oid
-                        || network.interface_oid == oid
-                        || network.units.values().any(|unit| unit.oid == oid)
-                })
+                Self::tag_network_oids(project).contains(&oid)
+                    || project.networks.values().any(|network| {
+                        network.oid == oid
+                            || network.interface_oid == oid
+                            || network.units.values().any(|unit| unit.oid == oid)
+                    })
             });
             let level_in_use = self.db_levels.values().any(|level| level.oid == oid);
             let pending_in_use = self.db_pending.values().any(|object| object.oid == oid);
@@ -3993,6 +4014,10 @@ impl Server {
                     .chain(std::iter::once(network.interface_oid.clone()))
                     .chain(network.units.values().map(|unit| unit.oid.clone()))
             })
+            .collect();
+        let project_oids = project_oids
+            .into_iter()
+            .chain(Self::tag_network_oids(&current))
             .collect();
         // Scene snapshots are not part of the modeled saved tree.
         let scenes = std::mem::take(&mut self.scene_snapshots);
@@ -5166,20 +5191,21 @@ impl Server {
         let Some(project) = self.projects.get(project_name) else {
             return err(tag, status::ABSENT, "401 Project not found");
         };
+        let schema = if project.tag_networks.is_empty() {
+            ""
+        } else {
+            "<DBVersion>2.3</DBVersion>"
+        };
         let mut document = format!(
-            "<Installation><Project><Address>{}</Address>",
+            "<Installation>{schema}<Project><Address>{}</Address>",
             xml_escape(&project.name)
         );
-        let mut networks = project.networks.keys().copied().collect::<Vec<_>>();
-        networks.sort_unstable();
+        let networks = match self.project_network_documents(project_name) {
+            Ok(networks) => networks,
+            Err(error) => return err(tag, 408, &format!("408 Operation failed: {error}")),
+        };
         for network in networks {
-            // Use the same modeled subtree as a direct Network read, retaining
-            // applications, labels, units, PP fields and XML extensions.
-            document.push_str(&self.network_xml_document(
-                project_name,
-                network,
-                &project.networks[&network],
-            ));
+            document.push_str(&network);
         }
         document.push_str("</Project></Installation>");
         Self::db_xml_response(tag, document)
@@ -8613,6 +8639,9 @@ impl Server {
                     "400 DBSETXML requires a path",
                 );
             }
+            if let Some(response) = self.tag_database_document(tag_of(&cmd), words[1], document) {
+                return response;
+            }
             let parts = words[1]
                 .trim_start_matches('/')
                 .split('/')
@@ -8855,6 +8884,9 @@ impl Server {
             Ok(parsed) => parsed,
             Err(error) => return err(tag, 446, &format!("446 Unable to set XML: {error}")),
         };
+        if let Some(response) = self.tag_database_document(tag, path, document) {
+            return response;
+        }
         let object = match parse_db_xml_object(parsed_document.root_element()) {
             Ok(object) => object,
             Err(error) if error == DB_XML_UNIT_NAME_REQUIRED => {
@@ -9228,6 +9260,7 @@ impl Server {
     fn active_db_oids(&self, project: &str) -> HashSet<String> {
         let mut output = HashSet::new();
         if let Some(record) = self.projects.get(project) {
+            output.extend(Self::tag_network_oids(record));
             for network in record.networks.values() {
                 output.insert(network.oid.clone());
                 output.insert(network.interface_oid.clone());
@@ -9252,11 +9285,12 @@ impl Server {
     fn retire_inactive_db_oids(&mut self, candidates: &[String]) {
         for oid in candidates {
             let active = self.projects.values().any(|project| {
-                project.networks.values().any(|network| {
-                    network.oid == *oid
-                        || network.interface_oid == *oid
-                        || network.units.values().any(|unit| unit.oid == *oid)
-                })
+                Self::tag_network_oids(project).contains(oid)
+                    || project.networks.values().any(|network| {
+                        network.oid == *oid
+                            || network.interface_oid == *oid
+                            || network.units.values().any(|unit| unit.oid == *oid)
+                    })
             }) || self.db_pending.values().any(|object| object.oid == *oid)
                 || self.db_levels.values().any(|level| level.oid == *oid);
             if active {
@@ -9663,10 +9697,39 @@ impl Server {
         self.objects
             .insert(format!("{}-{element}-{addr}", words[1]));
         if matches!(element.as_str(), "APPLICATION" | "GROUP") {
-            self.db_fields.insert(
-                format!("{}/{addr}/TagName", words[1].trim_end_matches('/')),
-                words[4].to_string(),
-            );
+            // These addressable objects must be owned by the same typed tree
+            // that DBGETXML, persistence and later edits use. An opaque tag
+            // field alone acknowledges data that disappears from export.
+            let parent = words[1].trim_end_matches('/');
+            let path = format!("{parent}/{addr}");
+            let oid = self
+                .db_pending
+                .values()
+                .find(|record| {
+                    record.project == proj_name && record.path.as_deref() == Some(path.as_str())
+                })
+                .map(|record| record.oid.clone())
+                .unwrap_or_else(|| self.issue_oid());
+            let object = ParsedDbXmlObject {
+                kind: if element == "APPLICATION" {
+                    DbXmlKind::Application
+                } else {
+                    DbXmlKind::Group
+                },
+                oid,
+                tag: words[4].to_string(),
+                address: addr,
+                value: None,
+                interface: None,
+                units: Vec::new(),
+                children: Vec::new(),
+                extras: DbXmlExtras::default(),
+            };
+            if let Err((code, message)) =
+                self.insert_db_xml_object(&proj_name, parent, &object, None)
+            {
+                return err(tag, code, &format!("{code} {message}"));
+            }
         }
         ok(tag, vec![], "200 OK")
     }
@@ -12150,7 +12213,11 @@ impl Server {
         {
             return false;
         }
-        self.pending_object(current, oid).is_some()
+        self.projects.get(current).is_some_and(|project| {
+            Self::tag_network_oids(project)
+                .iter()
+                .any(|value| value == oid)
+        }) || self.pending_object(current, oid).is_some()
             || self.projects.get(current).is_some_and(|project| {
                 project.networks.values().any(|network| {
                     network.oid == oid || network.units.values().any(|unit| unit.oid == oid)
@@ -12568,6 +12635,7 @@ mod tests {
     #[test]
     fn bridge_topology_resolves_native_forward_reverse_and_database_forms() {
         let project = Project {
+            tag_networks: Default::default(),
             name: "TOPO".into(),
             networks: HashMap::from([
                 (254, topology_network(254, "CNI", "127.0.0.1:10001", &[253])),
@@ -12637,6 +12705,7 @@ mod tests {
     #[test]
     fn bridge_topology_fails_closed_for_missing_units_cycles_and_long_paths() {
         let mut project = Project {
+            tag_networks: Default::default(),
             name: "BAD".into(),
             networks: HashMap::from([
                 (254, topology_network(254, "CNI", "", &[])),
@@ -12663,6 +12732,7 @@ mod tests {
             );
         }
         let long = Project {
+            tag_networks: Default::default(),
             name: "LONG".into(),
             networks,
         };
@@ -12674,6 +12744,7 @@ mod tests {
     #[test]
     fn bridge_interface_unit_does_not_replace_the_conventional_route_address() {
         let mut project = Project {
+            tag_networks: Default::default(),
             name: "MISMATCH".into(),
             networks: HashMap::from([
                 (254, topology_network(254, "CNI", "", &[42])),

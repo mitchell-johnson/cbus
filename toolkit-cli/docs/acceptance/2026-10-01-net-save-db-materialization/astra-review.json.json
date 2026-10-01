@@ -1,0 +1,66 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "3da5f73dd36e5a677480985bc492bdaa0752bc82333f00d0e604d4ac25f594cf",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/harness_review/post_execution_publication_qualification",
+      "action": "role_template",
+      "roles": [
+        "temporary_root_alias"
+      ],
+      "raw_string_sha256": "b7795b04bc40b7b94c2909e5b87be0b56d365d51579fa6620d0c84652dd62730"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-net-save-db-astra-review-v1",
+    "kind": "read_only_source_and_test_review",
+    "test_execution_by_reviewer": false,
+    "reviewed_files_sha256": {
+      "rust/cbus-cgate/src/tag_network.rs": "21c5156517bf9a6bb633115d76a023180ab1f09c16f0a73d381274f2e3162dbf",
+      "rust/cbus-cgate/src/service/tests/net_save_db.rs": "1f88eb449702e3bb42d5dd4b1d60153b6965c0321af15ece2e80e22d494cd32b"
+    },
+    "findings": [
+      {
+        "priority": "P1",
+        "trigger": "Associated numeric materialized Network deletion left pending/Level/field/Unit-document state and readable child OIDs.",
+        "resolution": "Established numeric subtree and side-table cleanup with complete current OID union and pending parent/OID descendants precedes retirement.",
+        "status": "resolved_in_narrow_re_review"
+      },
+      {
+        "priority": "P2",
+        "trigger": "DBCOPYSAFE accepted invalid path-component address bad/name and registered an unresolvable copy.",
+        "resolution": "Completed replacement receives full TagNetwork parse admission before registration inside the staged transaction.",
+        "status": "resolved_in_narrow_re_review"
+      }
+    ],
+    "conclusion": "No remaining concrete blocker found in narrow source/test re-review. Final release and public acceptance were not independently confirmed by this reviewer.",
+    "expanded_runtime_guard_qualification": "A later diagnostic test initially assumed global OID removal. The retained identity is also HARNESS Unit5; deletion must remove AUX ownership and reads while preserving this foreign owner. The reviewer traced the failure without executing tests. Final focused runtime validation is recorded separately.",
+    "harness_review": {
+      "kind": "read_only_source_review",
+      "executed_final_acceptance": false,
+      "concrete_findings_resolved": [
+        "Bind six current differential raw/public source pins and binaries to frozen v5",
+        "Bind focused before/after/import origins and command output hashes to frozen execution",
+        "Require actual original-driver process exit0, exact stdout/stderr hashes and no proxy errors"
+      ],
+      "files_sha256": {
+        "final-driver.py": "23eead31c2feef10dac4f30ea4a3bf5c76d1d0d148569a8a9f9c8fc6ce55c49d",
+        "generate.py": "1b4f6a6c0723178a53da7f8e0f8f808370ea594f630906992d68359938bf5083",
+        "publish.py": "c6b3963b33491d3e2c96cf744510908ebd12f7ce8762086a8587951b5902de22",
+        "publication-helpers.py": "759d8dc7298f65e1e3e1d12aea2faa652605c71969c8e5fc0627670bf21e8750"
+      },
+      "original_driver_sha256": "75b0d2e219f56d9bea349b51b1496317d5650eb68978859642ae2f6741bcdd39",
+      "privacy": "No concrete private-coordinate leak found in the scoped current schemas; actual final artifacts require independent post-execution audit.",
+      "product_review_qualification": "P1/P2 reviewed before the later selected-project refusal. These earlier source pins remain retained; final Rust owner validation and root frozen-roster audit are separate.",
+      "publication_guard_mirrored_after_review": "Actual native process exit0, terminal_checks and stdout/stderr SHA/size checks added. The reviewer requested terminal validation because completed precedes final cleanup.",
+      "current_publisher_sha256_after_terminal_guard": "30c08cc1feddf7324804459e1fc2dda0eb7714db69e17703cd0852b94a5202d3",
+      "actual_original_driver_revision_qualification": "After review, output filenames were indexed and the offline reopened export reference corrected. Earlier actual source failures/driver hashes remain recorded; native assertions and wire checks were retained. Final driver5bf5c395 is bound by actual source/installed reports.",
+      "post_execution_publication_qualification": "Supplemental native15 ${CBUS_TEMP_ROOT} alias was rejected by fail-closed path scan. Earlier partial draft and digest roster retained privately; explicit alias role added before final publication.",
+      "historical_guard_log_binding_qualification": "Publisher attempt2 used the wrong sibling log name; immutable validation and logs unchanged, explicit digest-pinned guards-hostile-final.log selected in attempt3."
+    },
+    "future_assignments_model_constraint": "After receiving the cross-chat human constraint, future new or follow-on assignments use GPT-6.1-Sol only."
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "d2bf5ec5a8a2bfdd11377b39bfd9c3f12fd82127cac831e7fb53bab5e96a14f2",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "format": "cbus-native-net-save-db-materialization-v1",
+    "oracle": {
+      "version": "3.4.0.2001",
+      "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "java_sha256": "94e156397958bb83fda31ee16200580fd083b0fc0ed4a9ce795cfa44ff8e72f4",
+      "java_version": "openjdk version \"11.0.32.1\" 2026-08-18\nOpenJDK Runtime Environment Temurin-11.0.32.1+1 (build 11.0.32.1+1)\nOpenJDK 64-Bit Server VM Temurin-11.0.32.1+1 (build 11.0.32.1+1, mixed mode)"
+    },
+    "source_pins": {
+      "private_probe": "16c9beb5d541baa4d1ee18ce6a080393cac9acd1b613c3658f429e763d88a628",
+      "toolkit-cli/research/local_cgate.py": "3df3f50db74bc1321b7d8b173927d88f50082df4bc67042b0bb2446e5f99e111"
+    },
+    "closed_model_only": true,
+    "physical_or_windows_acceptance": false,
+    "qualifications": [
+      "Fresh owned Program-role Java11 original process; raw boundary probe uses system Python, no Toolkit package imports.",
+      "All exact failed commands are retained; no hardware or Windows acceptance."
+    ],
+    "normalization": [
+      "Task-owned absent serial path/root becomes %OWNED_WORK%.",
+      "Reserved Cni port becomes %FIXTURE_CNI_PORT%.",
+      "Native generated OID elements/receipts become stable equality-preserving %OID_N% tokens; no OID allocator parity claimed.",
+      "Modified timestamps, Hostname and OSVersion are explicit tokens.",
+      "The second reserved Cni endpoint becomes %FIXTURE_SECOND_CNI_PORT%.",
+      "All UUID appearances including OID selectors/scalar summaries use the same equality-preserving OID map. Command tags are retained."
+    ],
+    "commands": [
+      {
+        "label": "new",
+        "command": "PROJECT NEW NDEL",
+        "response": [
+          "[probe0] 200 OK."
+        ]
+      },
+      {
+        "label": "use",
+        "command": "PROJECT USE NDEL",
+        "response": [
+          "[probe1] 200 OK."
+        ]
+      },
+      {
+        "label": "create",
+        "command": "NET CREATE CustomA Cni 127.0.0.1:%FIXTURE_CNI_PORT%",
+        "response": [
+          "[probe2] 200 OK."
+        ]
+      },
+      {
+        "label": "materialize",
+        "command": "NET SAVE DB",
+        "response": [
+          "[probe3] 200 OK."
+        ]
+      },
+      {
+        "label": "whole-before",
+        "command": "DBGETXML //NDEL",
+        "response": [
+          "[probe4] 343-Begin XML snippet",
+          "[probe4] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe4] 347-<Installation><OID>%OID_1%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_2%</OID><TagName>NDEL</TagName><Address>NDEL</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Network><OID>%OID_3%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_4%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network></Project><InstallationDetail><OID>%OID_5%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_6%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[probe4] 344 End XML snippet"
+        ]
+      },
+      {
+        "label": "project-save",
+        "command": "PROJECT SAVE NDEL",
+        "response": [
+          "[probe5] 200 OK."
+        ]
+      },
+      {
+        "label": "delete-tag-oid",
+        "command": "DBDELETE !%OID_3%",
+        "response": [
+          "[probe6] 200 OK."
+        ]
+      },
+      {
+        "label": "whole-after-tag-delete",
+        "command": "DBGETXML //NDEL",
+        "response": [
+          "[probe7] 343-Begin XML snippet",
+          "[probe7] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe7] 347-<Installation><OID>%OID_1%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_2%</OID><TagName>NDEL</TagName><Address>NDEL</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Config><OID>%OID_7%</OID><Application>cgate</Application><Property><OID>%OID_8%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_9%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_10%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_11%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_13%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_14%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_15%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_16%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_17%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_18%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_19%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_20%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_21%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_22%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_23%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_24%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_26%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_27%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_28%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_29%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_30%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_31%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_33%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_34%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_35%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_36%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_37%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_38%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_41%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_43%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_44%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_46%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_47%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_48%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_49%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_53%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_54%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_56%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_5%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_6%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[probe7] 344 End XML snippet"
+        ]
+      },
+      {
+        "label": "direct-after-tag-delete",
+        "command": "DBGETXML //NDEL/CustomA",
+        "response": [
+          "[probe8] 343-Begin XML snippet",
+          "[probe8] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe8] 347-<Network><OID>%OID_3%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_4%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+          "[probe8] 344 End XML snippet"
+        ]
+      },
+      {
+        "label": "delete-runtime",
+        "command": "NET DELETE CustomA",
+        "response": [
+          "[probe9] 200 OK."
+        ]
+      },
+      {
+        "label": "list-before-load",
+        "command": "NET LIST",
+        "response": [
+          "[probe10] 132 no networks found"
+        ]
+      },
+      {
+        "label": "load-db",
+        "command": "NET LOAD DB",
+        "response": [
+          "[probe11] 200 OK."
+        ]
+      },
+      {
+        "label": "list-after-load",
+        "command": "NET LIST",
+        "response": [
+          "[probe12] 132 no networks found"
+        ]
+      },
+      {
+        "label": "whole-after-load",
+        "command": "DBGETXML //NDEL",
+        "response": [
+          "[probe13] 343-Begin XML snippet",
+          "[probe13] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe13] 347-<Installation><OID>%OID_1%</OID><DBVersion>2.3</DBVersion><Version>1.0</Version><Modified>%MODIFIED%</Modified><Project><OID>%OID_2%</OID><TagName>NDEL</TagName><Address>NDEL</Address><Description>C-Bus project generated from live network by C-Gate v3.4.0 (build 2001)</Description><Config><OID>%OID_7%</OID><Application>cgate</Application><Property><OID>%OID_8%</OID><Name>allow-fast-start</Name><Value>no</Value></Property><Property><OID>%OID_9%</OID><Name>allow-v3-pci</Name><Value>yes</Value></Property><Property><OID>%OID_10%</OID><Name>application.model-change-events</Name><Value>yes</Value></Property><Property><OID>%OID_11%</OID><Name>application.show-command-failure</Name><Value>yes</Value></Property><Property><OID>%OID_12%</OID><Name>auto-reopen</Name><Value>no</Value></Property><Property><OID>%OID_13%</OID><Name>cbus-application</Name><Value>56</Value></Property><Property><OID>%OID_14%</OID><Name>cbus-tx-delay</Name><Value>250</Value></Property><Property><OID>%OID_15%</OID><Name>cbus.tx-cache</Name><Value>yes</Value></Property><Property><OID>%OID_16%</OID><Name>cbus.tx-compress</Name><Value>yes</Value></Property><Property><OID>%OID_17%</OID><Name>cgroups-file</Name><Value>cgroups.txt</Value></Property><Property><OID>%OID_18%</OID><Name>clock.master</Name><Value>no</Value></Property><Property><OID>%OID_19%</OID><Name>clock.mastermode</Name><Value>secondary</Value></Property><Property><OID>%OID_20%</OID><Name>clock.update-interval</Name><Value>30</Value></Property><Property><OID>%OID_21%</OID><Name>comms-debug</Name><Value>no</Value></Property><Property><OID>%OID_22%</OID><Name>enable.save-state</Name><Value>no</Value></Property><Property><OID>%OID_23%</OID><Name>lighting.auto-phantom-groups</Name><Value>yes</Value></Property><Property><OID>%OID_24%</OID><Name>lighting.learn-update</Name><Value>no</Value></Property><Property><OID>%OID_25%</OID><Name>local-flow-control</Name><Value>no</Value></Property><Property><OID>%OID_26%</OID><Name>network.application-connect</Name><Value>yes</Value></Property><Property><OID>%OID_27%</OID><Name>network.auto-phantom-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_28%</OID><Name>network.bridge.mmi-failure-ceiling</Name><Value>10</Value></Property><Property><OID>%OID_29%</OID><Name>network.bridge.mmi-fallback-delay</Name><Value>1000</Value></Property><Property><OID>%OID_30%</OID><Name>network.error.commands-failed</Name><Value>3</Value></Property><Property><OID>%OID_31%</OID><Name>network.error.units-failed</Name><Value>3</Value></Property><Property><OID>%OID_32%</OID><Name>network.error.units-failed-hysteresis</Name><Value>0</Value></Property><Property><OID>%OID_33%</OID><Name>network.pci.poll-interval</Name><Value>60</Value></Property><Property><OID>%OID_34%</OID><Name>network.retries</Name><Value>2</Value></Property><Property><OID>%OID_35%</OID><Name>network.retries.pci-check</Name><Value>1</Value></Property><Property><OID>%OID_36%</OID><Name>network.simultaneous-identifies</Name><Value>5</Value></Property><Property><OID>%OID_37%</OID><Name>network.source</Name><Value>db</Value></Property><Property><OID>%OID_38%</OID><Name>pci-flow-control</Name><Value>yes</Value></Property><Property><OID>%OID_39%</OID><Name>pci.local-sal</Name><Value>yes</Value></Property><Property><OID>%OID_40%</OID><Name>reopen-delay</Name><Value>15000</Value></Property><Property><OID>%OID_41%</OID><Name>report-new-objects</Name><Value>no</Value></Property><Property><OID>%OID_42%</OID><Name>response-delay</Name><Value>5500</Value></Property><Property><OID>%OID_43%</OID><Name>serial.fixbaud</Name><Value>yes</Value></Property><Property><OID>%OID_44%</OID><Name>speed-write</Name><Value>yes</Value></Property><Property><OID>%OID_45%</OID><Name>startup-delay</Name><Value>0</Value></Property><Property><OID>%OID_46%</OID><Name>sweep-timeout</Name><Value>2000</Value></Property><Property><OID>%OID_47%</OID><Name>sync-fast-pci</Name><Value>yes</Value></Property><Property><OID>%OID_48%</OID><Name>sync-time</Name><Value>3600</Value></Property><Property><OID>%OID_49%</OID><Name>sync.padding.enabled</Name><Value>yes</Value></Property><Property><OID>%OID_50%</OID><Name>sync.padding.maximum</Name><Value>300</Value></Property><Property><OID>%OID_51%</OID><Name>sync.padding.minimum</Name><Value>5</Value></Property><Property><OID>%OID_52%</OID><Name>sync.padding.sync-time-factor</Name><Value>0.75</Value></Property><Property><OID>%OID_53%</OID><Name>sync.sync-free.periods</Name><Value></Value></Property><Property><OID>%OID_54%</OID><Name>unit-auto-delete</Name><Value>no</Value></Property><Property><OID>%OID_55%</OID><Name>unit-auto-update-db</Name><Value>no</Value></Property><Property><OID>%OID_56%</OID><Name>unravel.readdress-bridge</Name><Value>yes</Value></Property><Property><OID>%OID_57%</OID><Name>use-cgroups</Name><Value>no</Value></Property><Property><OID>%OID_58%</OID><Name>use-queue-sweeper</Name><Value>yes</Value></Property></Config></Project><InstallationDetail><OID>%OID_5%</OID><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>%HOSTNAME%</Hostname><OSName>Mac OS X</OSName><OSVersion>%OS_VERSION%</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><OID>%OID_6%</OID><Name>[unknown]</Name></Installer></InstallationDetail></Installation>",
+          "[probe13] 344 End XML snippet"
+        ]
+      },
+      {
+        "label": "direct-after-load",
+        "command": "DBGETXML //NDEL/CustomA",
+        "response": [
+          "[probe14] 343-Begin XML snippet",
+          "[probe14] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+          "[probe14] 347-<Network><OID>%OID_3%</OID><TagName>nCustomA</TagName><Address>CustomA</Address><NetworkNumber>0xff</NetworkNumber><Interface><OID>%OID_4%</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:%FIXTURE_CNI_PORT%</InterfaceAddress></Interface></Network>",
+          "[probe14] 344 End XML snippet"
+        ]
+      }
+    ],
+    "network_summaries": [],
+    "repeated_xml_identical": null,
+    "cleanup": {
+      "listener_ownership_verified": true,
+      "cleanup_complete": true,
+      "process_exit_confirmed": true,
+      "work_removed": true
+    },
+    "raw_receipt_sha256": "d1ab94b36d1393d2e6ef8b6d3c5eaae70809ba65c94c2b162949bd333217835e"
+  }
+}

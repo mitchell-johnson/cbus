@@ -47,6 +47,17 @@ Create a closed Cni, Serial or Bridge project network through cmqttd with
 explicitly save/load the runtime catalogue. They select a named project and
 leave interfaces closed; project save/reopen and interface opening are explicit
 steps. See [network setup and DB/FILE semantics](docs/network-definitions.md).
+`network definition save --project NAME DB` materializes the current definitions
+as complete tag Network rows. Exact string addresses remain distinct from
+NetworkNumber; offline project editing retains those rows and their ordered
+Properties in native XML/CBZ. Repeated SAVE keeps Network/Interface OIDs and
+replaces Property OIDs. Follow it with explicit `cgate project save NAME` when
+the loaded database should become the saved project baseline.
+
+`cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
+snapshot through the server FILE protocol. cmqttd stores it in its virtual
+repository namespace for portable conversion commands. Upload completion does
+not imply project saving or native SQL-format interchange.
 
 Run the source, installed-wheel and interoperability gates below for results
 from the current revision. CI retains JUnit reports with the executed tests and

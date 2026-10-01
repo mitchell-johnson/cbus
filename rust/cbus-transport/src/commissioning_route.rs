@@ -493,7 +493,18 @@ fn validate_structure(project: Node<'_, '_>) -> Result<()> {
                     }
                     // Routing fields below require decimal bytes. For other
                     // entities retain ordinary project hex/decimal addresses.
-                    structural_byte(&scalar(node, "Address", true)?)?;
+                    if node.tag_name().name() == "Network" && independent_network_address(node)? {
+                        let address = scalar(node, "Address", true)?;
+                        if address.chars().any(|c| {
+                            c.is_control() || c.is_whitespace() || matches!(c, '/' | '\\' | '#')
+                        }) {
+                            return Err(RouteBindingError::new(
+                                "Invalid unassigned Network Address",
+                            ));
+                        }
+                    } else {
+                        structural_byte(&scalar(node, "Address", true)?)?;
+                    }
                 }
             }
         }
@@ -509,7 +520,13 @@ fn validate_structure(project: Node<'_, '_>) -> Result<()> {
                     .into_iter()
                     .filter(|child| is_entity(*child))
                 {
-                    if !addresses.insert(structural_byte(&scalar(child, "Address", true)?)?) {
+                    let address = scalar(child, "Address", true)?;
+                    let key = if name == "Network" {
+                        address
+                    } else {
+                        structural_byte(&address)?.to_string()
+                    };
+                    if !addresses.insert(key) {
                         return Err(RouteBindingError::new(format!("Duplicate {name} address")));
                     }
                 }
@@ -540,6 +557,24 @@ fn structural_byte(value: &str) -> Result<u8> {
         None => value.parse(),
     };
     parsed.map_err(|_| RouteBindingError::new("Project entity Address/Value must be a byte"))
+}
+
+// Native database Address is a string identity, distinct from the assigned
+// physical byte. An explicit unknown or differing Number never makes a route.
+fn independent_network_address(node: roxmltree::Node<'_, '_>) -> Result<bool> {
+    let number = scalar(node, "NetworkNumber", false)?;
+    let address = scalar(node, "Address", true)?;
+    if number.is_empty() {
+        return Ok(false);
+    }
+    if number != "0xff" && number.parse::<u8>().is_err() {
+        return Err(RouteBindingError::new("Invalid NetworkNumber"));
+    }
+    Ok(number == "0xff"
+        || address
+            .parse::<u8>()
+            .ok()
+            .is_none_or(|byte| byte.to_string() != address || number != address))
 }
 
 fn xml_networks(payload: &[u8]) -> Result<Option<HashMap<u8, Network>>> {
@@ -611,6 +646,9 @@ fn xml_networks(payload: &[u8]) -> Result<Option<HashMap<u8, Network>>> {
     }
     let mut networks = HashMap::new();
     for node in children(project, "Network") {
+        if independent_network_address(node)? {
+            continue;
+        }
         let address = decimal_byte(&scalar(node, "Address", true)?, "Network Address")?;
         let interfaces = children(node, "Interface");
         if interfaces.len() != 1 {
@@ -1147,5 +1185,40 @@ mod tests {
         ] {
             assert!(snapshot_networks(raw).is_err());
         }
+    }
+
+    #[test]
+    fn native_string_database_addresses_and_unknown_numbers_never_create_routes() {
+        let mut nodes = vec![
+            network(254, "CNI", "127.0.0.1:1", &[(253, "BRIDGE2N")]),
+            network(253, "Bridge", "254/p/253", &[(5, "KEYGL5")]),
+        ];
+        for (name, number) in [
+            ("42", "0xff"),
+            ("0254", "0xff"),
+            ("CustomA", "0xff"),
+            ("256", "0xff"),
+            ("43", "255"),
+            ("Customa", "1"),
+        ] {
+            nodes.push(format!("<Network><Address>{name}</Address><TagName>n{name}</TagName><NetworkNumber>{number}</NetworkNumber><Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>254/p/253</InterfaceAddress></Interface></Network>"));
+        }
+        let xml = document(&nodes);
+        let networks = snapshot_networks(&xml).unwrap();
+        assert_eq!(networks.len(), 2);
+        assert!(networks.contains_key(&254));
+        assert!(networks.contains_key(&253));
+        assert!(!networks.contains_key(&42));
+        assert!(!networks.contains_key(&43));
+        let snapshot = Snapshot::new(&xml);
+        let bound = plan(&xml, Some(vec![253]));
+        assert!(bind(&snapshot, &bound, 253).is_ok());
+        assert!(bind(&snapshot, &bound, 42).is_err());
+        assert!(bind(&snapshot, &bound, 43).is_err());
+        let invalid = String::from_utf8(xml).unwrap().replace(
+            "<NetworkNumber>0xff</NetworkNumber>",
+            "<NetworkNumber>invalid</NetworkNumber>",
+        );
+        assert!(snapshot_networks(invalid.as_bytes()).is_err());
     }
 }

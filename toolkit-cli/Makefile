@@ -101,6 +101,7 @@ check-cmqtt-interop: compile
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
 		tests/test_cmqtt_dali_commissioning_interop.py \
 		tests/test_cmqtt_network_new_cli.py \
+		tests/test_cmqtt_network_save_db_cli.py tests/test_cgate_file_upload.py \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

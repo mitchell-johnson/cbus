@@ -8,16 +8,16 @@
       "sha256": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20"
     },
     "manual": {
-      "sha256": "44dfe1283e540c4f27de61c23d9cdf2efac50df652241b9ab832bc4121e94f2f"
+      "sha256": "c21f0fd7b32f1bce130be046e6e0ffe6ecea8983fe3d48ddb45d4d52e126456d"
     },
     "service": {
-      "sha256": "f7de9c887f45aa7c344346310b92d5141dbd1638f80d555ff00861d8b5563a22"
+      "sha256": "304b0967754a8753fe15a4f76591854c2f171f3672dba93afa6c98348a2776a9"
     },
     "event_mode": {
-      "sha256": "c57ae1ea50030c4b5c3c3988a85722dffc6dbe9a603f886c186996b172c15ee6"
+      "sha256": "fe2d5551ddbddacf5c2ec65e7f6de817047aa85241298cf546d050f387ef1798"
     },
     "authorization_policy": {
-      "sha256": "f108a1b4bbdab7f123c4460feffc511a6fb7ba5c82d6547cff422505a766295e"
+      "sha256": "fa452613756a8b1a83551525b21fa2fab27d19eab0eee0d3503a0921e8151c8c"
     },
     "access_handler_registry": {
       "sha256": "5adb01f249c725d6ba1794f00211c9e938e38dc79907c771b384bb15a8ad4233"

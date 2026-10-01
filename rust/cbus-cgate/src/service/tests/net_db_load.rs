@@ -52,11 +52,13 @@ async fn net_db_load_materializes_fresh_and_sequential_closed_definitions_withou
     }
     let before = definitions(&service, "FRESH").await;
     assert_eq!(before.as_array().unwrap().len(), 3);
-    assert_eq!(before[0]["name"], "252");
-    assert_eq!(before[0]["interface_type"], "Bridge");
+    assert_eq!(before[0]["name"], "254");
+    assert_eq!(before[0]["interface_type"], "Cni");
+    assert_eq!(before[0]["bound_network"], 254);
+    assert_eq!(before[1]["name"], "253");
     assert_eq!(before[1]["interface_type"], "Serial");
-    assert_eq!(before[2]["interface_type"], "Cni");
-    assert_eq!(before[2]["bound_network"], 254);
+    assert_eq!(before[2]["name"], "252");
+    assert_eq!(before[2]["interface_type"], "Bridge");
     let list = run(&service, &mut client, "NET LIST").await;
     assert_eq!(list.status, 131);
     assert!(list
@@ -96,16 +98,25 @@ async fn net_db_load_refreshes_tag_fields_and_preserves_unrelated_runtime_names(
         ok_command(&service, &mut client, command).await;
     }
     let before = definitions(&service, "FRESH").await;
-    assert_eq!(before[0]["interface_address"], "127.0.0.1:1");
+    assert_eq!(
+        before
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|definition| definition["name"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        ["CustomA", "Extra", "254"]
+    );
+    assert_eq!(before[2]["interface_address"], "127.0.0.1:1");
     ok_command(&service, &mut client, "NET LOAD DB").await;
     let after = definitions(&service, "FRESH").await;
-    assert_eq!(after[0]["interface_type"], "Serial");
+    assert_eq!(after[2]["interface_type"], "Serial");
     assert_eq!(
-        after[0]["interface_address"],
+        after[2]["interface_address"],
         "/private/tmp/owned-refreshed-port"
     );
+    assert_eq!(after[0], before[0]);
     assert_eq!(after[1], before[1]);
-    assert_eq!(after[2], before[2]);
     for command in [
         "NET DELETE 254",
         "NET CREATE 254 Cni 127.0.0.1:2 stale=yes",
@@ -115,21 +126,21 @@ async fn net_db_load_refreshes_tag_fields_and_preserves_unrelated_runtime_names(
     }
     let conflict_refreshed = definitions(&service, "FRESH").await;
     assert_eq!(
-        conflict_refreshed[0]["interface_type"],
-        after[0]["interface_type"]
+        conflict_refreshed[2]["interface_type"],
+        after[2]["interface_type"]
     );
     assert_eq!(
-        conflict_refreshed[0]["interface_address"],
-        after[0]["interface_address"]
+        conflict_refreshed[2]["interface_address"],
+        after[2]["interface_address"]
     );
-    assert_eq!(conflict_refreshed[0]["options"], serde_json::json!([]));
+    assert_eq!(conflict_refreshed[2]["options"], serde_json::json!([]));
     assert_eq!(
-        conflict_refreshed[0]["bound_network"],
+        conflict_refreshed[2]["bound_network"],
         serde_json::Value::Null,
         "metadata refresh must not bind a CREATE-only definition"
     );
+    assert_eq!(conflict_refreshed[0], after[0]);
     assert_eq!(conflict_refreshed[1], after[1]);
-    assert_eq!(conflict_refreshed[2], after[2]);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -319,7 +330,22 @@ async fn net_db_load_refresh_keeps_immutable_binding_and_noncanonical_legacy_nam
         .iter()
         .find(|row| row["name"] == "253")
         .unwrap();
-    assert_eq!(row["interface_type"], "Serial");
+    // SAVE DB now follows the captured native refresh contract: the runtime
+    // definition renamed from254 replaces tag253's Serial metadata with its
+    // own CNI metadata. Neither existing physical database model is rebound.
+    assert_eq!(row["interface_type"], "CNI");
+    let model = service.model.lock().await;
+    assert_eq!(
+        model.projects["HARNESS"].networks[&253].iface_type,
+        "Serial"
+    );
+    assert_eq!(
+        model.projects["HARNESS"].tag_networks["253"]
+            .interface()
+            .field("InterfaceType"),
+        Some("CNI")
+    );
+    drop(model);
     assert_eq!(
         row["bound_network"], 254,
         "refresh must not retarget the binding retained by RENAME"

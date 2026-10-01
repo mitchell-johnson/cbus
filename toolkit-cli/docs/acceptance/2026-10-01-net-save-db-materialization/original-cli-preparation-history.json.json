@@ -1,0 +1,38 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "96a14c329f3a063f54fa448713e680cb4d8c22065eeeab9f75bafda89cd41720",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "previous_sha256": "8e4c0715bb04a8c024658558f70269ddb2529452e6875985df38856b36ecf631",
+    "previous_executed": false,
+    "superseded_reason": "Prepared harness assumed typed backslash admission; typed grammar must refuse preconnection.",
+    "current_sha256": "22eca8d51209501acc724aafe7e5b6590170e59c735229e1454208fae51bfe55",
+    "current_executed": false,
+    "next_revision": {
+      "previous_sha256": "22eca8d51209501acc724aafe7e5b6590170e59c735229e1454208fae51bfe55",
+      "previous_executed": false,
+      "current_sha256": "9dec9edf90c0e9ac8da82722d94f39042f137a1258335007f5c3617a306faeb5",
+      "current_executed": false,
+      "reason": "Added direct native JSONL vector and both historical source ZIP closure pins"
+    },
+    "subsequent_revisions": [
+      {
+        "previous_sha256": "9dec9edf90c0e9ac8da82722d94f39042f137a1258335007f5c3617a306faeb5",
+        "previous_executed": false,
+        "current_sha256": "28cef1da04e35f8b05a2cb1fe2cd1b32067e614a4626da34524a1001b51454e1",
+        "current_executed": false,
+        "reason": "Independent document payload/framing; explicit exit/connection contracts; actual package and wheel crossbindings"
+      },
+      {
+        "previous_sha256": "28cef1da04e35f8b05a2cb1fe2cd1b32067e614a4626da34524a1001b51454e1",
+        "previous_executed": false,
+        "current_sha256": "75b0d2e219f56d9bea349b51b1496317d5650eb68978859642ae2f6741bcdd39",
+        "current_executed": false,
+        "reason": "Publisher explicit expected_exits and wire_verified/kind schema"
+      }
+    ]
+  }
+}

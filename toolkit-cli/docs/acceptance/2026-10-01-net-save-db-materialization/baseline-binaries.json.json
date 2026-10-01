@@ -1,0 +1,51 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "4cd683d5503369ae21c2024d37ee0c0c5b6506ddf9be7d9d90855bd04e865292",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/binaries/cmqttd/path",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "c99d8fc64f65a0ea90fe936c7d759361a1fbc8d21f5d79126e9bfc6499610ade"
+    },
+    {
+      "json_pointer": "/binaries/cgate-mock/path",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "58c0c747e08aa37030bf2b0eeebb95fead32bf94b33fef6a78dc6fb575d0b6a6"
+    },
+    {
+      "json_pointer": "/binaries/cbus-tools/path",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "4884ecfcd94f6d62c0937a02b63b8acc28d4378c3793e1d9822781c19f86e6e7"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "source_revision": "62edbee6f15e7cc7dea5c9815f764e9d050e8c38",
+    "prior_acceptance_sha256": "d27cb05bb2f93cb2ac97ba2146c75ddf636fb80f9d5a8bf51bc1001b9795fb57",
+    "binaries": {
+      "cmqttd": {
+        "path": "${CBUS_FINAL_ACCEPTANCE_ROOT}/before-binaries/cmqttd",
+        "sha256": "c0f1ce4ec669dee12b7a779abbcfb876c34d80b613a308711bb91bab801d9445"
+      },
+      "cgate-mock": {
+        "path": "${CBUS_FINAL_ACCEPTANCE_ROOT}/before-binaries/cgate-mock",
+        "sha256": "a963aa5fc02fe08419e36e765e81f4a88b9598aa4348b10426656672c2576ebb"
+      },
+      "cbus-tools": {
+        "path": "${CBUS_FINAL_ACCEPTANCE_ROOT}/before-binaries/cbus-tools",
+        "sha256": "abd34f4c3148b4519a854c4b6548f5771d2d0667b3ae002c238891dbf3a4f018"
+      }
+    }
+  }
+}

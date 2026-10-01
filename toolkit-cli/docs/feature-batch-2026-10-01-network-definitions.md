@@ -1,5 +1,13 @@
 # Closed network creation, runtime catalogue and GET dispatch
 
+This is the historical `62edbee6` acceptance checkpoint. The later
+[NET SAVE DB batch](feature-batch-2026-10-01-net-save-db-materialization.md)
+implements its runtime-to-tag materialization gap and updates the maintained
+catalogue tests to that native contract. Both receipts below remain unchanged.
+Exact-release CI subsequently found two historical legacy-transform guards tied
+to older `native.py` bytes; the later batch preserves those bytes and receipts,
+proves the unchanged scoped project route, and records fresh original reruns.
+
 The Python Toolkit CLI can now create a closed project network through cmqttd using `cgate database network-new`, then save, close and reopen its complete database model. The new typed `cgate network definition` family provides explicit list, create, rename, delete, flush, load and save operations. cmqttd's `NET LOAD DB` reads the current numeric tag-network definitions instead of requiring an earlier internal snapshot. A fresh Cni, Serial or Bridge network can therefore enter its closed runtime catalogue immediately after `DBCREATENET`.
 
 This is a bounded milestone for [issue 27](https://github.com/mitchell-johnson/cbus/issues/27), [issue 29](https://github.com/mitchell-johnson/cbus/issues/29) and [issue 32](https://github.com/mitchell-johnson/cbus/issues/32). It establishes the tested closed-model setup and catalogue lifecycle, while broader obligations in those issues remain open. No house network, Windows VM, real adapter or physical C-Bus device was used.

@@ -1,0 +1,44 @@
+{
+  "format": "cbus-network-definition-evidence-derivative-v1",
+  "raw_sha256": "8d1a03e3a57debbdf04af0d7fbfe55910153e49f4af88e80881ac6ae5ff12b55",
+  "content_kind": "json",
+  "field_projection": false,
+  "coordinate_field_map": [
+    {
+      "json_pointer": "/argv/0",
+      "action": "role_template",
+      "roles": [
+        "toolkit_checkout"
+      ],
+      "raw_string_sha256": "0cc16e66198add98a5e90aef141951ee947678d1dc26fb4442434ad7d28fa2cf"
+    },
+    {
+      "json_pointer": "/argv/2",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "d5a6e14f6b305379a369499a4e2d89e16957fc7b7eb30d9de13f3817f8942d44"
+    },
+    {
+      "json_pointer": "/cwd",
+      "action": "role_template",
+      "roles": [
+        "final_acceptance"
+      ],
+      "raw_string_sha256": "51d399119c128df5f05adfabadfc49170c0d4ee44db19cdb131b4970015eae35"
+    }
+  ],
+  "qualification": "Original bytes, including all original wire captures, are privately archived by SHA-256. Declared runtime coordinates are role templates. Public CLI text and coordinate-bearing UTF-8 C-Gate wire or output hex use the same declared roles. Non-text binary wire hex remains unchanged. Projection is explicitly declared where used.",
+  "content": {
+    "argv": [
+      "${CBUS_TOOLKIT_ROOT}/.venv/bin/python",
+      "-c",
+      "import setuptools.build_meta; print(setuptools.build_meta.build_wheel('${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/wheels'))"
+    ],
+    "cwd": "${CBUS_FINAL_ACCEPTANCE_ROOT}/fresh-wheel/build-input",
+    "exit_status": 0,
+    "stdout_sha256": "003023bb53843f55f39a6206e26eee2c1b07e014e6e24343b65207eb265e8b6d",
+    "stderr_sha256": "8995e8cc62d964b7fedcbe7e25c28a9639531d076bc4981c73e741bf687c51eb"
+  }
+}
