@@ -4,13 +4,13 @@ A practical setup and troubleshooting guide
 
 Original Schneider Electric C-Bus Toolkit 1.18.0.2754 with C-Gate 3.4.0 build 2001
 
-Status dated 2 October 2026 NZDT at 09 30
+Status dated 2 October 2026 NZDT at 10 18
 
-Evidence cutoff 1 October 2026 at 20 30 UTC
+Evidence cutoff 1 October 2026 at 21 18 UTC
 
 This guide explains how to build a suitable Wine environment for the original Toolkit, why its dependencies matter, and how to prove that it can edit and retain a project. It separates the ordinary Intel Linux route from an exceptional cloud Linux host whose kernel cannot execute 32-bit Linux programs directly.
 
-The original Toolkit main window and a real Neo unit editor now open on the exceptional host. A synthetic key assignment was applied using Save to Database, and C-Gate acknowledged the project save. The project database survives a complete client and backend restart. However, Toolkit then shows only Topology and does not restore the saved network into its tree, although C-Gate lists it. Cold GUI reopening and project export remain blocked, so dependable offline editing is not established. Genuine Microsoft .NET Framework 4.0 and then 4.8 installed, and a native-CLR program compiled and ran successfully.
+The original Toolkit now passes a full synthetic offline edit, database save, shutdown and cold reopen on the exceptional host. After both Toolkit and C-Gate restarted, the real Neo editor retained key 1 DeskLamp with the On/Off function. Native Microsoft MSXML3 SP7 fixed the earlier cold project-load failure; native .NET Framework 4.0 followed by 4.8 had already passed real compile and execution tests. One important limitation remains: Backup Project fails in Wine comdlg32.dll before creating a CBZ archive. This is a verified offline editing workflow for one fixture, not complete compatibility or a proven backup and restore solution.
 
 The intended first use is an isolated, synthetic, offline editing lab. Connecting to a real C-Bus installation, scanning units, downloading unit settings, USB-driver use and production commissioning require separate testing and authorization.
 
@@ -26,7 +26,7 @@ The intended first use is an isolated, synthetic, offline editing lab. Connectin
 | Toolkit main window | Opened; project tree and Add Project toolbar visible; Connected to Local C-Gate |
 | Real Neo unit editor and database save | KEYM4 editor rendered; key 1 DeskLamp On/Off applied; backend PROJECT SAVE returned 200 OK |
 | Complete client and backend restart | Completed; persisted SQLite project, closed network and unit remain |
-| Cold reopen through Toolkit GUI | Blocked: saved network is missing from the tree despite backend NET LIST_ALL response |
+| Cold reopen through Toolkit GUI | Passed after native MSXML3: network 254 closed; saved KEYM4 key 1 DeskLamp On/Off reopened |
 | Normal Backup Project export | Failed before file creation: EAccessViolation in Wine comdlg32.dll |
 
 ### How to use this guide
@@ -63,7 +63,7 @@ Command blocks are shell commands unless labelled C# or configuration. Replace p
 
 ### Toolkit is more than one executable
 
-The Toolkit client is a 32-bit Windows application with native and managed components. It depends on the Windows API environment supplied by Wine and on the Microsoft CLR for its .NET components. The observed installation contains WPF-related assemblies and a managed C-Gate communicator. That is why merely opening a native Windows test application is insufficient.
+The Toolkit client is a 32-bit Windows application with native and managed components. It depends on the Windows API environment supplied by Wine and on the Microsoft CLR for its .NET components. The observed installation contains WPF-related assemblies and a managed C-Gate communicator. Cold project loading also uses an MSXML3 SAX XML reader; the .NET runtime does not supply that native COM parser. That is why merely opening a native Windows test application is insufficient.
 
 C-Gate is the backend. It maintains the C-Bus project model and exposes local network interfaces to client software. It is Java-based and can run with a native Linux Java runtime, while the Toolkit client runs inside Wine. The vendor publishes a C-Gate 3 Linux package alongside Toolkit releases. Use the backend that matches the tested client rather than substituting an unrelated C-Gate release. [S1]
 
@@ -147,7 +147,7 @@ The original Toolkit EXE was 176,675,576 bytes. Its Authenticode digest, signing
 
 Obtain Toolkit from Schneider Electric or Clipsal and Microsoft redistributables from Microsoft. Review the Toolkit agreement and the terms of each runtime installer before accepting. This guide does not accept them for you or establish that your licence covers every Wine, redistribution or deployment scenario. Follow the rights granted by the specific software agreements. [S1], [S5], [S6]
 
-Keep Microsoft installers interactive so you can see their agreement and result. Do not copy a command containing a silent licence-acceptance option without first reviewing what it does. If an installer raises a compatibility or security warning, read it; do not interpret an instruction in this guide as blanket permission to continue.
+Keep the initial Microsoft .NET installers interactive so you can see their agreement and result. The later MSXML3 test used a quiet MSI command only after its exact embedded agreement and mirror-package source were separately reviewed and approved. Do not copy a command containing a silent licence-acceptance option without first reviewing what it does. If an installer raises a compatibility or security warning, read it; do not interpret an instruction in this guide as blanket permission to continue.
 
 Use trusted package repositories for Wine, QEMU, Java and extraction tools. Do not fetch DLLs from “missing DLL” download sites. Do not change proprietary executables, fabricate installed registry flags, skip installer custom actions or turn off system protections to force a pass.
 
@@ -493,6 +493,88 @@ The extracted Toolkit payload included x86 Visual C++ 2008 SP1 and 2010 redistri
 
 The CLR’s VCRUNTIME140_CLR0400.dll observed after .NET 4.8 is distinct from the application’s older Visual C++ redistributables. Treat each missing dependency by its exact DLL, architecture and source.
 
+### Install the native XML parser for cold project loading
+
+The first cold session exposed a dependency that startup and new-project editing had not exercised. Toolkit requested the version-independent SAXXMLReader class 079aa557-4a18-424a-8eee-e39f0a8d41b9, bound to Wine 10 msxml3.dll. During Project Load, IVBSAXAttributes.getType reached an E_NOTIMPL stub, code 0x80004001. XML parsing aborted and the client surfaced OLE error 8000FFFF. The project tree then showed only Topology even though the backend correctly listed the saved network. These error codes describe different layers; do not treat them as the same HRESULT. [S17]
+
+Installing native Microsoft XML Core Services 3.0 Service Pack 7 into the dedicated prefix, and selecting native msxml3, restored the cold project tree and the saved editor values. The final trace loaded native msxml3.dll and no longer contained the former SAX stub or OLE parsing failure. Microsoft documents that version-independent MSXML callers remain on MSXML3; installing MSXML6 does not automatically redirect this caller. Do not substitute MSXML6 or rewrite the proprietary client to change its class selection. [S18]
+
+### Establish the exact MSXML3 source and agreement
+
+The tested input was msxml3.msi, 1,070,592 bytes, identified as Microsoft XML Parser with MSI ProductVersion 8.70.1104.04 and msxml3.dll version 8.70.1104.0. Its SHA-256 was:
+
+```text
+f9c678f8217e9d4f9647e8a1f6d89a7c26a57b9e9e00d39f7487493dd7b4e36c
+```
+
+The historical Microsoft download endpoint returned HTTP 404 at the time of this test. The approved bytes came from the CodeWeavers mirror listed in the Winetricks msxml3 recipe, whose recorded checksum matched. This is a historical Microsoft package obtained through a specific third-party mirror, not a current Microsoft-hosted download. The Authenticode payload digest matched and named Microsoft Corporation and MSXML3 SP7, but the current Linux CA bundle could not complete the old timestamp and expired-certificate chain. Full historical trust validation remained unconfirmed. A digest match and a reputable mirror do not erase that limitation. [S19], [S20]
+
+Before downloading or installing from this mirror, decide whether that exact provenance is acceptable to you and review the complete embedded Microsoft XML Core Services MSXML 3.0 Service Pack 7 EULA. It is in the linked MSI, not a separate blanket Wine licence. The test operator reviewed a read-only extraction of that exact agreement and explicitly approved the source, package and terms before installation. The agreement text used for that review had SHA-256 bce87dbe3ead83b8035845689d8ad5461c282bf1ab7c215936c7f344aff8b1c0. A reader must make their own decision; this guide does not accept the agreement for them, certify current security support, or authorize bypassing a warning. No security warning or verification setting was suppressed in the test.
+
+Keep this old parser in the isolated test prefix. Its successful compatibility result is not a recommendation to expose it to untrusted XML, external networks or production site projects.
+
+### Preserve the prefix before the parser install
+
+Close Toolkit and its backend, then verify that the dedicated prefix and matching Wine server are inactive. Save a cold prefix checkpoint. The actual installation also preserved system.reg, user.reg and userdef.reg before making a change.
+
+Wine provides an msxml3 placeholder with a high file version. The Winetricks recipe notes that this prevents the older MSI from replacing it. The test moved that verified Wine-owned placeholder into a checkpoint instead of deleting it; the genuine MSI then installed its own native files normally. This affects only the dedicated prefix, not a system Wine installation or a proprietary DLL. Do not move a file merely because its filename matches: identify it first, especially if a native parser may already be installed. [S20]
+
+The following is a portable reconstruction of the tested preservation step for the exact Wine 10 baseline. Stop if the placeholder hash differs and inspect your runtime rather than removing an unknown DLL:
+
+```sh
+# Run only after verifying this dedicated prefix is inactive
+CHECKPOINT="$LABROOT/backups/msxml3-before"
+if [ -e "$CHECKPOINT" ]; then
+  printf '%s\n' 'Stop: an earlier parser checkpoint exists' >&2
+  exit 1
+fi
+mkdir -p "$CHECKPOINT"
+cp -p "$WINEPREFIX/system.reg" "$CHECKPOINT/"
+cp -p "$WINEPREFIX/user.reg" "$CHECKPOINT/"
+cp -p "$WINEPREFIX/userdef.reg" "$CHECKPOINT/"
+SYSTEM32="$WINEPREFIX/drive_c/windows/system32"
+EXPECTED='bb743430e8111213db54a6f4ba4356afb59c962d51dfbb9af42501a899ce80ef'
+ACTUAL=$(sha256sum "$SYSTEM32/msxml3.dll" | cut -d " " -f 1)
+if [ "$ACTUAL" != "$EXPECTED" ]; then
+  printf '%s\n' 'Stop: this is not the verified Wine placeholder' >&2
+  exit 1
+fi
+if [ -e "$CHECKPOINT/wine-builtin-msxml3.dll" ]; then
+  printf '%s\n' 'Stop: an earlier parser checkpoint already exists' >&2
+  exit 1
+fi
+mv "$SYSTEM32/msxml3.dll" "$CHECKPOINT/wine-builtin-msxml3.dll"
+```
+
+### Install and select native MSXML3
+
+The following adapts the actual MSI command to your paths. The test ran offline inside a fresh loopback-only user and network namespace, with a new matching Wine server and verified inactive prefix. Preserve those lifecycle and isolation guards when reproducing the exceptional route.
+
+The quiet option /qn below was used only after explicit review and acceptance of the exact EULA and mirror package. Do not run it before that decision. Remove /qn if you want the normal interactive wizard; that UI variant is a proposed reader option, not the recorded command.
+
+```sh
+MSXML_MSI="<INSTALLER_DIR>/msxml3.msi"
+EXPECTED_MSI='f9c678f8217e9d4f9647e8a1f6d89a7c26a57b9e9e00d39f7487493dd7b4e36c'
+printf '%s  %s\n' "$EXPECTED_MSI" "$MSXML_MSI" | \
+  sha256sum -c - || exit 1
+MSI_WIN=$("$WINEBIN" winepath.exe -w "$MSXML_MSI")
+LOG_WIN=$("$WINEBIN" winepath.exe -w "$LABROOT/logs/msxml3-msi.log")
+export WINEDLLOVERRIDES='msxml3=n;mscoree=n;fusion=b;mshtml='
+"$WINEBIN" sc.exe start RpcSs
+"$WINEBIN" reg.exe add 'HKCU\Software\Wine\DllOverrides' \
+  /v msxml3 /t REG_SZ /d native /f
+"$WINEBIN" msiexec.exe /i "$MSI_WIN" /qn /norestart \
+  /l*v "$LOG_WIN"
+INSTALL_STATUS=$?
+printf 'MSXML3 installer exit: %s\n' "$INSTALL_STATUS"
+[ "$INSTALL_STATUS" -eq 0 ] || exit 1
+"$WINEBIN" wineboot.exe -s
+```
+
+The HKCU override selects the native DLL implementation in this one Wine prefix. It is not an invented installed-version flag. The genuine MSI completed with exit 0 and installed native msxml3.dll and its resource DLL. Native msxml3.dll was 1,049,088 bytes with SHA-256 a98ce3223f50eeb3fe9f1a28a81393bce13ab3d837dab8f5e66d260a669ce00d. The test did not create a fake parser registration or alter the client binary.
+
+After normal Wine shutdown, confirm the prefix is inactive and start a fresh C-Gate and Toolkit session together in the isolated boundary. Include msxml3=n in Toolkit’s launch overrides and capture +loaddll,+msxml tracing for the first cold readback. A completed MSI or a registry query alone is insufficient: verify that Toolkit actually loads native msxml3.dll and reopens the saved network and unit.
+
 ### Launch from the client directory
 
 Use the original working directory so application-relative resources resolve correctly:
@@ -500,13 +582,13 @@ Use the original working directory so application-relative resources resolve cor
 ```sh
 CLIENT="$WINEPREFIX/drive_c/Clipsal/CBusToolkit"
 cd "$CLIENT" || exit 1
-WINEDLLOVERRIDES='mscoree=n;fusion=b;mshtml=' \
+WINEDLLOVERRIDES='msxml3=n;mscoree=n;fusion=b;mshtml=' \
 WINEDEBUG=fixme-all,+mscoree,+seh,+loaddll \
   "$WINEBIN" CBusToolkit.exe \
   > "$LABROOT/logs/toolkit-startup.log" 2>&1
 ```
 
-This launch path has now displayed the original Toolkit main window with a local C-Gate connection on the exceptional host. The remaining acceptance test is a cold GUI reopen of the saved network and unit. The next sections explain the working backend configuration and the safe offline boundary.
+This launch path has now displayed the original Toolkit main window with a local C-Gate connection on the exceptional host. The later native MSXML3 correction also passed cold GUI reopening of the saved network and unit. Backup Project remains a separate unresolved failure. The next sections explain the working backend configuration and the safe offline boundary.
 
 ## 8 Run matching C Gate with native Java
 
@@ -623,7 +705,7 @@ If Toolkit cannot connect, first distinguish no listener, wrong namespace, wrong
 
 An installer splash screen, a runtime probe or an initial connection dialog does not establish Toolkit’s main editor. The first acceptance test should use only invented data and the actual unit-editing controls. Keep a short record of the version, screenshots, relevant log and values entered.
 
-The first session has now passed the actual Neo-editor and database-save milestones. The cold restart has exposed a separate project-view issue. Keep the two results distinct: saved backend data is valuable evidence, but it does not prove that the user can reopen and continue editing it through Toolkit.
+The actual Neo editor, database save and complete cold GUI reopen have now passed for the fixture below. The earlier cold project-view failure was corrected by native MSXML3. Supported project-backup export still fails, so keep both the proved editing workflow and its recovery limitation visible.
 
 ### What the actual editor test established
 
@@ -631,8 +713,7 @@ The synthetic project was DOTLAB, with a closed network at address 254 and one d
 
 The original unit editor opened as KEYM4 Unit in Database at Address 1 with Network Not Open. The physical keys 1 to 4, IR slots 5 to 8, Group and Function controls, Advanced, Templates, Apply and OK all rendered. Key 1 was assigned Lighting group 1, named DeskLamp, with the On/Off function. Apply displayed the normal Save Location dialog. Save to Database was selected, and Save to Physical Unit was disabled. C-Gate then acknowledged PROJECT SAVE DOTLAB with 200 OK.
 
-
-This proves that the original editor can render and submit a synthetic database-only change in this session. It does not establish every unit editor, a physical unit download, all managed plugins or successful continued editing after a cold restart.
+This proves original database-only editing and submission in the first session. The cold readback below establishes persistence of the same assignment through the original editor. It does not establish every unit editor, physical unit download or all managed plugins.
 
 ### Build the same small synthetic example
 
@@ -648,15 +729,16 @@ This proves that the original editor can render and submit a synthetic database-
 
 The unit type and addresses are an invented test fixture. If the UI does not permit the same choice, record the actual behavior or choose a documented database-only example. Do not scan for or import a real device, and do not select a physical save option.
 
-### The cold view blocker observed
+### The cold loading fault and its verified correction
 
-All previous client, Wine server and backend processes exited before the fresh isolated session started. The saved database checkpoint was 745,472 bytes. A read-only inspection after restart found one network and one KEYM4 unit in the persisted SQLite project. In the restarted session, an explicit PROJECT LOAD completed, followed by Disconnect, Connect to Local C-Gate and expansion of DOTLAB. Toolkit still showed only Topology beneath the project, with no network branch.
+The first restart used the persisted 745,472-byte SQLite checkpoint. A read-only inspection found one network and one KEYM4 unit. PROJECT LOAD completed and NET LIST_ALL returned //DOTLAB/254 with interfaceState closed, but Toolkit showed only Topology. A separate raw XML probe could not enter the running namespace because setgroups returned Operation not permitted; that route stopped without retries or security changes. It yielded no additional XML evidence.
 
-The backend returned the correct network through NET LIST_ALL: project DOTLAB, address //DOTLAB/254, interfaceState closed. This rules out an empty network list at that particular point, but it does not by itself locate the compatibility fault. The unresolved path lies between persisted project representation, backend responses and Toolkit tree reconstruction. Do not assume data loss, a solved cache issue or a particular Wine bug without further evidence.
+The ordinary client trace provided the useful diagnosis instead: the requested MSXML3 SAX reader reached Wine’s IVBSAXAttributes.getType stub and aborted parsing. After the exact native MSXML3 SP7 installation described in Section 7, both client and backend started fresh. The previous SAX stub and OLE error were absent, and the saved network reappeared in the original Toolkit tree.
 
-A separate read-only project XML check did not execute: entering the running namespace failed with setgroups Operation not permitted. It yielded no additional XML result. That route was stopped without retries, privilege changes or relaxed security settings. The proposed diagnostic is therefore not a tested repair, and cold GUI reopening still needs verification. The separate normal GUI backup attempt described below failed.
+At 21:18 UTC on 1 October 2026, or 10:18 NZDT on 2 October, DOTLAB reopened with closed network 254 and database unit KEYM4 at address 001, tagged NEWUNIT. Selecting Edit Unit reopened the original Neo editor with Network Not Open. Key 1 still showed DeskLamp and On/Off; the other key and IR entries remained Unused. This completes the create, edit, database save, full shutdown and cold GUI readback workflow for this fixture.
 
-There is no verified repair for this cold GUI view issue in the current guide. Do not enable automatic network opening, relax access rules, fabricate registry markers or recreate the project merely to hide it. Keep the cold database and logs intact, compare the read-only backend result with what the original client requests, and test any proposed repair in a separate copy. Until the saved unit and key assignment can be reopened through Toolkit after both processes restart, the offline editing acceptance test remains incomplete.
+
+The native-parser comparison verifies a useful dependency fix for this observed failure. It is not a guarantee that every XML feature or editor works. Keep the client, backend, native CLR and native parser versions pinned together, and repeat the cold test when changing any of them.
 
 ### The project backup dialog failure
 
@@ -686,12 +768,12 @@ Keep any modern project database and all associated persistence files together. 
 | Real Neo unit editor | Passed for this fixture: KEYM4 controls render and database-only Apply completes |
 | Backend communication | Matching C-Gate version and successful local connection |
 | Database save in the first session | PROJECT SAVE returned 200 OK; retain the actual selected key and save-dialog evidence |
-| Persisted backend data | SQLite project, network and unit survive full restart; verify the saved key values independently |
-| Cold GUI reopen | Still fails: correct backend network response but Toolkit network branch absent |
+| Persisted backend data | SQLite project, network and unit survive full restart |
+| Cold GUI reopen | Passed: original editor retains KEYM4 key 1 DeskLamp On/Off after both processes restart |
 | Backup export and restore | Failed before file creation in Wine comdlg32.dll; no CBZ archive or restore proof |
 | Isolation | Only loopback interfaces; no external route; matching process namespaces |
 
-Only the combined editor and cold-reopen result justifies saying that this setup works for offline editing. Physical network communication and commissioning remain separate tests.
+The combined editor and cold-reopen result proves this one synthetic offline editing workflow. Backup and restore, physical network communication and commissioning remain separate incomplete tests.
 
 ## 11 Start stop backup and recovery
 
@@ -706,7 +788,7 @@ export WINEPREFIX="$LABROOT/prefix-toolkit32"
 export WINEARCH=win32
 export WINEBIN="<VERIFIED_WINE_OR_WRAPPER>"
 export WINESERVER="<MATCHING_WINESERVER>"
-export WINEDLLOVERRIDES='mscoree=n;fusion=b;mshtml='
+export WINEDLLOVERRIDES='msxml3=n;mscoree=n;fusion=b;mshtml='
 ```
 
 For the exceptional route, also retain the tested wrapper paths, WINEDLLPATH, private XDG locations and a clean host environment. The tested environment cleared inherited LD_PRELOAD, LD_LIBRARY_PATH and unrelated QEMU/Wine tuning variables, then supplied only the guest library path inside the wrapper. This avoids accidentally combining private and system libraries.
@@ -718,7 +800,7 @@ For the exceptional route, also retain the tested wrapper paths, WINEDLLPATH, pr
 3. Start matching C-Gate from its backend root and inspect the startup log
 4. Start a fresh matching Wine server in the same boundary
 5. Start or query the prefix-local RpcSs service as needed
-6. Launch Toolkit from its client directory with native mscoree
+6. Launch Toolkit from its client directory with native mscoree and msxml3
 7. Verify the actual connection, project and network-closed state
 
 Do not add automatic project opening, system service installation or background startup until the manual workflow and persistence test are proven. A convenient launcher should preserve the same checks, logs and failure behavior.
@@ -773,7 +855,7 @@ Use one change at a time, retain the failing log, record the new result, and che
 | C-Gate banner appears with config-file error | Check working directory, ordinary config path and referenced directories |
 | Toolkit cannot reach localhost C-Gate | Check namespace membership, listeners, version, access control and TLS separately |
 | Unit changes disappear after restart | Establish actual database path, write access, save semantics and cold shutdown |
-| Restarted GUI shows only Topology but backend lists the network | Preserve the cold DB; inspect PROJECT LOAD, NET LIST_ALL and returned project XML; no verified fix yet |
+| Cold GUI shows only Topology with SAX stub and OLE 8000FFFF | Verify the actual MSXML3 caller; install the reviewed native parser and prove a fresh cold readback |
 | Backup Project raises EAccessViolation in comdlg32.dll | Preserve cold DB and exact null-read error; no verified CBZ export or dialog repair yet |
 | Wine nested exception on signal stack | Keep the error; identify the process and whether editor/probe behavior also fails |
 
@@ -816,7 +898,9 @@ Do not use an offline Wine success as evidence that a USB or serial interface, d
 8. Switch to Win7 mode and install the exact native .NET 4.8 upgrade
 9. Repeat real compile/run and read the installer-written Release value
 10. Stage matching Toolkit and native Java C-Gate without unrelated drivers
-11. Start both in an approved offline boundary and finish the editor/cold-reopen checklist
+11. Review the exact MSXML3 source and EULA, preserve the placeholder, and install the native parser
+12. Start both in an approved offline boundary with native msxml3 and finish the editor/cold-reopen checklist
+13. Treat the comdlg32 Backup Project failure as unresolved until export and restore are separately proved
 
 ### Reproduce the exceptional cloud dependency result
 
@@ -831,11 +915,14 @@ Do not use an offline Wine success as evidence that a USB or serial interface, d
 9. Prove actual native 4.0 compilation and managed execution
 10. Upgrade to genuine .NET 4.8 and repeat the native proof
 11. Stage unchanged Toolkit assets and matching Java backend
-12. Validate C-Gate configuration, then reproduce the real editor, database-only save and cold GUI reopen test
+12. Preserve the inactive prefix and install the exact approved native MSXML3 SP7 package
+13. Launch with native mscoree and msxml3 and validate matching C-Gate configuration
+14. Reproduce the real editor, database-only save, full shutdown and cold GUI readback test
+15. Preserve a cold filesystem checkpoint while the separate CBZ backup/export fault remains unresolved
 
 ### The final decision
 
-The native CLR, original Toolkit main window and real Neo unit editor can run on this exceptional host after correct signal translation, the ordinary Wine loader path and the complete .NET bootstrap sequence. Database-only Apply and project save also succeed, and the backend database survives a full restart. Two blockers remain: the cold Toolkit project view omits the saved network, and Backup Project fails in Wine comdlg32.dll before producing an archive. Keep the setup experimental until cold GUI reopening and supported backup/restore pass; physical commissioning remains a separate untested capability.
+The native CLR, original Toolkit main window and real Neo unit editor can run on this exceptional host after correct signal translation, the ordinary Wine loader path and the complete .NET bootstrap sequence. Database-only Apply and project save also succeed, and the backend database survives a full restart. Native MSXML3 then fixes the cold project-load path, and the original editor reopens the saved key assignment after a full client and backend restart. The remaining demonstrated limitation is Backup Project: Wine comdlg32.dll fails before producing an archive. This is a proved synthetic offline edit and persistence workflow with an incomplete application-level backup/restore path; physical commissioning remains untested.
 
 ## Sources and further reading
 
@@ -874,6 +961,14 @@ S15 Eclipse Temurin official Java 11.0.24+8 release. Use the Linux x64 JRE varia
 
 S16 innoextract official documentation. Explains extraction of Inno Setup payloads without running the Windows installer. https://constexpr.org/innoextract/
 
+S17 Wine 10.0 SAX reader source. The builtin IVBSAXAttributes getType implementation and associated parser behavior explain the diagnosed missing interface method. https://github.com/wine-mirror/wine/blob/wine-10.0/dlls/msxml3/saxreader.c
+
+S18 Microsoft MSXML GUID and ProgID information. Version-independent callers continue using MSXML3 when later versions are installed side by side. https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms757837(v=vs.85)
+
+S19 CodeWeavers mirror of the exact historical Microsoft MSXML3 SP7 MSI, which contains its embedded EULA. This is the separately approved mirror source; full historical certificate-chain trust was unconfirmed. https://media.codeweavers.com/pub/other/msxml3.msi
+
+S20 Winetricks msxml3 recipe. Identifies the historical Microsoft endpoint, exact CodeWeavers mirror and SHA-256 pin, placeholder replacement requirement and native override. Review the current file before using it; the observed source snapshot was hashed separately. https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+
 [S1]: https://www.clipsal.com/products/smart-home-solutions/c-bus/software-configuration-tool-5000tk?itemno=5000TK
 [S2]: https://packages.debian.org/trixie/wine32
 [S3]: https://manpages.debian.org/trixie/wine/wine.1.en.html
@@ -889,4 +984,8 @@ S16 innoextract official documentation. Explains extraction of Inno Setup payloa
 [S14]: https://manpages.debian.org/trixie/wine/wineserver.1.en.html
 [S15]: https://github.com/adoptium/temurin11-binaries/releases/tag/jdk-11.0.24%2B8
 [S16]: https://constexpr.org/innoextract/
+[S17]: https://github.com/wine-mirror/wine/blob/wine-10.0/dlls/msxml3/saxreader.c
+[S18]: https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms757837(v=vs.85)
+[S19]: https://media.codeweavers.com/pub/other/msxml3.msi
+[S20]: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 [S12]: https://www.clipsal.com/products/smart-home-solutions/c-bus/software-configuration-tool-5000tk?itemno=5000TK
