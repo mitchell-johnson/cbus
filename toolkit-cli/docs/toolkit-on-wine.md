@@ -4,13 +4,13 @@ A practical setup and troubleshooting guide
 
 Original Schneider Electric C-Bus Toolkit 1.18.0.2754 with C-Gate 3.4.0 build 2001
 
-Status dated 2 October 2026 NZDT at 10 18
+Status dated 2 October 2026
 
-Evidence cutoff 1 October 2026 at 21 18 UTC
+Evidence updated 2 October 2026 UTC including the eDLT offline test
 
 This guide explains how to build a suitable Wine environment for the original Toolkit, why its dependencies matter, and how to prove that it can edit and retain a project. It separates the ordinary Intel Linux route from an exceptional cloud Linux host whose kernel cannot execute 32-bit Linux programs directly.
 
-The original Toolkit now passes a full synthetic offline edit, database save, shutdown and cold reopen on the exceptional host. After both Toolkit and C-Gate restarted, the real Neo editor retained key 1 DeskLamp with the On/Off function. Native Microsoft MSXML3 SP7 fixed the earlier cold project-load failure; native .NET Framework 4.0 followed by 4.8 had already passed real compile and execution tests. One important limitation remains: Backup Project fails in Wine comdlg32.dll before creating a CBZ archive. This is a verified offline editing workflow for one fixture, not complete compatibility or a proven backup and restore solution.
+The original Toolkit passes a full synthetic offline Neo edit, database save, shutdown and cold reopen on the exceptional host. After both Toolkit and C-Gate restarted, the real Neo editor retained key 1 DeskLamp with the On/Off function. Native Microsoft MSXML3 SP7 fixed the earlier cold project-load failure; native .NET Framework 4.0 followed by 4.8 had already passed real compile and execution tests. Backup Project remains unresolved: Wine comdlg32.dll fails before creating a CBZ archive. The later eDLT test passed catalogue selection, database creation and cold persistence of a synthetic identity, but its editor failed before the configuration pages opened. No eDLT configuration save or compatibility repair has been proved. This is a verified Neo offline editing workflow with specific backup and eDLT limitations, not complete Toolkit compatibility.
 
 The intended first use is an isolated, synthetic, offline editing lab. Connecting to a real C-Bus installation, scanning units, downloading unit settings, USB-driver use and production commissioning require separate testing and authorization.
 
@@ -28,6 +28,10 @@ The intended first use is an isolated, synthetic, offline editing lab. Connectin
 | Complete client and backend restart | Completed; persisted SQLite project, closed network and unit remain |
 | Cold reopen through Toolkit GUI | Passed after native MSXML3: network 254 closed; saved KEYM4 key 1 DeskLamp On/Off reopened |
 | Normal Backup Project export | Failed before file creation: EAccessViolation in Wine comdlg32.dll |
+| eDLT catalogue and database fixture | Passed: five KEYGL5 models; synthetic 5085EDL at 004 with firmware 5.5.00 and blank serial |
+| eDLT cold identity readback | Passed: DOTLAB_eDLT_Test and preserved Neo survive full restart; network 254 stays closed |
+| eDLT editor and configuration | Blocked: TLS client-certificate handshake fails before pages render; no configuration acceptance |
+| eDLT repair and certificate import | Not completed: no patch installed; wizard rejected client.p12 before password or import |
 
 ### How to use this guide
 
@@ -39,6 +43,7 @@ Residual Wine signal-stack errors have appeared in helper or background processe
 4. Prove Wine, Windows Installer and the native CLR before trying Toolkit
 5. Start matching C-Gate and Toolkit together in a genuinely offline lab
 6. Finish the editor and persistence checklist before relying on the setup
+7. Read the eDLT limitations in Section 14 before choosing this setup for an eDLT project
 
 Command blocks are shell commands unless labelled C# or configuration. Replace placeholders such as `<INSTALLER_DIR>`, `<JAVA_BIN>` and `<CGATE_DIR>` with your own absolute paths. Do not type the angle brackets literally. Most blocks are portable examples adapted from the successful dependency tests. The ordinary Linux route has not been independently completed end to end for this Toolkit version.
 
@@ -58,6 +63,7 @@ Command blocks are shell commands unless labelled C# or configuration. Replace p
 - [11 Start stop backup and recovery](#11-start-stop-backup-and-recovery)
 - [12 Troubleshoot in layer order](#12-troubleshoot-in-layer-order)
 - [13 A compact repeatable runbook](#13-a-compact-repeatable-runbook)
+- [14 eDLT offline test and the remaining connection blocker](#14-edlt-offline-test-and-the-remaining-connection-blocker)
 
 ## 1 Understanding the architecture
 
@@ -839,7 +845,7 @@ Preserve symlinks and executable permissions when unpacking. Verify hashes and r
 
 ### Diagnose the first failing layer
 
-Work upward: Linux loader → QEMU if required → Wine boot and GUI → Windows Installer and services → native CLR → C-Gate configuration and local connectivity → Toolkit editor → project persistence. Reinstalling Toolkit will not fix an invalid signal frame in QEMU, and adding .NET registry values will not fix a missing native CLR shell DLL.
+Work upward: Linux loader → QEMU if required → Wine boot and GUI → Windows Installer and services → native CLR → C-Gate configuration and local connectivity → Toolkit editor → project persistence. For eDLT, distinguish the separate managed TLS connection from the main Toolkit connection; a working Neo editor does not clear that layer. Reinstalling Toolkit will not fix an invalid signal frame in QEMU, and adding .NET registry values will not fix a missing native CLR shell DLL.
 
 Use one change at a time, retain the failing log, record the new result, and checkpoint only actual passes. The matrix below distinguishes observed failures from general diagnostic possibilities.
 
@@ -858,6 +864,9 @@ Use one change at a time, retain the failing log, record the new result, and che
 | Cold GUI shows only Topology with SAX stub and OLE 8000FFFF | Verify the actual MSXML3 caller; install the reviewed native parser and prove a fresh cold readback |
 | Backup Project raises EAccessViolation in comdlg32.dll | Preserve cold DB and exact null-read error; no verified CBZ export or dialog repair yet |
 | Wine nested exception on signal stack | Keep the error; identify the process and whether editor/probe behavior also fails |
+| eDLT editor raises a connection exception while Neo works | Keep the separate TLS client-authentication finding visible; see Section 14. No deployed correction |
+| Initial cCreds=0 and empty Personal/My store | Do not infer a missing PFX; initial anonymous credentials can precede the .NET certificate-selection callback |
+| Certificate Import Wizard rejects client.p12 format | Import did not reach password or store commit; cause unproved and further import work stopped |
 
 ### Capture targeted diagnostics
 
@@ -869,6 +878,8 @@ WINEDLLOVERRIDES='mscoree=n;fusion=b;mshtml=' \
   "$WINEBIN" "<PROGRAM_TO_TEST>" \
   > "$LABROOT/logs/one-test.log" 2>&1
 ```
+
+System.Net tracing was not enabled in the eDLT investigation because it could disclose headers or sensitive material. Do not turn it on by copying a broad troubleshooting recipe; Section 14 records the retained nonsensitive TLS finding.
 
 Keep the actual process exit status as well as the log. If output is piped through tee without pipefail, the shell may report tee’s success instead of the tested program’s failure. A background launcher’s exit 0 also does not prove its child ran successfully.
 
@@ -901,6 +912,7 @@ Do not use an offline Wine success as evidence that a USB or serial interface, d
 11. Review the exact MSXML3 source and EULA, preserve the placeholder, and install the native parser
 12. Start both in an approved offline boundary with native msxml3 and finish the editor/cold-reopen checklist
 13. Treat the comdlg32 Backup Project failure as unresolved until export and restore are separately proved
+14. Treat the eDLT editor as blocked on the recorded Wine baseline; identity persistence is not configuration acceptance
 
 ### Reproduce the exceptional cloud dependency result
 
@@ -919,10 +931,128 @@ Do not use an offline Wine success as evidence that a USB or serial interface, d
 13. Launch with native mscoree and msxml3 and validate matching C-Gate configuration
 14. Reproduce the real editor, database-only save, full shutdown and cold GUI readback test
 15. Preserve a cold filesystem checkpoint while the separate CBZ backup/export fault remains unresolved
+16. Retain the original Wine baseline; the stopped eDLT prototype is not an installed or releasable correction
 
 ### The final decision
 
-The native CLR, original Toolkit main window and real Neo unit editor can run on this exceptional host after correct signal translation, the ordinary Wine loader path and the complete .NET bootstrap sequence. Database-only Apply and project save also succeed, and the backend database survives a full restart. Native MSXML3 then fixes the cold project-load path, and the original editor reopens the saved key assignment after a full client and backend restart. The remaining demonstrated limitation is Backup Project: Wine comdlg32.dll fails before producing an archive. This is a proved synthetic offline edit and persistence workflow with an incomplete application-level backup/restore path; physical commissioning remains untested.
+The native CLR, original Toolkit main window and real Neo unit editor can run on this exceptional host after correct signal translation, the ordinary Wine loader path and the complete .NET bootstrap sequence. Database-only Apply and project save succeed, and native MSXML3 restores cold project loading and readback of the saved Neo key assignment after a full client and backend restart. The eDLT catalogue and database identity also persist, but the separate eDLT editor fails its client-certificate TLS handshake before configuration pages render. No eDLT configuration save and reopen result or deployed compatibility patch exists. Backup Project still fails in Wine comdlg32.dll before creating an archive. The proved scope is synthetic offline Neo editing and persistence, with eDLT editing and supported backup/restore incomplete; physical commissioning remains untested.
+
+## 14 eDLT offline test and the remaining connection blocker
+
+### The result that matters
+
+The eDLT catalogue, creation of a synthetic database unit and cold persistence of its identity passed. The eDLT editor itself never opened: three recorded attempts, including clean restarts, stopped with SharpCGateCommunicator.CGateUnrecoverableConnectionException before the configuration pages rendered. There is therefore no demonstrated eDLT configuration workflow on this Wine baseline. The working Neo editor is a useful control, but its success does not establish eDLT compatibility. [S21]
+
+The tests used the original Toolkit 1.18.0.2754 and matching C-Gate 3.4.0 build 2001, Wine 10.0 under the recorded QEMU route, native Microsoft .NET Framework 4.8 and native MSXML3 SP7. The same isolated synthetic DOTLAB project and closed network 254 were retained. Only loopback networking was available; there was no external route, physical network scan or physical unit programming.
+
+### Catalogue and exact fixture identity
+
+Toolkit's eDLT catalogue filter returned five wired KEYGL5 models: 5055EDL, 5085EDL, 5085EDLB, R5045EDL and R5045EDLW. All five entries displayed default firmware 5.5.00. This establishes catalogue availability in the original client, not successful loading of each model's editor or equivalence to firmware on a physical device.
+
+The selected database-only fixture was:
+
+| Field | Retained synthetic value |
+|---|---|
+| Project | DOTLAB |
+| Network | Address 254, offline and closed |
+| Catalogue model | 5085EDL |
+| Unit type | KEYGL5, 5 Gang eDLT Input Unit |
+| Logical firmware | 5.5.00 |
+| Database address | 4, displayed as 004 in the unit list |
+| Tag | DOTLAB_eDLT_Test |
+| Serial number | Blank, displayed as No serial # |
+| Exists on Network | No |
+| Preserved control | KEYM4 Neo at address 1, key 1 DeskLamp with On/Off |
+
+The creation dialog's firmware value is a database setting. No firmware was downloaded, upgraded or read from physical hardware. The serial was intentionally left unknown; no real serial, site project or customer settings were used.
+
+![eDLT catalogue showing five KEYGL5 models and default firmware 5.5.00](assets/wine-edlt/02-edlt-catalogue-firmware-5500.png)
+
+Figure 3  The original catalogue lists all five eDLT models with firmware 5.5.00. The selected row is 5085EDL.
+
+![Synthetic eDLT identity dialog with blank serial address 4 and DOTLAB_eDLT_Test](assets/wine-edlt/03-synthetic-unit-identity.png)
+
+Figure 4  The creation dialog records the synthetic address, full tag, blank serial and logical firmware.
+
+### Cold persistence passed but editor acceptance did not
+
+After a normal complete client and backend shutdown and cold restart, Toolkit reopened DOTLAB with both database units present. Network 254 remained closed. The unit list retained KEYM4 at 001 and KEYGL5 at 004, and the full DOTLAB_eDLT_Test tag could be read back. Both units remained database-only; the physical network list was empty.
+
+This is proof that the eDLT database identity survived restart. It is not a configuration save and reopen result, because no eDLT configuration editor had loaded and no eDLT pages, widgets or assignments had been edited.
+
+The preserved Neo control reopened normally at address 1 with Network Not Open and key 1 still showing DeskLamp and On/Off. This narrows the observed failure: Toolkit can load the project, communicate with the local backend and render the previously validated Neo editor, while the separate eDLT path fails at connection establishment.
+
+![Cold reopened database containing the full synthetic eDLT tag and preserved Neo](assets/wine-edlt/07-cold-readback-full-synthetic-tag.png)
+
+Figure 5  The cold readback retains both units and the full eDLT tag. Network 254 is closed and no physical units are displayed.
+
+![Preserved Neo editor displaying DeskLamp and On Off beside the eDLT database unit](assets/wine-edlt/08-preserved-neo-control-editor.png)
+
+Figure 6  The Neo control editor still works after the eDLT attempts. This is evidence for that control editor only.
+
+### The observed TLS failure
+
+All three retained eDLT opening attempts failed before the editor's pages appeared. The original error dialog reports an exception of type SharpCGateCommunicator.CGateUnrecoverableConnectionException. A clean restart did not clear the fault. Repeating an unchanged attempt is not a passed acceptance test.
+
+The retained read-only handshake and source analysis separates two connections. Main Toolkit's OpenSSL path successfully authenticates to matching C-Gate with its bundled vendor client identity. The public certificate identifies KipperClient, with SystemSoftware/Schneider issuer information and recorded validity years 2017 to 2027. The managed eDLT connection selects TLS 1.2 during its failed handshake, receives C-Gate's request for a client certificate, then sends an empty certificate list. C-Gate rejects that empty chain with BAD_CERTIFICATE, TLS alert 42. The handshake does not complete. This is a client-authentication handshake blocker, rather than proof that the database unit or logical firmware is invalid. The connection-path and certificate findings come from the retained investigation record; the GUI report separately establishes the editor failure. [S22]
+
+The main connection's success shows that C-Gate can authenticate the bundled identity in this lab. It does not show that the separate .NET and Wine eDLT connection selects and supplies the same identity.
+
+![Original error dialog reporting the managed eDLT connection exception](assets/wine-edlt/04-edlt-editor-fatal-error.png)
+
+Figure 7  The eDLT editor stops at the connection exception before any configuration pages render.
+
+### Correct interpretation of the initial credential evidence
+
+An earlier interpretation treated initial cCreds=0 and an empty CurrentUser Personal/My certificate store as proof of a missing or unsuccessfully loaded PFX. That conclusion was too strong and is superseded by the later connection analysis.
+
+The .NET path can initially acquire anonymous credentials and wait for the server's certificate request before selecting a client identity through the SChannel callback. The initial credential count describes that stage, not the eventual certificate choice. Likewise, an empty Personal/My store does not prove that an application failed to load its own bundled identity directly. Neither observation establishes a missing PFX, a bad password, corrupted input or an absent vendor identity.
+
+The retained Wine 10 source review identified missing notification that additional credentials are required, an issuer-list query and support for refreshing an existing credential context after certificate selection. These are investigation findings that support a compatibility hypothesis. No installed Wine correction has demonstrated the full eDLT handshake, and the exact application-level certificate-selection and PFX-loading cause remains unresolved. Keep the direct observations, the source review and an unproved deployment fix distinct. [S22]
+
+### The approved normal import attempt stopped before import
+
+A narrowly approved test used the ordinary Certificate Import Wizard to select the bundled vendor client.p12 for the isolated Wine CurrentUser Personal/My store. Personal was empty before the attempt. The wizard rejected the file with The file format is not recognized before password entry, destination-store choice or final import. The wizard was cancelled; no identity was imported and the store remained empty.
+
+This UI result does not establish that the vendor file is malformed or that encryption is the reason for rejection. It establishes only that this wizard did not recognize the selected file at that stage. No password was extracted, guessed, changed or entered, and no private key was exposed. There was no alternative extraction, import bypass or manual credential conversion. Further import work is stopped.
+
+![Certificate Import Wizard file format rejection](assets/wine-edlt/11-certificate-wizard-file-format-error.png)
+
+Figure 8  The wizard rejects the selected file before password entry or any store commit. No credential was imported.
+
+### Compatibility research is not a deployed repair
+
+A first-stage synthetic, in-memory TLS 1.2 proof established success when a valid identity was supplied after the certificate request, with negative controls that failed as expected. It was a separate compatibility experiment, not the original eDLT editor, and did not establish that Toolkit's eDLT client worked under Wine. [S22]
+
+A second-stage private GnuTLS compatibility prototype had reported synthetic repeat, sanitizer and upstream control results, but its final handoff was blocked and the compatibility path was stopped by platform safety safeguards. Those reports were not an independently completed release or end-to-end Toolkit acceptance result. There was no finished release, no installed compatibility patch and no successful eDLT acceptance run after that prototype. The tested Toolkit environment therefore retains the original Wine baseline. This guide does not provide a deployment procedure for the stopped prototype. [S22]
+
+The actual runtime provider was verified against the Debian GnuTLS package version 3.8.9-3+deb13u4, carrying 47 Debian patches including security backports. A stock upstream 3.8.9 prototype is not the deployment baseline and must not be substituted for the patched provider. A version string shared at the upstream level is insufficient evidence of identical security fixes or behavior. This package identity is a retained test-baseline observation, not a claim about the newest available package. [S22]
+
+No TLS validation, client authentication, certificate trust, cipher policy, vendor executable or host security setting was weakened to obtain a result. The original launcher bytes were restored after temporary diagnostic logging, and the original application configuration was retained. System.Net tracing was considered but not enabled because its output could include headers or other sensitive material. Use the already retained, nonsensitive handshake summary and screenshots when sharing this finding; do not publish credentials, private keys, raw authentication headers or private host paths.
+
+### eDLT acceptance status and stopping point
+
+| Acceptance item | Status | What the evidence establishes |
+|---|---|---|
+| Catalogue filter and model selection | Passed | Five KEYGL5 models present with default 5.5.00 |
+| Database unit creation | Passed | Synthetic 5085EDL at 004 with blank serial and full tag |
+| Full restart and identity readback | Passed | The eDLT identity and preserved Neo survive cold reopen |
+| Closed offline boundary | Retained | Network 254 closed, loopback-only lab, no physical activity |
+| Preserved Neo editor | Passed | DeskLamp On/Off still renders at address 1 |
+| eDLT authenticated connection | Failed | No client certificate supplied; BAD_CERTIFICATE alert 42 |
+| eDLT editor and pages | Blocked | Connection exception occurs before pages render |
+| Page and widget configuration | Untested | No editor controls were available |
+| Group assignments and themes | Untested | No eDLT edits were accepted |
+| Scenes and templates | Untested | No eDLT scene or template workflow was exercised |
+| eDLT configuration save and cold reopen | Untested | Identity persistence is the only eDLT persistence proof |
+| Certificate-store import | Not completed | Wizard rejected the format before password or store commit |
+| Compatibility prototype deployment | Not completed | No finished release or patch installed |
+
+The safe retained state is the normal Toolkit session with the two-unit synthetic database, closed network 254 and working Neo control. No further GUI retry, manual certificate import or compatibility-patch installation is pending. Preserve that state and the existing cold checkpoint. The compatibility and import paths are stopped; this record does not authorize resuming them through a fresh prefix, alternate tool or different handoff.
+
+For an eDLT commissioning requirement, this Wine result is insufficient. A completed acceptance result would have to include opening the actual eDLT editor, editing the required pages and functions, completing a database save, and reopening those settings after a full client and backend restart. Physical communication and download remain additional tests. Native-Windows equivalence has not been established by this lab.
+
+The separate Backup Project failure in Wine comdlg32.dll still applies. No CBZ archive was produced and no supported restore workflow was proven. A cold filesystem checkpoint remains distinct from an application-exported, successfully restored backup.
 
 ## Sources and further reading
 
@@ -969,6 +1099,10 @@ S19 CodeWeavers mirror of the exact historical Microsoft MSXML3 SP7 MSI, which c
 
 S20 Winetricks msxml3 recipe. Identifies the historical Microsoft endpoint, exact CodeWeavers mirror and SHA-256 pin, placeholder replacement requirement and native override. Review the current file before using it; the observed source snapshot was hashed separately. https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 
+S21 eDLT offline configuration test dated 2 October 2026. Nine-page retained report with eleven screenshots, catalogue and identity readback, failed editor attempts and the stopped normal import attempt. This is lab evidence, not vendor certification. https://chatgpt.com/api/library/files/libfile_01334bc697408191a42f49710d7c5fe3/download
+
+S22 Retained read-only eDLT handshake and source investigation dated 2 October 2026. The nonsensitive findings summarized in Section 14 distinguish the OpenSSL and managed connections, the public KipperClient certificate, Wine certificate-selection gaps, the synthetic TLS proof, the stopped prototype and the verified Debian GnuTLS provider. These findings supplement the GUI report; they do not establish a released or installed repair. No private key, password or raw authentication material is included.
+
 [S1]: https://www.clipsal.com/products/smart-home-solutions/c-bus/software-configuration-tool-5000tk?itemno=5000TK
 [S2]: https://packages.debian.org/trixie/wine32
 [S3]: https://manpages.debian.org/trixie/wine/wine.1.en.html
@@ -989,3 +1123,5 @@ S20 Winetricks msxml3 recipe. Identifies the historical Microsoft endpoint, exac
 [S19]: https://media.codeweavers.com/pub/other/msxml3.msi
 [S20]: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 [S12]: https://www.clipsal.com/products/smart-home-solutions/c-bus/software-configuration-tool-5000tk?itemno=5000TK
+
+[S21]: https://chatgpt.com/api/library/files/libfile_01334bc697408191a42f49710d7c5fe3/download
