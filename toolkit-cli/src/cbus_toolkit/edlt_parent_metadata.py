@@ -39,7 +39,7 @@ from .edlt_display_model import (
 from .edlt_dltp_index import DltpIndex
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
-    EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS,
+    EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS, _ACTIVATION_PARAMETERS,
     _candidate_widget, normalize_operations,
 )
 from .native import NativeDatabase, NativeProjects, _project
@@ -433,6 +433,13 @@ def _operation_groups(values, operations):
 
     for index, operation in enumerate(operations, 1):
         kind = operation['op']
+        if kind == 'parent-add-binding':
+            kind = operation['panel']
+            operation = ({'op': kind, **({'edits': []} if kind == 'corridor' else {})}
+                         if operation.get('cancelled') else
+                         {'op': kind, 'edits': [{'field': operation['option'],
+                          'value': operation['value']}]} if kind == 'corridor' else
+                         {'op': kind, operation['option']: operation['value']})
         page_mode = operation.get('page_mode')
         if page_mode is not None:
             navigation = 1 if page_mode == 'multiple' else 0
@@ -594,7 +601,7 @@ class NativeEdltParentPlan:
     def as_dict(self):
         ordered_operations = tuple(
             row['op'] for row in self.operations
-            if row['op'] in ('applications', 'corridor', 'reset'))
+            if row['op'] in ('applications', 'corridor', 'reset', 'add-corridor-dialog'))
         ordered_application_cache = (
             self.cache.application_cache
             if hasattr(self.cache, 'application_cache') else self.cache)
@@ -613,7 +620,8 @@ class NativeEdltParentPlan:
                 **display_evidence(self.display_preferences,
                                    ordered_application_cache),
                 'toolkit_registry_display_and_sort_preferences_observed': False,
-                'projected_list_objects_admitted': False,
+                'projected_list_objects_admitted': bool(self.add_dialogs and
+                    any(row['op'] == 'add-corridor-dialog' for row in self.operations)),
                 'scene_manager_creations_enter_cache_before_pp_staging': bool(
                     self.scene_metadata is not None and self.creations),
                 'operation_owned_creations_enter_cache_before_pp_staging':
@@ -645,6 +653,7 @@ class NativeEdltParentPlan:
                 ['Application, then Group/NetVar, then Level dependency order',
                  'dialog-bearing histories preserve first creation order within kind']
                 if self.scene_metadata is not None and self.scene_metadata.add_dialogs
+                and not self.add_dialogs
                 else ['Application address order',
                       'Group/NetVar application then address order',
                       'Trigger action Level group then address order']),
@@ -659,7 +668,12 @@ class NativeEdltParentPlan:
             'add_dialog_boundary': {
                 'blank_address_group_dialog_modeled': bool(self.add_dialogs),
                 'application_add_dialog_supported': False,
-                'level_add_dialog_supported': False,
+                'level_add_dialog_supported': any(row['op'] == 'add-activation-action-dialog'
+                                                  for row in self.operations),
+                'corridor_add_dialog_supported': any(row['op'] == 'add-corridor-dialog'
+                                                     for row in self.operations),
+                'cancelled_dialogs': sum(row.as_dict().get('outcome') == 'cancelled'
+                                         for row in self.add_dialogs),
                 'scene_manager_trigger_action_dialog_supported': True,
                 'original_dialog_executed': False,
                 'created_before_pp_staging': True,
@@ -1356,6 +1370,12 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     if supplied != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
+    from .edlt_parent_add_dialog import KINDS as parent_add_kinds
+    if any(row['op'] in parent_add_kinds for row in operations):
+        return _plan_parent_add_dialogs(
+            text, unit_path, supplied, editor, operations, snapshot,
+            requirements, networks=networks,
+            display_preferences=display_preferences)
     if any(row['op'] == 'add-dialog' for row in operations):
         return _plan_add_dialogs(
             text, unit_path, supplied, editor, operations, snapshot,
@@ -1475,10 +1495,12 @@ def _plan_add_dialogs(text, unit_path, supplied, editor, operations, snapshot,
 
 def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     requirements, *, networks, display_preferences,
-                    source_operations=None, dialogs=()):
+                    source_operations=None, dialogs=(), extra_creations=(),
+                    cache_projector=None, initial_missing=(), dialog_contexts=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
+    required_apps.update(row.application for row in extra_creations)
     group_reasons = {}
     requirement_rows = {}
     for row in requirements['groups']:
@@ -1504,6 +1526,11 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                 APPLICATION_NAMES.get(address, 'Application ' + str(address))))
     for key, row in dialog_rows.items():
         group_reasons.setdefault(key, []).append('add-dialog ' + row.field)
+    for row in extra_creations:
+        if row.kind in ('Group', 'NetVar'):
+            group_reasons.setdefault((row.application, row.address), []).extend(row.reasons)
+        elif row.kind == 'Level':
+            group_reasons.setdefault((row.application, row.group), []).extend(row.reasons)
     cache_groups = []
     for (application, group), _reasons in sorted(group_reasons.items()):
         if application == 255:
@@ -1526,7 +1553,10 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
             continue
         if record is None:
             requirement = requirement_rows.get((application, group), {})
-            if requirement.get('facts', {}).get('complete_levels_if_present'):
+            if (requirement.get('facts', {}).get('complete_levels_if_present')
+                    and not any(row.application == application and
+                                (row.group if row.kind == 'Level' else row.address) == group
+                                for row in extra_creations)):
                 raise ValueError(
                     'Missing scene trigger metadata requires level creation, '
                     'which is outside the bounded parent metadata transaction: '
@@ -1550,12 +1580,20 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
             application, group, True,
             record.dynamic_images if needs_images else None,
             needs_images, levels))
-    creations = tuple(sorted(creations, key=lambda row: (
-        0 if row.kind == 'Application' else 1, row.application, row.address)))
+    unique = {(row.kind, row.application, row.group, row.address): row for row in creations}
+    for row in extra_creations:
+        unique[(row.kind, row.application, row.group, row.address)] = row
+    creations = tuple(sorted(unique.values(), key=lambda row: (
+        0 if row.kind == 'Application' else 2 if row.kind == 'Level' else 1,
+        row.application, row.group if row.group is not None else -1, row.address)))
     if len(creations) > 512:
         raise ValueError('eDLT metadata plan exceeds 512 creations')
     cache = LifecycleCache(tuple(sorted(required_apps)), tuple(cache_groups))
-    parent = editor.plan(supplied, metadata=cache, operations=operations)
+    if cache_projector is not None:
+        cache = cache_projector(cache, creations)
+    parent = editor.plan(supplied, metadata=cache, operations=operations,
+                         _dialog_initial_missing=initial_missing,
+                         _dialog_missing_by_operation=dialog_contexts)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1563,6 +1601,263 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
         _static_labels(supplied), display_preferences=display_preferences,
         add_dialogs=tuple(dialogs),
         resolved_operations=None if source_operations is None else operations)
+
+
+def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
+                             snapshot, requirements, *, networks,
+                             display_preferences):
+    """Compose complete dialog inventories with one native parent save.
+
+    Database XML supplies the complete inventory; exact creation receipts
+    expand it. Explicit preferences establish the post-refresh Corridor list
+    order. This never turns a caller's partial cache into a complete list.
+    """
+    from dataclasses import replace
+    from .edlt_parent_add_dialog import KINDS, resolve
+    from .edlt_scene_metadata import _dialog_name
+    if any(row['op'] == 'reset' for row in operations):
+        raise ValueError('Parent Add after Reset requires the fresh Reset graph and its original binding refresh; retained pre-Reset dialog inventories cannot stand in for that graph')
+    if any(row['op'] == KINDS[0] for row in operations) and display_preferences is None:
+        raise ValueError('Corridor Add requires explicit display preferences for its refreshed ordered list')
+    project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
+    project_name = _field(project, 'TagName')
+    if not project_name:
+        raise ValueError('Parent Add dialogs require explicit Project TagName')
+    existing = {app.address: {group.address: group.tag for group in app.groups}
+                for app in snapshot.applications}
+    levels = {(app.address, group.address): {level.address: level.tag for level in group.level_records}
+              for app in snapshot.applications for group in app.groups}
+    records = {(app.address, group.address): group for app in snapshot.applications for group in app.groups}
+    app_names = {app.address: app.tag for app in snapshot.applications}
+    load_groups = [(row['application'], row['group']) for row in requirements['groups']]
+    scene_results, scene_creations = [], []
+    dialog_contexts = []
+    lowered_so_far = []
+    seed_groups = {app: dict(rows) for app, rows in existing.items()}
+    seed_levels = {key: dict(rows) for key, rows in levels.items()}
+    if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
+        application = (202 if supplied['ProximityMode'][0] == 3 else
+                       56 if supplied['PrimaryApplication'][0] == 255 else supplied['PrimaryApplication'][0])
+        load_groups.append((application, supplied['ProximityGroup'][0]))
+    for app, address in load_groups:
+        if app != 255 and address != 255:
+            seed_groups.setdefault(app, {}).setdefault(address, 'Group ' + str(address))
+    # Parent LoadScenes invokes the retained trigger/action getters before
+    # every control history, independently of opening SceneManager later.
+    for slot, _pointer, header, _items in editor.lifecycle._scenes(supplied):
+        trigger, action = header[2], header[3]
+        if trigger == 255:
+            continue
+        current = seed_levels.setdefault((202, trigger), {})
+        if action not in current:
+            name = 'Action Selector ' + str(action)
+            current[action] = name
+            scene_creations.append(MetadataCreation('Level', 202, action, name,
+                group=trigger, value=action, safe_blank_variants=True,
+                reasons=('Scene' + str(slot) + ' initial trigger/action getter',)))
+
+    def preceding(index):
+        keys = load_groups + [(app, group) for app, group, _reason, _images
+                              in _operation_groups(supplied, lowered_so_far)]
+        return tuple((app, group, 'Group ' + str(group)) for app, group in keys
+                     if app != 255 and group != 255)
+
+    def inventory_cache(groups, level_names):
+        for row in requirements['applications']:
+            groups.setdefault(row['application'], {})
+        facts = []
+        for app, rows in groups.items():
+            for address in rows:
+                record = records.get((app, address))
+                facts.append(LifecycleGroup(app, address, True,
+                    (False,) * 4 if record is None else record.dynamic_images,
+                    True if record is None else record.dynamic_images_known,
+                    tuple(level_names.get((app, address), {}))))
+        for app, address in load_groups:
+            if address == 255 and not any(f.application == app and f.group == 255 for f in facts):
+                groups.setdefault(app, {})[255] = '<Unused>'
+                facts.append(LifecycleGroup(app, 255, True, (False,) * 4, True, ()))
+        cache = ApplicationCache(LifecycleCache(tuple(groups), tuple(facts)), True,
+            tuple(CachedDisplay(app, app_names.get(app, APPLICATION_NAMES.get(app, 'Application ' + str(app))),
+                                app_names.get(app, APPLICATION_NAMES.get(app, 'Application ' + str(app)))) for app in groups),
+            tuple(CachedGroupList(app, True, tuple(CachedDisplay(address, name, name)
+                for address, name in rows.items())) for app, rows in groups.items()))
+        return cache if display_preferences is None else present_application_cache(cache, display_preferences)
+
+    def advance(index, row, state, groups, level_names):
+        row = dict(row)
+        show_missing = row.pop('_show_missing', None)
+        kind = row['op']
+        options = {name: value for name, value in row.items() if name != 'op'}
+        binding = kind == 'parent-add-binding'
+        if binding:
+            kind = row['panel']
+            options = {} if row.get('cancelled') else {row['option']: row['value']}
+            if kind == 'corridor':
+                options = {'edits': [] if row.get('cancelled') else
+                           [{'field': row['option'], 'value': row['value']}]}
+        if kind == 'corridor':
+            primary = state['PrimaryApplication'][0]
+            if show_missing is None:
+                missing = tuple((name, state[name][0])
+                    for name in _SETTING_FIELDS['corridor'][:3]
+                    if state[name][0] != 255
+                    and state[name][0] not in groups.get(primary, {}))
+                show_missing = (primary, missing)
+            application, missing = show_missing
+            if missing:
+                dialog_contexts.append((index + 1, application, missing))
+                state = {**state, **{name: (255,) for name, _address in missing}}
+        if kind == 'scene-manager':
+            if scene_results:
+                raise EdltError('Only one SceneManager may own the retained scene graph')
+            for requirement in requirements['applications']:
+                groups.setdefault(requirement['application'], {})
+            from .edlt_scene_metadata import (SceneContainerCreation, SceneLevelCreation,
+                                             resolve_native_scene_metadata)
+            engine = editor._editor('scene-manager')
+            projected = []
+            for app, rows in groups.items():
+                if app not in existing:
+                    projected.append(SceneContainerCreation('Application', app, app,
+                        APPLICATION_NAMES.get(app, 'Application ' + str(app)), ('prior parent getter',)))
+                for address, name in rows.items():
+                    if address == 255:
+                        continue
+                    if address not in existing.get(app, {}):
+                        projected.append(SceneContainerCreation('NetVar' if app == 203 else 'Group',
+                            app, address, name, ('prior parent Add/getter',)))
+            projected_levels = tuple(SceneLevelCreation(group, address, name, ('prior parent Add',))
+                for (app, group), rows in level_names.items() if app == 202
+                for address, name in rows.items() if address not in levels.get((app, group), {}))
+            outcome = resolve_native_scene_metadata(text, unit_path, supplied, engine,
+                row['operations'], _projected_containers=tuple(projected),
+                _projected_levels=projected_levels, _projected_values=state,
+                dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+            scene_state = engine.edit(engine.load(state, metadata=outcome.cache),
+                                      operations=outcome.operations)
+            if not scene_state.complete:
+                raise ValueError('SceneManager capacity stopped the nested edit')
+            composition = engine.prepare_composition(scene_state.state)
+            state = {**state, **composition.fields}
+            for creation in outcome.creations:
+                if isinstance(creation, SceneLevelCreation):
+                    level_names.setdefault((202, creation.group), {})[creation.address] = creation.name
+                    scene_creations.append(MetadataCreation('Level', 202, creation.address,
+                        creation.name, group=creation.group, value=creation.address,
+                        safe_blank_variants=True, reasons=creation.reasons))
+                else:
+                    if creation.kind == 'Application':
+                        groups.setdefault(creation.address, {})
+                    else:
+                        groups.setdefault(creation.application, {})[creation.address] = creation.name
+                    scene_creations.append(MetadataCreation(creation.kind, creation.application,
+                        creation.address, creation.name, safe_blank_variants=creation.kind != 'Application',
+                        reasons=creation.reasons))
+            row = {**row, 'operations': outcome.operations}
+            scene_results.append(outcome)
+        elif kind == 'activation':
+            from .edlt_percentage import percentage_to_byte
+            percent = options.pop('level_percent', None)
+            plan = editor.activation_editor.plan(state,
+                level=None if percent is None else percentage_to_byte(percent), **options)
+            projected = {**plan.expected, **plan.changes}
+            state = {**state, **{name: projected[name] for name in _ACTIVATION_PARAMETERS}}
+        elif kind in _SETTING_FIELDS:
+            if kind in ('applications', 'corridor'):
+                plan = editor._editor(kind).plan(state, cache=inventory_cache(groups, level_names), **options)
+                projected = dict(plan.after_controls)
+            else:
+                plan = editor._editor(kind).plan(state, **options)
+                projected = {**plan.expected, **plan.changes}
+            fields = list(_SETTING_FIELDS[kind])
+            if kind == 'applications':
+                fields.extend(name for name in projected if name.startswith('Widget')
+                    and name.endswith('WidgetByteValue1') and projected[name] != state[name])
+            state = {**state, **{name: projected[name] for name in fields}}
+        lowered_so_far.append(row)
+        return state, row
+
+    initial_controls = editor.lifecycle.load(supplied,
+        metadata=inventory_cache(seed_groups, seed_levels).lifecycle).after_load
+    initial_missing = ()
+    if any(row['op'] == KINDS[0] for row in operations):
+        primary = initial_controls['PrimaryApplication'][0]
+        initial_missing = tuple(name for name in _SETTING_FIELDS['corridor'][:3]
+            if initial_controls[name][0] != 255
+            and initial_controls[name][0] not in seed_groups.get(primary, {}))
+        initial_controls = {**initial_controls, **{name: (255,) for name in initial_missing}}
+    resolved, receipts, groups, actions = resolve(
+        operations, initial_controls, project_name, seed_groups, seed_levels, preceding, advance=advance)
+    for receipt in receipts:
+        row = receipt.as_dict()
+        if row['outcome'] == 'accepted':
+            _dialog_name(row['name'])
+    resolved = normalize_operations(resolved)
+    extra = (*tuple(MetadataCreation(
+        'Level', 202, row['address'], row['name'], group=row['group'],
+        value=row['address'], safe_blank_variants=True,
+        reasons=('add-activation-action-dialog',)) for row in actions), *scene_creations)
+
+    def complete(cache, creations):
+        # Only source objects and the exact owned creation plan enter lists.
+        app_names = {app.address: app.tag for app in snapshot.applications}
+        lists = {app.address: [CachedDisplay(group.address, group.tag, group.tag)
+                               for group in app.groups] for app in snapshot.applications}
+        level_lists = {(app.address, group.address): list(group.levels)
+                       for app in snapshot.applications for group in app.groups}
+        for creation in creations:
+            if creation.kind == 'Application':
+                app_names[creation.address] = creation.name
+                lists[creation.address] = []
+            elif creation.kind in ('Group', 'NetVar'):
+                lists[creation.application].append(CachedDisplay(
+                    creation.address, creation.name, creation.name))
+                level_lists[(creation.application, creation.address)] = []
+            elif creation.kind == 'Level':
+                level_lists[(creation.application, creation.group)].append(creation.address)
+        facts = {(row.application, row.group): row for row in cache.groups}
+        for creation in creations:
+            if creation.kind != 'Level':
+                continue
+            key = (creation.application, creation.group)
+            old = facts.get(key)
+            facts[key] = LifecycleGroup(key[0], key[1], True,
+                None if old is None else old.dynamic_images,
+                False if old is None else old.dynamic_images_known,
+                tuple(sorted(level_lists[key])))
+        if scene_results:
+            for fact in scene_results[0].cache.application_cache.lifecycle.groups:
+                key = (fact.application, fact.group)
+                if fact.levels is not None:
+                    fact = LifecycleGroup(fact.application, fact.group, fact.exists,
+                        fact.dynamic_images, fact.dynamic_images_known,
+                        tuple(sorted(level_lists.get(key, fact.levels))))
+                facts[key] = _merge_lifecycle_fact(facts.get(key), fact)
+        lifecycle = LifecycleCache(tuple(app_names), tuple(facts.values()))
+        for app, rows in lists.items():
+            if any(row.application == app and row.group == 255 and row.exists
+                   for row in facts.values()):
+                rows.insert(0, CachedDisplay(255, '<Unused>', '<Unused>'))
+        projection = ApplicationCache(lifecycle, True,
+            tuple(CachedDisplay(app, name, name) for app, name in app_names.items()),
+            tuple(CachedGroupList(app, True, tuple(rows)) for app, rows in lists.items()))
+        projection = (projection if display_preferences is None else
+                      present_application_cache(projection, display_preferences))
+        if scene_results:
+            from .edlt_scene_manager import SceneManagerCache
+            return SceneManagerCache(projection, scene_results[0].cache.level_labels)
+        return projection
+
+    result = _plan_unordered(text, unit_path, supplied, editor, resolved,
+        snapshot, requirements, networks=networks,
+        display_preferences=display_preferences,
+        source_operations=operations, dialogs=groups,
+        extra_creations=extra, cache_projector=complete,
+        initial_missing=initial_missing,
+        dialog_contexts=tuple(dialog_contexts))
+    return replace(result, add_dialogs=receipts,
+                   scene_metadata=scene_results[0] if scene_results else None)
 
 
 @dataclass(frozen=True)

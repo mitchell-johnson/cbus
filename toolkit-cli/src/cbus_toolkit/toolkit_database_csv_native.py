@@ -132,6 +132,18 @@ def _parameter(unit, name):
     return rows[0].getAttribute('Value')
 
 
+def _source_applications(unit):
+    """Bounded base FormatCgApplication input, before object resolution."""
+    raw = _parameter(unit, 'Application')
+    if raw == '':
+        return 56, 255
+    values = raw.split(' ')
+    if len(values) not in (1, 2):
+        raise ValueError('Source Application requires zero, one or two decimal byte addresses')
+    addresses = tuple(_byte(value, 'Source Application') for value in values)
+    return addresses if len(addresses) == 2 else (addresses[0], 255)
+
+
 def _one_by_address(parent, kind, address):
     rows = [node for node in _children(parent, kind)
             if _byte(_field(node, 'Address'), kind + ' address') == address]
@@ -240,6 +252,51 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
             secondary_node if index < 8 and secondary_mask & (1 << index) else primary
             for index in range(len(group_addresses)))
         area_address = 255
+    elif family is not None and family.get('generic'):
+        app_values = _source_applications(unit)
+        primary = _one_by_address(network, 'Application', app_values[0])
+        secondary_node = _one_by_address(network, 'Application', app_values[1])
+        secondary = _field(secondary_node, 'TagName')
+        group_addresses = group_applications = ()
+        area_address = None
+        secondary_mask = 0
+    elif family is not None and family.get('source_model'):
+        app_values = _source_applications(unit)
+        primary = _one_by_address(network, 'Application', app_values[0])
+        secondary_node = _one_by_address(network, 'Application', app_values[1])
+        secondary = _field(secondary_node, 'TagName')
+        count = family['blocks']
+        parameter = family['group_parameter']
+        if parameter == 'relay_logic':
+            # The loader visits every physical channel's six logic masks, then
+            # replaces the report manager with the six initialized logic groups.
+            for logic in range(6):
+                mask = _tokens(_parameter(unit, f'LogicGA{logic}Associations'),
+                               f'LogicGA{logic}Associations')
+                if len(mask) > 32:
+                    raise ValueError('Relay logic association array exceeds thirty-two slots')
+            stored = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress')
+            if len(stored) > 32:
+                raise ValueError('Relay stored group array exceeds thirty-two slots')
+            group_values = (stored + (255,) * count)[:count]
+        elif parameter == 'channel_fields':
+            group_values = tuple(_tokens(_parameter(unit, f'Ch{index}GroupAddress'),
+                f'Ch{index}GroupAddress', count=1)[0] for index in range(count))
+        else:
+            stored = _tokens(_parameter(unit, parameter), parameter)
+            if len(stored) > 32:
+                raise ValueError('Source loader stored group array exceeds thirty-two slots')
+            # Native array access defaults absent trailing positions to255.
+            # The complete cache must still establish every defaulted group.
+            group_values = (stored + (255,) * count)[:count]
+        secondary_mask = (_tokens(_parameter(unit, 'SecondApplicationBlocks'),
+            'SecondApplicationBlocks', count=1)[0] if family['secondary_blocks'] else 0)
+        if secondary_mask >> count or secondary_node is None and secondary_mask:
+            raise ValueError('Source input secondary mask cannot resolve its declared Application')
+        group_addresses = group_values
+        group_applications = tuple(secondary_node if secondary_mask & (1 << index)
+                                   else primary for index in range(count))
+        area_address, = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
     elif family is not None:
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         if family['wireless']:
@@ -425,7 +482,8 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
     primary_groups = application_groups[primary]
     if area_address is not None and area_address not in primary_groups:
         raise ValueError('Native Area group is absent; original report creation requires an unperformed database mutation')
-    if area_address is not None and area_address not in (12, 13, 255):
+    if (area_address is not None and area_address not in (12, 13, 255)
+            and not (family or {}).get('source_model')):
         raise ValueError('Captured native RELAY4 profile supports existing Area12, Area13 or Area255')
     identities = tuple(application_groups[application][address].identity
                        for application, address in zip(group_applications, group_addresses))
@@ -578,7 +636,7 @@ def project_native_xml_selection(text, *, unit_paths=None, network_path=None,
         try:
             projection = _project_native_xml_unit(project, path, columns=selected,
                                                   xml_sha256=xml_sha256)
-            if not projection.complete or projection.cached.csv_unit is None:
+            if not projection.complete or projection.report is None:
                 raise ValueError('Native XML projection stopped: ' + str(projection.stop_reason))
             identity = projection.cached.unit.identity
             if identity in identities:
@@ -587,8 +645,11 @@ def project_native_xml_selection(text, *, unit_paths=None, network_path=None,
             projections.append(projection)
         except ValueError as error:
             raise ValueError(path + ': ' + str(error)) from error
-    report = document_database_csv(tuple(item.cached.csv_unit for item in projections),
-                                    columns=selected)
+    # Preserve the literal caught per-Unit error row as well as normal rows.
+    # All projections complete before one bounded report is returned.
+    header = document_database_csv((), columns=selected).rows[0]
+    report = DatabaseCSV(selected, (header, *(item.report.rows[1]
+        for item in projections)), len(projections))
     return NativeXMLCSVSelection(unit_paths, network_path, xml_sha256, tuple(projections),
                                  report, project_path)
 

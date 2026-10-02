@@ -247,6 +247,27 @@ def _operation(value, *, allow_add_dialog=False):
     if not isinstance(value, Mapping):
         raise EdltError('Parent transaction operation must be a mapping')
     operation = value.get('op')
+    if operation == 'parent-add-binding':
+        from .edlt_add_dialog import TARGETS
+        permitted = {(panel, option) for panel, option, _rule in TARGETS.values()}
+        permitted.update(('corridor', field) for field in
+                         ('link_group', 'office_group', 'corridor_group'))
+        permitted.add(('activation', 'action'))
+        if (set(value) - {'op', 'panel', 'option', 'value', 'cancelled'}
+                or (value.get('panel'), value.get('option')) not in permitted
+                or (value.get('cancelled') is not True and
+                    (type(value.get('value')) is not int or not 0 <= value['value'] <= 254))
+                or ('cancelled' in value and value['cancelled'] is not True)
+                or ('cancelled' in value and 'value' in value)):
+            raise EdltError('Invalid lowered parent Add binding')
+        return {key: value[key] for key in
+                ('op', 'panel', 'option', 'value', 'cancelled') if key in value}
+    from .edlt_parent_add_dialog import KINDS as parent_add_kinds
+    if operation in parent_add_kinds:
+        if not allow_add_dialog:
+            raise EdltError('Parent Add dialogs require the automatic --project-xml/--auto-metadata workflow')
+        from .edlt_parent_add_dialog import normalize
+        return normalize(value)
     if operation == 'add-dialog':
         if not allow_add_dialog:
             raise EdltError(
@@ -442,6 +463,8 @@ class ParentTransactionPlan:
     operations: tuple[Mapping, ...]
     operation_results: tuple[str, ...]
     evidence: str
+    dialog_initial_missing: tuple[str, ...] = ()
+    dialog_missing_by_operation: tuple = ()
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'after_controls', 'before_save',
@@ -464,6 +487,16 @@ class ParentTransactionPlan:
             'unit_type': 'KEYGL5', 'catalog_number': '5055EDL',
             'firmware': '5.5.00',
             'operations': [dict(value) for value in self.operations],
+            'initial_dialog_show_normalizations': [
+                {'parameter': name, 'before': list(self.expected[name]), 'after': [255],
+                 'fact': 'absent in the complete inventory before dialog operations'}
+                for name in self.dialog_initial_missing],
+            'ordered_dialog_show_normalizations': [
+                {'operation': number, 'application': application,
+                 'selections': [{'parameter': name, 'before': [address], 'after': [255]}
+                                for name, address in missing],
+                 'fact': 'absent in the complete inventory at this operation'}
+                for number, application, missing in self.dialog_missing_by_operation],
             'supported_operation_types': list(SUPPORTED_OPERATION_NAMES),
             'operation_results': [json.loads(value)
                                   for value in self.operation_results],
@@ -655,8 +688,41 @@ class EdltParentTransaction:
             ],
         }
 
-    def plan(self, current, *, metadata, operations):
+    def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
+             _dialog_missing_by_operation=()):
         operations = normalize_operations(operations)
+        if (type(_dialog_initial_missing) is not tuple
+                or any(type(name) is not str or name not in _SETTING_FIELDS['corridor'][:3]
+                       for name in _dialog_initial_missing)
+                or len(set(_dialog_initial_missing)) != len(_dialog_initial_missing)
+                or (_dialog_initial_missing and not any(row['op'] == 'parent-add-binding'
+                       and row['panel'] == 'corridor' for row in operations))):
+            raise EdltError('Invalid automatic initial Corridor Show absence facts')
+        context_by_operation = {}
+        if type(_dialog_missing_by_operation) is not tuple:
+            raise EdltError('Invalid automatic ordered Corridor Show absence facts')
+        for context in _dialog_missing_by_operation:
+            if (type(context) is not tuple or len(context) != 3
+                    or type(context[0]) is not int or not 1 <= context[0] <= len(operations)
+                    or type(context[1]) is not int or not 0 <= context[1] <= 254
+                    or type(context[2]) is not tuple or not context[2]):
+                raise EdltError('Invalid automatic ordered Corridor Show absence facts')
+            number, application, missing = context
+            operation = operations[number - 1]
+            if (number in context_by_operation
+                    or not (operation['op'] == 'corridor' or
+                            (operation['op'] == 'parent-add-binding'
+                             and operation['panel'] == 'corridor'))
+                    or any(type(row) is not tuple or len(row) != 2
+                           or type(row[0]) is not str
+                           or row[0] not in _SETTING_FIELDS['corridor'][:3]
+                           or type(row[1]) is not int or not 0 <= row[1] <= 254
+                           for row in missing)
+                    or len({row[0] for row in missing}) != len(missing)):
+                raise EdltError('Invalid automatic ordered Corridor Show absence facts')
+            context_by_operation[number] = (application, missing)
+        if tuple(sorted(context_by_operation)) != tuple(row[0] for row in _dialog_missing_by_operation):
+            raise EdltError('Automatic Corridor Show absence facts must be ordered')
         application_cache = None
         scene_manager_cache = None
         if isinstance(metadata, SceneManagerCache):
@@ -713,6 +779,8 @@ class EdltParentTransaction:
             loaded = self.lifecycle.load(current, metadata=cache)
             control_values = dict(loaded.after_load)
             planning_values = dict(loaded.after_load)
+        for name in _dialog_initial_missing:
+            control_values[name] = planning_values[name] = (255,)
         owners, slots, results, selected = {}, {}, [], []
         blank_transitions = []
         navigation_mode = None
@@ -728,16 +796,36 @@ class EdltParentTransaction:
         scene_manager_composition = None
         scene_manager_seen = False
         scene_widget_seen = False
+        dialog_panels = {row['panel'] for row in operations
+                         if row['op'] == 'parent-add-binding'}
         widget_editors = {
             'measurement': self.measurement_editor,
             'lighting': self.lighting_editor,
         }
 
         for number, operation in enumerate(operations, 1):
+            if number in context_by_operation:
+                application, missing = context_by_operation[number]
+                if (planning_values['PrimaryApplication'] != (application,)
+                        or any(planning_values[name] != (address,)
+                               for name, address in missing)):
+                    raise EdltError('Automatic Corridor Show absence facts differ from the ordered controls')
+                for name, _address in missing:
+                    control_values[name] = planning_values[name] = (255,)
             kind = operation['op']
             owner = f'operation {number} ({kind})'
             options = {name: value for name, value in operation.items()
                        if name != 'op'}
+            dialog_binding = kind == 'parent-add-binding'
+            if dialog_binding:
+                kind = operation['panel']
+                options = ({} if operation.get('cancelled') else
+                           {operation['option']: operation['value']})
+                if kind == 'corridor':
+                    options = {'edits': ([] if operation.get('cancelled') else
+                               [{'field': operation['option'], 'value': operation['value']}])}
+            if kind in dialog_panels:
+                owner = 'ordered parent Add panel (' + kind + ')'
             if kind == 'reset':
                 # normalize_operations makes Reset unique and first.  The
                 # transition was issued above so every later control sees its
@@ -1130,11 +1218,12 @@ class EdltParentTransaction:
                     raise EdltError(
                         f'{kind} parent composition requires a complete '
                         'cbus-edlt-application-cache-v1 metadata document')
-                if kind in setting_panels:
+                if kind in setting_panels and not dialog_binding:
                     raise EdltError(
                         f'Duplicate or conflicting byte ownership: only one {kind} '
                         'operation may own that settings panel')
-                setting_panels.add(kind)
+                if not dialog_binding:
+                    setting_panels.add(kind)
                 panel_plan = self._editor(kind).plan(
                     planning_values, cache=application_cache,
                     edits=options['edits'])
@@ -1167,11 +1256,12 @@ class EdltParentTransaction:
                 continue
 
             if kind == 'activation':
-                if activation_seen:
+                if activation_seen and not dialog_binding:
                     raise EdltError(
                         'Duplicate or conflicting byte ownership: only one activation '
                         'operation may own the proximity controls')
-                activation_seen = True
+                if not dialog_binding:
+                    activation_seen = True
                 self._claim(owners, _ACTIVATION_PARAMETERS, owner)
                 percent = options.pop('level_percent', None)
                 level = None
@@ -1222,11 +1312,12 @@ class EdltParentTransaction:
                 results.append(_json(document))
                 continue
 
-            if kind in setting_panels:
+            if kind in setting_panels and not dialog_binding:
                 raise EdltError(
                     f'Duplicate or conflicting byte ownership: only one {kind} '
                     'operation may own that settings panel')
-            setting_panels.add(kind)
+            if not dialog_binding:
+                setting_panels.add(kind)
             if kind == 'navigation' and options.get('metadata') is None:
                 options['metadata'] = self._navigation_metadata(
                     cache, _effective_primary(planning_values))
@@ -1575,7 +1666,8 @@ class EdltParentTransaction:
             loaded.after_load, after_controls, before_save,
             lifecycle_plan.changes, cache, application_cache,
             scene_manager_cache, operations, tuple(results),
-            _json(evidence))
+            _json(evidence), _dialog_initial_missing,
+            _dialog_missing_by_operation)
 
     @staticmethod
     def _interrupted(error, plan, attempted, original_error=None):
@@ -1604,7 +1696,9 @@ class EdltParentTransaction:
                  else plan.expected_raw),
                 metadata=(plan.scene_manager_cache or
                           plan.application_cache or plan.metadata),
-                operations=plan.operations)
+                operations=plan.operations,
+                _dialog_initial_missing=plan.dialog_initial_missing,
+                _dialog_missing_by_operation=plan.dialog_missing_by_operation)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):

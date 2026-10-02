@@ -547,7 +547,7 @@ uncertain.
 
 ## New conversion and NeoPro report commands
 
-`cgate conversion tweak` previews all 243 currently admitted Toolkit client-side
+`cgate conversion tweak` previews all 288 currently admitted Toolkit client-side
 pairs from a canonical source path, exact private source/target specs, unused
 target address, firmware and catalogue. Review `plan_sha256`; apply requires
 `--apply --exclusive-project --expect-plan-sha256 HASH`. It binds all project
@@ -572,8 +572,13 @@ one live DBGETXML. Public NeoPro cached v2 binds primary/secondary Application
 identities, complete Group membership and mask, validating each block before
 projection. This caller-supplied cache is not a fresh live read. The
 then-admitted older families retained v1; NeoPro v1 remains refused; read
-`toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. That checkpoint registry admitted 35 types; the current family registry admits 126/262 with v2/v3 inputs described in `toolkit-cli/docs/database-csv-source-families.md`;
-historical 32-type and native receipts are unchanged. Static EXE/MAP reading is
+`toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. That checkpoint registry admitted 35 types; the later historical family registry admitted 126/262 with v2/v3 inputs described in `toolkit-cli/docs/database-csv-source-families.md`.
+The current completion registry admits 214/262 types; its additional source
+profiles use cached v4 and require both authoritative Application objects.
+Base formatting defaults a missing secondary address to255, which requires a
+real existing Application255 in a read-only native snapshot. Read
+`toolkit-cli/docs/database-csv-completion.md`; historical v1-v3 contracts,
+32/35/126-type receipts and native captures are unchanged. Static EXE/MAP reading is
 not original-instruction acceptance. See
 `toolkit-cli/docs/toolkit-database-csv-neopro.md` and the October 2
 conversion/CSV/liveness batch for current proof and remaining gates.
@@ -665,16 +670,20 @@ and explicit `--group-sort address-ascending`; other manager orders remain refus
 
 ## Conversion, classic DLT and firmware boundaries
 
-The separate Toolkit conversion Python API admits 243 of 292 registered
+The separate Toolkit conversion Python API admits 288 of 292 registered
 source/target pairs. The earlier 123 comprise eight dimmer, seven RELDN, 93 classic-to-Neo, five
 coupler-to-Neo (1.2.67→2.2.00) and ten non-sensor InputUnit directions
-(1.2.67→1.2.67). SENPILL self-conversion remains refused. This is separate from typed C-Gate conversion. A RELDN4 short
+(1.2.67→1.2.67). Older SENPILL1.6.00 self-conversion is admitted with fresh
+learning/join resets. This is separate from typed C-Gate conversion. A RELDN4 short
 four-token baseline is refused before I/O; require the admitted complete source
 profile. For admitted metadata/delete/readdress and save/reopen, use the separate
 `conversion tweak-replace` lifecycle and read-only `tweak-recover`; read
 `toolkit-cli/docs/toolkit-tweaker-lifecycle.md` first. Original catalogue lookup,
 exception cleanup, editor history and physical conversion remain open.
-Read `toolkit-cli/docs/toolkit-conversion-tweakers.md`.
+Read `toolkit-cli/docs/toolkit-conversion-tweakers.md` and
+`toolkit-cli/docs/toolkit-remaining-conversions.md`. Three KEYM6 directions
+without a selected original factory and the undefined RELDN4 short-array
+direction remain refused; no new original GUI or physical acceptance is implied.
 
 Wireless Connection admits WGATE5N/F 2.2.90..2.4.99; Scenes and Remotes
 require WGATE5F. Database Connection/Scenes plans require the exact database
@@ -745,7 +754,7 @@ remain open. See [Bytecraft](../../../../toolkit-cli/docs/project-documentation-
 and [integration boundaries](../../../../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md).
 
 
-The current source-backed extensions admit 120 additional DLT-target conversion
+The earlier source-backed extensions admitted 120 additional DLT-target conversion
 pairs (243/292 total) and 91 additional CSV unit types (126/262 total). Read
 `toolkit-cli/docs/toolkit-dlt-conversions.md` and
 `toolkit-cli/docs/database-csv-source-families.md` before using these profiles.
@@ -754,3 +763,11 @@ literal constructor order. Wireless CSV v3 requires sixteen input blocks and
 complete installed-output tails, even beyond visible report columns. The
 remaining conversion/CSV profiles, original GUI/cold native family acceptance
 and physical behavior remain open.
+
+The current batch adds 45 conversion directions (288/292 total) and 88 CSV
+types (214/262 total), with exact firmware, loader and consumed-state boundaries
+in `toolkit-cli/docs/toolkit-remaining-conversions.md` and
+`toolkit-cli/docs/database-csv-completion.md`. These are static/synthetic and
+owned-service software scopes. They do not promote historical receipts to the
+current source or establish new original GUI, cold native family, VM or hardware
+acceptance. Remaining refused registrations and full Toolkit parity stay open.

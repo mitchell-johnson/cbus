@@ -54,12 +54,18 @@ CLASSES = {
         'summary': 'marks 13 Neo/IR attributes immutable (target default retained)', 'refusal': None,
         'profile': 'input-1.2.67-to-fresh-input-1.2.67',
         'source_firmware': '1.2.67', 'target_firmware': '1.2.67',
+        'additional_source_profile': {'source_type': 'SENPILL', 'target_type': 'SENPILL',
+            'source_firmware': '1.6.00', 'target_firmware': '1.6.00', 'native_acceptance': False,
+            'source_proof': 'toolkit-remaining-conversions-source-proof.json'},
         'hook_summary': ('fresh Learn flags are true/true/false; non-Neo sources and targets with '
                          'HasApplication2=false leave group and indicator strings unchanged; '
                          'brightness is writable for KEY1/2/4 and immutable for KEYBC2/4 and BCNC4A/B')},
     'TTweakerNeoToKey': {
         'recovered': True, 'inherits': 'TTweakerInputUnit', 'renames': {}, 'immutable': INPUT_UNIT_IMMUTABLE,
-        'assignments': [], 'summary': 'TTweakerInputUnit rules only', 'refusal': HOOK_KEY},
+        'assignments': [], 'summary': 'TTweakerInputUnit flags, then recovered CoreKey secondary identity scrub and Neo-to-classic reshape', 'refusal': None,
+        'profile': 'neo-classic-2.5.00-to-fresh-classic-1.2.67',
+        'source_firmware': '2.5.00', 'target_firmware': '1.2.67',
+        'evidence': 'static source recovery and owned synthetic software acceptance'},
     'TTweakerKeyToNeo': {
         'recovered': True, 'inherits': 'TTweakerInputUnit', 'renames': {},
         'immutable': INPUT_UNIT_IMMUTABLE + KEY_TO_NEO_IMMUTABLE, 'assignments': [], 'element_remap': INDICATOR_REMAP,
@@ -91,11 +97,13 @@ CLASSES = {
         'renames': {'PIREnablerGroup': 'EnableGroupAddress', 'PIREnablerGroupLogic': 'EnableGroupLogic',
                     'EnableGroupAddress': 'PIREnablerGroup', 'EnableGroupLogic': 'PIREnablerGroupLogic'},
         'immutable': [], 'assignments': [], 'summary': 'renames only (target <- source), no value rule',
-        'refusal': HOOK_SENSOR},
+        'refusal': None, 'profile': 'older-sensor-fresh',
+        'evidence': 'static source recovery and owned synthetic software acceptance'},
     'TTweakerSENLL': {
         'recovered': True, 'renames': {'PECEnablerGroup': 'EnableGroupAddress', 'EnableGroupAddress': 'PECEnablerGroup'},
         'immutable': [], 'assignments': [], 'summary': 'renames only (target <- source), no value rule',
-        'refusal': HOOK_SENSOR},
+        'refusal': None, 'profile': 'older-sensor-fresh',
+        'evidence': 'static source recovery and owned synthetic software acceptance'},
     'TTweakerDIMDN_TO_DIMDU4': {
         'recovered': True, 'renames': {}, 'immutable': [],
         'assignments': [{'target': 'InterLockingChannel', 'literal': '4'},
@@ -113,11 +121,13 @@ CLASSES = {
     'TTweakerPC_DAL2': {
         'recovered': True, 'renames': {}, 'immutable': [], 'assignments': [],
         'application_swap': 'Application becomes decimal element 1, one space, decimal element 0',
-        'summary': 'swaps the two Application values', 'refusal': NOT_NATIVE},
+        'summary': 'swaps the two Application values', 'refusal': None,
+        'profile': 'pci-dali-fresh-4.5.00', 'evidence': 'static source recovery and owned synthetic software acceptance'},
     'TTweakerPC_DAL2B': {
         'recovered': True, 'renames': {}, 'immutable': [], 'assignments': [],
         'application_swap': 'Application becomes decimal element 1, one space, decimal element 0',
-        'summary': 'swaps the two Application values', 'refusal': NOT_NATIVE},
+        'summary': 'swaps the two Application values', 'refusal': None,
+        'profile': 'pci-dali-fresh-4.5.00', 'evidence': 'static source recovery and owned synthetic software acceptance'},
     'TTweakerRELDN8_TO_X': {
         'recovered': True, 'touched': ['GroupAddress', 'LogicGA13Associations', 'LogicGA14Associations',
                                         'LogicGA15Associations', 'LogicGA16Associations'],
@@ -133,12 +143,8 @@ PAIR_REFUSALS = {
     **{('KEYM6', target): ('KEYM6 has no recovered static Toolkit unit factory/model; '
                           'its DLT registrations remain refused')
        for target in ('KEYDL4', 'KEYML5', 'KEYBL5')},
-    **{(source, target): ('KEYBIR source specification identity or catalogue alias is not established '
-                          'for the recovered DLT profile')
-       for source in ('KEYBIR2', 'KEYBIR4', 'KEYBIR6') for target in ('KEYDL4', 'KEYML5', 'KEYBL5')},
     ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
                           'reads eight without padding; no defined safe conversion is established'),
-    ('SENPILL', 'SENPILL'): HOOK_SENSOR,
 }
 _BASE = [('Application', True), ('FirmwareVersion', False), ('Project', True), ('SerialNo', False),
          ('State', False), ('UnitAddress', True), ('UnitName', True), ('UnitType', False)]
@@ -313,7 +319,8 @@ AGENTS['TBCNC4CGateAgent'] = {
 
 NATIVE_ACCEPTED = ('TTweakerDIMDN_TO_DIMDU4', 'TTweakerDIMDU4_TO_DIMDN', 'TTweakerRELDN8_TO_X', 'TTweakerRELDNX_TO_8',
                    'TTweakerKeyToNeo', 'TTweakerInputUnit')
-SOURCE_ADMITTED = ('TTweakerDLT', 'TTweakerKeyToDLT')
+SOURCE_ADMITTED = ('TTweakerDLT', 'TTweakerKeyToDLT', 'TTweakerNeoToKey',
+                   'TTweakerPC_DAL2', 'TTweakerPC_DAL2B', 'TTweakerSENPIR', 'TTweakerSENLL')
 # This receipt contains derived constructor names/flags and digests only.
 DLT_PROOF = json.loads((ROOT / 'research/fixtures/toolkit-dlt-conversion-source-proof.json').read_text())
 DLT_PROFILE = 'source-pinned-to-fresh-dlt-2.1.00'
@@ -330,6 +337,49 @@ AGENTS['TCBusDynamicLabelInputCGateAgent'] = {
     'conversion_hook_profile': DLT_PROFILE, 'target_firmware': '2.1.00',
     'attributes': DLT_PROOF['constructor_attributes'],
 }
+# Source-derived complete constructor inventories for the additional agents.
+# The older multisensor shares InputUnit's registered class, but its self pair
+# has source/software evidence only; it does not inherit native acceptance.
+REMAINING_PROOF = json.loads((ROOT / 'research/fixtures/toolkit-remaining-conversions-source-proof.json').read_text())
+CORE_INPUT = AGENTS['TCBusKeyInputCGateAgent']['attributes'][:-1]
+AGENTS['TCBusPCICGateAgent'] = {
+    'unit_types': ['PC_DAL2'], 'overrides_before_unit_conversion_save': False,
+    'attributes': [[n, flag] for n, flag in _BASE] + [['Burden', False], ['ClockGenEnable', True]],
+}
+AGENTS['TCBusPC_DAL2BCGateAgent'] = {
+    'unit_types': ['PC_DAL2B', 'PC_DAL2C'], 'overrides_before_unit_conversion_save': False,
+    'attributes': AGENTS['TCBusPCICGateAgent']['attributes'] + [[n, True] for n in (
+        'ErrorReportDeviceID', 'DaliMonitorRate', 'DaliARampMatching', 'DaliARestoreLevel',
+        'DaliAErrorReportingStatus', 'DaliAErrorRefreshTime', 'DaliAEnableErrorGroup', 'DaliAEnableErrorLevel',
+        'DaliADisableErrorGroup', 'DaliADisableErrorLevel', 'DaliATriggerErrorGroup', 'DaliATriggerErrorAcSel',
+        'DaliBRampMatching', 'DaliBRestoreLevel', 'DaliBErrorReportingStatus', 'DaliBErrorRefreshTime',
+        'DaliBEnableErrorGroup', 'DaliBEnableErrorLevel', 'DaliBDisableErrorGroup', 'DaliBDisableErrorLevel',
+        'DaliBTriggerErrorGroup', 'DaliBTriggerErrorAcSel', 'CBusToDali', 'DaliToCBus')],
+}
+AGENTS['TCBusPirSensorInputCGateAgent'] = {
+    'unit_types': ['SENPIRSS', 'SENPIROA', 'SENPIRIA', 'SENPIRIB'],
+    'overrides_before_unit_conversion_save': True, 'conversion_hook_profile': 'older-sensor-fresh',
+    'attributes': CORE_INPUT + [['EnableGroupAddress', True], ['EnableGroupLogic', True]],
+}
+AGENTS['TSENLLCGateAgent'] = {
+    'unit_types': ['SENLL'], 'overrides_before_unit_conversion_save': True,
+    'conversion_hook_profile': 'older-sensor-fresh',
+    'attributes': CORE_INPUT[:13] + [[n, True] for n in (
+        'TargetLUX', 'Hystersis', 'LevelGroupAddress', 'OnOffGroupAddress', 'EnableGroupAddress', 'LED', 'IndicatorFunction')],
+}
+AGENTS['TCBusMultisensorCGateAgent'] = {
+    'unit_types': ['SENPILL'], 'overrides_before_unit_conversion_save': True,
+    'conversion_hook_profile': 'older-sensor-fresh',
+    'attributes': [['IRBank' if n == 'InfraRedBank' else n, flag] for n, flag in CORE_INPUT]
+       + [[n, True] for n in (
+        'ControlAppGroupAddress', 'EnableNightlight', 'EnableNightlightControl', 'DisableTimerFlash',
+        'FirstKeyThrowAway', 'IndicatorPressedLevel', 'TimerDuration', 'PatchEnable', 'SceneKeySelector',
+        'SceneTable', 'SceneTablePointer', 'DisableIR', 'IDBacklightIllumination', 'EnableNightlightOnPCx',
+        'EnableNightlightOnPA6', 'PrimaryColour',
+        *[r['name'] for r in REMAINING_PROOF['constructor_fields'][
+            'CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.InternalCreate']])],
+}
+
 TOOLKIT_SEMANTICS = {
     'uses_cgate_convertunit': False,
     'lookup': 'case-insensitive (source type, target type); first registration wins',
@@ -349,10 +399,14 @@ LIMITS = ('Static facts from the pinned Toolkit EXE/MAP; no original code was ex
           'target model at 2.5.00. Its five coupler/auxiliary registrations use a separate fresh 2.2.00 '
           'target model profile with the CouplerPro brightness suppression. '
           'InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; '
-          'its SENPILL self-conversion remains refused pending the separate sensor hook. '
-          'DLT/KeyToDLT admits 120 additional registrations with source recovery and owned synthetic '
+          'the SENPILL self-conversion now uses the separate older-sensor source profile. '
+          'DLT/KeyToDLT admits 129 registrations with source recovery and owned synthetic '
           'CLI proof, separately from native acceptance: classic 1.2.67, modern 2.5.00 and DLT 2.1.00 '
           'sources into fresh DLT 2.1.00. KEYM6 has three registrations without a recovered factory model. '
+          'NeoToKey admits thirteen 2.5.00-to-fresh-1.2.67 directions; four PCI/DALI swaps use fresh 4.5.00; '
+          'nineteen older sensor directions use exact SENPIRSS/SENLL 1.2.67, other PIR 1.2.68 and SENPILL 1.6.00. '
+          'Those admissions and nine KEYBIR catalogue-alias DLT directions are source/software evidence only. '
+          'The InputUnit class native receipts cover its original ten non-sensor directions, not its new SENPILL self pair. '
           'Every other registered or unregistered pair is refused with the reason recorded here. '
           'Static evidence is separate from native C-Gate execution and does not establish original '
           'Toolkit GUI or physical acceptance.')
@@ -380,6 +434,8 @@ def build(tsv: Path) -> dict:
         'source_admitted_classes': list(SOURCE_ADMITTED),
         'pair_refusals': [{'source': s, 'target': t, 'reason': reason} for (s, t), reason in PAIR_REFUSALS.items()],
         'registrations': rows, 'limits': LIMITS,
+        'source_admitted_pairs': [['SENPILL', 'SENPILL']],
+        'additional_source_proof': 'toolkit-remaining-conversions-source-proof.json',
     }
 
 
@@ -433,7 +489,7 @@ def validate(receipt: dict) -> list[str]:
         check(not agent['overrides_before_unit_conversion_save'] or source_only
               or agent.get('conversion_hook_profile') in ('classic-1.2.67-to-fresh-neo-2.5.00',
                                                           'coupler-1.2.67-to-fresh-neo-2.2.00',
-                                                          'input-1.2.67-to-fresh-input-1.2.67', DLT_PROFILE),
+                                                          'input-1.2.67-to-fresh-input-1.2.67', DLT_PROFILE, 'older-sensor-fresh'),
               'admitted agent hook in ' + name)
     text = json.dumps(receipt)
     for marker in ('<Param', 'DefaultValue', '<Address>'):
@@ -442,7 +498,7 @@ def validate(receipt: dict) -> list[str]:
 
 
 def render(receipt: dict) -> str:
-    return json.dumps(receipt, indent=1) + '\n'
+    return json.dumps(receipt, indent=2) + '\n'
 
 
 def main() -> int:

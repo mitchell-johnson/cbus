@@ -1,0 +1,163 @@
+{
+  "format": "cbus-edlt-parent-add-dialog-source-evidence-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00",
+    "toolkit": "1.18.0.2754"
+  },
+  "original_sources": [
+    {
+      "path": "edlt-decompiled/eDLT/eDLT.Controls.PPControls/ComboBoxAddEdit.cs",
+      "sha256": "77a6f18293f1213797a48193e153387b2caa30103a1061c40a3f1a82e5996027"
+    },
+    {
+      "path": "edlt-decompiled/eDLT/eDLT/FrmBaseUnit.cs",
+      "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16"
+    },
+    {
+      "path": "edlt-decompiled/CBusLogicModel/CBusLogicModel.Units.EDLT/EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2"
+    },
+    {
+      "path": "edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c"
+    },
+    {
+      "path": "edlt-decompiled/CBusLogicModel/CBusLogicModel/CBusApplication.cs",
+      "sha256": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933"
+    },
+    {
+      "path": "edlt-decompiled/CBusLogicModel/CBusLogicModel.Utilities/BindingListCBusObject.cs",
+      "sha256": "700dc6020b82886b9ed69c94c07cddfd0da64da4d14d18941e8308ce75563bbe"
+    },
+    {
+      "path": "edlt-decompiled/CBusLogicModel/CBusLogicModel.ProgramableProperties/PPAttributeDataSourceLogic.cs",
+      "sha256": "a3b56f80b6abb9ba3b24cd9778e450ba8aca3a592f181e04c8eafdfeb600056b"
+    },
+    {
+      "path": "toolkit/app/CBusToolkit.exe",
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+    },
+    {
+      "path": "toolkit/app/CBusToolkit.map",
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    }
+  ],
+  "original_methods": [
+    {
+      "method": "CIS_TfrmKEYGL5.TfrmKEYGL5.AddSharpGroup",
+      "start": "0x11c6080",
+      "end": "0x11c61d0",
+      "sha256": "8b9704fa475294a89401f01f4a1d6398eddf1144557469ed87fbd94d12bb3bcc"
+    },
+    {
+      "method": "CIS_TfrmKEYGL5.TfrmKEYGL5.AddSharpLevel",
+      "start": "0x11c62ec",
+      "end": "0x11c648c",
+      "sha256": "dbeeb7e4b04b77c27c99146daf04692df4bbe269512a95622bfc9719459968b5"
+    },
+    {
+      "method": "CIS_TCBusApplicationGUIAgent.TCBusApplicationGUIAgent.AddGroup",
+      "start": "0xcd7520",
+      "end": "0xcd79ac",
+      "sha256": "11bf43d57a1b4add14d58ace9e56a1988650cb994b7ca33af909b7339b04a0ac"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.Add",
+      "start": "0xf288f0",
+      "end": "0xf28938",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.GenericAdd",
+      "start": "0xf28938",
+      "end": "0xf28954",
+      "sha256": "902ca9f7b02cdf1046adb13c2db8f89306cc48a2db652d1c5d7e6cf51e535611"
+    },
+    {
+      "method": "CIS_TCBusApplicationGUIAgent.TCBusApplicationGUIAgent.AddLevel",
+      "start": "0xcd79ac",
+      "end": "0xcd7e40",
+      "sha256": "3a8d2359a3689e5da726062e9bb83649a18271f38ab3ff0391c6cf908d25f635"
+    },
+    {
+      "method": "CIS_TfrmLevelAssign.TfrmLevelAssign.SetValues",
+      "start": "0xbc6a50",
+      "end": "0xbc7084",
+      "sha256": "5c1cf64576627f2d616527cd9a39338235bd20f164fa6cf350aa6b40d95223e2"
+    },
+    {
+      "method": "CIS_TfrmLevelAssign.TfrmLevelAssign.actOKExecute",
+      "start": "0xbc7084",
+      "end": "0xbc758c",
+      "sha256": "8f9e882373375ec11ff4d618da7838a0ddbbff45ed1a262df8029c5ebbb5b229"
+    },
+    {
+      "method": "CIS_TfrmLevelAssign.TfrmLevelAssign.cmbLevelAddressChange",
+      "start": "0xbc76f0",
+      "end": "0xbc7844",
+      "sha256": "57a71cc628f498ec4b2c13daff7b5cb9f4a01ba21b4ee5936866d099fec86604"
+    }
+  ],
+  "recovered_rules": [
+    {
+      "method": "ComboBoxAddEdit.AddObject",
+      "rule": "Blank Group Add uses the current list application. A null reply changes no selection. An accepted decimal address selects the matching refreshed item and writes its SelectedValue binding."
+    },
+    {
+      "method": "EDLTUnit.AfterLoadPPData / PPAttributeDataSourceLogic",
+      "rule": "Corridor uses PrimaryApplication groups. Link permits255; Office and Corridor controls are disabled by Link255 and lists exclude the other roles. Absent stored selections follow the existing Corridor Show normalization."
+    },
+    {
+      "method": "CBusApplication.ReadXmlData / BindingListCBusObject.PopulateList",
+      "rule": "Refreshed group lists use explicit group sort preference: address order or case-insensitive TagName order. Exclusions and virtual255 entries belong to the view. Database child order alone does not establish that preference."
+    },
+    {
+      "method": "FrmBaseUnit.InitializeComponent / btnAddGroup_Click",
+      "rule": "Activation group list uses202 in mode3 and PrimaryApplication otherwise. Standby duration enables its controls, event modes2/3 expose Group Add. Mode3 and selected group other than255 expose Action Add, which requests a blank Level address under202/currentProximityGroup."
+    },
+    {
+      "method": "TCBusApplicationGUIAgent.AddGroup / TfrmGroupAssign",
+      "rule": "First-free group address0..254, reserved255. The editable seed is the source application noun plus first-free address. Accepted group names trim before blank, exact Project.TagName and ASCII-insensitive duplicate validation. Cancel frees the provisional object."
+    },
+    {
+      "method": "TCBusApplicationGUIAgent.AddLevel / TfrmLevelAssign",
+      "rule": "First-free Level address0..254 with Level N seed; explicit address leaves the Level seed when the Action Selector prefix does not match. Duplicate lookup compares the entered untrimmed name with ASCII UpperCase, then accepted names trim. Project.TagName is exact. Address equals Value. Cancellation writes no binding."
+    },
+    {
+      "method": "CBusNetwork.GetApplicationByAddress / CBusApplication.GetGroupByAddress / SceneManager retained getter model",
+      "rule": "Fresh model default bAdd=true permits exact getter creations. Ordered dialog histories admit only objects already present or established by preceding getter/dialog receipts. Parent bindings reuse the owning panel editor and one final parent save."
+    },
+    {
+      "method": "EDLTUnit.AfterLoadPPData / LoadScenes / retained Corridor Show",
+      "rule": "Initial scene trigger/action getters run before controls whether or not SceneManager is opened later. Initial and per-operation Corridor absence facts come from the complete inventory at the actual binding, including after an Application switch; a future Add cannot make an earlier missing stored selection present retroactively."
+    }
+  ],
+  "software_contract": {
+    "new_operations": [
+      "add-corridor-dialog",
+      "add-activation-group-dialog",
+      "add-activation-action-dialog"
+    ],
+    "ordered_binding_events": "parent-add-binding",
+    "old_group_add_composition": true,
+    "scene_manager_composition": true,
+    "explicit_project_tag_name_required": true,
+    "corridor_display_preferences_required": true,
+    "first_free": "0..254",
+    "reserved": 255,
+    "complete_native_snapshot_required": true,
+    "partial_cache_promoted": false,
+    "application_add_range_resolved": false,
+    "reset_fresh_dialog_graph_admitted": false,
+    "original_instructions_executed": false,
+    "original_forms_executed": false,
+    "hardware_operations": 0
+  },
+  "references": [
+    "edlt-add-dialog-evidence.json",
+    "edlt-scene-add-dialog-evidence.json",
+    "edlt-display-acceptance.json"
+  ]
+}

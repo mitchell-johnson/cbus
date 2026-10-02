@@ -111,8 +111,8 @@ class KEYGL5CSVTests(unittest.TestCase):
                                     if node.findtext('Address') == '255'))
 
         cases = (
-            ('firmware', wrong_firmware, 'supports only'),
-            ('catalog', wrong_catalog, 'supports only'),
+            ('firmware', wrong_firmware, 'KEYGL5.*admitted only at its pinned firmware and stored shape'),
+            ('catalog', wrong_catalog, 'KEYGL5.*admitted only at its pinned firmware and stored shape'),
             ('application disagreement', conflicting_application, 'disagree'),
             ('duplicate widget parameter', duplicate_parameter,
              'exactly one stored native parameter'),
@@ -147,7 +147,7 @@ class KEYGL5CSVTests(unittest.TestCase):
                 ET.SubElement(other, name).text = str(value)
 
         text = changed_xml(add_unit)
-        with self.assertRaisesRegex(ValueError, 'supports only'):
+        with self.assertRaisesRegex(ValueError, 'KEYGL5.*admitted only at its pinned firmware and stored shape'):
             project_native_xml_selection(text, network_path='//CSVTEST/254',
                                          columns=COLUMNS)
         with tempfile.TemporaryDirectory() as folder:

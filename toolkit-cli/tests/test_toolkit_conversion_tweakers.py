@@ -67,8 +67,10 @@ class ReceiptTests(unittest.TestCase):
         admitted_rows = {(row['source'], row['target']) for row in data['registrations'] if row['decision'] == 'admitted'}
         dlt_rows = {(s, t) for (s, t), c in REGISTRY.items()
                     if c in tweakers.dlt.TWEAKERS and (s, t) not in tweakers.PAIR_REFUSALS}
-        self.assertEqual(len(dlt_rows), 120)
-        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED + INPUT_ADMITTED) | dlt_rows)
+        self.assertEqual(len(dlt_rows), 129)
+        remaining_rows = {(s,t) for (s,t),c in REGISTRY.items() if tweakers.remaining.handles(c,s,t)}
+        self.assertEqual(len(remaining_rows),36)
+        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED + INPUT_ADMITTED) | dlt_rows | remaining_rows)
         for name, rules in ASSIGNMENTS.items():
             recorded = [(rule['target'], 'literal' if 'literal' in rule else 'from', rule.get('literal', rule.get('from')))
                         for rule in data['classes'][name]['assignments']]

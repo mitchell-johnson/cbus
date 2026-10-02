@@ -1980,8 +1980,8 @@ Keep the durable attempt journal; `conversion recover --journal FILE` reads
 the current project and backup without replaying an uncertain conversion or
 save. See the [integrated workflow](docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).
 
-`cgate conversion tweak` exposes all 243 admitted client-side Toolkit tweaker
-pairs, including 120 source-backed DLT-target directions. See the
+`cgate conversion tweak` exposes all 288 admitted client-side Toolkit tweaker
+pairs, including 129 source-backed DLT-target directions and 36 Neo-to-classic, DALI and older sensor directions. See the
 [DLT firmware, shape and hook rules](docs/toolkit-dlt-conversions.md). Preview with the canonical source path, source/target types, private
 specification filenames, unused target address, target firmware and catalogue.
 After reviewing the returned plan, repeat with
@@ -2556,3 +2556,11 @@ unit-family, topology and diagnostic gaps are listed in the current
 census is in [toolkit-surface.md](docs/toolkit-surface.md), and
 [capabilities.json](src/cbus_toolkit/capabilities.json) is the completion gate's
 machine-readable input.
+
+Current source profiles also admit214/262 CSV unit types. Read
+[CSV completion profiles](docs/database-csv-completion.md) for authoritative
+application identities, firmware bounds and atomic output refusal, and
+[eDLT parent Add histories](docs/edlt-parent-add-dialog.md) for ordered Corridor,
+Activation and SceneManager creation through one save. Full Toolkit parity
+remains unfinished; catalogue admission is separate from original and hardware
+acceptance.

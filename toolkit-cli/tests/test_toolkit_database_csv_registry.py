@@ -28,7 +28,7 @@ from tests.test_cgate import peer
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / 'research/experiments/2026-09-30/csv-factory-registry-static.json'
-CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-families-registry.json'
+CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-completion-registry.json'
 FIXTURE = ROOT / 'research/fixtures/toolkit-database-csv-registry-batch-synthetic.xml'
 HEADER = ('Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,'
           'Firmware Version,Primary Application,Secondary Application,Area,'
@@ -166,8 +166,8 @@ class FactoryRegistryTests(unittest.TestCase):
 
     def test_refusal_reasons_name_the_registry_decision(self):
         for kind, firmware, needle in (
-            ('RELAY1', '4.4', 'relay predicate with RELAY4'),
-            ('DIMDD8', '1.3.0', 'TNCCOutputCGateAgent has no admitted CSV association model'),
+            ('IOPE1R1', '1.0', 'TIOPECGateAgent has no admitted CSV association model'),
+            ('PC_SHAC', '1.0', 'TPCSHACCGateAgent has no admitted CSV association model'),
             ('KEY4', '1.0', 'TCBusKeyInputCGateAgent'),
             ('SENPIRIB', '2.4.00', 'TCBusSurfaceMountPIRSensorCGateAgent'),
             ('DIMDN8', '2.6.00', 'admitted only at its pinned firmware'),
@@ -246,9 +246,13 @@ class RegistryBatchCSVTests(unittest.TestCase):
             self.assertEqual(live.read_bytes(), CSV_BYTES)
 
     def test_unadmitted_and_malformed_inputs_reject_before_output(self):
-        def relay1(_, unit): unit.find('UnitType').text = 'RELAY1'
-        def ncc(_, unit): unit.find('UnitType').text = 'DIMDD8'
-        def late(_, unit): unit.find('FirmwareVersion').text = '2.4.00'
+        def temperature(_, unit):
+            unit.find('UnitType').text = 'SENTEMP'
+            unit.find('FirmwareVersion').text = '1.00'
+        def shac(_, unit): unit.find('UnitType').text = 'PC_SHAC'
+        def old_light_sensor(_, unit):
+            unit.find('UnitType').text = 'SENLL'
+            unit.find('FirmwareVersion').text = '1.00'
         def firmware(_, unit): unit.find('FirmwareVersion').text = '2.6.00'
         def secondary(_, unit): parameter(unit, 'Application').set('Value', '56 57')
         def unused_secondary(_, unit): parameter(unit, 'Application').set('Value', '56 255')
@@ -259,9 +263,9 @@ class RegistryBatchCSVTests(unittest.TestCase):
                                     if group.findtext('Address') == '12'))
 
         for name, kind, change, needle in (
-            ('shared relay agent', 'DIMPR1', relay1, 'relay predicate with RELAY4'),
-            ('unimplemented agent', 'DIMDS8', ncc, 'TNCCOutputCGateAgent'),
-            ('other SENPIRIB agent', 'SENPIRIB', late, 'TCBusSurfaceMountPIRSensorCGateAgent'),
+            ('temperature agent', 'DIMPR1', temperature, 'TSENTEMPCGateAgent'),
+            ('SHAC agent', 'DIMDS8', shac, 'TPCSHACCGateAgent'),
+            ('old SENLL agent', 'SENPIRIB', old_light_sensor, 'TSENLLCGateAgent'),
             ('firmware', 'RELDC4', firmware, 'pinned firmware'),
             ('secondary', 'ANOMB8', secondary, 'unused secondary'),
             ('mask without secondary', 'SENPIRIB', unused_secondary, 'secondary group blocks'),

@@ -13,7 +13,7 @@ from .unitspec import UnitSpec
 
 TWEAKERS = frozenset(("TTweakerDLT", "TTweakerKeyToDLT"))
 DLT_TYPES = ("KEYDL4", "KEYML5", "KEYBL5")
-MODERN_TYPES = tuple("KEYM2 KEYM4 KEYM8 KEYB2 KEYB4 KEYB6 KEYH1 KEYH2 KEYH3 KEYH4 "
+MODERN_TYPES = tuple("KEYM2 KEYM4 KEYM8 KEYB2 KEYB4 KEYB6 KEYBIR2 KEYBIR4 KEYBIR6 KEYH1 KEYH2 KEYH3 KEYH4 "
                      "KEYA1 KEYA3 KEYA6 KEYA8 KEYAV2 KEYAV4 "
                      "KEYCIR1 KEYCIR4 KEYC1 KEYC2 KEYC4 KEYE1 KEYE2 KEYE3 KEYE4 "
                      "KEYP2 KEYP4 KEYP6 KEYEIR1 KEYEIR2 KEYEIR3 KEYEIR4".split())
@@ -65,6 +65,9 @@ def specification(unit_type):
         return "KEYL4.xml", "KEYDL4"
     if kind in KEYE_TYPES:
         return "KEYE.xml", "KEYE1"
+    if kind.startswith("KEYBIR"):
+        alias = "KEYB" + kind[-1]
+        return alias + ".xml", alias
     return kind + ".xml", kind
 
 

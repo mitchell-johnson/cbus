@@ -30,16 +30,74 @@ from .toolkit_database_csv_registry import refusal_reason, registrations_for
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 IDENTITY_PROFILE = 'cbus-toolkit-database-cached-projection-v2'
 WIRELESS_PROFILE = 'cbus-toolkit-database-cached-projection-v3'
+SOURCE_PROFILE = 'cbus-toolkit-database-cached-projection-v4'
+# These are exact-class factory agents and literal VMT loader bindings, not
+# parent-class guesses. The committed completion vector pins every range.
+_SOURCE_INPUT_AGENTS = {
+    'TBCNC4CGateAgent': (4, False),
+    'TCBusPirSensorInputCGateAgent': (4, False),
+    'TCBusMultisensorCGateAgent': (8, False),
+    'TCBusST7MultisensorCGateAgent': (8, True),
+    'TCBusST7LightLevelSensorCGateAgent': (8, True),
+    'TCBusSurfaceMountMultisensorCGateAgent': (8, True),
+    'TCBusSurfaceMountPIRSensorCGateAgent': (8, True),
+    'TCBusSurfaceMountLightLevelSensorCGateAgent': (8, True),
+    'TCBusCouplerProInputCGateAgent': (8, True),
+    'TCBusCouplerVieoInputCGateAgent': (8, True),
+    'TCBusDynamicLabelInputCGateAgent': (8, True),
+}
+_SOURCE_OUTPUT_AGENTS = {
+    'TDIMDNUXCGateAgent': 'GroupAddress',
+    'TBusPoweredDinRailOutputCGateAgent': 'GroupAddress',
+    'TCBusFanControllerCGateAgent': 'GroupAddress',
+    'TDIMARXCGateAgent': 'ChannelOutputGroup',
+    'TDIMPR12CGateAgent': 'GroupAddress',
+    'TDIMDD4CGateAgent': 'channel_fields',
+    'TDIMDD8CGateAgent': 'channel_fields',
+    'TCBus1RelayCGateAgent': 'relay_logic',
+}
+_SOURCE_CHANNELS = {
+    'TDIMDU4': 4, 'TDIMPR3A': 3, 'TDIMPR6A': 6, 'TDIMPR12A': 12,
+    'TRELSM8': 8, 'TRELDF1': 1,
+    'TDIMAR3': 3, 'TDIMAR6': 6, 'TDIMAR12': 12, 'TDIMPR12': 12,
+    'TDIMDD4': 4, 'TDIMDD4F': 4, 'TDIMDD8': 8, 'TDIMDD8F': 8,
+    'TRELAY1': 1, 'TRELAY2': 2, 'TDIMMER4': 4, 'TAN_OUT4': 4,
+}
+
+_SOURCE_GENERIC_CLASSES = {
+    'TCBusBurden': 'TCBusNonUnitCGateAgent',
+    'TCBusCable': 'TCBusNonUnitCGateAgent',
+    'TNCCInputUnit': 'TNCCInputCGateAgent',
+    'TNCCOutputUnit': 'TNCCOutputCGateAgent',
+    'TPCI2': 'TCBusPCI2CGateAgent',
+    'TPCI3': 'TCBusPCICGateAgent',
+    'TPCI4': 'TCBusPCICGateAgent',
+    'TPCI4DALI': 'TCBusPCICGateAgent',
+    'TPCI4NoBurden': 'TCBusPCICGateAgent',
+    'TPCI4PC_CTA': 'TCBusPC_CTACGateAgent',
+    'TPCI4_PC_CTB': 'TCBusPCICGateAgent',
+    'TPCI4_PC_CTBL': 'TCBusPCICGateAgent',
+    'TPCIMIND2': 'TCBusPCICGateAgent',
+    'TPC_PACA': 'TCBusPC_PACACGateAgent',
+    'TPC_WHAM': 'TCBusPC_WHAMCGateAgent',
+    'TPowerSupply': 'TPowerSupplyCGateAgent',
+    'TSYSDAL2': 'TSYSDAL2CGateAgent',
+}
 FAMILY_AGENTS = ('TCBusKeyInputCGateAgent', 'TCBusNeoInputCGateAgent',
                  'TCBusNeoProInputCGateAgent', 'TCBusWirelessInputUnitCGateAgent',
                  'TCBusWirelessInputUnit8RemotesCGateAgent',
-                 'TCBusWirelessDecoratorInputUnitCGateAgent')
+                 'TCBusWirelessDecoratorInputUnitCGateAgent',
+                 *_SOURCE_INPUT_AGENTS, *_SOURCE_OUTPUT_AGENTS,
+                 *dict.fromkeys(_SOURCE_GENERIC_CLASSES.values()))
 
 
 def family_profile(unit_type, firmware):
     """Select one literal factory range, never guess across overlapping rows."""
     rows = registrations_for(unit_type, firmware)
-    candidates = [row for row in rows if row[4] in FAMILY_AGENTS]
+    candidates = [row for row in rows if row[4] in FAMILY_AGENTS
+                  and not (row[4] == 'TCBus1RelayCGateAgent' and unit_type.upper() == 'RELAY4')
+                  and (row[4] not in _SOURCE_GENERIC_CLASSES.values()
+                       or _SOURCE_GENERIC_CLASSES.get(row[3]) == row[4])]
     if not candidates:
         return None
     # registrations_for deliberately returns all rows on an invalid version.
@@ -47,6 +105,20 @@ def family_profile(unit_type, firmware):
     if _firmware(firmware) is None or len(rows) != 1:
         raise ValueError('CSV family firmware must select exactly one static registration')
     row, = candidates
+    if _SOURCE_GENERIC_CLASSES.get(row[3]) == row[4]:
+        return {'class': row[3], 'agent': row[4], 'wireless': False,
+                'blocks': 0, 'has_area': False, 'secondary_blocks': False,
+                'source_model': True, 'generic': True, 'group_parameter': None}
+    if row[4] in _SOURCE_INPUT_AGENTS:
+        blocks, secondary = _SOURCE_INPUT_AGENTS[row[4]]
+        return {'class': row[3], 'agent': row[4], 'wireless': False,
+                'blocks': blocks, 'has_area': True, 'secondary_blocks': secondary,
+                'source_model': True, 'group_parameter': 'GroupAddress'}
+    if row[4] in _SOURCE_OUTPUT_AGENTS:
+        return {'class': row[3], 'agent': row[4], 'wireless': False,
+                'blocks': 6 if row[4] == 'TCBus1RelayCGateAgent' else _SOURCE_CHANNELS[row[3]], 'has_area': True,
+                'secondary_blocks': False, 'source_model': True,
+                'group_parameter': _SOURCE_OUTPUT_AGENTS[row[4]]}
     wireless = row[4].startswith('TCBusWireless')
     return {'class': row[3], 'agent': row[4], 'wireless': wireless,
             'blocks': 16 if wireless else 4 if row[4] == FAMILY_AGENTS[0] else 8,
@@ -101,8 +173,16 @@ def admitted_profiles():
     rows += [(kind, firmware, klass) for kind, (firmware, klass) in _SENSOR_TYPES.items()]
     rows.append(('KEYGL5', '5.5.00', 'TCBusEDLTUnit'))
     from .toolkit_database_csv_registry import REGISTRATIONS
-    rows += [(kind.upper(), point, klass) for kind, low, high, klass, agent, _ in REGISTRATIONS
-             if agent in FAMILY_AGENTS for point in (low, high)]
+    for kind, low, high, klass, agent, _ in REGISTRATIONS:
+        if agent not in FAMILY_AGENTS:
+            continue
+        for point in (low, high):
+            try:
+                profile = family_profile(kind, point)
+            except ValueError:
+                continue
+            if profile is not None and profile['class'] == klass:
+                rows.append((kind.upper(), point, klass))
     return tuple(dict.fromkeys(rows))
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
@@ -208,7 +288,9 @@ class CSVAreaObservation:
 
     def __post_init__(self):
         _text(self.raw, 'Area observation')
-        if self.raw not in _AREA_VALUES:
+        if (self.raw not in _AREA_VALUES and not (self.raw.isascii()
+                and self.raw.isdecimal() and str(int(self.raw)) == self.raw
+                and 0 <= int(self.raw) <= 255)):
             raise ValueError('Area observation is outside the captured v1 domain')
         if type(self.completed) is not bool:
             raise ValueError('Area observation completion must be Boolean')
@@ -338,7 +420,8 @@ class CachedCSVProjection:
         return (''.join(COLUMN_LABELS[name] + ',' for name in self.columns),)
 
     def as_dict(self):
-        result = {'format': WIRELESS_PROFILE if self.wireless_loader is not None else
+        result = {'format': SOURCE_PROFILE if (family_profile(self.unit.unit_type, self.unit.firmware) or {}).get('source_model') else
+                  WIRELESS_PROFILE if self.wireless_loader is not None else
                   IDENTITY_PROFILE if self.application_context is not None else PROFILE,
                 'complete': self.complete,
                 'selected_class': self.selected_class, 'columns': list(self.columns),
@@ -395,8 +478,8 @@ def _class(unit):
     raise ValueError('Cached projection supports the captured profiles and source-backed Key, Neo, NeoPro and wireless factory ranges; ' + refusal_reason(unit.unit_type, unit.firmware))
 
 
-def _validated_groups(unit, groups):
-    if type(groups) is not tuple or not 1 <= len(groups) <= 256:
+def _validated_groups(unit, groups, *, allow_empty=False):
+    if type(groups) is not tuple or not int(not allow_empty) <= len(groups) <= 256:
         raise ValueError('group_cache must be a nonempty exact tuple of at most 256 groups')
     if any(type(group) is not CachedCSVGroup for group in groups):
         raise ValueError('group_cache must contain exact CachedCSVGroup records')
@@ -412,7 +495,7 @@ def _validated_groups(unit, groups):
     return tuple(replace(group, references=tuple(group.references)) for group in groups)
 
 
-def _validated_application_context(unit, groups, context):
+def _validated_application_context(unit, groups, context, *, source_model=False):
     if type(context) is not CachedCSVApplicationContext:
         raise ValueError('NeoPro cached projection requires explicit primary Application identity context')
     if context.secondary_mask >> len(unit.group_identities):
@@ -429,7 +512,9 @@ def _validated_application_context(unit, groups, context):
     primary = applications[context.primary_identity]
     secondary = (None if context.secondary_identity is None else
                  applications[context.secondary_identity])
-    if secondary is not None and secondary.address == 255:
+    if source_model and secondary is None:
+        raise ValueError('Source cached projection requires the resolved secondary Application identity; base formatting defaults it to255')
+    if secondary is not None and secondary.address == 255 and not source_model:
         raise ValueError('Secondary Application address 255 must be represented as an unused null identity')
     if unit.primary != primary.tag or unit.secondary != ('' if secondary is None else secondary.tag):
         raise ValueError('Unit application tags disagree with the authoritative Application identities')
@@ -473,9 +558,10 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     selected = validate_columns(columns)
     selected_class = _class(unit)
     family = family_profile(unit.unit_type, unit.firmware)
-    current = list(_validated_groups(unit, group_cache))
+    current = list(_validated_groups(unit, group_cache, allow_empty=bool((family or {}).get('generic'))))
     if family is not None:
-        application_context = _validated_application_context(unit, current, application_context)
+        application_context = _validated_application_context(unit, current, application_context,
+            source_model=family.get('source_model', False))
         if family['wireless']:
             if (type(wireless_loader) is not CSVWirelessLoader
                     or len(unit.group_identities) != 16 + wireless_loader.installed_channels
@@ -505,6 +591,12 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Captured generic observations are absent or an ignored pair')
     if wireless_loader is not None and area_observations:
         raise ValueError('Wireless loader has no Area provider observations')
+    if (family or {}).get('generic') and area_observations:
+        raise ValueError('Source generic loader has no Area provider observations')
+
+    if not (family or {}).get('source_model') and any(
+            observation.raw not in _AREA_VALUES for observation in area_observations):
+        raise ValueError('Area observation is outside the captured v1 domain')
 
     events = [_event('factory_selected', selected_class=selected_class)]
     raw_area = area_identity = None
@@ -600,9 +692,9 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
 
 def parse_cached_projection(value, *, columns):
     """Validate and project the exact bounded cached-object JSON schema."""
-    if type(value) is not dict or value.get('format') not in (PROFILE, IDENTITY_PROFILE, WIRELESS_PROFILE):
+    if type(value) is not dict or value.get('format') not in (PROFILE, IDENTITY_PROFILE, WIRELESS_PROFILE, SOURCE_PROFILE):
         raise ValueError('Expected the cbus-toolkit-database-cached-projection-v1 object')
-    with_identity = value['format'] in (IDENTITY_PROFILE, WIRELESS_PROFILE)
+    with_identity = value['format'] in (IDENTITY_PROFILE, WIRELESS_PROFILE, SOURCE_PROFILE)
     with_wireless = value['format'] == WIRELESS_PROFILE
     expected_root = _ROOT_FIELDS | ({'application_context'} if with_identity else set())
     if with_wireless:
@@ -627,6 +719,8 @@ def parse_cached_projection(value, *, columns):
                          'use cached v2 or an explicit native XML snapshot')
     if family is not None and not with_identity:
         raise ValueError('CSV family cached JSON requires explicit Application identity context')
+    if bool(family and family.get('source_model')) != (value['format'] == SOURCE_PROFILE):
+        raise ValueError('Source-backed completion profiles require cached v4')
     if with_wireless != bool(family and family['wireless']):
         raise ValueError('Wireless profiles require cached v3 loader metadata')
     if with_identity and family is None:
@@ -642,7 +736,8 @@ def parse_cached_projection(value, *, columns):
                          loader_associations=tuple(raw_loader))
 
     raw_groups = value['group_cache']
-    if type(raw_groups) is not list or not 1 <= len(raw_groups) <= 256:
+    if (type(raw_groups) is not list or not int(not bool((family or {}).get('generic')))
+            <= len(raw_groups) <= 256):
         raise ValueError('Cached groups must be a nonempty JSON array of at most 256 entries')
     groups = []
     for raw_group in raw_groups:

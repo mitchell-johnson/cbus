@@ -2,9 +2,7 @@
 
 The native snapshot exporter and cached projection admit the classic Key, Neo,
 NeoPro and wireless input families selected by the literal Toolkit 1.18 factory
-registrations. The current registry admits 126 distinct types, up from the prior
-35; 136 of the 262 statically registered types still have no admitted report
-profile. These counts describe bounded modeled profiles, not complete Toolkit
+registrations. That published registry checkpoint admitted 126 distinct types, up from 35, with 136 unadmitted. The current [completion registry](database-csv-completion.md) admits214/262 types and leaves 48 unadmitted; historical fixtures and receipts below remain unchanged. These counts describe bounded modeled profiles, not complete Toolkit
 workflow acceptance.
 
 The family batch covers 233 registrations and 94 types: ten classic Key

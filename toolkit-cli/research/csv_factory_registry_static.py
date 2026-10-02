@@ -45,6 +45,9 @@ RELAY_PREDICATE = 'CIS_TCBus1RelayUnit.TCBus1RelayUnit.IsInteractionGroup'
 DIMMER_CHANNEL_SLOT = 0x188
 RELAY_CHANNEL_SLOT = 0x160
 AGENT_SLOTS = {'agent_load': 0x94, 'load_groups': 0xD4}
+SOURCE_APPLICATION_SLOTS = {'format_application': 0x100,
+                            'primary_provider': 0xE4, 'secondary_provider': 0xE8}
+SOURCE_UNIT_SLOTS = {'init': 0xE4, 'internal_create': 0x0C}
 CONSTANT_GETTER = bytes.fromhex('558bec83c4f88945fcc745f8')
 # TRELDN8B.IsInteractionGroup: unsigned (slot - 8) borrow, i.e. slot < 8.
 SLOT_BELOW_8 = bytes.fromhex('558bec83c4f48955f88945fc8b45f883e8080f92c08845f78a45f78be55dc3')
@@ -76,6 +79,68 @@ FAMILY_MODELS = {
        for agent in ('TCBusWirelessInputUnitCGateAgent', 'TCBusWirelessInputUnit8RemotesCGateAgent',
                      'TCBusWirelessDecoratorInputUnitCGateAgent')},
 }
+
+# New source-backed loader admission is kept separate from historical receipts.
+_SOURCE_FAMILY_EXPECTATIONS = {
+    **{agent: ('TCoreKeyInputCGateAgent.LoadGroups',
+               'TCBusInputUnit.GetAreaIfAvailable',
+               'TCoreKeyInputUnit.IsInteractionGroup' if blocks == 4 else
+               'TCBusNeoInputUnit.IsInteractionGroup')
+       for agent, blocks in {
+           'TBCNC4CGateAgent': 4, 'TCBusPirSensorInputCGateAgent': 4,
+           'TCBusMultisensorCGateAgent': 8, 'TCBusST7MultisensorCGateAgent': 8,
+           'TCBusST7LightLevelSensorCGateAgent': 8,
+           'TCBusSurfaceMountMultisensorCGateAgent': 8,
+           'TCBusSurfaceMountPIRSensorCGateAgent': 8,
+           'TCBusSurfaceMountLightLevelSensorCGateAgent': 8,
+           'TCBusCouplerProInputCGateAgent': 8, 'TCBusCouplerVieoInputCGateAgent': 8,
+           'TCBusDynamicLabelInputCGateAgent': 8}.items()},
+    'TDIMDNUXCGateAgent': ('TBasicDinRailOutputCGateAgent.LoadGroups',
+        'TCBusDINRailOutputUnit.GetAreaIfAvailable', 'TCBusDimmerUnit.IsInteractionGroup'),
+    'TCBusFanControllerCGateAgent': ('TBasicDinRailOutputCGateAgent.LoadGroups',
+        'TCBusDINRailOutputUnit.GetAreaIfAvailable', 'TCBusDimmerUnit.IsInteractionGroup'),
+    'TBusPoweredDinRailOutputCGateAgent': ('TBasicDinRailOutputCGateAgent.LoadGroups',
+        'TCBusDINRailOutputUnit.GetAreaIfAvailable', 'TRELSM8.IsInteractionGroup'),
+    'TDIMARXCGateAgent': ('TDIMARXCGateAgent.LoadGroups',
+        'TGOCUnit.GetAreaIfAvailable', 'TCBUSUnit.IsInteractionGroup'),
+    'TDIMPR12CGateAgent': ('TDIMPR12CGateAgent.LoadGroups',
+        'TGOCUnit.GetAreaIfAvailable', 'TCBUSUnit.IsInteractionGroup'),
+    'TDIMDD4CGateAgent': ('TDIMDD4CGateAgent.LoadGroups',
+        'TCBusDINRailOutputUnit.GetAreaIfAvailable', 'TCBusDimmerUnit.IsInteractionGroup'),
+    'TDIMDD8CGateAgent': ('TDIMDD8CGateAgent.LoadGroups',
+        'TCBusDINRailOutputUnit.GetAreaIfAvailable', 'TCBusDimmerUnit.IsInteractionGroup'),
+    'TCBus1RelayCGateAgent': ('TCBus1RelayCGateAgent.LoadGroups',
+        'TCBus1RelayUnit.GetAreaIfAvailable', 'TCBus1RelayUnit.IsInteractionGroup'),
+}
+_SOURCE_GENERIC_CLASSES = {
+    'TCBusBurden': 'TCBusNonUnitCGateAgent',
+    'TCBusCable': 'TCBusNonUnitCGateAgent',
+    'TNCCInputUnit': 'TNCCInputCGateAgent',
+    'TNCCOutputUnit': 'TNCCOutputCGateAgent',
+    'TPCI2': 'TCBusPCI2CGateAgent',
+    'TPCI3': 'TCBusPCICGateAgent',
+    'TPCI4': 'TCBusPCICGateAgent',
+    'TPCI4DALI': 'TCBusPCICGateAgent',
+    'TPCI4NoBurden': 'TCBusPCICGateAgent',
+    'TPCI4PC_CTA': 'TCBusPC_CTACGateAgent',
+    'TPCI4_PC_CTB': 'TCBusPCICGateAgent',
+    'TPCI4_PC_CTBL': 'TCBusPCICGateAgent',
+    'TPCIMIND2': 'TCBusPCICGateAgent',
+    'TPC_PACA': 'TCBusPC_PACACGateAgent',
+    'TPC_WHAM': 'TCBusPC_WHAMCGateAgent',
+    'TPowerSupply': 'TPowerSupplyCGateAgent',
+    'TSYSDAL2': 'TSYSDAL2CGateAgent',
+}
+_SOURCE_FAMILY_EXPECTATIONS.update({agent: ('TCBusUnitCGateAgent.LoadGroups',
+    'TCBUSUnit.GetAreaIfAvailable', 'TCBUSUnit.IsInteractionGroup')
+    for agent in _SOURCE_GENERIC_CLASSES.values()})
+FAMILY_MODELS.update({agent: 'Source-pinned initialized block/channel count and exact loader order; '
+    'complete authoritative Application membership; primary Area; '
+    'v4 requires both base-formatted Application objects, including secondary255.'
+    for agent in _SOURCE_FAMILY_EXPECTATIONS if agent not in _SOURCE_GENERIC_CLASSES.values()})
+FAMILY_MODELS.update({agent: 'Exact fresh base Unit lifecycle and base group loader; '
+    'empty Unit group manager and unavailable Area; two resolved base-formatted Application objects.'
+    for agent in _SOURCE_GENERIC_CLASSES.values()})
 
 
 def _sha(data):
@@ -232,6 +297,46 @@ def _agent_slots(image, reference):
     return result
 
 
+def _source_bindings(image, unit_reference, agent_reference):
+    """Pin the concrete lifecycle and provider methods of each new profile."""
+    result = {}
+    for label, reference, slots in (('unit', unit_reference, SOURCE_UNIT_SLOTS),
+                                    ('application', agent_reference, SOURCE_APPLICATION_SLOTS)):
+        vmt = image.pointer(reference)
+        result[label] = {}
+        for name, offset in slots.items():
+            start = image.pointer(vmt + offset)
+            end = image.starts[bisect.bisect_right(image.starts, start)]
+            result[label][name] = {'offset': hex(offset), 'symbol': image.name(start),
+                'start': hex(start), 'end': hex(end),
+                'sha256': _sha(image.raw(start, end - start))}
+    expected = {
+        'format_application': 'CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.FormatCgApplication',
+        'primary_provider': 'CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject',
+        'secondary_provider': 'CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object',
+    }
+    if {key: row['symbol'] for key, row in result['application'].items()} != expected:
+        raise ValueError('Source completion Application provider binding changed')
+    if image.class_name(unit_reference) in _SOURCE_GENERIC_CLASSES and {
+            key: row['symbol'] for key, row in result['unit'].items()} != {
+            'init': 'CIS_TCommonCBus.TCBUSUnit.Init',
+            'internal_create': 'CIS_TCommonCBus.TCBUSUnit.InternalCreate'}:
+        raise ValueError('Generic completion requires the exact base Unit lifecycle')
+    agent = image.class_name(agent_reference)
+    if _SOURCE_FAMILY_EXPECTATIONS[agent][0] == 'TCoreKeyInputCGateAgent.LoadGroups':
+        start = image.pointer(image.pointer(unit_reference) + 0x16C)
+        end = image.starts[bisect.bisect_right(image.starts, start)]
+        code = image.raw(start, end - start)
+        expected_count = (4 if _SOURCE_FAMILY_EXPECTATIONS[agent][2] ==
+                          'TCoreKeyInputUnit.IsInteractionGroup' else 8)
+        if code[:12] != CONSTANT_GETTER or struct.unpack('<I', code[12:16])[0] != expected_count:
+            raise ValueError('Source input initialized block count changed')
+        result['unit']['maximum_blocks'] = {'offset': '0x16c',
+            'symbol': image.name(start), 'start': hex(start), 'end': hex(end),
+            'sha256': _sha(code), 'count': expected_count}
+    return result
+
+
 def _visible(slots):
     if slots.get('predicate_kind') == 'relay' and slots.get('channels') is not None:
         return max(slots['channels'], 6)
@@ -246,7 +351,11 @@ def _decision(row, admitted):
     points = [point for point in admitted.get((row['unit_type'].upper(), klass), ())
               if firmware_in(point, row['firmware_min'], row['firmware_max'])]
     if points:
-        if agent in FAMILY_MODELS:
+        if _SOURCE_GENERIC_CLASSES.get(klass) == agent:
+            model = 'Fresh base Unit Init/InternalCreate and base AgentLoad/LoadGroups; no Unit group associations; base formatting defaults primary56/secondary255; both Application objects required.'
+        elif agent == RELAY_AGENT and row['unit_type'].upper() == 'RELAY4':
+            model = ADMITTED_MODELS[klass]
+        elif agent in FAMILY_MODELS:
             model = FAMILY_MODELS[agent]
         elif klass in ADMITTED_MODELS:
             model = ADMITTED_MODELS[klass]
@@ -318,6 +427,7 @@ def source_registry(exe_path, map_path, admitted_profiles):
     for kind, firmware, klass in admitted_profiles:
         admitted.setdefault((kind.upper(), klass), []).append(firmware)
     registrations = []
+    source_bindings = {}
     for row in units:
         klass = image.class_name(row['class_reference'])
         agent = agents.get(klass)
@@ -336,6 +446,8 @@ def source_registry(exe_path, map_path, admitted_profiles):
             result['report_slots']['visible_groups'] = visible
         result.update(_decision(result, admitted))
         registrations.append(result)
+        if result['admitted'] and (agent or (None,))[0] in _SOURCE_FAMILY_EXPECTATIONS:
+            source_bindings[klass] = _source_bindings(image, row['class_reference'], agent[1])
 
     for kind, firmware, klass in admitted_profiles:
         if not any(row['admitted'] and row['unit_type'].upper() == kind.upper()
@@ -349,6 +461,17 @@ def source_registry(exe_path, map_path, admitted_profiles):
     by_agent = Counter(row['agent'] for row in registrations if not row['admitted'])
     family_rows = [row for row in registrations if row['agent'] in FAMILY_MODELS]
     for row in family_rows:
+        if row['agent'] in _SOURCE_FAMILY_EXPECTATIONS:
+            loader, area, interaction = _SOURCE_FAMILY_EXPECTATIONS[row['agent']]
+            if (row['agent_methods']['load_groups'], row['report_slots']['area'],
+                    row['report_slots']['interaction']) != (loader, area, interaction):
+                raise ValueError('Source completion loader/report binding changed for ' + row['class'])
+            if row['class'] in _SOURCE_GENERIC_CLASSES and (
+                    row['agent_methods']['agent_load'] != 'TCBusUnitCGateAgent.AgentLoad'
+                    or row['report_slots']['primary'] != 'TCBUSUnit.GetApplicationObject'
+                    or row['report_slots']['secondary'] != 'TCBUSUnit.GetApplication2Object'):
+                raise ValueError('Generic completion requires the exact base agent/report getters')
+            continue
         wireless = row['agent'].startswith('TCBusWireless')
         expected_predicate = ('TCBUSUnit.IsInteractionGroup' if wireless else
                               'TCoreKeyInputUnit.IsInteractionGroup' if row['agent'] == 'TCBusKeyInputCGateAgent'
@@ -371,6 +494,12 @@ def source_registry(exe_path, map_path, admitted_profiles):
             'selection': 'one exact class registration at the explicit numeric firmware range; ambiguous matches refused',
             'wireless_metadata': ['InstalledKeys', 'InstalledChannels', 'ChannelRelayMask',
                                   'BlockGroup', 'BlockGroupSecondary', 'OutputGroup', 'OutputGroupSecondary'],
+        },
+        'source_completion_admission': {
+            'concrete_bindings': source_bindings,
+            'application_contract': 'Base FormatCgApplication defaults missing primary to56 and secondary to255; read-only projection requires both existing authoritative Application caches.',
+            'fresh_generic_contract': 'Only exact base Unit Init/InternalCreate and base AgentLoad/LoadGroups profiles; the fresh group manager remains empty.',
+            'original_execution': False,
         },
         'factories': {kind: {'method': FACTORIES[kind], 'address': hex(targets[kind]),
                              'callsites': len(sites[kind])} for kind in FACTORIES},

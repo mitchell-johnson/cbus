@@ -76,7 +76,7 @@ def arguments(directory,source,target,**changes):
 
 def test_every_recovered_dlt_registration_has_a_concrete_public_profile(tmp_path):
     from cbus_toolkit.toolkit_tweaker_lifecycle import prepare as prepare_replace
-    assert len(PAIRS)==120
+    assert len(PAIRS)==129
     for source,target in PAIRS:
         p=prepare(arguments(tmp_path/(source+'-'+target),source,target))
         assert p.source_type==source and p.target_type==target and p.spec_pins and p.firmware=='2.1.00'
@@ -87,7 +87,7 @@ def test_every_recovered_dlt_registration_has_a_concrete_public_profile(tmp_path
     for target in ('KEYDL4','KEYML5','KEYBL5'):
         with pytest.raises(tweaks.TweakerRefused,match='factory/model'): tweaks.admitted('KEYM6',target)
         for source in ('KEYBIR2','KEYBIR4','KEYBIR6'):
-            with pytest.raises(tweaks.TweakerRefused,match='specification identity'): tweaks.admitted(source,target)
+            assert tweaks.admitted(source,target)=='TTweakerDLT'
 
 
 @pytest.mark.parametrize('case',VECTOR['cases'],ids=lambda row:row['id'])
@@ -167,8 +167,9 @@ def test_registry_duplicate_exception_is_exact_and_other_agents_remain_strict():
         rows.write_text(''.join('\t'.join([r['call_va'],r['source'],r['target'],r['tweaker_class']])+'\n' for r in current['registrations']))
         receipt=build(rows)
     assert validate(receipt)==[]
-    assert sum(r['decision']=='admitted' for r in receipt['registrations'])==243
-    assert receipt['source_admitted_classes']==['TTweakerDLT','TTweakerKeyToDLT']
+    assert sum(r['decision']=='admitted' for r in receipt['registrations'])==288
+    assert receipt['source_admitted_classes']==['TTweakerDLT','TTweakerKeyToDLT','TTweakerNeoToKey',
+        'TTweakerPC_DAL2','TTweakerPC_DAL2B','TTweakerSENPIR','TTweakerSENLL']
     assert all(c not in receipt['native_accepted_classes'] for c in receipt['source_admitted_classes'])
     for name in ('TCBusDynamicLabelInputCGateAgent','TDinRailOutputCGateAgent'):
         bad=deepcopy(receipt)

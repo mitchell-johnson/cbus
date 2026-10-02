@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 635,
-    "modules_without_skip_sites": 336,
-    "modules_with_skip_sites": 299,
+    "test_modules": 641,
+    "modules_without_skip_sites": 341,
+    "modules_with_skip_sites": 300,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 28,
+      "unclassified": 29,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 139
+      "none": 140
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -344,6 +344,41 @@
             "test_public_barcode_named_unit_preservation_and_lifecycle",
             "test_public_barcode_numeric_unit_issued_identity",
             "test_public_barcode_owned_login_denial_and_positive_apply"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_csv_completion_interop.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 3,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_csv_completion_interop.py",
+          "kind": "helper.selected_binary.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned CSV family journey",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_public_csv_completion_all_templates_and_ordered_selection",
+            "test_public_csv_completion_late_refusal_is_atomic",
+            "test_public_csv_completion_lost_snapshot_is_not_retried"
           ]
         }
       ]

@@ -1,0 +1,280 @@
+{
+  "format": "cbus-edlt-parent-add-dialog-vector-v1",
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "original_instructions_executed": false,
+  "base_values": {
+    "PrimaryApplication": [
+      56
+    ],
+    "ProximityMode": [
+      3
+    ],
+    "ProximityGroup": [
+      7
+    ],
+    "ActivityDuration": [
+      30
+    ],
+    "CorridorLinkingLinkGroup": [
+      255
+    ],
+    "CorridorLinkingOfficeGroup": [
+      255
+    ],
+    "CorridorLinkingCorridorGroup": [
+      255
+    ],
+    "CorridorLinkingCorridorTime": [
+      300
+    ]
+  },
+  "project_tag_name": "Display name",
+  "groups": {
+    "56": {
+      "0": "Zulu",
+      "2": "Alpha"
+    },
+    "202": {
+      "7": "Trigger"
+    }
+  },
+  "levels": {
+    "202/7": {
+      "0": "Existing action",
+      "2": "Other action"
+    }
+  },
+  "cases": [
+    {
+      "name": "three-corridor-adds",
+      "operations": [
+        {
+          "op": "add-corridor-dialog",
+          "field": "link_group"
+        },
+        {
+          "op": "add-corridor-dialog",
+          "field": "office_group"
+        },
+        {
+          "op": "add-corridor-dialog",
+          "field": "corridor_group"
+        }
+      ],
+      "addresses": [
+        1,
+        3,
+        4
+      ],
+      "names": [
+        "Group 1",
+        "Group 3",
+        "Group 4"
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "corridor",
+          "option": "link_group",
+          "value": 1
+        },
+        {
+          "op": "parent-add-binding",
+          "panel": "corridor",
+          "option": "office_group",
+          "value": 3
+        },
+        {
+          "op": "parent-add-binding",
+          "panel": "corridor",
+          "option": "corridor_group",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "name": "cancel-does-not-consume-address",
+      "operations": [
+        {
+          "op": "add-corridor-dialog",
+          "field": "link_group",
+          "cancel": true
+        },
+        {
+          "op": "add-corridor-dialog",
+          "field": "link_group"
+        }
+      ],
+      "first_free": [
+        1,
+        1
+      ],
+      "outcomes": [
+        "cancelled",
+        "accepted"
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "corridor",
+          "option": "link_group",
+          "cancelled": true
+        },
+        {
+          "op": "parent-add-binding",
+          "panel": "corridor",
+          "option": "link_group",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "action-explicit-address-retains-level-seed",
+      "operations": [
+        {
+          "op": "add-activation-action-dialog",
+          "address": 40
+        }
+      ],
+      "addresses": [
+        40
+      ],
+      "names": [
+        "Level 1"
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "action",
+          "value": 40
+        }
+      ]
+    },
+    {
+      "name": "new-trigger-and-two-actions",
+      "operations": [
+        {
+          "op": "add-activation-group-dialog",
+          "name": "New trigger"
+        },
+        {
+          "op": "add-activation-action-dialog",
+          "name": "First"
+        },
+        {
+          "op": "add-activation-action-dialog",
+          "name": "Second"
+        }
+      ],
+      "addresses": [
+        0,
+        0,
+        1
+      ],
+      "names": [
+        "New trigger",
+        "First",
+        "Second"
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "group",
+          "value": 0
+        },
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "action",
+          "value": 0
+        },
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "action",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "action-cancel-has-no-binding",
+      "operations": [
+        {
+          "op": "add-activation-action-dialog",
+          "cancel": true
+        }
+      ],
+      "first_free": [
+        1
+      ],
+      "outcomes": [
+        "cancelled"
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "action",
+          "cancelled": true
+        }
+      ]
+    },
+    {
+      "name": "action-duplicate-entered-name",
+      "operations": [
+        {
+          "op": "add-activation-action-dialog",
+          "name": "EXISTING ACTION"
+        }
+      ],
+      "error": "2212"
+    },
+    {
+      "name": "action-spaced-name-trims-after-lookup",
+      "operations": [
+        {
+          "op": "add-activation-action-dialog",
+          "name": " Existing action "
+        }
+      ],
+      "names": [
+        "Existing action"
+      ],
+      "addresses": [
+        1
+      ],
+      "resolved": [
+        {
+          "op": "parent-add-binding",
+          "panel": "activation",
+          "option": "action",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "project-display-name-conflict",
+      "operations": [
+        {
+          "op": "add-activation-action-dialog",
+          "name": "Display name"
+        }
+      ],
+      "error": "2213"
+    }
+  ],
+  "bounds": {
+    "first_free": "0..254",
+    "reserved": 255,
+    "partial_cache_admitted": false,
+    "corridor_order_requires_explicit_display_preferences": true,
+    "original_dialog_executed": false,
+    "physical_device_programmed": false
+  }
+}

@@ -1,0 +1,2460 @@
+{
+  "format": "cbus-toolkit-remaining-conversions-source-proof-v1",
+  "review_date": "2026-10-02",
+  "original_code_executed": false,
+  "original_instruction_execution_count": 0,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+  "profiles": {
+    "KEYC1": "2.5.00",
+    "KEYC2": "2.5.00",
+    "KEYC4": "2.5.00",
+    "KEYCIR1": "2.5.00",
+    "KEYCIR4": "2.5.00",
+    "KEY1": "1.2.67",
+    "KEY2": "1.2.67",
+    "KEY4": "1.2.67",
+    "KEYIR1": "1.2.67",
+    "KEYIR4": "1.2.67",
+    "PC_DAL2": "4.5.00",
+    "PC_DAL2B": "4.5.00",
+    "PC_DAL2C": "4.5.00",
+    "SENPIRSS": "1.2.67",
+    "SENPIROA": "1.2.68",
+    "SENPIRIA": "1.2.68",
+    "SENPIRIB": "1.2.68",
+    "SENLL": "1.2.67",
+    "SENPILL": "1.6.00",
+    "KEYBIR2": "2.5.00",
+    "KEYBIR4": "2.5.00",
+    "KEYBIR6": "2.5.00"
+  },
+  "catalogue_aliases": [
+    {
+      "unit_type": "KEYC1",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYC1.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYC2",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYC2.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYC4",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYC4.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYCIR1",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYCIR1.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYCIR4",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYCIR4.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEY1",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "KEY1.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEY2",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "KEY2.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEY4",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "KEY4.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYIR1",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "KEYIR1.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYIR4",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "KEYIR4.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "PC_DAL2",
+      "firmware": "4.5.00",
+      "rows": [
+        {
+          "minimum_version": "4.5.00",
+          "maximum_version": "4.5.00",
+          "specification": "PC_DAL2.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "PC_DAL2B",
+      "firmware": "4.5.00",
+      "rows": [
+        {
+          "minimum_version": "4.5.00",
+          "maximum_version": "4.5.00",
+          "specification": "PC_DAL2B.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "PC_DAL2C",
+      "firmware": "4.5.00",
+      "rows": [
+        {
+          "minimum_version": "4.5.00",
+          "maximum_version": "4.5.00",
+          "specification": "PC_DAL2B.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "SENPIRSS.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENPIROA",
+      "firmware": "1.2.68",
+      "rows": [
+        {
+          "minimum_version": "1.2.68",
+          "maximum_version": "2.0.00",
+          "specification": "SENPIRSS.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware": "1.2.68",
+      "rows": [
+        {
+          "minimum_version": "1.2.68",
+          "maximum_version": "2.0.00",
+          "specification": "SENPIRSS.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware": "1.2.68",
+      "rows": [
+        {
+          "minimum_version": "1.2.68",
+          "maximum_version": "2.0.00",
+          "specification": "SENPIRSS.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENLL",
+      "firmware": "1.2.67",
+      "rows": [
+        {
+          "minimum_version": "1.2.67",
+          "maximum_version": "1.2.67",
+          "specification": "SENLL.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware": "1.6.00",
+      "rows": [
+        {
+          "minimum_version": "1.6.00",
+          "maximum_version": "1.6.00",
+          "specification": "SENPILL_1.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYBIR2",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYB2.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYBIR4",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYB4.xml"
+        }
+      ]
+    },
+    {
+      "unit_type": "KEYBIR6",
+      "firmware": "2.5.00",
+      "rows": [
+        {
+          "minimum_version": "2.5.00",
+          "maximum_version": "2.5.99",
+          "specification": "KEYB6.xml"
+        }
+      ]
+    }
+  ],
+  "factory_profiles": [
+    {
+      "unit_type": "SENPILL",
+      "firmware_min": "1.6.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENPILL",
+      "class_registration": "0x138330b",
+      "agent": "TCBusMultisensorCGateAgent",
+      "agent_registration": "0x1385694"
+    },
+    {
+      "unit_type": "SENLL",
+      "firmware_min": "1.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENLL",
+      "class_registration": "0x1383468",
+      "agent": "TSENLLCGateAgent",
+      "agent_registration": "0x1397e34"
+    },
+    {
+      "unit_type": "SENPIRSS",
+      "firmware_min": "1.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENPIRSS",
+      "class_registration": "0x138535b",
+      "agent": "TCBusPirSensorInputCGateAgent",
+      "agent_registration": "0x1397d2c"
+    },
+    {
+      "unit_type": "SENPIROA",
+      "firmware_min": "1.2.60",
+      "firmware_max": "2.0.00",
+      "class": "TSENPIROA",
+      "class_registration": "0x138537c",
+      "agent": "TCBusPirSensorInputCGateAgent",
+      "agent_registration": "0x1397d44"
+    },
+    {
+      "unit_type": "SENPIRIA",
+      "firmware_min": "1.2.60",
+      "firmware_max": "2.0.00",
+      "class": "TSENPIRSS",
+      "class_registration": "0x138539d",
+      "agent": "TCBusPirSensorInputCGateAgent",
+      "agent_registration": "0x1397d2c"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware_min": "1.2.60",
+      "firmware_max": "2.0.00",
+      "class": "TSENPIRSS",
+      "class_registration": "0x13853be",
+      "agent": "TCBusPirSensorInputCGateAgent",
+      "agent_registration": "0x1397d2c"
+    },
+    {
+      "unit_type": "PC_DAL2",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPCI4DALI",
+      "class_registration": "0x138640c",
+      "agent": "TCBusPCICGateAgent",
+      "agent_registration": "0x1398f0c"
+    },
+    {
+      "unit_type": "KEYCIR1",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "class": "TKEYCIR1",
+      "class_registration": "0x138e08f",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x1397880"
+    },
+    {
+      "unit_type": "KEY1",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKey1",
+      "class_registration": "0x138e13f",
+      "agent": "TCBusKeyInputCGateAgent",
+      "agent_registration": "0x1397528"
+    },
+    {
+      "unit_type": "KEY2",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKey2",
+      "class_registration": "0x138e1cf",
+      "agent": "TCBusKeyInputCGateAgent",
+      "agent_registration": "0x1397540"
+    },
+    {
+      "unit_type": "KEY4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKey4",
+      "class_registration": "0x138e25f",
+      "agent": "TCBusKeyInputCGateAgent",
+      "agent_registration": "0x1397558"
+    },
+    {
+      "unit_type": "KEYIR1",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKEYIR1",
+      "class_registration": "0x138e2ef",
+      "agent": "TCBusKeyInputCGateAgent",
+      "agent_registration": "0x1397570"
+    },
+    {
+      "unit_type": "KEYIR4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKEYIR4",
+      "class_registration": "0x138e383",
+      "agent": "TCBusKeyInputCGateAgent",
+      "agent_registration": "0x1397588"
+    },
+    {
+      "unit_type": "KEYBIR2",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKEYBIR2",
+      "class_registration": "0x138ea9f",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x13977a8"
+    },
+    {
+      "unit_type": "KEYBIR4",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKEYBIR4",
+      "class_registration": "0x138eac0",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x13977c0"
+    },
+    {
+      "unit_type": "KEYBIR6",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TKEYBIR6",
+      "class_registration": "0x138eae1",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x13977d8"
+    },
+    {
+      "unit_type": "KEYC1",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "class": "TKEYC1",
+      "class_registration": "0x138f067",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x1397838"
+    },
+    {
+      "unit_type": "KEYC2",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "class": "TKEYC2",
+      "class_registration": "0x138f113",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x1397850"
+    },
+    {
+      "unit_type": "KEYC4",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "class": "TKEYC4",
+      "class_registration": "0x138f1bf",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x1397868"
+    },
+    {
+      "unit_type": "KEYCIR4",
+      "firmware_min": "1.8.01",
+      "firmware_max": "9",
+      "class": "TKEYCIR4",
+      "class_registration": "0x138f26b",
+      "agent": "TCBusNeoProInputCGateAgent",
+      "agent_registration": "0x1397898"
+    },
+    {
+      "unit_type": "PC_DAL2B",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_DAL2B",
+      "class_registration": "0x139239d",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "agent_registration": "0x1398f60"
+    },
+    {
+      "unit_type": "PC_DAL2C",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_DAL2C",
+      "class_registration": "0x13923be",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "agent_registration": "0x1398f78"
+    }
+  ],
+  "reviewed_methods": {
+    "CIS_TBridge.TBridge.HasApplication2": {
+      "start": "0xd40dc4",
+      "end": "0xd40dd8",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusCouplerProInputCGateAgent.TCBusCouplerProInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x121f6cc",
+      "end": "0x121f6ec",
+      "bytes_sha256": "beb3ef97b7f68d8c7dbf4a34ae54027ab2ee8c8d1c977af043fbb03dce1aefae"
+    },
+    "CIS_TCBusCurrentSensorUnit.TCBusCurrentSensorUnit.HasApplication2": {
+      "start": "0xecc950",
+      "end": "0xecc964",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x121dcbc",
+      "end": "0x121de10",
+      "bytes_sha256": "d932cc15534b340d795f126a43c87c4cf7fb1c47b96675cf2a12ac877c74c806"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.HasApplication2": {
+      "start": "0xce4c50",
+      "end": "0xce4ccc",
+      "bytes_sha256": "1bb402ce0595d1b19a174c6bf494d504f231f8927774288acacbd6a39e750250"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x12bb9ec",
+      "end": "0x12bba70",
+      "bytes_sha256": "b73fbe249823e5b1a2af7948f7cc22e66e7a9590e49ed094a33173a4e99ee524"
+    },
+    "CIS_TCBusEDLTUnit.TCBusEDLTUnit.HasApplication2": {
+      "start": "0xce413c",
+      "end": "0xce4150",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcc5f70",
+      "end": "0xcc6004",
+      "bytes_sha256": "82e5dd24b953ea29ae8871107a8909e92700ab63085f12799c5129b6da5a76dc"
+    },
+    "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcf25a8",
+      "end": "0xcf28c0",
+      "bytes_sha256": "96fc71b083150dbd7c9c7c53c7d81d3d9cc1f4629a94b4944ec6306dd506b130"
+    },
+    "CIS_TCBusNonUnits.TCBusNonUnit.HasApplication2": {
+      "start": "0xea9b3c",
+      "end": "0xea9b50",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x1220688",
+      "end": "0x1220810",
+      "bytes_sha256": "9f1303f926721d130f9dd674b848bde5d09ab92bfcd4b2b6da41f9af99dce76a"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcf8e48",
+      "end": "0xcf91d4",
+      "bytes_sha256": "6d4209be476d44cab887d80fa3e04f9dcda98adbef1c0cf35d44b0d82f66a41e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcf66ac",
+      "end": "0xcf6da8",
+      "bytes_sha256": "3a691addcc6ca95a1104dab3098165431712caa2aeb5e8a79ceb8f3b9aaddd23"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcf8150",
+      "end": "0xcf8478",
+      "bytes_sha256": "03b84a67f7e0052f483bc9f58fe3ee5608cbca09cd11fa1842d0bd9c27f7463a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.HasApplication2": {
+      "start": "0xcfd880",
+      "end": "0xcfd894",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountLightLevelSensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x1219f28",
+      "end": "0x121a5cc",
+      "bytes_sha256": "63406ec6cb80a8a7434bb22b711509ac82ec4b54e6f5426a81e28dd5812cf94b"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x1218ec0",
+      "end": "0x1219864",
+      "bytes_sha256": "e9e03f3ce9a074e7cd6ac340477482510fde84ad605aad33d2705bf3e48d7c25"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountPIRSensorCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x1219ea0",
+      "end": "0x1219f28",
+      "bytes_sha256": "e7d16f17d066cabc3a7ea6e7b30c94db6b2d90bd57fe58e299bcee619629c2b6"
+    },
+    "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.HasApplication2": {
+      "start": "0xd42464",
+      "end": "0xd42478",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusWirelessInputUnit.TCBusWirelessInputUnit.HasApplication2": {
+      "start": "0xd4c2e0",
+      "end": "0xd4c2f4",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusWirelessPCIUnit.TCBusWirelessPCIUnit.HasApplication2": {
+      "start": "0x1110dc0",
+      "end": "0x1110dd4",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusWirelessUnit.TCBusWirelessUnit.HasApplication2": {
+      "start": "0xaf4bd4",
+      "end": "0xaf4be8",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcac4f8",
+      "end": "0xcac504",
+      "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.HasApplication2": {
+      "start": "0xf344fc",
+      "end": "0xf34510",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcc9180",
+      "end": "0xcc9930",
+      "bytes_sha256": "f95507698b15f7429b538ffc8fc130f25690b48f449fb8869f93d3fed9d48f58"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate": {
+      "start": "0xcc6d18",
+      "end": "0xcc717c",
+      "bytes_sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcedc88",
+      "end": "0xcedd7c",
+      "bytes_sha256": "b319b6f25fdc74fbdb34175d1e00acb4f7d5bb1308a483549503bb2d4a64c18b"
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HasApplication2": {
+      "start": "0xd066f0",
+      "end": "0xd06704",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TIOPECGateAgent.TIOPECGateAgent.BeforeUnitConversionSave": {
+      "start": "0x12df4d4",
+      "end": "0x12df4e8",
+      "bytes_sha256": "78c59fee7718067a50f3e26dd96ab9e5a3a605fbe00944835b98db1e8e669079"
+    },
+    "CIS_TIOPEUnit.TIOPEUnit.HasApplication2": {
+      "start": "0xd56194",
+      "end": "0xd561a8",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC1.CIS_TKEYC1": {
+      "start": "0x138f038",
+      "end": "0x138f0e4",
+      "bytes_sha256": "46c3469cba9640932b82a74587e5914ef55307bd9b5dce0bcf493c9dc97c4fbb"
+    },
+    "CIS_TKEYC1.TKEYC1.InternalCreate": {
+      "start": "0xf9d078",
+      "end": "0xf9d08c",
+      "bytes_sha256": "b18736d92224db9e06953ddc20906b0773da93d17ad06e516cd78a326ecffe9d"
+    },
+    "CIS_TKEYC1.TKEYC1.IsConvertableTo": {
+      "start": "0xf9d08c",
+      "end": "0xf9d188",
+      "bytes_sha256": "2f7e3599c58414af5eaed6ab2fb4c6242fcd9d06e4f04a8c44ec01eb30bf6e1e"
+    },
+    "CIS_TKEYC1.TKEYC1.IsKEYC": {
+      "start": "0xf9d188",
+      "end": "0xf9d19c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC1.TKEYC1.MaximumKeyCount": {
+      "start": "0xf9d19c",
+      "end": "0xf9d1b4",
+      "bytes_sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    },
+    "CIS_TKEYC2.CIS_TKEYC2": {
+      "start": "0x138f0e4",
+      "end": "0x138f190",
+      "bytes_sha256": "66c257f91bce4ee791a1e25641b4ab768d574a27ecbcd3c5c1c65fd43b8e0ab3"
+    },
+    "CIS_TKEYC2.TKEYC2.InternalCreate": {
+      "start": "0xf9d4c0",
+      "end": "0xf9d4d4",
+      "bytes_sha256": "50c5cd54471f0c032a5aeeb273e7b5f75ed24ed0714e9f2a44fe6c73b54b8541"
+    },
+    "CIS_TKEYC2.TKEYC2.IsConvertableTo": {
+      "start": "0xf9d4d4",
+      "end": "0xf9d5d0",
+      "bytes_sha256": "5e7b2d6584bbf7e47b111c5b9669a4dd9125bbaeb2bafc96d127b68f7f4144f0"
+    },
+    "CIS_TKEYC2.TKEYC2.IsKEYC": {
+      "start": "0xf9d5d0",
+      "end": "0xf9d5e4",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC2.TKEYC2.MaximumKeyCount": {
+      "start": "0xf9d5e4",
+      "end": "0xf9d5fc",
+      "bytes_sha256": "86ea199a1a5b554f27b6a04561d3ddea6a45402cb702e341398b6d2dbf8aab5e"
+    },
+    "CIS_TKEYC4.CIS_TKEYC4": {
+      "start": "0x138f190",
+      "end": "0x138f23c",
+      "bytes_sha256": "74c7b9a2713ab88fb93e4aaf54175597022f7abea3a1cc6eb9f02f5305039701"
+    },
+    "CIS_TKEYC4.TKEYC4.InternalCreate": {
+      "start": "0xf9d908",
+      "end": "0xf9d91c",
+      "bytes_sha256": "d88af470778a7e950f4271263747a71b26ce3742606dfb78ea082d5f5c773c02"
+    },
+    "CIS_TKEYC4.TKEYC4.IsConvertableTo": {
+      "start": "0xf9d91c",
+      "end": "0xf9da18",
+      "bytes_sha256": "a0468c049cc6fbfa8b357ec6ae6873ed42b2000c5b6fae6eb69b7afe5e1015a1"
+    },
+    "CIS_TKEYC4.TKEYC4.IsKEYC": {
+      "start": "0xf9da18",
+      "end": "0xf9da2c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC4.TKEYC4.MaximumKeyCount": {
+      "start": "0xf9da2c",
+      "end": "0xf9da44",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TKEYCIR1.CIS_TKEYCIR1": {
+      "start": "0x138e060",
+      "end": "0x138e110",
+      "bytes_sha256": "d218fa2a7b69771beba9993ce699f63f40e091bf1784645c3fec699c19beb30a"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.InternalCreate": {
+      "start": "0xf64da0",
+      "end": "0xf64db4",
+      "bytes_sha256": "9ae70efaccb2800e5ba235e0e03ecfa4e944ea79b4486f8b95cd975ca2a1d922"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.IsConvertableTo": {
+      "start": "0xf64db4",
+      "end": "0xf64e84",
+      "bytes_sha256": "8cad39c69caaccd11211230512c39b0544914d046f88b1cba9eaab68b8a84f75"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.IsKEYC": {
+      "start": "0xf64e84",
+      "end": "0xf64e98",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.MaximumIndicatorCount": {
+      "start": "0xf64e98",
+      "end": "0xf64eb0",
+      "bytes_sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.MaximumKeyCount": {
+      "start": "0xf64eb0",
+      "end": "0xf64ec8",
+      "bytes_sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TKEYCIR4.CIS_TKEYCIR4": {
+      "start": "0x138f23c",
+      "end": "0x138f2ec",
+      "bytes_sha256": "27c54a86871990e26dc49ff9a277d8d6eb631ca2cdda710f9ea9514a50342263"
+    },
+    "CIS_TKEYCIR4.TKEYCIR4.InternalCreate": {
+      "start": "0xf9dd58",
+      "end": "0xf9dd6c",
+      "bytes_sha256": "a1359855928ce5b4bc2b797da5e8b3ff02c2a73abeb383a743e8f57e0781e6f4"
+    },
+    "CIS_TKEYCIR4.TKEYCIR4.IsConvertableTo": {
+      "start": "0xf9dd6c",
+      "end": "0xf9de3c",
+      "bytes_sha256": "ccd1c4161cb6ea87ee270c8cfc409976bd11c88b63a40eced5a44c11746c3998"
+    },
+    "CIS_TKEYCIR4.TKEYCIR4.IsKEYC": {
+      "start": "0xf9de3c",
+      "end": "0xf9de50",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYCIR4.TKEYCIR4.MaximumKeyCount": {
+      "start": "0xf9de50",
+      "end": "0xf9de68",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TPCI.TPCI.HasApplication2": {
+      "start": "0xd19a50",
+      "end": "0xd19a64",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TPCI.TPCSHAC.HasApplication2": {
+      "start": "0xd1a010",
+      "end": "0xd1a024",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TPC_DAL2B.CIS_TPC_DAL2B": {
+      "start": "0x1392364",
+      "end": "0x13924d0",
+      "bytes_sha256": "0a9c363b113cdd604ec5628955d37ecf95ebe1b45e500a2d63ad5f585d52edcc"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.Add": {
+      "start": "0x102bd98",
+      "end": "0x102bde0",
+      "bytes_sha256": "787b6a4ea331dd57a42d435d3dc92eeefad1326c649927e0a282c52b86244165"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.Create": {
+      "start": "0x102bde0",
+      "end": "0x102be94",
+      "bytes_sha256": "07bccf20e98a5b2f27c1a116efe1acb43a5eee1381b17e3aa6c69d8d0dea269d"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.DaliActionByAddress": {
+      "start": "0x102be94",
+      "end": "0x102bef8",
+      "bytes_sha256": "d2d1bdd26d6e20dd0c2960303e5f803aa86cc118ea7c6d72291943d68bf35df8"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.DaliActionByTagName": {
+      "start": "0x102bef8",
+      "end": "0x102bfe4",
+      "bytes_sha256": "91d7bcaa73dda0b79a8bd81ab8599aa019d49e66da7b8c4132a415c2fc6d9bc3"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.Destroy": {
+      "start": "0x102bfe4",
+      "end": "0x102c018",
+      "bytes_sha256": "882748d4f2508ea118f757584b01c0bbfef958092169494f4812a9c0415e53d2"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.GenericAdd": {
+      "start": "0x102c018",
+      "end": "0x102c034",
+      "bytes_sha256": "44ceb39b2a95573b770caf6af1269c51bd673fd32c6ae6c280b2cc19dd1d98d7"
+    },
+    "CIS_TPC_DAL2B.TDaliActionManager.GetItem": {
+      "start": "0x102c034",
+      "end": "0x102c058",
+      "bytes_sha256": "c386c2a0310fab720485ce08d204d34f3514f51da9613f3ed82aa9f76e4abf41"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.AllowApplication1": {
+      "start": "0x102ba30",
+      "end": "0x102ba5c",
+      "bytes_sha256": "311a26fe27318b50ccec032e0279724f217c1add4801f947fbda622a3146733c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.Application2Changed": {
+      "start": "0x102ba5c",
+      "end": "0x102ba98",
+      "bytes_sha256": "f0b7757ff4ca1a522637833047d6b99d6c6b99da16156f45f2b478129589e527"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.BeforeDestruction": {
+      "start": "0x102b9ec",
+      "end": "0x102ba30",
+      "bytes_sha256": "65a5462782560e537d6c88b0b767edbb8942f7ddc5f008ffbba5f5b83478d46d"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeInputGroupDependencyAdvanced": {
+      "start": "0x102b65c",
+      "end": "0x102b74c",
+      "bytes_sha256": "87214c1b0f0436a75dafdaf5aa7713775b466c10075d66b007c664b7ebc7e203"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0x102b74c",
+      "end": "0x102b890",
+      "bytes_sha256": "0b3717bce572b5213dc04fa05f1958f14c4f0331b92780ba53c5f044a3741d94"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0x102b890",
+      "end": "0x102b970",
+      "bytes_sha256": "2120ce3af30609fcc2d6f1ec1c8758b6dc8f9bfffa765fbf2e6d2f58fdf362cd"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetCBusToDali": {
+      "start": "0x1029af0",
+      "end": "0x1029b1c",
+      "bytes_sha256": "008fde1bd684f004b63986c2944be63773c3199d1ed3b19004861958f14e9eb3"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliADisableErrorGroup": {
+      "start": "0x102b1fc",
+      "end": "0x102b220",
+      "bytes_sha256": "c63be03a4cb4cbcf2cf97b864c31c355cf1809d6e80ff67b7caa7069052cf50d"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliADisableErrorLevel": {
+      "start": "0x102b220",
+      "end": "0x102b244",
+      "bytes_sha256": "488f403bc44dc4be1c69ebd683d3116ac400ad55b56092904da240208b33da0c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliAEnableErrorGroup": {
+      "start": "0x102b244",
+      "end": "0x102b268",
+      "bytes_sha256": "e3eb6ca4d0dec2a09113bfcf94dcf695408811e3ae00ac6e49e1a3f73b0a5522"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliAEnableErrorLevel": {
+      "start": "0x102b268",
+      "end": "0x102b28c",
+      "bytes_sha256": "5aec68092952c49b9056a63e0003568337c9bf994471e4dc1167fee97fd36a38"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliAErrorRefreshTime": {
+      "start": "0x1029b1c",
+      "end": "0x1029b40",
+      "bytes_sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliAErrorReportingStatus": {
+      "start": "0x1029b40",
+      "end": "0x1029b64",
+      "bytes_sha256": "616f2ba9bdc7a6174fb44cacbd8741687d961e446b9a32741000a2be72b1e92f"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliARampMatching": {
+      "start": "0x102b55c",
+      "end": "0x102b580",
+      "bytes_sha256": "510af58c7cb27e4156d84de1725aca410f7c52c4df84b4d78dad6757b8e3f969"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliAToCBusMapping": {
+      "start": "0x102bac4",
+      "end": "0x102bae8",
+      "bytes_sha256": "aac9a023f9bdb17bf5b8f7ca71cd6c1f78e23691bfd1cfb70e2afe0ffb9ea2ff"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliATriggerErrorAcSel": {
+      "start": "0x102b28c",
+      "end": "0x102b2b0",
+      "bytes_sha256": "b644a77e83e5f553c93742d0fc6f15fa4381ac3f0d40911e9111e15b6e566505"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliATriggerErrorGroup": {
+      "start": "0x102b2b0",
+      "end": "0x102b2d4",
+      "bytes_sha256": "a5193123ca90d1b876c93c44a08dfbb55e7914506fb8bbca5cf7b8b797dbc10e"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBDisableErrorGroup": {
+      "start": "0x102b2d4",
+      "end": "0x102b2f8",
+      "bytes_sha256": "b9462f51c1795696afb95b4f01bf3ba69efda3026cacc23044c86b144f156b2c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBDisableErrorLevel": {
+      "start": "0x102b2f8",
+      "end": "0x102b31c",
+      "bytes_sha256": "51a1c0e05221dc971148a6448f705ea18481c0884e3267ac43d68c23107d908d"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBEnableErrorGroup": {
+      "start": "0x102b31c",
+      "end": "0x102b340",
+      "bytes_sha256": "713db45aa62d32a8b2bdd93c49772db2d967a123264024be54a5222613754883"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBEnableErrorLevel": {
+      "start": "0x102b340",
+      "end": "0x102b364",
+      "bytes_sha256": "04acf2bc3471feeb055b7b942a6c1564d04909accd00eb239130f8d27a780b09"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBErrorRefreshTime": {
+      "start": "0x1029b88",
+      "end": "0x1029bac",
+      "bytes_sha256": "805701c5e666a1b1f4a92f74dbde4513d295ea92f1ac85a9ccbd4d9ee9579804"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBErrorReportingStatus": {
+      "start": "0x1029bac",
+      "end": "0x1029bd0",
+      "bytes_sha256": "1e779b6e7c91fcb330859331df79d53c51072fbc2f65f4aa5020fe6d669aa198"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBRampMatching": {
+      "start": "0x102b5dc",
+      "end": "0x102b600",
+      "bytes_sha256": "f6d3e56d1050211291d83ad87b79e04afcd4ed86600b8334e9a35b21640b8feb"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBToCBusMapping": {
+      "start": "0x102bae8",
+      "end": "0x102bb0c",
+      "bytes_sha256": "26a8638878f5e5ca39d2d16bd455f77ec8ee223d40f26a44f06f7bd74d73c608"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBTriggerErrorAcSel": {
+      "start": "0x102b364",
+      "end": "0x102b388",
+      "bytes_sha256": "55ed0a67b6e47524928e725a242015053839c27682b88d6019c37c95ff373a99"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliBTriggerErrorGroup": {
+      "start": "0x102b388",
+      "end": "0x102b3ac",
+      "bytes_sha256": "c28a48c2a6605afa97ad7da8d4827c5cfaf9b77ffb5097446ae304f67141326c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliMonitorRate": {
+      "start": "0x102adf0",
+      "end": "0x102ae14",
+      "bytes_sha256": "5fa6fce049503eaa9d302da7dd10eb9bf13ba0fb64e4e06c5d9641fb290269c4"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDaliToCBus": {
+      "start": "0x1029bd0",
+      "end": "0x1029bfc",
+      "bytes_sha256": "eb23f8d1d19105263141e6fc98841eff613be0619cc4a3270bc390f0b3e01742"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetDefaultCBusToDali": {
+      "start": "0x1029bfc",
+      "end": "0x1029d70",
+      "bytes_sha256": "b77016f5ef2bf947d6434754507490a9cc1720b528323cf65ce0de0be9a907bf"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetErrorReportDeviceID": {
+      "start": "0x1029b64",
+      "end": "0x1029b88",
+      "bytes_sha256": "cedafe92a645c6e84ff9fff474adb86ac249908f5b5a08c615b0d9babdbf48f7"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetFirmwareVersionDisplayName": {
+      "start": "0x102bd78",
+      "end": "0x102bd98",
+      "bytes_sha256": "0969238e04165edcecf6e37174db2215adf9b2e8804e84b7bce368b512008f93"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetLearnModeStatusEnabled": {
+      "start": "0x102bd30",
+      "end": "0x102bd44",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetSecondaryFirmwareVersionDisplayName": {
+      "start": "0x102bd58",
+      "end": "0x102bd78",
+      "bytes_sha256": "a3d1663bd046198cec6034537524c7743d5c5057abb5d1f8e555f8591d9a4981"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.GetUseSecondaryFirmwareVersion": {
+      "start": "0x102bd44",
+      "end": "0x102bd58",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.HandleDaliAToCBusMappingChanged": {
+      "start": "0x102bbd4",
+      "end": "0x102bc6c",
+      "bytes_sha256": "c0508360e3d8786683c852bf18b71ea94f1bfa2df572cbebf6a0fe92a50a9435"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.HandleDaliBToCBusMappingChanged": {
+      "start": "0x102bc6c",
+      "end": "0x102bd1c",
+      "bytes_sha256": "e20e2b5c7ab18cd217c59ba0af748592e0c6e9315c7b131001b9d96318459f63"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.HasApplication1": {
+      "start": "0x102bd1c",
+      "end": "0x102bd30",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.InternalCreate": {
+      "start": "0x1029d70",
+      "end": "0x102ab64",
+      "bytes_sha256": "6d60c962bf9f3c97110608126a884e139f3cbd756df96bf48ab3247461f0e285"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.IsConvertableTo": {
+      "start": "0x102b970",
+      "end": "0x102b9ec",
+      "bytes_sha256": "b0852eb1b3d344df7a7af4c8d41074ac04087144c4944709efc975eb55ed4199"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.RefreshGroupsFromApplication": {
+      "start": "0x102ba98",
+      "end": "0x102bac4",
+      "bytes_sha256": "d7ad424a9298563c370dc016d9583d432413ddf86062b3ce28bdb5c30fce0593"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.ReloadGroupLevels": {
+      "start": "0x102ab64",
+      "end": "0x102acf8",
+      "bytes_sha256": "31c25c64786783dc8b145d2ab28123e3874f7f6705a69e1f4bb093b429f3be34"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetCBusToDali": {
+      "start": "0x102acf8",
+      "end": "0x102adf0",
+      "bytes_sha256": "071e48156c8e6fc80feed018283d20e85a37b4e9b41782532587954444a7ef28"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliADisableErrorGroup": {
+      "start": "0x102b3ac",
+      "end": "0x102b3d0",
+      "bytes_sha256": "def7285de1c9974956c7aeed8d836a47d4f47ab4163bbed146c1f581e695080d"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliADisableErrorLevel": {
+      "start": "0x102b3d0",
+      "end": "0x102b3f4",
+      "bytes_sha256": "5681fedffe88e3088c9faf55107b9409460221c2b67217fbbcd9f6669e4b8506"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliAEnableErrorGroup": {
+      "start": "0x102b3f4",
+      "end": "0x102b418",
+      "bytes_sha256": "a3b2986fbef35871a92229bf3a756e506a0646b40756b4d0c87f5f49f00f6282"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliAEnableErrorLevel": {
+      "start": "0x102b418",
+      "end": "0x102b43c",
+      "bytes_sha256": "11de7403e49abc0c5484e470edb8b6ac90c04faa8c9a5d43aa407a598ca24ca4"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliAErrorRefreshTime": {
+      "start": "0x102ae74",
+      "end": "0x102aed4",
+      "bytes_sha256": "0fef3c7086bf3116291be7a865ba31d6bc164c27f0bd2f06be51c0ebe18ef3b5"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliAErrorReportingStatus": {
+      "start": "0x102aed4",
+      "end": "0x102af30",
+      "bytes_sha256": "4618859b536ab8ef86114de25e7821fd8cd4bc7db11d1d5c2a2028434ecf708e"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliARampMatching": {
+      "start": "0x102b580",
+      "end": "0x102b5dc",
+      "bytes_sha256": "88b7e296408f4cef267a2039eb84095cac1447bb7ec42b457cfeb1372088ece5"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliAToCBusMapping": {
+      "start": "0x102bb0c",
+      "end": "0x102bb70",
+      "bytes_sha256": "91e193bb80b97558d82b11760d5e06f99b8004c70d44fb27fe051e32c3cc6db3"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliATriggerErrorAcSel": {
+      "start": "0x102b43c",
+      "end": "0x102b460",
+      "bytes_sha256": "03d7a989b5e1715d3ec1ee8c8965afcf3692e25e08379a2bddded621dc9e9291"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliATriggerErrorGroup": {
+      "start": "0x102b460",
+      "end": "0x102b484",
+      "bytes_sha256": "a7d9cc47a863035682630d7c345265b576af81bd9d63f8b58ba513917e6205c1"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBDisableErrorGroup": {
+      "start": "0x102b484",
+      "end": "0x102b4a8",
+      "bytes_sha256": "efde5386e749efbcd6d8519865f7538cb9753c3537e00b02f1de4d69bee5fb05"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBDisableErrorLevel": {
+      "start": "0x102b4a8",
+      "end": "0x102b4cc",
+      "bytes_sha256": "974f6f1bd42a4653b9216599efdf6d12b1b9ac6bcba048be535cf0d538c12699"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBEnableErrorGroup": {
+      "start": "0x102b4cc",
+      "end": "0x102b4f0",
+      "bytes_sha256": "da78bea646b47cc5ef4d3daf8b6612827b865f4a46ea99550439cc0fc8eafb9d"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBEnableErrorLevel": {
+      "start": "0x102b4f0",
+      "end": "0x102b514",
+      "bytes_sha256": "b75d568f70bf76e5e4e5ed0eeba8962e15dd36935c39545530a67aa6c4ccfba7"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBErrorRefreshTime": {
+      "start": "0x102af30",
+      "end": "0x102af90",
+      "bytes_sha256": "b781526ad3f784f9b5528f59accd1e32553bc051359d6596b5094b733fa62968"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBErrorReportingStatus": {
+      "start": "0x102af90",
+      "end": "0x102afec",
+      "bytes_sha256": "c6cb38f5fb3f366df9da8746c1219a04c645eb1b3294684d225f11e2dae180c4"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBRampMatching": {
+      "start": "0x102b600",
+      "end": "0x102b65c",
+      "bytes_sha256": "0a14d4899b8900d25e22f220ad50e3143767fd026f9b4e71c7b5d891f2c20fd3"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBToCBusMapping": {
+      "start": "0x102bb70",
+      "end": "0x102bbd4",
+      "bytes_sha256": "f636324fcb3802463a5e899e0088661d5205ae89a3e8cef2399a6f7df71927b1"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBTriggerErrorAcSel": {
+      "start": "0x102b514",
+      "end": "0x102b538",
+      "bytes_sha256": "880bc8d5be8841be1f5500975b246ec2db2315ec60c290df6554738a492385b8"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliBTriggerErrorGroup": {
+      "start": "0x102b538",
+      "end": "0x102b55c",
+      "bytes_sha256": "a2babcc32a31a976965797d18006edff0cc4f10e26f46f64aaf10b4135963566"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliMonitorRate": {
+      "start": "0x102ae14",
+      "end": "0x102ae74",
+      "bytes_sha256": "88c5489a1a907e7d6dce383fdbeb4d0f8772dc54be1393b572ddbfce2e1f5c1c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliToCBus": {
+      "start": "0x102afec",
+      "end": "0x102b0e4",
+      "bytes_sha256": "9f91591be7ba3f3e997d2bb9f37ea36fe7170ec31ab4e84a13f02e5e13e687d3"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetEnableDaliAErrorRefreshTime": {
+      "start": "0x102b0e4",
+      "end": "0x102b140",
+      "bytes_sha256": "535a6c42d6abeba213749cc0b869dc1897f852b3793b5f19b0ef41c7aecd8739"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetEnableDaliBErrorRefreshTime": {
+      "start": "0x102b140",
+      "end": "0x102b19c",
+      "bytes_sha256": "b5b7e17314be0ebfa68ea3247125e5a2b4b9c3f75a7f168b117acd0588bac0b5"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetErrorReportDeviceID": {
+      "start": "0x102b19c",
+      "end": "0x102b1fc",
+      "bytes_sha256": "b517140c39097f2c7b57090d3b71ab018bc939e23251066ff03f9b9279756467"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.GetDaliARestoreLevel": {
+      "start": "0x102c334",
+      "end": "0x102c358",
+      "bytes_sha256": "a272b5445db0a6a13ce7ab1b299df992668e7217b24021c49aaada840efe35ae"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.GetDaliAStatusCorrection": {
+      "start": "0x102c1d4",
+      "end": "0x102c1f8",
+      "bytes_sha256": "7875b26b1259bb3eb71c4473ecac861a6a2c544403b8aee2a78d01696d75d035"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.GetDaliBRestoreLevel": {
+      "start": "0x102c358",
+      "end": "0x102c37c",
+      "bytes_sha256": "6c7212942183d52b37218eeb9ede30dad40939e52135132ee07f39df6a744f5e"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.GetDaliBStatusCorrection": {
+      "start": "0x102c1f8",
+      "end": "0x102c21c",
+      "bytes_sha256": "ba891e238ed10673fe28ca80377b41e8f9dc78e47aeca8583ae560bcf7cc33ab"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.GetDefaultCBusToDali": {
+      "start": "0x102c21c",
+      "end": "0x102c27c",
+      "bytes_sha256": "80052b2fa36260b8374aa6ed7f13523aec8cbfd6fd1a7b33dac3722b2c720f54"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.InternalCreate": {
+      "start": "0x102c058",
+      "end": "0x102c1d4",
+      "bytes_sha256": "c046774c758ebd5ea75febd74db79e79d2d0d9bc8494c63119bcdf88e610086c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.SetDaliARestoreLevel": {
+      "start": "0x102c37c",
+      "end": "0x102c3dc",
+      "bytes_sha256": "5dd42bf8e0d44bda54edf917cb4dcc5aec13355c645e991f953dd6484b33104c"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.SetDaliAStatusCorrection": {
+      "start": "0x102c27c",
+      "end": "0x102c2d8",
+      "bytes_sha256": "17d6f8e934f988dfa2246d308252b662fff6f0966cf8fe080f713ab0fa03625f"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.SetDaliBRestoreLevel": {
+      "start": "0x102c3dc",
+      "end": "0x102c43c",
+      "bytes_sha256": "493ddc65be37697a64823b563885eaa7e207ee339e781202e7ee484ce891a112"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2C.SetDaliBStatusCorrection": {
+      "start": "0x102c2d8",
+      "end": "0x102c334",
+      "bytes_sha256": "3bddc938b7c55c5cf612ab76cd61cd632b18964240ddc1b5154469fd005d0b93"
+    },
+    "CIS_TPowerSupply.TPowerSupply.HasApplication2": {
+      "start": "0xd78a70",
+      "end": "0xd78a84",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x1221fbc",
+      "end": "0x1222200",
+      "bytes_sha256": "bf41d0503d1b25deef4a3e5b6bce7823f13393c3d8f211b1ec8b370bc6d929eb"
+    },
+    "CIS_TTweakerInputUnit.TTweakerNeoToKey.TweakParameters": {
+      "start": "0x12f1974",
+      "end": "0x12f1990",
+      "bytes_sha256": "38d719e11f65ff1f9c1d174bbb7e470d12dd3a64d5af5a0d6b4ebcc561a6ce93"
+    },
+    "CIS_TTweakerPC_DAL2.CIS_TTweakerPC_DAL2": {
+      "start": "0x139c3d0",
+      "end": "0x139c470",
+      "bytes_sha256": "979583f4aa9070707dccd61bbf77506cd9dac4f942855256d99ba1b0d6f757bb"
+    },
+    "CIS_TTweakerPC_DAL2.TTweakerPC_DAL2.PopulateParametersMap": {
+      "start": "0x12ed988",
+      "end": "0x12ed994",
+      "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TTweakerPC_DAL2.TTweakerPC_DAL2.TweakParameters": {
+      "start": "0x12ed994",
+      "end": "0x12edac8",
+      "bytes_sha256": "53f0676faa84752d1e12ecd4328ee95a581c46eb3608f5660ab1187318905e28"
+    },
+    "CIS_TTweakerPC_DAL2B.CIS_TTweakerPC_DAL2B": {
+      "start": "0x139c470",
+      "end": "0x139c510",
+      "bytes_sha256": "efae834399ae59609555577f191330c3dec00db982e68d4924aa051b4df817aa"
+    },
+    "CIS_TTweakerPC_DAL2B.TTweakerPC_DAL2B.TweakParameters": {
+      "start": "0x12edb84",
+      "end": "0x12edcb8",
+      "bytes_sha256": "4476bb844afeec7b4a3cabb0a753a9e473b0f00a63ebcbcaceea8f439b971935"
+    },
+    "CIS_TCBusPCICGateAgent.TCBusPCICGateAgent.InternalCreate": {
+      "start": "0x124fe64",
+      "end": "0x124ff8c",
+      "bytes_sha256": "a47ae47fe9fa9aa078b1332dfd114c8317620cc17adbd7f9d3cbfebb6b57f36a"
+    },
+    "CIS_TCBusPC_DAL2BCGateAgent.TCBusPC_DAL2BCGateAgent.InternalCreate": {
+      "start": "0x12505dc",
+      "end": "0x1251168",
+      "bytes_sha256": "5e91c46533f64f371c14762867d27ca315eed2b16f0dc1651aeb0d8ab39c4ce3"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.InternalCreate": {
+      "start": "0xcc643c",
+      "end": "0xcc6470",
+      "bytes_sha256": "bfcf84f9085c80687985a2ab002ee80982d28f8eabbe9e092f9a116a3d5375d8"
+    },
+    "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.InternalCreate": {
+      "start": "0xcc5aa0",
+      "end": "0xcc5b8c",
+      "bytes_sha256": "3fd90721ff749222122e8538368745c6c127fd2e9b84dd0bc4e7c423e9b55135"
+    },
+    "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.InternalCreate": {
+      "start": "0x121faf0",
+      "end": "0x121fbb4",
+      "bytes_sha256": "2898ecf06fed9454662ccf5300f20d7c2233e144d464d3a3ccc0909735fcdbf9"
+    },
+    "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.InternalCreate": {
+      "start": "0xcf2b74",
+      "end": "0xcf3874",
+      "bytes_sha256": "b77f229f9fd6ae826e0597f210ec094ca880e0b7cf32bed2eac1a717d5870165"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.InternalCreate": {
+      "start": "0x1221564",
+      "end": "0x1221798",
+      "bytes_sha256": "756adde7586ebe8532255f051bced33e36a93718bf5abb9136df622fec97bfc0"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+      "start": "0xd0871c",
+      "end": "0xd08734",
+      "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusKeyInputUnit.TCBusKeyInputUnit.MaximumBlockCount": {
+      "start": "0xca008c",
+      "end": "0xca00a4",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.IndicatorBrightnessPropertyEnabled": {
+      "start": "0xca1e54",
+      "end": "0xca1e68",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.MaximumBlockCount": {
+      "start": "0xca1d38",
+      "end": "0xca1d50",
+      "bytes_sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.InternalCreate": {
+      "start": "0xca1a6c",
+      "end": "0xca1b1c",
+      "bytes_sha256": "7e7cce913dff531119b99c075bdd85f78f7daec200692eaf640788f5001086f0"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.InternalCreate": {
+      "start": "0xd016d4",
+      "end": "0xd024d0",
+      "bytes_sha256": "bb4c0c04abcff6e32fcb38a95a2bb4e0fd7ed5f7e0334630555b7e40472d4a12"
+    },
+    "CIS_TCBusPirSensorInputUnit.TCBusPirSensorInputUnit.LearnModePropertiesEnabled": {
+      "start": "0xca1e90",
+      "end": "0xca1ea4",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x1249d6c",
+      "end": "0x124a198",
+      "bytes_sha256": "4ce295a6d55e5e5b6d94f9aa9d0eaf0cf9af8a4b9d26a53572e0474346c50564"
+    },
+    "CIS_TCBus1RelayCGateAgent.TCBus1RelayCGateAgent.LoadGroups": {
+      "start": "0x124a198",
+      "end": "0x124a1c4",
+      "bytes_sha256": "0f5f80519ca069c39ca370e169174702820bd1e315680904ec4b1413c9908991"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x12d131c",
+      "end": "0x12d1b18",
+      "bytes_sha256": "6dc985e22ec7f8bf71ae0cb0d6a943e9d7438f6ba9d4745d407e956de4f0d095"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.LoadGroups": {
+      "start": "0x12d1b18",
+      "end": "0x12d1cec",
+      "bytes_sha256": "1e03105916ed81616d21f02db470995976b68c7bbcbf65acc1525b4d23064d2d"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate": {
+      "start": "0xcb524c",
+      "end": "0xcb5614",
+      "bytes_sha256": "ca6224f18662e8133b0420a1a878288ae003869946a91993b15622293b83b39c"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadApplications": {
+      "start": "0xcb86b8",
+      "end": "0xcb87f4",
+      "bytes_sha256": "ae2a2c4675f794be9fa1bbac81b4f04b4ba288385251fbde91ff3dd587c81afe"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0xcb8ad4",
+      "end": "0xcb8b84",
+      "bytes_sha256": "f757c354b264936ea0e8d3e3c7744dd00fdb7fa4ebb0618167deefb939e127db"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadGroups": {
+      "start": "0xcb8b84",
+      "end": "0xcb8c44",
+      "bytes_sha256": "c3da804e6c685117639f52cc90af0e0422e59ad9fbb456cf9f02154f501460a1"
+    },
+    "CIS_TCBusWirelessFanControllerCGateAgent.CreateAndLoadGroupsList": {
+      "start": "0x12e9d28",
+      "end": "0x12e9da8",
+      "bytes_sha256": "bede7ad33c700029f911a58cb420a8f3a3d2173bea90cca790925ad3f6b8b519"
+    },
+    "CIS_TCBusWirelessFanControllerCGateAgent.TCBusWirelessFanControllerCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x12e66fc",
+      "end": "0x12e69ac",
+      "bytes_sha256": "3a95c54c902b4cdfc7880ebc682c7b196b63d2fc83c1c3954ab47f494194d5c4"
+    },
+    "CIS_TCBusWirelessFanControllerCGateAgent.TCBusWirelessFanControllerCGateAgent.LoadGroups": {
+      "start": "0x12e79a4",
+      "end": "0x12e7af8",
+      "bytes_sha256": "62ead2b135f4dfbcac2bb36e374ad86c38052acc254b9e02b9eee37cc253a120"
+    },
+    "CIS_TCBusWirelessGatewayCGateAgent.TCBusWirelessGatewayCGateAgent.LoadGroups": {
+      "start": "0x1258ac8",
+      "end": "0x1258aec",
+      "bytes_sha256": "b054db7425da05c2eaf9b0a54338ca3bc535494d7e64a30b186227c1f3084c5e"
+    },
+    "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.LoadApplications": {
+      "start": "0xd425b8",
+      "end": "0xd42620",
+      "bytes_sha256": "f18d79c64d5eabef6c9ec88dde5288921fd7097b7926203b7cb3ff4b80514416"
+    },
+    "CIS_TCBusWirelessGatewayUnit.TCBusWirelessGatewayUnit.LoadApplicationsList": {
+      "start": "0xd42478",
+      "end": "0xd425b8",
+      "bytes_sha256": "9ba541e3e97d38c1e0568cc3a9ff17ae2c4bc2f57c74c4b0bc3beae485971b58"
+    },
+    "CIS_TCBusWirelessInputUnit.TCBusWirelessInputUnit.LoadApplications": {
+      "start": "0xd4ad18",
+      "end": "0xd4aed4",
+      "bytes_sha256": "c9a211fb389fb26520d0914adc097e97cd707b2b8b8d24b745f0d76a1f2dd53a"
+    },
+    "CIS_TCBusWirelessInputUnitCGateAgent.CreateAndLoadGroupsList": {
+      "start": "0x127b840",
+      "end": "0x127b8c0",
+      "bytes_sha256": "9c57a1e2a5355223d56bbecba1f39fefec38ea479bea7c5828ef8be712d2c2ea"
+    },
+    "CIS_TCBusWirelessInputUnitCGateAgent.TCBusWirelessInputUnitCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x1286610",
+      "end": "0x1287134",
+      "bytes_sha256": "8d576125be2b2d79e880a8498f7edbd6f781dcc222c4c6296c72908d78e0a4a5"
+    },
+    "CIS_TCBusWirelessInputUnitCGateAgent.TCBusWirelessInputUnitCGateAgent.LoadGroups": {
+      "start": "0x1287134",
+      "end": "0x12872f0",
+      "bytes_sha256": "a24be4ae3474050e9ce8ab9f1691a1fb8fc3c96be2e082ab08e1b345b9892bac"
+    },
+    "CIS_TCBusWirelessPCIUnit.LoadApplicationsList": {
+      "start": "0x1110dd4",
+      "end": "0x1110f24",
+      "bytes_sha256": "760bb6534fb80f75665e8ebba0c94ed6e7df506e156bf492c17110dc5476518e"
+    },
+    "CIS_TCBusWirelessPCIUnit.TCBusWirelessPCIUnit.LoadApplications": {
+      "start": "0x1110f24",
+      "end": "0x1110f7c",
+      "bytes_sha256": "aaf073400adaa8e7cb7bf42028634d512dec1b7564e03fa359a4f4cc7d886833"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.LoadApplications": {
+      "start": "0xf2faec",
+      "end": "0xf2fc90",
+      "bytes_sha256": "3c6c8161c931cc4443e958ef63df18c76a7f9c012982e94963437d4fcf09258e"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.LoadGroups": {
+      "start": "0xf2fa30",
+      "end": "0xf2faec",
+      "bytes_sha256": "eb15fe25229e6f461a716057f581a68824d27506c7b1bc413451e98aa567501d"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0xcc7a24",
+      "end": "0xcc7bf0",
+      "bytes_sha256": "1dc060a65fe5ac2cdd72500c7de16f78bfe9cab679612d4535b2c7917ec2348f"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadGroups": {
+      "start": "0xcc7bf0",
+      "end": "0xcc7d04",
+      "bytes_sha256": "bfc5368eb3b13722627c3db492e2207adb7ca8a0009aec16528553f6c70ea941"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0xcecae4",
+      "end": "0xcecbbc",
+      "bytes_sha256": "1391a2938452336e7f76fefbce03478b1e757296e01f29d3fa3b796e412a301a"
+    },
+    "CIS_TDIMARXCGateAgent.TDIMARXCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x123f13c",
+      "end": "0x123f23c",
+      "bytes_sha256": "fffaddbdeab382209e390fe11298a3d613399f5e1f0ac4201e40d646cd01e8e3"
+    },
+    "CIS_TDIMARXCGateAgent.TDIMARXCGateAgent.LoadGroups": {
+      "start": "0x123f23c",
+      "end": "0x123f37c",
+      "bytes_sha256": "4cce43d1cbc087e21ebc3a224ed88e9888d12d51ade98025c1e99f3e39e5726f"
+    },
+    "CIS_TDIMDD4CGateAgent.TDIMDD4CGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x133e6d4",
+      "end": "0x133e9b4",
+      "bytes_sha256": "2129c1f5c384fa3cdd54871c3543a276ad51ed713dab4e005c40bc568b8c95d8"
+    },
+    "CIS_TDIMDD4CGateAgent.TDIMDD4CGateAgent.LoadGroups": {
+      "start": "0x133e9b4",
+      "end": "0x133ed18",
+      "bytes_sha256": "b78c1fccda9d27d87fc1f9114829fe6761a2fef3aa03352b3223bebd7b44b417"
+    },
+    "CIS_TDIMDD8CGateAgent.TDIMDD8CGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x13396a0",
+      "end": "0x1339c3c",
+      "bytes_sha256": "4d2849ccc89b15b7ef4f15522278a817b229f31a8d234dbcb58a1b85dcdde0e8"
+    },
+    "CIS_TDIMDD8CGateAgent.TDIMDD8CGateAgent.LoadGroups": {
+      "start": "0x1339c3c",
+      "end": "0x133a230",
+      "bytes_sha256": "3e3c45bdbe653247cf1997bdc60cdd85484ae9eb69f4a5581afc5ae56c45d91a"
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x1248420",
+      "end": "0x1248514",
+      "bytes_sha256": "f1865bf2f0114552482f5f212f2ae1997b29704fcd47de4d9d9be402d4f78cb2"
+    },
+    "CIS_TDIMPR12CGateAgent.TDIMPR12CGateAgent.LoadGroups": {
+      "start": "0x1248514",
+      "end": "0x12486c0",
+      "bytes_sha256": "80023e2d39ca93ebfa9df8ec3bab0b0bd5546c802272d96e5160665fe138f179"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x122dc4c",
+      "end": "0x122dd40",
+      "bytes_sha256": "c83d2044446b8427055bfff9664e616be759789f9fe9a424c916e766b9c3134f"
+    },
+    "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.LoadGroups": {
+      "start": "0x122dd40",
+      "end": "0x122df04",
+      "bytes_sha256": "455b0f618d59746d1c8ca3b66311f121eb1c325dbccad3f802f5342d41e60370"
+    },
+    "CIS_TFlashCxTreeViewDataProvider.LoadApplications": {
+      "start": "0xf0ed24",
+      "end": "0xf0ede8",
+      "bytes_sha256": "e3e064bacd04ecde72aab1e7ab87ac8b6bd5c48d7ee0011c74f91a797af1d38e"
+    },
+    "CIS_TFlashCxTreeViewDataProvider.LoadGroups": {
+      "start": "0xf0ede8",
+      "end": "0xf0eec0",
+      "bytes_sha256": "7dd9986b4c18372e07d23ae5a3b0b764ca61acb81aea8b927dd2bea4c16309a2"
+    },
+    "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x12df68c",
+      "end": "0x12dfae4",
+      "bytes_sha256": "cee0bddf0770665d5e4294f42a895d3ee3e558de6eede835a459852f6d8e7bda"
+    },
+    "CIS_TIOPECGateAgent.TIOPECGateAgent.LoadGroups": {
+      "start": "0x12dfae4",
+      "end": "0x12dfd40",
+      "bytes_sha256": "7842c1b6201b0f6ea6115e4a3face2f6b0a7b28b223eed429b720e7f79686eb3"
+    },
+    "CIS_TMarshallingBoxCGateAgent.TMarshallingBoxCGateAgent.LoadGroups": {
+      "start": "0x1244d0c",
+      "end": "0x1244ecc",
+      "bytes_sha256": "aae84e168a26e9df3effd32b3a93263e4a39e8c2ede933f9a6c39bd93ff14442"
+    },
+    "CIS_TPC_WHAA.TPC_WHAA.LoadApplications": {
+      "start": "0x10c3efc",
+      "end": "0x10c4010",
+      "bytes_sha256": "2a2c28a466d238636a8d30931996eb9db6143689ebbe4902fde6d1efbff6750a"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x1221798",
+      "end": "0x1221990",
+      "bytes_sha256": "7d1fa08c2906de18de7262dadd0d35f71b1b1fd5515c7017dee628596d15cd50"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.LoadGroups": {
+      "start": "0x1221990",
+      "end": "0x1221acc",
+      "bytes_sha256": "47c4ac8282b1cfea22d235b592352464fae157fca6ac35fd49ed5c4368353fcd"
+    },
+    "CIS_TSENTEMPCGateAgent.TSENTEMPCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x1222b74",
+      "end": "0x1222d74",
+      "bytes_sha256": "2c2ee7c1231bc860055fb404c9a9b0dd4f408f2cb7a162ccd81cc1827b50fef1"
+    },
+    "CIS_TSENTEMPCGateAgent.TSENTEMPCGateAgent.LoadGroups": {
+      "start": "0x1222d74",
+      "end": "0x1222eb0",
+      "bytes_sha256": "b4ffb5253f4781aade77d28b676267754b10c04170bfbb4796ff4130af54fcd2"
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.LoadDBParametersForLoadGroups": {
+      "start": "0x12257e4",
+      "end": "0x1225a50",
+      "bytes_sha256": "7ba2d9a824d791ad33e10949f85bdf9f77420cc00f7cbaad34a44f56809dce86"
+    },
+    "CIS_TSENTEMPProCGateAgent.TSENTEMPProCGateAgent.LoadGroups": {
+      "start": "0x1225a50",
+      "end": "0x1225ed8",
+      "bytes_sha256": "6d88768aca36f575738bff990c7dd84c17a6c498aad2d0d044bb3f7fccac0a1e"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AlignUnitNoSave": {
+      "start": "0xcc04a4",
+      "end": "0xcc08c8",
+      "bytes_sha256": "9ad1fdaf6f5c387a1ba25fa63664241b50a13d55f4a77d2f1959096262d77157"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockApplications": {
+      "start": "0xcc9948",
+      "end": "0xcc9954",
+      "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+      "start": "0xcc75e4",
+      "end": "0xcc76f8",
+      "bytes_sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications": {
+      "start": "0xcecf80",
+      "end": "0xced05c",
+      "bytes_sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833"
+    },
+    "CIS_TfrmEnvironment.TfrmEnvironment.GetBlockGroupFromFlashAttribute": {
+      "start": "0x11aa9cc",
+      "end": "0x11aaa7c",
+      "bytes_sha256": "25363b25c53ff425abaf053c39733b132523c8ea61a02e6e4ebb2b7d45cc9f7a"
+    },
+    "CIS_TTweakerSENPIR.CIS_TTweakerSENPIR": {
+      "start": "0x139ebc8",
+      "end": "0x139ee18",
+      "bytes_sha256": "766134e1f61cee837801b58ca235254bee6e00a4983b71d0a5ebb9dba0ec0d9b"
+    },
+    "CIS_TTweakerSENPIR.TTweakerSENPIR.Create": {
+      "start": "0x12f1a44",
+      "end": "0x12f1b98",
+      "bytes_sha256": "685d062188a4d3b131c46d0ee4cd6782b8acfcf33b6f7d72928d22ac6969b4a2"
+    },
+    "CIS_TTweakerSENPIR.TTweakerSENPIR.TweakParameters": {
+      "start": "0x12f1b98",
+      "end": "0x12f1ba8",
+      "bytes_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate": {
+      "start": "0xcc9d04",
+      "end": "0xcca140",
+      "bytes_sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    "CIS_TSENPILL.CIS_TSENPILL": {
+      "start": "0x13832d8",
+      "end": "0x1383430",
+      "bytes_sha256": "09438041d8c8c7e7f8c81f69ae9513ab71f2a78db858856353da3f1a8e363fd6"
+    },
+    "CIS_TSENPILL.TSENPILL.InternalCreate": {
+      "start": "0xca8e1c",
+      "end": "0xca8e30",
+      "bytes_sha256": "37f4322193ff99b59cf6e2d3e864b3493541f06a8b287fdb7a1743c3fa6a304a"
+    },
+    "CIS_TSENPILL.TSENPILL.MaximumIndicatorCount": {
+      "start": "0xca8e48",
+      "end": "0xca8e60",
+      "bytes_sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    },
+    "CIS_TSENPILL.TSENPILL.MaximumKeyCount": {
+      "start": "0xca8e30",
+      "end": "0xca8e48",
+      "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TSENPILL.TST7SENPILL.InternalCreate": {
+      "start": "0xca8e60",
+      "end": "0xca8e74",
+      "bytes_sha256": "ed123a001cbfcd7f782aba61a9dada92a143fa1b91ceafab864c0ebcde5b2896"
+    },
+    "CIS_TSENPILL.TST7SENPILL.MaximumIndicatorCount": {
+      "start": "0xca8e74",
+      "end": "0xca8e8c",
+      "bytes_sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    },
+    "CIS_TSENPILL.TST7SENPILL.MaximumKeyCount": {
+      "start": "0xca8e8c",
+      "end": "0xca8ea4",
+      "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IndicatorBrightnessPropertyEnabled": {
+      "start": "0xd03ffc",
+      "end": "0xd04010",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IsJoinModeSupported": {
+      "start": "0xd04bf0",
+      "end": "0xd04c70",
+      "bytes_sha256": "b66412c77789d688facf713c7c6100083d453a6029315343ea1eef508c373b7d"
+    },
+    "CIS_TCBusSensorInputUnit.TCBusSensorInputUnit.LearnModePropertiesEnabled": {
+      "start": "0xca90e0",
+      "end": "0xca9158",
+      "bytes_sha256": "721aa280e65929d0537bbb19987f4c2eeadb68beb87f9fdb4d498ea0e937439b"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.LearnModePropertiesEnabled": {
+      "start": "0xc9e014",
+      "end": "0xc9e08c",
+      "bytes_sha256": "6364220fcea1e5c8fac893b210f4cd54c9902eaa46db422a2a174192bc6ef158"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "start": "0x7ec504",
+      "end": "0x7ec5d0",
+      "bytes_sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    "CIS_TTweakerSENLL.CIS_TTweakerSENLL": {
+      "start": "0x139ee18",
+      "end": "0x139ee90",
+      "bytes_sha256": "0b38a38cba73512fa45d478859faaecc6f10fbbeeedc962281759a7fde75af80"
+    },
+    "CIS_TTweakerSENLL.TTweakerSENLL.Create": {
+      "start": "0x12f1c5c",
+      "end": "0x12f1d24",
+      "bytes_sha256": "0ef7716b07c43270afccf27950f7fe89944c7b27f4fd1aef28e49066d6a9f460"
+    },
+    "CIS_TTweakerSENLL.TTweakerSENLL.TweakParameters": {
+      "start": "0x12f1d24",
+      "end": "0x12f1d34",
+      "bytes_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.InternalCreate": {
+      "start": "0x7ef7f4",
+      "end": "0x7ef820",
+      "bytes_sha256": "a8de65e36b107ad2bfe976cc2169ce1ee4ff1e81206e34293bed9430625a97f1"
+    },
+    "CIS_TCustomFlashObject.TFoundationObject.InternalCreate": {
+      "start": "0x7eaed8",
+      "end": "0x7eaf40",
+      "bytes_sha256": "4b9343fab61f38e47e33c21270c37bc41f9d70eac0ceb2e051a198788d5a9d16"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.InternalCreate": {
+      "start": "0x7ea4b4",
+      "end": "0x7ea530",
+      "bytes_sha256": "9e2c3a0fb06d81abdf0874ce4c8f98788d61eb03b5a471887e3e725423798e64"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.InternalCreate": {
+      "start": "0x76a420",
+      "end": "0x76a42c",
+      "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TCustomFlashObject.TFlashEntityManager.Create": {
+      "start": "0x7ee09c",
+      "end": "0x7ee0ec",
+      "bytes_sha256": "31451f6d4004ffd86077e4e118334b6311265c82da01d4c5cdc21c18e126385b"
+    },
+    "CIS_TObjectManager.TCustomObjectManager.Create": {
+      "start": "0x7684a4",
+      "end": "0x768500",
+      "bytes_sha256": "48bef934257db144cec02465076f0da76dce1981962af41dc4f991f76c5ea5e7"
+    },
+    "CIS_TBaseObject.TBASEObject.Create": {
+      "start": "0x7681f0",
+      "end": "0x768234",
+      "bytes_sha256": "1d99602b403c4cee4c169a3f19e26de7d700cf3a7484bc7747d4b12dc5a305c1"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceList.Create": {
+      "start": "0x7f0954",
+      "end": "0x7f09a0",
+      "bytes_sha256": "3176ceab98588d2c4edb3a1d4ad7f8ffe7f3ba785b958d3ce798f89bdd0d6927"
+    },
+    "CIS_TCustomFlashObject.TThreadSafeList.Create": {
+      "start": "0x7f0b48",
+      "end": "0x7f0bb0",
+      "bytes_sha256": "7fd00327b3c94868e02cf2d71bf9ef8574372aab878090f7667dc7aa3238e38a"
+    },
+    "CIS_TCBusUnitCGateAgent.TUnitHintsCollection.Create": {
+      "start": "0xcc5854",
+      "end": "0xcc589c",
+      "bytes_sha256": "5697ce903fb8cb62a0a8174c38c10eaff72d16210712ee0adb9ff1d1b5ec03e5"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeAreaGroupAddress": {
+      "start": "0xcc6470",
+      "end": "0xcc64d0",
+      "bytes_sha256": "152255d9b2c4bcf4e20d614707712af633a3b89c413edef67293ed37dfa92427"
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeStatusReportInterval": {
+      "start": "0xcc64d0",
+      "end": "0xcc6538",
+      "bytes_sha256": "c51c28f9f1b654cad66f255008ec40781d34fcd77510090fa631186d8212c892"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes": {
+      "start": "0xcc7290",
+      "end": "0xcc7430",
+      "bytes_sha256": "1eeb568a802f8c8127f1aadf2af706ac9dc6d268fe27ea7b93c4ae0eedd977ba"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerHighByte": {
+      "start": "0xcc717c",
+      "end": "0xcc71d4",
+      "bytes_sha256": "d140abca9b5b7c46da0895b951b72140be5a6432b8315b36bef80a425b9282df"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerLowByte": {
+      "start": "0xcc71d4",
+      "end": "0xcc722c",
+      "bytes_sha256": "500b1c8cfa9e7deaba3eebc3cc2c29bac7a0befd85bcbd9fdcedd4e9a22cb3e5"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerExpiryCommand": {
+      "start": "0xcc722c",
+      "end": "0xcc7290",
+      "bytes_sha256": "654d5ff0fabdbdd52ec51e10a06c9d8420e6e7fcad2bcaf9d9cd272c17130c32"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.InternalCreate": {
+      "start": "0xceba64",
+      "end": "0xcebbe4",
+      "bytes_sha256": "a6d839d57579b2568dfd699e453deadb0aff9faba2af0e78abfcbe146a182e9e"
+    },
+    "CIS_TTweakerRELDNx.TTweakerRELDNX_TO_8.TweakParameters": {
+      "start": "0x12ef138",
+      "end": "0x12f0488",
+      "bytes_sha256": "8ff66825d3c3dbee288885495ef8f79520ab4d131929cf328fe3ad7af5c18cd1"
+    }
+  },
+  "constructor_fields": {
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate": [
+      {
+        "name": "Application",
+        "offset": "0x88",
+        "address": "0xcb52bd"
+      },
+      {
+        "name": "FirmwareVersion",
+        "offset": "0x8c",
+        "address": "0xcb52fe"
+      },
+      {
+        "name": "Project",
+        "offset": "0x90",
+        "address": "0xcb5324"
+      },
+      {
+        "name": "SerialNo",
+        "offset": "0x94",
+        "address": "0xcb534a"
+      },
+      {
+        "name": "State",
+        "offset": "0x98",
+        "address": "0xcb5370"
+      },
+      {
+        "name": "UnitAddress",
+        "offset": "0x9c",
+        "address": "0xcb5396"
+      },
+      {
+        "name": "UnitName",
+        "offset": "0xa0",
+        "address": "0xcb53bc"
+      },
+      {
+        "name": "UnitType",
+        "offset": "0xa4",
+        "address": "0xcb5408"
+      }
+    ],
+    "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.InternalCreate": [
+      {
+        "name": "LearnAnyApp",
+        "offset": "0xe4",
+        "address": "0xcc5acf"
+      },
+      {
+        "name": "LearnMode",
+        "offset": "0xe0",
+        "address": "0xcc5af5"
+      },
+      {
+        "name": "LearnedFlag",
+        "offset": "0xe8",
+        "address": "0xcc5b1b"
+      }
+    ],
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate": [
+      {
+        "name": "GroupAddress",
+        "offset": "0x100",
+        "address": "0xcc6d47"
+      },
+      {
+        "name": "DebounceTime",
+        "offset": "0x104",
+        "address": "0xcc6d6d"
+      },
+      {
+        "name": "IndicatorBrightness",
+        "offset": "0x108",
+        "address": "0xcc6da9"
+      },
+      {
+        "name": "LongPressTime",
+        "offset": "0x10c",
+        "address": "0xcc6dcf"
+      },
+      {
+        "name": "RampRate",
+        "offset": "0x114",
+        "address": "0xcc6dfd"
+      },
+      {
+        "name": "InfraRedBank",
+        "offset": "0x118",
+        "address": "0xcc6e23"
+      },
+      {
+        "name": "JPCommand",
+        "offset": "0x11c",
+        "address": "0xcc6e49"
+      },
+      {
+        "name": "SRCommand",
+        "offset": "0x120",
+        "address": "0xcc6e6f"
+      },
+      {
+        "name": "LPCommand",
+        "offset": "0x124",
+        "address": "0xcc6e95"
+      },
+      {
+        "name": "LRCommand",
+        "offset": "0x128",
+        "address": "0xcc6ebb"
+      },
+      {
+        "name": "BlockAllocation",
+        "offset": "0x12c",
+        "address": "0xcc6ee1"
+      },
+      {
+        "name": "IndicatorBlockAssignment",
+        "offset": "0x130",
+        "address": "0xcc6f07"
+      },
+      {
+        "name": "IndicatorFunction",
+        "offset": "0x134",
+        "address": "0xcc6f2d"
+      }
+    ],
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes": [
+      {
+        "name": "EEPROMLevelStore",
+        "offset": "0x110",
+        "address": "0xcc72b7"
+      },
+      {
+        "name": "LightIndex",
+        "offset": "0x138",
+        "address": "0xcc72dd"
+      },
+      {
+        "name": "LightLevel",
+        "offset": "0x13c",
+        "address": "0xcc7303"
+      },
+      {
+        "name": "LightLevelStore1",
+        "offset": "0x140",
+        "address": "0xcc7329"
+      },
+      {
+        "name": "LightLevelStore2",
+        "offset": "0x144",
+        "address": "0xcc734f"
+      }
+    ],
+    "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.InternalCreate": [
+      {
+        "name": "EnableGroupAddress",
+        "offset": "0x160",
+        "address": "0x121fb1f"
+      },
+      {
+        "name": "EnableGroupLogic",
+        "offset": "0x164",
+        "address": "0x121fb45"
+      }
+    ],
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate": [
+      {
+        "name": "ControlAppGroupAddress",
+        "offset": "0x160",
+        "address": "0xcc9d33"
+      },
+      {
+        "name": "EnableNightlight",
+        "offset": "0x164",
+        "address": "0xcc9d59"
+      },
+      {
+        "name": "EnableNightlightControl",
+        "offset": "0x168",
+        "address": "0xcc9d7f"
+      },
+      {
+        "name": "DisableTimerFlash",
+        "offset": "0x16c",
+        "address": "0xcc9da5"
+      },
+      {
+        "name": "FirstKeyThrowAway",
+        "offset": "0x170",
+        "address": "0xcc9dcb"
+      },
+      {
+        "name": "IndicatorPressedLevel",
+        "offset": "0x174",
+        "address": "0xcc9df1"
+      },
+      {
+        "name": "TimerDuration",
+        "offset": "0x178",
+        "address": "0xcc9e17"
+      },
+      {
+        "name": "PatchEnable",
+        "offset": "0x17c",
+        "address": "0xcc9e3d"
+      },
+      {
+        "name": "SceneKeySelector",
+        "offset": "0x180",
+        "address": "0xcc9e63"
+      },
+      {
+        "name": "SceneTable",
+        "offset": "0x184",
+        "address": "0xcc9e89"
+      },
+      {
+        "name": "SceneTablePointer",
+        "offset": "0x188",
+        "address": "0xcc9eaf"
+      },
+      {
+        "name": "DisableIR",
+        "offset": "0x18c",
+        "address": "0xcc9ed5"
+      }
+    ],
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.InternalCreate": [
+      {
+        "name": "IDBacklightIllumination",
+        "offset": "0x190",
+        "address": "0xceba93"
+      },
+      {
+        "name": "EnableNightlightOnPCx",
+        "offset": "0x194",
+        "address": "0xcebab9"
+      },
+      {
+        "name": "EnableNightlightOnPA6",
+        "offset": "0x198",
+        "address": "0xcebadf"
+      },
+      {
+        "name": "PrimaryColour",
+        "offset": "0x19c",
+        "address": "0xcebb05"
+      }
+    ],
+    "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.InternalCreate": [
+      {
+        "name": "PIRLightMovement",
+        "offset": "0x1a0",
+        "address": "0xcf2ba3"
+      },
+      {
+        "name": "PIRDarkMovement",
+        "offset": "0x1a4",
+        "address": "0xcf2bc9"
+      },
+      {
+        "name": "PIRDark",
+        "offset": "0x1a8",
+        "address": "0xcf2bef"
+      },
+      {
+        "name": "IRBankKeyOffset",
+        "offset": "0x1ac",
+        "address": "0xcf2c15"
+      },
+      {
+        "name": "CorridorLinkOfficeBlock",
+        "offset": "0x1b0",
+        "address": "0xcf2c3b"
+      },
+      {
+        "name": "CorridorLinkBlock",
+        "offset": "0x1b4",
+        "address": "0xcf2c61"
+      },
+      {
+        "name": "CorridorLinkActive",
+        "offset": "0x1b8",
+        "address": "0xcf2c87"
+      },
+      {
+        "name": "BroadcastBlock",
+        "offset": "0x1bc",
+        "address": "0xcf2cad"
+      },
+      {
+        "name": "BroadcastActive",
+        "offset": "0x1c0",
+        "address": "0xcf2cd3"
+      },
+      {
+        "name": "IndicatorControl",
+        "offset": "0x1c4",
+        "address": "0xcf2cf9"
+      },
+      {
+        "name": "PECTargetLux",
+        "offset": "0x1c8",
+        "address": "0xcf2d1f"
+      },
+      {
+        "name": "PECMarginLux",
+        "offset": "0x1cc",
+        "address": "0xcf2d45"
+      },
+      {
+        "name": "PECScaleFactor",
+        "offset": "0x1d0",
+        "address": "0xcf2d6b"
+      },
+      {
+        "name": "BlockGroupLogic",
+        "offset": "0x1d4",
+        "address": "0xcf2d91"
+      },
+      {
+        "name": "BlockBankSwitchActive",
+        "offset": "0x1d8",
+        "address": "0xcf2db7"
+      },
+      {
+        "name": "PIREnablerGroup",
+        "offset": "0x1dc",
+        "address": "0xcf2ddd"
+      },
+      {
+        "name": "PECEnablerGroup",
+        "offset": "0x1e0",
+        "address": "0xcf2e03"
+      },
+      {
+        "name": "SingleJoinEnablerGroup",
+        "offset": "0x1e4",
+        "address": "0xcf2e29"
+      },
+      {
+        "name": "DualJoinEnablerGroup",
+        "offset": "0x1e8",
+        "address": "0xcf2e4f"
+      },
+      {
+        "name": "CorridorLinkEnablerGroup",
+        "offset": "0x1ec",
+        "address": "0xcf2e75"
+      },
+      {
+        "name": "SingleJoinEnablerControlGroup",
+        "offset": "0x1f0",
+        "address": "0xcf2e9b"
+      },
+      {
+        "name": "DualJoinEnablerControlGroup",
+        "offset": "0x1f4",
+        "address": "0xcf2ec1"
+      },
+      {
+        "name": "PECFunctionBlock",
+        "offset": "0x1f8",
+        "address": "0xcf2ee7"
+      },
+      {
+        "name": "PECFunctionActive",
+        "offset": "0x1fc",
+        "address": "0xcf2f0d"
+      },
+      {
+        "name": "PECFunctionIRKey",
+        "offset": "0x200",
+        "address": "0xcf2f33"
+      },
+      {
+        "name": "PECFunctionIRActive",
+        "offset": "0x204",
+        "address": "0xcf2f59"
+      },
+      {
+        "name": "PIRFunctionIRKey",
+        "offset": "0x208",
+        "address": "0xcf2f7f"
+      },
+      {
+        "name": "PIRFunctionIRActive",
+        "offset": "0x20c",
+        "address": "0xcf2fa5"
+      },
+      {
+        "name": "PECLevelStore",
+        "offset": "0x210",
+        "address": "0xcf2fcb"
+      },
+      {
+        "name": "PIRLevelStore",
+        "offset": "0x214",
+        "address": "0xcf2ff1"
+      },
+      {
+        "name": "PECEnablerGroupLogic",
+        "offset": "0x218",
+        "address": "0xcf3017"
+      },
+      {
+        "name": "PIREnablerGroupLogic",
+        "offset": "0x21c",
+        "address": "0xcf303d"
+      },
+      {
+        "name": "PotentiometerAFunction",
+        "offset": "0x220",
+        "address": "0xcf3063"
+      },
+      {
+        "name": "PotentiometerBFunction",
+        "offset": "0x224",
+        "address": "0xcf3089"
+      },
+      {
+        "name": "PotentiometerATimerBlock",
+        "offset": "0x228",
+        "address": "0xcf30af"
+      },
+      {
+        "name": "PotentiometerBTimerBlock",
+        "offset": "0x22c",
+        "address": "0xcf30d5"
+      },
+      {
+        "name": "PotentiometerBBankSwitchEnable",
+        "offset": "0x230",
+        "address": "0xcf30fb"
+      }
+    ],
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.InternalCreate": [
+      {
+        "name": "TargetLUX",
+        "offset": "0x100",
+        "address": "0x1221593"
+      },
+      {
+        "name": "Hystersis",
+        "offset": "0x104",
+        "address": "0x12215b9"
+      },
+      {
+        "name": "LevelGroupAddress",
+        "offset": "0x108",
+        "address": "0x12215df"
+      },
+      {
+        "name": "OnOffGroupAddress",
+        "offset": "0x10c",
+        "address": "0x1221605"
+      },
+      {
+        "name": "EnableGroupAddress",
+        "offset": "0x110",
+        "address": "0x122162b"
+      },
+      {
+        "name": "LED",
+        "offset": "0x114",
+        "address": "0x1221651"
+      },
+      {
+        "name": "IndicatorFunction",
+        "offset": "0x118",
+        "address": "0x1221677"
+      }
+    ],
+    "CIS_TCBusPCICGateAgent.TCBusPCICGateAgent.InternalCreate": [
+      {
+        "name": "Burden",
+        "offset": "0xe0",
+        "address": "0x124fea6"
+      },
+      {
+        "name": "ClockGenEnable",
+        "offset": "0xe4",
+        "address": "0x124fed9"
+      }
+    ],
+    "CIS_TCBusPC_DAL2BCGateAgent.TCBusPC_DAL2BCGateAgent.InternalCreate": [
+      {
+        "name": "ErrorReportDeviceID",
+        "offset": "0xe8",
+        "address": "0x1250625"
+      },
+      {
+        "name": "DaliMonitorRate",
+        "offset": "0xec",
+        "address": "0x125066b"
+      },
+      {
+        "name": "DaliARampMatching",
+        "offset": "0xf0",
+        "address": "0x12506b1"
+      },
+      {
+        "name": "DaliARestoreLevel",
+        "offset": "0xf4",
+        "address": "0x12506f7"
+      },
+      {
+        "name": "DaliAErrorReportingStatus",
+        "offset": "0xf8",
+        "address": "0x125071d"
+      },
+      {
+        "name": "DaliAErrorRefreshTime",
+        "offset": "0xfc",
+        "address": "0x1250763"
+      },
+      {
+        "name": "DaliAEnableErrorGroup",
+        "offset": "0x100",
+        "address": "0x12507a9"
+      },
+      {
+        "name": "DaliAEnableErrorLevel",
+        "offset": "0x104",
+        "address": "0x12507ef"
+      },
+      {
+        "name": "DaliADisableErrorGroup",
+        "offset": "0x108",
+        "address": "0x1250815"
+      },
+      {
+        "name": "DaliADisableErrorLevel",
+        "offset": "0x10c",
+        "address": "0x125085b"
+      },
+      {
+        "name": "DaliATriggerErrorGroup",
+        "offset": "0x110",
+        "address": "0x1250881"
+      },
+      {
+        "name": "DaliATriggerErrorAcSel",
+        "offset": "0x114",
+        "address": "0x12508cd"
+      },
+      {
+        "name": "DaliBRampMatching",
+        "offset": "0x118",
+        "address": "0x12508f3"
+      },
+      {
+        "name": "DaliBRestoreLevel",
+        "offset": "0x11c",
+        "address": "0x125093f"
+      },
+      {
+        "name": "DaliBErrorReportingStatus",
+        "offset": "0x120",
+        "address": "0x1250965"
+      },
+      {
+        "name": "DaliBErrorRefreshTime",
+        "offset": "0x124",
+        "address": "0x12509b1"
+      },
+      {
+        "name": "DaliBEnableErrorGroup",
+        "offset": "0x128",
+        "address": "0x12509fd"
+      },
+      {
+        "name": "DaliBEnableErrorLevel",
+        "offset": "0x12c",
+        "address": "0x1250a49"
+      },
+      {
+        "name": "DaliBDisableErrorGroup",
+        "offset": "0x130",
+        "address": "0x1250a6f"
+      },
+      {
+        "name": "DaliBDisableErrorLevel",
+        "offset": "0x134",
+        "address": "0x1250abb"
+      },
+      {
+        "name": "DaliBTriggerErrorGroup",
+        "offset": "0x138",
+        "address": "0x1250ae1"
+      },
+      {
+        "name": "DaliBTriggerErrorAcSel",
+        "offset": "0x13c",
+        "address": "0x1250b2d"
+      },
+      {
+        "name": "CBusToDali",
+        "offset": "0x140",
+        "address": "0x1250b53"
+      },
+      {
+        "name": "DaliToCBus",
+        "offset": "0x144",
+        "address": "0x1250b79"
+      }
+    ]
+  },
+  "rules": {
+    "neo_to_key": "InputUnit immutable flags, fresh Learn flags, remove source block groups whose application object equals a concrete secondary application, then source slots0..3 + slot8 + 255*3; Area slot8 is outside eight block removal; brightness enabled",
+    "pci_dali": "Both tweaker classes swap two Application elements as decimal second, space, first; no target conversion-hook override; Burden immutable and destination-only fields retain defaults",
+    "pir": "Older PIR uses CoreKey+Learn, no dual application/Neo reshape; brightness false; EEPROMLevelStore, InfraRedBank, LightIndex, LightLevel, LightLevelStore1, LightLevelStore2 immutable; source is never ST7",
+    "senll": "Older SENLL invokes Learn only; the ST7 source translation branch is not reached. The no-op tweaker mapping is fallback-only when a target name is absent in source",
+    "multisensor": "Older multisensor invokes CoreKey then re-enables DisableIR; brightness false. Source older SENLL has no GroupAddress; original fresh empty string plus IntArrayElementWithDefault(255) generates nine255 values. IsJoinModeSupported compares firmware to2.0.0:1.6.00 forces four join fields255; ST7-only lux translation is not reached"
+  },
+  "limits": [
+    "Static source and private catalogue/specification shape reads only; no original/native/GUI/hardware execution.",
+    "Fixed selected firmware profiles do not establish every sensor firmware, retained editor history or source application-model exception behavior.",
+    "NeoToKey requires a concrete primary application; its runtime application objects are reconstructed from complete admitted PP identities, not a captured original in-memory process.",
+    "Private vendor specification/catalogue text and original instruction bytes are not bundled."
+  ],
+  "agent_virtual_slots": {
+    "TCBusPCICGateAgent": {
+      "class_reference": "0x124fca0",
+      "vmt": "0x124fcf8",
+      "before_unit_conversion_save": {
+        "offset": "0xa8",
+        "address": "0xcac4f8",
+        "method": "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave"
+      }
+    },
+    "TCBusPC_DAL2BCGateAgent": {
+      "class_reference": "0x1250408",
+      "vmt": "0x1250460",
+      "before_unit_conversion_save": {
+        "offset": "0xa8",
+        "address": "0xcac4f8",
+        "method": "CIS_TCGateAgent.TCGateAgent.BeforeUnitConversionSave"
+      }
+    },
+    "TCBusPirSensorInputCGateAgent": {
+      "class_reference": "0x121f900",
+      "vmt": "0x121f958",
+      "before_unit_conversion_save": {
+        "offset": "0xa8",
+        "address": "0x1220688",
+        "method": "CIS_TCBusPirSensorInputCGateAgent.TCBusPirSensorInputCGateAgent.BeforeUnitConversionSave"
+      }
+    },
+    "TSENLLCGateAgent": {
+      "class_reference": "0x1221214",
+      "vmt": "0x122126c",
+      "before_unit_conversion_save": {
+        "offset": "0xa8",
+        "address": "0x1221fbc",
+        "method": "CIS_TSENLLCGateAgent.TSENLLCGateAgent.BeforeUnitConversionSave"
+      }
+    },
+    "TCBusMultisensorCGateAgent": {
+      "class_reference": "0xcf022c",
+      "vmt": "0xcf0284",
+      "before_unit_conversion_save": {
+        "offset": "0xa8",
+        "address": "0xcf25a8",
+        "method": "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.BeforeUnitConversionSave"
+      }
+    }
+  },
+  "remaining_refusals": {
+    "KEYM6": {
+      "registered_targets": [
+        "KEYDL4",
+        "KEYML5",
+        "KEYBL5"
+      ],
+      "original_unit_factory_matches": 0,
+      "complete_factory_receipt": "../experiments/2026-09-30/csv-factory-registry-static.json"
+    },
+    "RELDN4_to_RELDN8": {
+      "reverse_tweaker_method": "CIS_TTweakerRELDNx.TTweakerRELDNX_TO_8.TweakParameters",
+      "reviewed_rule_receipt": "toolkit-reldn-conversion-source-proof.json",
+      "source_logic_shape": {
+        "LogicGA13Associations": {
+          "specification_elements": 4,
+          "source_direct_read_minimum": 8,
+          "original_padding": false
+        },
+        "LogicGA14Associations": {
+          "specification_elements": 4,
+          "source_direct_read_minimum": 8,
+          "original_padding": false
+        },
+        "LogicGA15Associations": {
+          "specification_elements": 4,
+          "source_direct_read_minimum": 8,
+          "original_padding": false
+        },
+        "LogicGA16Associations": {
+          "specification_elements": 4,
+          "source_direct_read_minimum": 8,
+          "original_padding": false
+        }
+      }
+    }
+  }
+}

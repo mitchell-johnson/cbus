@@ -131,6 +131,14 @@
       "profile": "input-1.2.67-to-fresh-input-1.2.67",
       "source_firmware": "1.2.67",
       "target_firmware": "1.2.67",
+      "additional_source_profile": {
+        "source_type": "SENPILL",
+        "target_type": "SENPILL",
+        "source_firmware": "1.6.00",
+        "target_firmware": "1.6.00",
+        "native_acceptance": false,
+        "source_proof": "toolkit-remaining-conversions-source-proof.json"
+      },
       "hook_summary": "fresh Learn flags are true/true/false; non-Neo sources and targets with HasApplication2=false leave group and indicator strings unchanged; brightness is writable for KEY1/2/4 and immutable for KEYBC2/4 and BCNC4A/B",
       "call_sites": 11
     },
@@ -246,8 +254,12 @@
         "DisableIRNEC"
       ],
       "assignments": [],
-      "summary": "TTweakerInputUnit rules only",
-      "refusal": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered",
+      "summary": "TTweakerInputUnit flags, then recovered CoreKey secondary identity scrub and Neo-to-classic reshape",
+      "refusal": null,
+      "profile": "neo-classic-2.5.00-to-fresh-classic-1.2.67",
+      "source_firmware": "2.5.00",
+      "target_firmware": "1.2.67",
+      "evidence": "static source recovery and owned synthetic software acceptance",
       "call_sites": 13
     },
     "TTweakerPC_DAL2": {
@@ -257,7 +269,9 @@
       "assignments": [],
       "application_swap": "Application becomes decimal element 1, one space, decimal element 0",
       "summary": "swaps the two Application values",
-      "refusal": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet",
+      "refusal": null,
+      "profile": "pci-dali-fresh-4.5.00",
+      "evidence": "static source recovery and owned synthetic software acceptance",
       "call_sites": 2
     },
     "TTweakerPC_DAL2B": {
@@ -267,7 +281,9 @@
       "assignments": [],
       "application_swap": "Application becomes decimal element 1, one space, decimal element 0",
       "summary": "swaps the two Application values",
-      "refusal": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet",
+      "refusal": null,
+      "profile": "pci-dali-fresh-4.5.00",
+      "evidence": "static source recovery and owned synthetic software acceptance",
       "call_sites": 2
     },
     "TTweakerRELDN8_TO_X": {
@@ -305,7 +321,9 @@
       "immutable": [],
       "assignments": [],
       "summary": "renames only (target <- source), no value rule",
-      "refusal": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered",
+      "refusal": null,
+      "profile": "older-sensor-fresh",
+      "evidence": "static source recovery and owned synthetic software acceptance",
       "call_sites": 2
     },
     "TTweakerSENPIR": {
@@ -319,7 +337,9 @@
       "immutable": [],
       "assignments": [],
       "summary": "renames only (target <- source), no value rule",
-      "refusal": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered",
+      "refusal": null,
+      "profile": "older-sensor-fresh",
+      "evidence": "static source recovery and owned synthetic software acceptance",
       "call_sites": 16
     }
   },
@@ -1067,6 +1087,9 @@
         "KEYB2",
         "KEYB4",
         "KEYB6",
+        "KEYBIR2",
+        "KEYBIR4",
+        "KEYBIR6",
         "KEYC1",
         "KEYC2",
         "KEYC4",
@@ -2364,6 +2387,801 @@
           true
         ]
       ]
+    },
+    "TCBusPCICGateAgent": {
+      "unit_types": [
+        "PC_DAL2"
+      ],
+      "overrides_before_unit_conversion_save": false,
+      "attributes": [
+        [
+          "Application",
+          true
+        ],
+        [
+          "FirmwareVersion",
+          false
+        ],
+        [
+          "Project",
+          true
+        ],
+        [
+          "SerialNo",
+          false
+        ],
+        [
+          "State",
+          false
+        ],
+        [
+          "UnitAddress",
+          true
+        ],
+        [
+          "UnitName",
+          true
+        ],
+        [
+          "UnitType",
+          false
+        ],
+        [
+          "Burden",
+          false
+        ],
+        [
+          "ClockGenEnable",
+          true
+        ]
+      ]
+    },
+    "TCBusPC_DAL2BCGateAgent": {
+      "unit_types": [
+        "PC_DAL2B",
+        "PC_DAL2C"
+      ],
+      "overrides_before_unit_conversion_save": false,
+      "attributes": [
+        [
+          "Application",
+          true
+        ],
+        [
+          "FirmwareVersion",
+          false
+        ],
+        [
+          "Project",
+          true
+        ],
+        [
+          "SerialNo",
+          false
+        ],
+        [
+          "State",
+          false
+        ],
+        [
+          "UnitAddress",
+          true
+        ],
+        [
+          "UnitName",
+          true
+        ],
+        [
+          "UnitType",
+          false
+        ],
+        [
+          "Burden",
+          false
+        ],
+        [
+          "ClockGenEnable",
+          true
+        ],
+        [
+          "ErrorReportDeviceID",
+          true
+        ],
+        [
+          "DaliMonitorRate",
+          true
+        ],
+        [
+          "DaliARampMatching",
+          true
+        ],
+        [
+          "DaliARestoreLevel",
+          true
+        ],
+        [
+          "DaliAErrorReportingStatus",
+          true
+        ],
+        [
+          "DaliAErrorRefreshTime",
+          true
+        ],
+        [
+          "DaliAEnableErrorGroup",
+          true
+        ],
+        [
+          "DaliAEnableErrorLevel",
+          true
+        ],
+        [
+          "DaliADisableErrorGroup",
+          true
+        ],
+        [
+          "DaliADisableErrorLevel",
+          true
+        ],
+        [
+          "DaliATriggerErrorGroup",
+          true
+        ],
+        [
+          "DaliATriggerErrorAcSel",
+          true
+        ],
+        [
+          "DaliBRampMatching",
+          true
+        ],
+        [
+          "DaliBRestoreLevel",
+          true
+        ],
+        [
+          "DaliBErrorReportingStatus",
+          true
+        ],
+        [
+          "DaliBErrorRefreshTime",
+          true
+        ],
+        [
+          "DaliBEnableErrorGroup",
+          true
+        ],
+        [
+          "DaliBEnableErrorLevel",
+          true
+        ],
+        [
+          "DaliBDisableErrorGroup",
+          true
+        ],
+        [
+          "DaliBDisableErrorLevel",
+          true
+        ],
+        [
+          "DaliBTriggerErrorGroup",
+          true
+        ],
+        [
+          "DaliBTriggerErrorAcSel",
+          true
+        ],
+        [
+          "CBusToDali",
+          true
+        ],
+        [
+          "DaliToCBus",
+          true
+        ]
+      ]
+    },
+    "TCBusPirSensorInputCGateAgent": {
+      "unit_types": [
+        "SENPIRSS",
+        "SENPIROA",
+        "SENPIRIA",
+        "SENPIRIB"
+      ],
+      "overrides_before_unit_conversion_save": true,
+      "conversion_hook_profile": "older-sensor-fresh",
+      "attributes": [
+        [
+          "Application",
+          true
+        ],
+        [
+          "FirmwareVersion",
+          false
+        ],
+        [
+          "Project",
+          true
+        ],
+        [
+          "SerialNo",
+          false
+        ],
+        [
+          "State",
+          false
+        ],
+        [
+          "UnitAddress",
+          true
+        ],
+        [
+          "UnitName",
+          true
+        ],
+        [
+          "UnitType",
+          false
+        ],
+        [
+          "LearnAnyApp",
+          true
+        ],
+        [
+          "LearnMode",
+          true
+        ],
+        [
+          "LearnedFlag",
+          true
+        ],
+        [
+          "AreaGroupAddress",
+          true
+        ],
+        [
+          "StatusReportInterval",
+          true
+        ],
+        [
+          "GroupAddress",
+          true
+        ],
+        [
+          "DebounceTime",
+          true
+        ],
+        [
+          "IndicatorBrightness",
+          false
+        ],
+        [
+          "LongPressTime",
+          true
+        ],
+        [
+          "EEPROMLevelStore",
+          true
+        ],
+        [
+          "LightIndex",
+          true
+        ],
+        [
+          "LightLevel",
+          true
+        ],
+        [
+          "LightLevelStore1",
+          true
+        ],
+        [
+          "LightLevelStore2",
+          true
+        ],
+        [
+          "RampRate",
+          true
+        ],
+        [
+          "InfraRedBank",
+          true
+        ],
+        [
+          "JPCommand",
+          true
+        ],
+        [
+          "SRCommand",
+          true
+        ],
+        [
+          "LPCommand",
+          true
+        ],
+        [
+          "LRCommand",
+          true
+        ],
+        [
+          "BlockAllocation",
+          true
+        ],
+        [
+          "IndicatorBlockAssignment",
+          true
+        ],
+        [
+          "IndicatorFunction",
+          true
+        ],
+        [
+          "TimerHighByte",
+          true
+        ],
+        [
+          "TimerLowByte",
+          true
+        ],
+        [
+          "TimerExpiryCommand",
+          true
+        ],
+        [
+          "EnableGroupAddress",
+          true
+        ],
+        [
+          "EnableGroupLogic",
+          true
+        ]
+      ]
+    },
+    "TSENLLCGateAgent": {
+      "unit_types": [
+        "SENLL"
+      ],
+      "overrides_before_unit_conversion_save": true,
+      "conversion_hook_profile": "older-sensor-fresh",
+      "attributes": [
+        [
+          "Application",
+          true
+        ],
+        [
+          "FirmwareVersion",
+          false
+        ],
+        [
+          "Project",
+          true
+        ],
+        [
+          "SerialNo",
+          false
+        ],
+        [
+          "State",
+          false
+        ],
+        [
+          "UnitAddress",
+          true
+        ],
+        [
+          "UnitName",
+          true
+        ],
+        [
+          "UnitType",
+          false
+        ],
+        [
+          "LearnAnyApp",
+          true
+        ],
+        [
+          "LearnMode",
+          true
+        ],
+        [
+          "LearnedFlag",
+          true
+        ],
+        [
+          "AreaGroupAddress",
+          true
+        ],
+        [
+          "StatusReportInterval",
+          true
+        ],
+        [
+          "TargetLUX",
+          true
+        ],
+        [
+          "Hystersis",
+          true
+        ],
+        [
+          "LevelGroupAddress",
+          true
+        ],
+        [
+          "OnOffGroupAddress",
+          true
+        ],
+        [
+          "EnableGroupAddress",
+          true
+        ],
+        [
+          "LED",
+          true
+        ],
+        [
+          "IndicatorFunction",
+          true
+        ]
+      ]
+    },
+    "TCBusMultisensorCGateAgent": {
+      "unit_types": [
+        "SENPILL"
+      ],
+      "overrides_before_unit_conversion_save": true,
+      "conversion_hook_profile": "older-sensor-fresh",
+      "attributes": [
+        [
+          "Application",
+          true
+        ],
+        [
+          "FirmwareVersion",
+          false
+        ],
+        [
+          "Project",
+          true
+        ],
+        [
+          "SerialNo",
+          false
+        ],
+        [
+          "State",
+          false
+        ],
+        [
+          "UnitAddress",
+          true
+        ],
+        [
+          "UnitName",
+          true
+        ],
+        [
+          "UnitType",
+          false
+        ],
+        [
+          "LearnAnyApp",
+          true
+        ],
+        [
+          "LearnMode",
+          true
+        ],
+        [
+          "LearnedFlag",
+          true
+        ],
+        [
+          "AreaGroupAddress",
+          true
+        ],
+        [
+          "StatusReportInterval",
+          true
+        ],
+        [
+          "GroupAddress",
+          true
+        ],
+        [
+          "DebounceTime",
+          true
+        ],
+        [
+          "IndicatorBrightness",
+          false
+        ],
+        [
+          "LongPressTime",
+          true
+        ],
+        [
+          "EEPROMLevelStore",
+          true
+        ],
+        [
+          "LightIndex",
+          true
+        ],
+        [
+          "LightLevel",
+          true
+        ],
+        [
+          "LightLevelStore1",
+          true
+        ],
+        [
+          "LightLevelStore2",
+          true
+        ],
+        [
+          "RampRate",
+          true
+        ],
+        [
+          "IRBank",
+          true
+        ],
+        [
+          "JPCommand",
+          true
+        ],
+        [
+          "SRCommand",
+          true
+        ],
+        [
+          "LPCommand",
+          true
+        ],
+        [
+          "LRCommand",
+          true
+        ],
+        [
+          "BlockAllocation",
+          true
+        ],
+        [
+          "IndicatorBlockAssignment",
+          true
+        ],
+        [
+          "IndicatorFunction",
+          true
+        ],
+        [
+          "TimerHighByte",
+          true
+        ],
+        [
+          "TimerLowByte",
+          true
+        ],
+        [
+          "TimerExpiryCommand",
+          true
+        ],
+        [
+          "ControlAppGroupAddress",
+          true
+        ],
+        [
+          "EnableNightlight",
+          true
+        ],
+        [
+          "EnableNightlightControl",
+          true
+        ],
+        [
+          "DisableTimerFlash",
+          true
+        ],
+        [
+          "FirstKeyThrowAway",
+          true
+        ],
+        [
+          "IndicatorPressedLevel",
+          true
+        ],
+        [
+          "TimerDuration",
+          true
+        ],
+        [
+          "PatchEnable",
+          true
+        ],
+        [
+          "SceneKeySelector",
+          true
+        ],
+        [
+          "SceneTable",
+          true
+        ],
+        [
+          "SceneTablePointer",
+          true
+        ],
+        [
+          "DisableIR",
+          true
+        ],
+        [
+          "IDBacklightIllumination",
+          true
+        ],
+        [
+          "EnableNightlightOnPCx",
+          true
+        ],
+        [
+          "EnableNightlightOnPA6",
+          true
+        ],
+        [
+          "PrimaryColour",
+          true
+        ],
+        [
+          "PIRLightMovement",
+          true
+        ],
+        [
+          "PIRDarkMovement",
+          true
+        ],
+        [
+          "PIRDark",
+          true
+        ],
+        [
+          "IRBankKeyOffset",
+          true
+        ],
+        [
+          "CorridorLinkOfficeBlock",
+          true
+        ],
+        [
+          "CorridorLinkBlock",
+          true
+        ],
+        [
+          "CorridorLinkActive",
+          true
+        ],
+        [
+          "BroadcastBlock",
+          true
+        ],
+        [
+          "BroadcastActive",
+          true
+        ],
+        [
+          "IndicatorControl",
+          true
+        ],
+        [
+          "PECTargetLux",
+          true
+        ],
+        [
+          "PECMarginLux",
+          true
+        ],
+        [
+          "PECScaleFactor",
+          true
+        ],
+        [
+          "BlockGroupLogic",
+          true
+        ],
+        [
+          "BlockBankSwitchActive",
+          true
+        ],
+        [
+          "PIREnablerGroup",
+          true
+        ],
+        [
+          "PECEnablerGroup",
+          true
+        ],
+        [
+          "SingleJoinEnablerGroup",
+          true
+        ],
+        [
+          "DualJoinEnablerGroup",
+          true
+        ],
+        [
+          "CorridorLinkEnablerGroup",
+          true
+        ],
+        [
+          "SingleJoinEnablerControlGroup",
+          true
+        ],
+        [
+          "DualJoinEnablerControlGroup",
+          true
+        ],
+        [
+          "PECFunctionBlock",
+          true
+        ],
+        [
+          "PECFunctionActive",
+          true
+        ],
+        [
+          "PECFunctionIRKey",
+          true
+        ],
+        [
+          "PECFunctionIRActive",
+          true
+        ],
+        [
+          "PIRFunctionIRKey",
+          true
+        ],
+        [
+          "PIRFunctionIRActive",
+          true
+        ],
+        [
+          "PECLevelStore",
+          true
+        ],
+        [
+          "PIRLevelStore",
+          true
+        ],
+        [
+          "PECEnablerGroupLogic",
+          true
+        ],
+        [
+          "PIREnablerGroupLogic",
+          true
+        ],
+        [
+          "PotentiometerAFunction",
+          true
+        ],
+        [
+          "PotentiometerBFunction",
+          true
+        ],
+        [
+          "PotentiometerATimerBlock",
+          true
+        ],
+        [
+          "PotentiometerBTimerBlock",
+          true
+        ],
+        [
+          "PotentiometerBBankSwitchEnable",
+          true
+        ]
+      ]
     }
   },
   "native_accepted_classes": [
@@ -2376,7 +3194,12 @@
   ],
   "source_admitted_classes": [
     "TTweakerDLT",
-    "TTweakerKeyToDLT"
+    "TTweakerKeyToDLT",
+    "TTweakerNeoToKey",
+    "TTweakerPC_DAL2",
+    "TTweakerPC_DAL2B",
+    "TTweakerSENPIR",
+    "TTweakerSENLL"
   ],
   "pair_refusals": [
     {
@@ -2395,59 +3218,9 @@
       "reason": "KEYM6 has no recovered static Toolkit unit factory/model; its DLT registrations remain refused"
     },
     {
-      "source": "KEYBIR2",
-      "target": "KEYDL4",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR2",
-      "target": "KEYML5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR2",
-      "target": "KEYBL5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR4",
-      "target": "KEYDL4",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR4",
-      "target": "KEYML5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR4",
-      "target": "KEYBL5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR6",
-      "target": "KEYDL4",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR6",
-      "target": "KEYML5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
-      "source": "KEYBIR6",
-      "target": "KEYBL5",
-      "reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
-    },
-    {
       "source": "RELDN4",
       "target": "RELDN8",
       "reason": "native RELDN4 logic arrays have four elements, but the original reverse tweaker reads eight without padding; no defined safe conversion is established"
-    },
-    {
-      "source": "SENPILL",
-      "target": "SENPILL",
-      "reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
     }
   ],
   "registrations": [
@@ -2456,32 +3229,32 @@
       "target": "PC_DAL2B",
       "tweaker_class": "TTweakerPC_DAL2",
       "call_va": "0x139c3f0",
-      "decision": "refused",
-      "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "PC_DAL2",
       "target": "PC_DAL2C",
       "tweaker_class": "TTweakerPC_DAL2",
       "call_va": "0x139c40c",
-      "decision": "refused",
-      "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "PC_DAL2B",
       "target": "PC_DAL2",
       "tweaker_class": "TTweakerPC_DAL2B",
       "call_va": "0x139c490",
-      "decision": "refused",
-      "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "PC_DAL2C",
       "target": "PC_DAL2",
       "tweaker_class": "TTweakerPC_DAL2B",
       "call_va": "0x139c4ac",
-      "decision": "refused",
-      "refusal_reason": "rule recovered and target agent has no conversion hook, but no native acceptance exists yet"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "RELDN8",
@@ -2704,24 +3477,24 @@
       "target": "KEYDL4",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139c960",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR4",
       "target": "KEYDL4",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139c97c",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR6",
       "target": "KEYDL4",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139c998",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYA1",
@@ -2992,24 +3765,24 @@
       "target": "KEYML5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139cd50",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR4",
       "target": "KEYML5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139cd6c",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR6",
       "target": "KEYML5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139cd88",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYA1",
@@ -3280,24 +4053,24 @@
       "target": "KEYBL5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139d140",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR4",
       "target": "KEYBL5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139d15c",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBIR6",
       "target": "KEYBL5",
       "tweaker_class": "TTweakerDLT",
       "call_va": "0x139d178",
-      "decision": "refused",
-      "refusal_reason": "KEYBIR source specification identity or catalogue alias is not established for the recovered DLT profile"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYA1",
@@ -3752,8 +4525,8 @@
       "target": "SENPILL",
       "tweaker_class": "TTweakerInputUnit",
       "call_va": "0x139dc24",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYBC2",
@@ -4544,249 +5317,256 @@
       "target": "KEY1",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e6f8",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC1",
       "target": "KEY2",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e714",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC1",
       "target": "KEY4",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e730",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC2",
       "target": "KEY1",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e74c",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC2",
       "target": "KEY2",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e768",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC2",
       "target": "KEY4",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e784",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC4",
       "target": "KEY1",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e7a0",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC4",
       "target": "KEY2",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e7bc",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYC4",
       "target": "KEY4",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e7d8",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYCIR1",
       "target": "KEYIR1",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e7f4",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYCIR1",
       "target": "KEYIR4",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e810",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYCIR4",
       "target": "KEYIR1",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e82c",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "KEYCIR4",
       "target": "KEYIR4",
       "tweaker_class": "TTweakerNeoToKey",
       "call_va": "0x139e848",
-      "decision": "refused",
-      "refusal_reason": "target key-input agent overrides BeforeUnitConversionSave (TCoreKeyInputCGateAgent chain); its application/block rewrite depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRSS",
       "target": "SENPIRSS",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ebec",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRSS",
       "target": "SENPIROA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec08",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRSS",
       "target": "SENPIRIA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec24",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRSS",
       "target": "SENPIRIB",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec40",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIROA",
       "target": "SENPIRSS",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec5c",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIROA",
       "target": "SENPIROA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec78",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIROA",
       "target": "SENPIRIA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ec94",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIROA",
       "target": "SENPIRIB",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ecb0",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIA",
       "target": "SENPIRSS",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139eccc",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIA",
       "target": "SENPIROA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ece8",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIA",
       "target": "SENPIRIA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed04",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIA",
       "target": "SENPIRIB",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed20",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIB",
       "target": "SENPIRSS",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed3c",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIB",
       "target": "SENPIROA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed58",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIB",
       "target": "SENPIRIA",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed74",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENPIRIB",
       "target": "SENPIRIB",
       "tweaker_class": "TTweakerSENPIR",
       "call_va": "0x139ed90",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENLL",
       "target": "SENLL",
       "tweaker_class": "TTweakerSENLL",
       "call_va": "0x139ee38",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     },
     {
       "source": "SENLL",
       "target": "SENPILL",
       "tweaker_class": "TTweakerSENLL",
       "call_va": "0x139ee54",
-      "decision": "refused",
-      "refusal_reason": "target sensor agent overrides BeforeUnitConversionSave (PIR, SENLL, ST7 or multisensor chain); the hook depends on the Toolkit in-memory unit model and is not recovered"
+      "decision": "admitted",
+      "refusal_reason": null
     }
   ],
-  "limits": "Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata (tag, description, serial, readdress, source deletion and project save) is outside this receipt. The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: its four-element source logic would cause undefined original array reads. Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh target model at 2.5.00. Its five coupler/auxiliary registrations use a separate fresh 2.2.00 target model profile with the CouplerPro brightness suppression. InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; its SENPILL self-conversion remains refused pending the separate sensor hook. DLT/KeyToDLT admits 120 additional registrations with source recovery and owned synthetic CLI proof, separately from native acceptance: classic 1.2.67, modern 2.5.00 and DLT 2.1.00 sources into fresh DLT 2.1.00. KEYM6 has three registrations without a recovered factory model. Every other registered or unregistered pair is refused with the reason recorded here. Static evidence is separate from native C-Gate execution and does not establish original Toolkit GUI or physical acceptance."
+  "limits": "Static facts from the pinned Toolkit EXE/MAP; no original code was executed. Database metadata (tag, description, serial, readdress, source deletion and project save) is outside this receipt. The DIMDUx and RELDN classes are admitted with native C-Gate PP acceptance, except RELDN4 to RELDN8: its four-element source logic would cause undefined original array reads. Classic KeyToNeo conversion admits 93 registrations only for source firmware 1.2.67 and a fresh target model at 2.5.00. Its five coupler/auxiliary registrations use a separate fresh 2.2.00 target model profile with the CouplerPro brightness suppression. InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; the SENPILL self-conversion now uses the separate older-sensor source profile. DLT/KeyToDLT admits 129 registrations with source recovery and owned synthetic CLI proof, separately from native acceptance: classic 1.2.67, modern 2.5.00 and DLT 2.1.00 sources into fresh DLT 2.1.00. KEYM6 has three registrations without a recovered factory model. NeoToKey admits thirteen 2.5.00-to-fresh-1.2.67 directions; four PCI/DALI swaps use fresh 4.5.00; nineteen older sensor directions use exact SENPIRSS/SENLL 1.2.67, other PIR 1.2.68 and SENPILL 1.6.00. Those admissions and nine KEYBIR catalogue-alias DLT directions are source/software evidence only. The InputUnit class native receipts cover its original ten non-sensor directions, not its new SENPILL self pair. Every other registered or unregistered pair is refused with the reason recorded here. Static evidence is separate from native C-Gate execution and does not establish original Toolkit GUI or physical acceptance.",
+  "source_admitted_pairs": [
+    [
+      "SENPILL",
+      "SENPILL"
+    ]
+  ],
+  "additional_source_proof": "toolkit-remaining-conversions-source-proof.json"
 }

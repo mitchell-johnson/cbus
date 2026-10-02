@@ -10,7 +10,7 @@ is caught and ignored. This is separate from the native engine described in
 
 ## Public preview and guarded apply
 
-`cgate conversion tweak` exposes all **243 currently admitted pairs** through
+`cgate conversion tweak` exposes all **288 currently admitted pairs** through
 one operator workflow: eight DIMDN/DIMDU4, seven RELDN, 93 classic key to fresh
 Neo, five coupler/auxiliary to fresh Neo, ten classic InputUnit pairs and 120
 source-bound conversions into fresh DLT targets. The registry and
@@ -141,23 +141,15 @@ receipt's counts, uniqueness, class coverage and decisions.
 | --- | --- | --- | --- |
 | TTweakerDIMDN_TO_DIMDU4 | 4 | InterLockingChannel=4; PowerUpDelay takes the aligned MaxDimmingLevel; MaxDimmingLevel=`0 0 0 0` | admitted |
 | TTweakerDIMDU4_TO_DIMDN | 4 | InterLockingChannel=0; MaxDimmingLevel takes the aligned PowerUpDelay; PowerUpDelay=`0 0 0 0` | admitted |
-| TTweakerInputUnit | 11 | 13 Neo/IR attributes stay at target defaults; inherited Learn and target brightness flags | ten non-sensor pairs admitted for fresh 1.2.67→1.2.67; SENPILL self-conversion refused |
-| TTweakerNeoToKey | 13 | 13 Neo/IR attributes stay at target defaults | refused: secondary-application model rewrite is outside admitted profiles |
+| TTweakerInputUnit | 11 | 13 Neo/IR attributes stay at target defaults; inherited Learn and target brightness flags | ten non-sensor pairs at 1.2.67 and older SENPILL self-conversion at 1.6.00 admitted |
+| TTweakerNeoToKey | 13 | 13 Neo/IR attributes stay at target defaults | 13 admitted at 2.5.00→1.2.67 with source-backed secondary-application identity rewrite |
 | TTweakerKeyToNeo | 98 | as above, plus five attributes, IndicatorFunction 1→2/3→1 and the inherited Learn/CoreKey/NeoPro hooks; CouplerPro finally suppresses brightness | 93 classic-source pairs admitted for fresh 1.2.67→2.5.00; five coupler/auxiliary pairs admitted for fresh 1.2.67→2.2.00 |
-| TTweakerDLT, TTweakerKeyToDLT | 117, 15 | eight (or 13) attributes stay at defaults; one-element LabelFlavourLSB/MSB=0; KeyToDLT remaps IndicatorFunction; DLT own hook uses the loaded Neo source model without inherited conversion hooks | 120 pairs admitted into fresh DLT 2.1.00: classic sources 1.2.67, modern 2.5.00 and DLT 2.1.00; three KEYM6 factory-model and nine KEYBIR specification-identity gaps remain refused |
-| TTweakerSENPIR, TTweakerSENLL | 16, 2 | renames between EnableGroupAddress/Logic and PIR/PEC enabler groups | refused: sensor agent conversion hook not recovered |
-| TTweakerPC_DAL2, TTweakerPC_DAL2B | 2, 2 | swaps the two Application values | refused: no native acceptance yet |
+| TTweakerDLT, TTweakerKeyToDLT | 117, 15 | eight (or 13) attributes stay at defaults; one-element LabelFlavourLSB/MSB=0; KeyToDLT remaps IndicatorFunction; DLT own hook uses the loaded Neo source model without inherited conversion hooks | 129 pairs admitted into fresh DLT 2.1.00, including verified KEYBIR catalogue aliases; three factory-less KEYM6 directions remain refused |
+| TTweakerSENPIR, TTweakerSENLL | 16, 2 | renames between EnableGroupAddress/Logic and PIR/PEC enabler groups | 18 older-profile directions admitted; later sensor profiles require separate admission |
+| TTweakerPC_DAL2, TTweakerPC_DAL2B | 2, 2 | swaps the two Application values | all four source-backed directions admitted at 4.5.00; native GUI/cold acceptance remains open |
 | TTweakerRELDN8_TO_X, TTweakerRELDNX_TO_8 | 4, 4 | source-pinned GroupAddress and LogicGA13–16 repacking | seven pairs admitted; RELDN4 → RELDN8 refused because its four-element source logic cannot satisfy the original eight-element reads |
 
-The refused hooks rewrite values from the Toolkit's in-memory unit model, for
-example key blocks, group applications and sensor settings. Their missing
-model rules remain outside the admitted profiles.
-
-The DLT profiles and explicit twelve-pair evidence gaps are documented in
-[source-bound DLT conversions](toolkit-dlt-conversions.md). The new 120
-admissions use static source recovery and owned synthetic software checks;
-the earlier native API receipts below do not establish their native acceptance.
-The 49 remaining refused registrations retain their individual receipt reasons.
+The current registry admits 288/292 directions. Read [remaining conversions](toolkit-remaining-conversions.md) for the 45 additions after the historical 243 checkpoint:13 Neo-to-classic, 4 DALI, 19 older sensors and 9 KEYBIR-to-DLT aliases. Constructor and agent hooks, lexical writes and storage effects are separate contracts. Static/source and owned-service checks do not extend earlier native API receipts into original GUI, cold native or physical acceptance. Three KEYM6 targets lack factories and RELDN4→RELDN8 has undefined short-array reads; these four remain refused.
 
 The classic-to-Neo exception below has an independently recovered fresh-target
 model lifecycle. It does not generalize to retained/editor targets or to

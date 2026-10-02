@@ -30,7 +30,8 @@ def unit(fields):
 def test_all_123_pairs_have_the_same_guarded_lifecycle_admission(tmp_path):
     pairs = [p for p in tweakers.REGISTRY if p not in tweakers.PAIR_REFUSALS
              and tweakers.REFUSALS[tweakers.REGISTRY[p]] is None
-             and tweakers.REGISTRY[p] not in tweakers.dlt.TWEAKERS]
+             and tweakers.REGISTRY[p] not in tweakers.dlt.TWEAKERS
+             and not tweakers.remaining.handles(tweakers.REGISTRY[p], *p)]
     assert len(pairs) == 123
     for source, target in pairs:
         # Reuse complete profile synthesis, including the retained aliases.

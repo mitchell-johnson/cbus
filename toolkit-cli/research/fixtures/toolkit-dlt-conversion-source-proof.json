@@ -26,6 +26,9 @@
         "KEYB2",
         "KEYB4",
         "KEYB6",
+        "KEYBIR2",
+        "KEYBIR4",
+        "KEYBIR6",
         "KEYC1",
         "KEYC2",
         "KEYC4",
@@ -62,7 +65,7 @@
     }
   },
   "target_firmware": "2.1.00",
-  "new_admitted_registrations": 120,
+  "new_admitted_registrations": 129,
   "refused_registered_source": "KEYM6",
   "missing_factory_reason": "The three KEYM6 tweaker registrations have no static unit factory/model in the pinned executable; specification existence is insufficient.",
   "target_agent": "TCBusDynamicLabelInputCGateAgent",
@@ -755,10 +758,14 @@
     "No original instruction bytes or vendor specification text are published."
   ],
   "refused_registered_sources": [
-    "KEYM6",
-    "KEYBIR2",
-    "KEYBIR4",
-    "KEYBIR6"
+    "KEYM6"
   ],
-  "missing_specification_reason": "Nine KEYBIR2/4/6 registrations remain refused because source specification identity or catalogue aliases are not established."
+  "missing_specification_reason": "KEYBIR aliases are now established from literal vendor catalogue2.5.00..2.5.99 mappings: KEYBIR2/4/6 use KEYB2/4/6.xml; see toolkit-remaining-conversions-source-proof.json.",
+  "earlier_source_batch_registrations": 120,
+  "catalogue_alias_extension": {
+    "source_proof": "toolkit-remaining-conversions-source-proof.json",
+    "catalogue_sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "additional_registrations": 9,
+    "original_code_executed": false
+  }
 }

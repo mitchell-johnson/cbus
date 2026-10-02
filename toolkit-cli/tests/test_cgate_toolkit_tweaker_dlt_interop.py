@@ -16,6 +16,12 @@ from test_toolkit_conversion_dlt import profile_files, VECTOR as RULES
 BACKENDS = create.BACKENDS
 VECTOR = json.loads((Path(__file__).resolve().parents[2]/'rust/testdata/vectors/cgate_toolkit_tweaker_dlt_wire.json').read_text())
 CASES = [row for row in RULES['cases'] if row['id'] != 'neo-classic-three-preserved']
+# The literal KEYB2/Saturn model oracle also applies to the catalogue's KEYBIR2
+# alias. Only the source identity and destination profile change; this is not
+# derived from the implementation's reported expected values.
+CASES.append({**next(row for row in RULES['cases'] if row['id'] == 'saturn-pcx'),
+              'id': 'keybir2-literal-keyb2-catalogue-alias',
+              'source': 'KEYBIR2', 'target': 'KEYDL4'})
 
 
 @contextmanager

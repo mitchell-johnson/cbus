@@ -161,6 +161,48 @@ check-cgate-interop: compile
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-create-save-mock]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-replace-delete-mock]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_stale_plan_and_source_firmware_refuse[mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-secondary-mask-removal-before-area-reshape-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-secondary-mask-removal-before-area-reshape-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-matching-application-object-removes-primary-too-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-matching-application-object-removes-primary-too-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-unused-secondary-keeps-lexical-application-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-unused-secondary-keeps-lexical-application-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-all-secondary-area-is-independent-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-all-secondary-area-is-independent-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-forward-swap-decimal-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-forward-swap-decimal-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-catalogue-alias-forward-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-catalogue-alias-forward-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-reverse-swap-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-reverse-swap-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-alias-reverse-swap-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-alias-reverse-swap-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-six-default-fields-and-polarity-aligned-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-six-default-fields-and-polarity-aligned-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-self-retains-fresh-learning-history-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-self-retains-fresh-learning-history-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-self-no-st7-lux-rewrite-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-self-no-st7-lux-rewrite-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-to-multisensor-rename-and-fresh-unassigned-groups-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-to-multisensor-rename-and-fresh-unassigned-groups-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-multisensor-self-input-flag-overridden-and-join-reset-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-multisensor-self-input-flag-overridden-and-join-reset-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_lost_success_never_replays[create-PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_lost_success_never_replays[replace-DBDELETE-mock]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_all_templates_and_ordered_selection[mock]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_late_refusal_is_atomic[bad-profile-mock]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_late_refusal_is_atomic[missing-application-mock]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_lost_snapshot_is_not_retried[mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[corridor-and-activation-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[cancel-repeat-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[preceding-enable-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[scene-interleave-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[initial-scene-getter-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[corridor-future-absence-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[application-switch-future-absence-mock]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_lost_save_success_is_not_replayed[mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-replace-mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -244,6 +286,48 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-replace-delete-daemon]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_stale_plan_and_source_firmware_refuse[daemon]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_auth_stops_before_selection_or_write[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-secondary-mask-removal-before-area-reshape-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-secondary-mask-removal-before-area-reshape-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-matching-application-object-removes-primary-too-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-matching-application-object-removes-primary-too-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-unused-secondary-keeps-lexical-application-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-unused-secondary-keeps-lexical-application-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-all-secondary-area-is-independent-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[neo-all-secondary-area-is-independent-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-forward-swap-decimal-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-forward-swap-decimal-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-catalogue-alias-forward-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-catalogue-alias-forward-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-reverse-swap-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-reverse-swap-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-alias-reverse-swap-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[dali-alias-reverse-swap-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-six-default-fields-and-polarity-aligned-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-six-default-fields-and-polarity-aligned-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-self-retains-fresh-learning-history-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-pir-self-retains-fresh-learning-history-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-self-no-st7-lux-rewrite-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-self-no-st7-lux-rewrite-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-to-multisensor-rename-and-fresh-unassigned-groups-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-light-level-to-multisensor-rename-and-fresh-unassigned-groups-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-multisensor-self-input-flag-overridden-and-join-reset-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_literal_and_lifecycle[older-multisensor-self-input-flag-overridden-and-join-reset-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_lost_success_never_replays[create-PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_remaining_interop.py::test_public_remaining_conversion_lost_success_never_replays[replace-DBDELETE-daemon]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_all_templates_and_ordered_selection[daemon]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_late_refusal_is_atomic[bad-profile-daemon]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_late_refusal_is_atomic[missing-application-daemon]' \
+		'tests/test_cgate_csv_completion_interop.py::test_public_csv_completion_lost_snapshot_is_not_retried[daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[corridor-and-activation-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[cancel-repeat-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[preceding-enable-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[scene-interleave-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[initial-scene-getter-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[corridor-future-absence-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_history_one_save_and_full_preservation[application-switch-future-absence-daemon]' \
+		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_lost_save_success_is_not_replayed[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-replace-daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

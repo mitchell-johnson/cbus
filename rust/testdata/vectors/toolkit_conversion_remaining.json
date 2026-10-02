@@ -1,0 +1,405 @@
+{
+  "format": "cbus-toolkit-remaining-conversion-literal-vectors-v1",
+  "evidence": "Static original source facts; public invented PP defaults; no original execution or hardware acceptance.",
+  "cases": [
+    {
+      "id": "neo-secondary-mask-removal-before-area-reshape",
+      "source": "KEYC4",
+      "target": "KEY4",
+      "expected": {
+        "Application": [
+          56,
+          255
+        ],
+        "GroupAddress": [
+          255,
+          11,
+          255,
+          13,
+          18,
+          255,
+          255,
+          255
+        ],
+        "IndicatorFunction": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "IndicatorBrightness": [
+          17
+        ],
+        "LearnedFlag": [
+          0
+        ]
+      },
+      "literal_writes": {
+        "GroupAddress": "0xFF 0x0B 0xFF 0x0D 0x12 0xFF 0xFF 0xFF",
+        "Application": "56 255"
+      },
+      "not_written": [
+        "InfraRedBank",
+        "LearnedFlag",
+        "GAVBroadcastFlag"
+      ]
+    },
+    {
+      "id": "neo-matching-application-object-removes-primary-too",
+      "source": "KEYCIR4",
+      "target": "KEYIR1",
+      "source_values": {
+        "Application": "56 56",
+        "SecondApplicationBlocks": "0"
+      },
+      "expected": {
+        "Application": [
+          56,
+          255
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          18,
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "id": "neo-unused-secondary-keeps-lexical-application",
+      "source": "KEYC2",
+      "target": "KEY2",
+      "source_values": {
+        "Application": "0x38 $FF",
+        "SecondApplicationBlocks": "255"
+      },
+      "expected": {
+        "Application": [
+          56,
+          255
+        ],
+        "GroupAddress": [
+          10,
+          11,
+          12,
+          13,
+          18,
+          255,
+          255,
+          255
+        ]
+      },
+      "literal_writes": {
+        "Application": "0x38 $FF"
+      }
+    },
+    {
+      "id": "neo-all-secondary-area-is-independent",
+      "source": "KEYC1",
+      "target": "KEY1",
+      "source_values": {
+        "SecondApplicationBlocks": "255",
+        "GroupAddress": "255 254 0 255 4 5 6 7 173"
+      },
+      "expected": {
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          173,
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "id": "dali-forward-swap-decimal",
+      "source": "PC_DAL2",
+      "target": "PC_DAL2B",
+      "source_values": {
+        "Application": "0x38 $CA"
+      },
+      "expected": {
+        "Application": [
+          202,
+          56
+        ],
+        "ClockGenEnable": [
+          1
+        ],
+        "Burden": [
+          0
+        ]
+      },
+      "literal_writes": {
+        "Application": "202 56"
+      },
+      "not_written": [
+        "Burden",
+        "DaliMonitorRate",
+        "CBusToDali",
+        "DaliToCBus"
+      ]
+    },
+    {
+      "id": "dali-catalogue-alias-forward",
+      "source": "PC_DAL2",
+      "target": "PC_DAL2C",
+      "expected": {
+        "Application": [
+          202,
+          56
+        ]
+      },
+      "literal_writes": {
+        "Application": "202 56"
+      }
+    },
+    {
+      "id": "dali-reverse-swap",
+      "source": "PC_DAL2B",
+      "target": "PC_DAL2",
+      "source_values": {
+        "Application": "255 0"
+      },
+      "expected": {
+        "Application": [
+          0,
+          255
+        ]
+      },
+      "literal_writes": {
+        "Application": "0 255"
+      }
+    },
+    {
+      "id": "dali-alias-reverse-swap",
+      "source": "PC_DAL2C",
+      "target": "PC_DAL2",
+      "expected": {
+        "Application": [
+          202,
+          56
+        ]
+      },
+      "literal_writes": {
+        "Application": "202 56"
+      }
+    },
+    {
+      "id": "older-pir-six-default-fields-and-polarity-aligned",
+      "source": "SENPIROA",
+      "target": "SENPIRSS",
+      "expected": {
+        "Application": [
+          56,
+          202
+        ],
+        "GroupAddress": [
+          10,
+          11,
+          12,
+          13
+        ],
+        "EnableGroupAddress": [
+          77
+        ],
+        "EnableGroupLogic": [
+          1
+        ],
+        "EEPROMLevelStore": [
+          0
+        ],
+        "LightIndex": [
+          0
+        ],
+        "LRCommand": [
+          99
+        ],
+        "BlockAllocation": [
+          255
+        ],
+        "IndicatorBlockAssignment": [
+          17
+        ],
+        "IndicatorFunction": [
+          0
+        ],
+        "LearnedFlag": [
+          0
+        ],
+        "InfraRedBank": [
+          0
+        ],
+        "LightLevel": [
+          0
+        ],
+        "LightLevelStore1": [
+          0
+        ],
+        "LightLevelStore2": [
+          0
+        ]
+      },
+      "not_written": [
+        "EEPROMLevelStore",
+        "InfraRedBank",
+        "LightIndex",
+        "LightLevel",
+        "LightLevelStore1",
+        "LightLevelStore2",
+        "IndicatorBrightness",
+        "LearnedFlag"
+      ]
+    },
+    {
+      "id": "older-pir-self-retains-fresh-learning-history",
+      "source": "SENPIRSS",
+      "target": "SENPIRSS",
+      "expected": {
+        "LearnMode": [
+          0
+        ],
+        "LearnAnyApp": [
+          1
+        ],
+        "LearnedFlag": [
+          0
+        ],
+        "EnableGroupLogic": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "older-light-level-self-no-st7-lux-rewrite",
+      "source": "SENLL",
+      "target": "SENLL",
+      "expected": {
+        "TargetLUX": [
+          123
+        ],
+        "Hystersis": [
+          21
+        ],
+        "LevelGroupAddress": [
+          77
+        ],
+        "OnOffGroupAddress": [
+          78
+        ],
+        "EnableGroupAddress": [
+          79
+        ],
+        "IndicatorFunction": [
+          2
+        ],
+        "LearnedFlag": [
+          0
+        ]
+      }
+    },
+    {
+      "id": "older-light-level-to-multisensor-rename-and-fresh-unassigned-groups",
+      "source": "SENLL",
+      "target": "SENPILL",
+      "expected": {
+        "PECEnablerGroup": [
+          79
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "PECTargetLux": [
+          0
+        ],
+        "PECMarginLux": [
+          0
+        ],
+        "LearnedFlag": [
+          0
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ]
+      },
+      "literal_writes": {
+        "GroupAddress": "0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF"
+      },
+      "not_written": [
+        "PECTargetLux",
+        "PECMarginLux",
+        "DisableIR"
+      ]
+    },
+    {
+      "id": "older-multisensor-self-input-flag-overridden-and-join-reset",
+      "source": "SENPILL",
+      "target": "SENPILL",
+      "expected": {
+        "GroupAddress": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "DisableIR": [
+          1
+        ],
+        "PECTargetLux": [
+          101
+        ],
+        "PECMarginLux": [
+          12
+        ],
+        "LearnedFlag": [
+          0
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ]
+      },
+      "not_written": [
+        "LearnedFlag",
+        "EnableNightlight",
+        "DisableTimerFlash",
+        "FirstKeyThrowAway"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "format": "cbus-remaining-conversion-wire-literals-v1",
+  "evidence": "Independent literal native PP SET argument spellings for database workflows after numeric PP LOAD and workflow element-count admission. Pure lexical tweaker writes are recorded separately. No original execution or hardware acceptance.",
+  "cases": {
+    "neo-secondary-mask-removal-before-area-reshape": {
+      "GroupAddress": " GroupAddress \"255\\ 11\\ 255\\ 13\\ 18\\ 255\\ 255\\ 255\"",
+      "Application": " Application \"56\\ 255\""
+    },
+    "neo-matching-application-object-removes-primary-too": {},
+    "neo-unused-secondary-keeps-lexical-application": {
+      "Application": " Application \"56\\ 255\""
+    },
+    "neo-all-secondary-area-is-independent": {},
+    "dali-forward-swap-decimal": {
+      "Application": " Application \"202\\ 56\""
+    },
+    "dali-catalogue-alias-forward": {
+      "Application": " Application \"202\\ 56\""
+    },
+    "dali-reverse-swap": {
+      "Application": " Application \"0\\ 255\""
+    },
+    "dali-alias-reverse-swap": {
+      "Application": " Application \"202\\ 56\""
+    },
+    "older-pir-six-default-fields-and-polarity-aligned": {},
+    "older-pir-self-retains-fresh-learning-history": {},
+    "older-light-level-self-no-st7-lux-rewrite": {},
+    "older-light-level-to-multisensor-rename-and-fresh-unassigned-groups": {
+      "GroupAddress": " GroupAddress \"255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\\ 255\""
+    },
+    "older-multisensor-self-input-flag-overridden-and-join-reset": {}
+  },
+  "recovery_prefixes": [
+    "DBGETXML ",
+    "PROJECT USE WFTEST",
+    "PP LOCK ",
+    "PP START ",
+    "PP LOAD ",
+    "DBGET ",
+    "PP GET ",
+    "PP END ",
+    "PP UNLOCK "
+  ]
+}

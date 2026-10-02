@@ -111,7 +111,8 @@ def _dialog_name(value):
 
 
 def _operation_facts(values, engine, snapshot, operations,
-                     projected_containers=(), dialog_project_name=None):
+                     projected_containers=(), dialog_project_name=None,
+                     projected_level_receipts=()):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -157,6 +158,12 @@ def _operation_facts(values, engine, snapshot, operations,
         (app.address, child.address): {level.address: level.tag
                                       for level in child.level_records}
         for app in snapshot.applications for child in app.groups}
+    for row in projected_level_receipts:
+        key = (TRIGGER_APPLICATION, row.group)
+        if key not in present_groups or row.address in levels[key]:
+            raise ValueError('Projected scene Level lacks a unique existing projected parent')
+        levels[key].add(row.address)
+        level_names.setdefault(key, {})[row.address] = row.name
     resolved_operations, dialogs = [], []
 
     def group(application, address, reason, *, levels=False):
@@ -393,6 +400,7 @@ class ResolvedSceneMetadata:
 
 def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
                                   *, _projected_containers=(),
+                                  _projected_levels=(),
                                   _projected_values=None,
                                   display_preferences=None, dltp_index=None):
     """Resolve one immutable SceneManager cache without native mutation.
@@ -415,6 +423,10 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
     ]
     if len(projected_keys) != len(set(projected_keys)):
         raise ValueError('Projected scene containers contain duplicate objects')
+    if (type(_projected_levels) is not tuple
+            or any(type(row) is not SceneLevelCreation for row in _projected_levels)
+            or len({(row.group, row.address) for row in _projected_levels}) != len(_projected_levels)):
+        raise ValueError('Projected scene Levels must be exact unique receipts')
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index)
@@ -456,11 +468,12 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
     (extra_groups, extra_levels, action_pairs, creations, projected_levels,
      projected_applications, projected_groups, resolved_operations,
      dialogs) = _operation_facts(
-        supplied, engine, snapshot, operations, _projected_containers, dialog_project_name)
+        supplied, engine, snapshot, operations, _projected_containers, dialog_project_name,
+        _projected_levels)
     object_count = 1 + sum(
         1 + sum(1 + len(group.level_records) for group in application.groups)
         for application in snapshot.applications)
-    if (object_count + len(_projected_containers) + len(creations)
+    if (object_count + len(_projected_containers) + len(_projected_levels) + len(creations)
             > MAX_OBJECTS):
         raise ValueError(
             'Native eDLT metadata creation would exceed 4096 objects')
@@ -563,7 +576,7 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         group = _record(snapshot, 202, group_address)
         level = None if group is None else next(
             (row for row in group.level_records if row.address == action), None)
-        creation = next((row for row in creations
+        creation = next((row for row in (*_projected_levels, *creations)
                          if isinstance(row, SceneLevelCreation)
                          if (row.group, row.address)
                          == (group_address, action)), None)

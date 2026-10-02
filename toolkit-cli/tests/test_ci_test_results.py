@@ -1,6 +1,7 @@
 """CI results must distinguish executed calls, setup skips, and subtests."""
 import json
 from pathlib import Path
+import re
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -11,6 +12,74 @@ from research.ci_test_results import AuditError, audit, main
 
 FIRST = "tests/test_first.py::test_with_subtests"
 SECOND = "tests/test_second.py::test_setup_skip"
+
+
+class NewInteropSelectionTests(unittest.TestCase):
+    """A green backend job must retain every newly accepted public journey."""
+
+    def test_make_and_ci_retain_exact_new_backend_rosters(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / "toolkit-cli/Makefile").read_text()
+        workflow = (root / ".github/workflows/ci.yml").read_text()
+        modules = ("test_cgate_toolkit_tweaker_remaining_interop.py",
+                   "test_cgate_csv_completion_interop.py",
+                   "test_cgate_edlt_parent_add_dialog_interop.py")
+        cases = (
+            "neo-secondary-mask-removal-before-area-reshape",
+            "neo-matching-application-object-removes-primary-too",
+            "neo-unused-secondary-keeps-lexical-application",
+            "neo-all-secondary-area-is-independent",
+            "dali-forward-swap-decimal", "dali-catalogue-alias-forward",
+            "dali-reverse-swap", "dali-alias-reverse-swap",
+            "older-pir-six-default-fields-and-polarity-aligned",
+            "older-pir-self-retains-fresh-learning-history",
+            "older-light-level-self-no-st7-lux-rewrite",
+            "older-light-level-to-multisensor-rename-and-fresh-unassigned-groups",
+            "older-multisensor-self-input-flag-overridden-and-join-reset",
+        )
+        remaining = "tests/" + modules[0] + "::"
+        csv = "tests/" + modules[1] + "::"
+        parent = "tests/" + modules[2] + "::"
+        for backend, target, selection in (
+                ("mock", "check-cgate-interop", "cgate-mock"),
+                ("daemon", "check-cmqtt-interop", "cmqttd")):
+            with self.subTest(backend=backend):
+                expected = {
+                    remaining + "test_public_remaining_conversion_literal_and_lifecycle["
+                    + case + "-" + operation + "-" + backend + "]"
+                    for case in cases for operation in ("create", "replace")}
+                expected.update(remaining + "test_public_remaining_conversion_lost_success_never_replays["
+                                + action + "-" + backend + "]"
+                                for action in ("create-PP SAVE_TO_SOURCE", "replace-DBDELETE"))
+                expected.update(csv + name + "[" + suffix + backend + "]" for name, suffix in (
+                    ("test_public_csv_completion_all_templates_and_ordered_selection", ""),
+                    ("test_public_csv_completion_late_refusal_is_atomic", "bad-profile-"),
+                    ("test_public_csv_completion_late_refusal_is_atomic", "missing-application-"),
+                    ("test_public_csv_completion_lost_snapshot_is_not_retried", "")))
+                expected.update(parent + "test_public_parent_add_history_one_save_and_full_preservation["
+                                + case + "-" + backend + "]"
+                                for case in ("corridor-and-activation", "cancel-repeat",
+                                             "preceding-enable", "scene-interleave",
+                                             "initial-scene-getter", "corridor-future-absence",
+                                             "application-switch-future-absence"))
+                expected.add(parent + "test_public_parent_add_lost_save_success_is_not_replayed["
+                             + backend + "]")
+                body = make.split(target + ": compile\n", 1)[1].split("\n\n", 1)[0]
+                selected = re.findall(r"'(tests/test_[^']+)'", body)
+                actual = [node for node in selected
+                          if any(node.startswith("tests/" + module + "::") for module in modules)]
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                self.assertEqual(len(expected), 40)
+                aliases = {"tests/test_cgate_toolkit_tweaker_dlt_interop.py::"
+                           "test_public_dlt_tweaker_profile_create_and_replace["
+                           "keybir2-literal-keyb2-catalogue-alias-" + operation + "-" + backend + "]"
+                           for operation in ("create", "replace")}
+                self.assertTrue(aliases <= set(selected))
+                audit_body = workflow.split("--selection " + selection + "\n", 1)[1].split(
+                    "\n      - name:", 1)[0]
+                for module in modules:
+                    self.assertEqual(audit_body.count("--require-module tests/" + module), 1)
 
 
 class CITestResultsTests(unittest.TestCase):

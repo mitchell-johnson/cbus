@@ -1,9 +1,8 @@
 # Source-bound DLT conversions
 
-`cgate conversion tweak` and `tweak-replace` admit 120 additional Toolkit
+`cgate conversion tweak` and `tweak-replace` admit 129 source-backed Toolkit
 tweaker registrations into KEYDL4, KEYML5 or KEYBL5 at firmware `2.1.00`.
-Together with the previous 123 registrations, the client admits 243 of the
-292 registered pairs. Admission remains specific to the source type, firmware
+The original DLT checkpoint added 120 directions; verified KEYBIR aliases now add 9 more. With the other recovered families the client admits 288 of 292 registered pairs; see [remaining conversions](toolkit-remaining-conversions.md). Admission remains specific to the source type, firmware
 and decoded specification shape; it is not unrestricted DLT conversion.
 
 | Source profile | Firmware | Pairs into the three DLT targets |
@@ -11,14 +10,14 @@ and decoded specification shape; it is not unrestricted DLT conversion.
 | KEY1/KEY2/KEY4/KEYIR1/KEYIR4 | 1.2.67 | 15 |
 | 32 recovered Neo, Saturn, Reflection, Neo Classic and KEYE models | 2.5.00 | 96 |
 | KEYDL4/KEYML5/KEYBL5 | 2.1.00 | 9 |
+| KEYBIR2/KEYBIR4/KEYBIR6 with exact KEYB2/4/6 catalogue aliases | 2.5.00 | 9 |
 
 The exact modern types and constructor order are recorded in the sanitized
 [source proof](../research/fixtures/toolkit-dlt-conversion-source-proof.json).
 KEYM6's three registrations remain refused because no static Toolkit factory
-model is established. Nine KEYBIR2/4/6 registrations remain refused because
-their source specification identity or catalogue alias is unestablished.
-An IR-looking model name or an available non-IR specification does not resolve
-that missing evidence.
+model is established. KEYBIR2/4/6 use independently verified literal catalogue
+aliases to KEYB2/4/6 specifications; an inferred IR-looking name is insufficient.
+The current proof binds those aliases and the actual specification shapes.
 
 Preview a new DLT alongside the source:
 

@@ -103,7 +103,9 @@ def prepare(args):
     converter = tweakers.ToolkitTweakerConversion(None, source_type, source_spec, target_type, target_spec)
     if not target_spec.supports_version(args.firmware):
         raise ValueError("Target firmware is outside the supplied specification")
-    if converter.tweaker == tweakers.KEY_TWEAKER:
+    if tweakers.remaining.handles(converter.tweaker, source_type, target_type):
+        tweakers.remaining.require_target_firmware(target_type, args.firmware)
+    elif converter.tweaker == tweakers.KEY_TWEAKER:
         validate = (tweakers.coupler.require_target_firmware
                     if source_type in tweakers.coupler.COUPLER_SOURCE_TYPES else tweakers.require_target_firmware)
         validate(args.firmware)
@@ -287,8 +289,12 @@ def execute(prepared, client, state, *, before_add=None):
     if _field(source_node, "UnitType").upper() != p.source_type or not p.source_spec.supports_version(source_firmware):
         raise ValueError("Source type/firmware differs from the supplied profile")
     if (tweakers.lookup(p.source_type, p.target_type) in (tweakers.KEY_TWEAKER, tweakers.input_unit.INPUT_TWEAKER)
+            and not tweakers.remaining.handles(tweakers.lookup(p.source_type, p.target_type), p.source_type, p.target_type)
             and source_firmware != "1.2.67"):
         raise ValueError("This tweaker requires source firmware 1.2.67")
+    if (tweakers.remaining.handles(tweakers.lookup(p.source_type, p.target_type), p.source_type, p.target_type)
+            and source_firmware != tweakers.remaining.unit_firmware(p.source_type)):
+        raise ValueError("Conversion source firmware differs from the recovered fresh-model profile")
     if (tweakers.lookup(p.source_type, p.target_type) in tweakers.dlt.TWEAKERS
             and source_firmware != tweakers.dlt.source_firmware(p.source_type)):
         raise ValueError("DLT source firmware differs from the recovered profile")

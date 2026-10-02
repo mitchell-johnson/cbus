@@ -209,7 +209,7 @@ def damage(root, case):
     elif case == 'other-firmware':
         unit.find('FirmwareVersion').text = '10.0'
     elif case == 'other-family':
-        unit.find('UnitType').text = 'DIMDD8'
+        unit.find('UnitType').text = 'KEYSCEN4'
     elif case == 'group-count':
         parameter(unit, 'GroupAddress').set('Value', '1 2 3 4 5 6 7 8 9')
     elif case == 'short-groups':

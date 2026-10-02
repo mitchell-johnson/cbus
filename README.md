@@ -86,13 +86,16 @@ incomplete Units while initializing the new object. Project saving and device
 programming are explicit later steps; original GUI, physical scanner and
 PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
 
-The current [DLT conversion](toolkit-cli/docs/toolkit-dlt-conversions.md),
-[CSV family](toolkit-cli/docs/database-csv-source-families.md) and
-[eDLT scene Add](toolkit-cli/docs/edlt-scene-add-dialog.md) work expands the CLI
-to 243 registered conversion pairs and 126 bounded CSV unit types, and adds
-ordered Trigger/Action dialog operations through both Rust services. These are
-software scopes with stated input limits; full Toolkit and physical acceptance
-remain tracked separately.
+The CLI now admits **288 of 292 registered conversion directions** and
+**214 of 262 CSV unit types** at their documented firmware and input profiles.
+[Conversion rules](toolkit-cli/docs/toolkit-remaining-conversions.md) cover
+Neo-to-classic, DALI, older sensors and the verified KEYBIR catalogue aliases.
+[CSV report profiles](toolkit-cli/docs/database-csv-completion.md) cover the
+additional input, output, relay and generic agents. Ordered eDLT Corridor,
+Activation and Scene Add dialogs can share one parent save; see
+[eDLT parent Add histories](toolkit-cli/docs/edlt-parent-add-dialog.md).
+These counts describe bounded software profiles. Original GUI, cold native
+family acceptance and physical behavior remain tracked separately.
 
 The [replacement, cached NeoPro CSV and bounded TCP batch](toolkit-cli/docs/feature-batch-2026-10-02-cached-csv-event-bounds.md)
 introduced `cgate conversion tweak-replace` and read-only `tweak-recover` for
@@ -274,9 +277,9 @@ requires its documented initially empty application and explicit
 `--group-sort address-ascending` profile.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
-admits 243 of 292 registered source/target pairs. The earlier 123 have historical
+admits 288 of 292 registered source/target pairs. The earlier 123 have historical
 native database evidence; the additional 120 DLT-target pairs have source-backed
-literal and owned-service tests. See [DLT conversion rules](toolkit-cli/docs/toolkit-dlt-conversions.md).
+literal and owned-service tests. A further 45 directions cover verified KEYBIR aliases, Neo-to-classic, DALI and older sensor profiles; see [remaining conversion rules](toolkit-cli/docs/toolkit-remaining-conversions.md). Four registrations remain refused for absent factories or undefined original reads.
 The earlier set includes seven relay, 93 classic-to-Neo, five coupler-to-Neo and ten non-sensor
 InputUnit directions at the documented exact firmware profiles. Its
 source-preservation and refusal rules also govern `cgate conversion tweak`.
