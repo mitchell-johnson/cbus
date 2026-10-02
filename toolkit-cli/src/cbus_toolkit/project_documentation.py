@@ -296,11 +296,18 @@ RECOVERED_BODIES = {
     "DigitalTemperatureSensor": "partial",
     "PIR": "partial",
     "ST7PIRSensor": "partial",
-    "BytecraftDimmer": "partial",  # Old DIMPR12 explicit records; L1/loader state remain open.
+    "BytecraftDimmer": "partial",  # Exact old/L1 DIMPR12 loaded records only.
     "LightLevelSensor": "recovered",  # Old SENLL/PE_CELL consumed PP and groups required.
     "ST7LightLevelSensor": "partial",  # Nonzero or explicitly idle zero broadcast timer.
     "WHAA": "recovered",
     "DALI2B": "recovered",
+    "Multisensor": "partial",  # Exact source-pinned loaders; active joins remain explicit.
+    "Thermostat": "partial",  # Resolved outputs/masters; implicit plant group creation remains open.
+    "CBusWirelessInput": "partial",
+    "WirelessGateway": "partial",
+    "WirelessGatewayAdvanced": "partial",
+    "RemoteControl": "partial",
+    "ArchitecturalDimmer": "partial",  # Explicit loaded channels/logic/scenes only.
 }
 PARITY = {
     "model_basis": "static_disassembly_of_original_toolkit",
@@ -472,6 +479,9 @@ class Network:
     interface_address: str
     applications: list[Application]
     units: list[Unit]
+    # Physical NetworkNumber is independent of a database Address. Absence
+    # stays unknown; report consumers must never substitute the Address.
+    network_number: int | None = None
 
     def application(self, address: int) -> Application | None:
         return next((app for app in self.applications if app.address == address), None)
@@ -545,11 +555,17 @@ def build_model(project: ProjectDocument) -> ProjectModel:
                               _scalar(unit_node, "UnitType").strip(), _scalar(unit_node, "UnitName"),
                               _scalar(unit_node, "SerialNumber"), _scalar(unit_node, "FirmwareVersion").strip(),
                               _scalar(unit_node, "Description"), parameters, fields))
+        network_number = None
+        if _children(net_node, "NetworkNumber"):
+            number = _scalar(net_node, "NetworkNumber").strip()
+            if not re.fullmatch(r"[0-9]{1,3}", number) or int(number) > 255:
+                raise ProjectError("NetworkNumber must be a decimal byte")
+            network_number = int(number)
         networks.append(Network(
             net_address, _scalar(net_node, "TagName"),
             _scalar(interface, "InterfaceType") if interface is not None else "",
             _scalar(interface, "InterfaceAddress") if interface is not None else "",
-            _unique(applications, "application"), _unique(units, "unit")))
+            _unique(applications, "application"), _unique(units, "unit"), network_number))
     if not networks:
         raise ProjectError("Project contains no networks")
     return ProjectModel(_scalar(project.project, "TagName"), _unique(networks, "network"))
@@ -766,13 +782,17 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
     from .project_documentation_bytecraft import document_bytecraft
     from .project_documentation_light_level import document_light_level
     from .project_documentation_gateways import document_dali, document_whaa
+    from .project_documentation_multisensor import document_multisensor
+    from .project_documentation_thermostat import document_thermostat
+    from .project_documentation_wireless import document_wireless
     documentors = {**device_documentors, **neo_documentors, "DLT": document_dlt,
                    "CustomSceneController": document_scene_controller, "FanController": document_fan,
                    **{name: document_temperature for name in ("SENTEMP", "SENTEMPPro", "DigitalTemperatureSensor")},
                    "PIR": document_pir, "ST7PIRSensor": document_pir,
                    "BytecraftDimmer": document_bytecraft,
                    "LightLevelSensor": document_light_level, "ST7LightLevelSensor": document_light_level,
-                   "DALI2B": document_dali, "WHAA": document_whaa}
+                   "DALI2B": document_dali, "WHAA": document_whaa,
+                   "Multisensor": document_multisensor}
     out.add(f'<h3><a name="{network.address}_unit_{unit.address}">{unit.name} - {unit.unit_type}</a>'
             ' [ <a href="#contents">top</a> ]</h3>')
     record = {"network": network.address, "unit": unit.address, "unit_type": unit.unit_type}
@@ -798,6 +818,13 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
         status = document_output(out, network, unit)
     elif body == "Bridge":
         status = document_bridge(out, network, unit, model)
+    elif body == "Thermostat":
+        status = document_thermostat(out, network, unit, model)
+    elif body == "ArchitecturalDimmer":
+        from .project_documentation_architectural import document_architectural
+        status = document_architectural(out, network, unit)
+    elif body in {"CBusWirelessInput", "WirelessGateway", "WirelessGatewayAdvanced", "RemoteControl"}:
+        status = document_wireless(out, network, unit, model.networks)
     elif body in documentors:
         status = documentors[body](out, network, unit)
     else:
@@ -850,7 +877,7 @@ def _levels(out: _Writer, network: Network, application: Application, group: Gro
                 short = select_documentor(unit.unit_type, unit.firmware)
                 action = DOCUMENTOR_METHODS[short][1]
                 usage = action_selector_usage(unit, action, application.address, group.address,
-                                              level.address, level.action_value)
+                                              level.address, level.action_value, network=network)
                 if not usage.html and usage.status == "recovered":
                     continue
                 reported = True
@@ -877,7 +904,7 @@ def _group_usage(out: _Writer, network: Network, application: Application, group
     out.add(heading)
     out.add("<ul>")
     for unit in network.units:
-        usage = group_usage(unit, application.address, group.address, kind)
+        usage = group_usage(unit, application.address, group.address, kind, network=network)
         if not usage.html and usage.status == "recovered":
             continue
         out.add("<li />" + html_unit(network, unit))

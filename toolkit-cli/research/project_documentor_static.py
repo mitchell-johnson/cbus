@@ -30,7 +30,9 @@ from cbus_toolkit import project_documentation as model  # noqa: E402
 from cbus_toolkit.din_output_settings import PROFILES  # noqa: E402
 from topology_generator_static import EXE_SHA256, MAP_SHA256, _Image  # noqa: E402
 
-FORMAT = "cbus-toolkit-project-documentor-static-v1"
+FORMAT = "cbus-toolkit-project-documentor-current-static-v1"
+HISTORICAL_RECEIPT = "research/experiments/2026-09-30/project-documentor-static.json"
+HISTORICAL_SHA256 = "96e8f19a27e9e0582098223d2a048e700ff9af7e623fe887bef5c52506f9d07d"
 FACTORY = "CIS_TProjectDocumentor.TUnitTypeDocumentorFactory.RegisterUnitType"
 UNIT_FACTORY = "CIS_TCISUnitFactory.TUnitTypeFactory.RegisterUnitType"
 # Delphi 32-bit VMT: the MAP class symbol is vmtSelfPtr (-0x58).
@@ -224,22 +226,42 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
     if failed:
         raise ValueError("Original documentor source differs from the reproduced model: " + ", ".join(failed))
 
-    inventory = {}
+    inventory, omitted_coordinates = {}, 0
+    def public_strings(values):
+        nonlocal omitted_coordinates
+        result = []
+        for value in values:
+            if re.search(r"[A-Za-z]:[\\/]|(?:^|[\\/])(?:Users|Volumes|private)[\\/]|\.pas(?:$|[\s:])", value):
+                omitted_coordinates += 1
+                result.append("[original source coordinate omitted]")
+            else:
+                result.append(value)
+        return result
     for symbol in sorted(name for name in image.by_name
                          if re.fullmatch(r"CIS_T\w+Documentor\.T\w+Documentor\.\w+", name)
                          and not name.startswith(("CIS_TProjectDocumentor.", "CIS_TfrmProjectDocumentor."))):
         method = image.method(symbol)
         inventory[symbol.split(".", 1)[1]] = {
             "bytes": method["end"] - method["start"], "sha256": method["sha256"],
-            "literals": method["literals"], "resources": method["resources"]}
+            "literals": public_strings(method["literals"]), "resources": public_strings(method["resources"])}
     if _sha(exe_path.read_bytes()) != EXE_SHA256 or _sha(map_path.read_bytes()) != MAP_SHA256:
         raise ValueError("Original files changed during inspection")
     status = {short: model.RECOVERED_BODIES.get(slots[short][0], "unrecovered") for short in classes}
+    historical = ROOT / HISTORICAL_RECEIPT
+    if _sha(historical.read_bytes()) != HISTORICAL_SHA256:
+        raise ValueError("Historical static receipt changed")
+    if json.loads(historical.read_text(encoding="utf-8"))["original_executed"] is not False:
+        raise ValueError("Historical receipt is not source-only")
     return {
         "format": FORMAT,
         "original_exe_sha256": EXE_SHA256,
         "original_map_sha256": MAP_SHA256,
         "original_executed": False,
+        "historical_receipt": {"path": HISTORICAL_RECEIPT, "sha256": HISTORICAL_SHA256,
+                               "original_executed": False},
+        "extractor_sha256": _sha(Path(__file__).read_bytes()),
+        "literal_disclosure": {"private_compiler_coordinates_omitted": omitted_coordinates,
+                               "method_hashes_include_omitted_coordinates": True},
         "model_module_sha256": _sha(Path(model.__file__).read_bytes()),
         "supporting_module_sha256": {
             name: _sha(Path(model.__file__).with_name(name + ".py").read_bytes())
@@ -253,7 +275,11 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
                          "project_documentation_neoclassic_usage", "project_documentation_bytecraft_usage",
                          "project_documentation_bytecraft_loader", "project_documentation_bytecraft",
                          "project_documentation_neoclassic_modify", "project_documentation_gateways",
-                         "project_documentation_light_level")
+                         "project_documentation_light_level", "project_documentation_multisensor",
+                         "project_documentation_thermostat", "project_documentation_wireless",
+                         "project_documentation_wireless_facts", "project_documentation_wireless_loader",
+                         "project_documentation_wireless_usage", "project_documentation_architectural",
+                         "project_documentation_architectural_loader", "project_documentation_architectural_usage")
         },
         "method_spans": {short: {"start": hex(m["start"]), "end": hex(m["end"]), "bytes": m["end"] - m["start"],
                                  "sha256": m["sha256"]} for short, m in methods.items()},

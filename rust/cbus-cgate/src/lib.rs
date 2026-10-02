@@ -1455,6 +1455,18 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
             (DbXmlKind::Network, "Application") => {
                 children.push(parse_db_xml_object(child)?);
             }
+            (DbXmlKind::Network, "Languages") => {
+                if extras
+                    .children
+                    .iter()
+                    .any(|xml| xml.starts_with("<Languages>"))
+                {
+                    return Err("DBSETXML Network contains duplicate Languages".to_string());
+                }
+                extras
+                    .children
+                    .push(tag_network::parse_network_languages(child)?);
+            }
             (DbXmlKind::Network, "Interface") => {
                 if interface.is_some() {
                     return Err("DBSETXML Network contains duplicate Interface".to_string());
@@ -1526,8 +1538,34 @@ fn db_xml_object_oids(object: &ParsedDbXmlObject, output: &mut Vec<(String, &'st
         output.push((interface.oid.clone(), "Interface"));
     }
     output.extend(object.units.iter().map(|unit| (unit.oid.clone(), "Unit")));
+    db_xml_language_oids(&object.extras, output);
     for child in &object.children {
         db_xml_object_oids(child, output);
+    }
+}
+
+fn db_xml_language_oids(extras: &DbXmlExtras, output: &mut Vec<(String, &'static str)>) {
+    for xml in extras
+        .children
+        .iter()
+        .filter(|xml| xml.starts_with("<Languages>"))
+    {
+        if let Ok(document) = roxmltree::Document::parse(xml) {
+            for node in document.descendants().filter(|node| node.is_element()) {
+                let kind = match node.tag_name().name() {
+                    "Languages" => "Languages",
+                    "Language" => "Language",
+                    _ => continue,
+                };
+                if let Some(oid) = node
+                    .children()
+                    .find(|child| child.has_tag_name("OID"))
+                    .and_then(|child| child.text())
+                {
+                    output.push((oid.to_string(), kind));
+                }
+            }
+        }
     }
 }
 
@@ -9043,6 +9081,20 @@ impl Server {
         if let Err((code, error)) = staged.apply_db_xml_replacement(&target, &object) {
             return err(tag, code, &format!("{code} {error}"));
         }
+        if object.kind == DbXmlKind::Network
+            && object
+                .extras
+                .children
+                .iter()
+                .any(|xml| xml.starts_with("<Languages>"))
+        {
+            let sequence = staged.projects[&target.project].networks[&object.address].created_seq;
+            let record = match TagNetwork::parse(document, Some(object.address), sequence) {
+                Ok(record) => record,
+                Err(error) => return err(tag, 400, &format!("400 {error}")),
+            };
+            staged.register_tag_network(&target.project, record);
+        }
         let oid = object.oid.clone();
         *self = staged;
         Response {
@@ -9393,6 +9445,14 @@ impl Server {
                 output.insert(network.oid.clone());
                 output.insert(network.interface_oid.clone());
                 output.extend(network.units.values().map(|unit| unit.oid.clone()));
+                if let Some(extras) = self
+                    .db_xml_extras
+                    .get(&Self::unit_document_key(project, &network.oid))
+                {
+                    let mut language_oids = Vec::new();
+                    db_xml_language_oids(extras, &mut language_oids);
+                    output.extend(language_oids.into_iter().map(|(oid, _)| oid));
+                }
             }
         }
         output.extend(
@@ -9469,6 +9529,14 @@ impl Server {
             }) {
                 output.insert(network.interface_oid.clone());
                 output.extend(network.units.values().map(|unit| unit.oid.clone()));
+                if let Some(extras) = self
+                    .db_xml_extras
+                    .get(&Self::unit_document_key(&target.project, &network.oid))
+                {
+                    let mut language_oids = Vec::new();
+                    db_xml_language_oids(extras, &mut language_oids);
+                    output.extend(language_oids.into_iter().map(|(oid, _)| oid));
+                }
             }
         }
         output

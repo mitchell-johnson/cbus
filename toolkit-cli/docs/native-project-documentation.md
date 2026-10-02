@@ -27,6 +27,11 @@ typed or hidden unsupported collections, namespace shadows, unsafe XML and
 missing Level Value attributes refuse before creating output. It sends no
 network OPEN, scan, programming LOAD, database edit or project SAVE.
 
+The native adapter currently requires canonical numeric Network Address and,
+when present, a matching NetworkNumber. Distinct Address/NetworkNumber values
+remain refused. The pure report helpers can resolve an explicit NetworkNumber
+independently; that broader helper scope is not admitted by this native CLI.
+
 The HTML uses UTF-8 BOM and CRLF. Existing files and dangling symlinks are
 protected, publication uses an exclusive create, and a failed flush removes
 only the newly created incomplete file. A lost XML terminal creates no output

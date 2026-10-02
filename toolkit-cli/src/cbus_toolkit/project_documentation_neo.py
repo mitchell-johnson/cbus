@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from .device_scenes import SceneEntry, _decode
 from .macros import MICRO_FUNCTION_LABELS, STAGES
@@ -99,13 +99,15 @@ def _key_application(applications: tuple[int, int], mask: int, secondary: int, k
     return applications[int(bool(secondary & (1 << selected)))]
 
 
-def neo_data(unit: Unit, profile: NeoProfile | None = None) -> NeoData:
+def neo_data(unit: Unit, profile: NeoProfile | None = None, *,
+             macro_resolver: Callable[[tuple[int, ...], int, int | None, int | None], tuple[int, str]] | None = None) -> NeoData:
     """Decode eight keys/blocks and eight canonical scene slots without defaults.
 
     A profile override is for separately source-pinned derived documentors,
     such as DLT. It must establish the same PP loader and scene-table shape.
     """
     profile = neo_profile(unit) if profile is None else profile
+    resolve_macro = classic_key_macro if macro_resolver is None else macro_resolver
     if not 0 <= profile.physical_key_count <= 8:
         raise ValueError("unsupported Neo physical key count")
     applications_raw = _required_array(unit, "Application", 2 if profile.is_pro else 1)
@@ -159,7 +161,7 @@ def neo_data(unit: Unit, profile: NeoProfile | None = None) -> NeoData:
             # AssignTemplate(Scene) uses the registered all-idle microgroup.
             actual_commands = (0, 0, 0, 0)
         else:
-            kind, label = classic_key_macro(commands, application,
+            kind, label = resolve_macro(commands, application,
                                             stored1[primary] if primary is not None else None,
                                             stored2[primary] if primary is not None else None)
             # The original template AfterChange runs before the macro lock

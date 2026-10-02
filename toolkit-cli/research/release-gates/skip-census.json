@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 648,
-    "modules_without_skip_sites": 345,
-    "modules_with_skip_sites": 303,
+    "test_modules": 660,
+    "modules_without_skip_sites": 355,
+    "modules_with_skip_sites": 305,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,7 +62,7 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 103,
+      "original_toolkit": 105,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 143
+      "none": 145
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -8225,6 +8225,42 @@
         }
       ]
     },
+    "tests/test_project_documentation_bytecraft_l1.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_bytecraft_l1.py::test_l1_static_receipt_reproduces_when_explicit_inputs_exist",
+          "kind": "body.call",
+          "condition": "not executable or not mapping",
+          "reason": "explicit private Toolkit EXE/MAP static inputs not configured",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_l1_static_receipt_reproduces_when_explicit_inputs_exist"
+          ]
+        }
+      ]
+    },
     "tests/test_project_documentation_bytecraft_loader.py": {
       "categories": [
         "original_toolkit",
@@ -9162,6 +9198,42 @@
           ],
           "tests": [
             "test_original_vectors_reproduce_in_opt_in_subprocess"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_wireless.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_wireless.py::test_static_receipt_reproduces_without_original_execution",
+          "kind": "body.call",
+          "condition": "not executable or not mapping",
+          "reason": "explicit private Toolkit EXE/MAP static inputs not configured",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_static_receipt_reproduces_without_original_execution"
           ]
         }
       ]

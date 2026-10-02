@@ -67,11 +67,11 @@ def test_action_does_not_consume_body_programming_or_level_value():
     assert bytecraft_action_selector_usage(sparse, 202, 7, 11, 11).status == 'unrecovered'
 
 
-def test_action_dispatch_keeps_old_native_class_gate_and_rejects_l1():
+def test_action_dispatch_keeps_native_class_gate_and_admits_inherited_l1():
     from cbus_toolkit.project_documentation_usage import action_selector_usage
     u = unit(scenes={0: record(on=1)})
     assert action_selector_usage(u, 'BytecraftDimmer', 202, 7, 11, 0).html == '<li />Trigger Scene 0'
-    assert action_selector_usage(unit(firmware='1.9.03'), 'BytecraftDimmer', 202, 7, 11, 11).status == 'unrecovered'
+    assert action_selector_usage(unit(firmware='1.9.03', scenes={0: record(on=1)}), 'BytecraftDimmer', 202, 7, 11, 99).html == '<li />Trigger Scene 0'
 
 
 def test_input_dependencies_are_channel_major_use_on_or_off_and_one_based_scene_labels():
@@ -207,7 +207,7 @@ def test_missing_consumed_body_fields_refuse_atomic_tables(field, value):
     assert field in out.unrecovered[0]['item']
 
 
-def test_body_requires_actual_trigger_address_metadata_and_refuses_l1():
+def test_body_requires_actual_trigger_address_metadata_and_l1_logic_fields():
     net = network()
     net.application(202).group(7).levels = [doc.Level(99, 'Same value, wrong Address', 11)]
     out = doc._Writer()
@@ -215,7 +215,7 @@ def test_body_requires_actual_trigger_address_metadata_and_refuses_l1():
     assert 'Level 11' in out.unrecovered[0]['item']
     out = doc._Writer()
     assert document_bytecraft(out, network(), complete_body_unit(firmware='1.9.03')) == 'partial'
-    assert 'class/agent firmware' in out.unrecovered[0]['item']
+    assert 'LogicGroupAddress' in out.unrecovered[0]['item']
 
 
 @pytest.mark.parametrize('bits', ['0  ' + '0 ' * 15, '00 ' + '0 ' * 15, '0\t' + '0 ' * 15])
@@ -294,4 +294,15 @@ def test_cli_complete_bytecraft_and_modify_software_smoke_receipt(tmp_path):
         'remaining_marker_count': len(result['unrecovered']), 'encoding': 'UTF-8 BOM and CRLF',
         'original_generated_page_comparison': 'not_obtained'}
     fixture = Path(__file__).parents[1] / 'research/experiments/2026-09-30/project-documentor-bytecraft-modify-software-smoke.json'
-    assert receipt == json.loads(fixture.read_text())
+    historical = json.loads(fixture.read_text())
+    assert historical['remaining_marker_count'] == 37
+    # Unit7's inherited L1 scene/action consumers now recover. The incomplete
+    # body/output fixture still refuses its missing logic list. Keep this check
+    # scoped to that unit instead of binding unrelated report marker counts.
+    missing_logic = 'LogicGroupAddress (requires 1 explicit values in 0..255)'
+    expected_l1 = [{'network': 254, 'unit': 7, 'item': f'Group output usage ({app}/{group})',
+                    'missing': [missing_logic]} for app, group in ((56, 8), (56, 9), (203, 20), (203, 21))]
+    expected_l1.append({'network': 254, 'unit': 7, 'item': 'Bytecraft controls: ' + missing_logic})
+    assert [row for row in result['unrecovered'] if row['unit'] == 7] == expected_l1
+    assert {k: v for k, v in receipt.items() if k != 'remaining_marker_count'} == {
+        k: v for k, v in historical.items() if k != 'remaining_marker_count'}

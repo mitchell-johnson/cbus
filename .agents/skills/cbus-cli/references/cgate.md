@@ -2316,3 +2316,28 @@ or restore; a converted loaded model alone cannot prove an uncertain project
 save. Require the complete apply result before claiming database persistence.
 This bounded workflow is separate from Toolkit client-side tweakers and
 physical programming. See the [operator guide](../../../../toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).
+
+
+## Network language objects
+
+cmqttd and the owned mock implement the Toolkit Network language collection
+commands independently from Group/Level TagsDLT. `DBADD !NETWORK_OID Languages`
+creates a singleton collection; `DBADD !NETWORK_OID/Languages Language` creates
+an initially incomplete row. Require one301 issued UUID, then set/read its
+`ID` and `TagValue` through that exact OID. Scalar reads use342, setters/deletes
+use200. `DBGET !NETWORK_OID/Languages`, `DBGETXML` and `DBDELETE !ROW_OID` use
+owned local database state. No PCI command is sent. Complete Network XML admits
+complete unnamespaced language rows with nonconflicting OIDs. IDs use signed
+i32; XML1.0-unrepresentable text refuses atomically. Existing row order,
+custom names, duplicate real IDs and default ID0 remain retained. Project
+save/reload and service JSON restart preserve identities. Legacy numeric
+startup import validates Languages separately without re-admitting incomplete
+Units or requiring a previously absent Interface/NetworkNumber. A successful
+language mutation installs an owned overlay; read-only access does not.
+
+Original serializer position, native callback save count, GUI/physical language
+switching and Schneider SQLite interchange remain unaccepted. Standalone
+language copying is refused. Read `docs/cgate-network-languages.md` and query
+`database_network_languages`, `database_network_language_operations` and
+`database_network_language_physical_io` in CMQTT CAPABILITIES. Never replay a
+mutation after an uncertain receipt.

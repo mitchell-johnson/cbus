@@ -1,0 +1,1587 @@
+{
+  "format": "cbus-project-documentor-architectural-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "profiles": [
+    {
+      "unit_type": "DIMAR3",
+      "class": "TDIMAR3",
+      "channels": 3,
+      "ancestry": [
+        "TDIMAR3",
+        "TArchDimmerUnit",
+        "TGOC2Unit",
+        "TGOCUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x188": "CIS_TDIMARX.TDIMAR3.GetMaxChannels",
+        "0x18c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxLogicGroups"
+      }
+    },
+    {
+      "unit_type": "DIMAR6",
+      "class": "TDIMAR6",
+      "channels": 6,
+      "ancestry": [
+        "TDIMAR6",
+        "TArchDimmerUnit",
+        "TGOC2Unit",
+        "TGOCUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x188": "CIS_TDIMARX.TDIMAR6.GetMaxChannels",
+        "0x18c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxLogicGroups"
+      }
+    },
+    {
+      "unit_type": "DIMAR12",
+      "class": "TDIMAR12",
+      "channels": 12,
+      "ancestry": [
+        "TDIMAR12",
+        "TArchDimmerUnit",
+        "TGOC2Unit",
+        "TGOCUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x188": "CIS_TDIMARX.TDIMAR12.GetMaxChannels",
+        "0x18c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxLogicGroups"
+      }
+    },
+    {
+      "unit_type": "C12DIMAR",
+      "class": "TDIMAR12",
+      "channels": 12,
+      "ancestry": [
+        "TDIMAR12",
+        "TArchDimmerUnit",
+        "TGOC2Unit",
+        "TGOCUnit",
+        "TCBusGenericOutputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x188": "CIS_TDIMARX.TDIMAR12.GetMaxChannels",
+        "0x18c": "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxLogicGroups"
+      }
+    }
+  ],
+  "factory": [
+    {
+      "unit_type": "DIMAR3",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMAR3",
+      "class_registration": "0x13894c7",
+      "agent": "TDIMARXCGateAgent",
+      "agent_registration": "0x1398a2c",
+      "agent_methods": {
+        "agent_load": "TDIMARXCGateAgent.AgentLoad",
+        "load_groups": "TDIMARXCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TArchitecturalDimmerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TGOCUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMARXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "DIMAR6",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMAR6",
+      "class_registration": "0x13894e8",
+      "agent": "TDIMARXCGateAgent",
+      "agent_registration": "0x1398a44",
+      "agent_methods": {
+        "agent_load": "TDIMARXCGateAgent.AgentLoad",
+        "load_groups": "TDIMARXCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TArchitecturalDimmerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TGOCUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMARXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "DIMAR12",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMAR12",
+      "class_registration": "0x1389509",
+      "agent": "TDIMARXCGateAgent",
+      "agent_registration": "0x1398a5c",
+      "agent_methods": {
+        "agent_load": "TDIMARXCGateAgent.AgentLoad",
+        "load_groups": "TDIMARXCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TArchitecturalDimmerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TGOCUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMARXCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "C12DIMAR",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TDIMAR12",
+      "class_registration": "0x138952a",
+      "agent": "TDIMARXCGateAgent",
+      "agent_registration": "0x1398a5c",
+      "agent_methods": {
+        "agent_load": "TDIMARXCGateAgent.AgentLoad",
+        "load_groups": "TDIMARXCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TArchitecturalDimmerDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TGOCUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TDIMARXCGateAgent has no admitted CSV association model"
+    }
+  ],
+  "checks": {
+    "exact_four_factory_rows": true,
+    "DIMAR3:channel_count": true,
+    "DIMAR3:four_logic_groups": true,
+    "DIMAR3:architectural_dependencies": true,
+    "DIMAR6:channel_count": true,
+    "DIMAR6:four_logic_groups": true,
+    "DIMAR6:architectural_dependencies": true,
+    "DIMAR12:channel_count": true,
+    "DIMAR12:four_logic_groups": true,
+    "DIMAR12:architectural_dependencies": true,
+    "C12DIMAR:channel_count": true,
+    "C12DIMAR:four_logic_groups": true,
+    "C12DIMAR:architectural_dependencies": true,
+    "base_body_first": true,
+    "body_complete_section_order": true,
+    "body_exact_writer_boundaries": true,
+    "malformed_logic_cell_preserved": true,
+    "fixed_voltage_report_conversion": true,
+    "scene_name_is_raw_string": true,
+    "ordinary_scene_group_rows": true,
+    "special_scene_channel_rows": true,
+    "ordinary_raw_fade_not_unpacked": true,
+    "ordinary_ramp_description_lookup": true,
+    "cross_fade_formatter": true,
+    "exact_loader_order_and_single_preparation": true,
+    "consumed_parameter_constructor_inventory": true,
+    "scene_constructor_128_data_and_name_slots": true,
+    "scene_loader_128_sparse_slots": true,
+    "scene_name_trim": true,
+    "scene_name_38_utf16_units": true,
+    "scene_default_name": true,
+    "scene_cross_fade_inverts_normal": true,
+    "scene_fade_little_endian": true,
+    "scene_four_byte_channel_records": true,
+    "scene_inhibit_three_low_bits": true,
+    "scene_unused_channel_bit8": true,
+    "scene_target_scale_254_to_255": true,
+    "ordinary_scene_collection_only_prepared": true,
+    "first_channel_group_wins": true,
+    "first_group_target_fade_and_inhibit_copied": true,
+    "special_raw255_is_absent": true,
+    "special_target_scale_254_to_255": true,
+    "special_loader_only_fills_channels": true,
+    "special_fresh_groups_created_separately": true,
+    "cbus_four_masks_inverted": true,
+    "dmx_four_masks_direct": true,
+    "dmx_patch_little_endian": true,
+    "dmx_current_mask_guard_when_enable_unused": true,
+    "output_groups_native_lookup": true,
+    "logic_associations_nonzero_boolean": true,
+    "boolean_array_normalizes_before_xor": true,
+    "invalid_curve_falls_back_to_linear": true,
+    "exact_eleven_curve_descriptions": true,
+    "exact_sixteen_ramp_descriptions": true,
+    "exact_fixed_rms_cache_42_points": true,
+    "fixed_rms_cache_constructor": true,
+    "fixed_rms_cache_independent_of_editable_curves": true,
+    "rms_interpolation_round_then_scale_truncation": true,
+    "fade_unit_top_two_bits": true,
+    "all_four_fade_multipliers": true,
+    "inherited_primary_application_object": true,
+    "halogen_body_uses_unit_selector": true,
+    "halogen_action_uses_separate_scene_selector": true,
+    "loader_sets_unit_halogen_selector_only": true,
+    "special_duration_integer_setters_do_not_truncate_to_byte": true,
+    "distinct_selector_reference_fields": true,
+    "unused_error_level_is_not_network_selector": true,
+    "input_scans_prepared_groups_not_special_channels": true,
+    "input_dmx_mode_and_four_allocated_levels": true,
+    "exact_dependency_resources": true,
+    "other_exact_three_references": true,
+    "output_channels_then_logic_groups": true
+  },
+  "model_module_sha256": {
+    "project_documentation_architectural.py": "6e9f43e484313b826367eaab09d871eed66084e9ed0bf934c83b6a86bbcbab60",
+    "project_documentation_architectural_loader.py": "384f9c893ad5c9c30d81e3416ad97a780c61a2837a04bbc24a89050161fcbaee",
+    "project_documentation_architectural_usage.py": "453bfd097123c84b99b1db9c6e27136bfcb548690471bff6e9324638e4545d37"
+  },
+  "methods": {
+    "CIS_CBus.LevelToPercent": {
+      "start": "0x7f2ac8",
+      "end": "0x7f2aec",
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+    },
+    "CIS_Maths.IntToBool": {
+      "start": "0x7f17bc",
+      "end": "0x7f17e8",
+      "sha256": "9e04121d853825de87f86909bf3f3930ecd296a049e45148f0806193bbc3f833"
+    },
+    "CIS_Maths.StrToBool": {
+      "start": "0x7f1760",
+      "end": "0x7f17bc",
+      "sha256": "f64e6885c7952a39e6a84811517415e3ab7e7a4b5521b5dc5427b96b609bfa60"
+    },
+    "CIS_Maths.StrToBoolArray": {
+      "start": "0x7f1638",
+      "end": "0x7f1760",
+      "sha256": "d4d1a6e93ab0da31e0debcf0c5c687f3ca36f8dc64a12570885b3de906c2a8d4"
+    },
+    "CIS_TArchitecturalDimmerDocumentor.TArchitecturalDimmerDocumentor.ActionSelectorUse": {
+      "start": "0xda60d0",
+      "end": "0xda6280",
+      "sha256": "89ff7fc05c0043677235bd1a4f97312edb0bb0798daccaa22aa8e2b312387aa1"
+    },
+    "CIS_TArchitecturalDimmerDocumentor.TArchitecturalDimmerDocumentor.DocumentHTML": {
+      "start": "0xda6280",
+      "end": "0xda8c84",
+      "sha256": "b1e18065df823ee83b5563b59b33f2739ced4ec8588473c2b3a6283dbbb6f241"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.CIS_TCBusArchitecturalDimmerUnit": {
+      "start": "0x13878e8",
+      "end": "0x1387af8",
+      "sha256": "aaf74658c2d646bed6bd93d08975503274b85e3cff1489ca06fbc27503480478"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.GetSecondsMultiplierFromArchDimmerSceneFadeTime": {
+      "start": "0xd304bc",
+      "end": "0xd304e0",
+      "sha256": "38139e5c9fdd050aea9e75e718c6930d90378fc6c9c30b32deb81c6d8da08aa7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.GetValuesFromArchDimmerSceneFadeTime": {
+      "start": "0xd3030c",
+      "end": "0xd303f8",
+      "sha256": "ff4827c3af4433d79ab0c64ea2bc4b835656cf132fe86346bc6c641b4e67c718"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerCBusLossScene.InternalCreate": {
+      "start": "0xd36e4c",
+      "end": "0xd36ea4",
+      "sha256": "6178883d327f5d67618caaa01089b7b64b4cc92b41771df59f919e99b5568806"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerCBusLossScene.SetDirtyFlags": {
+      "start": "0xd36ea4",
+      "end": "0xd36ed0",
+      "sha256": "0bdc791e1c94dac052fd0b556985fe02a4f7da33c4b2a46a3c260a303ff6883a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetChannelMask1": {
+      "start": "0xd33e2c",
+      "end": "0xd33e50",
+      "sha256": "e874b73a0bbc283e189aac9f38179a1b9aa0509b08d4766b526bbde039d33cb0"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetChannelMask2": {
+      "start": "0xd33e50",
+      "end": "0xd33e74",
+      "sha256": "497c9108798cdf8724293a9f9ff4067d406ed5044f85eefa8e4b50a9844dd471"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetChannelMask3": {
+      "start": "0xd33e74",
+      "end": "0xd33e98",
+      "sha256": "28b9f263181900f4eaf4eaafa1b44758bc24d7e71a01d95d8fca3bf125da41b1"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetChannelMask4": {
+      "start": "0xd33e98",
+      "end": "0xd33ebc",
+      "sha256": "ea91e93ee9065ec5f584862c53a3e21047822a09dbbc054e9327b7ca06779741"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetChannelName": {
+      "start": "0xd33ebc",
+      "end": "0xd33ee0",
+      "sha256": "4cebee007297823465e710de4cd172d5e8d4942049fe9519fc89d843eb982799"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXChannel": {
+      "start": "0xd33f5c",
+      "end": "0xd33f80",
+      "sha256": "bbc41b8078c32a1abf238898d031d99bfdd70f3f98c4a731181905bf6b65bfc7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXChannelMask1": {
+      "start": "0xd33f80",
+      "end": "0xd33fa4",
+      "sha256": "085a1d187151fae739a06f3f15e461c3c5dcd5368f14c255761b91664841ae40"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXChannelMask2": {
+      "start": "0xd33fa4",
+      "end": "0xd33fc8",
+      "sha256": "5790c159248aa2b018c3b8bc9ca771f0c734af49cd627dca59ba31c13e86173f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXChannelMask3": {
+      "start": "0xd33fc8",
+      "end": "0xd33fec",
+      "sha256": "a98726fe31c682cd480a771bd9942307c34c87fd43fcd9d9c9cfafda39876074"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXChannelMask4": {
+      "start": "0xd33fec",
+      "end": "0xd34010",
+      "sha256": "14310bbfb3cd0166e782898d428c29fedd71dc6d3033bab94a3cbc2687af9649"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXDisableOperation": {
+      "start": "0xd34010",
+      "end": "0xd34034",
+      "sha256": "1c2a3ad850fd95d6941b41cd849e20820ec8528f4bd244cf71b93b2557dcf9c3"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXDisableRampRate": {
+      "start": "0xd34034",
+      "end": "0xd34058",
+      "sha256": "e00f9581bc0a302a86ec0a098949b87cf51f7ce881850a69b643c7073ed5e993"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXFadeTime": {
+      "start": "0xd340a0",
+      "end": "0xd340c4",
+      "sha256": "25c81253ea863aefd5072845932f6748a37684d5a90c69b7e6a87855f2027987"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXOffFadeTime": {
+      "start": "0xd34058",
+      "end": "0xd3407c",
+      "sha256": "c30ef65269ea2b721c2cdb0a210880f27722725467ea54eb1ebbc5c223899f38"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDMXOnFadeTime": {
+      "start": "0xd3407c",
+      "end": "0xd340a0",
+      "sha256": "0a5775194ade107a220cbbead4cbab3b492e05feee2d02ac6e5df8db51cac18d"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDefaultChannelName": {
+      "start": "0xd33ee0",
+      "end": "0xd33f38",
+      "sha256": "896ebe2252250ebb25607517deb863b9e0f4da4ff3452c90c33b77d9bc6b27bd"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetDimmingCurve": {
+      "start": "0xd33f38",
+      "end": "0xd33f5c",
+      "sha256": "e4c0a79843fdb1684d7d4763eb68d41236919559f78ede7d0417e0b7e206e808"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetFanKickstartTime": {
+      "start": "0xd340c4",
+      "end": "0xd340e8",
+      "sha256": "93793325ea2b6335b5afb4523fd7e9db271153abe943fd0428ab7cc77eed4bd4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetGlobalFadeTime": {
+      "start": "0xd340e8",
+      "end": "0xd3410c",
+      "sha256": "2315c23fadd0991f5955918c256a0add3b47ea0e33630dd413d610cdcfd154be"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLightLevel": {
+      "start": "0xd3410c",
+      "end": "0xd34130",
+      "sha256": "acd9f37e1630e248896d39b98595b05c15f1a47df02d2d91727c6c3354308f31"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicFunction": {
+      "start": "0xd34130",
+      "end": "0xd34154",
+      "sha256": "060cf86b3611645612bb4fea0ad665df3d26bebd151b069a4f96640894535437"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicGA13Associations": {
+      "start": "0xd34154",
+      "end": "0xd34178",
+      "sha256": "e97fb5efdc851e0af36e6fcfb5c1bbae36ed38cfc82f1ce6b69d208aeb615a3e"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicGA14Associations": {
+      "start": "0xd34178",
+      "end": "0xd3419c",
+      "sha256": "e7495f747b6219cca3158b28e9d8f96872facd95c3648a1dd951b5c03de568e8"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicGA15Associations": {
+      "start": "0xd3419c",
+      "end": "0xd341c0",
+      "sha256": "b5ca5fd82233c8a70ae96cfbc01519247a9ae51a1f26bedfc0af3b0718cf4965"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicGA16Associations": {
+      "start": "0xd341c0",
+      "end": "0xd341e4",
+      "sha256": "640069643e029e0ae27122ada6bf840a702204d4df1596fe92181b30d86e9eae"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetLogicGAAssociation": {
+      "start": "0xd341e4",
+      "end": "0xd34244",
+      "sha256": "5d2b7897f4aea960bea5473338576b9fca64d01d98a9001d9095d94dc1ee0727"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetMaxVoltageLevelA": {
+      "start": "0xd34244",
+      "end": "0xd34268",
+      "sha256": "a4e6ced467f8df63b5f5a2ef6c399bee207ebabc27a1b6cfd32c844f540c12ea"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetMaxVoltageLevelB": {
+      "start": "0xd34268",
+      "end": "0xd3428c",
+      "sha256": "a0408041c08eec01fcf597c49e2f8dff47342acb0aff96b0dff612e1ea0a58de"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetOutputGroup": {
+      "start": "0xd3428c",
+      "end": "0xd342b0",
+      "sha256": "6a2497e60951fde9d07d68d25e33c6176c1999a4dc70b7539bf7e135134f7747"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetPowerUpDelay": {
+      "start": "0xd342b0",
+      "end": "0xd342d4",
+      "sha256": "870faae020f55c3aa33543762d29232e6e54fb218fa3801599436e6870237c84"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetSceneCBusLossLevel": {
+      "start": "0xd342d4",
+      "end": "0xd342f8",
+      "sha256": "1eebc6b526292b28b309156ddc49966639ec338766f9938823ce04d625d14e61"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetSceneDryContact1Level": {
+      "start": "0xd342f8",
+      "end": "0xd3431c",
+      "sha256": "f5e842190df5e6a41efb17355583b42f2b15edb89f7580a802a2f4e3aea6e69f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetSceneDryContact2Level": {
+      "start": "0xd3431c",
+      "end": "0xd34340",
+      "sha256": "55da511ce448b401f193e92350b2f8604038dd168ed94c259a32d3a882900c88"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetSceneDryContact3Level": {
+      "start": "0xd34340",
+      "end": "0xd34364",
+      "sha256": "2575fb55cd54ed6d04721afdf3180e5548bd0c5e8d676233023f4e616f006b86"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetSceneLoadShedLevel": {
+      "start": "0xd34364",
+      "end": "0xd34388",
+      "sha256": "e5eb6ec37b1ff852892b11a56f7b0988dfceee7eaeb18c82183407d2f070ae9a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.GetTurnOnThreshold": {
+      "start": "0xd34388",
+      "end": "0xd343ac",
+      "sha256": "525ef70b0ef7b978a5e99efc398aa53857d72581288c44785e9f344be4132098"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.InternalCreate": {
+      "start": "0xd343ac",
+      "end": "0xd34f38",
+      "sha256": "0a1d90152e5a7ae1521ae5b81c9690281a52ce9b7a87607cda5b2f16096a5a90"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetChannelMask1": {
+      "start": "0xd34f38",
+      "end": "0xd34f94",
+      "sha256": "046c1c537e6b7e1d49132fa3d767b72e638b493d9331c4b820bf6e243c96d052"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetChannelMask2": {
+      "start": "0xd34f94",
+      "end": "0xd34ff0",
+      "sha256": "4123af7d6edcfc645c97a7a38b1fdbc8392cd011affbc65bf537cc6a959b0c2e"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetChannelMask3": {
+      "start": "0xd34ff0",
+      "end": "0xd3504c",
+      "sha256": "7fe740927056bce0d17cc41a83d2cb7850b930f1e7db14fea7cc2cf0ee467614"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetChannelMask4": {
+      "start": "0xd3504c",
+      "end": "0xd350a8",
+      "sha256": "a33171db180ea1100424306a29976fcf81235198ea6c28771a9166221149794a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetChannelName": {
+      "start": "0xd350a8",
+      "end": "0xd35124",
+      "sha256": "8875c3006091999cc4aeb1424fd12903528fa8806cddf26204229e0a15d05144"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXChannel": {
+      "start": "0xd353ec",
+      "end": "0xd3544c",
+      "sha256": "66dc1f395c14a7041a3c0ff1f328fa083686ba9bb5f401e9d95495676a7a2489"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXChannelMask1": {
+      "start": "0xd3544c",
+      "end": "0xd354a8",
+      "sha256": "31a061a42387b8d7e23705459d0f38f8b64ee7870c7ba3213f87711f0f5e6323"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXChannelMask2": {
+      "start": "0xd354a8",
+      "end": "0xd35504",
+      "sha256": "dce1d09f269141bc4bd967dc45b06ed95f628130384da5e3af11c681bebdefc5"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXChannelMask3": {
+      "start": "0xd35504",
+      "end": "0xd35560",
+      "sha256": "9cf274089f9deac12ffdeb16d0a51cc745cfa1641724dc57dc32e3851a86f459"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXChannelMask4": {
+      "start": "0xd35560",
+      "end": "0xd355bc",
+      "sha256": "461164d2cb003f9339522b10c3961b9018bf90e371dad1b2a80e20336fc2b8bd"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXDisableOperation": {
+      "start": "0xd355bc",
+      "end": "0xd35618",
+      "sha256": "5106527303a93995eeedddfffcd268a8911d308ebd89ba4090d7a7dfc8dfd2e8"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXDisableRampRate": {
+      "start": "0xd35618",
+      "end": "0xd3567c",
+      "sha256": "16487397b21db7d10fe84a2c3f655246125908337111d6fa778ee76130d4b25c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXFadeTime": {
+      "start": "0xd3573c",
+      "end": "0xd3579c",
+      "sha256": "7d61c3687c7571f838c5fed36b9c1252cc32ac317a915edb5669320b108554cb"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXOffFadeTime": {
+      "start": "0xd3567c",
+      "end": "0xd356dc",
+      "sha256": "e0c86774fff83bf294c824d25bfd584fdbf460d254341e1e3cb482626b9197d1"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDMXOnFadeTime": {
+      "start": "0xd356dc",
+      "end": "0xd3573c",
+      "sha256": "82e3d75aa8f6ea8cd2092e0366a9cf6441abe9cbfe61e9272c03903c513ebfc4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDimmingCurve": {
+      "start": "0xd35124",
+      "end": "0xd351c4",
+      "sha256": "b9c5cfc7f8b92516b95b473ae6784779a90802042249c6514c22a7b1d829c9b7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetDirtyFlags": {
+      "start": "0xd351c4",
+      "end": "0xd353ec",
+      "sha256": "ca8413d50d83d38e69873bff4fe1d9e27bdd11cdd748246b3d6758cb5527340c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetFanKickstartTime": {
+      "start": "0xd3579c",
+      "end": "0xd357fc",
+      "sha256": "bb77a7ec14c983d9ebbd933a782489de3c6d75463d82835413a50abc9da9b9f0"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetGlobalFadeTime": {
+      "start": "0xd357fc",
+      "end": "0xd3585c",
+      "sha256": "87814f2983ac241da9ec0d6c6c27b03f8c9f50acc57691a7d1edf3fda8e6c6e4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLightLevel": {
+      "start": "0xd3585c",
+      "end": "0xd358bc",
+      "sha256": "3a8cc528afa1d0e0500b48b581407d909882b86d360c275d50323a7a89ea479f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicFunction": {
+      "start": "0xd358bc",
+      "end": "0xd3591c",
+      "sha256": "a556747b47c1b3971548316025eb4dac4905ea6f9ff5044d5bd7780d5e31b65c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicGA13Associations": {
+      "start": "0xd3591c",
+      "end": "0xd35978",
+      "sha256": "c670e9102562b5bb947fd79617521cce6d135f03056433efba4cc068503c9f8e"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicGA14Associations": {
+      "start": "0xd35978",
+      "end": "0xd359d4",
+      "sha256": "668f9430b542a0ae2c9e374e6b72095841f655d594348a0ab615c18c8dcfd88b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicGA15Associations": {
+      "start": "0xd359d4",
+      "end": "0xd35a30",
+      "sha256": "77ea10f3c6904e693adf8ea292682cc3584b8dd6aec648df5af6a93edcabf1b0"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicGA16Associations": {
+      "start": "0xd35a30",
+      "end": "0xd35a8c",
+      "sha256": "f2b4e54d68e99efe498686a3bc3a7c6cda80d403be4bd56d041aff7522ba0985"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetLogicGAAssociation": {
+      "start": "0xd35a8c",
+      "end": "0xd35ae4",
+      "sha256": "d11072c16a11aaa6558d1f281bb6bf887b41cb3dc3788ab0e5011589dccc539b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetMaxVoltageLevelA": {
+      "start": "0xd35ae4",
+      "end": "0xd35b44",
+      "sha256": "8b08530af8f826a5ad8de12b9ccf8960e85da4260e59c21eb93c1903304b823c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetMaxVoltageLevelB": {
+      "start": "0xd35b44",
+      "end": "0xd35ba4",
+      "sha256": "6fcdccdd3a9ad4e978d9345f1a413b859ab4bc19df23aed46738fbc7c5f4b0f7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetOutputGroup": {
+      "start": "0xd35ba4",
+      "end": "0xd35bc8",
+      "sha256": "74734098a3ff2828b7f3d7228d8d7711becb7ea2e2180fc0709567a1572389d8"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetPowerUpDelay": {
+      "start": "0xd35bc8",
+      "end": "0xd35c28",
+      "sha256": "42249510cf4f1fafd6bcdb03a5f5ca10f3a3636168f20958eb0b9231222cb945"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetSceneCBusLossLevel": {
+      "start": "0xd35c28",
+      "end": "0xd35c88",
+      "sha256": "8822a370945e194b73a5e86ea04885a238fa768b9a5ad1409152bcbb38fcf442"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetSceneDryContact1Level": {
+      "start": "0xd35c88",
+      "end": "0xd35ce8",
+      "sha256": "e4f5d3964e5944c2286cee3c354be6f01e59b7ca9fc6555346293b9d6be7aa33"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetSceneDryContact2Level": {
+      "start": "0xd35ce8",
+      "end": "0xd35d48",
+      "sha256": "c2ccf6f152c8a150356af392b40d2e8b8e3f89176863224219e0b9d74047f0c7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetSceneDryContact3Level": {
+      "start": "0xd35d48",
+      "end": "0xd35da8",
+      "sha256": "8ab5beb26e6d272ae9f393fee680e2616480a1b4dc1a89992f9e06d85f809e76"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetSceneLoadShedLevel": {
+      "start": "0xd35da8",
+      "end": "0xd35e08",
+      "sha256": "72f95688f71aac382bd88b42237921ab677e02d687c65e4beb1482a139a88a84"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerChannel.SetTurnOnThreshold": {
+      "start": "0xd35e08",
+      "end": "0xd35e68",
+      "sha256": "8a48e7be05a214f41a23451739af3f6e14ae0f2b3417a14780c20002d6c63174"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerHalogenCleanScene.InternalCreate": {
+      "start": "0xd36ed0",
+      "end": "0xd36f28",
+      "sha256": "4b3bf98483194f3530b62ccc5d8429b241bb151267ab0341de5cda3e33d55804"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerHalogenCleanScene.SetDirtyFlags": {
+      "start": "0xd36f28",
+      "end": "0xd36f54",
+      "sha256": "b08c819506ce0b2a10cb622484ea1666a2b8dca866e340de34f347a6d99a62e7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetActionSelector": {
+      "start": "0xd36238",
+      "end": "0xd3625c",
+      "sha256": "7d5fe1beb805570584b823b50e566928d2239c91881a48abca3d7e1a0b7e7d2d"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetCanBeTweaked": {
+      "start": "0xd3625c",
+      "end": "0xd36280",
+      "sha256": "2e288f425b2eeb9d8628c19e39558f569ea9d9ca5cecb924c315f74b6d0806d7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetCanFadeToOff": {
+      "start": "0xd36280",
+      "end": "0xd362a4",
+      "sha256": "f149f4e298d5ad79bf0ad257ee540f882e2fc0c59fe45940c5f8cb01ca832422"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetCrossFadeScene": {
+      "start": "0xd362a4",
+      "end": "0xd362c8",
+      "sha256": "98dbf97922fa831fa44f56a5c3eba348719e14803fe71ccfa9da7eb69d462cdf"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetCrossFadeTime": {
+      "start": "0xd362c8",
+      "end": "0xd362ec",
+      "sha256": "1aaf94b2c18ef523abb93b19720a4b844ccb5d196e6808cff4571ffe445b9c09"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetSceneName": {
+      "start": "0xd362ec",
+      "end": "0xd3630c",
+      "sha256": "38d0c65ebe09ea300453404560b72f1014fa039ad896e3dfee2c709bd5bb2d8e"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetTriggerGroup": {
+      "start": "0xd3630c",
+      "end": "0xd36330",
+      "sha256": "5e99ababaaa20ca89f5d2c8651565b532511fdfbaa6421e3be4ba351415b4039"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetUseRampRate": {
+      "start": "0xd36330",
+      "end": "0xd36354",
+      "sha256": "e9290543b72f9ffd159d1ffbc738c7f106a09f63b853dbea37bfc35c37e4d8c8"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.GetWasEdited": {
+      "start": "0xd36354",
+      "end": "0xd363ac",
+      "sha256": "352ccc023d46e67038103ea71a5114d76c5adf8daa1ec6d5a349238dff2e5236"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.Init": {
+      "start": "0xd363ac",
+      "end": "0xd36404",
+      "sha256": "8dc66f2378c4cf2310eb93dd7cd08288fee2e48dc415d686e31fd53266854a8f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.InternalCreate": {
+      "start": "0xd36404",
+      "end": "0xd3674c",
+      "sha256": "475154c1202e2db602c57d70046026ef37f58bc8821d9796a5563bbdea61e2d2"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.IsGroupUsed": {
+      "start": "0xd36760",
+      "end": "0xd367d8",
+      "sha256": "b377d7e339850d66d7feb1ff60c4b4987b913e3c5af19f4b9fda97ceaebccc79"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetActionSelector": {
+      "start": "0xd367d8",
+      "end": "0xd367fc",
+      "sha256": "6afb05365134ff6294692b465480540bc3a038bd416ad57169ad9faaac7b2c24"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetCBusUnit": {
+      "start": "0xd368b4",
+      "end": "0xd368d0",
+      "sha256": "368605d0a19510f7a0a8fee966d15d0da68a99729b381a3823d39211ae938947"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetCanBeTweaked": {
+      "start": "0xd367fc",
+      "end": "0xd36858",
+      "sha256": "e469bfedf04b430e5b2f757bb80a5257109e5e748043be1924705b27122ffb4a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetCanFadeToOff": {
+      "start": "0xd36858",
+      "end": "0xd368b4",
+      "sha256": "d965c3ae4464cfdb0920bb02199ef25b509f419ab0c4cc4dd77e6dd40ef9cbe7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetCrossFadeScene": {
+      "start": "0xd368d0",
+      "end": "0xd3692c",
+      "sha256": "e679520bb1903ca6fcd712bf29e2c997ddd760b22ca8439d366760fe061d63b7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetCrossFadeTime": {
+      "start": "0xd3692c",
+      "end": "0xd3698c",
+      "sha256": "bf7aab9aec5d049b2161104c5ff2af7f5856e499e94faf02369a4bd0fd51ff67"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetDirtyFlags": {
+      "start": "0xd3698c",
+      "end": "0xd36a34",
+      "sha256": "ffc2aec1ccd7237e1b3a6d64f7ce285688883022dc99a9c6912143f92d332e3a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetSceneName": {
+      "start": "0xd36a34",
+      "end": "0xd36aac",
+      "sha256": "b0910bd893426b45ca937da38f4795799aac841f325bec1951317dd83d914dd4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetTriggerGroup": {
+      "start": "0xd36aac",
+      "end": "0xd36af0",
+      "sha256": "93c10cbc9d2e6538e087d81a6a1463cd2ff59d465afac3b178d602ffa57a4fbd"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerScene.SetUseRampRate": {
+      "start": "0xd36af0",
+      "end": "0xd36b4c",
+      "sha256": "6d3729f40f7d92baf88fd0ed7f127d5e5c6219871d8850eeb8e5d434db072510"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.GetChannel": {
+      "start": "0xd36fa8",
+      "end": "0xd36fc4",
+      "sha256": "acdf4b3ed6fb9ac3b1ea5deb83918c298db260f820287709f1dff3c5e6bd5802"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.GetCompactedFadeTime": {
+      "start": "0xd36fc4",
+      "end": "0xd36fe8",
+      "sha256": "28a80aff14ef698638add72d6473db5e383fbdb282f655de2e3b3901c48ff259"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.GetInhibitCode": {
+      "start": "0xd36fe8",
+      "end": "0xd3700c",
+      "sha256": "bc642aaed9ab3fe434c457f76fe7260dceb151f015362465ece12a0b17df4efa"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.GetTargetLevel": {
+      "start": "0xd3700c",
+      "end": "0xd37030",
+      "sha256": "1f8f2b54869b9dbab1b6237b128f0fb1e09028468e47f87d711793d6e02b391c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.GetWasEdited": {
+      "start": "0xd37030",
+      "end": "0xd37080",
+      "sha256": "1cf7ddd7f856fd7743d8b84903a21635776d02068c65b6a75cd8ede273a8fd12"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.Init": {
+      "start": "0xd37080",
+      "end": "0xd370cc",
+      "sha256": "32cea0ee8493af3cb036c081c58271962e78ed5975ea8d559925360e054f2c7b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.InternalCreate": {
+      "start": "0xd370cc",
+      "end": "0xd37228",
+      "sha256": "4f186eb1fa8723563263bcfa8718520f2e6112904b20dd2abb2f0114cf9964b3"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetChannel": {
+      "start": "0xd37228",
+      "end": "0xd3724c",
+      "sha256": "60e370fc6a54866d9fde07550fa10c55723e9a6708467b9199ce1c7d86692934"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetCompactedFadeTime": {
+      "start": "0xd3724c",
+      "end": "0xd372ac",
+      "sha256": "0411220918ddad454142e7e9ed4345c566d61ff3abc26bfebc56b108e359d09e"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetDirtyFlags": {
+      "start": "0xd372ac",
+      "end": "0xd37304",
+      "sha256": "bf89e77b0d89dd8db8fb5e455cbdf91f23e286da0885d68c218668cfa2802506"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetEnabled": {
+      "start": "0xd373c0",
+      "end": "0xd3741c",
+      "sha256": "21bb0e39eb076fee7143b4b44338a9b8647c2348f89a9af6e582d02283b49371"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetInhibitCode": {
+      "start": "0xd37304",
+      "end": "0xd37364",
+      "sha256": "94d74fa9f7196e9dfd874c8f6a1f47fd1a1a9619fe600cb19769191d40c51830"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneChannel.SetTargetLevel": {
+      "start": "0xd37364",
+      "end": "0xd373c0",
+      "sha256": "dab5a051d1cdfd586796f732765c9f23b541b56f89256d98874fa481001d5818"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.GetCompactedFadeTime": {
+      "start": "0xd38428",
+      "end": "0xd3844c",
+      "sha256": "28a80aff14ef698638add72d6473db5e383fbdb282f655de2e3b3901c48ff259"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.GetGroup": {
+      "start": "0xd3844c",
+      "end": "0xd38468",
+      "sha256": "acdf4b3ed6fb9ac3b1ea5deb83918c298db260f820287709f1dff3c5e6bd5802"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.GetInhibitCode": {
+      "start": "0xd38468",
+      "end": "0xd3848c",
+      "sha256": "bc642aaed9ab3fe434c457f76fe7260dceb151f015362465ece12a0b17df4efa"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.GetTargetLevel": {
+      "start": "0xd3848c",
+      "end": "0xd384b0",
+      "sha256": "1f8f2b54869b9dbab1b6237b128f0fb1e09028468e47f87d711793d6e02b391c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.Init": {
+      "start": "0xd384b0",
+      "end": "0xd384fc",
+      "sha256": "b1a2083b2fd7d1bb064354aba9ba6ae671bb4979ce28005b7764abf32e48d434"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.InternalCreate": {
+      "start": "0xd384fc",
+      "end": "0xd38654",
+      "sha256": "5002e315099b63b62e9b4dbc3e6d988bf971bf67cd138ec3954102bfcb42db1a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetCompactedFadeTime": {
+      "start": "0xd38654",
+      "end": "0xd386b4",
+      "sha256": "24ca5753ca6685d5f6af4ce45e4613d34c3ec0294d5d636f02df166c4096fd95"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetDirtyFlags": {
+      "start": "0xd386b4",
+      "end": "0xd3870c",
+      "sha256": "bf89e77b0d89dd8db8fb5e455cbdf91f23e286da0885d68c218668cfa2802506"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetEnabled": {
+      "start": "0xd3870c",
+      "end": "0xd38768",
+      "sha256": "af7f0ebf6a3c4b7b398561f92b24f86916371f70b46468ab5bc27ff2110aa788"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetGroup": {
+      "start": "0xd38768",
+      "end": "0xd3878c",
+      "sha256": "60e370fc6a54866d9fde07550fa10c55723e9a6708467b9199ce1c7d86692934"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetInhibitCode": {
+      "start": "0xd3878c",
+      "end": "0xd387ec",
+      "sha256": "c1df52c934e11f89df47b6f07b6ea25105dcee1ab296f4d25183f69f9911104c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerSceneGroup.SetTargetLevel": {
+      "start": "0xd387ec",
+      "end": "0xd38848",
+      "sha256": "a867291039de662142facb5a000bdfff73f65ac359471259f5f36b7f8492833f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.ConvertLevelToNormalisedRMSVoltageA": {
+      "start": "0xd30aa0",
+      "end": "0xd30c2c",
+      "sha256": "e96cce4a1f2501bff80ff6675ef54b9f3275e2fb07a2d6c02743f6a742b31a42"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.ConvertNormalisedRMSVoltageAToLevel": {
+      "start": "0xd304e0",
+      "end": "0xd306b4",
+      "sha256": "b6b6760ec18b46acd70586f17fbd2f3b32c4dead3ec0882e7a6cb093677a8db0"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.ConvertNormalisedRMSVoltageBToLevel": {
+      "start": "0xd306b4",
+      "end": "0xd30888",
+      "sha256": "06e0d58d1f0631ba41c5576a62c230d10a42bf61e094cd4649b221921d3d5992"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd30ce4",
+      "end": "0xd31224",
+      "sha256": "8c5fb28e15c06d8a2f69f2b8832577252975d6a87a8ecd4da00ed40a6be0bb67"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd31224",
+      "end": "0xd3132c",
+      "sha256": "5ea0c5a5cc9cd9c05f4b073957a03c3ab67bb2e1d6241476c7f5d9e7be763d1f"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xd3132c",
+      "end": "0xd3151c",
+      "sha256": "1b5f7b433d8a23a9c3b185be605a29eafde2b5a731bcd77707bd071ae4107004"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetCBusLossFadeTime": {
+      "start": "0xd315a4",
+      "end": "0xd315c8",
+      "sha256": "d1782b1a1ff973fc20f2d0fb0dd8fb658cfc5e2e722c43464cc7412dfe4816a4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetChannelEnableGroup": {
+      "start": "0xd315c8",
+      "end": "0xd315ec",
+      "sha256": "c237d9a3aad9580da2d6416aa7f11b21d5b999d39ed0e7b8ff01c67618acf422"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXEnableGroup": {
+      "start": "0xd31624",
+      "end": "0xd31648",
+      "sha256": "d9037f1c62eebe1398a32444f954755b2f1b660906fef32d7b9ce7496036ed03"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXEnableMask1Level": {
+      "start": "0xd31648",
+      "end": "0xd3166c",
+      "sha256": "e0ec75425945831c68e0ac7357e23fa6c99d89d6f88e059156cd03cddbb9249d"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXEnableMask2Level": {
+      "start": "0xd3166c",
+      "end": "0xd31690",
+      "sha256": "b2b86673f03a50c329bf265884143397d71a4d14d7c9bc9ef1a04e6e142eb1a0"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXEnableMask3Level": {
+      "start": "0xd31690",
+      "end": "0xd316b4",
+      "sha256": "8cd14220a02815e9a7030a0a636aa2a737c06df5ca3fc70ec671ff8c2e2c66c1"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXEnableMask4Level": {
+      "start": "0xd316b4",
+      "end": "0xd316d8",
+      "sha256": "0361c80d9824ad2d9ebb9a3ce14442cee14173d73e6aed7f822c6f2b35c0150b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDMXModeEnabled": {
+      "start": "0xd316d8",
+      "end": "0xd316fc",
+      "sha256": "e985cdffc21408f9aa850798d560db6df8a180352e9d468597129e847756cbdc"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDimmingCurveA": {
+      "start": "0xd315ec",
+      "end": "0xd31608",
+      "sha256": "bc272303d32ab2ea4c9f61a82f312b0444bead7fdbc05d0e4dc81b1b20513118"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetDimmingCurveB": {
+      "start": "0xd31608",
+      "end": "0xd31624",
+      "sha256": "ba75f85c8e7efc49e6c76a3acf80a3e7b0d69c28d2f756664d0c0728ce636bf9"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetErrorUpdateInterval": {
+      "start": "0xd316fc",
+      "end": "0xd31720",
+      "sha256": "b060200543f314ccde867b4f9a821a85eb7f3aca71a8f462ae01b0836b9f2914"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetFirstSpecialScene": {
+      "start": "0xd31720",
+      "end": "0xd3173c",
+      "sha256": "b1b900a1c7cd48021af86b8c832055e0f5da1bbb046b812a53382b3912feb376"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetHalogenCleanActionSelector": {
+      "start": "0xd3173c",
+      "end": "0xd31760",
+      "sha256": "d868785c22e800685e0daba01f7c7125abd168b588c0e1190c25d05d06e0969c"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetHalogenCleanDuration": {
+      "start": "0xd31760",
+      "end": "0xd31784",
+      "sha256": "0f78fb2f73520556c82a2636ba11eeb0d00b67d2d5a24e25b10d4cd6b7d3dbe7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetHalogenCleanTriggerGroup": {
+      "start": "0xd31784",
+      "end": "0xd317a8",
+      "sha256": "d0df025277b91686c32b4d7bdcf3dda735a3496254f605a956c2ffa083e909d6"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetHalogenFadeOn": {
+      "start": "0xd317a8",
+      "end": "0xd317cc",
+      "sha256": "52fb24f23a739d1f00a95f2bdc5932b86ee8cfc9fa1969256aea8f7c8a57c11d"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetLoadPartial": {
+      "start": "0xd317cc",
+      "end": "0xd317e0",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetLogicGroups": {
+      "start": "0xd317e0",
+      "end": "0xd317fc",
+      "sha256": "954658edda4b5922891eb5530c6199793a7d0f433739f94fc2ebe6eb2c1b24ca"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxLogicGroups": {
+      "start": "0xd317fc",
+      "end": "0xd31814",
+      "sha256": "6d20e15d7c4fb8cab035653b09b63ceb2b745f071ebae936650cac13be3e5b82"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMaxScenes": {
+      "start": "0xd31814",
+      "end": "0xd3182c",
+      "sha256": "a6e6887cff8e4419fe4cdb26017bd53c4c4b87d7b9ddb938666cc6165389143b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetMinAllowedRMSVoltage": {
+      "start": "0xd3182c",
+      "end": "0xd31844",
+      "sha256": "5685996902780132d64c2a8860da2e8e0c108c194b29799d76500ef93fe5cc85"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetNextSpecialScene": {
+      "start": "0xd31844",
+      "end": "0xd318e8",
+      "sha256": "c89a909855e94ba32f272f3344314a3227984046017bb9ed2e991c0deb73f925"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetNominalLineVoltage": {
+      "start": "0xd318e8",
+      "end": "0xd3190c",
+      "sha256": "d704ea73ca0b6e2475447fe982d994001f14ffad715a04ad56bf1c346f71b0a7"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSecondaryFirmwareVersionDisplayName": {
+      "start": "0xd3190c",
+      "end": "0xd31964",
+      "sha256": "05aa847589395b50e6e09140339ce010c2d18b8acd25193aefa2cdc86fc65fd4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneCBusLoss": {
+      "start": "0xd31964",
+      "end": "0xd31988",
+      "sha256": "322e7fa613c4e29ec2a53b7101f55c1b874a1b06f2ab9d41ae63631facb7ca6a"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneDryContact1": {
+      "start": "0xd31988",
+      "end": "0xd319ac",
+      "sha256": "2647ee069e790c0cd76cf5cab7afb814298c92e32732ab6f9bc60704f00b2085"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneDryContact2": {
+      "start": "0xd319ac",
+      "end": "0xd319d0",
+      "sha256": "30a52deff715d00ff07e8509dfc5771f295dbf1cf89c96476eb4c16b165c6cbd"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneDryContact3": {
+      "start": "0xd319d0",
+      "end": "0xd319f4",
+      "sha256": "caf90216618c21e8a3f5a5e87fe890e3e3847fb5cfe0b0fbb57f4eff33a95ce1"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneHalogenClean": {
+      "start": "0xd319f4",
+      "end": "0xd31a18",
+      "sha256": "82c29d1bd959fe8a027e8814c900b7fb4e479f3b5143535a158689fe1c7490fe"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetSpecialSceneLoadShed": {
+      "start": "0xd31a18",
+      "end": "0xd31a3c",
+      "sha256": "2820f33ae0ccde4d261963cc2ea7734bce4395f8ad166abba50be6f0bcdb3bba"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.GetUnitLog": {
+      "start": "0xd31a3c",
+      "end": "0xd31a60",
+      "sha256": "8a59cb8402b31e8f260db1f7976dea4587ca4c020da1cce19697402f410ff16b"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.Init": {
+      "start": "0xd31b1c",
+      "end": "0xd31b60",
+      "sha256": "f696f753cb144178b473b3746632c288caa03501ab3420401a8eca0c81a50487"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.InternalCreate": {
+      "start": "0xd31b60",
+      "end": "0xd32d38",
+      "sha256": "4c769083181ad4b9ba691d41dc7059169c3419acb9da86e54f05f5ce828bcde3"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetCBusLossFadeTime": {
+      "start": "0xd332b8",
+      "end": "0xd33318",
+      "sha256": "b5d6f93ce1370bac54b3408e8c3272da344e7f32c5bff40dd4339cf8363ae43d"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetChannelEnableGroup": {
+      "start": "0xd33318",
+      "end": "0xd3333c",
+      "sha256": "5f00296d8400446469a86c9625b109481e189069060a0cea37f2fb51dccf9891"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXEnableGroup": {
+      "start": "0xd3333c",
+      "end": "0xd33360",
+      "sha256": "b0961a5e70c325d1874286bb8e3f99a4016041cde4a159f77620a82ac93b10d4"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXEnableMask1Level": {
+      "start": "0xd33360",
+      "end": "0xd33384",
+      "sha256": "ed9b3d920fa02d9b3d6b8a3e5db3c2e792cda1260d2ef737944424f8f79c3e69"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXEnableMask2Level": {
+      "start": "0xd33384",
+      "end": "0xd333a8",
+      "sha256": "e8c7d601485d45f818426431c2c43c8e13c9a0a97c36cada89bfc132c909cad2"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXEnableMask3Level": {
+      "start": "0xd333a8",
+      "end": "0xd333cc",
+      "sha256": "8e570998c0c4f9c32349ad64cfb55bc346288d6a4e8d06c8b64507dadd8e5654"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXEnableMask4Level": {
+      "start": "0xd333cc",
+      "end": "0xd333f0",
+      "sha256": "912d1e87b43bcead4cc90cc2651aaafcb8a416df4a754e06294e619ed43f01ee"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDMXModeEnabled": {
+      "start": "0xd333f0",
+      "end": "0xd3344c",
+      "sha256": "84561e18b57c4d4cb7bc6bf9f0b2b149b811f700fb19ac867c25c544e4a822ab"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetDirtyFlags": {
+      "start": "0xd33614",
+      "end": "0xd33840",
+      "sha256": "556562f68bb4ce9fd9680d2720ea654b171874bd0707ce3306e223e08c0a3f98"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetErrorUpdateInterval": {
+      "start": "0xd3344c",
+      "end": "0xd334ac",
+      "sha256": "7d3b2c20eb000ff2b14cb70179339286248982fe00502defe4a36492569d4ea6"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetHalogenCleanActionSelector": {
+      "start": "0xd334ac",
+      "end": "0xd334d0",
+      "sha256": "70f2df0d17b1bf59c1c5a61cf626e5e13fa678bb3bb57db9b7f3c2014e64c0f6"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetHalogenCleanDuration": {
+      "start": "0xd334d0",
+      "end": "0xd33530",
+      "sha256": "46c71be5288eb3b43624bab64785d82e43f66ca6989fad835d7e614a508767ca"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetHalogenCleanTriggerGroup": {
+      "start": "0xd33530",
+      "end": "0xd33554",
+      "sha256": "70feb9b27e7fb6c18ab24434b9db44ca704e0fb1a9e3f6ef225bfc4a25c2c681"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetHalogenFadeOn": {
+      "start": "0xd33554",
+      "end": "0xd335b4",
+      "sha256": "382d0d14580446d5d2f8d35a66d36232b99f02665acede86dd31d87228a29192"
+    },
+    "CIS_TCBusArchitecturalDimmerUnit.TArchDimmerUnit.SetNominalLineVoltage": {
+      "start": "0xd335b4",
+      "end": "0xd33614",
+      "sha256": "99bbf7c7c61a0ac8b50d4a05cb50d4160f3f9ed778274a4919fce00268d926af"
+    },
+    "CIS_TCBusGOC2Unit.TGOC2Unit.GetLevelUnused": {
+      "start": "0xd2dde8",
+      "end": "0xd2de04",
+      "sha256": "2345f31bc2b66c90903ed4fab481c47ed0e5c5a90594111ac2ea72fd4fbbde9e"
+    },
+    "CIS_TCBusGOC2Unit.TGOC2Unit.InternalCreate": {
+      "start": "0xd2df08",
+      "end": "0xd2e304",
+      "sha256": "77fa4c41e0205e2e8b51dbd30db8ea37c61480028bd327eb3d4461cc12ae3778"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject": {
+      "start": "0xcb8068",
+      "end": "0xcb82b4",
+      "sha256": "c781eabff439fdd02b07ea57a61e7f8960f3e7b8e47003586579f832cc208a17"
+    },
+    "CIS_TCGateAttribute.TBooleanArrayCGateAttribute.AsArrayBoolean": {
+      "start": "0xf43604",
+      "end": "0xf4369c",
+      "sha256": "487f1e61901ec1dec1b350352daa544e88e9f28c408cfab7fc54ea710bce092d"
+    },
+    "CIS_TCommonCBus.RegisterEnumerations": {
+      "start": "0xf2401c",
+      "end": "0xf25130",
+      "sha256": "8c1aeae8aa61425b72a6ec5de34e9fb685977c8b1f52b553e5524883b69f7f27"
+    },
+    "CIS_TDIMARX.TDIMAR12.GetMaxChannels": {
+      "start": "0xda9300",
+      "end": "0xda9318",
+      "sha256": "d5e2322032941a9fe8d2ff3265d8c0899c202e1e5b4bd79f15dc752befece697"
+    },
+    "CIS_TDIMARX.TDIMAR3.GetMaxChannels": {
+      "start": "0xda9508",
+      "end": "0xda9520",
+      "sha256": "4ea6f9613498bf40753c4850a18c7ebc6f07f3c62d6cd9392ccfb88703abc681"
+    },
+    "CIS_TDIMARX.TDIMAR6.GetMaxChannels": {
+      "start": "0xda9404",
+      "end": "0xda941c",
+      "sha256": "595a10120c857be345693e56c0c960fca7fe329b3fbfd92efcde3b996fdbb72f"
+    },
+    "CIS_TDIMARXCGateAgent.FindTriggerControlGroupBySimpleAddress": {
+      "start": "0x1237270",
+      "end": "0x123741c",
+      "sha256": "f27166674fbbbb9ef2df3e7ca4771c919e5ea8c617981eb833b549757d8f597d"
+    },
+    "CIS_TDIMARXCGateAgent.FindTriggerControlLevelBySimpleAddress": {
+      "start": "0x123741c",
+      "end": "0x1237594",
+      "sha256": "b36c59ed8fab93157ea2ecc83b5c5697df5ecd9a3434130c0c736e7b66771f68"
+    },
+    "CIS_TDIMARXCGateAgent.LoadChannels": {
+      "start": "0x1238064",
+      "end": "0x1238b1c",
+      "sha256": "0571b857931db546833456da725a0002bf533196d7c41a7d93afb83a9a610dd3"
+    },
+    "CIS_TDIMARXCGateAgent.LoadDimmingCurves": {
+      "start": "0x1237b6c",
+      "end": "0x1238064",
+      "sha256": "9e09bdaf093153a299972c721a774964ec802d1d25f3003be0b6d4368271f5e7"
+    },
+    "CIS_TDIMARXCGateAgent.LoadErrorReporting": {
+      "start": "0x12393e8",
+      "end": "0x1239638",
+      "sha256": "8e82f62836632cfb77f647d5945391ca7a4af606ad32bc7cbf56c9298065fbfa"
+    },
+    "CIS_TDIMARXCGateAgent.LoadLogic": {
+      "start": "0x1238b1c",
+      "end": "0x1238d1c",
+      "sha256": "6be40cb6440de2fa93c183d6af682a5cd7a387028e9bf4d12a83958638b90fae"
+    },
+    "CIS_TDIMARXCGateAgent.LoadScenes": {
+      "start": "0x1238d1c",
+      "end": "0x1239108",
+      "sha256": "a4dcbaf4259895ade5d7228af4fffe361ee91dd5e02bbcad969a5b9dc8d9810b"
+    },
+    "CIS_TDIMARXCGateAgent.LoadSpecialScenes": {
+      "start": "0x1239220",
+      "end": "0x12393e8",
+      "sha256": "fa755d550c20b2d4dbc0b18273554565b14b82ed4d7a1b342e8cfcee1a3faccc"
+    },
+    "CIS_TDIMARXCGateAgent.LoadUnit": {
+      "start": "0x1237594",
+      "end": "0x1237b6c",
+      "sha256": "3369c96abf8b31ea0101b7ec4f2a648b6bddb7a1a7f93b1482738e627950b0cf"
+    },
+    "CIS_TDIMARXCGateAgent.PrepareScenesForUnit": {
+      "start": "0x1239108",
+      "end": "0x1239220",
+      "sha256": "9bd911c24aa7776f2eff2e2e4c2e6ae445555748bdba9ac33831ecb515fedfc1"
+    },
+    "CIS_TDIMARXCGateAgent.TDIMARXCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1239638",
+      "end": "0x1239694",
+      "sha256": "9df2da5bd6bb8b29204a55b993a393ff78d14fc5100e0531957b33cf128addcd"
+    },
+    "CIS_TDIMARXCGateAgent.TDIMARXCGateAgent.GetSpecialSceneCGateAttribute": {
+      "start": "0x123f084",
+      "end": "0x123f13c",
+      "sha256": "4095b036f21c1941074657e1df32d95ebf5579fa8c94f3527905ebc6e00353fd"
+    },
+    "CIS_TDIMARXCGateAgent.TDIMARXCGateAgent.InternalCreate": {
+      "start": "0x12333dc",
+      "end": "0x1235c00",
+      "sha256": "58d1c0f5bffab991b091903735cec60dde54b306179c34c75afe26046bfe9b89"
+    }
+  },
+  "literal_disclosure": {
+    "private_compiler_coordinates_omitted": 5,
+    "method_hashes_include_omitted_coordinates": true,
+    "all_unselected_method_literals_omitted": true
+  },
+  "rms_a_points": [
+    [
+      55,
+      25
+    ],
+    [
+      60,
+      29
+    ],
+    [
+      64,
+      33
+    ],
+    [
+      69,
+      36
+    ],
+    [
+      73,
+      41
+    ],
+    [
+      78,
+      44
+    ],
+    [
+      83,
+      48
+    ],
+    [
+      88,
+      52
+    ],
+    [
+      92,
+      56
+    ],
+    [
+      97,
+      60
+    ],
+    [
+      102,
+      64
+    ],
+    [
+      107,
+      68
+    ],
+    [
+      112,
+      73
+    ],
+    [
+      117,
+      76
+    ],
+    [
+      121,
+      81
+    ],
+    [
+      126,
+      84
+    ],
+    [
+      131,
+      88
+    ],
+    [
+      136,
+      93
+    ],
+    [
+      140,
+      96
+    ],
+    [
+      145,
+      101
+    ],
+    [
+      149,
+      104
+    ],
+    [
+      154,
+      108
+    ],
+    [
+      158,
+      111
+    ],
+    [
+      163,
+      115
+    ],
+    [
+      167,
+      119
+    ],
+    [
+      171,
+      123
+    ],
+    [
+      175,
+      126
+    ],
+    [
+      180,
+      129
+    ],
+    [
+      184,
+      133
+    ],
+    [
+      187,
+      136
+    ],
+    [
+      191,
+      139
+    ],
+    [
+      195,
+      143
+    ],
+    [
+      199,
+      145
+    ],
+    [
+      202,
+      148
+    ],
+    [
+      207,
+      153
+    ],
+    [
+      213,
+      159
+    ],
+    [
+      221,
+      166
+    ],
+    [
+      228,
+      176
+    ],
+    [
+      236,
+      185
+    ],
+    [
+      239,
+      190
+    ],
+    [
+      253,
+      230
+    ],
+    [
+      255,
+      255
+    ]
+  ],
+  "curves": [
+    "Fan Control",
+    "Linear (1:1)",
+    "Tungsten",
+    "Tungsten-Halogen",
+    "Neon",
+    "Square Law",
+    "S Curve",
+    "Linear Power",
+    "Switch",
+    "Dimming Curve A",
+    "Dimming Curve B"
+  ],
+  "ramps": [
+    "Instant",
+    "4 secs",
+    "8 secs",
+    "12 secs",
+    "20 secs",
+    "30 secs",
+    "40 secs",
+    "60 secs",
+    "90 secs",
+    "120 secs",
+    "180 secs",
+    "300 secs",
+    "420 secs",
+    "600 secs",
+    "900 secs",
+    "1020 secs"
+  ],
+  "limits": [
+    "Fresh snapshot projection; prior GUI/process object histories are not reconstructed.",
+    "Complete explicit consumed PP and existing native display/link objects are required.",
+    "128 sparse ordinary scenes; special SceneGroups remain unprepared after a fresh load.",
+    "Unit and Halogen special-scene selectors are distinct fresh references.",
+    "Native integer fields admit explicit 0..65535 only; unknown ramp ordinals refuse.",
+    "A scene-name prefix splitting a surrogate refuses until original UTF-8 conversion is proved.",
+    "No original generated-page comparison, vendor execution, programming or physical acceptance."
+  ]
+}

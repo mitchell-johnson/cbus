@@ -2884,6 +2884,9 @@ def _cgate(args):
     barcode_plan = None
     tweaker_plan = None
     tweaker_lifecycle_plan = None
+    if args.action == "unit" and args.remote_action == "edlt-parent-transaction":
+        from .edlt_parent_transaction_cli import preflight
+        preflight(args)
     if args.action == "conversion" and args.remote_action == "tweak":
         from .toolkit_tweaker_workflow import prepare
         tweaker_plan = prepare(args)
@@ -4312,6 +4315,9 @@ def run(args):
         if args.action == "global-plan":
             from .edlt_global_cli import offline
             return offline(args)
+        if args.action == "parent-transaction-plan":
+            from .edlt_parent_transaction_cli import preflight
+            preflight(args)
         identity = []
         values = _parameter_snapshot(args.file, _edlt_database_profile, identity=identity)
         if args.action == "enable-plan":

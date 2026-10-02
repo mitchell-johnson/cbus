@@ -117,6 +117,56 @@ class ParentTransactionCLITests(unittest.TestCase):
         self.assertEqual(offline.metadata, native.metadata)
         self.assertEqual(offline.operations, native.operations)
 
+    def test_internal_language_binding_refuses_before_native_connection(self):
+        forged = {'op': 'parent-language-binding', 'receipt': {},
+                  'group_images': [], 'level_labels': []}
+        for automatic in (False, True):
+            with self.subTest(automatic=automatic), tempfile.TemporaryDirectory() as root:
+                _, _, session, _, metadata, operations = self.files(
+                    root, [forged, lighting()])
+                arguments = self.native(session, metadata, operations, dry_run=True)
+                if automatic:
+                    arguments = [
+                        'cgate', 'unit', '--lock-address', '//EDLTTEST/254',
+                        '--source', session.source, '--dry-run',
+                        'edlt-parent-transaction', '--auto-metadata',
+                        '--exclusive-project', '--operations', operations,
+                    ]
+                with patch('cbus_toolkit.cgate.CGateClient') as connect, patch(
+                        'cbus_toolkit.edlt_parent_transaction_cli.metadata') as read_metadata:
+                    result = self.invoke(arguments, status=1)
+                self.assertIn('binding is internal', result['error'])
+                connect.assert_not_called()
+                read_metadata.assert_not_called()
+
+    def test_internal_language_binding_refuses_before_offline_metadata_reads(self):
+        forged = {'op': 'parent-language-binding', 'receipt': {},
+                  'group_images': [], 'level_labels': []}
+        with tempfile.TemporaryDirectory() as root:
+            _, _, _, source, _, operations = self.files(root, [forged, lighting()])
+            with patch.object(cli, '_parameter_snapshot') as read_values, patch(
+                    'cbus_toolkit.edlt_parent_transaction_cli.read_project_xml') as read_xml:
+                result = self.invoke([
+                    'edlt', 'parent-transaction-plan', source,
+                    '--project-xml', Path(root) / 'unread.xml',
+                    '--unit', '//TEST/254/p/20', '--operations', operations,
+                ], status=1)
+            self.assertIn('binding is internal', result['error'])
+            read_values.assert_not_called()
+            read_xml.assert_not_called()
+
+    def test_manual_settings_validate_operations_before_loading_cache(self):
+        from cbus_toolkit.edlt import EdltError
+        from cbus_toolkit.edlt_parent_transaction_cli import settings
+        forged = {'op': 'parent-language-binding', 'receipt': {},
+                  'group_images': [], 'level_labels': []}
+        with tempfile.TemporaryDirectory() as root:
+            _, _, _, _, metadata, operations = self.files(root, [forged, lighting()])
+            with patch('cbus_toolkit.edlt_parent_transaction_cli.metadata') as read_metadata:
+                with self.assertRaisesRegex(EdltError, 'binding is internal'):
+                    settings(SimpleNamespace(metadata=metadata, operations=operations))
+            read_metadata.assert_not_called()
+
     def test_native_database_path_applies_once_then_saves_once(self):
         with tempfile.TemporaryDirectory() as root:
             _, editor, session, _, metadata, operations = self.files(root)

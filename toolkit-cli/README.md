@@ -442,7 +442,8 @@ cbus-toolkit project document house.cbz --output house.html
 
 For a loaded cmqttd/C-Gate database, `cgate database-document --project //PROJECT`
 reads one fresh complete XML snapshot and creates the same exclusive HTML file.
-It includes supported light-level, WHAA audio and DALI gateway tables. This
+It includes supported light-level, WHAA audio, DALI gateway, multisensor,
+thermostat, wireless/remote-control and architectural/Bytecraft L1 tables. This
 documents saved programming; original live programming loading, complete-page
 byte/visual comparisons and printing remain open. Read the
 [snapshot workflow](docs/native-project-documentation.md).
@@ -1268,6 +1269,15 @@ operation-1 Reset raw state. It refuses missing/projected list objects. In one
 combined plan it projects ordered list, Reset and contiguous fresh-graph Blank
 state before the SceneManager resolver creates only its required Trigger
 application/group/action objects.
+
+Ordered `static-text-dialog` operations edit committed rows in the 64-slot
+static-label grid; both window and button close save those edits. Ordered
+`add-language-dialog` operations take explicit preferences and a complete
+selected-language list, retain surviving identities/custom names and repair
+the default marker when needed. They can share the same parent history with
+widgets and SceneManager. The service implements the required Network language
+objects. Read [static text and Language Add](docs/edlt-static-language-add.md)
+before applying; an uncertain save is never replayed.
 
 Time/Date widgets support standby and functional positions, with unit-wide
 date formats, time formats and leading zeroes:

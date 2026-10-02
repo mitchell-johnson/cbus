@@ -1,0 +1,278 @@
+{
+  "checks": {
+    "body_action_unused_spans_match_historical_proof": true,
+    "body_logic_group_separator": true,
+    "body_logic_group_zero": true,
+    "body_logic_or_true_min_else_max": true,
+    "body_use_logic_gate": true,
+    "exact_old_and_l1_unit_factory_partitions": true,
+    "l1_derives_from_bytecraft": true,
+    "l1_inherits_33_scenes": true,
+    "l1_inherits_twelve_channels": true,
+    "l1_init_add_logic_group": true,
+    "l1_init_channels_for_logic_attributes": true,
+    "l1_init_parent_first": true,
+    "l1_logic_vmt_override": true,
+    "l1_one_logic_group": true,
+    "logic_attribute_pp_literal_and_offset": true,
+    "logic_group_pp_literal_and_offset": true,
+    "logic_or_bit7_normalized": true,
+    "logic_or_setter": true,
+    "new_loader_parent_first": true,
+    "old_logic_null": true,
+    "output_logic_labels": true,
+    "output_used_if_any_attribute": true,
+    "use_logic_bit0_normalized": true,
+    "use_logic_setter": true
+  },
+  "format": "cbus-project-documentor-bytecraft-l1-static-v1",
+  "logic_attribute_count": 12,
+  "logic_group_count": 1,
+  "methods": {
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.ActionSelectorUse": {
+      "end": "0x1014408",
+      "literals": [
+        "<li />Advanced Trigger Scene ",
+        "<li />Trigger Scene "
+      ],
+      "resources": [],
+      "sha256": "21b6d6491bd811b64d4d0042773e361bc15afac596ed4c73bd43182bff60a0e4",
+      "start": "0x1014218"
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.DocumentHTML": {
+      "end": "0x10141dc",
+      "literals": [
+        "C-Bus Lock Enable Group: ",
+        "<br />",
+        "DMX Enable Group: ",
+        "<br />",
+        "Control Failure Scene: Enabled<br />",
+        "Control Failure Scene Ramp Rate: ",
+        "<br />",
+        "Control Failure Scene: Disabled<br />",
+        "<br />",
+        "<table border=\"1\">",
+        "<tr><th>Channel</th><th>Groups</th><th>Logic Function</th><th>Curve</th><th>Min</th><th>Max</th>",
+        "<th>C-Bus Lock</th>",
+        "<th>Max RMS Voltage</th>",
+        "<th>DMX</th><th>Take|Update</th><th>C-Bus Fade</th><th>DMX Fade</th>",
+        "<th>Restore Level</th>",
+        "</tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        ", ",
+        "</td>",
+        "<td>Min</td>",
+        "<td>Max</td>",
+        "<td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "%</td>",
+        "<td>Yes</td>",
+        "<td>No</td>",
+        "<td>LINE</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td><td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "<Unused>",
+        "</td>",
+        "<td>",
+        "</td><td>",
+        "</td><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>Update</td>",
+        "<td>Take</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "Scenes: <br />",
+        "<table border=\"1\"",
+        "<tr><th>Scene</th><th>Scene Type</th><th>Trigger</th><th>Scene On</th><th>Scene Off</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>Advanced</td>",
+        "<td>",
+        "</td>",
+        "<td>Basic</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Group</th><th>Level</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Group</th><th>Level</th><th>Ramp Rate</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "%</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "</tr>",
+        "</table>"
+      ],
+      "resources": [],
+      "sha256": "ac566126732adc7378c318c1f00f4e196c95628502ba18b7ce3f1d2412b65e96",
+      "start": "0x1012ab8"
+    },
+    "CIS_TBytecraftDimmerDocumentor.TBytecraftDimmerDocumentor.IsChannelUnused": {
+      "end": "0x1014218",
+      "literals": [],
+      "resources": [],
+      "sha256": "e525010cd83116d1200accec1869187d903931e9f29561083035ef1ed6374600",
+      "start": "0x10141dc"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.DescribeOutputGroupDependencyAdvanced": {
+      "end": "0xd3a0c0",
+      "literals": [
+        "|",
+        "|",
+        "|"
+      ],
+      "resources": [],
+      "sha256": "64ed1f048b3c3c07299dbcf4b386d5c3f6ddc111e80d4be7d1785cdd99acc1b2",
+      "start": "0xd39ea0"
+    },
+    "CIS_TCBusBytecraftDimmerUnit.TBytecraftUnit.GetLogicGroups": {
+      "end": "0xd39a70",
+      "literals": [],
+      "resources": [],
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4",
+      "start": "0xd39a58"
+    },
+    "CIS_TCBusGOCUnit.TGOCLogicAttribute.SetLogicOR": {
+      "end": "0xd20a08",
+      "literals": [],
+      "resources": [],
+      "sha256": "18341531518765089ac2f44f94846c96600534e9c7dd8e1a5c7a7a55d4ee6f80",
+      "start": "0xd209ac"
+    },
+    "CIS_TCBusGOCUnit.TGOCLogicAttribute.SetUseLogic": {
+      "end": "0xd20a64",
+      "literals": [],
+      "resources": [],
+      "sha256": "4ca0a48d4c109558b715b5c673cb82608ae86220f35a02da667f6401aff661b5",
+      "start": "0xd20a08"
+    },
+    "CIS_TCBusGOCUnit.TGOCLogicGroup.InternalCreate": {
+      "end": "0xd20ecc",
+      "literals": [
+        "LogicGroup",
+        "Group",
+        "LightLevel",
+        "LogicLevelStoreEnable",
+        "LogicAttributes"
+      ],
+      "resources": [],
+      "sha256": "e3e37e3baa718a17e60eac781ffbc6abab75540a2f6a97ad3657f82aebc1a4d9",
+      "start": "0xd20d54"
+    },
+    "CIS_TDIMPR12L1.TDIMPR12L1.GetLogicGroups": {
+      "end": "0x10148b0",
+      "literals": [],
+      "resources": [],
+      "sha256": "df33ddd1b5bfb2593782223a8b1d980eeaddef8e6d52b79f8731423047f3b154",
+      "start": "0x1014894"
+    },
+    "CIS_TDIMPR12L1.TDIMPR12L1.GetMaxLogicGroups": {
+      "end": "0x10148c8",
+      "literals": [],
+      "resources": [],
+      "sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4",
+      "start": "0x10148b0"
+    },
+    "CIS_TDIMPR12L1.TDIMPR12L1.Init": {
+      "end": "0x1014988",
+      "literals": [],
+      "resources": [],
+      "sha256": "1ba525fa85fc5ca6f34bfaf476f3dd0e1d878381bb750a3ff19a27a744cc5be6",
+      "start": "0x1014920"
+    },
+    "CIS_TDIMPR12L1CGateAgent.TDIMPR12L1CGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1248d20",
+      "literals": [
+        " ",
+        " ",
+        " "
+      ],
+      "resources": [],
+      "sha256": "e30f9be40dd489f0ea6af462f3e3ccd2ae6df494ec16e9d1e66e95f63fb30496",
+      "start": "0x1248ad4"
+    },
+    "CIS_TDIMPR12L1CGateAgent.TDIMPR12L1CGateAgent.InternalCreate": {
+      "end": "0x1248ad4",
+      "literals": [
+        "LogicGroupAddress",
+        "LogicAttributes"
+      ],
+      "resources": [],
+      "sha256": "7d517823facb2cf5e583353c2f78b7ef65e05a9d3986103794cad42f37301a90",
+      "start": "0x1248a18"
+    }
+  },
+  "original_generated_page_comparison": "not_obtained",
+  "original_instructions_executed": 0,
+  "sources": {
+    "CBusToolkit.exe": {
+      "bytes": 20518992,
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab"
+    },
+    "CBusToolkit.map": {
+      "bytes": 19819281,
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    }
+  },
+  "unit_factory_profiles": [
+    [
+      "DIMPR12",
+      "CIS_TDIMPR12..TDIMPR12",
+      "0",
+      "1.9.02"
+    ],
+    [
+      "DIMPR12",
+      "CIS_TDIMPR12L1..TDIMPR12L1",
+      "1.9.03",
+      "9"
+    ]
+  ]
+}

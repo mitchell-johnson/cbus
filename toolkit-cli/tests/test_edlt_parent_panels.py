@@ -415,12 +415,14 @@ class ExtendedParentPanelTests(unittest.TestCase):
         self.assertEqual(document['format'],
                          'cbus-edlt-parent-panels-evidence-v1')
         boundary = document['implemented_boundary']
+        # This retained panel receipt predates the later graph dialogues.
         self.assertEqual(
             boundary['widget_operations'] + boundary['settings_operations'],
             [name for name in SUPPORTED_OPERATION_NAMES
             if name not in (
                 'applications', 'corridor', 'blank', 'reset',
-                'scene-manager')])
+                'scene-manager', 'static-text-dialog',
+                'add-language-dialog')])
         for row in document['accepted_panel_fixtures']:
             self.assertEqual(
                 hashlib.sha256((ROOT / row['path']).read_bytes()).hexdigest(),

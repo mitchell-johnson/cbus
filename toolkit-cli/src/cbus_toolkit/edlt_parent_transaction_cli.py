@@ -127,11 +127,22 @@ def _read_operations(path, *, limit=256 * 1024):
 
 
 def settings(args):
-    from .edlt_parent_transaction import normalize_operations
+    normalized = operations(args, allow_add_dialog=False)
     return {
         'metadata': metadata(args.metadata),
-        'operations': normalize_operations(_read_operations(args.operations)),
+        'operations': normalized,
     }
+
+
+def preflight(args):
+    """Reject caller-injected internal bindings before other inputs or I/O."""
+    from .edlt import EdltError
+
+    document = _read_operations(args.operations)
+    if isinstance(document, list) and any(
+            isinstance(row, dict) and row.get('op') == 'parent-language-binding'
+            for row in document):
+        raise EdltError('Language binding is internal; use add-language-dialog')
 
 
 def metadata(path, *, limit=16 * 1024 * 1024):
@@ -167,11 +178,11 @@ def metadata(path, *, limit=16 * 1024 * 1024):
     return LifecycleCache.from_dict(document)
 
 
-def operations(args):
+def operations(args, *, allow_add_dialog=True):
     """Read the automatic-metadata operation document, admitting add-dialog."""
     from .edlt_parent_transaction import normalize_operations
     return normalize_operations(_read_operations(args.operations),
-                                allow_add_dialog=True)
+                                allow_add_dialog=allow_add_dialog)
 
 
 def read_project_xml(path, *, limit=16 * 1024 * 1024):

@@ -1,0 +1,241 @@
+{
+  "format": "cbus-edlt-static-language-add-static-v1",
+  "original_inputs": {
+    "exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "original_instructions_executed": false,
+  "methods": [
+    {
+      "symbol": "CIS_TfrmKEYGL5.TfrmKEYGL5.AddLanguage",
+      "start": "0x11c7854",
+      "end": "0x11c7a70",
+      "bytes": 540,
+      "bytes_sha256": "0532f80d2e500e260cec450c9352207069f9a3b7a1dcc20ac984d4c3a0cb3efa"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.AddLanguage",
+      "start": "0xd8d5c4",
+      "end": "0xd8d76c",
+      "bytes": 424,
+      "bytes_sha256": "0699cff5ee0bb80c6253c06b16ac2e28a4834c490fc7d0b21a1390e611a11735"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.EditNetworkLanguageTypes",
+      "start": "0xd8cf40",
+      "end": "0xd8d2b4",
+      "bytes": 884,
+      "bytes_sha256": "93c25ee6375b130b4150beb2420f6fe222377ca79ee7062256ed9e675075dc1e"
+    },
+    {
+      "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.AgentSave",
+      "start": "0x120fbc4",
+      "end": "0x120fd48",
+      "bytes": 388,
+      "bytes_sha256": "69bb75b59719f0716045dab674511906bc96f5ccbe6c22fa9a31d31850182c9b"
+    },
+    {
+      "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.CreateNetworkLanguageType",
+      "start": "0x120fd9c",
+      "end": "0x120fec0",
+      "bytes": 292,
+      "bytes_sha256": "caab39122c583e0e70b094ba8b60dd5c2e4e323224ae0f38d1d1696d3a3b2222"
+    },
+    {
+      "symbol": "CIS_TNetworkLanguageType.TNetworkLanguageType.InternalCreate",
+      "start": "0x857d94",
+      "end": "0x857e54",
+      "bytes": 192,
+      "bytes_sha256": "869a1ba14bceaebd76fbdf9ec7f3ebec2574c71734e90632ac3be42d5ac04ad1"
+    },
+    {
+      "symbol": "CIS_TLanguageType.InitialiseLanguageTypeFactory",
+      "start": "0x852ba0",
+      "end": "0x853d24",
+      "bytes": 4484,
+      "bytes_sha256": "e615bcd62cdd3e6172dceddaa840bded0a5e19286b7a5d97d3bdc79464036c78"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.FinaliseLanguages",
+      "start": "0xf2b9cc",
+      "end": "0xf2bc60",
+      "bytes": 660,
+      "bytes_sha256": "629eb334017a5bac4ed327cd5ec6fbd92824914f3c3ec089e66727eea7d4d764"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.InitialiseLanguages",
+      "start": "0xf2b864",
+      "end": "0xf2b9cc",
+      "bytes": 360,
+      "bytes_sha256": "5830d42675b9561e8c93a52f523afcaa03ae6ebd328527359f568119803ea3e3"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.SetLanguageTypeDefault",
+      "start": "0xf2b23c",
+      "end": "0xf2b260",
+      "bytes": 36,
+      "bytes_sha256": "92ea391d15b4e25bc775ef3acfaa55e43a4e4c50113e720918481155857410f7"
+    },
+    {
+      "symbol": "CIS_TCommonCBus.TCBusNetwork.GetLanguageTypeDefault",
+      "start": "0xf2b218",
+      "end": "0xf2b23c",
+      "bytes": 36,
+      "bytes_sha256": "d0c75a6c7b943ade0436d88d9d56fa22a867bd5f7f123b98c4d71affd70440ab"
+    },
+    {
+      "symbol": "CIS_TfrmKEYGL5.IsDefaultLanguageValid",
+      "start": "0x11c77e4",
+      "end": "0x11c7854",
+      "bytes": 112,
+      "bytes_sha256": "50eb33a2753b1c22da0f1a9f418fe0479d56a8130fd4b96108fa4786f2e759a7"
+    },
+    {
+      "symbol": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.HandleCanUnselectItem",
+      "start": "0xd8d2b4",
+      "end": "0xd8d2e8",
+      "bytes": 52,
+      "bytes_sha256": "41e7f41b4a42f9c26139c8a909a9bf1893023a9f547cfdf2c4f2b320dc9ac8fd"
+    },
+    {
+      "symbol": "CIS_TfrmFlashObjectListSelect.TfrmFlashObjectListSelect.Execute",
+      "start": "0xd6fef4",
+      "end": "0xd7018c",
+      "bytes": 664,
+      "bytes_sha256": "ca1b00b08f7bc51546d9f6256b9a01300d2bbb50e945e02b5dad221fe7ba9117"
+    },
+    {
+      "symbol": "CIS_TfrmFlashObjectListSelect.TfrmFlashObjectListSelect.SelectIndex",
+      "start": "0xd703d8",
+      "end": "0xd7046c",
+      "bytes": 148,
+      "bytes_sha256": "b0879bc0f4b7ecc7420361f3c02cd8e7bb5f313a63f906129d06a7e4ebdf8554"
+    },
+    {
+      "symbol": "CIS_TfrmFlashObjectListSelect.TfrmFlashObjectListSelect.UnselectIndex",
+      "start": "0xd7046c",
+      "end": "0xd70500",
+      "bytes": 148,
+      "bytes_sha256": "e05f085eaec024bd74cdc79c090cd777ce168eccab88ceb0edb7556ac8049b9e"
+    },
+    {
+      "symbol": "CIS_Handles.TFlashCollectionVariable.SaveToCollection",
+      "start": "0x8502dc",
+      "end": "0x85032c",
+      "bytes": 80,
+      "bytes_sha256": "9031f35ed5d370a886b1b0377db103c553bb8715060b68ea40219029a4c107d9"
+    },
+    {
+      "symbol": "CIS_TNetworkLanguageTypeCGateAgent.TNetworkLanguageTypeCGateAgent.AgentLoad",
+      "start": "0x120fba0",
+      "end": "0x120fbc4",
+      "bytes": 36,
+      "bytes_sha256": "1d1f84f6837d2ead4ab66fd9febd4c3c449ef5b9e3a78a82281cce58e82445ea"
+    },
+    {
+      "symbol": "CIS_TLanguageType.Add",
+      "start": "0x8541ec",
+      "end": "0x854260",
+      "bytes": 116,
+      "bytes_sha256": "f24056b4ae305e90410b7a61d921f384162bc070507f8e34859c237f2b68dcf8"
+    },
+    {
+      "symbol": "CIS_TNetworkLanguageType.TNetworkLanguageType.GetTagValue",
+      "start": "0x857e78",
+      "end": "0x857e9c",
+      "bytes": 36,
+      "bytes_sha256": "cfd031e3bd21e3c0c3dad037bcee483bf3a823c1de257247b0ac5feae37a0a28"
+    },
+    {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CommandDBGetExists",
+      "start": "0xcad068",
+      "end": "0xcad208",
+      "bytes": 416,
+      "bytes_sha256": "7f4831e0f913f5a7c104f766fcd0354ae58c21363a9700c4edae35be6dcb1151"
+    },
+    {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CommandDBAdd",
+      "start": "0xcad208",
+      "end": "0xcad3a8",
+      "bytes": 416,
+      "bytes_sha256": "26a750e37de1384c27f5145a1fdbeb999cb81bd5a23b28545f7abd5ec9cb8caf"
+    },
+    {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CGateAdd",
+      "start": "0xcac698",
+      "end": "0xcac8c8",
+      "bytes": 560,
+      "bytes_sha256": "01d46a10ced372f6188aadc40182d4bc2c7f8ad22b8f804a39be8b36a02a2af9"
+    },
+    {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.UpdateCGateValue",
+      "start": "0xcac504",
+      "end": "0xcac614",
+      "bytes": 272,
+      "bytes_sha256": "2ee8f07f61c598bf53a43eb1a8f44cb857094519d52069b877fe770d4123211a"
+    },
+    {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.CommandDBSet",
+      "start": "0xcac928",
+      "end": "0xcacaf0",
+      "bytes": 456,
+      "bytes_sha256": "6b426870691e983d78a22c72c06974511c65c0cfbf8a42cb46841f02a394bbaf"
+    },
+    {
+      "symbol": "SysUtils.StrToIntDef",
+      "start": "0x619bac",
+      "bytes_sha256": "05487ae3767ef328de23df0b3af6dfba56e95660a3de9510e11d417dcb74343f"
+    },
+    {
+      "symbol": "System.@ValLong",
+      "start": "0x605938",
+      "bytes_sha256": "69d551db426b3c45fa134d5d7a269daa68b12cda0a2c5745dd95d3d1eaca4c64"
+    }
+  ],
+  "rules": {
+    "static_grid": {
+      "rows": 64,
+      "name_utf16_units": 64,
+      "save_on": [
+        "button-close",
+        "window-close"
+      ],
+      "accepted_result_checked": false,
+      "allocation": false,
+      "setter": "first63UTF8bytes, stop after firstNUL, appendNUL; padding64; splitUTF8prefix possible"
+    },
+    "native_languages": {
+      "factory_count": 69,
+      "nonzero_choices": 68,
+      "selected_min": 1,
+      "selected_max": 8,
+      "selected_sorted": false,
+      "available_gui_sorted": true,
+      "gui_collation_verified": false,
+      "english1_can_unselect": false,
+      "initial_import_before_preferences": true,
+      "initial_cache_cleared": false,
+      "default_marker": "ID0; later initial marker wins; retainlast markerOID onfinalise",
+      "default_repair": "first selected factoryobject; not smallestID/name",
+      "existing_real_rows": "keep all matchingIDs/customTagValue/OIDs",
+      "new_rows": "append selectedcache order with factory descriptions",
+      "original_network_pre_finalise_storage_save_load": true,
+      "original_per_row_project_saves_reproduced": false,
+      "default_marker_integer_grammar": "leadingASCII spaces; signed decimali32 or $/x/X/0x/0X hexadecimalu32 reinterpreted i32; invalid\u21920; noUnicode digits/underscore/trailingspaces"
+    }
+  },
+  "owned_composition": {
+    "one_parent_pp_save": true,
+    "one_target_project_save": true,
+    "native_response_acceptance": false,
+    "new_collection_position": "ownedDBADD appendsNetworkchild; original serializerpositionunaccepted",
+    "comparison_ignores_whitespace_only_text": true
+  },
+  "boundaries": [
+    "No GUI/dialog/manual/native or physical acceptance",
+    "Explicit preferences and fresh native selected-list cache; not inferred Toolkit retained cache",
+    "Malformed loaded UTF8 evaluation refused; uncommitted gridcell GUI behavior unaccepted",
+    "Standalone collection DBSETXML not invented; native command wrappers composed",
+    "Original perrow saves and callbacksave/load ordering not reproduced by one-save parenttransaction"
+  ]
+}

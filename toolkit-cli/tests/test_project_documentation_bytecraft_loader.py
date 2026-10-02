@@ -74,15 +74,15 @@ def test_old_registration_admitted(firmware):
     assert len(decode_bytecraft_scenes(unit(firmware=firmware))) == 33
 
 
-@pytest.mark.parametrize('firmware', ['', '1.9.03', '9', '1.9.x', None, '2147483648'])
-def test_l1_missing_and_malformed_firmware_refused(firmware):
-    with pytest.raises(ValueError, match='old DIMPR12'):
+@pytest.mark.parametrize('firmware', ['', '9.0.1', '1.9.x', None, '2147483648'])
+def test_missing_and_malformed_firmware_refused(firmware):
+    with pytest.raises(ValueError, match='DIMPR12 class/agent'):
         decode_bytecraft_scenes(unit(firmware=firmware))
 
 
 @pytest.mark.parametrize('kind', ['DIMPR12A', 'DIMPR12L1', 'dimpr12'])
 def test_other_registration_refused(kind):
-    with pytest.raises(ValueError, match='old DIMPR12'):
+    with pytest.raises(ValueError, match='DIMPR12 class/agent'):
         decode_bytecraft_scenes(unit(kind=kind))
 
 

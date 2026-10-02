@@ -3366,6 +3366,17 @@ impl Service {
                 "typed-network-with-unit"
             ]);
             capabilities["database_document_network_units"] = serde_json::Value::Bool(true);
+            capabilities["database_network_languages"] = serde_json::Value::Bool(true);
+            capabilities["database_network_language_operations"] = serde_json::json!([
+                "DBADD Languages",
+                "DBADD Language",
+                "DBGET",
+                "DBSET ID",
+                "DBSET TagValue",
+                "DBDELETE",
+                "complete Network XML"
+            ]);
+            capabilities["database_network_language_physical_io"] = serde_json::Value::Bool(false);
             capabilities["database_document_configured_network"] =
                 serde_json::Value::String("same-address-same-interface-binding".to_string());
             capabilities["database_document_physical_io"] = serde_json::Value::Bool(false);
@@ -18029,6 +18040,45 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
             let record = crate::TagNetwork::parse(&document, Some(net), network_index as u64 + 1)
                 .map_err(io::Error::other)?;
             tag_networks.insert(field(node, "Address"), record);
+        } else {
+            // Legacy startup XML has its own Unit admission. A language
+            // collection must not re-admit unrelated incomplete Units or
+            // require an Interface absent from an otherwise valid archive.
+            let mut collections = node
+                .children()
+                .filter(|child| child.has_tag_name("Languages"));
+            if let Some(collection) = collections.next() {
+                if collections.next().is_some() {
+                    return Err(io::Error::other("Duplicate Network Languages collection"));
+                }
+                let document = crate::native_archive::with_generated_oids(collection, xml)
+                    .map_err(io::Error::other)?;
+                let parsed = roxmltree::Document::parse(&document).map_err(io::Error::other)?;
+                let language_xml =
+                    crate::tag_network::parse_network_languages(parsed.root_element())
+                        .map_err(io::Error::other)?;
+                let extras = crate::DbXmlExtras {
+                    children: vec![language_xml],
+                    ..Default::default()
+                };
+                let mut oids = Vec::new();
+                crate::db_xml_language_oids(&extras, &mut oids);
+                for (oid, _) in oids {
+                    let declared_count = p
+                        .descendants()
+                        .filter(|candidate| {
+                            candidate.has_tag_name("OID") && candidate.text() == Some(oid.as_str())
+                                || candidate.attribute("oid") == Some(oid.as_str())
+                        })
+                        .count();
+                    if declared_count > 1 || !model.known_oids.insert(oid) {
+                        return Err(io::Error::other("Conflicting Network Language OID"));
+                    }
+                }
+                model
+                    .db_xml_extras
+                    .insert(Server::unit_document_key(&name, &network_oid), extras);
+            }
         }
         networks.insert(
             net,
@@ -18240,6 +18290,130 @@ mod application_description_state_tests {
                 "[blank] 401 Bad object or device ID: Object is null\n"
             );
             assert_eq!(restored.handle("[xml] DBGETXML //DESC").lines, xml);
+        }
+    }
+}
+
+#[cfg(test)]
+mod network_language_state_tests {
+    use super::*;
+
+    #[test]
+    fn legacy_language_import_preserves_incomplete_units_without_interface_or_network_number() {
+        let xml = "<Project><TagName>OLDLANG</TagName><Network><Address>254</Address><TagName>Local</TagName><OID>11000000-0000-4000-8000-000000000011</OID><Unit><Address>20</Address><OID>11000000-0000-4000-8000-000000000012</OID><PP Name=\"Kept\" Value=\"raw value\"/></Unit><Languages><OID>11000000-0000-4000-8000-000000000013</OID><Language><OID>11000000-0000-4000-8000-000000000014</OID><ID>-1</ID><TagValue>Unknown retained language</TagValue></Language></Languages></Network></Project>";
+        let (mut model, project, network) = import_project(xml, None).unwrap();
+        assert_eq!((&*project, network), ("OLDLANG", 254));
+        seed_project_xml_metadata(&mut model, xml, &project).unwrap();
+        let before = serde_json::to_value(&model.projects[&project].networks[&254].units).unwrap();
+        let oid = "11000000-0000-4000-8000-000000000014";
+        assert_eq!(
+            model.handle(&format!("[read] DBGET !{oid}/ID")).final_text,
+            format!("342 !{oid}/ID=-1")
+        );
+        // A language read must not materialize a tag overlay or modify the
+        // legacy startup model. The first confirmed mutation owns its overlay.
+        assert!(model.projects[&project].tag_networks.is_empty());
+        assert_eq!(
+            model
+                .handle(&format!("[set] DBSET !{oid}/TagValue Updated unknown"))
+                .status,
+            200
+        );
+        assert_eq!(
+            serde_json::to_value(&model.projects[&project].networks[&254].units).unwrap(),
+            before
+        );
+        assert_eq!(model.handle("[save] PROJECT SAVE OLDLANG").status, 200);
+        let output = model.handle("[xml] DBGETXML //OLDLANG").lines;
+        let database: Database =
+            serde_json::from_slice(&serde_json::to_vec(&Database::from_server(&model)).unwrap())
+                .unwrap();
+        let mut restored = Server::new(AccessLevel::Program);
+        database.restore(&mut restored).unwrap();
+        assert_eq!(restored.handle("[use] PROJECT USE OLDLANG").status, 200);
+        assert_eq!(restored.handle("[xml] DBGETXML //OLDLANG").lines, output);
+        assert_eq!(
+            restored
+                .handle(&format!("[read] DBGET !{oid}/TagValue"))
+                .final_text,
+            format!("342 !{oid}/TagValue=Updated unknown")
+        );
+        for invalid in [
+            xml.replace("<ID>-1</ID>", "<ID>2147483648</ID>"),
+            xml.replace("000000000014", "000000000012"),
+        ] {
+            assert!(import_project(&invalid, None).is_err());
+        }
+    }
+
+    #[test]
+    fn network_languages_survive_durable_restart_and_saved_reload() {
+        let mut original = Server::new(AccessLevel::Program);
+        for command in [
+            "PROJECT NEW LANG",
+            "DBCREATENET 254 Local Cni nowhere",
+            "DBADDSAFE //LANG/254 Unit 20 Kept",
+        ] {
+            assert!(original.handle(&format!("[seed] {command}")).status < 400);
+        }
+        let oid = original.projects["LANG"].networks[&254].oid.clone();
+        let before = original.projects["LANG"].networks[&254].clone();
+        let collection = original.handle(&format!("[add] DBADD !{oid} Languages"));
+        assert_eq!(collection.status, 301, "{collection:?}");
+        let collection_oid = collection.final_text.strip_prefix("301 OID=").unwrap();
+        let language = original.handle(&format!("[add] DBADD !{collection_oid} Language"));
+        assert_eq!(language.status, 301, "{language:?}");
+        let language_oid = language.final_text.strip_prefix("301 OID=").unwrap();
+        for command in [
+            format!("DBSET !{language_oid}/ID 1"),
+            format!("DBSET !{language_oid}/TagValue English"),
+            "PROJECT SAVE LANG".to_string(),
+        ] {
+            assert_eq!(original.handle(&format!("[set] {command}")).status, 200);
+        }
+        let after = &original.projects["LANG"].networks[&254];
+        assert_eq!(after.oid, before.oid);
+        assert_eq!(after.interface_oid, before.interface_oid);
+        assert_eq!(after.state, before.state);
+        assert_eq!(after.retries, before.retries);
+        assert_eq!(
+            serde_json::to_value(&after.units).unwrap(),
+            serde_json::to_value(&before.units).unwrap()
+        );
+        assert_eq!(
+            serde_json::to_value(&after.physical).unwrap(),
+            serde_json::to_value(&before.physical).unwrap()
+        );
+        assert_eq!(after.levels, before.levels);
+        let xml = original.handle("[xml] DBGETXML //LANG").lines;
+        let encoded = serde_json::to_vec(&Database::from_server(&original)).unwrap();
+        let database: Database = serde_json::from_slice(&encoded).unwrap();
+        let mut restored = Server::new(AccessLevel::Program);
+        database.restore(&mut restored).unwrap();
+        assert_eq!(restored.handle("[use] PROJECT USE LANG").status, 200);
+        for boundary in [false, true] {
+            if boundary {
+                for command in [
+                    "PROJECT CLOSE LANG",
+                    "PROJECT LOAD LANG",
+                    "PROJECT USE LANG",
+                ] {
+                    assert_eq!(restored.handle(&format!("[project] {command}")).status, 200);
+                }
+            }
+            assert_eq!(restored.handle("[xml] DBGETXML //LANG").lines, xml);
+            assert_eq!(
+                restored
+                    .handle(&format!("[id] DBGET !{language_oid}/ID"))
+                    .final_text,
+                format!("342 !{language_oid}/ID=1")
+            );
+            assert_eq!(
+                restored
+                    .handle(&format!("[name] DBGET !{language_oid}/TagValue"))
+                    .final_text,
+                format!("342 !{language_oid}/TagValue=English")
+            );
         }
     }
 }

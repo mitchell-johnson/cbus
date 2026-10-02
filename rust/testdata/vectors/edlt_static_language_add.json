@@ -1,0 +1,16 @@
+{
+  "format":"cbus-edlt-static-language-add-v1",
+  "source_execution":false,
+  "static_rows":[
+    {"text":"Māori","hex_prefix":"4dc4816f726900"},
+    {"text":"A\u0000B","hex_prefix":"410000"},
+    {"text":"  ","hex_prefix":"202000"},
+    {"text":"","hex_prefix":"00"}
+  ],
+  "language_initial_rows":[{"id":0,"tag_value":"8","oid":"default"},{"id":1,"tag_value":"local English","oid":"english"},{"id":8,"tag_value":"local NZ","oid":"nz"}],
+  "selected_ids":[74,1,80],
+  "final_default":74,
+  "final_rows":[{"id":0,"tag_value":"74","oid":"default"},{"id":1,"tag_value":"local English","oid":"english"},{"id":74,"tag_value":"French","oid":null},{"id":80,"tag_value":"German","oid":null}],
+  "out_result":"1",
+  "cancel_out_result":"0"
+}

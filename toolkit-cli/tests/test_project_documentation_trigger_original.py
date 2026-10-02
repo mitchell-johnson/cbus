@@ -39,7 +39,10 @@ def test_trigger_wrapper_matches_original_instruction_capture(monkeypatch, index
     model = doc.ProjectModel("SYNTHETIC", [network])
     actions = []
 
-    def action(unit, _documentor, application_number, group_number, address, value):
+    def action(unit, _documentor, application_number, group_number, address, value, *, network=None):
+        # New leaf projections receive the selected network explicitly.  The
+        # historical capture still supplies the same leaf strings and traces.
+        assert network is model.networks[0]
         assert (application_number, group_number) == (202, case["group"])
         actions.append({"unit": unit.address, "address": address, "value": value})
         return usage.Usage(case["action_html"].get(f"{address}/{unit.address}", ""))

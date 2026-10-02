@@ -40,7 +40,7 @@ from .edlt_dltp_index import DltpIndex
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS, _ACTIVATION_PARAMETERS,
-    _candidate_widget, normalize_operations,
+    _candidate_widget, normalize_operations, _NativeLanguageBinding,
 )
 from .native import NativeDatabase, NativeProjects, _project
 from .native_thermostat_schedule import _project_shape, _shape
@@ -296,7 +296,7 @@ def _tag_images(group, default_language, dltp_index=None):
     return tuple(row[2] for row in labels), True
 
 
-def _snapshot(text, unit_path, editor, *, dltp_index=None):
+def _snapshot(text, unit_path, editor, *, dltp_index=None, _language_default=None):
     if dltp_index is not None and type(dltp_index) is not DltpIndex:
         raise ValueError('A DLTP index must come from load_dltp_index')
     unit_path, project_name, network_address, unit_address = _unit_path(unit_path)
@@ -320,7 +320,8 @@ def _snapshot(text, unit_path, editor, *, dltp_index=None):
             message='Native unit is not KEYGL5 / 5055EDL firmware 5.5.00')
     unit_oid = _oid(_field(unit, 'OID'))
     values, raw_values = _pp_values(unit, editor)
-    default_language = _default_language(network)
+    default_language = (_default_language(network) if _language_default is None
+                        else _language_default)
 
     applications = []
     app_addresses, identities = set(), {unit_oid}
@@ -609,15 +610,17 @@ class NativeEdltParentPlan:
     display_preferences: EdltDisplayPreferences | None = None
     add_dialogs: tuple = ()
     resolved_operations: tuple | None = None
+    language_history: str | None = None
 
     @property
     def mutation_required(self):
-        return bool(self.creations or self.parent_plan.changes)
+        return bool(self.creations or self.parent_plan.changes
+                    or (self.language_history and json.loads(self.language_history)['mutations']))
 
     def semantic_source(self):
         return (self.snapshot, self.operations, self.cache,
                 self.creations, self.scene_metadata, self.display_preferences,
-                self.add_dialogs,
+                self.add_dialogs, self.language_history,
                 tuple(sorted(self.parent_plan.expected.items())),
                 tuple(sorted(self.parent_plan.changes.items())))
 
@@ -685,6 +688,8 @@ class NativeEdltParentPlan:
                 else self.scene_metadata.as_dict()),
             'automatic_ordered_application_cache': ordered_cache,
             'add_dialogs': [row.as_dict() for row in self.add_dialogs],
+            'language_dialog_history': (None if self.language_history is None
+                                        else json.loads(self.language_history)),
             'resolved_operations': (
                 None if self.resolved_operations is None
                 else json.loads(_json(list(self.resolved_operations)))),
@@ -814,7 +819,7 @@ def _accumulate_operation_groups(values, operations, required_apps,
 def _complete_application_cache(snapshot, required_apps, requirement_rows,
                                 *, required_existing=(),
                                 required_group_lists=(), projection=None,
-                                display_preferences=None):
+                                display_preferences=None, operations=()):
     """Resolve one complete database-view cache without projecting objects.
 
     ``TagName`` and XML child order are exact database facts.  Toolkit's
@@ -898,7 +903,8 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
             continue
         consumed = requirement.get('facts', {})
         needs_images = bool(consumed.get('dynamic_images_if_present'))
-        if needs_images and not record.dynamic_images_known:
+        language_bound = any(type(row) is _NativeLanguageBinding for row in operations)
+        if needs_images and not record.dynamic_images_known and not language_bound:
             raise ValueError(
                 'Consumed dynamic image metadata is not derivable from '
                 'DBGETXML; application '
@@ -907,8 +913,8 @@ def _complete_application_cache(snapshot, required_apps, requirement_rows,
                   if consumed.get('complete_levels_if_present') else None)
         facts.append(LifecycleGroup(
             application, group, True,
-            record.dynamic_images if needs_images else None,
-            needs_images, levels))
+            record.dynamic_images if needs_images or language_bound else None,
+            record.dynamic_images_known if language_bound else needs_images, levels))
 
     for application, group in sorted(required_existing):
         key = (application, group)
@@ -1181,7 +1187,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
             required_existing=control_groups,
             required_group_lists=complete_group_lists,
             projection=resolved.cache.application_cache,
-            display_preferences=display_preferences)
+            display_preferences=display_preferences, operations=operations)
         if reset_requirements is not None:
             reset = operations[0]
             options = {
@@ -1219,7 +1225,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
             required_existing=control_groups,
             required_group_lists=complete_group_lists,
             projection=resolved.cache.application_cache,
-            display_preferences=display_preferences)
+            display_preferences=display_preferences, operations=operations)
         stable_source = _project_ordered_scene_source(
             editor, operations, ordered_base_source, ordered_cache)
         if stable_source != scene_source:
@@ -1235,7 +1241,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
                 required_existing=control_groups,
                 required_group_lists=complete_group_lists,
                 projection=resolved.cache.application_cache,
-            display_preferences=display_preferences)
+                display_preferences=display_preferences, operations=operations)
             if _project_ordered_scene_source(
                     editor, operations, ordered_base_source,
                     ordered_cache) != stable_source:
@@ -1375,9 +1381,83 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         resolved_operations=resolved_parent_operations)
 
 
+def _language_default_for_operations(text, unit_path, operations):
+    first = next((row for row in operations if row['op'] == 'add-language-dialog'), None)
+    if first is None:
+        return None
+    from .edlt_language_add_dialog import native_inventory, initialise
+    _network, _collection, rows = native_inventory(text, unit_path)
+    return initialise(rows, first['preferences']).default
+
+
+def _plan_language_histories(text, unit_path, values, editor, operations, *,
+                             networks, display_preferences, dltp_index):
+    from dataclasses import replace
+    from .edlt_language_add_dialog import (
+        LanguageRow, LanguageState, native_inventory, initialise, project,
+        replace_native_rows, _preferences,
+    )
+    network_oid, collection_oid, rows = native_inventory(text, unit_path)
+    first = next(row for row in operations if row['op'] == 'add-language-dialog')
+    state = initialise(rows, first['preferences'])
+    initial_default = state.default
+    lowered, steps = [], []
+    next_key = 0
+    for index, operation in enumerate(operations, 1):
+        if operation['op'] != 'add-language-dialog':
+            lowered.append(operation)
+            continue
+        if _preferences(operation['preferences']) != _preferences(first['preferences']):
+            raise NativeEdltParentError('Language history must retain one explicit preference profile')
+        state, receipt = project(state, operation)
+        for identifier in [r.identifier for r in state.rows if r.oid is None]:
+            key = '@language-' + str(next_key)
+            next_key += 1
+            state = replace(state, rows=tuple(replace(r, oid=key)
+                if r.oid is None and r.identifier == identifier else r for r in state.rows))
+            for r in receipt['created_rows']:
+                if r['oid'] is None and r['id'] == identifier: r['oid'] = key
+        receipt['rows_after'] = [r.as_dict() for r in state.rows]
+        receipt['operation'] = index
+        projected = replace_native_rows(text, unit_path, state.rows,
+            collection_oid=collection_oid or '@languages')
+        snapshot = _snapshot(projected, unit_path, editor, dltp_index=dltp_index,
+                             _language_default=state.default)
+        images = [{'application': app.address, 'group': group.address,
+                   'known': group.dynamic_images_known,
+                   'images': None if group.dynamic_images is None else list(group.dynamic_images)}
+                  for app in snapshot.applications for group in app.groups]
+        labels = [{'group': group.address, 'action': level.address,
+                   'labels': (None if not level.dynamic_labels_known else [
+                       {'value': variant, 'name': name, 'image_present': image}
+                       for variant, name, image in level.dynamic_labels])}
+                  for app in snapshot.applications if app.address == 202
+                  for group in app.groups for level in group.level_records]
+        lowered.append(_NativeLanguageBinding(
+            op='parent-language-binding', receipt=receipt,
+            group_images=images, level_labels=labels))
+        steps.append(receipt)
+    base = plan_native_parent_metadata(text, unit_path, values, editor, tuple(lowered),
+        networks=networks, display_preferences=display_preferences, dltp_index=dltp_index,
+        _language_default=initial_default)
+    history = {'format': 'cbus-edlt-native-language-history-v1',
+        'network_oid': network_oid, 'collection_oid': collection_oid,
+        'collection_plan_key': '@languages' if collection_oid is None else collection_oid,
+        'initial_default': initial_default, 'final_default': state.default,
+        'initial_rows': [r.as_dict() for r in rows],
+        'final_rows': [r.as_dict() for r in state.rows], 'steps': steps,
+        'mutations': any(not r['cancelled'] for r in steps),
+        'cache_profile': 'fresh-native-network-with-explicit-preferences',
+        'original_callback_multiple_project_saves_reproduced': False,
+        'atomic': False}
+    return replace(base, operations=operations,
+                   resolved_operations=(base.resolved_operations or tuple(lowered)),
+                   language_history=_json(history))
+
+
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,
                                 *, networks=(), display_preferences=None,
-                                dltp_index=None):
+                                dltp_index=None, _language_default=None):
     """Build the projected cache and parent plan without native I/O.
 
     ``display_preferences`` optionally applies the eDLT registry display/sort
@@ -1390,13 +1470,18 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         raise ValueError('Display preferences must be EdltDisplayPreferences')
     operations = normalize_operations(operations, allow_add_dialog=True)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
-    snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index)
+    if any(row['op'] == 'add-language-dialog' for row in operations):
+        return _plan_language_histories(text, unit_path, values, editor, operations,
+            networks=networks, display_preferences=display_preferences, dltp_index=dltp_index)
+    snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index,
+                         _language_default=_language_default)
     supplied = editor.snapshot(values)
     if supplied != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
     if (any(row['op'] in parent_add_kinds for row in operations)
+            or any(row['op'] == 'parent-language-binding' for row in operations)
             or (any(row['op'] == 'add-dialog' for row in operations)
                 and any(row['op'] == 'reset' for row in operations))):
         return _plan_parent_add_dialogs(
@@ -1446,7 +1531,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
                 snapshot, required_apps, requirement_rows,
                 required_existing=control_groups,
                 required_group_lists=complete_group_lists,
-                display_preferences=display_preferences)
+                display_preferences=display_preferences, operations=operations)
             reset_operation = operations[0]
             reset_options = {
                 name: value for name, value in reset_operation.items()
@@ -1469,7 +1554,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
             snapshot, required_apps, requirement_rows,
             required_existing=control_groups,
             required_group_lists=complete_group_lists,
-            display_preferences=display_preferences)
+            display_preferences=display_preferences, operations=operations)
         parent_input = (snapshot.raw_map()
                         if reset_requirements is not None else supplied)
         parent = editor.plan(
@@ -1597,9 +1682,12 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
             continue
         requirement = requirement_rows.get((application, group), {})
         facts = requirement.get('facts', {})
-        needs_images = bool(facts.get('dynamic_images_if_present')
+        initial_images = bool(facts.get('dynamic_images_if_present'))
+        needs_images = bool(initial_images
                             or (application, group) in operation_images)
-        if needs_images and not record.dynamic_images_known:
+        ordered_language = any(type(row) is _NativeLanguageBinding for row in operations)
+        if (needs_images and not record.dynamic_images_known
+                and (initial_images or not ordered_language)):
             raise ValueError(
                 'Consumed dynamic image metadata is not derivable from DBGETXML; '
                 f'application {application} group {group} requires project/DLTP images')
@@ -1607,7 +1695,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
         cache_groups.append(LifecycleGroup(
             application, group, True,
             record.dynamic_images if needs_images else None,
-            needs_images, levels))
+            needs_images and record.dynamic_images_known, levels))
     unique = {(row.kind, row.application, row.group, row.address): row for row in creations}
     for row in extra_creations:
         unique[(row.kind, row.application, row.group, row.address)] = row
@@ -1646,8 +1734,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     if any(row['op'] == KINDS[0] for row in operations) and display_preferences is None:
         raise ValueError('Corridor Add requires explicit display preferences for its refreshed ordered list')
     project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
-    project_name = _field(project, 'TagName')
-    if not project_name:
+    project_name = _field(project, 'TagName') if _children(project, 'TagName') else ''
+    if not project_name and any(row['op'] in KINDS or row['op'] == 'add-dialog' for row in operations):
         raise ValueError('Parent Add dialogs require explicit Project TagName')
     existing = {app.address: {group.address: group.tag for group in app.groups}
                 for app in snapshot.applications}
@@ -1684,6 +1772,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                         requirements[key].append(row)
     load_groups = [(row['application'], row['group']) for row in requirements['groups']]
     scene_results, scene_creations = [], []
+    language_text = text
     dialog_contexts = []
     lowered_so_far = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
@@ -1762,7 +1851,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         return cache if display_preferences is None else present_application_cache(cache, display_preferences)
 
     def advance(index, row, state, groups, level_names):
-        nonlocal reset_transition, reset_dependency_values
+        nonlocal reset_transition, reset_dependency_values, language_text
         row = dict(row)
         show_missing = row.pop('_show_missing', None)
         application_name = row.pop('_application_name', None)
@@ -1794,12 +1883,34 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             if missing:
                 dialog_contexts.append((index + 1, application, missing))
                 state = {**state, **{name: (255,) for name, _address in missing}}
-        if kind == 'reset':
+        if kind == 'parent-language-binding':
+            # The generic ordered Add resolver copies mappings. Restore the
+            # internal type only from the already admitted operation at this
+            # exact position, never from caller-supplied JSON facts.
+            if type(operations[index]) is not _NativeLanguageBinding:
+                raise EdltError('Language binding is internal; use add-language-dialog')
+            row = _NativeLanguageBinding(row)
+            from .edlt_language_add_dialog import LanguageRow, replace_native_rows
+            collection = _children(_one_by_address(project, 'Network', snapshot.network), 'Languages')
+            language_text = replace_native_rows(text, unit_path,
+                tuple(LanguageRow(r['id'], r['tag_value'], r['oid']) for r in row['receipt']['rows_after']),
+                collection_oid=_field(collection[0], 'OID') if collection else '@languages')
+            for images in row['group_images']:
+                key = (images['application'], images['group'])
+                if key in records:
+                    records[key] = replace(records[key],
+                        dynamic_images=None if images['images'] is None else tuple(images['images']),
+                        dynamic_images_known=images['known'])
+        elif kind == 'reset':
             options.setdefault('dirty_parameters', ())
             _raw, _dirty, _prepared, reset_transition = editor._editor('reset').prepare_unit_reset(
                 snapshot.raw_map(), metadata=inventory_cache(groups, level_names), **options)
             state = dict(reset_transition.after_controls)
             reset_dependency_values = dict(state)
+        elif kind == 'static-text-dialog':
+            from .edlt_static_text_dialog import project as project_static_text
+            changes, _receipt = project_static_text(state, row)
+            state = {**state, **changes}
         elif kind == 'blank':
             slot = _candidate_widget(row, state)
             if slot is None:
@@ -1831,7 +1942,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             projected_levels = tuple(SceneLevelCreation(group, address, name, ('prior parent Add',))
                 for (app, group), rows in level_names.items() if app == 202
                 for address, name in rows.items() if address not in levels.get((app, group), {}))
-            outcome = resolve_native_scene_metadata(text, unit_path, supplied, engine,
+            outcome = resolve_native_scene_metadata(language_text, unit_path, supplied, engine,
                 row['operations'], _projected_containers=tuple(projected),
                 _projected_levels=projected_levels, _projected_values=state,
                 dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
@@ -1944,6 +2055,13 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                     fact = LifecycleGroup(fact.application, fact.group, fact.exists,
                         fact.dynamic_images, fact.dynamic_images_known,
                         tuple(sorted(level_lists.get(key, fact.levels))))
+                if any(row['op'] == 'parent-language-binding' for row in operations) and key in facts:
+                    # The initial parent load cannot borrow a later language
+                    # selection. Ordered bindings install the new image facts
+                    # at their actual operation, before SceneManager consumes them.
+                    fact = replace(fact,
+                        dynamic_images=facts[key].dynamic_images,
+                        dynamic_images_known=facts[key].dynamic_images_known)
                 facts[key] = _merge_lifecycle_fact(facts.get(key), fact)
         lifecycle = LifecycleCache(tuple(app_names), tuple(facts.values()))
         for app, rows in lists.items():
@@ -2154,11 +2272,13 @@ class NativeEdltParentTransaction:
             if len(self._plans) >= 16:
                 raise ValueError('Use a new manager after sixteen issued plans')
             unit, project, _network, _address = _unit_path(unit)
+            normalized = normalize_operations(operations, allow_add_dialog=True)
             text = self._xml(project)
             networks = self._closed_networks(project, text)
+            default = _language_default_for_operations(text, unit, normalized)
             plan = plan_native_parent_metadata(
-                text, unit, _snapshot(text, unit, self.editor).value_map(),
-                self.editor, operations, networks=networks,
+                text, unit, _snapshot(text, unit, self.editor, _language_default=default).value_map(),
+                self.editor, normalized, networks=networks,
                 display_preferences=self.display_preferences,
                 dltp_index=self.dltp_index)
             self._plans.append(plan); self._fingerprints[id(plan)] = repr(plan)
@@ -2237,10 +2357,99 @@ class NativeEdltParentTransaction:
             self.database.set('!' + identity + '/Description', creation.description)
             receipt['description_initialized'] = True
 
+    def _language_command(self, command, code):
+        receipt = {'command': command, 'attempted': True, 'completed': False}
+        self._evidence['commands'].append(receipt)
+        result = self.client.command(command)
+        receipt['code'] = result.code
+        if result.code != code or len(result.lines) != 1 or result.final != result.lines[0]:
+            raise RuntimeError('Language mutation did not return its exact completion status')
+        receipt['completed'] = True
+        return result
+
+    def _apply_languages(self, plan, known):
+        if plan.language_history is None:
+            return
+        from .edlt_language_add_dialog import native_inventory
+        history = json.loads(plan.language_history)
+        self._evidence['language_identity_map'] = {}
+        identities = self._evidence['language_identity_map']
+        collection = history['collection_oid']
+
+        def created(command, kind):
+            response = self._language_command(command, 301)
+            match = re.fullmatch(r'301 OID=([0-9a-fA-F-]{36})', response.final)
+            if match is None:
+                raise RuntimeError('Language creation did not return exactly one issued OID')
+            identity = _oid(match[1])
+            if identity in known:
+                raise RuntimeError('Language creation returned an observed existing OID')
+            fresh = self._xml(plan.snapshot.project)
+            root = _container(fresh, 'Installation').documentElement
+            network = _one_by_address(_children(root, 'Project')[0], 'Network', plan.snapshot.network)
+            collections = _children(network, 'Languages')
+            observed_collection = _field(collections[0], 'OID') if len(collections) == 1 else None
+            if kind == 'Languages':
+                bound = observed_collection == identity
+            else:
+                bound = observed_collection == collection and sum(
+                    _field(row, 'OID') == identity for row in _children(collections[0], 'Language')) == 1
+            if not bound:
+                raise RuntimeError('Language creation OID is not bound to its selected network collection')
+            path = '!' + identity + '/OID'
+            read = self.database.get(path)
+            if read.code != 342 or read.lines != ('342 ' + path + '=' + identity,) or read.final != read.lines[0]:
+                raise RuntimeError('Language creation OID scalar differs from its bound XML')
+            known.add(identity)
+            return identity
+
+        for step in history['steps']:
+            if step['cancelled']:
+                continue
+            self._evidence.update(state='language_metadata', metadata_mutation_attempted=True,
+                                  unidentified_metadata_mutation=True)
+            # Existing-row mutations are recovered by source reload before PP
+            # SAVE; inverse deletion never targets an existing row.
+            if collection is None:
+                collection = created('DBADD !' + history['network_oid'] + ' Languages', 'Languages')
+                identities['@languages'] = collection
+            for row in step['deleted_rows']:
+                identity = identities.get(row['oid'], row['oid'])
+                self._language_command('DBDELETE !' + identity, 200)
+            for row in step['created_rows']:
+                identity = created('DBADD !' + history['network_oid'] + '/Languages Language', 'Language')
+                identities[row['oid']] = identity
+                self._language_command('DBSET !' + identity + '/ID ' + str(row['id']), 200)
+                self._language_command('DBSET !' + identity + '/TagValue ' + row['tag_value'], 200)
+            marker = next(row for row in step['rows_after'] if row['id'] == 0)
+            identity = identities.get(marker['oid'], marker['oid'])
+            self._language_command('DBSET !' + identity + '/ID 0', 200)
+            self._language_command('DBSET !' + identity + '/TagValue ' + marker['tag_value'], 200)
+            _network, observed_collection, observed = native_inventory(self._xml(plan.snapshot.project), plan.unit)
+            expected = [(r['id'], r['tag_value'], identities.get(r['oid'], r['oid'])) for r in step['rows_after']]
+            if observed_collection != collection or [(r.identifier, r.name, r.oid) for r in observed] != expected:
+                raise RuntimeError('Language rows or retained identities differ after mutation')
+        self._evidence['language_rows_verified_before_pp'] = True
+
+    def _language_baseline(self, plan):
+        if plan.language_history is None or not json.loads(plan.language_history)['mutations']:
+            return plan.snapshot
+        from .edlt_language_add_dialog import LanguageRow, replace_native_rows
+        history = json.loads(plan.language_history)
+        identities = self._evidence.get('language_identity_map', {})
+        text = replace_native_rows(plan.before_xml, plan.unit,
+            tuple(LanguageRow(r['id'], r['tag_value'], r['oid']) for r in history['final_rows']),
+            collection_oid=history['collection_oid'] or identities.get('@languages'), identities=identities)
+        return _snapshot(text, plan.unit, self.editor, dltp_index=plan.snapshot.dltp_index,
+                         _language_default=history['final_default'])
+
     def _verify_created(self, plan, text, *, description_phase):
+        baseline = self._language_baseline(plan)
         snapshot = _snapshot(text, plan.unit, self.editor,
-                             dltp_index=plan.snapshot.dltp_index)
-        before_apps = {row.address: row for row in plan.snapshot.applications}
+                             dltp_index=plan.snapshot.dltp_index,
+                             _language_default=(None if plan.language_history is None
+                                else json.loads(plan.language_history)['final_default']))
+        before_apps = {row.address: row for row in baseline.applications}
         after_apps = {row.address: row for row in snapshot.applications}
         app_creations = {
             row.address: row for row in plan.creations
@@ -2371,11 +2580,11 @@ class NativeEdltParentTransaction:
         if len(receipts) != len(plan.creations):
             raise RuntimeError('Parent metadata creation receipts are incomplete')
         if (snapshot.unit_oid != plan.snapshot.unit_oid
-                or snapshot.project_metadata != plan.snapshot.project_metadata
-                or snapshot.unit_metadata != plan.snapshot.unit_metadata
-                or snapshot.network_metadata != plan.snapshot.network_metadata
-                or snapshot.other_networks != plan.snapshot.other_networks
-                or snapshot.other_units != plan.snapshot.other_units):
+                or snapshot.project_metadata != baseline.project_metadata
+                or snapshot.unit_metadata != baseline.unit_metadata
+                or snapshot.network_metadata != baseline.network_metadata
+                or snapshot.other_networks != baseline.other_networks
+                or snapshot.other_units != baseline.other_units):
             raise RuntimeError('Unrelated native project/unit/network metadata changed')
         return snapshot
 
@@ -2396,7 +2605,9 @@ class NativeEdltParentTransaction:
                 self._operation(action, plan.snapshot.project)
             text = self._xml(plan.snapshot.project)
             current = _snapshot(text, plan.unit, self.editor,
-                                dltp_index=plan.snapshot.dltp_index)
+                                dltp_index=plan.snapshot.dltp_index,
+                                _language_default=(None if plan.language_history is None
+                                    else json.loads(plan.language_history)['initial_default']))
             if current != plan.snapshot:
                 raise RuntimeError('Reload did not restore the admitted eDLT source')
             self._evidence['rollback_verified'] = True
@@ -2439,7 +2650,8 @@ class NativeEdltParentTransaction:
                                       metadata_mutation_attempted=True)
             for creation in plan.creations:
                 self._add(plan, creation, known)
-            if plan.creations:
+            self._apply_languages(plan, known)
+            if plan.creations or plan.language_history:
                 self._verify_created(plan, self._xml(plan.snapshot.project), description_phase='before_pp')
 
             self._evidence.update(state='pp', pp_mutation_attempted=True)

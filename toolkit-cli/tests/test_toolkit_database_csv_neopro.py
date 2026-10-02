@@ -208,8 +208,8 @@ def damage(root, case):
         unit.find('FirmwareVersion').text = '1.2.99'
     elif case == 'other-firmware':
         unit.find('FirmwareVersion').text = '10.0'
-    elif case == 'other-family':
-        unit.find('UnitType').text = 'KEYSCEN4'
+    elif case == 'unregistered-family':
+        unit.find('UnitType').text = 'OWNED_UNREGISTERED_NEOPRO'
     elif case == 'group-count':
         parameter(unit, 'GroupAddress').set('Value', '1 2 3 4 5 6 7 8 9')
     elif case == 'short-groups':
@@ -248,7 +248,7 @@ def damage(root, case):
         raise AssertionError(case)
 
 
-REFUSALS = ('old-firmware', 'other-firmware', 'other-family', 'group-count',
+REFUSALS = ('old-firmware', 'other-firmware', 'unregistered-family', 'group-count',
             'short-groups', 'bad-mask', 'missing-mask', 'duplicate-pp',
             'unconfigured-secondary', 'missing-secondary', 'missing-primary',
             'duplicate-application', 'missing-selected-group', 'duplicate-group',
@@ -263,6 +263,28 @@ def test_neopro_unsupported_or_ambiguous_inputs_refuse_without_snapshot_mutation
     before = xml(root)
     with pytest.raises(ValueError):
         project_native_xml_unit(before, FIRST_PATH, columns=COLUMNS)
+    assert xml(root) == before
+
+
+@pytest.mark.parametrize('kind', TYPES)
+def test_neopro_fixture_reclassified_as_registered_scene_key_uses_its_own_loader(kind):
+    # KEYSCEN4 was admitted by the final factory-profile batch. It has no
+    # input-block associations, so the inherited Neo PP does not turn it into
+    # a NeoPro loader or expose the eight cached Neo groups in its CSV.
+    root = one_family(kind)
+    first_unit(root).find('UnitType').text = 'KEYSCEN4'
+    before = xml(root)
+    result = project_native_xml_unit(before, FIRST_PATH, columns=COLUMNS)
+    assert result.complete
+    assert result.cached.selected_class == 'TKEYSCEN4'
+    assert result.cached.unit.group_identities == ()
+    assert result.report.rows == (
+        DATA['fixture']['csv_rows'][0],
+        '21,KEYSCEN4,Lighting,"HVAC, west",AreaPrimary,'
+        '<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,',
+    )
+    assert result.as_dict()['native_database_mutated'] is False
+    assert result.as_dict()['network_io_performed'] is False
     assert xml(root) == before
 
 

@@ -62,7 +62,10 @@ class MRAParentTransactionTests(unittest.TestCase):
     def test_three_mra_panels_and_globals_share_one_terminal_save(self):
         plan = self.plan()
         document = plan.as_dict()
-        self.assertEqual(len(SUPPORTED_OPERATION_NAMES), 28)
+        self.assertEqual(len(SUPPORTED_OPERATION_NAMES), 30)
+        self.assertEqual(SUPPORTED_OPERATION_NAMES[-4:], (
+            'reset', 'scene-manager', 'static-text-dialog',
+            'add-language-dialog'))
         self.assertEqual(document['supported_operation_types'],
                          list(SUPPORTED_OPERATION_NAMES))
         self.assertEqual(

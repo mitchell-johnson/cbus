@@ -137,6 +137,42 @@ class NewInteropSelectionTests(unittest.TestCase):
                 audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
                 self.assertEqual(audit.count('--require-module ' + module), 1)
 
+    def test_static_language_and_recovered_report_public_rosters_are_required(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        parent = 'tests/test_cgate_edlt_static_language_add_interop.py'
+        sensors = 'tests/test_cgate_project_documentation_sensors_interop.py'
+        wireless = 'tests/test_cgate_project_documentation_wireless_interop.py'
+        l1 = 'tests/test_cgate_project_documentation_l1_interop.py'
+        architectural = 'tests/test_cgate_project_documentation_architectural_interop.py'
+        for backend, target, selection in [('mock', 'check-cgate-interop', 'cgate-mock'),
+                                           ('daemon', 'check-cmqtt-interop', 'cmqttd')]:
+            with self.subTest(backend=backend):
+                expected = {parent + '::test_public_static_language_parent_complete_history[' + case
+                            + '-' + backend + ']' for case in ('default-repair-grid-before-widget',
+                                'cancel-repeated-selected-list', 'absent-collection-chinese',
+                                'zero-default-first-selected', 'allocated-widget-then-grid',
+                                'language-parent-and-scene-add')}
+                expected.update(parent + '::test_public_static_language_lost_success_stops_without_replay['
+                                + stage + '-' + backend + ']' for stage in ('add', 'set', 'pp-save'))
+                expected.add(parent + '::test_public_static_language_invalid_history_never_writes[' + backend + ']')
+                if backend == 'daemon':
+                    expected.update(parent + '::test_public_static_language_authentication_stops_before_write['
+                                    + failure + ']' for failure in ('missing', 'wrong'))
+                expected.add(sensors + '::test_public_database_document_sensor_families_preserves_snapshot[' + backend + ']')
+                expected.add(wireless + '::test_public_database_document_wireless_families_preserves_snapshot[' + backend + ']')
+                expected.add(l1 + '::test_public_database_document_l1_preserves_snapshot_and_literal_body[' + backend + ']')
+                expected.add(architectural + '::test_public_database_document_architectural_families_preserves_snapshot[' + backend + ']')
+                body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+                actual = [node for node in re.findall(r"'(tests/test_[^']+)'", body)
+                          if node.startswith((parent + '::', sensors + '::', wireless + '::', l1 + '::', architectural + '::'))]
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+                for module in (parent, sensors, wireless, l1, architectural):
+                    self.assertEqual(audit_body.count('--require-module ' + module), 1)
+
 
 class CITestResultsTests(unittest.TestCase):
     def setUp(self):

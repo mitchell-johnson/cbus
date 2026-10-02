@@ -1,0 +1,53 @@
+{
+  "format": "cbus-project-documentor-bytecraft-l1-literal-v1",
+  "origin": "Invented complete native snapshot and independently authored HTML/usage literals from static original body/loader/consumer methods. No original instructions or generated-page comparison.",
+  "project": "L1REPORT",
+  "network": 254,
+  "unit": {
+    "address": 1,
+    "unit_type": "DIMPR12",
+    "firmware": "1.9.03",
+    "name": "L1 dimmer",
+    "serial": "1.1",
+    "display_serial": "000000010001"
+  },
+  "native_xml": "<Installation><Project><Address>L1REPORT</Address><TagName>L1 report</TagName><Network><Address>254</Address><NetworkNumber>254</NetworkNumber><TagName>Dimmer report</TagName><Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:9</InterfaceAddress></Interface><Application><Address>56</Address><TagName>Lighting</TagName><Group><Address>8</Address><TagName>Load&lt;&amp;&gt;</TagName></Group><Group><Address>9</Address><TagName>Logic&lt;&amp;&gt;</TagName></Group><Group><Address>255</Address><TagName>&lt;Unused&gt;</TagName></Group></Application><Application><Address>202</Address><TagName>Trigger</TagName><Group><Address>7</Address><TagName>Mode</TagName><Level Value=\"99\"><Address>11</Address><TagName>Eleven&lt;&amp;&gt;</TagName></Level></Group><Group><Address>255</Address><TagName>&lt;Unused&gt;</TagName><Level Value=\"255\"><Address>255</Address><TagName>Unused</TagName></Level></Group></Application><Application><Address>203</Address><TagName>Enable</TagName><Group><Address>255</Address><TagName>&lt;Unused&gt;</TagName></Group></Application><Application><Address>255</Address><TagName>&lt;Unused&gt;</TagName><Group><Address>255</Address><TagName>&lt;Unused&gt;</TagName></Group></Application><Unit><Address>1</Address><TagName>L1 dimmer</TagName><UnitType>DIMPR12</UnitType><UnitName>DIMPR12</UnitName><FirmwareVersion>1.9.03</FirmwareVersion><SerialNumber>1.1</SerialNumber><PP Name=\"Application\" Value=\"56\" /><PP Name=\"GroupAddress\" Value=\"8 9 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"AreaGroupAddress\" Value=\"8\" /><PP Name=\"CBusDisableGroupAddress\" Value=\"255\" /><PP Name=\"DMXCBusSwitchAddress\" Value=\"255\" /><PP Name=\"DMXCbusSwitchOverActionAndRestoreMode\" Value=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\" /><PP Name=\"DMXPatchInfo\" Value=\"0 0 0 0 0 17 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\" /><PP Name=\"ChannelDimmerCurve\" Value=\"80 0 0 0 0 0\" /><PP Name=\"ChannelMinLevel\" Value=\"64 254 0 0 0 0 0 0 0 0 0 0\" /><PP Name=\"ChannelMaxLevel\" Value=\"255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"MaxChannelVoltage\" Value=\"0 230 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"LogicGroupAddress\" Value=\"9\" /><PP Name=\"LogicAttributes\" Value=\"1 129 128 1 0 0 0 0 0 0 0 0\" /><PP Name=\"PresetRec00\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec01\" Value=\"0 7 11 255 0 1 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec02\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec03\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec04\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec05\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec06\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec07\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec08\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec09\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec10\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec11\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec12\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec13\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec14\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec15\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec16\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec17\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec18\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec19\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec20\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec21\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec22\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec23\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec24\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec25\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec26\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec27\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec28\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec29\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec30\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec31\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /><PP Name=\"PresetRec32\" Value=\"0 7 11 255 0 0 255 255 255 255 255 255 255 255 255 255 255 255 0 0 128 128 128 128 128 128 128 128 128 128 128 128\" /></Unit></Network></Project></Installation>",
+  "body_lines": [
+    "C-Bus Lock Enable Group: &#60;Unused&#62;<br />",
+    "DMX Enable Group: &#60;Unused&#62;<br />",
+    "Control Failure Scene: Disabled<br />",
+    "<br />",
+    "<table border=\"1\">",
+    "</tr><tr><th>Channel</th><th>Groups</th><th>Logic Function</th><th>Curve</th><th>Min</th><th>Max</th><th>Max RMS Voltage</th>",
+    "</tr><tr><td>1</td><td><a href=\"#254_56_8\">Load<&></a>, <a href=\"#254_56_9\">Logic<&></a></td><td>Max</td><td>Lite 1</td><td>25%</td><td>100%</td><td>LINE</td>",
+    "</tr><tr><td>2</td><td><a href=\"#254_56_9\">Logic<&></a>, <a href=\"#254_56_9\">Logic<&></a></td><td>Min</td><td>1:1</td><td>100%</td><td>100%</td><td>230</td>",
+    "</tr><tr><td>3</td><td>&#60;Unused&#62;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>",
+    "</table>",
+    "Scenes: <br />",
+    "<table border=\"1\"",
+    "<tr><th>Scene</th><th>Scene Type</th><th>Trigger</th><th>Scene On</th><th>Scene Off</th></tr>",
+    "<tr><td>1</td>",
+    "<td>Basic</td>",
+    "<td><a href=\"#254_202_7_11\">Eleven<&></a></td>",
+    "<td><table border=\"1\">",
+    "<tr><th>Group</th><th>Level</th><th>Ramp Rate</th></tr>",
+    "<tr><td><a href=\"#254_56_8\">Load<&></a></td><td>100%</td><td>Instantaneous</td></tr>",
+    "</table>",
+    "</td>",
+    "<td>&nbsp;</td>",
+    "</tr>",
+    "</table>"
+  ],
+  "group_usage": {
+    "output_56_8": "Channel 1",
+    "output_56_9": "Channel 2<br/>Logic Group",
+    "output_56_255": "Channel 3<br/>Channel 4<br/>Channel 5<br/>Channel 6<br/>Channel 7<br/>Channel 8<br/>Channel 9<br/>Channel 10<br/>Channel 11<br/>Channel 12",
+    "input_56_8": "Scene 2",
+    "other_56_8": "Area Group",
+    "other_203_255": "C-Bus Disable Group<br/>DMX Switch"
+  },
+  "selector_usage": {
+    "11": "<li />Trigger Scene 1",
+    "99": ""
+  }
+}

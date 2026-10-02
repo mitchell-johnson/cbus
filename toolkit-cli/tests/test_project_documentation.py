@@ -17,7 +17,8 @@ from cbus_toolkit.cli import main
 from cbus_toolkit.project import ProjectDocument
 
 ROOT = Path(__file__).resolve().parents[1]
-RECEIPT = ROOT / "research/experiments/2026-09-30/project-documentor-static.json"
+RECEIPT = ROOT / "research/fixtures/project-documentor-current-static.json"
+HISTORICAL_RECEIPT = ROOT / "research/experiments/2026-09-30/project-documentor-static.json"
 WHEN = datetime(2026, 9, 30, 7, 5)
 
 
@@ -287,20 +288,23 @@ def test_bridge_adjacent_network_and_missing_far_side_warning():
     assert by_unit == {1: "partial", 9: "recovered"}
 
 
-def test_unrecovered_documentors_are_marked_and_listed_last():
-    lines, summary = page([network(254, "Local", units=(unit(3, "PC_TSB5", name="Stat"),
+def test_partial_and_unrecovered_documentors_are_marked_and_listed_last():
+    lines, summary = page([network(254, "Local", units=(unit(3, "PC_TSB5", name="Stat", firmware="1.2.00"),
                                                         unit(4, "KEYA1", firmware="1.4.00")))])
-    assert "TThermostatDocumentor.DocumentHTML: not documented (unrecovered)<br />" in lines
+    # The thermostat body is recovered for complete consumed state.  This
+    # deliberately incomplete input must preserve a precise loader refusal.
+    assert "InstalledZones (requires 1 explicit values in 0..255): not documented (unrecovered)<br />" in lines
+    assert "TThermostatDocumentor.DocumentHTML: not documented (unrecovered)<br />" not in lines
     assert "TNeoInputDocumentor.DocumentHTML: not documented (unrecovered)<br />" in lines
     tail = section(lines, '<h2><a name="unrecovered">Not documented (unrecovered)</a></h2>', "</ul>")
     assert tail[1:] == [
         "<ul>",
         '<li /><a href="#254">Local</a>: Network calculator (no --catalog supplied)',
         '<li /><a href="#254">Local</a>: Status Report Interval (status-report interface)',
-        '<li /><a href="#254_unit_3">Stat - PC_TSB5</a>: TThermostatDocumentor.DocumentHTML',
+        '<li /><a href="#254_unit_3">Stat - PC_TSB5</a>: InstalledZones (requires 1 explicit values in 0..255)',
         '<li /><a href="#254_unit_4">U4 - KEYA1</a>: TNeoInputDocumentor.DocumentHTML']
     assert lines[lines.index(tail[0]) - 1] == "<hr />"
-    assert summary["unit_status"] == {"recovered": 0, "partial": 0, "unrecovered": 2, "heading_only": 0}
+    assert summary["unit_status"] == {"recovered": 0, "partial": 1, "unrecovered": 1, "heading_only": 0}
 
 
 def test_calculator_lines_with_a_synthetic_catalogue(tmp_path):
@@ -389,7 +393,18 @@ def test_duplicate_addresses_are_rejected():
 
 def test_committed_static_receipt_matches_the_model():
     receipt = json.loads(RECEIPT.read_text(encoding="utf-8"))
+    assert receipt["format"] == "cbus-toolkit-project-documentor-current-static-v1"
     assert receipt["original_executed"] is False
+    assert receipt["historical_receipt"] == {
+        "path": HISTORICAL_RECEIPT.relative_to(ROOT).as_posix(),
+        "sha256": "96e8f19a27e9e0582098223d2a048e700ff9af7e623fe887bef5c52506f9d07d",
+        "original_executed": False,
+    }
+    assert hashlib.sha256(HISTORICAL_RECEIPT.read_bytes()).hexdigest() == receipt["historical_receipt"]["sha256"]
+    assert receipt["extractor_sha256"] == hashlib.sha256(
+        (ROOT / "research/project_documentor_static.py").read_bytes()).hexdigest()
+    assert receipt["literal_disclosure"]["private_compiler_coordinates_omitted"] >= 0
+    assert receipt["literal_disclosure"]["method_hashes_include_omitted_coordinates"] is True
     assert [tuple(row) for row in receipt["registrations"]] == list(doc.REGISTRATIONS)
     assert {short: (row["document_html"], row["action_selector_use"])
             for short, row in receipt["documentor_classes"].items()} == doc.DOCUMENTOR_METHODS
@@ -409,9 +424,13 @@ def test_committed_static_receipt_matches_the_model():
                      "project_documentation_neoclassic_usage", "project_documentation_bytecraft_usage",
                      "project_documentation_bytecraft_loader", "project_documentation_bytecraft",
                      "project_documentation_neoclassic_modify", "project_documentation_gateways",
-                     "project_documentation_light_level")}
+                     "project_documentation_light_level", "project_documentation_multisensor",
+                     "project_documentation_thermostat", "project_documentation_wireless",
+                     "project_documentation_wireless_facts", "project_documentation_wireless_loader",
+                     "project_documentation_wireless_usage", "project_documentation_architectural",
+                     "project_documentation_architectural_loader", "project_documentation_architectural_usage")}
     statuses = {row["body_status"] for row in receipt["documentor_classes"].values()}
-    assert statuses == {"recovered", "partial", "unrecovered"}
+    assert statuses == {"recovered", "partial"}
 
 
 @pytest.mark.skipif(not os.environ.get("CBUS_TOOLKIT_EXE"),

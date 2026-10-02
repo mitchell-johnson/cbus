@@ -1,10 +1,10 @@
-"""Old DIMPR12 dependency and action consumers, independently projected."""
+"""DIMPR12 and L1 dependency and action consumers, independently projected."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from .project_documentation_devices import _required_array
-from .project_documentation_outputs import _registration
+from .project_documentation_bytecraft_loader import bytecraft_logic, bytecraft_profile
 from .project_documentation_usage import Usage
 
 if TYPE_CHECKING:
@@ -12,23 +12,24 @@ if TYPE_CHECKING:
 
 
 def bytecraft_output_group_usage(unit: Unit, application: int, group: int) -> Usage:
-    """Project the twelve old Bytecraft channel objects in native order.
+    """Project the twelve Bytecraft channel objects in native order.
 
     Missing PP is refused instead of synthesizing the native loader's defaults.
-    The inherited output consumer is empty and old TDIMPR12 has no logic list.
+    The inherited output consumer is empty. L1 appends its one logic group after all matching channels.
     """
-    row = _registration(unit)
-    if (unit.unit_type != "DIMPR12" or row is None
-            or row[3:5] != ("TDIMPR12", "TDIMPR12CGateAgent")):
-        return Usage(status="unrecovered", missing=("old DIMPR12 class/agent firmware profile",))
     try:
+        bytecraft_profile(unit)
         primary = _required_array(unit, "Application", 1)[0]
         groups = _required_array(unit, "GroupAddress", 12)
+        logic = bytecraft_logic(unit)
     except ValueError as error:
         return Usage(status="unrecovered", missing=(str(error),))
     # No IsUnused/DMX predicate: address 255 is still a group identity.
-    return Usage("<br/>".join(f"Channel {index + 1}" for index, address in enumerate(groups)
-                              if (primary, address) == (application, group)))
+    labels = [f"Channel {index + 1}" for index, address in enumerate(groups)
+              if (primary, address) == (application, group)]
+    if logic is not None and (primary, logic[0]) == (application, group):
+        labels.append('Logic Group' if any(value & 1 for value in logic[1]) else 'Logic Group (Unused)')
+    return Usage('<br/>'.join(labels))
 
 
 def bytecraft_action_selector_usage(unit: Unit, application: int, group: int,
@@ -39,10 +40,10 @@ def bytecraft_action_selector_usage(unit: Unit, application: int, group: int,
     Advanced scenes compare the group object; basic scenes compare the exact
     Level object selected by Address. Level.Value is not read by this consumer.
     """
-    row = _registration(unit)
-    if (unit.unit_type != "DIMPR12" or row is None
-            or row[3:5] != ("TDIMPR12", "TDIMPR12CGateAgent")):
-        return Usage(status="unrecovered", missing=("old DIMPR12 class/agent firmware profile",))
+    try:
+        bytecraft_profile(unit)
+    except ValueError as error:
+        return Usage(status='unrecovered', missing=(str(error),))
     if application != 202:
         return Usage()
     try:
@@ -62,10 +63,10 @@ def bytecraft_group_usage(unit: Unit, application: int, group: int, kind: str) -
         raise ValueError('Group usage kind must be input, output or other')
     if kind == 'output':
         return bytecraft_output_group_usage(unit, application, group)
-    row = _registration(unit)
-    if (unit.unit_type != 'DIMPR12' or row is None
-            or row[3:5] != ('TDIMPR12', 'TDIMPR12CGateAgent')):
-        return Usage(status='unrecovered', missing=('old DIMPR12 class/agent firmware profile',))
+    try:
+        bytecraft_profile(unit)
+    except ValueError as error:
+        return Usage(status='unrecovered', missing=(str(error),))
     if kind == 'input':
         try:
             primary = _required_array(unit, 'Application', 1)[0]

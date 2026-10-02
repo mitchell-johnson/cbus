@@ -1,4 +1,4 @@
-"""Bounded old DIMPR12 packed scene projection; no original PP execution."""
+"""Source-pinned DIMPR12/TDIMPR12L1 packed scene projection."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,6 +13,26 @@ if TYPE_CHECKING:
 CHANNEL_COUNT = 12
 SCENE_COUNT = 33
 RECORD_SIZE = 32
+
+
+def bytecraft_profile(unit: Unit) -> str:
+    """Resolve the two original class/agent partitions, without PP defaults."""
+    row = _registration(unit)
+    if unit.unit_type == 'DIMPR12' and row is not None:
+        if row[3:5] == ('TDIMPR12', 'TDIMPR12CGateAgent'):
+            return 'old'
+        if row[3:5] == ('TDIMPR12L1', 'TDIMPR12L1CGateAgent'):
+            return 'l1'
+    raise ValueError('DIMPR12 class/agent firmware profile')
+
+
+def bytecraft_logic(unit: Unit) -> tuple[int, tuple[int, ...]] | None:
+    """L1.Init creates one group; its loader uses bit0 and bit7 per channel."""
+    if bytecraft_profile(unit) == 'old':
+        return None
+    group = _required_array(unit, 'LogicGroupAddress', 1)[0]
+    attributes = _required_array(unit, 'LogicAttributes', CHANNEL_COUNT)
+    return group, tuple(attributes)
 
 
 @dataclass(frozen=True)
@@ -45,7 +65,7 @@ class BytecraftScene:
 
 
 def decode_bytecraft_scenes(unit: Unit) -> tuple[BytecraftScene, ...]:
-    """Decode explicit PresetRec00..32 under the exact old class registration.
+    """Decode explicit PresetRec00..32 under either exact native class registration.
 
     Native array defaults are zero, but this saved-project adapter requires all
     consumed values explicitly. It models the fresh records only, without any
@@ -54,10 +74,7 @@ def decode_bytecraft_scenes(unit: Unit) -> tuple[BytecraftScene, ...]:
     constructs a Variant Boolean. In particular channels 8..11 are not dropped
     by a low-byte truncation of the raw inclusion mask.
     """
-    row = _registration(unit)
-    if (unit.unit_type != "DIMPR12" or row is None
-            or row[3:5] != ("TDIMPR12", "TDIMPR12CGateAgent")):
-        raise ValueError("old DIMPR12 class/agent firmware profile")
+    bytecraft_profile(unit)
     scenes = []
     for index in range(SCENE_COUNT):
         name = f"PresetRec{index:02d}"

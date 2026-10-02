@@ -1,0 +1,21 @@
+{
+  "format": "cbus-network-languages-owned-v1",
+  "scope": {
+    "original_execution": false,
+    "source_contract": "Toolkit 1.18 NetworkLanguageTypeCGateAgent: DBADD Languages/Language, DBSET ID/TagValue, DBDELETE row OID",
+    "native_receipts_verified": false,
+    "physical_io": false
+  },
+  "seed": ["PROJECT NEW LANG", "PROJECT USE LANG", "DBCREATENET 254 Local Cni 127.0.0.1:1"],
+  "rows": [
+    {"id": "1", "name": "English", "id_reply": "[read] 342 !{oid}/ID=1\n"},
+    {"id": "2", "name": "Français & 日本語", "id_reply": "[read] 342 !{oid}/ID=2\n"},
+    {"id": "0", "name": "2", "id_reply": "[read] 342 !{oid}/ID=0\n"}
+  ],
+  "setter_reply": "[set] 200 OK.\n",
+  "refusals": [
+    {"command": "DBSET !{oid}/ID invalid", "reply": "[refuse] 408 Operation failed: Language ID must be an integer\n"},
+    {"command": "DBSET !{oid}/OID 10000000-0000-4000-8000-000000000099", "reply": "[refuse] 408 Operation failed: OID field can not be changed\n"},
+    {"command": "DBSET !{oid}/Address 9", "reply": "[refuse] 401 Bad object or device ID: Field not found\n"}
+  ]
+}

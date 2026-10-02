@@ -77,7 +77,7 @@ def _joined(items: list[str]) -> Usage:
     return Usage("<br/>".join(items))
 
 
-def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> Usage:
+def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str, *, network=None) -> Usage:
     """Describe one unit in an Input/Output/Other group section, in native order."""
     if kind not in {"input", "output", "other"}:
         raise ValueError("Group usage kind must be input, output or other")
@@ -90,6 +90,24 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
         return scene_controller_group_usage(unit, application, group, kind)
     from .project_documentation import select_documentor
     documentor = select_documentor(typ, getattr(unit, "firmware", ""))
+    if documentor == "Multisensor":
+        from .project_documentation_multisensor import multisensor_group_usage
+        return multisensor_group_usage(unit, application, group, kind)
+    if documentor == "ArchitecturalDimmer":
+        from .project_documentation_architectural_usage import architectural_group_usage
+        return architectural_group_usage(unit, application, group, kind)
+    if documentor == "Thermostat":
+        from .project_documentation_thermostat import thermostat_group_usage
+        return thermostat_group_usage(unit, application, group, kind, network=network)
+    if documentor == "CBusWirelessInput":
+        from .project_documentation_wireless_usage import wireless_group_usage
+        return wireless_group_usage(unit, application, group, kind)
+    if documentor in {"WirelessGateway", "WirelessGatewayAdvanced"}:
+        from .project_documentation_wireless_usage import gateway_group_usage
+        return gateway_group_usage(unit, application, group, kind)
+    if documentor == "RemoteControl":
+        from .project_documentation_wireless_usage import remote_group_usage
+        return _missing("Network context") if network is None else remote_group_usage(network, unit, application, group, kind)
     if documentor in {"LightLevelSensor", "ST7LightLevelSensor"}:
         from .project_documentation_light_level import light_level_group_usage
         return light_level_group_usage(unit, application, group, kind)
@@ -252,17 +270,32 @@ def _selector_match(unit: UnitSnapshot, application: int, group: int, address: i
 
 
 def action_selector_usage(unit: UnitSnapshot, action_documentor: str, application: int, group: int,
-                          address: int, value: int) -> Usage:
+                          address: int, value: int, *, network=None) -> Usage:
     """Reproduce admitted ActionSelectorUse methods, retaining their native quirks."""
     if action_documentor == "UnitType":
         return Usage()
     if action_documentor == "DALI2B":
         from .project_documentation_gateways import dali_action_selector_usage
         return dali_action_selector_usage(unit, application, group, address, value)
+    if action_documentor == "ArchitecturalDimmer":
+        from .project_documentation_architectural_usage import architectural_action_selector_usage
+        return architectural_action_selector_usage(unit, application, group, address, value)
+    if action_documentor == "CBusWirelessInput":
+        from .project_documentation_wireless_usage import wireless_action_usage
+        return wireless_action_usage(unit, application, group, address)
+    if action_documentor == "WirelessGatewayAdvanced":
+        from .project_documentation_wireless_usage import gateway_action_usage
+        return _missing("Network context") if network is None else gateway_action_usage(network, unit, application, group, address)
+    if action_documentor == "RemoteControl":
+        from .project_documentation_wireless_usage import remote_action_usage
+        return remote_action_usage(unit, application, group, address)
     if action_documentor == "ErrorReportOutput":
         from .project_documentation_special_outputs import error_output_action_usage
         return error_output_action_usage(unit, application, group, address, value)
     typ = unit.unit_type.upper()
+    from .project_documentation_multisensor import TYPES as MULTISENSOR_TYPES, multisensor_action_selector_usage
+    if typ in MULTISENSOR_TYPES and action_documentor == "NeoInput":
+        return multisensor_action_selector_usage(unit, application, group, address, value)
     if action_documentor == "BytecraftDimmer" and typ == "DIMPR12":
         from .project_documentation_bytecraft_usage import bytecraft_action_selector_usage
         return bytecraft_action_selector_usage(unit, application, group, address, value)

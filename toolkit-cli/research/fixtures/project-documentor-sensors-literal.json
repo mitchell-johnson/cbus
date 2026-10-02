@@ -1,0 +1,5227 @@
+{
+  "format": "cbus-project-documentation-sensors-literal-v1",
+  "original_executed": false,
+  "oracle_basis": "Independently transcribed source strings and loader facts; invented complete consumed PP inputs. No producer output used.",
+  "project": "DOCSENS",
+  "network": {
+    "address": 254,
+    "name": "Sensor vector",
+    "applications": [
+      {
+        "address": 56,
+        "name": "Application 56",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "address": 57,
+        "name": "Application 57",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "address": 172,
+        "name": "Application 172",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "address": 202,
+        "name": "Application 202",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "address": 203,
+        "name": "Application 203",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "address": 255,
+        "name": "Application 255",
+        "groups": [
+          {
+            "address": 1,
+            "name": "K1",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 2,
+            "name": "K2",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 3,
+            "name": "K3",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 4,
+            "name": "K4",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 5,
+            "name": "K5",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 6,
+            "name": "K6",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 7,
+            "name": "K7",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 8,
+            "name": "K8",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 9,
+            "name": "K9",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "address": 255,
+            "name": "<Unused>",
+            "levels": [
+              {
+                "address": 64,
+                "name": "Preset <64>",
+                "value": 99
+              },
+              {
+                "address": 66,
+                "name": "Dinner <66>",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "senpill-old",
+      "family": "multisensor",
+      "class": "TSENPILL",
+      "unit_type": "SENPILL",
+      "firmware": "1.6.00",
+      "address": 20,
+      "parameters": {
+        "Application": [
+          56
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_56_5\">K5</a></td><td><a href=\"#254_56_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": ""
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": "Key 5"
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senpill-st7",
+      "family": "multisensor",
+      "class": "TST7SENPILL",
+      "unit_type": "SENPILL",
+      "firmware": "2.0.01",
+      "address": 21,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senpill-surface",
+      "family": "multisensor",
+      "class": "TSENPILLA",
+      "unit_type": "SENPILL",
+      "firmware": "2.4",
+      "address": 22,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link<br/>Light Level Target Group<br/>Bank Switch Low Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": "Light Level Margin Group<br/>Bank Switch High Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senpilla",
+      "family": "multisensor",
+      "class": "TSENPILLA",
+      "unit_type": "SENPILLA",
+      "firmware": "2.5.00",
+      "address": 23,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link<br/>Light Level Target Group<br/>Bank Switch Low Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": "Light Level Margin Group<br/>Bank Switch High Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senpiric",
+      "family": "multisensor",
+      "class": "TSENPIRIC",
+      "unit_type": "SENPIRIC",
+      "firmware": "2.5.00",
+      "address": 24,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link<br/>Light Level Target Group<br/>Bank Switch Low Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": "Light Level Margin Group<br/>Bank Switch High Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senpirib",
+      "family": "multisensor",
+      "class": "TSENPIRIC",
+      "unit_type": "SENPIRIB",
+      "firmware": "2.4",
+      "address": 25,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>Day Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>Night Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>Any Move</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link<br/>Light Level Target Group<br/>Bank Switch Low Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": "Light Level Margin Group<br/>Bank Switch High Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "senlla",
+      "family": "multisensor",
+      "class": "TSENLLA",
+      "unit_type": "SENLLA",
+      "firmware": "2.5.00",
+      "address": 26,
+      "parameters": {
+        "Application": [
+          56,
+          57
+        ],
+        "DebounceTime": [
+          2
+        ],
+        "LongPressTime": [
+          63
+        ],
+        "RampRate": [
+          0,
+          255
+        ],
+        "GroupAddress": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          255,
+          8,
+          255
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "LightLevelStore1": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "LightLevelStore2": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15,
+          15
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ControlAppGroupAddress": [
+          9
+        ],
+        "SceneTable": [
+          1,
+          128,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SecondApplicationBlocks": [
+          16
+        ],
+        "JoinPrimaryApplication": [
+          255
+        ],
+        "DualJoinPrimaryApplication": [
+          255
+        ],
+        "JoinSecondaryApplication": [
+          255
+        ],
+        "DualJoinSecondaryApplication": [
+          255
+        ],
+        "SingleJoinEnablerControlGroup": [
+          255
+        ],
+        "DualJoinEnablerControlGroup": [
+          255
+        ],
+        "SingleJoinEnablerGroup": [
+          255
+        ],
+        "DualJoinEnablerGroup": [
+          255
+        ],
+        "JPCommand": [
+          7,
+          13,
+          13,
+          13,
+          0,
+          0,
+          14,
+          1
+        ],
+        "SRCommand": [
+          0,
+          7,
+          7,
+          15,
+          12,
+          0,
+          2,
+          2
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          7,
+          9,
+          0,
+          4,
+          3
+        ],
+        "LRCommand": [
+          0,
+          0,
+          7,
+          15,
+          0,
+          0,
+          2,
+          4
+        ],
+        "PECFunctionBlock": [
+          0
+        ],
+        "PECFunctionActive": [
+          1
+        ],
+        "AreaGroupAddress": [
+          1
+        ],
+        "PECEnablerGroup": [
+          1
+        ],
+        "PIREnablerGroup": [
+          1
+        ],
+        "CorridorMasterGroup": [
+          1
+        ],
+        "CorridorLinkEnablerGroup": [
+          1
+        ],
+        "BroadcastBlock": [
+          4
+        ],
+        "BroadcastActive": [
+          0
+        ],
+        "LightLevelTargetGroup": [
+          1
+        ],
+        "LightLevelMarginGroup": [
+          1
+        ],
+        "BankSwitchThresholdGroup": [
+          1
+        ],
+        "BankSwitchThresholdBehaviour": [
+          1
+        ],
+        "PIRLightMovement": [
+          15
+        ],
+        "PIRDarkMovement": [
+          15
+        ],
+        "PIRDark": [
+          8
+        ],
+        "KeyDisableGroup": [
+          1
+        ],
+        "IndicatorBrightness": ""
+      },
+      "body_lines": [
+        "<table border=\"1\">",
+        "<tr><th>Debounce</th><td>32 ms</td></tr>",
+        "<tr><th>Long Press</th><td>1008 ms</td></tr>",
+        "<tr><th>Ramp 1</th><td>Instant</td></tr>",
+        "<tr><th>Ramp 2</th><td>4 secs</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>",
+        "<tr><td>1</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Retrigger Timer</td><td>Idle</td><td>Idle</td><td>Idle</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_1\">K1</a></td><td>0h0m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>2</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>On Key</td><td>Retrigger Timer</td><td>Retrigger Timer</td><td>Idle</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_2\">K2</a></td><td>0h0m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>3</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>On Key</td><td>Retrigger Timer</td><td>Idle</td><td>Retrigger Timer</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_3\">K3</a></td><td>0h0m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>4</td><td>Sunset</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Timer</th><th>Expiry</th></tr><tr><td><a href=\"#254_56_4\">K4</a></td><td>0h5m0s</td><td>Off Key</td></tr></table></td></tr>",
+        "<tr><td>5</td><td>Preset 1</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Group</th><th>Preset 1</th></tr><tr><td><a href=\"#254_57_5\">K5</a></td><td><a href=\"#254_57_5_64\">Preset <64></a> (25%)</td></tr></table></td></tr>",
+        "<tr><td>6</td><td>Unused</td><td>&nbsp;</td><td>&nbsp;</td></tr>",
+        "<tr><td>7</td><td>Scene</td><td>&nbsp;</td><td><table border=\"1\"><tr><th>Scene</th><th>Ramp Rate</th></tr><tr><td>Scene 1</td><td>8 secs</td></tr></table></td></tr>",
+        "<tr><td>8</td><td>&#60;Custom&#62;</td><td><table border=\"1\"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr><td>Store 1</td><td>Downcycle</td><td>Mem Toggle 2</td><td>Down Key</td></tr></table></td><td><table border=\"1\"><tr><th>Group</th></tr><tr><td><a href=\"#254_56_8\">K8</a></td></tr></table></td></tr>",
+        "</table>",
+        "<br />",
+        "Scenes<br />",
+        "<table border=\"1\">",
+        "<tr><th>Scene</th><th>Triggers</th><th>Groups</th><th>Level</th></tr>",
+        "<tr><td>1</td><td><table border=\"1\"><tr><th>Action Selector</th><th>Ramp Rate</th></tr><tr><td><a href=\"#254_202_9_66\">Dinner <66></a></td><td>Instant</td></tr></table></td><td><a href=\"#254_56_1\">K1</a></td><td>50%</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Key 1<br/>Light Level Maintenance<br/>Scene 1"
+        },
+        {
+          "kind": "input",
+          "application": 57,
+          "group": 5,
+          "html": "Key 5"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 6,
+          "html": "Block (Unused)"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 1,
+          "html": "Area Group<br/>Corridor Link Group<br/>Light Level Maintenance Enable<br/>Occupancy Enable<br/>Corridor Link<br/>Light Level Target Group<br/>Bank Switch Low Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 57,
+          "group": 5,
+          "html": "Light Level Broadcast Group"
+        },
+        {
+          "kind": "other",
+          "application": 56,
+          "group": 255,
+          "html": "Light Level Margin Group<br/>Bank Switch High Threshold Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 255,
+          "html": "Key Disable Group"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": ""
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": "Triggers Scene 1"
+        },
+        {
+          "application": 56,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        },
+        {
+          "application": 57,
+          "group": 5,
+          "address": 64,
+          "value": 99,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "pc_tsa",
+      "family": "thermostat",
+      "class": "TPC_TSA",
+      "unit_type": "PC_TSA",
+      "firmware": "1.2.00",
+      "address": 10,
+      "parameters": {
+        "Application": [
+          56
+        ],
+        "ApplicationNumber": [
+          57
+        ],
+        "InstalledZones": [
+          21
+        ],
+        "ControlledZones": [
+          17
+        ],
+        "CoolingPlantInstalledZones": [
+          5
+        ],
+        "HeatingPlantInstalledZones": [
+          17
+        ],
+        "VentingPlantInstalledZones": [
+          16
+        ],
+        "UIAllocatedZones": [
+          4
+        ],
+        "MeasuredZones": [
+          1
+        ],
+        "InternalPlantType": [
+          3
+        ],
+        "FanOperationMode": [
+          1
+        ],
+        "GuardEnable": [
+          1
+        ],
+        "GuardLowerTemperature": [
+          0
+        ],
+        "GuardUpperTemperature": [
+          40
+        ],
+        "HeatingPlantFanEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeeds": [
+          3
+        ],
+        "HeatingPlantFanDefaultSpeed": [
+          2
+        ],
+        "HeatingPlantFanOnDelay": [
+          15
+        ],
+        "HeatingPlantFanOffDelay": [
+          21
+        ],
+        "CoolingPlantFanEnable": [
+          0
+        ],
+        "CoolingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "CoolingPlantFanSpeeds": [
+          2
+        ],
+        "CoolingPlantFanDefaultSpeed": [
+          1
+        ],
+        "CoolingPlantFanOnDelay": [
+          1
+        ],
+        "CoolingPlantFanOffDelay": [
+          3
+        ],
+        "ZoneTemperatureDisplay": [
+          2
+        ],
+        "EvapProgramEnabled": [
+          255
+        ],
+        "NonEvapProgramEnabled": [
+          255
+        ],
+        "RemoteScheduleEnable": [
+          1
+        ],
+        "RemoteScheduleOnGroup": [
+          3
+        ],
+        "RemoteScheduleOffGroup": [
+          4
+        ],
+        "RemoteScheduleOverrideGroup": [
+          5
+        ],
+        "ZoneGroup": [
+          1
+        ],
+        "RemoteSetbackControlSource": [
+          2
+        ],
+        "RemoteSetbackOnGroup": [
+          2
+        ],
+        "RemoteSetbackOffGroup": [
+          3
+        ],
+        "MasterNetworkAddress": [
+          255
+        ],
+        "MasterAddress": [
+          10
+        ],
+        "InternalRelay1GroupNumber": [
+          1
+        ],
+        "InternalRelay2GroupNumber": [
+          2
+        ],
+        "InternalRelay3GroupNumber": [
+          3
+        ],
+        "InternalRelay4GroupNumber": [
+          4
+        ],
+        "InternalRelay5GroupNumber": [
+          255
+        ],
+        "CoolActivationOutput": [
+          1
+        ],
+        "CoolStage1Output": [
+          1
+        ],
+        "CoolStage2Output": [
+          1
+        ],
+        "CoolStage3Output": [
+          1
+        ],
+        "CoolFanLowOutput": [
+          1
+        ],
+        "CoolFanMediumOutput": [
+          1
+        ],
+        "CoolFanHighOutput": [
+          1
+        ],
+        "HeatActivationOutput": [
+          1
+        ],
+        "HeatStage1Output": [
+          1
+        ],
+        "HeatStage2Output": [
+          1
+        ],
+        "HeatStage3Output": [
+          1
+        ],
+        "HeatFanLowOutput": [
+          1
+        ],
+        "HeatFanMediumOutput": [
+          1
+        ],
+        "HeatFanHighOutput": [
+          1
+        ],
+        "DamperZone1Output": [
+          2
+        ],
+        "DamperZone2Output": [
+          2
+        ],
+        "DamperZone3Output": [
+          2
+        ],
+        "DamperZone4Output": [
+          2
+        ]
+      },
+      "body_lines": [
+        "Master/Slave: Master<br/>",
+        "Plant Type: Heat pump - reverse cycle<br/>",
+        "UI Displayed Temperature Zone: Zone 2<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Unswitched Zone</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>Yes</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 2</th></tr>",
+        "<tr><th>Plant Zone</th><td>No</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>No</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>Yes</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 4</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>No</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>Yes</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "Guard Enabled<br/>",
+        "Lower Activation Threshold: 20°C<br/>",
+        "Upper Activation Threshold: 30°C<br/>",
+        "<br/>",
+        "Fan Operation Mode: Continuous operation<br/>",
+        "<table>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Heating Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Fan Speeds</th><td>3</td></tr>",
+        "<tr><th>Default Speed</th><td>2</td></tr>",
+        "<tr><th>Fan On Delay</th><td>1m</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>2m</td></tr>",
+        "</table></td>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Cooling Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Scheduling</th></tr>",
+        "<tr><th>Non-Evaporative Plant Equipment</th><td>Enabled</td></tr>",
+        "<tr><th>Evaporative Plant Equipment</th><td>Disabled</td></tr>",
+        "<tr><th>Enable Group</th><td><a href=\"#254_203_3\">K3</a></td></tr>",
+        "<tr><th>Disable Group</th><td><a href=\"#254_203_4\">K4</a></td></tr>",
+        "<tr><th>Override Group</th><td><a href=\"#254_203_5\">K5</a></td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Cool Activation<br/>Cool Stage 1<br/>Cool Stage 2<br/>Cool Stage 3<br/>Cool Fan Low<br/>Cool Fan Medium<br/>Cool Fan High<br/>Heat Activation<br/>Heat Stage 1<br/>Heat Stage 2<br/>Heat Stage 3<br/>Heat Fan Low<br/>Heat Fan Medium<br/>Heat Fan High"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 2,
+          "html": "Damper Zone 1<br/>Damper Zone 2<br/>Damper Zone 3<br/>Damper Zone 4"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": "Internal Relay 1"
+        },
+        {
+          "kind": "output",
+          "application": 57,
+          "group": 1,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 172,
+          "group": 1,
+          "html": "Zone Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 3,
+          "html": "Remote Setback Off<br/>Schedule On"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "pc_tsa5",
+      "family": "thermostat",
+      "class": "TPC_TSA5",
+      "unit_type": "PC_TSA5",
+      "firmware": "1.2.00",
+      "address": 11,
+      "parameters": {
+        "Application": [
+          56
+        ],
+        "ApplicationNumber": [
+          57
+        ],
+        "InstalledZones": [
+          21
+        ],
+        "ControlledZones": [
+          17
+        ],
+        "CoolingPlantInstalledZones": [
+          5
+        ],
+        "HeatingPlantInstalledZones": [
+          17
+        ],
+        "VentingPlantInstalledZones": [
+          16
+        ],
+        "UIAllocatedZones": [
+          4
+        ],
+        "MeasuredZones": [
+          1
+        ],
+        "InternalPlantType": [
+          3
+        ],
+        "FanOperationMode": [
+          1
+        ],
+        "GuardEnable": [
+          1
+        ],
+        "GuardLowerTemperature": [
+          0
+        ],
+        "GuardUpperTemperature": [
+          40
+        ],
+        "HeatingPlantFanEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeeds": [
+          3
+        ],
+        "HeatingPlantFanDefaultSpeed": [
+          2
+        ],
+        "HeatingPlantFanOnDelay": [
+          15
+        ],
+        "HeatingPlantFanOffDelay": [
+          21
+        ],
+        "CoolingPlantFanEnable": [
+          0
+        ],
+        "CoolingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "CoolingPlantFanSpeeds": [
+          2
+        ],
+        "CoolingPlantFanDefaultSpeed": [
+          1
+        ],
+        "CoolingPlantFanOnDelay": [
+          1
+        ],
+        "CoolingPlantFanOffDelay": [
+          3
+        ],
+        "ZoneTemperatureDisplay": [
+          2
+        ],
+        "EvapProgramEnabled": [
+          255
+        ],
+        "NonEvapProgramEnabled": [
+          255
+        ],
+        "RemoteScheduleEnable": [
+          1
+        ],
+        "RemoteScheduleOnGroup": [
+          3
+        ],
+        "RemoteScheduleOffGroup": [
+          4
+        ],
+        "RemoteScheduleOverrideGroup": [
+          5
+        ],
+        "ZoneGroup": [
+          1
+        ],
+        "RemoteSetbackControlSource": [
+          2
+        ],
+        "RemoteSetbackOnGroup": [
+          2
+        ],
+        "RemoteSetbackOffGroup": [
+          3
+        ],
+        "MasterNetworkAddress": [
+          255
+        ],
+        "MasterAddress": [
+          10
+        ],
+        "InternalRelay1GroupNumber": [
+          1
+        ],
+        "InternalRelay2GroupNumber": [
+          2
+        ],
+        "InternalRelay3GroupNumber": [
+          3
+        ],
+        "InternalRelay4GroupNumber": [
+          4
+        ],
+        "InternalRelay5GroupNumber": [
+          255
+        ],
+        "CoolActivationOutput": [
+          1
+        ],
+        "CoolStage1Output": [
+          1
+        ],
+        "CoolStage2Output": [
+          1
+        ],
+        "CoolStage3Output": [
+          1
+        ],
+        "CoolFanLowOutput": [
+          1
+        ],
+        "CoolFanMediumOutput": [
+          1
+        ],
+        "CoolFanHighOutput": [
+          1
+        ],
+        "HeatActivationOutput": [
+          1
+        ],
+        "HeatStage1Output": [
+          1
+        ],
+        "HeatStage2Output": [
+          1
+        ],
+        "HeatStage3Output": [
+          1
+        ],
+        "HeatFanLowOutput": [
+          1
+        ],
+        "HeatFanMediumOutput": [
+          1
+        ],
+        "HeatFanHighOutput": [
+          1
+        ],
+        "DamperZone1Output": [
+          2
+        ],
+        "DamperZone2Output": [
+          2
+        ],
+        "DamperZone3Output": [
+          2
+        ],
+        "DamperZone4Output": [
+          2
+        ]
+      },
+      "body_lines": [
+        "Master/Slave: Master<br/>",
+        "Plant Type: Heat pump - reverse cycle<br/>",
+        "UI Displayed Temperature Zone: Zone 2<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Unswitched Zone</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>Yes</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 2</th></tr>",
+        "<tr><th>Plant Zone</th><td>No</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>No</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>Yes</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 4</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>No</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>Yes</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "Guard Enabled<br/>",
+        "Lower Activation Threshold: 20°C<br/>",
+        "Upper Activation Threshold: 30°C<br/>",
+        "<br/>",
+        "Fan Operation Mode: Continuous operation<br/>",
+        "<table>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Heating Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Fan Speeds</th><td>3</td></tr>",
+        "<tr><th>Default Speed</th><td>2</td></tr>",
+        "<tr><th>Fan On Delay</th><td>1m</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>2m</td></tr>",
+        "</table></td>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Cooling Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Scheduling</th></tr>",
+        "<tr><th>Non-Evaporative Plant Equipment</th><td>Enabled</td></tr>",
+        "<tr><th>Evaporative Plant Equipment</th><td>Disabled</td></tr>",
+        "<tr><th>Enable Group</th><td><a href=\"#254_203_3\">K3</a></td></tr>",
+        "<tr><th>Disable Group</th><td><a href=\"#254_203_4\">K4</a></td></tr>",
+        "<tr><th>Override Group</th><td><a href=\"#254_203_5\">K5</a></td></tr>",
+        "</table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Internal Relays</th></tr>",
+        "<tr><th>Relay 1</th><td><a href=\"#254_56_1\">K1</a></td></tr>",
+        "<tr><th>Relay 2</th><td><a href=\"#254_56_2\">K2</a></td></tr>",
+        "<tr><th>Relay 3</th><td><a href=\"#254_56_3\">K3</a></td></tr>",
+        "<tr><th>Relay 4</th><td><a href=\"#254_56_4\">K4</a></td></tr>",
+        "<tr><th>Relay 5</th><td>&#60;Unused&#62;</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Cool Activation<br/>Cool Stage 1<br/>Cool Stage 2<br/>Cool Stage 3<br/>Cool Fan Low<br/>Cool Fan Medium<br/>Cool Fan High<br/>Heat Activation<br/>Heat Stage 1<br/>Heat Stage 2<br/>Heat Stage 3<br/>Heat Fan Low<br/>Heat Fan Medium<br/>Heat Fan High"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 2,
+          "html": "Damper Zone 1<br/>Damper Zone 2<br/>Damper Zone 3<br/>Damper Zone 4"
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": "Internal Relay 1"
+        },
+        {
+          "kind": "output",
+          "application": 57,
+          "group": 1,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 172,
+          "group": 1,
+          "html": "Zone Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 3,
+          "html": "Remote Setback Off<br/>Schedule On"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "pc_tsb",
+      "family": "thermostat",
+      "class": "TPC_TSB",
+      "unit_type": "PC_TSB",
+      "firmware": "1.2.00",
+      "address": 12,
+      "parameters": {
+        "Application": [
+          56
+        ],
+        "ApplicationNumber": [
+          57
+        ],
+        "InstalledZones": [
+          21
+        ],
+        "ControlledZones": [
+          17
+        ],
+        "CoolingPlantInstalledZones": [
+          5
+        ],
+        "HeatingPlantInstalledZones": [
+          17
+        ],
+        "VentingPlantInstalledZones": [
+          16
+        ],
+        "UIAllocatedZones": [
+          4
+        ],
+        "MeasuredZones": [
+          1
+        ],
+        "InternalPlantType": [
+          3
+        ],
+        "FanOperationMode": [
+          1
+        ],
+        "GuardEnable": [
+          1
+        ],
+        "GuardLowerTemperature": [
+          0
+        ],
+        "GuardUpperTemperature": [
+          40
+        ],
+        "HeatingPlantFanEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeeds": [
+          3
+        ],
+        "HeatingPlantFanDefaultSpeed": [
+          2
+        ],
+        "HeatingPlantFanOnDelay": [
+          15
+        ],
+        "HeatingPlantFanOffDelay": [
+          21
+        ],
+        "CoolingPlantFanEnable": [
+          0
+        ],
+        "CoolingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "CoolingPlantFanSpeeds": [
+          2
+        ],
+        "CoolingPlantFanDefaultSpeed": [
+          1
+        ],
+        "CoolingPlantFanOnDelay": [
+          1
+        ],
+        "CoolingPlantFanOffDelay": [
+          3
+        ],
+        "ZoneTemperatureDisplay": [
+          2
+        ],
+        "EvapProgramEnabled": [
+          255
+        ],
+        "NonEvapProgramEnabled": [
+          255
+        ],
+        "RemoteScheduleEnable": [
+          1
+        ],
+        "RemoteScheduleOnGroup": [
+          3
+        ],
+        "RemoteScheduleOffGroup": [
+          4
+        ],
+        "RemoteScheduleOverrideGroup": [
+          5
+        ],
+        "ZoneGroup": [
+          1
+        ],
+        "RemoteSetbackControlSource": [
+          2
+        ],
+        "RemoteSetbackOnGroup": [
+          2
+        ],
+        "RemoteSetbackOffGroup": [
+          3
+        ],
+        "MasterNetworkAddress": [
+          255
+        ],
+        "MasterAddress": [
+          10
+        ],
+        "InternalRelay1GroupNumber": [
+          1
+        ],
+        "InternalRelay2GroupNumber": [
+          2
+        ],
+        "InternalRelay3GroupNumber": [
+          3
+        ],
+        "InternalRelay4GroupNumber": [
+          4
+        ],
+        "InternalRelay5GroupNumber": [
+          255
+        ],
+        "CoolActivationOutput": [
+          1
+        ],
+        "CoolStage1Output": [
+          1
+        ],
+        "CoolStage2Output": [
+          1
+        ],
+        "CoolStage3Output": [
+          1
+        ],
+        "CoolFanLowOutput": [
+          1
+        ],
+        "CoolFanMediumOutput": [
+          1
+        ],
+        "CoolFanHighOutput": [
+          1
+        ],
+        "HeatActivationOutput": [
+          1
+        ],
+        "HeatStage1Output": [
+          1
+        ],
+        "HeatStage2Output": [
+          1
+        ],
+        "HeatStage3Output": [
+          1
+        ],
+        "HeatFanLowOutput": [
+          1
+        ],
+        "HeatFanMediumOutput": [
+          1
+        ],
+        "HeatFanHighOutput": [
+          1
+        ],
+        "DamperZone1Output": [
+          2
+        ],
+        "DamperZone2Output": [
+          2
+        ],
+        "DamperZone3Output": [
+          2
+        ],
+        "DamperZone4Output": [
+          2
+        ]
+      },
+      "body_lines": [
+        "Master/Slave: Master<br/>",
+        "Plant Type: Heat pump - reverse cycle<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Unswitched Zone</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>Yes</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 2</th></tr>",
+        "<tr><th>Plant Zone</th><td>No</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>No</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>Yes</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 4</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>No</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>Yes</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "Guard Enabled<br/>",
+        "Lower Activation Threshold: 20°C<br/>",
+        "Upper Activation Threshold: 30°C<br/>",
+        "<br/>",
+        "Fan Operation Mode: Continuous operation<br/>",
+        "<table>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Heating Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Fan Speeds</th><td>3</td></tr>",
+        "<tr><th>Default Speed</th><td>2</td></tr>",
+        "<tr><th>Fan On Delay</th><td>1m</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>2m</td></tr>",
+        "</table></td>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Cooling Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "</tr></table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Cool Activation<br/>Cool Stage 1<br/>Cool Stage 2<br/>Cool Stage 3<br/>Cool Fan Low<br/>Cool Fan Medium<br/>Cool Fan High<br/>Heat Activation<br/>Heat Stage 1<br/>Heat Stage 2<br/>Heat Stage 3<br/>Heat Fan Low<br/>Heat Fan Medium<br/>Heat Fan High"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 2,
+          "html": ""
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": "Internal Relay 1"
+        },
+        {
+          "kind": "output",
+          "application": 57,
+          "group": 1,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 172,
+          "group": 1,
+          "html": "Zone Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 3,
+          "html": "Remote Setback Off<br/>Schedule On"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": ""
+        }
+      ]
+    },
+    {
+      "id": "pc_tsb5",
+      "family": "thermostat",
+      "class": "TPC_TSB5",
+      "unit_type": "PC_TSB5",
+      "firmware": "1.2.00",
+      "address": 13,
+      "parameters": {
+        "Application": [
+          56
+        ],
+        "ApplicationNumber": [
+          57
+        ],
+        "InstalledZones": [
+          21
+        ],
+        "ControlledZones": [
+          17
+        ],
+        "CoolingPlantInstalledZones": [
+          5
+        ],
+        "HeatingPlantInstalledZones": [
+          17
+        ],
+        "VentingPlantInstalledZones": [
+          16
+        ],
+        "UIAllocatedZones": [
+          4
+        ],
+        "MeasuredZones": [
+          1
+        ],
+        "InternalPlantType": [
+          3
+        ],
+        "FanOperationMode": [
+          1
+        ],
+        "GuardEnable": [
+          1
+        ],
+        "GuardLowerTemperature": [
+          0
+        ],
+        "GuardUpperTemperature": [
+          40
+        ],
+        "HeatingPlantFanEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "HeatingPlantFanSpeeds": [
+          3
+        ],
+        "HeatingPlantFanDefaultSpeed": [
+          2
+        ],
+        "HeatingPlantFanOnDelay": [
+          15
+        ],
+        "HeatingPlantFanOffDelay": [
+          21
+        ],
+        "CoolingPlantFanEnable": [
+          0
+        ],
+        "CoolingPlantFanSpeedControlEnable": [
+          1
+        ],
+        "CoolingPlantFanSpeeds": [
+          2
+        ],
+        "CoolingPlantFanDefaultSpeed": [
+          1
+        ],
+        "CoolingPlantFanOnDelay": [
+          1
+        ],
+        "CoolingPlantFanOffDelay": [
+          3
+        ],
+        "ZoneTemperatureDisplay": [
+          2
+        ],
+        "EvapProgramEnabled": [
+          255
+        ],
+        "NonEvapProgramEnabled": [
+          255
+        ],
+        "RemoteScheduleEnable": [
+          1
+        ],
+        "RemoteScheduleOnGroup": [
+          3
+        ],
+        "RemoteScheduleOffGroup": [
+          4
+        ],
+        "RemoteScheduleOverrideGroup": [
+          5
+        ],
+        "ZoneGroup": [
+          1
+        ],
+        "RemoteSetbackControlSource": [
+          2
+        ],
+        "RemoteSetbackOnGroup": [
+          2
+        ],
+        "RemoteSetbackOffGroup": [
+          3
+        ],
+        "MasterNetworkAddress": [
+          255
+        ],
+        "MasterAddress": [
+          10
+        ],
+        "InternalRelay1GroupNumber": [
+          1
+        ],
+        "InternalRelay2GroupNumber": [
+          2
+        ],
+        "InternalRelay3GroupNumber": [
+          3
+        ],
+        "InternalRelay4GroupNumber": [
+          4
+        ],
+        "InternalRelay5GroupNumber": [
+          255
+        ],
+        "CoolActivationOutput": [
+          1
+        ],
+        "CoolStage1Output": [
+          1
+        ],
+        "CoolStage2Output": [
+          1
+        ],
+        "CoolStage3Output": [
+          1
+        ],
+        "CoolFanLowOutput": [
+          1
+        ],
+        "CoolFanMediumOutput": [
+          1
+        ],
+        "CoolFanHighOutput": [
+          1
+        ],
+        "HeatActivationOutput": [
+          1
+        ],
+        "HeatStage1Output": [
+          1
+        ],
+        "HeatStage2Output": [
+          1
+        ],
+        "HeatStage3Output": [
+          1
+        ],
+        "HeatFanLowOutput": [
+          1
+        ],
+        "HeatFanMediumOutput": [
+          1
+        ],
+        "HeatFanHighOutput": [
+          1
+        ],
+        "DamperZone1Output": [
+          2
+        ],
+        "DamperZone2Output": [
+          2
+        ],
+        "DamperZone3Output": [
+          2
+        ],
+        "DamperZone4Output": [
+          2
+        ]
+      },
+      "body_lines": [
+        "Master/Slave: Master<br/>",
+        "Plant Type: Heat pump - reverse cycle<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Unswitched Zone</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>Yes</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 2</th></tr>",
+        "<tr><th>Plant Zone</th><td>No</td></tr>",
+        "<tr><th>Cooling Operation</th><td>Yes</td></tr>",
+        "<tr><th>Heating Operation</th><td>No</td></tr>",
+        "<tr><th>Venting Operation</th><td>No</td></tr>",
+        "<tr><th>User Controlled</th><td>Yes</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Zone 4</th></tr>",
+        "<tr><th>Plant Zone</th><td>Yes</td></tr>",
+        "<tr><th>Cooling Operation</th><td>No</td></tr>",
+        "<tr><th>Heating Operation</th><td>Yes</td></tr>",
+        "<tr><th>Venting Operation</th><td>Yes</td></tr>",
+        "<tr><th>User Controlled</th><td>No</td></tr>",
+        "<tr><th>Local Temperature Sensor</th><td>No</td></tr>",
+        "</table>",
+        "<br/>",
+        "Guard Enabled<br/>",
+        "Lower Activation Threshold: 20°C<br/>",
+        "Upper Activation Threshold: 30°C<br/>",
+        "<br/>",
+        "Fan Operation Mode: Continuous operation<br/>",
+        "<table>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Heating Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Enabled</td></tr>",
+        "<tr><th>Allow Direct Fan Speed Control</th><td>Yes</td></tr>",
+        "<tr><th>Fan Speeds</th><td>3</td></tr>",
+        "<tr><th>Default Speed</th><td>2</td></tr>",
+        "<tr><th>Fan On Delay</th><td>1m</td></tr>",
+        "<tr><th>Fan Off Delay</th><td>2m</td></tr>",
+        "</table></td>",
+        "<td vAlign=\"top\"><table border=\"1\">",
+        "<tr><th colspan=\"2\">Cooling Fan</th></tr>",
+        "<tr><th>Fan Operation</th><td>Disabled</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Internal Relays</th></tr>",
+        "<tr><th>Relay 1</th><td><a href=\"#254_56_1\">K1</a></td></tr>",
+        "<tr><th>Relay 2</th><td><a href=\"#254_56_2\">K2</a></td></tr>",
+        "<tr><th>Relay 3</th><td><a href=\"#254_56_3\">K3</a></td></tr>",
+        "<tr><th>Relay 4</th><td><a href=\"#254_56_4\">K4</a></td></tr>",
+        "<tr><th>Relay 5</th><td>&#60;Unused&#62;</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 1,
+          "html": "Cool Activation<br/>Cool Stage 1<br/>Cool Stage 2<br/>Cool Stage 3<br/>Cool Fan Low<br/>Cool Fan Medium<br/>Cool Fan High<br/>Heat Activation<br/>Heat Stage 1<br/>Heat Stage 2<br/>Heat Stage 3<br/>Heat Fan Low<br/>Heat Fan Medium<br/>Heat Fan High"
+        },
+        {
+          "kind": "input",
+          "application": 56,
+          "group": 2,
+          "html": ""
+        },
+        {
+          "kind": "output",
+          "application": 56,
+          "group": 1,
+          "html": "Internal Relay 1"
+        },
+        {
+          "kind": "output",
+          "application": 57,
+          "group": 1,
+          "html": ""
+        },
+        {
+          "kind": "other",
+          "application": 172,
+          "group": 1,
+          "html": "Zone Group"
+        },
+        {
+          "kind": "other",
+          "application": 203,
+          "group": 3,
+          "html": "Remote Setback Off<br/>Schedule On"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 9,
+          "address": 66,
+          "value": 2,
+          "html": ""
+        }
+      ]
+    }
+  ]
+}

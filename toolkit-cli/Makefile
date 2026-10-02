@@ -223,6 +223,20 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[expanded-reserved-confirmed-mock]' \
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_add_guards_refuse_without_persistent_send[mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[default-repair-grid-before-widget-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[cancel-repeated-selected-list-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[absent-collection-chinese-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[zero-default-first-selected-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[allocated-widget-then-grid-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[language-parent-and-scene-add-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[add-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[set-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[pp-save-mock]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_invalid_history_never_writes[mock]' \
+		'tests/test_cgate_project_documentation_sensors_interop.py::test_public_database_document_sensor_families_preserves_snapshot[mock]' \
+		'tests/test_cgate_project_documentation_wireless_interop.py::test_public_database_document_wireless_families_preserves_snapshot[mock]' \
+		'tests/test_cgate_project_documentation_l1_interop.py::test_public_database_document_l1_preserves_snapshot_and_literal_body[mock]' \
+		'tests/test_cgate_project_documentation_architectural_interop.py::test_public_database_document_architectural_families_preserves_snapshot[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -368,6 +382,22 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[expanded-reserved-confirmed-daemon]' \
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_lost_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_add_guards_refuse_without_persistent_send[daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[default-repair-grid-before-widget-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[cancel-repeated-selected-list-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[absent-collection-chinese-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[zero-default-first-selected-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[allocated-widget-then-grid-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_parent_complete_history[language-parent-and-scene-add-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[add-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[set-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_lost_success_stops_without_replay[pp-save-daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_invalid_history_never_writes[daemon]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_authentication_stops_before_write[missing]' \
+		'tests/test_cgate_edlt_static_language_add_interop.py::test_public_static_language_authentication_stops_before_write[wrong]' \
+		'tests/test_cgate_project_documentation_sensors_interop.py::test_public_database_document_sensor_families_preserves_snapshot[daemon]' \
+		'tests/test_cgate_project_documentation_wireless_interop.py::test_public_database_document_wireless_families_preserves_snapshot[daemon]' \
+		'tests/test_cgate_project_documentation_l1_interop.py::test_public_database_document_l1_preserves_snapshot_and_literal_body[daemon]' \
+		'tests/test_cgate_project_documentation_architectural_interop.py::test_public_database_document_architectural_families_preserves_snapshot[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

@@ -456,6 +456,8 @@ fn parse_node(node: roxmltree::Node<'_, '_>) -> Result<TagNode, String> {
                 | "Unit"
                 | "PP"
                 | "TagsDLT"
+                | "Languages"
+                | "Language"
         ) {
             result.push_child(parse_node(child)?);
         } else if child.children().any(|c| !c.is_text()) || child.attributes().len() != 0 {
@@ -500,6 +502,42 @@ fn parse_node(node: roxmltree::Node<'_, '_>) -> Result<TagNode, String> {
         }
     }
     Ok(result)
+}
+
+/// Complete native Network language rows. The Toolkit language agent uses
+/// these ID/TagValue objects separately from Group/Level TagsDLT labels.
+pub(crate) fn parse_network_languages(node: roxmltree::Node<'_, '_>) -> Result<String, String> {
+    let collection = parse_node(node)?;
+    if collection.element != "Languages"
+        || !collection.attributes.is_empty()
+        || !collection.retained_xml.is_empty()
+        || collection.fields.iter().any(|(name, _)| name != "OID")
+        || collection
+            .field("OID")
+            .is_none_or(|oid| !crate::valid_uuid(oid))
+    {
+        return Err("Invalid Network Languages collection".to_string());
+    }
+    for row in &collection.children {
+        if row.element != "Language"
+            || !row.attributes.is_empty()
+            || !row.children.is_empty()
+            || !row.retained_xml.is_empty()
+            || row
+                .fields
+                .iter()
+                .any(|(name, _)| !matches!(name.as_str(), "OID" | "ID" | "TagValue"))
+            || row.field("OID").is_none_or(|oid| !crate::valid_uuid(oid))
+            || row.field("ID").is_none_or(|id| id.parse::<i32>().is_err())
+            || row.field("TagValue").is_none()
+            || ["OID", "ID", "TagValue"]
+                .iter()
+                .any(|name| row.fields.iter().filter(|(key, _)| key == name).count() != 1)
+        {
+            return Err("Invalid Network Language row".to_string());
+        }
+    }
+    Ok(collection.document())
 }
 
 impl TagNetwork {
@@ -570,9 +608,21 @@ impl TagNetwork {
                 "Application" => {
                     crate::parse_db_xml_object(child)?;
                 }
+                "Languages" => {
+                    parse_network_languages(child)?;
+                }
                 "OID" | "Address" | "TagName" | "NetworkNumber" | "Interface" | "Description" => {}
                 other => return Err(format!("Unsupported Network child {other}")),
             }
+        }
+        if root
+            .children
+            .iter()
+            .filter(|child| child.element == "Languages")
+            .count()
+            > 1
+        {
+            return Err("Duplicate Network Languages collection".to_string());
         }
         for element in ["Unit", "Application"] {
             let mut addresses = HashSet::new();
@@ -679,6 +729,8 @@ fn child_type(token: &str) -> bool {
             | "Unit"
             | "TagsDLT"
             | "TagDLT"
+            | "Languages"
+            | "Language"
     )
 }
 
@@ -1108,7 +1160,11 @@ impl Server {
             Err(_)
                 if network
                     .database_network
-                    .is_some_and(|number| number.to_string() == address) =>
+                    .is_some_and(|number| number.to_string() == address)
+                    && !suffix.split('/').any(|part| {
+                        part == "Languages"
+                            || indexed_type(part).is_some_and(|(kind, _)| kind == "Languages")
+                    }) =>
             {
                 Ok(None)
             }
@@ -1207,6 +1263,14 @@ impl Server {
                                 .into_iter()
                                 .flat_map(TagNode::oids),
                         )
+                        .chain(
+                            record
+                                .root
+                                .children
+                                .iter()
+                                .filter(|child| child.element == "Languages")
+                                .flat_map(TagNode::oids),
+                        )
                         .collect::<Vec<_>>()
                 } else {
                     record.root.oids()
@@ -1275,10 +1339,143 @@ impl Server {
         Ok(())
     }
 
+    /// Language edits own only the Network language collection. Replaying
+    /// the complete numeric Unit/Application mapper here would change
+    /// unrelated raw programming records and physical inventory.
+    fn replace_language_record(&mut self, project: &str, key: &str, record: TagNetwork) {
+        let old_oids = self.projects[project].tag_networks[key].root.oids();
+        if record.database_network.is_some() {
+            let oid = record.root.field("OID").expect("Network OID");
+            let extras = self
+                .db_xml_extras
+                .entry(Self::unit_document_key(project, oid))
+                .or_default();
+            extras
+                .children
+                .retain(|xml| !xml.starts_with("<Languages>"));
+            extras.children.extend(
+                record
+                    .root
+                    .children
+                    .iter()
+                    .filter(|child| child.element == "Languages")
+                    .map(TagNode::document),
+            );
+        }
+        self.projects
+            .get_mut(project)
+            .expect("selected project")
+            .tag_networks
+            .remove(key);
+        self.register_tag_network(project, record);
+        self.retire_inactive_db_oids(&old_oids);
+    }
+
+    /// Legacy numeric databases do not always have a tag overlay. Resolve
+    /// their actual Network OID and compose a temporary authoritative tree
+    /// for this language command. Reads never materialize persistent state;
+    /// successful mutations install the tree once.
+    fn numeric_language_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
+        let verb = words.first()?.to_ascii_uppercase();
+        let target = *words.get(1)?;
+        let add = matches!(verb.as_str(), "DBADD" | "DBADDSAFE")
+            && words
+                .get(2)
+                .is_some_and(|element| element.eq_ignore_ascii_case("Languages"));
+        let qualified = target
+            .strip_prefix("//")
+            .and_then(|rest| rest.split_once('/'))
+            .map(|(project, _)| project);
+        let project = qualified.or(self.current.as_deref())?.to_string();
+        let owner = self.projects.get(&project)?;
+        let language_owner = target.strip_prefix('!').and_then(|rest| {
+            let oid = rest.split('/').next()?;
+            owner.networks.values().find(|network| {
+                let Some(extras) = self
+                    .db_xml_extras
+                    .get(&Self::unit_document_key(&project, &network.oid))
+                else {
+                    return false;
+                };
+                let mut oids = Vec::new();
+                crate::db_xml_language_oids(extras, &mut oids);
+                oids.iter().any(|(candidate, _)| candidate == oid)
+            })
+        });
+        if !add
+            && language_owner.is_none()
+            && !target.split('/').any(|part| {
+                part == "Languages"
+                    || indexed_type(part).is_some_and(|(kind, _)| kind == "Languages")
+            })
+        {
+            return None;
+        }
+        let network = if let Some(rest) = target.strip_prefix('!') {
+            let oid = rest.split('/').next()?;
+            language_owner.or_else(|| owner.networks.values().find(|network| network.oid == oid))
+        } else {
+            let relative = target
+                .strip_prefix(&format!("//{project}/"))
+                .unwrap_or(target);
+            let address = relative.split('/').next()?;
+            owner
+                .networks
+                .values()
+                .find(|network| network.address.to_string() == address)
+        }?;
+        if owner
+            .tag_networks
+            .values()
+            .any(|record| record.database_network == Some(network.address))
+        {
+            return None;
+        }
+        if !matches!(
+            verb.as_str(),
+            "DBGET" | "DBGETXML" | "DBADD" | "DBADDSAFE" | "DBSET" | "DBSETSAFE" | "DBDELETE"
+        ) {
+            return None;
+        }
+        if add
+            && target.trim_end_matches('/') != format!("!{}", network.oid)
+            && target.trim_end_matches('/') != format!("//{project}/{}", network.address)
+            && target != network.address.to_string()
+        {
+            return None;
+        }
+        let document = self.network_xml_document(&project, network.address, network);
+        let parsed = match roxmltree::Document::parse(&document) {
+            Ok(parsed) => parsed,
+            Err(error) => return Some(err(tag, 408, &format!("408 Operation failed: {error}"))),
+        };
+        let root = match parse_node(parsed.root_element()) {
+            Ok(root) => root,
+            Err(error) => return Some(err(tag, 408, &format!("408 Operation failed: {error}"))),
+        };
+        // This is an already-owned numeric graph, not a new complete XML
+        // submission. Preserve incomplete/raw descendants without trying to
+        // re-admit them under external Unit/Application schema rules.
+        let record = TagNetwork {
+            root,
+            database_network: Some(network.address),
+            created_seq: network.created_seq,
+            saved_level_tags_pending: false,
+        };
+        let mut staged = self.clone();
+        staged.register_tag_network(&project, record);
+        let response = staged.tag_database_command(tag, words)?;
+        if !matches!(verb.as_str(), "DBGET" | "DBGETXML") && response.status < 400 {
+            *self = staged;
+        }
+        Some(response)
+    }
+
     fn named_child_allowed(parent: &str, child: &str) -> bool {
         matches!(
             (parent, child),
-            ("Network", "Application" | "Unit")
+            ("Network", "Application" | "Unit" | "Languages")
+                | ("Languages", "Language")
                 | ("Application", "Group" | "NetVar")
                 | ("Group" | "NetVar", "Level")
         )
@@ -1315,10 +1512,44 @@ impl Server {
             "netvar" => "NetVar",
             "level" => "Level",
             "unit" => "Unit",
+            "languages" => "Languages",
+            "language" => "Language",
             _ => return err(tag, 401, "401 Bad object or device ID: Field not found"),
         };
         if selected.field.is_some() || !Self::named_child_allowed(&parent.element, element) {
             return err(tag, 401, "401 Bad object or device ID: Field not found");
+        }
+        if matches!(element, "Languages" | "Language") {
+            if safe {
+                return err(
+                    tag,
+                    400,
+                    "400 Language objects require DBADD without an Address",
+                );
+            }
+            if element == "Languages"
+                && parent
+                    .children
+                    .iter()
+                    .any(|child| child.element == "Languages")
+            {
+                return err(tag, 409, "409 Languages collection already exists");
+            }
+            let mut staged = self.clone();
+            let oid = staged.issue_oid();
+            let mut replacement = record.clone();
+            replacement
+                .root
+                .at_mut(&selected.indices)
+                .push_child(TagNode::new(element, &[("OID", &oid)]));
+            staged.replace_language_record(&selected.project, &selected.key, replacement);
+            *self = staged;
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("301 OID={oid}"),
+                status: 301,
+            };
         }
         if safe {
             let Ok(address) = words[3].parse::<u8>() else {
@@ -2335,6 +2566,9 @@ impl Server {
     }
 
     pub(crate) fn tag_database_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
+        if let Some(response) = self.numeric_language_command(tag, words) {
+            return Some(response);
+        }
         let verb = words.first()?.to_ascii_uppercase();
         if verb == "DBGET" && words.len() == 2 {
             let path = words[1];
@@ -2653,6 +2887,12 @@ impl Server {
             && record
                 .database_network
                 .is_some_and(|address| address.to_string() == selected.key)
+            && !words.get(2).is_some_and(|element| {
+                matches!(
+                    element.to_ascii_lowercase().as_str(),
+                    "languages" | "language"
+                )
+            })
         {
             // Existing numeric children retain their established pending and
             // typed creation owner. Reads rehydrate from that current owner.
@@ -2660,6 +2900,73 @@ impl Server {
         }
         if matches!(verb.as_str(), "DBADD" | "DBADDSAFE") {
             return Some(self.add_named_tag_child(tag, words, &selected, &record));
+        }
+        if matches!(node.element.as_str(), "Languages" | "Language")
+            && matches!(
+                verb.as_str(),
+                "DBSET" | "DBSETSAFE" | "DBDELETE" | "DBCOPY" | "DBCOPYSAFE"
+            )
+        {
+            if matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE") {
+                return Some(err(
+                    tag,
+                    408,
+                    "408 Operation failed: standalone language copy is unsupported",
+                ));
+            }
+            let mut replacement = record.clone();
+            if verb == "DBDELETE" {
+                if words.len() != 2 || selected.field.is_some() {
+                    return Some(err(tag, 400, "400 Syntax Error."));
+                }
+                let (last, parent) = selected.indices.split_last().expect("language child");
+                let mut index = 0;
+                replacement.root.at_mut(parent).retain_children(|_| {
+                    let keep = index != *last;
+                    index += 1;
+                    keep
+                });
+            } else {
+                let Some(field @ ("ID" | "TagValue")) = selected
+                    .field
+                    .as_deref()
+                    .filter(|_| node.element == "Language")
+                else {
+                    return Some(err(
+                        tag,
+                        401,
+                        "401 Bad object or device ID: Field not found",
+                    ));
+                };
+                if verb == "DBSETSAFE" && words.len() < 3 {
+                    return Some(err(tag, 400, "400 Field value required"));
+                }
+                let mut value = words.get(2..).unwrap_or_default().join(" ");
+                if field == "ID" {
+                    let Ok(id) = value.parse::<i32>() else {
+                        return Some(err(
+                            tag,
+                            408,
+                            "408 Operation failed: Language ID must be an integer",
+                        ));
+                    };
+                    value = id.to_string();
+                }
+                if !value.chars().all(|character| {
+                    matches!(character,
+                    '\u{9}' | '\u{A}' | '\u{D}' | '\u{20}'..='\u{D7FF}'
+                        | '\u{E000}'..='\u{FFFD}' | '\u{10000}'..='\u{10FFFF}')
+                }) {
+                    return Some(err(
+                        tag,
+                        408,
+                        "408 Operation failed: Language value is not representable in XML",
+                    ));
+                }
+                replacement.root.at_mut(&selected.indices).set(field, value);
+            }
+            self.replace_language_record(&selected.project, &selected.key, replacement);
+            return Some(crate::ok(tag, Vec::new(), "200 OK."));
         }
         if matches!(verb.as_str(), "DBCOPY" | "DBCOPYSAFE") && record.database_network.is_none() {
             return Some(self.copy_named_tag_node(tag, words, &selected, &record));

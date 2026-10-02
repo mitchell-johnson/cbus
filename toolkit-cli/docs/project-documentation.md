@@ -18,6 +18,9 @@ For one fresh loaded cmqttd/C-Gate snapshot, use
 [`cgate database-document --project //PROJECT`](native-project-documentation.md).
 The same renderer now also admits eight source-pinned light-level, WHAA and
 DALI factory profiles; see [their exact saved-PP boundaries](project-documentation-remaining.md).
+It also renders bounded [multisensor and thermostat](project-documentation-sensors.md)
+and [wireless, gateway, remote and Bytecraft L1](project-documentation-wireless-l1.md)
+profiles with independent group and action dependencies.
 
 The command never overwrites. If the output file exists, it fails with
 `FileExistsError` and leaves the file unchanged. The default name is
@@ -113,7 +116,12 @@ and its verified receipt.
 | `TSENTEMPDocumentor`, `TSENTEMPProDocumentor`, `TDigitalTemperatureSensorDocumentor` | registered `SENTEMP`, `SENTEMPB`, `SENTEMP4` classes | Recovered consumed control/broadcast fields and four-channel reports under explicit Celsius/period-decimal formatting |
 | `TLightLevelSensorDocumentor`, `TST7LightLevelSensorDocumentor` | old `SENLL`, `PE_CELL`, ST7 `SENLL` under exact selected factory profiles | Recovered saved control/lux/broadcast bodies and independently bounded usage; scene and omitted loader-state dependencies remain marked |
 | `TWHAADocumentor`, `TDALI2BDocumentor` | `PC_WHAD/WHAR/WHARB`, `PC_DAL2B/C` under exact selected factory profiles | Recovered audio roles/zones and DALI mappings/error references; complete consumed programming required |
-| every other documentor | other Neo key inputs, multisensor, thermostat, architectural and Bytecraft L1 dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
+| `TMultisensorDocumentor` | Seven exact factory profiles for `SENPILL/A`, `SENPIRIC/IB` and `SENLLA` | Bounded eight-key/block loaders, sensor-specific macro overrides, occupancy/light-level controls and explicit canonical scenes; active joins and missing dependencies refused |
+| `TThermostatDocumentor` | `PC_TSA`, `PC_TSA5`, `PC_TSB`, `PC_TSB5` | Bounded HVAC/plant/output/master reports; existing nongenerated plant groups and unambiguous explicit NetworkNumber required |
+| `TCBusWirelessInputDocumentor`, `TWirelessGatewayDocumentor`, `TWirelessGatewayAdvancedDocumentor`, `TRemoteControlDocumentor` | 50 wireless input types, two gateways and seven remotes under exact source partitions | Bounded sixteen-block/decorator/remote-map and compacted-scene tables; missing receivers/consumed metadata refused |
+| `TBytecraftDimmerDocumentor` | `DIMPR12` L1 partition at `1.9.03–9` | Bounded inherited body/scenes and one logic group, with per-channel enable and Min/Max attributes |
+| `TArchitecturalDimmerDocumentor` | `DIMAR3`, `DIMAR6`, `DIMAR12`, `C12DIMAR` | Bounded fresh loaded channel/logic/DMX tables, fixed RMS voltage conversion, 128 sparse ordinary scenes and special scenes; consumed metadata required |
+| every other documentor | other Neo key input profiles and unsupported loaded states | Unrecovered: base block and a marker |
 
 The [Neo body note](project-documentation-neo.md) records physical and virtual
 key labels, secondary applications, the native scene-ramp indexing quirk and

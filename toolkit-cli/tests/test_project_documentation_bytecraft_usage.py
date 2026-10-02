@@ -33,7 +33,7 @@ def test_old_registration_admitted(firmware):
 
 
 @pytest.mark.parametrize('firmware', ['', '1.9.03', '9', '١.٩.٠٢', '1.9.x', None, '2147483648'])
-def test_missing_malformed_and_l1_firmware_refused(firmware):
+def test_missing_malformed_and_incomplete_l1_firmware_refused(firmware):
     assert bytecraft_output_group_usage(unit(firmware), 56, 8).status == 'unrecovered'
 
 
@@ -66,10 +66,11 @@ def test_static_receipt():
     assert receipt['original_loader_execution'] == 'not_executed'
 
 
-def test_generic_dispatch_admits_old_output_only_and_preserves_l1_boundary():
+def test_generic_dispatch_admits_output_and_requires_l1_logic_fields():
     from cbus_toolkit.project_documentation_usage import group_usage
     assert group_usage(unit(), 56, 8, 'output') == bytecraft_output_group_usage(unit(), 56, 8)
-    assert group_usage(unit('1.9.03'), 56, 8, 'output').status == 'unrecovered'
+    result = group_usage(unit('1.9.03'), 56, 8, 'output')
+    assert result.status == 'unrecovered' and 'LogicGroupAddress' in result.missing[0]
     assert group_usage(unit(), 56, 8, 'input').status == 'unrecovered'
     assert group_usage(unit(), 56, 8, 'other').status == 'partial'
 

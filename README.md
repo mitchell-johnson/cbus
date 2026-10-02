@@ -19,6 +19,21 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+The Toolkit CLI also renders saved multisensor, thermostat, wireless input,
+gateway and remote-control report tables from explicit supported snapshots.
+Architectural dimmer reports include 128 sparse scenes, DMX mappings and
+source-derived voltage conversion; Bytecraft L1 adds channel logic.
+Use `project document` for a file or `cgate database-document` for one fresh
+database read. Ordered eDLT `static-text-dialog` and `add-language-dialog`
+operations compose with widget and SceneManager edits through the existing
+parent transaction. cmqttd retains their Network language objects with stable
+identities and save/reload. See [report profiles](toolkit-cli/docs/project-documentation.md),
+[static text and languages](toolkit-cli/docs/edlt-static-language-add.md) and
+[service language definitions](docs/cgate-network-languages.md) for the admitted
+inputs, exact command behavior and remaining original/physical acceptance.
+The [current implementation report](toolkit-cli/docs/feature-batch-2026-10-03-static-languages-documentors.md)
+records the tests, retained failures and outstanding acceptance for this batch.
+
 The [network definition workflow](toolkit-cli/docs/network-definitions.md)
 now carries closed runtime definitions into the project with `NET SAVE DB`.
 The CLI and cmqttd preserve exact native tag addresses such as `0254`, `0xff`

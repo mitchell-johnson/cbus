@@ -155,6 +155,7 @@ def build_native_model(snapshot: bytes) -> ProjectModel:
     for network_node in _children(project, "Network"):
         _shape(network_node, {"Application", "Unit"})
         network_address = _address(network_node)
+        number = None
         if _children(network_node, "NetworkNumber"):
             number = _byte(_scalar(network_node, "NetworkNumber"), "NetworkNumber")
             if number != network_address:
@@ -192,7 +193,7 @@ def build_native_model(snapshot: bytes) -> ProjectModel:
         interface_type, interface_address = _interface(network_node)
         networks.append(Network(network_address, _scalar(network_node, "TagName"),
                                 interface_type, interface_address, _unique(applications, "application"),
-                                _unique(units, "unit")))
+                                _unique(units, "unit"), number))
     if not networks:
         raise ProjectError("Native snapshot contains no networks")
     return ProjectModel(_scalar(project, "TagName"), _unique(networks, "network"),

@@ -1318,6 +1318,14 @@ configured Network/Unit exchange through the running daemon while checking
 zero administrative PCI traffic; `system_cgate_database_lifecycle.rs`
 additionally pins restart behavior.
 
+Network language definitions now use the recovered Toolkit `DBADD Languages`,
+`DBADD Language`, `DBSET ID`/`TagValue` and OID deletion sequence. Complete
+Network XML and durable JSON retain their collection/row identities and order;
+local edits preserve unrelated programming and physical state. The
+[`Network language contract`](cgate-network-languages.md) distinguishes these
+tested owned operations from pending original native receipts, serializer
+ordering and physical label acceptance.
+
 `native_cgate_deploy_queue.json` retains all five command help/grammar paths,
 TaskGroupSummary field order, delete-type behavior, exact event JSON, owned
 class hashes, and the native registry-orphan edge from the same pinned jar.

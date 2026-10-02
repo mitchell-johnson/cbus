@@ -1,0 +1,365 @@
+{
+  "format": "cbus-edlt-static-language-add-cli-wire-v1",
+  "scope": {
+    "original_execution": false,
+    "physical_acceptance": false,
+    "owned_native_command_composition": true,
+    "comparison_ignores_whitespace_only_text": true,
+    "native_collection_serializer_order_accepted": false
+  },
+  "language_requests": {
+    "create_collection": "DBADD !NETWORK_OID Languages",
+    "create_row": "DBADD !NETWORK_OID/Languages Language",
+    "id": "DBSET !ROW_OID/ID ID",
+    "tag_value": "DBSET !ROW_OID/TagValue NAME",
+    "delete": "DBDELETE !ROW_OID"
+  },
+  "statuses": {
+    "create": 301,
+    "write": 200,
+    "delete": 200,
+    "oid": 342,
+    "save": 200
+  },
+  "cases": [
+    {
+      "id": "default-repair-grid-before-widget",
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            74,
+            1
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "close": "button",
+          "edits": [
+            {
+              "index": 3,
+              "text": "Māori"
+            }
+          ]
+        },
+        {
+          "op": "lighting",
+          "page": 1,
+          "position": 2,
+          "group": 0,
+          "mode": "off-on",
+          "label_text": "Māori"
+        }
+      ],
+      "ids": [
+        0,
+        1,
+        74
+      ],
+      "names": [
+        "74",
+        "custom English",
+        "French"
+      ],
+      "created": 1,
+      "deleted": 1,
+      "static": {
+        "3": "4dc4816f726900"
+      },
+      "pp": {
+        "Widget7WidgetByteValue13": [
+          3
+        ]
+      }
+    },
+    {
+      "id": "cancel-repeated-selected-list",
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "cancel": true
+        },
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            1,
+            8,
+            74
+          ]
+        },
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            80,
+            1,
+            8
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "edits": [
+            {
+              "index": 0,
+              "text": "First"
+            },
+            {
+              "index": 0,
+              "text": "Final"
+            }
+          ]
+        }
+      ],
+      "ids": [
+        0,
+        1,
+        8,
+        1,
+        80
+      ],
+      "names": [
+        "8",
+        "custom English",
+        "custom NZ",
+        "second English",
+        "German"
+      ],
+      "created": 2,
+      "deleted": 2,
+      "static": {
+        "0": "46696e616c00"
+      },
+      "pp": {},
+      "lexical_ids": true
+    },
+    {
+      "id": "absent-collection-chinese",
+      "absent": true,
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            1,
+            202
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "close": "window",
+          "edits": [
+            {
+              "index": 0,
+              "text": "中文"
+            }
+          ]
+        }
+      ],
+      "ids": [
+        1,
+        202,
+        0
+      ],
+      "names": [
+        "English",
+        "Chinese",
+        "1"
+      ],
+      "created": 4,
+      "deleted": 0,
+      "static": {
+        "0": "e4b8ade6968700"
+      },
+      "pp": {}
+    },
+    {
+      "id": "zero-default-first-selected",
+      "zero_default": true,
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            8,
+            1
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "edits": [
+            {
+              "index": 63,
+              "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
+          ]
+        }
+      ],
+      "ids": [
+        0,
+        1,
+        8
+      ],
+      "names": [
+        "8",
+        "custom English",
+        "custom NZ"
+      ],
+      "created": 0,
+      "deleted": 0,
+      "static": {
+        "63": "41414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414100"
+      },
+      "pp": {}
+    },
+    {
+      "id": "allocated-widget-then-grid",
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "cancel": true
+        },
+        {
+          "op": "lighting",
+          "page": 1,
+          "position": 2,
+          "group": 0,
+          "mode": "off-on",
+          "label_text": "Allocated"
+        },
+        {
+          "op": "static-text-dialog",
+          "close": "window",
+          "edits": [
+            {
+              "index": 63,
+              "text": "Changed"
+            }
+          ]
+        }
+      ],
+      "ids": [
+        0,
+        1,
+        8
+      ],
+      "names": [
+        "8",
+        "custom English",
+        "custom NZ"
+      ],
+      "created": 0,
+      "deleted": 0,
+      "static": {
+        "63": "4368616e67656400"
+      },
+      "pp": {
+        "Widget7WidgetByteValue13": [
+          63
+        ]
+      }
+    },
+    {
+      "id": "language-parent-and-scene-add",
+      "ops": [
+        {
+          "op": "add-language-dialog",
+          "preferences": "registered-defaults",
+          "selected_ids": [
+            1,
+            8,
+            74
+          ]
+        },
+        {
+          "op": "add-activation-action-dialog",
+          "name": "Parent action"
+        },
+        {
+          "op": "scene-manager",
+          "operations": [
+            {
+              "op": "set-trigger",
+              "scene": 1,
+              "group": 7
+            },
+            {
+              "op": "add-action-dialog",
+              "scene": 1,
+              "name": "Scene action"
+            }
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "edits": [
+            {
+              "index": 4,
+              "text": "Scene grid"
+            }
+          ]
+        }
+      ],
+      "ids": [
+        0,
+        1,
+        8,
+        74
+      ],
+      "names": [
+        "8",
+        "custom English",
+        "custom NZ",
+        "French"
+      ],
+      "created": 1,
+      "deleted": 0,
+      "static": {
+        "4": "5363656e65206772696400"
+      },
+      "pp": {
+        "SceneCount": [
+          8
+        ],
+        "Scene1StartAddress": [
+          0
+        ],
+        "ProximityLevel": [
+          1
+        ]
+      },
+      "levels": [
+        [
+          7,
+          1,
+          "Parent action"
+        ],
+        [
+          7,
+          3,
+          "Scene action"
+        ]
+      ]
+    }
+  ],
+  "lost_stages": [
+    {
+      "id": "add",
+      "prefix": "DBADD",
+      "status": 301
+    },
+    {
+      "id": "set",
+      "prefix": "DBSET",
+      "status": 200
+    },
+    {
+      "id": "pp-save",
+      "prefix": "PP SAVE_TO_SOURCE",
+      "status": 200
+    }
+  ]
+}

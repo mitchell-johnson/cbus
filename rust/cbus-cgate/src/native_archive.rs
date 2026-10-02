@@ -55,6 +55,8 @@ const OID_ELEMENTS: &[&str] = &[
     "NetVar",
     "Level",
     "Unit",
+    "Languages",
+    "Language",
 ];
 const DEFAULT_INSTALLATION_DETAIL: &str = "<InstallationDetail><SystemLocation>[unknown]</SystemLocation><HardwarePlatform>[unknown]</HardwarePlatform><Hostname>[unknown]</Hostname><OSName>[unknown]</OSName><OSVersion>[unknown]</OSVersion><HardwareLocation>[unknown]</HardwareLocation><MaintenanceEmail>[unknown]</MaintenanceEmail><Installer><Name>[unknown]</Name></Installer></InstallationDetail>";
 

@@ -1,0 +1,1571 @@
+{
+  "format": "cbus-project-documentor-sensors-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "factory": [
+    {
+      "unit_type": "SENPILLA",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TSENPILLA",
+      "class_registration": "0x138326f",
+      "agent": "TCBusSurfaceMountMultisensorCGateAgent",
+      "agent_registration": "0x13979f8",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusSurfaceMountMultisensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware_min": "1.6.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENPILL",
+      "class_registration": "0x138330b",
+      "agent": "TCBusMultisensorCGateAgent",
+      "agent_registration": "0x1385694",
+      "agent_methods": {
+        "agent_load": "TCBusMultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusMultisensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware_min": "2.0.01",
+      "firmware_max": "2.3.9",
+      "class": "TST7SENPILL",
+      "class_registration": "0x138332c",
+      "agent": "TCBusST7MultisensorCGateAgent",
+      "agent_registration": "0x13856b8",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusST7MultisensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENPILL",
+      "firmware_min": "2.4",
+      "firmware_max": "9",
+      "class": "TSENPILLA",
+      "class_registration": "0x138334d",
+      "agent": "TCBusSurfaceMountMultisensorCGateAgent",
+      "agent_registration": "0x13979f8",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusSurfaceMountMultisensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENPIRIC",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TSENPIRIC",
+      "class_registration": "0x13852bf",
+      "agent": "TCBusSurfaceMountPIRSensorCGateAgent",
+      "agent_registration": "0x1397a10",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusSurfaceMountPIRSensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENPIRIB",
+      "firmware_min": "2.4",
+      "firmware_max": "9",
+      "class": "TSENPIRIC",
+      "class_registration": "0x13854c6",
+      "agent": "TCBusSurfaceMountPIRSensorCGateAgent",
+      "agent_registration": "0x1397a10",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TPIRDocumentor",
+          "1.2.60",
+          "2.0.00"
+        ],
+        [
+          "TST7PIRSensorDocumentor",
+          "2.0.01",
+          "2.3.9"
+        ],
+        [
+          "TMultisensorDocumentor",
+          "2.4",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusSurfaceMountPIRSensorCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "PC_TSA",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_TSA",
+      "class_registration": "0x138fda0",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "agent_registration": "0x139c074",
+      "agent_methods": {
+        "agent_load": "TCBusThermostatCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TThermostatDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBUSUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusProgrammableThermostatCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "PC_TSA5",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_TSA5",
+      "class_registration": "0x138fdc1",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "agent_registration": "0x139c08c",
+      "agent_methods": {
+        "agent_load": "TCBusThermostatCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TThermostatDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBUSUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusProgrammableThermostatCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "PC_TSB",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_TSB",
+      "class_registration": "0x138fde2",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "agent_registration": "0x139c044",
+      "agent_methods": {
+        "agent_load": "TCBusThermostatCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TThermostatDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBUSUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusBasicThermostatCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "PC_TSB5",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_TSB5",
+      "class_registration": "0x138fe03",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "agent_registration": "0x139c05c",
+      "agent_methods": {
+        "agent_load": "TCBusThermostatCGateAgent.AgentLoad",
+        "load_groups": "TCBusUnitCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TThermostatDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBUSUnit.GetAreaIfAvailable",
+        "interaction": "TCBUSUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusBasicThermostatCGateAgent has no admitted CSV association model"
+    },
+    {
+      "unit_type": "SENLLA",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TSENLLA",
+      "class_registration": "0x1397977",
+      "agent": "TCBusSurfaceMountLightLevelSensorCGateAgent",
+      "agent_registration": "0x1397a28",
+      "agent_methods": {
+        "agent_load": "TCBusST7MultisensorCGateAgent.AgentLoad",
+        "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+      },
+      "documentors": [
+        [
+          "TMultisensorDocumentor",
+          "0",
+          "9"
+        ]
+      ],
+      "report_slots": {
+        "area": "TCBusInputUnit.GetAreaIfAvailable",
+        "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+        "primary": "TCBUSUnit.GetApplicationObject",
+        "secondary": "TCBUSUnit.GetApplication2Object"
+      },
+      "admitted": false,
+      "refusal_reason": "agent TCBusSurfaceMountLightLevelSensorCGateAgent has no admitted CSV association model"
+    }
+  ],
+  "profiles": [
+    {
+      "class": "TSENPILL",
+      "ancestry": [
+        "TSENPILL",
+        "TCBusMultisensorUnit",
+        "TCBusNeoInputUnit",
+        "TCBusKeyInputUnit",
+        "TCoreKeyInputUnit",
+        "TCustomKeyInputUnit",
+        "TCBusInputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPILL.TSENPILL.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.InfraredBankPropertyEnabled",
+        "0x1a8": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.MacroFunctionSubsetName",
+        "0x1cc": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.RefreshMacroFunctionOverrides",
+        "0x1e8": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsCorridorLinkingSupported",
+        "0x260": "?"
+      }
+    },
+    {
+      "class": "TST7SENPILL",
+      "ancestry": [
+        "TST7SENPILL",
+        "TCBusST7MultisensorUnit",
+        "TCBusNeoProInputUnit",
+        "TCoreNeoProInputUnit",
+        "TCBusNeoInputUnit",
+        "TCBusKeyInputUnit",
+        "TCoreKeyInputUnit",
+        "TCustomKeyInputUnit",
+        "TCBusInputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPILL.TST7SENPILL.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetName",
+        "0x1cc": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "class": "TSENPILLA",
+      "ancestry": [
+        "TSENPILLA",
+        "TCBusSurfaceMountMultisensorUnit",
+        "TCBusST7MultisensorUnit",
+        "TCBusNeoProInputUnit",
+        "TCoreNeoProInputUnit",
+        "TCBusNeoInputUnit",
+        "TCBusKeyInputUnit",
+        "TCoreKeyInputUnit",
+        "TCustomKeyInputUnit",
+        "TCBusInputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPILLA.TSENPILLA.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetName",
+        "0x1cc": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "class": "TSENPIRIC",
+      "ancestry": [
+        "TSENPIRIC",
+        "TCBusSurfaceMountPIRSensorUnit",
+        "TCBusSurfaceMountMultisensorUnit",
+        "TCBusST7MultisensorUnit",
+        "TCBusNeoProInputUnit",
+        "TCoreNeoProInputUnit",
+        "TCBusNeoInputUnit",
+        "TCBusKeyInputUnit",
+        "TCoreKeyInputUnit",
+        "TCustomKeyInputUnit",
+        "TCBusInputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENPIRIC.TSENPIRIC.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetName",
+        "0x1cc": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+        "0x1e8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsJoinModeSupported",
+        "0x238": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsDualJoinModeSupported",
+        "0x244": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    },
+    {
+      "class": "TSENLLA",
+      "ancestry": [
+        "TSENLLA",
+        "TCBusSurfaceMountLightLevelSensorUnit",
+        "TCBusSurfaceMountMultisensorUnit",
+        "TCBusST7MultisensorUnit",
+        "TCBusNeoProInputUnit",
+        "TCoreNeoProInputUnit",
+        "TCBusNeoInputUnit",
+        "TCBusKeyInputUnit",
+        "TCoreKeyInputUnit",
+        "TCustomKeyInputUnit",
+        "TCBusInputUnit",
+        "TCBusLearnUnit",
+        "TCBUSUnit",
+        "TCGateObject",
+        "TCBUSObject",
+        "TPersistableObject",
+        "TIdentifiableObject",
+        "TFlashObject",
+        "TFoundationObject",
+        "TCustomFlashObject",
+        "TFlashElement",
+        "TManagedFlashObject",
+        "TBASEObject",
+        "TObject"
+      ],
+      "slots": {
+        "0x128": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+        "0x12c": "CIS_TCommonCBus.TCBUSUnit.DescribeOutputGroupDependencyAdvanced",
+        "0x130": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0x190": "CIS_TSENLLA.TSENLLA.MaximumKeyCount",
+        "0x194": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount",
+        "0x1a4": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+        "0x1a8": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+        "0x1c4": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.MacroFunctionSubsetName",
+        "0x1cc": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+        "0x1e8": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.MacroFunctionSubsetNameSecondary",
+        "0x234": "CIS_TSENLLA.TSENLLA.IsJoinModeSupported",
+        "0x238": "CIS_TSENLLA.TSENLLA.IsDualJoinModeSupported",
+        "0x244": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+        "0x260": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled"
+      }
+    }
+  ],
+  "model_sha256": {
+    "project_documentation_multisensor.py": "f71093b8ce420e5ea02b4ffbb4c8fb3875c674b5c79541acf44646a7379c9641",
+    "project_documentation_thermostat.py": "2b5fe8d47e695ce27468835bfc3eb1e5de8c773d4e2abf9596b584f1f597d59c"
+  },
+  "checks": {
+    "exact_factory_rows": true,
+    "multisensor_body_delegates_neo": true,
+    "multisensor_action_is_neo_not_pro": true,
+    "thermostat_action_empty_base": true,
+    "TSENPILL:eight_16c": true,
+    "TSENPILL:eight_190": true,
+    "TSENPILL:eight_194": true,
+    "TSENPILL:infrared": true,
+    "TSENPILL:no_brightness": true,
+    "TSENPILL:empty_output": true,
+    "TSENPILL:macro_subset": true,
+    "TST7SENPILL:eight_16c": true,
+    "TST7SENPILL:eight_190": true,
+    "TST7SENPILL:eight_194": true,
+    "TST7SENPILL:infrared": true,
+    "TST7SENPILL:no_brightness": true,
+    "TST7SENPILL:empty_output": true,
+    "TST7SENPILL:macro_subset": true,
+    "TST7SENPILL:no_key_disable": true,
+    "TSENPILLA:eight_16c": true,
+    "TSENPILLA:eight_190": true,
+    "TSENPILLA:eight_194": true,
+    "TSENPILLA:infrared": true,
+    "TSENPILLA:no_brightness": true,
+    "TSENPILLA:empty_output": true,
+    "TSENPILLA:macro_subset": true,
+    "TSENPILLA:no_key_disable": true,
+    "TSENPIRIC:eight_16c": true,
+    "TSENPIRIC:eight_190": true,
+    "TSENPIRIC:eight_194": true,
+    "TSENPIRIC:infrared": true,
+    "TSENPIRIC:no_brightness": true,
+    "TSENPIRIC:empty_output": true,
+    "TSENPIRIC:macro_subset": true,
+    "TSENPIRIC:no_key_disable": true,
+    "TSENLLA:eight_16c": true,
+    "TSENLLA:eight_190": true,
+    "TSENLLA:eight_194": true,
+    "TSENLLA:infrared": true,
+    "TSENLLA:no_brightness": true,
+    "TSENLLA:empty_output": true,
+    "TSENLLA:macro_subset": true,
+    "TSENLLA:no_key_disable": true,
+    "TPC_TSA:thermostat_dependencies": true,
+    "TPC_TSA:relay_support": true,
+    "TPC_TSA5:thermostat_dependencies": true,
+    "TPC_TSA5:relay_support": true,
+    "TPC_TSB:thermostat_dependencies": true,
+    "TPC_TSB:relay_support": true,
+    "TPC_TSB5:thermostat_dependencies": true,
+    "TPC_TSB5:relay_support": true,
+    "thermostat_base_first": true,
+    "thermostat_complete_body_order": true,
+    "thermostat_malformed_outer_fan_table": true,
+    "thermostat_display_labels_present": true,
+    "signed_guard_threshold_fields": true,
+    "guard_conversion": true,
+    "fan_delay_division_round": true,
+    "auto_prefix_uses_zone_group": true,
+    "existing_default_group_guard": true,
+    "primary_is_inherited_application": true,
+    "master_network_number": true,
+    "program_boolean_normalization": true,
+    "both_ui_allocated_loaders": true,
+    "target_clears_margin_before_load": true,
+    "bank_threshold_distinct_objects": true,
+    "fresh_event_gate_no_macro_rewrite": true,
+    "movement_timer_before_lock": true,
+    "senpill_template_overrides": true,
+    "sensor_macro_subsets": true,
+    "movement_first_matches": true
+  },
+  "methods": {
+    "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf0d60",
+      "end": "0xcf13e0",
+      "sha256": "354540838b6c301dcf9d6364ae4e325482c686844f97fadfe57287b632e7d3d9"
+    },
+    "CIS_TCBusMultisensorCGateAgent.TCoreMultisensorCGateAgent.InternalCreate": {
+      "start": "0xcf2b74",
+      "end": "0xcf3874",
+      "sha256": "b77f229f9fd6ae826e0597f210ec094ca880e0b7cf32bed2eac1a717d5870165"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xd02820",
+      "end": "0xd02c8c",
+      "sha256": "fb224616a574687d99aec8214fb65b7357753ce300ddea93b911fa7c0705b3ac"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xd02c8c",
+      "end": "0xd02dd4",
+      "sha256": "597c0216c8875d3311a29ad42b3fb579a559b9cdb6f4e751ee9136c06dc8ca90"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IndicatorBrightnessPropertyEnabled": {
+      "start": "0xd03ffc",
+      "end": "0xd04010",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.InfraredBankPropertyEnabled": {
+      "start": "0xd04010",
+      "end": "0xd04024",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.MacroFunctionSubsetName": {
+      "start": "0xd040a0",
+      "end": "0xd040dc",
+      "sha256": "e665b7450910b183c4e437e457ee2a39cdbe932be38fc10fbaccd519be74f93e"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.RefreshMacroFunctionOverrides": {
+      "start": "0xd043b4",
+      "end": "0xd04408",
+      "sha256": "229c14fc412b0213dac4637bd0e6ec85e822de8f0b9b38c31efe60802f1f1196"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.EventFlagChanged": {
+      "start": "0xd0102c",
+      "end": "0xd01138",
+      "sha256": "ae9e7a66b1dc4e13d409d6543b3bb3eebde243d16aa16f5f09ec5a6f32146740"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetMaximumVirtualKeyCount": {
+      "start": "0xd07d68",
+      "end": "0xd07d80",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+      "start": "0xd0871c",
+      "end": "0xd08734",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf8b38",
+      "end": "0xcf8bac",
+      "sha256": "3f92d925f7ae26b97c10012b88422011099c5f68dc379c07a38d4bf854c6d92b"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.InternalCreate": {
+      "start": "0xcf9388",
+      "end": "0xcf939c",
+      "sha256": "1fcc23790d7afaf005054616c63b1ade6a43eacd3e80f06b72d41471176af4d4"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf4890",
+      "end": "0xcf4cb8",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.InternalCreate": {
+      "start": "0xcf6eb8",
+      "end": "0xcf7b20",
+      "sha256": "8b464bd7a94c3adcbc14a663dad23f20ad15a737a71da748e373a67b53b89b12"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf8064",
+      "end": "0xcf80a0",
+      "sha256": "657ab2f034e7b8677a757962c4682838e05edae5ae48d1299ceffc03cfff4b6a"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.InternalCreate": {
+      "start": "0xcf8620",
+      "end": "0xcf8634",
+      "sha256": "3cd2a56287fd263d724e2f21ae56491cb8a57e275a2a4089ebb23df82da43449"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcfd6c8",
+      "end": "0xcfd7ac",
+      "sha256": "cc4d642ac38c7687460576e287c041f58179679669efc122ad49c770d3dbc8eb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcfd7ac",
+      "end": "0xcfd880",
+      "sha256": "ca5a0d9720952bc85b7c7f81e9728d3267a78123a21505614fcb7a54cd8d1c4f"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcfa928",
+      "end": "0xcfad94",
+      "sha256": "0c9203f8c3e771a59f4c0853c2930abc93195cf4c50a448ebb66eca756324387"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcfad94",
+      "end": "0xcfaedc",
+      "sha256": "72a4ee5cf0fc957877e042d76aa560e07f6f9e331dbd4469781f59dac768a948"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled": {
+      "start": "0xcfb620",
+      "end": "0xcfb634",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled": {
+      "start": "0xcfb65c",
+      "end": "0xcfb670",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled": {
+      "start": "0xcfc3c8",
+      "end": "0xcfc3dc",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetName": {
+      "start": "0xcfc490",
+      "end": "0xcfc4cc",
+      "sha256": "6efc5321a9c037dda7bd5faa875f5f72c5376a293e9e594b5922632b3cb736a1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides": {
+      "start": "0xcfc8cc",
+      "end": "0xcfc920",
+      "sha256": "37c9b10ba072426961c98884b3fc8943e0897cd20416821db9359f03e88215e9"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.RefreshMacroFunctionOverrides": {
+      "start": "0xcfe0f0",
+      "end": "0xcfe144",
+      "sha256": "7715e420a7eb580d14e496caad32769be78d8263339f593d8d6da20f473b55c9"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1217764",
+      "end": "0x1217b18",
+      "sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.InternalCreate": {
+      "start": "0x1219864",
+      "end": "0x1219cd8",
+      "sha256": "529d5429715ffef330e693fd8d9d23422003b8d502dc8673f2f80890a3dda9f4"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.MacroFunctionSubsetName": {
+      "start": "0xca4b18",
+      "end": "0xca4b54",
+      "sha256": "b73cb76a47b631274481dbe3bef2d8039e3e597f82700f40656190431b832a5d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xca3984",
+      "end": "0xca3ac8",
+      "sha256": "cd3d204d9350c4150e0dade2663b17b03486bf44c2c2642fc50627ef515165bd"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1297738",
+      "end": "0x1297c54",
+      "sha256": "e9e5b47cc0d3ccda66271e5d888ffbffc0e213c94defa99a1718a813a7cea96e"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.InternalCreate": {
+      "start": "0x12971f4",
+      "end": "0x1297738",
+      "sha256": "17331e122a2494b90e7ac278d07b32226840bf18c39d505b84eb14dd3855515c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x12994d0",
+      "end": "0x1299b98",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.InternalCreate": {
+      "start": "0x1298928",
+      "end": "0x1298fd0",
+      "sha256": "374b666b51f9403ab31919d0e15d2fa731814a6ce8f18f390f1f83866cdcb8db"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x128e06c",
+      "end": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.GetMasterUnit": {
+      "start": "0x128f9a0",
+      "end": "0x128fa44",
+      "sha256": "78cac6cf2d3e666817b729fce3fbc06b32487215070319cc6050df7daf0a5ef9"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.GetMasterUnitNetwork": {
+      "start": "0x128fa44",
+      "end": "0x128fa7c",
+      "sha256": "aa8b6d9808a6b3b2fb185622eca75ab2a62dff6375ab8bd3c4709c16dee74249"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.IntUnitPlantTypeToVirtualPlantType": {
+      "start": "0x128de1c",
+      "end": "0x128df48",
+      "sha256": "5e567a858ddf994e8f8be268ebe9e4aba038c9415d56fcc1c5b64cd18b154de9"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "start": "0x128b948",
+      "end": "0x128dc7c",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject": {
+      "start": "0xcb8068",
+      "end": "0xcb82b4",
+      "sha256": "c781eabff439fdd02b07ea57a61e7f8960f3e7b8e47003586579f832cc208a17"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xced154",
+      "end": "0xced538",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes": {
+      "start": "0xced05c",
+      "end": "0xced154",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b"
+    },
+    "CIS_TDocumentorCommon.DisplayHTMLUnit": {
+      "start": "0xca59fc",
+      "end": "0xca5b2c",
+      "sha256": "bb1b82be86b3e9ea3f57aa546d381a8ee1e0a933dbf62b8c7f9d399359ee50d3"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "start": "0xd12adc",
+      "end": "0xd12c2c",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.ReconcileTemplateAndGroup": {
+      "start": "0xc97940",
+      "end": "0xc97b48",
+      "sha256": "1928ef6c57448935acb10e358a211a03bf98d4a877d9a3bf3ef3b3d69e2bf1fb"
+    },
+    "CIS_TMultisensorDocumentor.TMultisensorDocumentor.DocumentHTML": {
+      "start": "0xca848c",
+      "end": "0xca84b0",
+      "sha256": "b581ab4421e1c2fac62fd6b6c202ca40d3bc0920c4f3ded68c9449a39eede606"
+    },
+    "CIS_TSENLLA.TSENLLA.MaximumKeyCount": {
+      "start": "0x1216ef8",
+      "end": "0x1216f10",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TSENPILL.TSENPILL.MaximumKeyCount": {
+      "start": "0xca8e30",
+      "end": "0xca8e48",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TSENPILL.TST7SENPILL.MaximumKeyCount": {
+      "start": "0xca8e8c",
+      "end": "0xca8ea4",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TSENPILLA.TSENPILLA.MaximumKeyCount": {
+      "start": "0xca87dc",
+      "end": "0xca87f4",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TSENPIRIC.TSENPIRIC.MaximumKeyCount": {
+      "start": "0xcee714",
+      "end": "0xcee72c",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TThermostat.TPC_TSA5.GetUnitHasRelays": {
+      "start": "0xfeda5c",
+      "end": "0xfeda70",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TThermostat.TPC_TSB5.GetUnitHasRelays": {
+      "start": "0xfeda48",
+      "end": "0xfeda5c",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TThermostat.TPlantControlService.AutogeneratedPrefix": {
+      "start": "0xfe2a74",
+      "end": "0xfe2afc",
+      "sha256": "777407f4647eff01e71b7f8d6551815fab6c047f865ab10244091cb8ae276a16"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType": {
+      "start": "0xfe6520",
+      "end": "0xfe6828",
+      "sha256": "2ead3d4b4cb76a3ca55fa37a5216dcea76019a20f1bff4520ffba148f68b7129"
+    },
+    "CIS_TThermostat.TThermostat.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xfea964",
+      "end": "0xfeadd8",
+      "sha256": "5f7759ef63845875a2300996527e5f1bb775e7a57da94ded902c8f35fb29134c"
+    },
+    "CIS_TThermostat.TThermostat.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xfeadd8",
+      "end": "0xfeafa0",
+      "sha256": "13453928f8cef412df90a2738c005f0f6b8b5f2c859a0aad522df124733f4e4f"
+    },
+    "CIS_TThermostat.TThermostat.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0xfeafa0",
+      "end": "0xfeb130",
+      "sha256": "f9b1bbe25448e20eb60cdf8adcd872893aaeedd8c922440465be6e060ee89091"
+    },
+    "CIS_TThermostat.TThermostat.GetUnitHasRelays": {
+      "start": "0xfecc9c",
+      "end": "0xfeccb0",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TThermostat.TThermostat.InternalCreate": {
+      "start": "0xfea134",
+      "end": "0xfea404",
+      "sha256": "c295d6af4e272c8e00994ff747e39ab3d790e8fcd360a371dbe4e920f213f0da"
+    },
+    "CIS_TThermostat.TUIService.InternalCreate": {
+      "start": "0xfdc25c",
+      "end": "0xfdc7c0",
+      "sha256": "56e8fd72cc4094293b9e699def67d98155c40ee913e662ee2ba8827ab48b5b62"
+    },
+    "CIS_TThermostat.TZoneManagerService.InternalCreate": {
+      "start": "0xfdd338",
+      "end": "0xfddf98",
+      "sha256": "149e7f01f36dcbf1f51ccf1ed9244dd2449e63f07a02dadd4cf8caca7247d729"
+    },
+    "CIS_TThermostatDocumentor.TThermostatDocumentor.DocumentHTML": {
+      "start": "0xfd5808",
+      "end": "0xfd7804",
+      "sha256": "b4eea64955783a46d32232d2cc670d5c383a10a66c6592860e0680612f86f554"
+    }
+  },
+  "macro_first_match": [
+    {
+      "commands": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "type": 16
+    },
+    {
+      "commands": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "type": 0
+    },
+    {
+      "commands": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "type": 1
+    },
+    {
+      "commands": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "type": 2
+    },
+    {
+      "commands": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "type": 3
+    },
+    {
+      "commands": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "type": 3
+    },
+    {
+      "commands": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "type": 4
+    },
+    {
+      "commands": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "type": 5
+    },
+    {
+      "commands": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "type": 6
+    },
+    {
+      "commands": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "type": 6
+    },
+    {
+      "commands": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "type": 6
+    },
+    {
+      "commands": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "type": 6
+    },
+    {
+      "commands": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "type": 6
+    },
+    {
+      "commands": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "type": 7
+    },
+    {
+      "commands": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "type": 8
+    },
+    {
+      "commands": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "type": 9
+    },
+    {
+      "commands": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "type": 10
+    },
+    {
+      "commands": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "type": 11
+    },
+    {
+      "commands": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "type": 12
+    },
+    {
+      "commands": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "type": 13
+    },
+    {
+      "commands": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "type": 14
+    },
+    {
+      "commands": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "type": 15
+    },
+    {
+      "commands": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "type": 21
+    },
+    {
+      "commands": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "type": 31
+    },
+    {
+      "commands": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "type": 32
+    },
+    {
+      "commands": [
+        13,
+        15,
+        7,
+        15
+      ],
+      "type": 34
+    },
+    {
+      "commands": [
+        13,
+        7,
+        0,
+        7
+      ],
+      "type": 33
+    },
+    {
+      "commands": [
+        13,
+        0,
+        15,
+        0
+      ],
+      "type": 36
+    },
+    {
+      "commands": [
+        15,
+        0,
+        13,
+        0
+      ],
+      "type": 37
+    },
+    {
+      "commands": [
+        11,
+        0,
+        11,
+        0
+      ],
+      "type": 38
+    },
+    {
+      "commands": [
+        11,
+        7,
+        11,
+        7
+      ],
+      "type": 39
+    },
+    {
+      "commands": [
+        15,
+        8,
+        13,
+        0
+      ],
+      "type": 41
+    },
+    {
+      "commands": [
+        3,
+        0,
+        3,
+        0
+      ],
+      "type": 42
+    },
+    {
+      "commands": [
+        10,
+        0,
+        9,
+        0
+      ],
+      "type": 43
+    },
+    {
+      "commands": [
+        10,
+        0,
+        15,
+        0
+      ],
+      "type": 44
+    },
+    {
+      "commands": [
+        13,
+        0,
+        9,
+        0
+      ],
+      "type": 45
+    },
+    {
+      "commands": [
+        5,
+        14,
+        0,
+        14
+      ],
+      "type": 46
+    },
+    {
+      "commands": [
+        4,
+        14,
+        0,
+        14
+      ],
+      "type": 47
+    },
+    {
+      "commands": [
+        0,
+        0,
+        13,
+        0
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        0,
+        9,
+        0
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        0,
+        15,
+        0
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        7,
+        0,
+        8
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        9,
+        7,
+        9,
+        8
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        7,
+        11,
+        8
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        0,
+        7,
+        13,
+        8
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        15,
+        7,
+        15,
+        8
+      ],
+      "type": 48
+    },
+    {
+      "commands": [
+        13,
+        0,
+        13,
+        0
+      ],
+      "type": 49
+    },
+    {
+      "commands": [
+        15,
+        0,
+        15,
+        0
+      ],
+      "type": 51
+    },
+    {
+      "commands": [
+        12,
+        0,
+        12,
+        0
+      ],
+      "type": 52
+    }
+  ],
+  "macro_labels": {
+    "16": "Unused",
+    "0": "On",
+    "1": "Off",
+    "2": "On/Off",
+    "3": "Dimmer",
+    "4": "On Up",
+    "5": "Off Down",
+    "6": "Timer",
+    "7": "Bell Press",
+    "8": "Dimmer Up",
+    "9": "Dimmer Down",
+    "10": "Soft Up",
+    "11": "Soft Down",
+    "12": "Preset 1",
+    "13": "Preset 2",
+    "14": "Trigger 1",
+    "15": "Trigger 2",
+    "17": "Shutter Toggle",
+    "18": "Shutter Open Toggle",
+    "19": "Shutter Close Toggle",
+    "20": "Shutter Open",
+    "21": "Shutter Close",
+    "22": "Shutter Stop",
+    "23": "<Fan Speed Cycle>",
+    "24": "<Scene>",
+    "25": "<Scene Modify>",
+    "26": "<Custom>",
+    "27": "Clock Timer",
+    "28": "Aux On/Off",
+    "31": "Day Move",
+    "32": "Night Move",
+    "34": "Sunset",
+    "33": "Any Move",
+    "29": "Day Move",
+    "30": "Night Move",
+    "35": "Security",
+    "36": "On/Off",
+    "37": "Off/On",
+    "38": "On/Off Toggle",
+    "39": "On/Off Toggle Timer",
+    "40": "On/Off Timer",
+    "41": "Off/On Timer",
+    "42": "Memory Toggle",
+    "43": "Soft On/Soft Off",
+    "44": "Soft On/Hard Off",
+    "45": "Hard On/Soft Off",
+    "46": "Ramp Up",
+    "47": "Ramp Down",
+    "48": "Occupancy Detector",
+    "49": "Bell Press",
+    "50": "On",
+    "51": "Off",
+    "52": "Preset 1",
+    "53": "Scene Set",
+    "54": "Scene Toggle",
+    "55": "Scene Toggle",
+    "56": "Scene Set",
+    "57": "Scene On/Off",
+    "58": "<Custom Scene>"
+  },
+  "macro_subsets": {
+    "SENPILL": {
+      "0": [
+        16,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        30,
+        29,
+        33,
+        34,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        26
+      ],
+      "202": [
+        16,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        30,
+        29,
+        33,
+        34,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        26
+      ],
+      "255": [
+        16
+      ]
+    },
+    "SENLLA": {
+      "0": [
+        16,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        34,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        26
+      ]
+    }
+  },
+  "limits": [
+    "Fresh saved snapshot with complete consumed PP, not original loading or prior GUI/process state.",
+    "Active join state and noncanonical scenes remain explicit refusals.",
+    "Existing group/Level display metadata is required; no native object auto-creation.",
+    "Thermostat Input requires existing non-autogenerated output groups and observed Network context.",
+    "Foreign masters require one explicit NetworkNumber, never an Address fallback.",
+    "Explicit Celsius/Fahrenheit formatting; no original running preference observation.",
+    "No original generated-page, physical bus or hardware acceptance claimed."
+  ]
+}

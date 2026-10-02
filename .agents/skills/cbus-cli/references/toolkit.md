@@ -748,7 +748,7 @@ Old DIMPR12 firmware 0–1.9.02 has bounded project-documentation bodies and
 independent group/action usage, with an explicit 33-record packed scene
 projection. NeoClassic KEYC/KEYCIR bodies and usage consume canonical
 SceneModify commands. Require complete consumed PP/model facts; unknown
-dependencies retain unresolved markers. DIMPR12A/L1, later firmware, original
+dependencies retain unresolved markers. DIMPR12A, wider L1 loader history, later firmware, original
 complete loaders, initialized GUI history and full-page byte/visual parity
 remain open. See [Bytecraft](../../../../toolkit-cli/docs/project-documentation-bytecraft.md)
 and [integration boundaries](../../../../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md).
@@ -808,3 +808,46 @@ initializer or inverse deletion. Operation-1 Reset plus Add binds fresh
 defaults; initial scene/proximity getters retain their earlier allocations.
 One parent PP save still crosses a separate target project save. Never replay
 an uncertain save. See `toolkit-cli/docs/edlt-application-reset-add.md`.
+
+
+## Static grid, Language Add and saved reports
+
+For KEYGL5 5.5.00, include `static-text-dialog` and `add-language-dialog` in the
+existing ordered `edlt parent-transaction-plan` or database-unit
+`edlt-parent-transaction` operation array. The static operation supplies ordered
+committed `{index,text}` edits and `close:button|window`; both closes save.
+Its 64 UTF-16-unit cell limit differs from the PP setter's first 63 UTF-8 bytes
+plus terminator. An edit does not select or allocate a widget label. Inspect
+split UTF-8/NUL projection and existing label references before apply.
+
+Language Add supplies the complete ordered `selected_ids`, explicit initial
+`preferences` (`registered-defaults` or eight signed factory preference values),
+and optional cancellation. Initial native XML then preferences populate a fresh
+cache; later dialogs consume the retained cache rather than reimporting it.
+Accepted lists contain 1–8 distinct nonzero factory IDs; existing English1 is
+locked. Preserve matching rows/custom names/OIDs and the last ID0 default
+marker. Chinese is factory ID202. Factory selection admission is separate from
+signed-i32 unknown database row IDs. Read
+`toolkit-cli/docs/edlt-static-language-add.md` for the operation schemas.
+
+Prefer automatic metadata with a known existing closed database unit and exact
+source-network lock. Inspect language creations/deletions and issued-OID
+readbacks before PP staging. The parent composes one owning PP save and a
+separate project save; it does not reproduce the original callback's per-row
+save count or create cross-command atomicity. Before PP save, failure uses the
+saved-source reload boundary; after a possibly issued save, preserve uncertainty
+and do not replay. Use a reviewed backup and exclusive project ownership.
+
+The shared saved-project renderer now has bounded multisensor, thermostat,
+wireless input/gateway/remote, Bytecraft L1 and architectural dimmer report bodies
+and independent usage/action consumers. Architectural reports admit four factories
+and 128 sparse ordinary scenes. Thermostat masters require explicit unambiguous
+NetworkNumber; generated/missing plant groups remain refused. Independent-number
+resolution is a pure/legacy helper scope; native reports still require canonical
+numeric Address and matching NetworkNumber. Wireless
+receivers and consumed scene objects must exist. Use `project document` for
+files or `cgate database-document` for one fresh DBGETXML. Inspect unresolved
+markers and original-page/physical flags. Read
+`toolkit-cli/docs/project-documentation-sensors.md`,
+`toolkit-cli/docs/project-documentation-wireless-l1.md` and
+`toolkit-cli/docs/project-documentation-architectural.md`.

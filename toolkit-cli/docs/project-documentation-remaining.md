@@ -71,10 +71,10 @@ corridor references and broadcast blocks 4–7. It does not suppress these
 references based on the corresponding active flag. Output and selector usage
 are known empty.
 
-`SENLLA`, `SENPILL` and `SENPILLA` remain excluded. The multisensor's report
-calls the Neo report, but its loader also applies SENPILL macro overrides and
-occupancy template transitions. A wrapper call alone does not prove those
-loaded key and scene states.
+The separate [multisensor recovery](project-documentation-sensors.md) now
+admits seven exact profiles, including `SENLLA`, `SENPILL` and `SENPILLA`.
+It binds their own loaded macros, fresh macro overrides and report dependencies;
+active joins and unsupported scene states remain explicit refusals.
 
 ## WHAA audio units
 
@@ -163,7 +163,7 @@ No original executable, VM, live C-Bus network, audio device or DALI endpoint
 was used for this extension. Original full-project loading, retained GUI state,
 Windows preferences/locales and generated HTML comparisons remain unaccepted.
 ST7 active-template zero timers and scene dependencies remain bounded as
-described above. Thermostats, multisensors, architectural/Bytecraft L1 dimmers,
-remote controls and wireless report bodies still require their own recovered
-loader and report contracts. These limits keep the overall Document Project
-workflow partial.
+described above. [Sensor and thermostat reports](project-documentation-sensors.md)
+now have their own bounded loader and report contracts. Wireless, remote and
+architectural dimmer recovery is tracked separately. These limits keep the
+overall Document Project workflow partial.

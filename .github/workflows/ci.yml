@@ -110,6 +110,11 @@ jobs:
           --require-module tests/test_cgate_csv_last_profiles_interop.py
           --require-module tests/test_cgate_project_documentation_interop.py
           --require-module tests/test_cgate_edlt_application_reset_add_interop.py
+          --require-module tests/test_cgate_edlt_static_language_add_interop.py
+          --require-module tests/test_cgate_project_documentation_sensors_interop.py
+          --require-module tests/test_cgate_project_documentation_wireless_interop.py
+          --require-module tests/test_cgate_project_documentation_l1_interop.py
+          --require-module tests/test_cgate_project_documentation_architectural_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -146,6 +151,11 @@ jobs:
           --require-module tests/test_cgate_csv_last_profiles_interop.py
           --require-module tests/test_cgate_project_documentation_interop.py
           --require-module tests/test_cgate_edlt_application_reset_add_interop.py
+          --require-module tests/test_cgate_edlt_static_language_add_interop.py
+          --require-module tests/test_cgate_project_documentation_sensors_interop.py
+          --require-module tests/test_cgate_project_documentation_wireless_interop.py
+          --require-module tests/test_cgate_project_documentation_l1_interop.py
+          --require-module tests/test_cgate_project_documentation_architectural_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

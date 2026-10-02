@@ -26,8 +26,12 @@ receipt is [`project-documentor-static.json`](project-documentor-static.json).
 It holds the method spans (MAP symbols with byte-span hashes), the 223
 registrations, each documentor's ancestry and effective methods, and a string
 inventory of every per-type documentor method, including the unrecovered
-ones. `tests/test_project_documentation.py` compares the committed receipt
-with the model offline, and regenerates it when `CBUS_TOOLKIT_EXE` is set.
+ones. At this checkpoint, `tests/test_project_documentation.py` compared the
+receipt with the model offline and regenerated it with `CBUS_TOOLKIT_EXE`.
+The current suite uses the separately derived
+[`project-documentor-current-static.json`](../../fixtures/project-documentor-current-static.json),
+which binds the current renderer and supporting modules. This historical
+receipt remains unchanged; neither static extraction executes the original.
 
 ## Findings
 

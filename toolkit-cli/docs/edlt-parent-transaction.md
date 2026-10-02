@@ -1,5 +1,11 @@
 # eDLT ordered parent transaction
 
+Ordered histories also admit committed `static-text-dialog` cell edits and
+explicit `add-language-dialog` selections. Read
+[their operation schema and save boundaries](edlt-static-language-add.md)
+for UTF-16 versus PP byte limits, initial preferences, retained repeated-open
+cache, cancellation, default-marker identity and language object persistence.
+
 `EdltParentTransaction` applies two through 22 ordered control operations to
 one **KEYGL5 / 5055EDL firmware 5.5.00** database snapshot. It composes
 15 configurable widget operations, including Blank and all three MRA models,

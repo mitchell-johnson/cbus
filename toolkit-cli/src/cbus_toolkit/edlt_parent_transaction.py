@@ -149,7 +149,7 @@ SETTING_OPERATION_NAMES = (
     'activation', 'general', 'display', 'standby', 'colours', 'navigation',
     'quick-status', 'page-control', 'mra-globals', 'applications', 'corridor',
 )
-GRAPH_OPERATION_NAMES = ('reset', 'scene-manager')
+GRAPH_OPERATION_NAMES = ('reset', 'scene-manager', 'static-text-dialog', 'add-language-dialog')
 SUPPORTED_OPERATION_NAMES = (WIDGET_OPERATION_NAMES + SETTING_OPERATION_NAMES +
                              GRAPH_OPERATION_NAMES)
 
@@ -243,10 +243,44 @@ LIGHTING_BINDING_FACTS = (
 )
 
 
+class _NativeLanguageBinding(dict):
+    """Internal replay facts derived by the native Language Add resolver.
+
+    JSON operations cannot supply this type. The public dialog operation is
+    resolved against the exact project snapshot before these facts exist.
+    """
+
+    def _immutable(self, *args, **kwargs):
+        raise TypeError('Native language binding is immutable')
+
+    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = __ior__ = _immutable
+
+    def __deepcopy__(self, memo):
+        from copy import deepcopy
+        return type(self)(deepcopy(dict(self), memo))
+
+
 def _operation(value, *, allow_add_dialog=False):
     if not isinstance(value, Mapping):
         raise EdltError('Parent transaction operation must be a mapping')
     operation = value.get('op')
+    if operation == 'add-language-dialog':
+        if not allow_add_dialog:
+            raise EdltError('Language Add requires automatic complete native project metadata')
+        from .edlt_language_add_dialog import normalize
+        return normalize(value)
+    if operation == 'parent-language-binding':
+        if type(value) is not _NativeLanguageBinding:
+            raise EdltError('Language binding is internal; use add-language-dialog')
+        if set(value) != {'op', 'receipt', 'group_images', 'level_labels'}:
+            raise EdltError('Invalid lowered Language Add binding')
+        # Canonical native planner supplies complete facts, not a partial
+        # caller cache. Apply always recomputes this unchanged operation.
+        json.dumps(dict(value), allow_nan=False)
+        return _NativeLanguageBinding(value)
+    if operation == 'static-text-dialog':
+        from .edlt_static_text_dialog import normalize
+        return normalize(value)
     if operation == 'parent-add-binding':
         from .edlt_add_dialog import TARGETS
         permitted = {(panel, option) for panel, option, _rule in TARGETS.values()}
@@ -332,7 +366,8 @@ def normalize_operations(operations, *, allow_add_dialog=False):
                 'operation 1 so every receipt binds the issued fresh graph')
     if not (resets or any(value['op'] in WIDGET_OPERATION_NAMES
                           for value in result) or
-            any(value['op'] == 'scene-manager' for value in result)):
+            any(value['op'] in ('scene-manager', 'static-text-dialog', 'parent-language-binding',
+                                'add-language-dialog') for value in result)):
         raise EdltError(
             'Parent transaction requires at least one widget, SceneManager '
             'or reset operation')
@@ -476,7 +511,8 @@ class ParentTransactionPlan:
             object.__setattr__(self, 'expected_raw',
                                MappingProxyType(dict(self.expected_raw)))
         object.__setattr__(self, 'operations', tuple(
-            MappingProxyType(dict(value)) for value in self.operations))
+            _NativeLanguageBinding(value) if type(value) is _NativeLanguageBinding
+            else MappingProxyType(dict(value)) for value in self.operations))
 
     def as_dict(self):
         final = {**self.expected, **self.changes}
@@ -783,6 +819,13 @@ class EdltParentTransaction:
         for name in _dialog_initial_missing:
             control_values[name] = planning_values[name] = (255,)
         owners, slots, results, selected = {}, {}, [], []
+        static_dialog_seen = any(row['op'] == 'static-text-dialog' for row in operations)
+
+        def claim_static(parameters, owner):
+            # An explicit grid history edits the same indexed rows before or
+            # after allocations.  Other fields retain exclusive ownership.
+            self._claim(owners, parameters,
+                'ordered parent static text' if static_dialog_seen else owner)
         blank_transitions = []
         navigation_mode = None
         activation_seen = False
@@ -804,6 +847,7 @@ class EdltParentTransaction:
             'lighting': self.lighting_editor,
         }
 
+        initial_cache, initial_application_cache, initial_scene_manager_cache = cache, application_cache, scene_manager_cache
         for number, operation in enumerate(operations, 1):
             if number in context_by_operation:
                 application, missing = context_by_operation[number]
@@ -818,6 +862,33 @@ class EdltParentTransaction:
             options = {name: value for name, value in operation.items()
                        if name != 'op'}
             dialog_binding = kind == 'parent-add-binding'
+            if kind == 'parent-language-binding':
+                from dataclasses import replace
+                images = {(row['application'], row['group']): row
+                          for row in operation['group_images']}
+                cache = replace(cache, groups=tuple(replace(row,
+                    dynamic_images=(None if not images[(row.application, row.group)]['known']
+                                    else tuple(images[(row.application, row.group)]['images'])),
+                    dynamic_images_known=images[(row.application, row.group)]['known'])
+                    if (row.application, row.group) in images else row for row in cache.groups))
+                if application_cache is not None:
+                    application_cache = replace(application_cache, lifecycle=cache)
+                if scene_manager_cache is not None:
+                    from .edlt_scene_manager import SceneLevelLabels, SceneDynamicLabel
+                    labels = {(row['group'], row['action']): row for row in operation['level_labels']}
+                    scene_manager_cache = replace(scene_manager_cache,
+                        application_cache=application_cache,
+                        level_labels=tuple(SceneLevelLabels(row.group, row.action,
+                            tuple(SceneDynamicLabel(**v) for v in labels[(row.group, row.action)]['labels']))
+                            if (row.group, row.action) in labels else row
+                            for row in scene_manager_cache.level_labels
+                            if ((row.group, row.action) not in labels
+                                or labels[(row.group, row.action)]['labels'] is not None)))
+                receipt = dict(operation['receipt'])
+                receipt.update(operation=number, metadata_only=True,
+                    terminal_save_deferred_to_parent=True)
+                results.append(_json(receipt))
+                continue
             if dialog_binding:
                 kind = operation['panel']
                 options = ({} if operation.get('cancelled') else
@@ -830,6 +901,17 @@ class EdltParentTransaction:
                                [{'field': operation['option'], 'address': operation['value']}])}
             if kind in dialog_panels:
                 owner = 'ordered parent Add panel (' + kind + ')'
+            if kind == 'static-text-dialog':
+                from .edlt_static_text_dialog import project
+                changes, receipt = project(planning_values, operation)
+                claim_static(changes, owner)
+                control_values.update(changes)
+                planning_values.update(changes)
+                receipt.update(operation=number,
+                    owned_parameters=sorted(changes),
+                    terminal_save_deferred_to_parent=True)
+                results.append(_json(receipt))
+                continue
             if kind == 'reset':
                 # normalize_operations makes Reset unique and first.  The
                 # transition was issued above so every later control sees its
@@ -910,7 +992,8 @@ class EdltParentTransaction:
                         'SceneManager composition changed an unsupported '
                         'control field')
                 claimed = sorted(graph_fields | static_fields)
-                self._claim(owners, claimed, owner)
+                self._claim(owners, graph_fields, owner)
+                claim_static(static_fields, owner)
                 for parameter in claimed:
                     control_values[parameter] = composition.fields[parameter]
                     planning_values[parameter] = composition.fields[parameter]
@@ -1074,7 +1157,7 @@ class EdltParentTransaction:
                         control_values[f'Widget{record_widget}RestoreLevel'] = projected[
                             f'Widget{record_widget}RestoreLevel']
                 allocations = _static_changes(widget_plan, projected)
-                self._claim(owners, allocations, owner)
+                claim_static(allocations, owner)
                 control_values.update(allocations)
                 extra_fields = []
                 if kind == 'time-date':
@@ -1345,7 +1428,7 @@ class EdltParentTransaction:
             for parameter in fields:
                 control_values[parameter] = projected[parameter]
             allocations = _static_changes(settings_plan, projected)
-            self._claim(owners, allocations, owner)
+            claim_static(allocations, owner)
             control_values.update(allocations)
 
             primary = _effective_primary(projected)
@@ -1668,8 +1751,8 @@ class EdltParentTransaction:
             loaded.expected,
             (None if reset_preparation is None else reset_preparation['raw']),
             loaded.after_load, after_controls, before_save,
-            lifecycle_plan.changes, cache, application_cache,
-            scene_manager_cache, operations, tuple(results),
+            lifecycle_plan.changes, initial_cache, initial_application_cache,
+            initial_scene_manager_cache, operations, tuple(results),
             _json(evidence), _dialog_initial_missing,
             _dialog_missing_by_operation)
 

@@ -1,9 +1,9 @@
-"""Old DIMPR12 documentor from explicit, bounded saved programming fields."""
+"""DIMPR12 and L1 documentor from explicit, bounded saved programming fields."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .project_documentation_bytecraft_loader import decode_bytecraft_scenes
+from .project_documentation_bytecraft_loader import bytecraft_logic, decode_bytecraft_scenes
 from .project_documentation_devices import _group_link, _required_array
 
 if TYPE_CHECKING:
@@ -46,10 +46,11 @@ def _level_link(network: Network, group_address: int, address: int) -> str:
 
 
 def bytecraft_body_lines(network: Network, unit: Unit) -> list[str]:
-    """Project the old class only, retaining the original malformed table tags."""
+    """Project both exact native class partitions, retaining the original malformed table tags."""
     scenes = decode_bytecraft_scenes(unit)
     application = _required_array(unit, 'Application', 1)[0]
     groups = _required_array(unit, 'GroupAddress', 12)
+    logic = bytecraft_logic(unit)
     disable = _required_array(unit, 'CBusDisableGroupAddress', 1)[0]
     switch = _required_array(unit, 'DMXCBusSwitchAddress', 1)[0]
     switching = _bits(unit, 'DMXCbusSwitchOverActionAndRestoreMode')
@@ -92,7 +93,12 @@ def bytecraft_body_lines(network: Network, unit: Unit) -> list[str]:
     for index, group in enumerate(groups):
         if group == 255 and patches[index] == 0:
             continue
-        row = f'</tr><tr><td>{index + 1}</td><td>' + _group_link(network, application, group) + '</td><td>&nbsp;</td>'
+        row = f'</tr><tr><td>{index + 1}</td><td>' + _group_link(network, application, group)
+        if logic is not None and logic[1][index] & 1:
+            row += ', ' + _group_link(network, application, logic[0])
+            row += '</td><td>' + ('Min' if logic[1][index] & 128 else 'Max') + '</td>'
+        else:
+            row += '</td><td>&nbsp;</td>'
         if group != 255:
             row += f'<td>{CURVE_DESCRIPTIONS[curves[index]]}</td><td>{_percent(minimum[index])}</td><td>{_percent(maximum[index])}</td>'
             if disable != 255:
