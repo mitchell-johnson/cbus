@@ -2,7 +2,9 @@
 
 The body admits the original TDIMPR12 / TDIMPR12CGateAgent firmware profile
 0 through 1.9.02. It requires complete explicit PresetRec00–32 and consumed PP
-fields. DIMPR12L1 and DIMPR12A use separate classes and remain excluded. This is
+fields. DIMPR12 L1 has a [separate report profile](project-documentation-wireless-l1.md).
+DIMPR12A selects the DIN `ErrorReportOutput` class and is covered by that
+existing report implementation; it is not a missing Bytecraft body. This is
 a fresh saved-snapshot consumer projection, not original full-loader execution.
 
 Channel groups bind in the primary application. Both C-Bus Lock and DMX Enable

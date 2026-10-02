@@ -22,6 +22,8 @@ from test_cgate_named_database_interop import (
 
 VECTOR = Path(__file__).resolve().parents[2] / 'rust/testdata/vectors/project_documentation_remaining.json'
 DATA = json.loads(VECTOR.read_text())
+ST7_ANNEX = Path(__file__).resolve().parents[1] / 'research/fixtures/project-documentor-st7-light-level.json'
+ST7_CURRENT = json.loads(ST7_ANNEX.read_text())['historical_current_overrides']
 BACKENDS = [('cgate-mock', 'CBUS_CGATE_MOCK_BIN'), ('cmqttd', 'CBUS_CMQTTD_BIN')]
 
 
@@ -94,6 +96,7 @@ def journey(backend, variable, tmp_path):
                 'original_execution': False, 'physical_acceptance': False,
                 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
                 'vector_sha256': hashlib.sha256(VECTOR.read_bytes()).hexdigest(),
+                'current_st7_annex_sha256': hashlib.sha256(ST7_ANNEX.read_bytes()).hexdigest(),
                 'calls': [], 'processes': []}
     relay = None
     try:
@@ -127,7 +130,8 @@ def literal_bodies(raw, result):
     assert b'\n' not in raw.replace(b'\r\n', b'')
     assert b'Generated on: 02 Oct 2026 12:00<br />\r\n' in raw
     for index, case in enumerate(DATA['cases']):
-        assert ('\r\n'.join(case['body_lines']) + '\r\n').encode() in raw
+        current = ST7_CURRENT.get(case['id'], case)
+        assert ('\r\n'.join(current['body_lines']) + '\r\n').encode() in raw
         assert result['units'][index] == {
             'network': 254, 'unit': index + 3, 'unit_type': case['unit']['unit_type'],
             'documentor': 'T' + case['family'] + 'Documentor', 'status': 'recovered',

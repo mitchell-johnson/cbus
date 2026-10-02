@@ -487,7 +487,13 @@ class EdltSceneManager:
                 raise EdltError('Static label text must be nonblank and contain no NUL; use set-name-index 255 to detach')
             try: encoded = text.encode('utf-8')
             except UnicodeEncodeError as error: raise EdltError('Static label text must be valid Unicode') from error
-            if len(encoded) > 63: raise EdltError('Static label text exceeds63UTF-8 bytes; truncation is not permitted')
+            if len(encoded) > 63:
+                from .edlt_static_grid import _parent_history_active
+                if not _parent_history_active():
+                    raise EdltError('Static label text exceeds63UTF-8 bytes; truncation is not permitted')
+                # A parent shape pass runs before its actual ordered cache.
+                # Allocation later admits only a real earlier retained Name;
+                # an unmatched or future long name still fails the63-byte gate.
         if 'item_id' in op: _int(op['item_id'], 'Item identity', 1, 65536)
         for key, maximum in (('groups', 254), ('item_ids', 65536)):
             if key in op:

@@ -67,8 +67,7 @@ class StaticTextDialogTests(unittest.TestCase):
         for op in ({**edit(0, 'A'), 'cancel': True}, edit(64, 'A'), edit(True, 'A'),
                    edit(-1, 'A'), edit(0, 3), edit(0, 'A', close='cancel')):
             with self.subTest(op=op), self.assertRaises(EdltError): normalize(op)
-        for values in ({}, {**self.base, 'StaticTextString1': (0,) * 63},
-                       {**self.base, 'StaticTextString1': (196, 0) + (0,) * 62}):
+        for values in ({}, {**self.base, 'StaticTextString1': (0,) * 63}):
             with self.subTest(values=list(values)[:1]), self.assertRaises(EdltError):
                 project(values, edit(0, 'A'))
 

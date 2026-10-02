@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 660,
-    "modules_without_skip_sites": 355,
-    "modules_with_skip_sites": 305,
+    "test_modules": 667,
+    "modules_without_skip_sites": 360,
+    "modules_with_skip_sites": 307,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,7 +62,7 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 105,
+      "original_toolkit": 107,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 145
+      "none": 147
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -8569,6 +8569,41 @@
         }
       ]
     },
+    "tests/test_project_documentation_native_addresses.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_native_addresses.py::test_optional_explicit_pinned_static_extraction_matches_current_receipt",
+          "kind": "decorator.skipif",
+          "condition": "not os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Supply explicit pinned EXE/MAP for read-only static regeneration; no original instructions run",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_optional_explicit_pinned_static_extraction_matches_current_receipt"
+          ]
+        }
+      ]
+    },
     "tests/test_project_documentation_neo.py": {
       "categories": [
         "original_toolkit"
@@ -9032,6 +9067,42 @@
           ],
           "tests": [
             "test_original_receipt_regenerates"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_st7_light_level.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_st7_light_level.py::test_static_annex_reproduces_when_explicit_private_inputs_exist",
+          "kind": "body.call",
+          "condition": "not exe or not mapping",
+          "reason": "explicit private Toolkit EXE/MAP static inputs not configured",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_static_annex_reproduces_when_explicit_private_inputs_exist"
           ]
         }
       ]

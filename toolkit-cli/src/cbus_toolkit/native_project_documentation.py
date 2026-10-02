@@ -17,6 +17,7 @@ from .native import NativeDatabase
 from .project import ProjectError
 from .project_documentation import (
     PARITY, _write_new, default_output_name, encode, render,
+    parse_report_network_selector, resolve_report_network_selector,
 )
 from .project_documentation_native import (
     MAX_SNAPSHOT_BYTES, _children, _scalar, build_native_model,
@@ -27,12 +28,10 @@ FORMAT = "cbus-native-project-documentation-v1"
 
 
 def options(parser) -> None:
-    from .cli import _byte
-
     parser.add_argument("--project", required=True, metavar="//PROJECT",
                         help="Project exported by one read-only DBGETXML request")
-    parser.add_argument("--network", type=_byte, metavar="N",
-                        help="Document only this numeric network from the same snapshot")
+    parser.add_argument("--network", type=parse_report_network_selector, metavar="ADDRESS",
+                        help="Document only this exact database Network Address from the snapshot")
     parser.add_argument("--output", type=Path,
                         help="New HTML file (default: <project TagName>.html); never overwrites")
     parser.add_argument("--generated-at", metavar="ISO",
@@ -57,8 +56,18 @@ def _preflight(args):
     if type(args.timeout) not in (int, float) or not math.isfinite(args.timeout) or args.timeout <= 0:
         raise ValueError("C-Gate timeout must be positive and finite")
     network = getattr(args, "network", None)
-    if network is not None and (type(network) is not int or not 0 <= network <= 255):
-        raise ValueError("--network must be a numeric byte")
+    if network is not None:
+        if type(network) is int:
+            if not 0 <= network <= 255:
+                raise ValueError("--network must be an exact database Network Address")
+        elif type(network) is str:
+            from argparse import ArgumentTypeError
+            try:
+                network = parse_report_network_selector(network)
+            except ArgumentTypeError as error:
+                raise ValueError(str(error)) from error
+        else:
+            raise ValueError("--network must be an exact database Network Address")
     output = None if args.output is None else Path(args.output)
     if output is not None and os.path.lexists(output):
         raise FileExistsError("Output already exists: " + str(output))
@@ -109,8 +118,8 @@ def live(args, client_factory, ssl_context):
     address = _scalar(node, "Address", required=True)
     if address.upper() != project[2:].upper():
         raise ProjectError("DBGETXML Project.Address differs from the selected project")
-    if network is not None and network not in model.by_address:
-        raise ProjectError(f"Network {network} is absent from the project")
+    if network is not None:
+        network = resolve_report_network_selector(model, network)
     output = output if output is not None else default_output_name(model.name)
     text, summary = render(model, generated=generated,
                            networks=None if network is None else [network], catalog=catalog)

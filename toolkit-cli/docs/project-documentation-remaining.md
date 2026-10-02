@@ -9,7 +9,7 @@ units, read physical sensors, or operate an audio or DALI network.
 | Device | Native class and agent | Factory firmware | Projection |
 | --- | --- | --- | --- |
 | `SENLL`, `PE_CELL` | `TSENLL`, `TSENLLCGateAgent` | `1.00–2.0.00` | Three group roles, exponential threshold conversion, Lux and foot-candle target/margin |
-| `SENLL` | `TST7SENLL`, `TCBusST7LightLevelSensorCGateAgent` | `2.0.01–9` | Maintenance/on-off/enable/broadcast groups, broadcast timer, Lux2550 target and percentage margin; bounded timer and scene states below |
+| `SENLL` | `TST7SENLL`, `TCBusST7LightLevelSensorCGateAgent` | `2.0.01–9` | Maintenance/on-off/enable/broadcast groups, zero-key fresh loader, broadcast timer minimum, Lux2550 target and percentage margin |
 | `PC_WHAD`, `PC_WHAR`, `PC_WHARB` | Corresponding `TPC_*`, `TCBusPC_WHAACGateAgent` | `0–9` | Automatic/manual zone, matrix/relative zone, control application, both control-group tables |
 | `PC_DAL2B`, `PC_DAL2C` | Corresponding `TPC_*`, `TCBusPC_DAL2BCGateAgent` | `0–9` | Both DALI network settings, levels/selectors, ramp/status controls and complete mapping table |
 
@@ -53,23 +53,22 @@ with the existing source-derived extended-precision margin calculation; a zero
 target reports zero. `TimerHighByte` and `TimerLowByte` supply the broadcast
 timer, written as `0h1m1s` without inserted spaces.
 
-A nonzero stored timer is admitted. A zero timer is admitted only when all
-eight `JPCommand`, `SRCommand`, `LPCommand` and `LRCommand` values and the
-`PIRLightMovement`, `PIRDarkMovement` and `PIRDark` masks explicitly establish
-idle templates. Other zero-timer template states remain partial because the
-original loader can assign a 300-second default while changing templates and
-block associations. Missing data is not converted into idle state.
+The selected class has zero physical and zero effective virtual keys. Its
+fresh `InputKeys` collection is empty, so stored key commands and occupancy
+masks cannot trigger the inherited five-minute key-template timer default.
+Block 4 instead has its own ten-second `TimerMin`: stored values 0–9 load as
+10 seconds. Other selected blocks retain zero, and larger values retain their
+unsigned sixteen-bit timer. Explicit consumed timer bytes are required.
 
-The native model has zero physical keys and does not support either join mode.
-Input usage reports `Light Level Maintenance` for an active matching
-maintenance block and `Block (Unused)` for other matching blocks. An explicit
-empty scene graph is required for complete input usage; a nonempty or absent
-`SceneTable` retains these known block uses and records the missing scene
-dependencies. Other usage preserves Area, disabled-key, corridor, trigger,
-maintenance-enable, occupancy-enable and broadcast roles, including repeated
-corridor references and broadcast blocks 4–7. It does not suppress these
-references based on the corresponding active flag. Output and selector usage
-are known empty.
+The selected class overrides the multisensor dependency methods. Input usage
+is `Level Group`, then `On/Off Group`; Other usage is
+`Light Level Broadcast Group`, then `Enable Group`. Complete application/group
+identity controls these comparisons, including duplicate role matches and
+unused objects. Active flags do not suppress them. This report does not
+consume key, scene, area, corridor or occupancy dependencies. Output and
+selector usage are known empty. A saved nonempty scene table is preserved and
+does not add report dependencies. These corrections and their source evidence
+are detailed in [the ST7 annex](project-documentation-st7-light-level.md).
 
 The separate [multisensor recovery](project-documentation-sensors.md) now
 admits seven exact profiles, including `SENLLA`, `SENPILL` and `SENPILLA`.
@@ -142,28 +141,35 @@ Value and excludes unused trigger groups.
 
 ## Evidence and remaining work
 
-The [literal vector](../../rust/testdata/vectors/project_documentation_remaining.json)
+The historical [literal vector](../../rust/testdata/vectors/project_documentation_remaining.json)
 contains ten complete synthetic units and their independently authored body
 lines, group-use results and selector results. It covers old exponential and
 unused light-level states, ST7 secondary-application and explicit-idle zero
 timers, all three manual WHAA models, automatic WHAA with an unused application,
 and both two-network DALI models. Boundary tests cover zone clamping, all DALI
 action ranges, mapping duplicate clearing, hidden fields, missing references,
-firmware selection and ST7 refusals.
+firmware selection. Its bytes remain unchanged. The current ST7
+[literal annex](../research/fixtures/project-documentor-st7-light-level.json)
+explicitly supersedes its two ST7 expectations; the zero timer on block 4 now
+reports ten seconds and usage follows the selected derived methods. Ten new
+invented units cover all broadcast selectors, stored active keys and scenes,
+coincident roles and unused objects. Current public journeys pin both receipts.
 
-The [static receipt](../research/fixtures/project-documentor-remaining-static.json)
+The historical [static receipt](../research/fixtures/project-documentor-remaining-static.json)
 binds the exact Toolkit 1.18.0.2754 EXE/MAP hashes, eight factory profiles,
 33 source methods and 40 checked facts. It records source method hashes and
 derived literals/contracts, without publishing vendor instruction bytes or
 private unit specifications. The verifier is
 [`project_documentor_remaining_static.py`](../research/project_documentor_remaining_static.py).
 It requires explicitly supplied pinned original files and reads them statically.
+The current [ST7 source annex](../research/fixtures/project-documentor-st7-light-level-static.json)
+checks the effective class slots, zero-key loader and timer callbacks. Historical
+evidence is not presented as acceptance of the corrected current implementation.
 
 No original executable, VM, live C-Bus network, audio device or DALI endpoint
 was used for this extension. Original full-project loading, retained GUI state,
 Windows preferences/locales and generated HTML comparisons remain unaccepted.
-ST7 active-template zero timers and scene dependencies remain bounded as
-described above. [Sensor and thermostat reports](project-documentation-sensors.md)
+[Sensor and thermostat reports](project-documentation-sensors.md)
 now have their own bounded loader and report contracts. Wireless, remote and
 architectural dimmer recovery is tracked separately. These limits keep the
 overall Document Project workflow partial.

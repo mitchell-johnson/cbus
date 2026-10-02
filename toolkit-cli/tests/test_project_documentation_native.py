@@ -151,7 +151,7 @@ def test_original_sentinel_first_order_applies_only_to_network_application_group
 
 @pytest.mark.parametrize("old,new", (
     (b"<Address>DOCS</Address>", b"<Address>TOO_LONG1</Address>"),
-    (b"<Address>254</Address>", b"<Address>0254</Address>"),
+    (b"<Address>254</Address>", b"<Address>bad/path</Address>"),
     (b"<Address>202</Address>", b"<Address>256</Address>"),
     (b"<Address>7</Address>", b"<Address>-1</Address>"),
     (b"<Address>3</Address>", b"<Address>0x03</Address>"),
@@ -203,10 +203,15 @@ def test_ambiguous_interface_representation_fails(interface):
         build_native_model(snapshot(interface=interface))
 
 
-@pytest.mark.parametrize("number", ("253", "0254", "256"))
-def test_network_number_must_agree_with_address(number):
+@pytest.mark.parametrize("number", ("0254", "256"))
+def test_invalid_network_number_is_not_reinterpreted_as_address(number):
     with pytest.raises(ProjectError):
         build_native_model(snapshot(interface=f"<NetworkNumber>{number}</NetworkNumber>"))
+
+
+def test_distinct_native_network_number_does_not_rename_address():
+    model = build_native_model(snapshot(interface='<NetworkNumber>253</NetworkNumber>'))
+    assert (model.networks[0].address, model.networks[0].network_number) == (254, 253)
 
 
 @pytest.mark.parametrize("group", (

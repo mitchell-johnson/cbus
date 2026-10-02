@@ -9,11 +9,11 @@ from __future__ import annotations
 from decimal import Decimal, localcontext
 from fractions import Fraction
 
-from .macros import STAGES
 from .project_documentation_devices import _group_link, _required_array
 from .project_documentation_outputs import _registration
 from .project_documentation_usage import Usage
 from .sensors import _extended, margin_percent
+from .project_documentation_st7_light_level import st7_light_level_group_usage, st7_light_level_timer
 
 OLD_TYPES = ("SENLL", "PE_CELL")
 # Exact native extended constants in ByteToLux1600 and both report bodies.
@@ -55,19 +55,7 @@ def _foot_candle(lux):
 
 
 def _st7_timer(unit, selected):
-    high = _required_array(unit, "TimerHighByte", 8)
-    low = _required_array(unit, "TimerLowByte", 8)
-    timer = high[selected] * 256 + low[selected]
-    if timer:
-        return timer
-    # Assigning a Timer/SENPILL template can default a zero timer during native
-    # loading. Explicit all-idle keys and empty occupancy masks establish the
-    # zero case without inventing a retained template/association history.
-    commands = tuple(_required_array(unit, name, 8, 15) for name in STAGES)
-    occupancy = tuple(_byte(unit, name) for name in ("PIRLightMovement", "PIRDarkMovement", "PIRDark"))
-    if any(any(values) for values in commands) or any(occupancy):
-        raise ValueError("zero broadcast timer with active key/occupancy templates is unrecovered")
-    return 0
+    return st7_light_level_timer(unit, selected)
 
 
 def light_level_data(unit):
@@ -143,54 +131,7 @@ def light_level_group_usage(unit, application, group, kind):
                 ("AreaGroupAddress", "Area Group"), ("OnOffGroupAddress", "On/Off Group"),
                 ("EnableGroupAddress", "Enable Group"))
             return Usage("<br/>".join(label for name, label in fields if _byte(unit, name) == group))
-        if kind == "other":
-            return _st7_other_usage(unit, application, group)
-        apps = _required_array(unit, "Application", 2)
-        groups = _required_array(unit, "GroupAddress", 8)
-        secondary = _byte(unit, "SecondApplicationBlocks")
-        active = _required_array(unit, "PECFunctionActive", 1, 1)[0]
-        maintenance = _byte(unit, "PECFunctionBlock")
-        if maintenance >= 8:
-            raise ValueError("PECFunctionBlock (requires an existing loaded block)")
-        # TST7SENLL has zero physical keys and both joins unsupported. None of
-        # its virtual keys satisfies the report's visible-key predicate.
-        descriptions = []
-        for index, address in enumerate(groups):
-            if (apps[int(bool(secondary & (1 << index)))], address) == (application, group):
-                descriptions.append("Light Level Maintenance" if active and maintenance == index else "Block (Unused)")
-        scenes = unit.array("SceneTable")
-        if scenes is None or any(not 0 <= value <= 255 for value in scenes):
-            return Usage("<br/>".join(descriptions), "partial", ("SceneTable (explicit empty scene graph required)",))
-        if scenes and scenes[0] != 255:
-            return Usage("<br/>".join(descriptions), "partial", ("light-level scene group dependencies",))
-        return Usage("<br/>".join(descriptions))
+        return st7_light_level_group_usage(unit, application, group, kind)
     except ValueError as error:
         return Usage(status="unrecovered", missing=(str(error),))
 
-
-def _st7_other_usage(unit, application, group):
-    apps = _required_array(unit, "Application", 2)
-    descriptions = []
-    if application == apps[0]:
-        if _byte(unit, "AreaGroupAddress") == group:
-            descriptions.append("Area Group")
-    if application == 203 and group == 255:
-        descriptions.append("Key Disable Group")
-    if application == apps[0] and _byte(unit, "CorridorLinkEnablerGroup") == group:
-        descriptions.append("Corridor Link Group")
-    if application == 202 and _byte(unit, "ControlAppGroupAddress") == group:
-        descriptions.append("Control App Group")
-    if application == apps[0]:
-        for name, label in (("PECEnablerGroup", "Light Level Maintenance Enable"),
-                            ("PIREnablerGroup", "Occupancy Enable"),
-                            ("CorridorLinkEnablerGroup", "Corridor Link")):
-            if _byte(unit, name) == group:
-                descriptions.append(label)
-    selected = _byte(unit, "BroadcastBlock")
-    if selected >= 8:
-        raise ValueError("BroadcastBlock (requires an existing loaded block)")
-    groups = _required_array(unit, "GroupAddress", 8)
-    secondary = _byte(unit, "SecondApplicationBlocks")
-    if (apps[int(bool(secondary & (1 << selected)))], groups[selected]) == (application, group):
-        descriptions.append("Light Level Broadcast Group")
-    return Usage("<br/>".join(descriptions))

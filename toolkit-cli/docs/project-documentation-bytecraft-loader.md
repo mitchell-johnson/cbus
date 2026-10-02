@@ -3,8 +3,12 @@
 `decode_bytecraft_scenes(unit)` projects the exact old `DIMPR12` registration:
 `TDIMPR12` / `TDIMPR12CGateAgent`, firmware `0` through `1.9.02`. It returns
 33 immutable `BytecraftScene` records in index order, each containing twelve
-on/off inclusions and levels. `DIMPR12L1` and firmware `1.9.03` onward remain
-outside this decoder, as does the different DIN-schema `DIMPR12A`.
+on/off inclusions and levels. The shared decoder also admits the exact `TDIMPR12L1` /
+`TDIMPR12L1CGateAgent` partition at firmware `1.9.03` through `9`; see
+[the separate L1 report profile](project-documentation-wireless-l1.md).
+The historical evidence in this note describes the old partition. DIMPR12A
+selects the existing DIN ErrorReportOutput implementation and does not use
+this scene decoder.
 
 Every `PresetRec00` through `PresetRec32` must contain at least 32 explicit
 byte values. Missing, malformed, partial or out-of-range arrays fail closed.

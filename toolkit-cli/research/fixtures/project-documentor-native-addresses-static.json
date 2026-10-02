@@ -1,0 +1,127 @@
+{
+  "checks": {
+    "address_string_is_integer_then_decimal": true,
+    "bridge_adjacent_consumes_number": true,
+    "bridge_destination_defaults255_then_last_valid_prefix": true,
+    "bridge_final_destination_consumes_number": true,
+    "bridge_nil_destination_has_literal_unknown_network": true,
+    "bridge_prefix_consumes_number": true,
+    "header_anchor_uses_address_string": true,
+    "header_number_label_uses_address_string": true,
+    "integer_uses_address_attribute_not_number": true,
+    "network_path_uses_address_string": true,
+    "original_address_cache_parses_integer": true,
+    "original_address_na_is_zero": true,
+    "original_lookup_returns_first_manager_match": true,
+    "original_unparseable_address_cache_is255": true,
+    "physical_number_has_separate_attribute": true,
+    "physical_number_lookup_reads_separate_integer": true,
+    "strtoint_uses_val_long_and_checks_failure": true,
+    "val_long_accepts_leading_ascii_spaces": true,
+    "val_long_decimal_overflow_and_signed_terminal": true,
+    "val_long_hex_prefixes": true,
+    "val_long_hex_unsigned_accumulator_and_sign": true,
+    "val_long_optional_signs": true
+  },
+  "extractor_sha256": "10f734317845bf26e8d2e35d15c1ec9ed2a470392b68cdbe9bac85eb85a01b6c",
+  "format": "cbus-documentor-native-address-source-v1",
+  "limits": [
+    "Exact database identities select saved native networks independently; report headings and anchors use the original signed integer address projection, including numeric aliases and name fallback255.",
+    "Distinct exact database identities can share source-projected HTML anchors; no complete original page or manager-order acceptance is claimed.",
+    "Original manager/locale ordering and duplicate-number first-match selection are not reproduced; ambiguous consumed Numbers refuse.",
+    "Bridge remote lookup consumes the last valid prefix Number, or Number255 when no prefix resolved.",
+    "No original instructions, native server, VM or hardware is executed by this extraction."
+  ],
+  "literal_disclosure": {
+    "compiler_coordinate_literals_omitted": 0,
+    "original_instruction_bytes_embedded": false
+  },
+  "method_spans": {
+    "CIS_TBridgeDocumentor.TBridgeDocumentor.DocumentHTML": {
+      "end": 13890312,
+      "instruction_count": 176,
+      "sha256": "7a061cc6277445633e37b35ba55e28b602612a8275f74bae96d6d69178c2101d",
+      "start": 13888664
+    },
+    "CIS_TCBusBridgeCGateAgent.TCBusBridgeCGateAgent.AfterLoadProgrammingInformation": {
+      "end": 19230036,
+      "instruction_count": 151,
+      "sha256": "952c1254c5bdaf7e7dc8f6d28515271cd51f4124d7ecccc5f15dd258879abdf8",
+      "start": 19229512
+    },
+    "CIS_TCBusObject.TCGateAddressAttribute.GetSimpleDecimalAddress": {
+      "end": 16023224,
+      "instruction_count": 17,
+      "sha256": "8f34b58ddf020b15c8051cf598e509d320a078b99288cffbd08b5f8c993ff2c5",
+      "start": 16023176
+    },
+    "CIS_TCBusObject.TCGateAddressAttribute.PopulateCacheValues": {
+      "end": 16023848,
+      "instruction_count": 149,
+      "sha256": "7d8463e3db2a186503eb7f66f81d6f5be7936f8c0ca24b84b16b8f940b6124f6",
+      "start": 16023224
+    },
+    "CIS_TCBusObject.TCGateObject.GetAddressAsInteger": {
+      "end": 16022068,
+      "instruction_count": 14,
+      "sha256": "29e51f5d44bbbdf14cf1164607c98dc68cb323c7caa1f2d593bed173972e9341",
+      "start": 16022032
+    },
+    "CIS_TCBusObject.TCGateObject.GetAddressAsString": {
+      "end": 16022032,
+      "instruction_count": 13,
+      "sha256": "2b4a18fc72aeb806f72f6de0ab5f730c609a695adb59cb757f166d157ae2e0f9",
+      "start": 16022000
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetAddressAsPath": {
+      "end": 15905012,
+      "instruction_count": 13,
+      "sha256": "d95d2185236b91b4fea22226071fb2129ec800054abae622654f98ebb8d1b488",
+      "start": 15904984
+    },
+    "CIS_TCommonCBus.TCBusNetwork.InternalCreate": {
+      "end": 15900784,
+      "instruction_count": 306,
+      "sha256": "a36bfe4c44ea8cf2e3b6fbbdc60ba816885eea6547f19e6de22b8ba66a4f0912",
+      "start": 15899056
+    },
+    "CIS_TCommonCBus.TCBusNetworkManager.NetworkByNetworkNumber": {
+      "end": 15898048,
+      "instruction_count": 37,
+      "sha256": "3d27d34ab077ee466395f17ff31235d66cfc9742cdae8881c3c08e07d1ecaf4d",
+      "start": 15897944
+    },
+    "CIS_TProjectDocumentor.TProjectDocumentor.InsertHTMLNetworkNEW": {
+      "end": 15758684,
+      "instruction_count": 212,
+      "sha256": "230eba4aa832dcd1334f1308865669bfd793d4527d14181c5af173d7c67a5d3e",
+      "start": 15757268
+    },
+    "SysUtils.StrToInt": {
+      "end": 6396844,
+      "instruction_count": 22,
+      "sha256": "e38f4ca11dc62e31046ca512bec9b1908f873d0016a2c6af472825fe9bc58945",
+      "start": 6396784
+    },
+    "System.@ValLong": {
+      "end": 6314556,
+      "instruction_count": 102,
+      "sha256": "69d551db426b3c45fa134d5d7a269daa68b12cda0a2c5745dd95d3d1eaca4c64",
+      "start": 6314296
+    }
+  },
+  "native_address_evidence": {
+    "path": "rust/testdata/fixtures/native_cgate_net_save_db_materialization.json",
+    "retained_execution_only": true,
+    "sha256": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b"
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "supporting_module_sha256": {
+    "native_project_documentation.py": "e6bd2130f3a9311212e635bdb5dbfdb291987f6a8ade8795248d6941f9a89eed",
+    "project_documentation.py": "25917cb1473d96235d269e9726e35f45906a842beec7055679b68bcc2cbfd212",
+    "project_documentation_native.py": "874178ca95407f57e67fa65ea397916da6458de9bc8729ccba1ab2cc438a2fda",
+    "project_documentation_wireless.py": "289c8dda04fe4dc8c35b183719677b1ec3aa24be0fe91758915ee27d6ad08c92"
+  }
+}

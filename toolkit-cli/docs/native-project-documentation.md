@@ -16,8 +16,11 @@ Replace HOST and PROJECT with the selected endpoint and loaded project. The
 selector must be `//` followed by 1–8 letters, digits or underscores. The
 project's display TagName and its Address are independent: Address must match
 the requested selector, ignoring case, while TagName supplies the report title
-and default output filename. `--network` selects a numeric network from that
-same snapshot. `--catalog` supplies an optional private calculator catalogue.
+and default output filename. `--network` selects the exact database Network
+Address from that same snapshot. For example, `--network RoomA`, `--network
+0254` and `--network 254` select distinct stored identities; spelling and case
+remain significant. Physical NetworkNumber does not select a database network.
+`--catalog` supplies an optional private calculator catalogue.
 
 The command sends exactly one `DBGETXML //PROJECT`. It requires a complete
 343 opener, 347 payload records and exact 344 XML terminal receipt, bounds the
@@ -27,10 +30,31 @@ typed or hidden unsupported collections, namespace shadows, unsafe XML and
 missing Level Value attributes refuse before creating output. It sends no
 network OPEN, scan, programming LOAD, database edit or project SAVE.
 
-The native adapter currently requires canonical numeric Network Address and,
-when present, a matching NetworkNumber. Distinct Address/NetworkNumber values
-remain refused. The pure report helpers can resolve an explicit NetworkNumber
-independently; that broader helper scope is not admitted by this native CLI.
+The native adapter preserves numeric, named and lexical Network identities,
+including the original captured `0254`, `254`, `256`, `0xff`, `CustomA` and
+`Customa` profiles. Address must be one nonempty XML-safe path component; it
+cannot contain `/` or control characters. Application, Group, Level and Unit
+addresses retain their canonical decimal-byte profile.
+
+Toolkit's report Address accessor is a separate integer projection. Headings
+and links therefore render `0254` as `254`, `256` as `256` and an unparseable
+name such as `RoomA` as `255`. The source also treats exact `NA` as zero and
+accepts signed i32 decimal and `$`, `x` or `0x` hexadecimal spellings. JSON
+selection and per-unit network identities remain exact. Distinct database
+identities can share HTML anchors; that source behavior is preserved without
+claiming complete original-page or manager-order acceptance.
+
+An explicit NetworkNumber is independent of Address and may use a canonical
+decimal byte or hexadecimal byte. An absent Number stays unknown. Thermostat
+masters, wireless gateways and bridges resolve their consumed physical
+references through that property. A unique explicit match works even if
+unrelated networks have missing or duplicate Numbers. A duplicate consumed
+Number refuses that body rather than choosing manager order; an unresolved
+reference also refuses if missing Numbers prevent proving absence. Address is
+never substituted for a missing native Number. Unrecovered raw Number states
+remain refused. A bridge requesting a remote destination uses the last resolved
+forwarding-prefix Number; if none resolved, its source loader consumes Number
+255. That sentinel lookup has the same consumed ambiguity and absence guards.
 
 The HTML uses UTF-8 BOM and CRLF. Existing files and dangling symlinks are
 protected, publication uses an exclusive create, and a failed flush removes
@@ -64,4 +88,21 @@ output and interrupted reads. `tests/test_cgate_project_documentation_interop.py
 exercises the public subprocess CLI against owned `cgate-mock` and `cmqttd`,
 checks all ten literal device-body fixtures, whole-project preservation and
 zero closed-interface trap contacts, and tests the saved native XML command.
-No site endpoint, original program or physical device is used by those tests.
+`tests/test_project_documentation_native_addresses.py` compares exact native
+identities, source integer projections, consumed-only Number resolution and
+distinct action Address/Value anchors against independent literals and the
+retained original native materialization. Its matching public interop module
+uses both owned Rust backends for named-network selection, thermostat and
+gateway references, saved XML output and whole-project preservation. The new
+static receipt records only read-only source checks; it does not rebind any
+historical original execution to current code. No site endpoint, original
+program or physical device is used by those tests.
+
+The owned-backend public fixture has a separate complete provisioning profile:
+its master Number is decimal `42` and the originally absent unrelated Number
+is explicitly `255`. Rust's current archive admission requires Number and
+admits decimal bytes or literal `0xff`; the fixture records those changed
+fields. That inserted `255` is a known sentinel. Live tests validate the actual
+exported profile and do not claim interchange for absent Number or general
+hexadecimal Number spellings. The independent saved-snapshot tests cover those
+adapter inputs separately.

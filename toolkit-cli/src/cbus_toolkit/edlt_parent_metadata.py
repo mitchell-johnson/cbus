@@ -13,6 +13,8 @@ save boundary, and reports every later failure as potentially partial.
 """
 from __future__ import annotations
 
+from .edlt_static_grid import retained_history
+
 from dataclasses import dataclass
 import hashlib
 import json
@@ -41,6 +43,7 @@ from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS, _ACTIVATION_PARAMETERS,
     _candidate_widget, normalize_operations, _NativeLanguageBinding,
+    WIDGET_OPERATION_NAMES, MRA_WIDGET_TYPES, _static_changes,
 )
 from .native import NativeDatabase, NativeProjects, _project
 from .native_thermostat_schedule import _project_shape, _shape
@@ -1482,6 +1485,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
     if (any(row['op'] in parent_add_kinds for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
+            or (any(row['op'] == 'static-text-dialog' for row in operations)
+                and any(row['op'] == 'scene-manager' for row in operations))
             or (any(row['op'] == 'add-dialog' for row in operations)
                 and any(row['op'] == 'reset' for row in operations))):
         return _plan_parent_add_dialogs(
@@ -1719,6 +1724,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
         resolved_operations=None if source_operations is None else operations)
 
 
+@retained_history
 def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                              snapshot, requirements, *, networks,
                              display_preferences):
@@ -1906,11 +1912,42 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             _raw, _dirty, _prepared, reset_transition = editor._editor('reset').prepare_unit_reset(
                 snapshot.raw_map(), metadata=inventory_cache(groups, level_names), **options)
             state = dict(reset_transition.after_controls)
+            from .edlt_static_grid import initialize as initialize_static_grid
+            initialize_static_grid(state)
             reset_dependency_values = dict(state)
         elif kind == 'static-text-dialog':
             from .edlt_static_text_dialog import project as project_static_text
             changes, _receipt = project_static_text(state, row)
             state = {**state, **changes}
+        elif kind in WIDGET_OPERATION_NAMES and kind not in ('scene', 'blank') and not scene_results:
+            from .edlt_static_grid import _parent_history_active
+            if _parent_history_active():
+                # An earlier widget reserves its label slot before SceneName
+                # asks the shared retained allocator for a cached name/free
+                # row. The canonical parent still owns validation and save.
+                widget_editor = ({'measurement': editor.measurement_editor,
+                                  'lighting': editor.lighting_editor}.get(kind)
+                                 or editor._editor(kind))
+                widget_plan = (widget_editor.plan(state, kind=kind,
+                    _parent_composition=True, **options) if kind in MRA_WIDGET_TYPES
+                    else widget_editor.plan(state, **options))
+                projected = {**widget_plan.expected, **widget_plan.changes}
+                slots = {widget_plan.widget: widget_plan.record}
+                adjacent = getattr(widget_plan, 'adjacent_widget', None)
+                if adjacent is not None and getattr(widget_plan, 'adjacent_after', None) is not None:
+                    slots[adjacent] = widget_plan.adjacent_after
+                for slot, record in slots.items():
+                    state = editor.common._place_record(state, slot, record,
+                        normalize_mra=False)
+                    if slot >= 6:
+                        state[f'Widget{slot}RestoreLevel'] = projected[f'Widget{slot}RestoreLevel']
+                state.update(_static_changes(widget_plan, projected))
+                state['NavWidgetType'] = (1 if widget_plan.page_mode == 'multiple' else 0,)
+                if kind == 'time-date':
+                    for name in ('DateFormat', 'TimeFormat', 'TimeDateLeadingZero'):
+                        state[name] = projected[name]
+                if kind in MRA_WIDGET_TYPES:
+                    state.update(widget_plan.propagation.changes)
         elif kind == 'blank':
             slot = _candidate_widget(row, state)
             if slot is None:
@@ -1992,6 +2029,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
 
     initial_controls = editor.lifecycle.load(supplied,
         metadata=inventory_cache(seed_groups, seed_levels).lifecycle).after_load
+    from .edlt_static_grid import initialize as initialize_static_grid
+    initialize_static_grid(initial_controls)
     for application in seed_groups:
         app_names.setdefault(application, APPLICATION_NAMES.get(application, 'Application ' + str(application)))
     initial_missing = ()

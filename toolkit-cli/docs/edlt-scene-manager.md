@@ -9,9 +9,10 @@ nonempty SceneManager operation array with a complete caller-supplied
 SceneManager cache. It uses the scene-only `prepare_composition` receipt, then
 runs the parent's single terminal normalization, retained full-capacity CRC
 rule, PP staging, readback and database-save path. Applications must precede
-that operation and Scene widgets must follow it. The automatic parent metadata
-path deliberately refuses this case; it does not merge the separate action
-object creation transaction.
+that operation and Scene widgets must follow it. The separate automatic parent
+metadata coordinator resolves the native project graph and can compose its
+SceneManager metadata transaction. Ordered static-dialog histories now retain
+their names through that path as well.
 
 ```python
 from cbus_toolkit.edlt_scene_manager import EdltSceneManager, SceneManagerCache
@@ -47,7 +48,7 @@ Supported operation dictionaries all contain `op` and `scene`:
 | `set-trigger` | `group` | Sets the numeric trigger reference without implicitly resolving other fields. |
 | `set-action` | `action` | Invokes original-style action lookup and dynamic-label refresh. With a manual cache, an explicitly absent action becomes -1. The automatic outer transaction projects the original exact-address creation side effect before this model runs. A disabled trigger ignores the assignment. |
 | `set-name-index` | `index`: 0–63 or 255 | Selects an existing static slot or unused name. No allocation or reindexing occurs. |
-| `set-name-text` | `text`: nonblank, at most 63 UTF-8 bytes, no NUL | Releases this scene's old name reference, reuses an exact existing string or allocates the highest unreferenced static slot, then binds the scene to it. |
+| `set-name-text` | `text`: nonblank, no NUL; new strings at most 63 UTF-8 bytes | Releases this scene's old name reference, reuses an exact existing string or allocates the highest unreferenced static slot, then binds the scene to it. |
 | `get-trigger`, `get-action` | none | Explicitly observes the original potentially mutating getter. |
 
 `available_groups(state, scene=...)` returns the ordered choices from the declared cache. Changing a scene from primary to secondary leaves its old group objects attached. A new secondary object with the same numeric group is therefore available. Serialization emits only the numeric group under the selected scene application, exactly as observed in the original model; the result reports the retained references so callers can review that distinction.
@@ -59,6 +60,18 @@ Copy/Paste copies the scene application, scene editability, trigger/action/name 
 `set-name-text` uses the same `EdltLighting.allocate_static_text` implementation as the accepted widget and declarative scene-table workflows. Matching is ordinal, case-sensitive and scans slots 0 through 63. An exact match is reused even when no spare slot exists. A new string uses the highest slot not referenced anywhere in the retained after-load unit model. Reservations include all eight current scene names, navigation page names and every supported static widget label/status reference described in [eDLT shared static text allocation](edlt.md#shared-static-text-allocation). The operation never edits another reference or renames a shared slot in place.
 
 Operations are applied in array order. A `set-name-text` first changes the selected scene's name index to 255 in the staged view, so its old slot can be reused when no other field refers to it. The allocated string and new scene reference are then visible to the next operation. Equal later text reuses the earlier slot; a later `set-name-index` can add or clear a reservation. `set-name-index` with 255 clears only the reference and leaves stored static text intact. Clipboard contents are detached and do not reserve a unit slot until pasted into a scene.
+
+An ordered parent history now retains the private name cache from the
+[static-text editor](edlt-static-language-add.md). A SceneManager operation in
+that history can reuse an exact cached name longer than its truncated 63-byte
+PP image. A new unmatched string still must fit 63 UTF-8 bytes, and standalone
+SceneManager admission remains strict. Prior widget reservations are visible
+when the SceneManager operation runs.
+
+The additive `set-name-text` release-before-allocation rule is distinct from
+the original SceneName property setter, which retains its old index while
+allocating. Source-faithful property replacement ordering, complete getter
+views and ComboBoxStaticText callbacks remain outstanding under issue #45.
 
 Each retained state and final plan contains `static_text.overlay_changes`, the ordered allocation records and a SHA-256 `fingerprint` of that evidence. Every record includes its scene, operation number, chosen index, exact-reuse flag, used indexes and proposed string write. The overlay is part of the issued-state integrity receipt, so an exported or modified state cannot be resumed. Capacity and text validation finish while planning; failure causes no PP SET or SAVE. The plan exposes the eight final `scene_pointers`, includes the bound name byte in `SceneBucket`, and recalculates `StaticTextCRC`, `ScenesCheckSum` and `OverallCRC` together with the other configuration CRCs.
 

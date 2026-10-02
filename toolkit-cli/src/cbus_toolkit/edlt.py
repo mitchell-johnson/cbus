@@ -302,10 +302,18 @@ class EdltLighting:
             encoded = text.encode("utf-8")
         except UnicodeEncodeError as error:
             raise EdltError("Static label text must be valid Unicode") from error
+        current = self.snapshot(values)
+        from .edlt_static_grid import current as current_static_grid
+        grid = current_static_grid(current)
+        if grid is not None:
+            cached = grid.find(text)
+            if cached is not None:
+                return StaticTextAllocation(cached, text, True, {}, ())
         if len(encoded) > 63:
             raise EdltError("Static label text exceeds63UTF-8 bytes; truncation is not permitted")
-        current = self.snapshot(values)
         for index in range(64):
+            if grid is not None:
+                continue  # Source lookup used the retained DataStore.Name table.
             raw = bytes(current[f"StaticTextString{index}"]).split(b"\0", 1)[0]
             try:
                 existing = raw.decode("utf-8")
@@ -320,6 +328,8 @@ class EdltLighting:
             raise EdltError("Static text table is full under Toolkit's used-reference capacity check")
         for index in range(63, -1, -1):
             if index not in used:
+                if grid is not None:
+                    grid.allocate(index, text)
                 return StaticTextAllocation(index, text, False,
                                             {f"StaticTextString{index}": tuple(encoded.ljust(64, b"\0"))}, used)
         raise EdltError("Static text table has no unreferenced slot")

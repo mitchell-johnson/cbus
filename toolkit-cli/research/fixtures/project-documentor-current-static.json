@@ -521,7 +521,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "partial",
+      "body_status": "recovered",
       "document_html": "ST7LightLevelSensor"
     },
     "ST7PIRSensor": {
@@ -622,7 +622,7 @@
       "document_html": "WirelessGatewayAdvanced"
     }
   },
-  "extractor_sha256": "8318f1273ff4bf0a9f6c6c48ab11d854beafd848f90c71034affcf93a0ff3cd3",
+  "extractor_sha256": "4e8b47e8488a5b196a2ab0312bc2c9dfbebad2d059119341466a304800056baf",
   "format": "cbus-toolkit-project-documentor-current-static-v1",
   "historical_receipt": {
     "original_executed": false,
@@ -778,7 +778,7 @@
       "start": "0xf05fcc"
     }
   },
-  "model_module_sha256": "f5c956c98f433f4db9ce174f3a9674e9a5b7e51f87c83a50f34d4d7b2c8386a9",
+  "model_module_sha256": "25917cb1473d96235d269e9726e35f45906a842beec7055679b68bcc2cbfd212",
   "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
   "original_executed": false,
   "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
@@ -4218,9 +4218,9 @@
     "project_documentation_devices": "b4a1749e75e58da39ac106cf970329b9b8e853fda71da0715540d0f4f456f07d",
     "project_documentation_dlt": "54f9db478cccc7071dc31b57d2190eacfbc38e11a1bfedf8c02752768130898a",
     "project_documentation_gateways": "e134ffbcd6c10f8b0a3ab0be3cc58b875977650d0a5c40c56a0be73567a44dab",
-    "project_documentation_light_level": "8910a541d8b67d4bda1a1668dc84334f4a1cdbb57bc4423abec5aea4b7d9d99c",
+    "project_documentation_light_level": "4ce1858d3fed2b902afcf890ce57d69508248612ea29ae2abd08cfd620c27e0b",
     "project_documentation_multisensor": "f71093b8ce420e5ea02b4ffbb4c8fb3875c674b5c79541acf44646a7379c9641",
-    "project_documentation_native": "36c737a9e41d08bba9894499a69ea53d7b8611c8ba3ce2c8010c6fe55d5bc498",
+    "project_documentation_native": "874178ca95407f57e67fa65ea397916da6458de9bc8729ccba1ab2cc438a2fda",
     "project_documentation_neo": "d244f1903050a7cc7246b5cc637e557eeefded663c18d7aa3820afa97d243687",
     "project_documentation_neo_usage": "5c2a9d8463579223ed8ac41731649bda89ea63783273396852bbd2d42d411b57",
     "project_documentation_neoclassic": "5f1da5fa69528526314bbab99182cd0a52562e88273ca8567b49b2d025381836",
@@ -4230,11 +4230,12 @@
     "project_documentation_pir": "cfc30c10eea73fe1b5af6975265e2b30cf24ead5435cb2a278f3ae3403ac2eb3",
     "project_documentation_scene_controller": "0bee388297b82f475099127aedcae45576a2db9c3c4efbafd817e0014a396871",
     "project_documentation_special_outputs": "f1bc999eed6cf4bcdf28d90048718b90b6f11a55ac31b59e37edb45564b6da58",
+    "project_documentation_st7_light_level": "45cc4e26e7dd237321680bee196e03fcbfed3dde60f30a018299685641428106",
     "project_documentation_status": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
     "project_documentation_temperature": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b",
     "project_documentation_thermostat": "2b5fe8d47e695ce27468835bfc3eb1e5de8c773d4e2abf9596b584f1f597d59c",
     "project_documentation_usage": "8e06b28aea9e35fdc6bff8877b0865835698c27e9f2cbe9076f8ae4cd1b4ee45",
-    "project_documentation_wireless": "e2337d03eb6679d0874d01e0d56e6c8a517e461f69084a3012fa534c54f5e39b",
+    "project_documentation_wireless": "289c8dda04fe4dc8c35b183719677b1ec3aa24be0fe91758915ee27d6ad08c92",
     "project_documentation_wireless_facts": "97251e8c53ee33f2ecc96a81931d555f62680f48881a97c432f3f9ab9817d73e",
     "project_documentation_wireless_loader": "2c148a5292b89b843f55762ab88b129e6efcf9fd212edd31c4516c115ff12279",
     "project_documentation_wireless_usage": "788ab0609d92b185499797a283ea2a37701399dafb0644454f4b1765f3427cfa"

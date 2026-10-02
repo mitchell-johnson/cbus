@@ -1,0 +1,223 @@
+{
+  "format": "cbus-edlt-static-grid-public-wire-v1",
+  "original_execution": false,
+  "modeled_backend_contract": true,
+  "preview_persistent_writes": 0,
+  "apply": {
+    "backup_source_save": 1,
+    "backup_copy": 1,
+    "pp_save_to_source": 1,
+    "target_save": 1,
+    "target_close": 1,
+    "target_load": 1,
+    "save_status": 200,
+    "lost_success_terminal": "200 OK"
+  },
+  "cases": [
+    {
+      "id": "cell-transactions",
+      "ops": [
+        {
+          "op": "static-text-dialog",
+          "events": [
+            {
+              "event": "begin",
+              "index": 3
+            },
+            {
+              "event": "input",
+              "text": "Committed"
+            },
+            {
+              "event": "commit"
+            },
+            {
+              "event": "begin",
+              "index": 3
+            },
+            {
+              "event": "input",
+              "text": "Discarded"
+            },
+            {
+              "event": "cancel"
+            },
+            {
+              "event": "begin",
+              "index": 4
+            },
+            {
+              "event": "input",
+              "text": "Focused"
+            },
+            {
+              "event": "focus",
+              "index": 0,
+              "column": "value"
+            }
+          ]
+        },
+        {
+          "op": "static-text-dialog",
+          "close": "window",
+          "events": [
+            {
+              "event": "begin",
+              "index": 3
+            },
+            {
+              "event": "cancel"
+            }
+          ]
+        }
+      ],
+      "seed_rows": {},
+      "final_rows": {
+        "3": "436f6d6d697474656400",
+        "4": "466f637573656400"
+      }
+    },
+    {
+      "id": "cached-split-name",
+      "ops": [
+        {
+          "op": "static-text-dialog",
+          "edits": [
+            {
+              "index": 3,
+              "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā"
+            }
+          ]
+        },
+        {
+          "op": "scene-manager",
+          "operations": [
+            {
+              "op": "set-name-text",
+              "scene": 1,
+              "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā"
+            }
+          ]
+        },
+        {
+          "op": "lighting",
+          "page": 1,
+          "position": 2,
+          "group": 12,
+          "mode": "dimmer",
+          "label_text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā"
+        },
+        {
+          "op": "static-text-dialog",
+          "close": "window",
+          "events": [
+            {
+              "event": "begin",
+              "index": 3
+            },
+            {
+              "event": "cancel"
+            }
+          ]
+        }
+      ],
+      "seed_rows": {},
+      "final_rows": {
+        "3": "4141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141c400"
+      },
+      "widget_label_index": 3,
+      "scene_name_index": 3,
+      "scene_name_byte_offset": 4,
+      "scene_name_text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā"
+    },
+    {
+      "id": "malformed-preserved",
+      "ops": [
+        {
+          "op": "static-text-dialog",
+          "events": [
+            {
+              "event": "begin",
+              "index": 3
+            },
+            {
+              "event": "input",
+              "text": "��"
+            },
+            {
+              "event": "commit"
+            },
+            {
+              "event": "begin",
+              "index": 4
+            },
+            {
+              "event": "input",
+              "text": "�"
+            },
+            {
+              "event": "commit"
+            }
+          ]
+        },
+        {
+          "op": "lighting",
+          "page": 1,
+          "position": 2,
+          "group": 12,
+          "mode": "dimmer",
+          "label_text": "��"
+        },
+        {
+          "op": "static-text-dialog",
+          "edits": [
+            {
+              "index": 5,
+              "text": "Fixed"
+            }
+          ]
+        }
+      ],
+      "seed_rows": {
+        "3": "eda08000a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+        "4": "c400a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+      },
+      "final_rows": {
+        "5": "466978656400"
+      },
+      "unchanged_seed_rows": [
+        3,
+        4
+      ],
+      "widget_label_index": 3
+    }
+  ],
+  "pending_close_refusal": {
+    "ops": [
+      {
+        "op": "static-text-dialog",
+        "events": [
+          {
+            "event": "begin",
+            "index": 3
+          },
+          {
+            "event": "input",
+            "text": "Unsettled"
+          }
+        ]
+      }
+    ],
+    "exit": 1,
+    "persistent_writes": 0,
+    "automatic_replay": 0
+  },
+  "lost_save": {
+    "exit": 1,
+    "forwarded_pp_save": 1,
+    "backend_status": 200,
+    "replay": 0,
+    "rollback": 0
+  },
+  "comparison_limit": "Whitespace-only XML text is ignored, including opaque/xml:space content; substantive XML and every unowned PP byte remain compared."
+}

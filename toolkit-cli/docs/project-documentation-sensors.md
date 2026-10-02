@@ -39,10 +39,10 @@ Thermostat plant-output loading can allocate or remap missing or generated group
 
 A MasterNetworkAddress of 255 selects the current network. A foreign master requires exactly one network with the explicit matching NetworkNumber, independent of its report Address, and an admitted thermostat at MasterAddress. Missing or duplicate numbers, missing units and MasterAddress 255 remain refusals.
 
-That independent-number resolution is a pure/legacy report-helper contract.
-The saved native XML adapter currently admits canonical numeric Address with
-matching NetworkNumber only; distinct values remain refused by
-`cgate database-document`.
+The saved native adapter also resolves consumed physical Numbers independently
+from exact database Address identity and the source integer report projection.
+Distinct values are admitted; ambiguous consumed Numbers and unresolved unknowns
+remain marked. See [native report identities](native-project-documentation.md).
 
 ## Evidence and remaining acceptance
 

@@ -1,10 +1,13 @@
 # Old Bytecraft report dependencies
 
-The dependency adapters admit only the exact old `DIMPR12` registration:
+This note records the exact old `DIMPR12` registration:
 `TDIMPR12`, `TDIMPR12CGateAgent`, firmware `0` through `1.9.02` under the existing
 native registration comparison. Missing or malformed firmware fails closed.
-The distinct `TDIMPR12L1` / `TDIMPR12L1CGateAgent` registration starting at
-`1.9.03` and the DIN-schema `DIMPR12A` are not admitted.
+The shared consumers now also admit the exact `TDIMPR12L1` /
+`TDIMPR12L1CGateAgent` partition at `1.9.03` through `9`; its additional logic
+roles are described in [the L1 guide](project-documentation-wireless-l1.md).
+The evidence in this note retains the old-profile scope. DIMPR12A selects
+the existing DIN ErrorReportOutput implementation, not these consumers.
 
 Explicit byte-valued `Application` and at least twelve `GroupAddress` values are
 required. The first application and first twelve groups project the original

@@ -31,8 +31,14 @@ identities and save/reload. See [report profiles](toolkit-cli/docs/project-docum
 [static text and languages](toolkit-cli/docs/edlt-static-language-add.md) and
 [service language definitions](docs/cgate-network-languages.md) for the admitted
 inputs, exact command behavior and remaining original/physical acceptance.
-The [current implementation report](toolkit-cli/docs/feature-batch-2026-10-03-static-languages-documentors.md)
-records the tests, retained failures and outstanding acceptance for this batch.
+Static-text histories now also accept explicit cell commit, cancellation and
+focus events. They retain row names across dialog opens and later widget edits,
+including truncated UTF-8 text. ST7 light-level reports apply their own timer
+minimum and exact group roles. Native reports select the exact database Network
+Address separately from physical NetworkNumber; HTML follows the source integer
+address projection, so distinct saved identities can share anchors. The
+[current implementation report](toolkit-cli/docs/feature-batch-2026-10-03-grid-native-report-corrections.md)
+records the fixes, focused tests and remaining acceptance boundaries.
 
 The [network definition workflow](toolkit-cli/docs/network-definitions.md)
 now carries closed runtime definitions into the project with `NET SAVE DB`.

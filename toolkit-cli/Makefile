@@ -237,6 +237,14 @@ check-cgate-interop: compile
 		'tests/test_cgate_project_documentation_wireless_interop.py::test_public_database_document_wireless_families_preserves_snapshot[mock]' \
 		'tests/test_cgate_project_documentation_l1_interop.py::test_public_database_document_l1_preserves_snapshot_and_literal_body[mock]' \
 		'tests/test_cgate_project_documentation_architectural_interop.py::test_public_database_document_architectural_families_preserves_snapshot[mock]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[cell-transactions-mock]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[cached-split-name-mock]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-mock]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[mock]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-thermostat]' \
+		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-wireless]' \
+		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -398,6 +406,14 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_project_documentation_wireless_interop.py::test_public_database_document_wireless_families_preserves_snapshot[daemon]' \
 		'tests/test_cgate_project_documentation_l1_interop.py::test_public_database_document_l1_preserves_snapshot_and_literal_body[daemon]' \
 		'tests/test_cgate_project_documentation_architectural_interop.py::test_public_database_document_architectural_families_preserves_snapshot[daemon]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[cell-transactions-daemon]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[cached-split-name-daemon]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-daemon]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[daemon]' \
+		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-thermostat]' \
+		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-wireless]' \
+		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

@@ -1,0 +1,227 @@
+{
+  "format": "cbus-project-documentor-st7-light-level-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "factory_profiles": [
+    [
+      "SENLL",
+      "CIS_TSENLL..TSENLL",
+      "1.00",
+      "2.0.00"
+    ],
+    [
+      "SENLL",
+      "CIS_TSENLL..TST7SENLL",
+      "2.0.01",
+      "9"
+    ]
+  ],
+  "checks": {
+    "exact_SENLL_partitions": true,
+    "effective_input_is_light_level_override": true,
+    "effective_other_is_light_level_override": true,
+    "effective_output_is_empty_base": true,
+    "action_selector_is_empty_base": true,
+    "effective_physical_key_limit": true,
+    "effective_virtual_key_limit": true,
+    "input_block2_is_fixed": true,
+    "derived_constructor_loads_parent_first": true,
+    "Neo_loader_loads_Core_blocks_first": true,
+    "occupancy_load_zero_keys_skips_masks": true,
+    "broadcast_template_refresh_zero_keys_skips_mutations": true,
+    "zero_physical_keys": true,
+    "virtual_key_sentinel": true,
+    "sentinel_uses_physical_count": true,
+    "fresh_key_count_from_effective_limit": true,
+    "key_load_asserts_effective_count": true,
+    "key_load_zero_count_skips_all_events": true,
+    "eight_loaded_blocks": true,
+    "default_block_minimum_zero": true,
+    "block4_minimum_ten": true,
+    "timer_callback_registered": true,
+    "minimum_callback_registered": true,
+    "timer_change_clamps_below_minimum": true,
+    "minimum_change_clamps_existing_timer": true,
+    "block_loader_uses_timer_setter": true,
+    "timer_high_low_word_order": true,
+    "ST7_load_inherits_NeoPro_first": true,
+    "inherited_scenes_load_before_keys": true,
+    "packed_scene_pairs_and_162_pointer_base": true,
+    "scene_loader_retains_first_group_per_scene": true,
+    "scene_loader_completes_eight_slots": true,
+    "template_zero_timer_300_is_per_key_callback": true,
+    "SENPILL_override_only_loops_existing_keys": true,
+    "input_exact_roles_no_inherited_consumer": true,
+    "other_exact_roles_no_inherited_consumer": true,
+    "input_role_resources": true,
+    "other_role_resources": true
+  },
+  "fresh_model": {
+    "physical_keys": 0,
+    "virtual_key_limit": -1,
+    "effective_input_keys": 0,
+    "blocks": 8,
+    "timer_minima": [
+      0,
+      0,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0
+    ],
+    "scene_collection_loaded": true,
+    "scene_dependency_consumer": false,
+    "scene_action_consumer": false
+  },
+  "methods": {
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+      "start": "0xd0871c",
+      "end": "0xd08734",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadOccupancyKeys": {
+      "start": "0xcf4208",
+      "end": "0xcf44c4",
+      "sha256": "a72596e7e1a9204a1476a546b8e08984eb10ef01c4c5b8fbeb68d2e4f5856e6e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf4890",
+      "end": "0xcf4cb8",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcfd6c8",
+      "end": "0xcfd7ac",
+      "sha256": "cc4d642ac38c7687460576e287c041f58179679669efc122ad49c770d3dbc8eb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcfd7ac",
+      "end": "0xcfd880",
+      "sha256": "ca5a0d9720952bc85b7c7f81e9728d3267a78123a21505614fcb7a54cd8d1c4f"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.InternalCreate": {
+      "start": "0xcfd894",
+      "end": "0xcfd8c4",
+      "sha256": "88ce08382f0871bfd3b4aa77d5b0b55225fc06f9afe9e155d719939fc21da04a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFunction": {
+      "start": "0xcfc754",
+      "end": "0xcfc820",
+      "sha256": "c5b3dbfa64ae12884610b3f10ae251d92aa47214cc43119bdbc07b634dcf55be"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides": {
+      "start": "0xcfc8cc",
+      "end": "0xcfc920",
+      "sha256": "37c9b10ba072426961c98884b3fc8943e0897cd20416821db9359f03e88215e9"
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetBlockValues": {
+      "start": "0xcc80c8",
+      "end": "0xcc85dc",
+      "sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcc85dc",
+      "end": "0xcc87e4",
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadTimerHighAndLowBytes": {
+      "start": "0xcc7d98",
+      "end": "0xcc7e74",
+      "sha256": "32a0677001fde96ffc4dacc21c456cd47a339de981dc8d3bfad33b6188a28d13"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetMaximumVirtualInputCount": {
+      "start": "0xc9e230",
+      "end": "0xc9e24c",
+      "sha256": "7ce48339d601db8f61985556e7984b3d8c666590b426de06c93310d98c441aeb"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate": {
+      "start": "0xc9dcc0",
+      "end": "0xc9dfb0",
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.MaximumVirtualKeyCount": {
+      "start": "0xc9e1d4",
+      "end": "0xc9e210",
+      "sha256": "11e48e9d8e0ce913aca69e61db00f54e39b399a4ba3959f4d348377bb4efe8d1"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "start": "0xcca51c",
+      "end": "0xccaef4",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetSceneCommands": {
+      "start": "0xccaf50",
+      "end": "0xccb180",
+      "sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xccb180",
+      "end": "0xccb450",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xced154",
+      "end": "0xced538",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    },
+    "CIS_TInputKey.TInputBlock.GetTimer": {
+      "start": "0xd0f0f8",
+      "end": "0xd0f120",
+      "sha256": "2b7ad02acaa6ca43f8116d58335cb7d1a603aed43dce8fb446581a734ffa30e6"
+    },
+    "CIS_TInputKey.TInputBlock.HandleTimerAfterChange": {
+      "start": "0xd0f508",
+      "end": "0xd0f544",
+      "sha256": "cdf45b8b5146c47b0932b36722dc317125f44dee2e940b486857b164081ce6b6"
+    },
+    "CIS_TInputKey.TInputBlock.HandleTimerMinAfterChange": {
+      "start": "0xd0f544",
+      "end": "0xd0f580",
+      "sha256": "63658d27f54424d18f34fa732beae3d8a947f68243faa26a064dfcc7f7800b71"
+    },
+    "CIS_TInputKey.TInputBlock.InternalCreate": {
+      "start": "0xd0eb24",
+      "end": "0xd0ef50",
+      "sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0"
+    },
+    "CIS_TInputKey.TInputBlock.SetTimer": {
+      "start": "0xd0f344",
+      "end": "0xd0f3a4",
+      "sha256": "3d4d77fb13a4d9ecbb2f828ee8bc4807bcabef34871259d2bdfc4e5b18fe20d1"
+    },
+    "CIS_TInputKey.TInputBlock.SetTimerMin": {
+      "start": "0xd0f404",
+      "end": "0xd0f464",
+      "sha256": "66e0a777350e4539ee4061620e06e23da938857e0596fbd57b2f43519a23ad56"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "start": "0xd12adc",
+      "end": "0xd12c2c",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+    },
+    "CIS_TProjectDocumentor.TUnitTypeDocumentor.ActionSelectorUse": {
+      "start": "0xf06418",
+      "end": "0xf06438",
+      "sha256": "6b6436eeb38100c02938a45aeeb7497f637d00118c56a96b7ac3ae7e84838910"
+    },
+    "CIS_TSENLL.TST7SENLL.GetMaximumVirtualKeyCount": {
+      "start": "0xcab074",
+      "end": "0xcab08c",
+      "sha256": "1a9fba4d5469db81463298a9662e6c0f410e3af5b9dffd8e74dccdda225ed0da"
+    },
+    "CIS_TSENLL.TST7SENLL.MaximumKeyCount": {
+      "start": "0xcab0e0",
+      "end": "0xcab0f8",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TST7LightLevelSensorDocumentor.TST7LightLevelSensorDocumentor.DocumentHTML": {
+      "start": "0xca9854",
+      "end": "0xca9cb4",
+      "sha256": "7062298ac00307f55165330205bd2ba11f6beaa32f4eab1bb9d095863f61f6d5"
+    }
+  }
+}

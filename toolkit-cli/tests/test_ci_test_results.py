@@ -173,6 +173,35 @@ class NewInteropSelectionTests(unittest.TestCase):
                 for module in (parent, sensors, wireless, l1, architectural):
                     self.assertEqual(audit_body.count('--require-module ' + module), 1)
 
+    def test_grid_native_address_and_st7_public_rosters_are_required(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        grid = 'tests/test_cgate_edlt_static_grid_editor_interop.py'
+        native = 'tests/test_cgate_project_documentation_native_addresses_interop.py'
+        st7 = 'tests/test_cgate_project_documentation_st7_light_level_interop.py'
+        for backend, target, selection in [('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')]:
+            with self.subTest(backend=backend):
+                expected = {grid + '::test_public_static_grid_history_preview_apply_and_preservation['
+                            + case + '-' + backend + ']' for case in
+                            ('cell-transactions', 'cached-split-name', 'malformed-preserved')}
+                expected.update(grid + '::' + name + '[' + backend + ']' for name in
+                                ('test_public_pending_cell_close_refuses_without_write',
+                                 'test_public_static_grid_lost_successful_save_is_not_replayed'))
+                expected.update(native + '::test_public_native_report_exact_named_identity_and_physical_references['
+                                + backend + '-' + kind + ']' for kind in ('thermostat', 'wireless'))
+                expected.add(st7 + '::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles['
+                             + backend + ']')
+                body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+                actual = [node for node in re.findall(r"'(tests/test_[^']+)'", body)
+                          if node.startswith((grid + '::', native + '::', st7 + '::'))]
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+                for module in (grid, native, st7):
+                    self.assertEqual(audit.count('--require-module ' + module), 1)
+
 
 class CITestResultsTests(unittest.TestCase):
     def setUp(self):

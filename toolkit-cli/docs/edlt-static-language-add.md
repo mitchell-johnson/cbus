@@ -21,9 +21,43 @@ the source has no accepted-result check or cancel rollback. It does not allocate
 reindex or select a label. A later edit can change a row already referenced by a
 widget or scene. The PP setter retains the first 63 UTF-8 bytes, stops after a NUL
 if encountered, and appends a terminator. That can split a character. The existing
-label allocator keeps its separate validation policy. Evaluation of malformed
-loaded UTF-8 and the GUI behavior of an uncommitted cell remain outside this
-operation's contract.
+label allocator keeps its separate validation policy for new text. Within one
+parent history, it first matches the retained row name, so a long name whose PP
+bytes were truncated can still be reused by a later widget without allocating a
+different row. SceneManager's `set-name-text` uses that same source-backed lookup.
+Only a real earlier cached name permits this reuse; a future dialog edit or a
+name cleared by Reset does not authorize long new allocation. Parent input shape
+validation defers this length decision until the ordered cache is available.
+
+Explicit editor histories use `events` instead of `edits`:
+
+```json
+{"op":"static-text-dialog","close":"button","events":[
+  {"event":"begin","index":3},
+  {"event":"input","text":"Kitchen"},
+  {"event":"commit"},
+  {"event":"begin","index":4},
+  {"event":"input","text":"Discard this cell"},
+  {"event":"cancel"}
+]}
+```
+
+`begin` selects an editable name cell, `input` replaces its pending text, and
+`commit` writes that text to the retained row name. `cancel` discards only the
+pending cell; it does not roll back earlier commits. Moving `focus` to another
+row or column commits the pending edit. The value column is read-only. A dialog
+cannot close with a pending cell: the exact retained WinForms version's modal
+close sequence has not been established, so explicitly commit, cancel or move
+focus first. There is no invented automatic close action.
+
+Initial load decodes the canonical 64-byte PP rows with the source-established
+.NET Framework UTF-8 replacement policy, including malformed and truncated
+sequences. Unedited malformed rows keep their exact bytes. Save compares that
+decoded PP text with the retained name; an equal replacement name does not
+rewrite malformed bytes. Reopening a dialog in the same parent history retains
+the full committed names, while a new parent load or Reset builds a fresh cache
+from PP. The cache is private to the parent invocation and cannot be supplied in
+operations JSON. Standalone label allocation retains its existing strict policy.
 
 Language Add requires explicit preferences and a complete native Languages
 collection, or an explicitly absent collection:
@@ -80,5 +114,9 @@ Full-tree comparison checks substantive XML, attributes, comments and processing
 instructions. It ignores whitespace-only text, including opaque and
 `xml:space="preserve"` content. This is a comparison limit, not full XML fidelity.
 Static evidence is in `research/fixtures/edlt-static-language-add-static.json`;
-owned command and byte facts are in the two static-language vectors. Issues
+the grid source annex is `research/fixtures/edlt-static-grid-source-annex.json`.
+Explicit editor and replacement-decoding facts are in
+`rust/testdata/vectors/edlt_static_grid_editor.json`; owned public journeys are in
+`rust/testdata/vectors/cgate_edlt_static_grid_editor_wire.json`. Owned command
+and byte facts for language Add remain in the two static-language vectors. Issues
 72–75 and original/manual/hardware acceptance are not advanced by this workflow.

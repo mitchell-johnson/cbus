@@ -1,0 +1,3567 @@
+{
+  "format": "cbus-project-documentor-st7-light-level-literals-v1",
+  "oracle": "source-derived literals independent of report producer",
+  "cases": [
+    {
+      "id": "zero-block-0",
+      "unit": {
+        "address": 1,
+        "name": "ST7 block 0",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010001",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            0
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_56_1\">Primary 1</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-1",
+      "unit": {
+        "address": 2,
+        "name": "ST7 block 1",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010002",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            1
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-2",
+      "unit": {
+        "address": 3,
+        "name": "ST7 block 2",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010003",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            2
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-3",
+      "unit": {
+        "address": 4,
+        "name": "ST7 block 3",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010004",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            3
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_57_4\">Secondary 4</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-4",
+      "unit": {
+        "address": 5,
+        "name": "ST7 block 4",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010005",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            4
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_56_5\">Primary 5</a><br />",
+        "Broadcast Time: 0h0m10s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-5",
+      "unit": {
+        "address": 6,
+        "name": "ST7 block 5",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010006",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            5
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_57_6\">Secondary 6</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-6",
+      "unit": {
+        "address": 7,
+        "name": "ST7 block 6",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010007",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            6
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_56_7\">Primary 7</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "zero-block-7",
+      "unit": {
+        "address": 8,
+        "name": "ST7 block 7",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010008",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            7
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_57_2\">Secondary 2</a><br />",
+        "On/Off Group: <a href=\"#254_56_3\">Primary 3</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_57_8\">Secondary 8</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "coincident-roles",
+      "unit": {
+        "address": 9,
+        "name": "ST7 coincident",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010001",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            56,
+            56
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            2
+          ],
+          "PECEnablerGroup": [
+            9
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            2
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "On/Off Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Enable Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Group: <a href=\"#254_56_9\">Primary 9</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    },
+    {
+      "id": "unused-objects",
+      "unit": {
+        "address": 10,
+        "name": "ST7 unused",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "000000010001",
+        "firmware": "2.0.01",
+        "description": "Invented stored ST7 state",
+        "parameters": {
+          "Application": [
+            255,
+            255
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SecondApplicationBlocks": [
+            170
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            255
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PECFunctionActive": [
+            0
+          ],
+          "BroadcastActive": [
+            6
+          ],
+          "AreaGroupAddress": [
+            9
+          ],
+          "PIREnablerGroup": [
+            9
+          ],
+          "CorridorLinkEnablerGroup": [
+            9
+          ],
+          "ControlAppGroupAddress": [
+            7
+          ],
+          "PIRLightMovement": [
+            255
+          ],
+          "PIRDarkMovement": [
+            255
+          ],
+          "PIRDark": [
+            255
+          ],
+          "JPCommand": [
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14,
+            14
+          ],
+          "SRCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "LPCommand": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ],
+          "LRCommand": [
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+          ],
+          "BlockAllocation": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneKeySelector": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "IndicatorBlockAssignment": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "SceneTable": [
+            10,
+            0,
+            11,
+            1,
+            12,
+            2,
+            13,
+            3,
+            14,
+            4,
+            15,
+            5,
+            16,
+            6,
+            17,
+            7,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "SceneTablePointer": [
+            162,
+            164,
+            166,
+            168,
+            170,
+            172,
+            174,
+            176
+          ],
+          "TimerExpiryCommand": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ],
+          "DebounceTime": [
+            2
+          ],
+          "LongPressTime": [
+            6
+          ],
+          "RampRate": [
+            0,
+            1
+          ],
+          "LightLevelStore1": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "LightLevelStore2": [
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
+          ],
+          "JoinPrimaryApplication": [
+            1
+          ],
+          "DualJoinPrimaryApplication": [
+            2
+          ],
+          "JoinSecondaryApplication": [
+            3
+          ],
+          "DualJoinSecondaryApplication": [
+            4
+          ],
+          "BroadcastBlock": [
+            4
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: Unused<br />",
+        "On/Off Group: Unused<br />",
+        "Enable Group: Unused<br />",
+        "Broadcast Group: Unused<br />",
+        "Broadcast Time: 0h0m10s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ]
+    }
+  ],
+  "applications": [
+    {
+      "address": 56,
+      "name": "Primary",
+      "groups": [
+        {
+          "address": 1,
+          "name": "Primary 1",
+          "levels": []
+        },
+        {
+          "address": 2,
+          "name": "Primary 2",
+          "levels": []
+        },
+        {
+          "address": 3,
+          "name": "Primary 3",
+          "levels": []
+        },
+        {
+          "address": 4,
+          "name": "Primary 4",
+          "levels": []
+        },
+        {
+          "address": 5,
+          "name": "Primary 5",
+          "levels": []
+        },
+        {
+          "address": 6,
+          "name": "Primary 6",
+          "levels": []
+        },
+        {
+          "address": 7,
+          "name": "Primary 7",
+          "levels": []
+        },
+        {
+          "address": 8,
+          "name": "Primary 8",
+          "levels": []
+        },
+        {
+          "address": 9,
+          "name": "Primary 9",
+          "levels": []
+        },
+        {
+          "address": 10,
+          "name": "Primary 10",
+          "levels": []
+        },
+        {
+          "address": 11,
+          "name": "Primary 11",
+          "levels": []
+        },
+        {
+          "address": 12,
+          "name": "Primary 12",
+          "levels": []
+        },
+        {
+          "address": 13,
+          "name": "Primary 13",
+          "levels": []
+        },
+        {
+          "address": 14,
+          "name": "Primary 14",
+          "levels": []
+        },
+        {
+          "address": 15,
+          "name": "Primary 15",
+          "levels": []
+        },
+        {
+          "address": 16,
+          "name": "Primary 16",
+          "levels": []
+        },
+        {
+          "address": 17,
+          "name": "Primary 17",
+          "levels": []
+        }
+      ]
+    },
+    {
+      "address": 57,
+      "name": "Secondary",
+      "groups": [
+        {
+          "address": 1,
+          "name": "Secondary 1",
+          "levels": []
+        },
+        {
+          "address": 2,
+          "name": "Secondary 2",
+          "levels": []
+        },
+        {
+          "address": 3,
+          "name": "Secondary 3",
+          "levels": []
+        },
+        {
+          "address": 4,
+          "name": "Secondary 4",
+          "levels": []
+        },
+        {
+          "address": 5,
+          "name": "Secondary 5",
+          "levels": []
+        },
+        {
+          "address": 6,
+          "name": "Secondary 6",
+          "levels": []
+        },
+        {
+          "address": 7,
+          "name": "Secondary 7",
+          "levels": []
+        },
+        {
+          "address": 8,
+          "name": "Secondary 8",
+          "levels": []
+        },
+        {
+          "address": 9,
+          "name": "Secondary 9",
+          "levels": []
+        },
+        {
+          "address": 10,
+          "name": "Secondary 10",
+          "levels": []
+        },
+        {
+          "address": 11,
+          "name": "Secondary 11",
+          "levels": []
+        },
+        {
+          "address": 12,
+          "name": "Secondary 12",
+          "levels": []
+        },
+        {
+          "address": 13,
+          "name": "Secondary 13",
+          "levels": []
+        },
+        {
+          "address": 14,
+          "name": "Secondary 14",
+          "levels": []
+        },
+        {
+          "address": 15,
+          "name": "Secondary 15",
+          "levels": []
+        },
+        {
+          "address": 16,
+          "name": "Secondary 16",
+          "levels": []
+        },
+        {
+          "address": 17,
+          "name": "Secondary 17",
+          "levels": []
+        }
+      ]
+    },
+    {
+      "address": 202,
+      "name": "Trigger",
+      "groups": [
+        {
+          "address": 7,
+          "name": "Trigger 7",
+          "levels": [
+            {
+              "address": 75,
+              "value": 99,
+              "name": "Unconsumed scene action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 203,
+      "name": "Enable",
+      "groups": [
+        {
+          "address": 9,
+          "name": "Enable 9",
+          "levels": []
+        }
+      ]
+    },
+    {
+      "address": 255,
+      "name": "Unused",
+      "groups": [
+        {
+          "address": 255,
+          "name": "Unused",
+          "levels": []
+        }
+      ]
+    }
+  ],
+  "native_xml": "<Installation><Project><Address>DOCREST</Address><TagName>ST7 invented</TagName><Network><OID>00000000-0000-0000-0000-000000000001</OID><Address>254</Address><NetworkNumber>254</NetworkNumber><TagName>ST7 invented</TagName><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>00000000-0000-0000-0000-000000000003</OID><Address>56</Address><TagName>Primary</TagName><Group><OID>00000000-0000-0000-0000-000000000004</OID><Address>1</Address><TagName>Primary 1</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000005</OID><Address>2</Address><TagName>Primary 2</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000006</OID><Address>3</Address><TagName>Primary 3</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000007</OID><Address>4</Address><TagName>Primary 4</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000008</OID><Address>5</Address><TagName>Primary 5</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000009</OID><Address>6</Address><TagName>Primary 6</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000a</OID><Address>7</Address><TagName>Primary 7</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000b</OID><Address>8</Address><TagName>Primary 8</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000c</OID><Address>9</Address><TagName>Primary 9</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000d</OID><Address>10</Address><TagName>Primary 10</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000e</OID><Address>11</Address><TagName>Primary 11</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000000f</OID><Address>12</Address><TagName>Primary 12</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000010</OID><Address>13</Address><TagName>Primary 13</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000011</OID><Address>14</Address><TagName>Primary 14</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000012</OID><Address>15</Address><TagName>Primary 15</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000013</OID><Address>16</Address><TagName>Primary 16</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000014</OID><Address>17</Address><TagName>Primary 17</TagName></Group></Application><Application><OID>00000000-0000-0000-0000-000000000015</OID><Address>57</Address><TagName>Secondary</TagName><Group><OID>00000000-0000-0000-0000-000000000016</OID><Address>1</Address><TagName>Secondary 1</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000017</OID><Address>2</Address><TagName>Secondary 2</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000018</OID><Address>3</Address><TagName>Secondary 3</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000019</OID><Address>4</Address><TagName>Secondary 4</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001a</OID><Address>5</Address><TagName>Secondary 5</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001b</OID><Address>6</Address><TagName>Secondary 6</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001c</OID><Address>7</Address><TagName>Secondary 7</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001d</OID><Address>8</Address><TagName>Secondary 8</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001e</OID><Address>9</Address><TagName>Secondary 9</TagName></Group><Group><OID>00000000-0000-0000-0000-00000000001f</OID><Address>10</Address><TagName>Secondary 10</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000020</OID><Address>11</Address><TagName>Secondary 11</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000021</OID><Address>12</Address><TagName>Secondary 12</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000022</OID><Address>13</Address><TagName>Secondary 13</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000023</OID><Address>14</Address><TagName>Secondary 14</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000024</OID><Address>15</Address><TagName>Secondary 15</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000025</OID><Address>16</Address><TagName>Secondary 16</TagName></Group><Group><OID>00000000-0000-0000-0000-000000000026</OID><Address>17</Address><TagName>Secondary 17</TagName></Group></Application><Application><OID>00000000-0000-0000-0000-000000000027</OID><Address>202</Address><TagName>Trigger</TagName><Group><OID>00000000-0000-0000-0000-000000000028</OID><Address>7</Address><TagName>Trigger 7</TagName><Level Value=\"99\"><OID>00000000-0000-0000-0000-000000000029</OID><Address>75</Address><TagName>Unconsumed scene action</TagName></Level></Group></Application><Application><OID>00000000-0000-0000-0000-00000000002a</OID><Address>203</Address><TagName>Enable</TagName><Group><OID>00000000-0000-0000-0000-00000000002b</OID><Address>9</Address><TagName>Enable 9</TagName></Group></Application><Application><OID>00000000-0000-0000-0000-00000000002c</OID><Address>255</Address><TagName>Unused</TagName><Group><OID>00000000-0000-0000-0000-00000000002d</OID><Address>255</Address><TagName>Unused</TagName></Group></Application><Unit><OID>00000000-0000-0000-0000-00000000002e</OID><Address>1</Address><TagName>ST7 block 0</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010001</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"0\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-00000000002f</OID><Address>2</Address><TagName>ST7 block 1</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010002</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"1\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000030</OID><Address>3</Address><TagName>ST7 block 2</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010003</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"2\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000031</OID><Address>4</Address><TagName>ST7 block 3</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010004</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"3\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000032</OID><Address>5</Address><TagName>ST7 block 4</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010005</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"4\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000033</OID><Address>6</Address><TagName>ST7 block 5</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010006</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"5\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000034</OID><Address>7</Address><TagName>ST7 block 6</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010007</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"6\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000035</OID><Address>8</Address><TagName>ST7 block 7</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010008</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"1 2 3 4 5 6 7 8\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"7\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000036</OID><Address>9</Address><TagName>ST7 coincident</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010001</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"56 56\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"9 9 9 9 9 9 9 9\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"2\" /><PP Name=\"PECEnablerGroup\" Value=\"9\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"2\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit><Unit><OID>00000000-0000-0000-0000-000000000037</OID><Address>10</Address><TagName>ST7 unused</TagName><UnitType>SENLL</UnitType><FirmwareVersion>2.0.01</FirmwareVersion><UnitName>Synthetic</UnitName><SerialNumber>000000010001</SerialNumber><Description>Invented stored ST7 state</Description><PP Name=\"Application\" Value=\"255 255\" /><PP Name=\"StatusReportInterval\" Value=\"3\" /><PP Name=\"GroupAddress\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"PECFunctionBlock\" Value=\"1\" /><PP Name=\"PECEnablerGroup\" Value=\"255\" /><PP Name=\"PECTargetLux\" Value=\"50\" /><PP Name=\"PECMarginLux\" Value=\"10\" /><PP Name=\"TimerHighByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"TimerLowByte\" Value=\"0 0 0 0 0 0 0 0\" /><PP Name=\"PECFunctionActive\" Value=\"0\" /><PP Name=\"BroadcastActive\" Value=\"6\" /><PP Name=\"AreaGroupAddress\" Value=\"9\" /><PP Name=\"PIREnablerGroup\" Value=\"9\" /><PP Name=\"CorridorLinkEnablerGroup\" Value=\"9\" /><PP Name=\"ControlAppGroupAddress\" Value=\"7\" /><PP Name=\"PIRLightMovement\" Value=\"255\" /><PP Name=\"PIRDarkMovement\" Value=\"255\" /><PP Name=\"PIRDark\" Value=\"255\" /><PP Name=\"JPCommand\" Value=\"14 14 14 14 14 14 14 14\" /><PP Name=\"SRCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"LPCommand\" Value=\"4 4 4 4 4 4 4 4\" /><PP Name=\"LRCommand\" Value=\"11 11 11 11 11 11 11 11\" /><PP Name=\"BlockAllocation\" Value=\"255 255 255 255 255 255 255 255\" /><PP Name=\"SceneKeySelector\" Value=\"1 1 1 1 1 1 1 1\" /><PP Name=\"IndicatorBlockAssignment\" Value=\"0 1 2 3 4 5 6 7\" /><PP Name=\"SceneTable\" Value=\"10 0 11 1 12 2 13 3 14 4 15 5 16 6 17 7 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255\" /><PP Name=\"SceneTablePointer\" Value=\"162 164 166 168 170 172 174 176\" /><PP Name=\"TimerExpiryCommand\" Value=\"7 7 7 7 7 7 7 7\" /><PP Name=\"DebounceTime\" Value=\"2\" /><PP Name=\"LongPressTime\" Value=\"6\" /><PP Name=\"RampRate\" Value=\"0 1\" /><PP Name=\"LightLevelStore1\" Value=\"100 100 100 100 100 100 100 100\" /><PP Name=\"LightLevelStore2\" Value=\"50 50 50 50 50 50 50 50\" /><PP Name=\"JoinPrimaryApplication\" Value=\"1\" /><PP Name=\"DualJoinPrimaryApplication\" Value=\"2\" /><PP Name=\"JoinSecondaryApplication\" Value=\"3\" /><PP Name=\"DualJoinSecondaryApplication\" Value=\"4\" /><PP Name=\"BroadcastBlock\" Value=\"4\" /><Burden>false</Burden><ClockGenEnable>false</ClockGenEnable></Unit></Network></Project></Installation>",
+  "historical_current_overrides": {
+    "st7-senll-secondary-broadcast": {
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_1\">G1</a><br />",
+        "On/Off Group: <a href=\"#254_57_2\">G2</a><br />",
+        "Enable Group: <a href=\"#254_56_4\">G4</a><br />",
+        "Broadcast Group: <a href=\"#254_57_3\">G3</a><br />",
+        "Broadcast Time: 0h1m1s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "Level Group",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 2,
+          "kind": "input",
+          "html": "On/Off Group",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 3,
+          "kind": "other",
+          "html": "Light Level Broadcast Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 4,
+          "kind": "other",
+          "html": "Enable Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    },
+    "st7-senll-explicit-idle-zero": {
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_1\">G1</a><br />",
+        "On/Off Group: <a href=\"#254_57_2\">G2</a><br />",
+        "Enable Group: <a href=\"#254_56_4\">G4</a><br />",
+        "Broadcast Group: <a href=\"#254_57_3\">G3</a><br />",
+        "Broadcast Time: 0h0m10s<br />",
+        "Target: 0 Lux, 0 ft-candle<br />",
+        "Margin: 0%<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "Level Group",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 2,
+          "kind": "input",
+          "html": "On/Off Group",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 3,
+          "kind": "other",
+          "html": "Light Level Broadcast Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 4,
+          "kind": "other",
+          "html": "Enable Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    }
+  },
+  "usage_literals": {
+    "coincident_input": "Level Group<br/>On/Off Group",
+    "coincident_other": "Light Level Broadcast Group<br/>Enable Group",
+    "unused_input": "Level Group<br/>On/Off Group",
+    "unused_other": "Light Level Broadcast Group<br/>Enable Group",
+    "scene_input": "",
+    "scene_other": "",
+    "scene_action": ""
+  }
+}

@@ -152,15 +152,10 @@ def _gateway_advanced_lines(network: Network, unit: Unit) -> list[str]:
 
 
 def _gateway_lines(network: Network, unit: Unit, networks: Sequence[Network]) -> list[str]:
-    from .project_documentation import html_application, html_network
+    from .project_documentation import html_application, html_network, network_by_number
     # Both adjacent and forwarding destinations use NetworkNumber, not the
     # archive object Address. Missing numbers cannot establish this lookup.
-    if any(item.network_number is None for item in networks):
-        raise ValueError('wireless gateway requires explicit project NetworkNumber values')
-    by_number = {item.network_number: item for item in networks}
-    if len(by_number) != len(networks):
-        raise ValueError('ambiguous wireless gateway NetworkNumber values')
-    adjacent = by_number.get(unit.address)
+    adjacent = network_by_number(networks, unit.address)
     if adjacent is None:
         return ['WARNING: Wireless Gateway has no far side Network.']
     apps = _required_array(unit, 'Application', 2)
@@ -179,9 +174,12 @@ def _gateway_lines(network: Network, unit: Unit, networks: Sequence[Network]) ->
     if forward:
         route = _required_array(unit, 'ForwardingRoute', 7)
         for number in route[1:]:
-            if number == 255 or number not in by_number:
+            if number == 255:
                 break
-            destination = by_number[number]
+            resolved = network_by_number(networks, number)
+            if resolved is None:
+                break
+            destination = resolved
     result.append('Send Messages to a Remote Network: No<br/>' if destination is None else
                   f'Send Messages to Remote Network: {html_network(destination)}<br/>')
     result.append(f'Sync To Wired: {"Yes" if sync else "No"}<br/>')

@@ -298,7 +298,7 @@ RECOVERED_BODIES = {
     "ST7PIRSensor": "partial",
     "BytecraftDimmer": "partial",  # Exact old/L1 DIMPR12 loaded records only.
     "LightLevelSensor": "recovered",  # Old SENLL/PE_CELL consumed PP and groups required.
-    "ST7LightLevelSensor": "partial",  # Nonzero or explicitly idle zero broadcast timer.
+    "ST7LightLevelSensor": "recovered",  # Exact zero-key loader, timer floor and direct usage slots.
     "WHAA": "recovered",
     "DALI2B": "recovered",
     "Multisensor": "partial",  # Exact source-pinned loaders; active joins remain explicit.
@@ -482,6 +482,13 @@ class Network:
     # Physical NetworkNumber is independent of a database Address. Absence
     # stays unknown; report consumers must never substitute the Address.
     network_number: int | None = None
+    # Saved native database identity is independent of both Number and the
+    # original report's AddressAsInteger projection used in headings/links.
+    database_address: int | str | None = None
+
+    @property
+    def identity(self) -> int | str:
+        return self.address if self.database_address is None else self.database_address
 
     def application(self, address: int) -> Application | None:
         return next((app for app in self.applications if app.address == address), None)
@@ -494,21 +501,80 @@ class ProjectModel:
     digest: str = ""
     size: int = 0
     format: str = ""
-    by_address: dict[int, Network] = field(default_factory=dict)
+    by_address: dict[int | str, Network] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        self.by_address = {network.address: network for network in self.networks}
+        self.by_address = {network.identity: network for network in self.networks}
+
+
+def parse_report_network_selector(value: str) -> str:
+    """Retain the exact selector until the saved addressing profile is known."""
+    from argparse import ArgumentTypeError
+    from .project import _named_address
+
+    try:
+        return _named_address(value)
+    except ProjectError as error:
+        raise ArgumentTypeError(str(error)) from error
+
+
+def resolve_report_network_selector(model: ProjectModel, selector: int | str) -> int | str:
+    """Resolve native lexical identities without importing legacy byte aliases."""
+    if type(selector) is int:
+        if not 0 <= selector <= 255:
+            raise ProjectError("Numeric network selector must be a byte")
+        address = selector
+    elif type(selector) is str:
+        if model.format == "native-cgate-xml-snapshot":
+            from .project_documentation_native import native_network_address
+            address = native_network_address(selector)
+        else:
+            from argparse import ArgumentTypeError
+            from .cli import _byte
+            try:
+                address = _byte(selector)
+            except (ValueError, ArgumentTypeError) as error:
+                raise ProjectError("Legacy network selector must be a numeric byte") from error
+    else:
+        raise ProjectError("Network selector must be an exact string or numeric byte")
+    if address not in model.by_address:
+        raise ProjectError(f"Network {selector} is absent from the project")
+    return address
+
+
+def network_by_number(networks: list[Network], number: int, *, legacy_address: bool = False) -> Network | None:
+    """Resolve only the consumed physical number, keeping absent numbers unknown."""
+    def known(item):
+        if item.network_number is not None:
+            return item.network_number
+        return item.address if legacy_address and type(item.address) is int else None
+
+    matches = [item for item in networks if known(item) == number]
+    if len(matches) > 1:
+        raise ValueError(f"ambiguous NetworkNumber {number}")
+    if matches:
+        return matches[0]
+    if any(known(item) is None for item in networks):
+        raise ValueError(f"Unresolved NetworkNumber {number}; project contains unknown numbers")
+    return None
 
 
 def _unique(items, label: str):
     seen = set()
     for item in items:
-        if item.address in seen:
-            raise ProjectError(f"Ambiguous project: duplicate {label} address {item.address}")
-        seen.add(item.address)
+        identity = item.identity if label == "network" else item.address
+        if identity in seen:
+            raise ProjectError(f"Ambiguous project: duplicate {label} address {identity}")
+        seen.add(identity)
     # Original custom comparators place the unused object first for these
     # three classes; Unit and Level have ordinary numeric address order.
-    if label in ("network", "application", "group"):
+    if label == "network":
+        # Preserve the existing numeric unused-first profile. Native lexical
+        # identities follow in exact case-sensitive order; manager order is
+        # not established by this portable saved-snapshot projection.
+        return sorted(items, key=lambda item: (type(item.identity) is str,
+                                              item.identity != UNASSIGNED, item.identity))
+    if label in ("application", "group"):
         return sorted(items, key=lambda item: (item.address != UNASSIGNED, item.address))
     return sorted(items, key=lambda item: item.address)
 
@@ -619,7 +685,7 @@ class _Writer:
     def mark(self, network: Network, unit: Unit | None, what: str) -> None:
         line = f"{what}: {UNRECOVERED}<br />"
         self.add(line)
-        self.unrecovered.append({"network": network.address, "unit": unit.address if unit else None,
+        self.unrecovered.append({"network": network.identity, "unit": unit.address if unit else None,
                                  "item": what})
 
 
@@ -727,7 +793,12 @@ def document_bridge(out: _Writer, network: Network, unit: Unit, model: ProjectMo
     only enables the remote-forwarding line. Missing programming is unknown.
     """
     document_base(out, network, unit)
-    adjacent = model.by_address.get(unit.address)
+    legacy_address = model.format != "native-cgate-xml-snapshot"
+    try:
+        adjacent = network_by_number(model.networks, unit.address, legacy_address=legacy_address)
+    except ValueError as error:
+        out.mark(network, unit, "Bridge adjacent network (" + str(error) + ")")
+        return "partial"
     if adjacent is None:
         out.add(f"WARNING: {unit.unit_type} has no far side Network.")
         return "recovered"
@@ -757,14 +828,30 @@ def document_bridge(out: _Writer, network: Network, unit: Unit, model: ProjectMo
     if route is None or any(not 0 <= value <= 255 for value in route):
         out.mark(network, unit, "Bridge destination network")
         return "partial"
-    destination = UNASSIGNED
-    for address in route[:7]:
-        if address == UNASSIGNED or address not in model.by_address:
-            break
-        destination = address
-    remote = model.by_address.get(destination)
-    out.add("Send Messages to Remote Network: "
-            + (html_network(remote) if remote is not None else "Unknown Network") + "<br/>")
+    remote = None
+    try:
+        for number in route[:7]:
+            if number == UNASSIGNED:
+                break
+            resolved = network_by_number(model.networks, number, legacy_address=legacy_address)
+            if resolved is None:
+                break
+            remote = resolved
+    except ValueError as error:
+        out.mark(network, unit, "Bridge destination network (" + str(error) + ")")
+        return "partial"
+    if remote is None:
+        # AfterLoadProgrammingInformation initializes its destination number
+        # to 255 before consuming the forwarding prefix. The final lookup uses
+        # NetworkNumber even when the prefix is empty.
+        try:
+            remote = network_by_number(model.networks, UNASSIGNED,
+                                       legacy_address=legacy_address)
+        except ValueError as error:
+            out.mark(network, unit, "Bridge destination network (" + str(error) + ")")
+            return "partial"
+    destination = "Unknown Network" if remote is None else html_network(remote)
+    out.add("Send Messages to Remote Network: " + destination + "<br/>")
     return "recovered"
 
 
@@ -795,7 +882,7 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
                    "Multisensor": document_multisensor}
     out.add(f'<h3><a name="{network.address}_unit_{unit.address}">{unit.name} - {unit.unit_type}</a>'
             ' [ <a href="#contents">top</a> ]</h3>')
-    record = {"network": network.address, "unit": unit.address, "unit_type": unit.unit_type}
+    record = {"network": network.identity, "unit": unit.address, "unit_type": unit.unit_type}
     if unit.unit_type in HEADING_ONLY_TYPES:
         out.unit_status["heading_only"] += 1
         return {**record, "documentor": None, "status": "heading_only"}
@@ -887,7 +974,7 @@ def _levels(out: _Writer, network: Network, application: Application, group: Gro
                     out.add(usage.html)
                 if usage.status != "recovered":
                     out.add(f"<li />{documentor_class(action)}.ActionSelectorUse: {UNRECOVERED}")
-                    out.unrecovered.append({"network": network.address, "unit": unit.address,
+                    out.unrecovered.append({"network": network.identity, "unit": unit.address,
                                             "item": f"{documentor_class(action)}.ActionSelectorUse",
                                             "level": [application.address, group.address, level.address]})
                 out.add("</ul>")
@@ -912,7 +999,7 @@ def _group_usage(out: _Writer, network: Network, application: Application, group
             out.add("<ul>" + usage.html + "</ul>")
         if usage.status != "recovered":
             out.add(f"<ul>Unit usage: {UNRECOVERED}</ul>")
-            out.unrecovered.append({"network": network.address, "unit": unit.address,
+            out.unrecovered.append({"network": network.identity, "unit": unit.address,
                                     "item": f"Group {kind} usage ({application.address}/{group.address})",
                                     "missing": list(usage.missing)})
     out.add("</ul>")
@@ -980,17 +1067,17 @@ def _network(out: _Writer, network: Network, model: ProjectModel, catalog, units
     out.add(f"Current Supplied: {supplied} mA</br>")
     out.add(f"Impedance: {impedance} ohms</br>")
     if gap:
-        out.unrecovered.append({"network": network.address, "unit": None, "item": gap})
+        out.unrecovered.append({"network": network.identity, "unit": None, "item": gap})
     status = minimum_status_report(network.units)
     if status.known:
         interval = "None" if status.seconds is None else f"{status.seconds}secs on Unit {html_unit(network, status.unit)}"
     else:
         interval = UNRECOVERED
-        out.unrecovered.append({"network": network.address, "unit": None,
+        out.unrecovered.append({"network": network.identity, "unit": None,
                                 "item": "Status Report Interval (status-report interface)",
                                 "missing": list(status.issues)})
     out.add(f"Status Report Interval: {interval}<br/>")
-    out.status_reports.append({"network": network.address, "known": status.known, "seconds": status.seconds,
+    out.status_reports.append({"network": network.identity, "known": status.known, "seconds": status.seconds,
                                "unit": status.unit.address if status.unit else None,
                                "basis": status.basis, "issues": list(status.issues)})
     for application in network.applications:
@@ -1005,7 +1092,7 @@ def _network(out: _Writer, network: Network, model: ProjectModel, catalog, units
 
 
 def _unrecovered_section(out: _Writer, networks: list[Network]) -> None:
-    by_address = {network.address: network for network in networks}
+    by_address = {network.identity: network for network in networks}
     out.add("<hr />")
     out.add('<h2><a name="unrecovered">Not documented (unrecovered)</a></h2>')
     out.add("<ul>")
@@ -1017,7 +1104,7 @@ def _unrecovered_section(out: _Writer, networks: list[Network]) -> None:
     out.add("</ul>")
 
 
-def render(model: ProjectModel, *, generated: datetime, networks: list[int] | None = None,
+def render(model: ProjectModel, *, generated: datetime, networks: list[int | str] | None = None,
            catalog=None) -> tuple[str, dict[str, Any]]:
     """Return the document text (CRLF lines) and a summary."""
     selected = model.networks if networks is None else [model.by_address[n] for n in networks]
@@ -1050,7 +1137,7 @@ def render(model: ProjectModel, *, generated: datetime, networks: list[int] | No
     out.add("</body>")
     out.add("</html>")
     text = LINE_BREAK.join(out.lines) + LINE_BREAK
-    summary = {"networks": [network.address for network in selected], "units": units,
+    summary = {"networks": [network.identity for network in selected], "units": units,
                "unit_status": dict(out.unit_status), "unrecovered": out.unrecovered,
                "status_reports": out.status_reports}
     return text, summary
@@ -1101,9 +1188,7 @@ def run(args) -> tuple[dict[str, Any], int]:
     model = load_model(args.file, native_xml=getattr(args, "native_xml", False))
     networks = None
     if args.network is not None:
-        if args.network not in model.by_address:
-            raise ProjectError(f"Network {args.network} is absent from the project")
-        networks = [args.network]
+        networks = [resolve_report_network_selector(model, args.network)]
     catalog = None
     if args.catalog is not None:
         from .calculator import CalculatorCatalog
@@ -1122,8 +1207,6 @@ def run(args) -> tuple[dict[str, Any], int]:
 
 
 def options(commands) -> None:
-    from .cli import _byte
-
     parser = commands.add_parser(
         "document",
         help="Write the Toolkit Document Project HTML for a saved XML/CBZ project; never overwrites",
@@ -1133,7 +1216,8 @@ def options(commands) -> None:
                         help="Read an explicit saved native DBGETXML Installation snapshot (no server access)")
     parser.add_argument("--output", type=Path,
                         help="New HTML file (default: <project name>.html, as the Toolkit names it)")
-    parser.add_argument("--network", type=_byte, metavar="N", help="Document only this network")
+    parser.add_argument("--network", type=parse_report_network_selector, metavar="ADDRESS",
+                        help="Document this exact native Network Address, or a legacy numeric byte")
     parser.add_argument("--generated-at", metavar="ISO",
                         help="Timestamp for 'Generated on:' (default: the project file's modification time, UTC)")
     parser.add_argument("--catalog", type=Path, default=None,

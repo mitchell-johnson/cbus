@@ -15,6 +15,8 @@ from cbus_toolkit.project_documentation_usage import action_selector_usage, grou
 VECTOR = Path(__file__).resolve().parents[2] / "rust/testdata/vectors/project_documentation_remaining.json"
 CASES = json.loads(VECTOR.read_text())["cases"]
 SOURCE = Path(__file__).resolve().parents[1] / "research/fixtures/project-documentor-remaining-static.json"
+ST7_ANNEX = json.loads((Path(__file__).resolve().parents[1] /
+    "research/fixtures/project-documentor-st7-light-level.json").read_text())["historical_current_overrides"]
 
 
 def unit_from_case(case):
@@ -36,6 +38,9 @@ def vector_network():
 
 @pytest.mark.parametrize("case", CASES, ids=lambda case: case["id"])
 def test_complete_family_body_literal_and_public_dispatch(case):
+    # Preserve the original fixture bytes; the current source-corrected ST7
+    # expectations are independently authored in its distinct annex.
+    case = dict(case, **ST7_ANNEX.get(case["id"], {}))
     unit, network = unit_from_case(case), vector_network()
     family = case["family"]
     data, lines = ((gateway.whaa_data, gateway.whaa_lines) if family == "WHAA" else
@@ -199,15 +204,14 @@ def test_light_level_firmware_boundary_requires_exact_factory_identity():
         light.light_level_profile(unit)
 
 
-def test_st7_zero_timer_does_not_invent_template_state_and_scenes_stay_explicit():
+def test_st7_zero_timer_uses_fresh_zero_key_model_and_block4_minimum():
     unit = unit_from_case(next(case for case in CASES if case["id"] == "st7-senll-explicit-idle-zero"))
     unit.parameters["JPCommand"] = "0 0 0 0 7 0 0 0"
-    with pytest.raises(ValueError, match="zero broadcast timer"):
-        light.light_level_data(unit)
+    assert light.light_level_data(unit)["timer"] == 10
     unit.parameters["SceneTable"] = "0 1 2"
     usage = group_usage(unit, 56, 1, "input")
     assert (usage.html, usage.status, usage.missing) == (
-        "Light Level Maintenance", "partial", ("light-level scene group dependencies",))
+        "Level Group", "recovered", ())
 
 
 @pytest.mark.parametrize("case,field", [(CASES[0], "Hystersis"), (CASES[2], "SecondApplicationBlocks"),

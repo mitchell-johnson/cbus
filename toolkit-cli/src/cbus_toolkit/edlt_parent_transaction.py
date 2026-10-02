@@ -7,6 +7,8 @@ normalization and CRC projection before any database write can occur.
 """
 from __future__ import annotations
 
+from .edlt_static_grid import retained_history
+
 from dataclasses import dataclass
 import json
 from types import MappingProxyType
@@ -341,6 +343,7 @@ def _operation(value, *, allow_add_dialog=False):
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
 
+@retained_history
 def normalize_operations(operations, *, allow_add_dialog=False):
     if not isinstance(operations, (tuple, list)):
         raise EdltError('Parent transaction operations must be an array')
@@ -725,6 +728,7 @@ class EdltParentTransaction:
             ],
         }
 
+    @retained_history
     def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
              _dialog_missing_by_operation=()):
         operations = normalize_operations(operations)
@@ -818,6 +822,8 @@ class EdltParentTransaction:
             planning_values = dict(loaded.after_load)
         for name in _dialog_initial_missing:
             control_values[name] = planning_values[name] = (255,)
+        from .edlt_static_grid import initialize as initialize_static_grid
+        initialize_static_grid(planning_values)
         owners, slots, results, selected = {}, {}, [], []
         static_dialog_seen = any(row['op'] == 'static-text-dialog' for row in operations)
 
@@ -1485,6 +1491,13 @@ class EdltParentTransaction:
             })
             results.append(_json(document))
 
+        from .edlt_static_grid import current as current_static_grid
+        grid = current_static_grid(planning_values)
+        if grid is not None:
+            static_changes, _static_setters = grid.save(planning_values)
+            claim_static(static_changes, 'ordered parent static text')
+            control_values.update(static_changes)
+            planning_values.update(static_changes)
         after_controls = self.snapshot(control_values)
         changed_controls = {
             name for name in after_controls

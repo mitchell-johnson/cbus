@@ -19,9 +19,10 @@ state. Missing consumed PP is a visible refusal; it is never replaced with a
 factory default.
 
 Gateway routing resolves adjacent and forwarded networks by `NetworkNumber`.
-This is the pure/legacy helper scope. The saved native XML adapter currently
-requires canonical numeric Address and matching NetworkNumber; distinct values
-remain refused by `cgate database-document`.
+The saved native adapter preserves exact database Address identity separately
+from physical Number and the source integer HTML projection. Distinct values
+are admitted; ambiguous consumed Numbers and unresolved unknowns are marked.
+See [native report identities](native-project-documentation.md).
 The forwarding route consumes the contiguous existing prefix starting at
 index one. Advanced gateway remotes retain page order and all sixteen action
 slots. Remote bodies display their ten keys with each remote type's page and

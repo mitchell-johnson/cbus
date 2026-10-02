@@ -748,7 +748,9 @@ Old DIMPR12 firmware 0–1.9.02 has bounded project-documentation bodies and
 independent group/action usage, with an explicit 33-record packed scene
 projection. NeoClassic KEYC/KEYCIR bodies and usage consume canonical
 SceneModify commands. Require complete consumed PP/model facts; unknown
-dependencies retain unresolved markers. DIMPR12A, wider L1 loader history, later firmware, original
+dependencies retain unresolved markers. DIMPR12A selects the existing DIN
+ErrorReportOutput implementation. Exact L1 firmware1.9.03 through9 has its own
+report/usage profile; wider loader history, unregistered firmware, original
 complete loaders, initialized GUI history and full-page byte/visual parity
 remain open. See [Bytecraft](../../../../toolkit-cli/docs/project-documentation-bytecraft.md)
 and [integration boundaries](../../../../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md).
@@ -842,12 +844,19 @@ The shared saved-project renderer now has bounded multisensor, thermostat,
 wireless input/gateway/remote, Bytecraft L1 and architectural dimmer report bodies
 and independent usage/action consumers. Architectural reports admit four factories
 and 128 sparse ordinary scenes. Thermostat masters require explicit unambiguous
-NetworkNumber; generated/missing plant groups remain refused. Independent-number
-resolution is a pure/legacy helper scope; native reports still require canonical
-numeric Address and matching NetworkNumber. Wireless
+NetworkNumber; generated/missing plant groups remain refused. Native report selection preserves exact database Address identity separately
+from the source signed-integer heading/anchor projection and physical
+NetworkNumber. Numeric spellings can normalize to the same HTML anchor and
+named addresses project to255; inspect exact identities in JSON metadata.
+Consumed Number lookups refuse ambiguity and unresolved unknowns. Original
+manager ordering and full-page acceptance remain open. Wireless
 receivers and consumed scene objects must exist. Use `project document` for
 files or `cgate database-document` for one fresh DBGETXML. Inspect unresolved
 markers and original-page/physical flags. Read
 `toolkit-cli/docs/project-documentation-sensors.md`,
 `toolkit-cli/docs/project-documentation-wireless-l1.md` and
 `toolkit-cli/docs/project-documentation-architectural.md`.
+
+For ST7 SENLL reports read `toolkit-cli/docs/project-documentation-st7-light-level.md`: the selected class has zero fresh keys, block4 TimerMin10 and direct ordered Level/On-Off/Broadcast/Enable dependencies. Stored key/scene values do not create report dependencies. DIMPR12A selects the existing DIN ErrorReportOutput profile, not Bytecraft. Exact native report identity/projection rules are in `toolkit-cli/docs/native-project-documentation.md`.
+
+Retained static-grid histories admit begin/input/commit/cancel/focus events. Explicitly commit, cancel or change cell focus before modal close; pending-close timing remains unproved and refuses. One private parent name cache survives dialog opens and later widget/SceneManager allocation, including names longer than the truncated PP image. Initial .NET Framework replacement decoding preserves unchanged/equal-name malformed rows. New parent loads and Reset rebuild it; operations JSON cannot inject cache state. Standalone allocators remain strict. Read `toolkit-cli/docs/edlt-static-language-add.md` and `toolkit-cli/docs/feature-batch-2026-10-03-grid-native-report-corrections.md`.

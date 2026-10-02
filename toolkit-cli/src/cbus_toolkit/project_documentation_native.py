@@ -21,7 +21,7 @@ from xml.dom import Node, minidom
 from xml.parsers import expat
 
 from .addressing import _container
-from .project import ProjectError
+from .project import ProjectError, _named_address
 from .project_documentation import Application, Group, Level, Network, ProjectModel, Unit
 
 
@@ -67,15 +67,76 @@ def _address(node: Node) -> int:
     return _byte(_scalar(node, "Address", required=True), f"{node.nodeName} Address")
 
 
+def native_network_address(value: str) -> int | str:
+    """Retain one exact native catalogue identity, without numeric aliases.
+
+    Canonical byte spellings retain the established numeric report JSON.
+    Other stored path components (including 0254, 256 and 0xff) are strings:
+    they are independent database identities, not physical network numbers.
+    """
+    value = _named_address(value)
+    if re.fullmatch(r"0|[1-9][0-9]{0,2}", value) and int(value) <= 255:
+        return int(value)
+    return value
+
+
+def native_network_number(value: str) -> int:
+    """Read the explicit byte property; never infer it from the Address.
+
+    The captured native materialization contains the hexadecimal 0xff
+    sentinel as well as decimal numbers. Other raw property values remain
+    outside this snapshot report profile.
+    """
+    if re.fullmatch(r"0[xX][0-9a-fA-F]{1,2}", value):
+        return int(value[2:], 16)
+    return _byte(value, "NetworkNumber")
+
+
+def native_network_report_address(value: str) -> int:
+    """Project the source Address cache, independently of database identity.
+
+    TCGateAddressAttribute uses exact NA -> 0, then SysUtils.StrToInt and an
+    exception fallback of 255. The pinned System.@ValLong grammar accepts
+    leading ASCII spaces, an optional sign and decimal/$/x/0x forms. Hex
+    values use the original unsigned accumulator then signed i32 result.
+    This projection supplies report headings/anchors, never selection or
+    physical NetworkNumber lookup.
+    """
+    value = _named_address(value)
+    if value == "NA":
+        return 0
+    match = re.fullmatch(r"([+-]?)(?:(?:\$|0[xX]|[xX])([0-9a-fA-F]+)|([0-9]+))", value.lstrip(" "))
+    if match is None:
+        return 255
+    sign, hexadecimal, decimal = match.groups()
+    if hexadecimal is not None:
+        hexadecimal = hexadecimal.lstrip("0") or "0"
+        if len(hexadecimal) > 8:
+            return 255
+        number = int(hexadecimal, 16)
+        if sign == "-":
+            number = (-number) & 0xffffffff
+        return number if number < 0x80000000 else number - 0x100000000
+    decimal = decimal.lstrip("0") or "0"
+    if len(decimal) > 10:
+        return 255
+    number = int(decimal)
+    if sign == "-":
+        number = -number
+    return number if -(2**31) <= number < 2**31 else 255
+
+
 def _unique(items, label):
-    addresses = [item.address for item in items]
+    addresses = [item.identity if label == "network" else item.address for item in items]
     if len(addresses) != len(set(addresses)):
         raise ProjectError(f"Ambiguous native snapshot: duplicate {label} address")
     # Original LoadAndSort puts the address-255 sentinel first for these
     # three managers. Unit and level addresses retain plain numeric order.
     sentinel_first = label in ("network", "application", "group")
-    return sorted(items, key=lambda item: (item.address != 255, item.address)
-                  if sentinel_first else (False, item.address))
+    def key(item):
+        address = item.identity if label == "network" else item.address
+        return (address != 255, isinstance(address, str), address) if sentinel_first else (False, address)
+    return sorted(items, key=key)
 
 
 def _shape(node: minidom.Element, children: set[str]) -> None:
@@ -154,12 +215,12 @@ def build_native_model(snapshot: bytes) -> ProjectModel:
     networks = []
     for network_node in _children(project, "Network"):
         _shape(network_node, {"Application", "Unit"})
-        network_address = _address(network_node)
+        raw_address = _scalar(network_node, "Address", required=True)
+        network_address = native_network_address(raw_address)
+        report_address = native_network_report_address(raw_address)
         number = None
         if _children(network_node, "NetworkNumber"):
-            number = _byte(_scalar(network_node, "NetworkNumber"), "NetworkNumber")
-            if number != network_address:
-                raise ProjectError("Ambiguous native network Address and NetworkNumber")
+            number = native_network_number(_scalar(network_node, "NetworkNumber"))
         applications = []
         for application_node in _children(network_node, "Application"):
             _shape(application_node, {"Group"})
@@ -191,9 +252,9 @@ def build_native_model(snapshot: bytes) -> ProjectModel:
                 _scalar(unit_node, "Description"), _parameters(unit_node),
                 {name: _scalar(unit_node, name) for name in _UNIT_FIELDS if _children(unit_node, name)}))
         interface_type, interface_address = _interface(network_node)
-        networks.append(Network(network_address, _scalar(network_node, "TagName"),
+        networks.append(Network(report_address, _scalar(network_node, "TagName"),
                                 interface_type, interface_address, _unique(applications, "application"),
-                                _unique(units, "unit"), number))
+                                _unique(units, "unit"), number, network_address))
     if not networks:
         raise ProjectError("Native snapshot contains no networks")
     return ProjectModel(_scalar(project, "TagName"), _unique(networks, "network"),

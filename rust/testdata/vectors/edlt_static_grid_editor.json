@@ -1,0 +1,115 @@
+{
+  "format": "cbus-edlt-static-grid-editor-literals-v1",
+  "original_instructions_executed": false,
+  "decoder": "Microsoft .NET Framework UTF8Encoding.GetChars slow path; invalid continuation constraint consumes the second byte before fallback",
+  "decoded_rows": [
+    {
+      "name": "ascii",
+      "hex": "4142",
+      "text": "AB"
+    },
+    {
+      "name": "valid-two",
+      "hex": "c481",
+      "text": "ā"
+    },
+    {
+      "name": "valid-three",
+      "hex": "e282ac",
+      "text": "€"
+    },
+    {
+      "name": "valid-four",
+      "hex": "f09f9880",
+      "text": "😀"
+    },
+    {
+      "name": "lone-continuation",
+      "hex": "804180",
+      "text": "�A�"
+    },
+    {
+      "name": "forbidden-lead",
+      "hex": "c080",
+      "text": "��"
+    },
+    {
+      "name": "unfinished-two",
+      "hex": "c4",
+      "text": "�"
+    },
+    {
+      "name": "unfinished-three",
+      "hex": "e282",
+      "text": "�"
+    },
+    {
+      "name": "unfinished-four",
+      "hex": "f09f98",
+      "text": "�"
+    },
+    {
+      "name": "bad-trail-retried",
+      "hex": "e28241",
+      "text": "�A"
+    },
+    {
+      "name": "overlong-three",
+      "hex": "e08080",
+      "text": "��"
+    },
+    {
+      "name": "surrogate",
+      "hex": "eda080",
+      "text": "��"
+    },
+    {
+      "name": "overlong-four",
+      "hex": "f0808080",
+      "text": "���"
+    },
+    {
+      "name": "outside-unicode",
+      "hex": "f4908080",
+      "text": "���"
+    },
+    {
+      "name": "forbidden-four-lead",
+      "hex": "f5808080",
+      "text": "����"
+    },
+    {
+      "name": "highest-codepoint",
+      "hex": "f48fbfbf",
+      "text": "􏿿"
+    }
+  ],
+  "editor_contract": {
+    "rows": 64,
+    "name_max_utf16_units": 64,
+    "value_column_read_only": true,
+    "events": [
+      "begin",
+      "input",
+      "commit",
+      "cancel",
+      "focus"
+    ],
+    "pending_close_inferred": false,
+    "row_rollback_supported": false,
+    "dialog_close_saves_retained_names": true,
+    "reopen_reloads_pp": false,
+    "parent_afterload_reloads_pp": true
+  },
+  "parent_scene_name_contract": {
+    "earlier_retained_name_reuse_before_capacity": true,
+    "normalizer_shape_deferral_only": true,
+    "future_or_reset_cleared_name_authorizes_new_long_allocation": false,
+    "standalone_or_unmatched_new_text_limit_utf8_bytes": 63,
+    "caller_private_cache_injection": false,
+    "native_no_add_uses_progressive_parent_replay": true,
+    "earlier_widget_name_reused_index": 63,
+    "earlier_widget_other_scene_name_index": 62,
+    "later_dialog_not_borrowed": true
+  }
+}
