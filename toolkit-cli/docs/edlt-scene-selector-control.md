@@ -71,14 +71,15 @@ is internal to the owning SceneManager. A fresh owner or Reset starts unbound;
 the engine has no module-global mutable state. SceneName pending text is owned
 by its separate control engine and is neither committed nor discarded here.
 
-The owning model's optional bound-list observer reads its actual live shared
-collections when a selection consumes them. It is not Binding.ReadValue and
-does not run an automatic PropertyChanged or currency callback. Thus an earlier
-Add can append to the bound Levels list, while a TriggerGroup setter cannot
-silently rebind the action list to the newly selected group. The explicit
-trigger-current handler binds the collection before its ActionSelector getter;
-getter-created actions appear in that same live collection. Snapshot-only pure
-suppliers retain their last declared observed rows until a handler rebinds them.
+The owning model's optional bound-list observer checks the actual collection
+generation when a selection consumes it. It is not Binding.ReadValue and does
+not run an automatic PropertyChanged or currency callback. Native creation
+refreshes the whole Network and replaces every loaded Group's Levels list.
+An old control binding retains its old rows until explicit rebinding, including
+when a getter creates an action after the trigger-current handler bound its
+list. A TriggerGroup setter alone cannot rebind the action list. Declared
+manual caches and snapshot-only pure suppliers retain their separately supplied
+inventory behavior. Read [native creation/collection rules](edlt-scene-inventory-timeline.md).
 
 The callback journal distinguishes source handler binding operations from
 setter WriteValue calls. A failed callback stops immediately: the engine does

@@ -85,6 +85,11 @@ jobs:
           --require-module tests/test_edlt_scene_selector_control.py
           --require-module tests/test_edlt_scene_selector_static.py
           --require-module tests/test_edlt_scene_selector_metadata.py
+          --require-module tests/test_edlt_scene_inventory_timeline.py
+          --require-module tests/test_edlt_scene_inventory_native_plan.py
+          --require-module tests/test_edlt_scene_inventory_model.py
+          --require-module tests/test_edlt_scene_inventory_static.py
+          --require-module tests/test_edlt_parent_scene_inventory.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -128,6 +133,7 @@ jobs:
           --require-module tests/test_cgate_project_documentation_st7_light_level_interop.py
           --require-module tests/test_cgate_edlt_scene_name_control_interop.py
           --require-module tests/test_cgate_edlt_scene_selector_interop.py
+          --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -174,6 +180,7 @@ jobs:
           --require-module tests/test_cgate_project_documentation_st7_light_level_interop.py
           --require-module tests/test_cgate_edlt_scene_name_control_interop.py
           --require-module tests/test_cgate_edlt_scene_selector_interop.py
+          --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

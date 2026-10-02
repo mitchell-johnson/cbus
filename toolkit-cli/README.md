@@ -4,8 +4,12 @@ For retained eDLT application, trigger, action and dynamic-label selection, use
 `get-selector-view` and explicit `scene-selector-control` operations within the
 SceneManager or parent transaction commands. Read [callback schemas](docs/edlt-scene-selector-control.md)
 and [native inventory/save limits](docs/edlt-scene-selector-metadata.md). These
-workflows support existing objects through cmqttd and cgate-mock; full Toolkit
-GUI and hardware parity remains unfinished.
+workflows support existing objects, create-enabled getters and accepted or
+cancelled SceneManager Add histories through cmqttd and cgate-mock. Earlier
+parent edits are visible at their position; retained lists keep their original
+generation until an explicit callback rebinds them. Read
+[creation order and retained inventories](docs/edlt-scene-inventory-timeline.md).
+Full Toolkit GUI and hardware parity remains unfinished.
 
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The

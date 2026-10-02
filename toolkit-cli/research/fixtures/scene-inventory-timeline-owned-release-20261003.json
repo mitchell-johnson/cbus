@@ -1,0 +1,1711 @@
+{
+  "acceptance_limits": {
+    "category_ledger": {
+      "categories": 42,
+      "implemented": 18,
+      "is_functional_percentage": false,
+      "percent": 42.86
+    },
+    "complete": false,
+    "fully_accepted_obligations": 0,
+    "functional_percentage": "unmeasured; complete denominator unavailable",
+    "hardware_or_house_service_operated": false,
+    "original_instructions_executed": false,
+    "remaining": [
+      "automatic selection/currency/notifications/async/modal behavior",
+      "initializer composition after earlier Network language mutation",
+      "culture sorting/null conversions/complete original forms",
+      "physical-device and complete release acceptance"
+    ],
+    "remaining_issue_scopes": {
+      "72": "manual original Toolkit/C-Gate acceptance",
+      "73": "numeric Level XML selector compatibility after Network rename",
+      "74": "numeric Level COPY/plain LOAD preservation",
+      "75": "Application Description XML round-trip contract"
+    }
+  },
+  "author_component_handoffs": [
+    {
+      "artifact": {
+        "bytes": 10371,
+        "sha256": "26e689d1b144dc0edb49226c9a69c22d6bded89197cf34a4d3b2385f6d51d36a"
+      },
+      "current_runtime_acceptance": false,
+      "role": "native",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    },
+    {
+      "artifact": {
+        "bytes": 7728,
+        "sha256": "a4ceec192055b9e886d2fe9fdae364941861e5bd6f430c63dec0824049f5606b"
+      },
+      "current_runtime_acceptance": false,
+      "role": "model",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    },
+    {
+      "artifact": {
+        "bytes": 8665,
+        "sha256": "6888077b5b4f4c5b17659d21bdb558b9fb4f1078330614a889aa2fdd9ad53d43"
+      },
+      "current_runtime_acceptance": false,
+      "role": "static-literal",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    },
+    {
+      "artifact": {
+        "bytes": 10296,
+        "sha256": "13e8f845b7d40751afb344bc63c4d23bec14d6b7c4443072e8e41c09bcccf1c3"
+      },
+      "current_runtime_acceptance": false,
+      "role": "parent-test-correction",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    },
+    {
+      "artifact": {
+        "bytes": 12330,
+        "sha256": "205c276b4a63aed9b4dc94dd2f3287358166ce4446f1bc5d9af6766759f1f502"
+      },
+      "current_runtime_acceptance": false,
+      "role": "public-roster",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    },
+    {
+      "artifact": {
+        "bytes": 8279,
+        "sha256": "791054af31fa674f458ab233e825a990f203af7f30c375978c20a235eeaf3628"
+      },
+      "current_runtime_acceptance": false,
+      "role": "prior-ci-presentation-regression",
+      "scope": "Preserved scoped author results/failures; final current release runs own acceptance for the declared software scope."
+    }
+  ],
+  "author_history": {
+    "source-storage-author-1": {
+      "audit": {
+        "bytes": 31751,
+        "sha256": "f136373ac5b57fb0cbcc36403b443b5fc6ce059f703a1a4c057c337650d4882c"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": false,
+      "input_count": 3859,
+      "parent_tests": {
+        "failure": 32,
+        "passed": 10
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 6000,
+        "sha256": "27125d13fe5d1676b02f452ff71053a0a384f8b8f42fb58c3c4e7a75f56f7924"
+      }
+    },
+    "source-storage-author-2": {
+      "audit": {
+        "bytes": 31754,
+        "sha256": "089f94f1a944b18a5c8f49f58ef1053bab26748700390ef8c536d6ab8ddc7850"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": false,
+      "input_count": 3860,
+      "parent_tests": {
+        "failure": 36,
+        "passed": 6
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4637,
+        "sha256": "badc2ff4a5fa423e0a38506e56684dc4ec16c3b991171fd99a4070183f624575"
+      }
+    },
+    "source-storage-author-3": {
+      "audit": {
+        "bytes": 31745,
+        "sha256": "f31e1a9723dc6b1b3c9fa04f4c07cf255f27673eca6f2e12d67c944a6a001cd7"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": false,
+      "input_count": 3860,
+      "parent_tests": {
+        "failure": 26,
+        "passed": 16
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4988,
+        "sha256": "057a6c55f310478352e345970da421a493b1b79f1109e0866d0057409ee403aa"
+      }
+    },
+    "source-storage-dltp-presentation-author1": {
+      "audit": {
+        "bytes": 11186,
+        "sha256": "a9bc0c7df3b4faed9b66f3b382711f61736061060ebdbda42823f32f994be6fa"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 0,
+      "global_inputs_quiet": true,
+      "input_count": 3863,
+      "parent_tests": {
+        "passed": 9,
+        "skipped": 1
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 28,
+        "reported": 28,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4031,
+        "sha256": "05a36f1fb887cf03f1f0926eb8f6a5c6dfe2211e79a4ad99fd377662cd4e54eb"
+      }
+    },
+    "source-storage-parent-author-1": {
+      "audit": {
+        "bytes": 4897,
+        "sha256": "1daf11f129aa597b8233a2335bba6e82b04f4e66dfb46f5e04bdc8c596a60a0b"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": true,
+      "input_count": 3861,
+      "parent_tests": {
+        "failure": 7
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 3985,
+        "sha256": "d8cd10dd20b203573b282de3aa582e38b8024e3992ede4aa05c31c6107234d98"
+      }
+    },
+    "source-storage-parent-author-2": {
+      "audit": {
+        "bytes": 4897,
+        "sha256": "2f50ef770c89b493afbeace85eabf83731ad59a21322cf97d2f17e9a48b764bb"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": true,
+      "input_count": 3861,
+      "parent_tests": {
+        "failure": 7
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 3985,
+        "sha256": "e64cfbe3f412bda3dc66ae061271585bf33299d924ef05f5408576f786efed5f"
+      }
+    },
+    "source-storage-parent-author-3": {
+      "audit": {
+        "bytes": 4840,
+        "sha256": "e2ac085d460cb96b739b9ce636c7f53659d3dadbc518cb755560a8619e328ff8"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": true,
+      "input_count": 3861,
+      "parent_tests": {
+        "failure": 1,
+        "passed": 6
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 3986,
+        "sha256": "1d1c8773d20ee0562beb7b3a2f0aff81ca84b53409234c3b63850c7834ee4af9"
+      }
+    },
+    "source-storage-parent-author-4": {
+      "audit": {
+        "bytes": 4838,
+        "sha256": "ec0f9ae8d98241accf65dea9dc839f9bc1f74041f64242c2680e54b9aa295dfb"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 0,
+      "global_inputs_quiet": false,
+      "input_count": 3861,
+      "parent_tests": {
+        "passed": 7
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4690,
+        "sha256": "83e176ad3f19fbb0201c4584fd1fae13a83448892efd1710661569bf23fd2345"
+      }
+    },
+    "source-storage-public-author-4": {
+      "audit": {
+        "bytes": 34614,
+        "sha256": "74e15c8f714376b71c9b8b96be48b438533173ec72c46ad6c408845b9c5c9f26"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 1,
+      "global_inputs_quiet": false,
+      "input_count": 3862,
+      "parent_tests": {
+        "failure": 8,
+        "passed": 38
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 8975,
+        "sha256": "4478673ca278bb23dc6d0844e08cccc29f67d3928602d1604664496c578a0842"
+      }
+    },
+    "source-storage-public-ci-author-6": {
+      "audit": {
+        "bytes": 14430,
+        "sha256": "696b756a390bef29f5f7b2cc92ab49f389f217fa1f389ad98633ecfa2e46bf26"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 0,
+      "global_inputs_quiet": true,
+      "input_count": 3863,
+      "parent_tests": {
+        "passed": 19
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 14,
+        "reported": 14,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 3982,
+        "sha256": "9866dc98fff6cf9c8734a3b7661c5f83d895570134d02abd75c116794d408506"
+      }
+    },
+    "source-storage-public-loader-author-7": {
+      "audit": {
+        "bytes": 3943,
+        "sha256": "6e9b2e4470222863ae812ddcb1a4bb15d8a63e11c04dcafc5a493138e5ae1efc"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 0,
+      "global_inputs_quiet": true,
+      "input_count": 3863,
+      "parent_tests": {
+        "passed": 4
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4682,
+        "sha256": "fee80a45108a0270679be03a2765bd8cf741f803b7dec4cce72c4f975a3035e7"
+      }
+    },
+    "source-storage-public-ordered-author-5": {
+      "audit": {
+        "bytes": 2051,
+        "sha256": "baed55d2824496dfc80bf3416d5e5d91ddc4870da2c2a910f65dbe05d7d1cd7a"
+      },
+      "binaries_quiet": true,
+      "current_runtime_acceptance": false,
+      "exit": 0,
+      "global_inputs_quiet": true,
+      "input_count": 3863,
+      "parent_tests": {
+        "passed": 2
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 4265,
+        "sha256": "b77d0040b493b9bdbe0cd088d43c28d1bb4354c5ecf494c819bdf6b50bf06e69"
+      }
+    }
+  },
+  "counting_rules": "Parent tests and separate subtest events are separate. Overlapping author and release epochs are not summed. Declarative vectors are not execution evidence.",
+  "coverage_require_complete": {
+    "artifact": {
+      "bytes": 243245,
+      "sha256": "ece5f8005bd34ceb0c328bc5b03f5ca338cb8030a7cd0dfb8d3ee521165b6750"
+    },
+    "census_complete": false,
+    "complete": false,
+    "exit": 1
+  },
+  "current_release_runs": {
+    "source": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 651047,
+          "sha256": "355c35aac26cce49b7b1cf3c5ea2e011bd78e8060a090890c0c23f5d74c77c82"
+        },
+        "inputs-after.json": {
+          "bytes": 689719,
+          "sha256": "9fd4d7fdce63c79712a613bfce2bfc3ecf11fc696216d88e87f7dc8cb0163669"
+        },
+        "inputs-before.json": {
+          "bytes": 689719,
+          "sha256": "9fd4d7fdce63c79712a613bfce2bfc3ecf11fc696216d88e87f7dc8cb0163669"
+        },
+        "junit.xml": {
+          "bytes": 227582,
+          "sha256": "1389a1f0c53b4b6ecb0ddb132b305f2e7bcf4cda409efcfe1e3c6f38201a4888"
+        },
+        "pytest.log": {
+          "bytes": 2438,
+          "sha256": "408a266b2ff58f1c74f45207150e893c408feb3b9c3c86502f0cd5972cc90baa"
+        },
+        "summary.json": {
+          "bytes": 8162,
+          "sha256": "e4992f1fd08b71dbced1c2750704920b009583eb962ff93943a163eef3f41b89"
+        },
+        "trace.json": {
+          "bytes": 499153,
+          "sha256": "09092fad122b9962cb6b43d04186a5535106f2245b06d050781a61bb9ff188b4"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0
+      },
+      "executed_base_commit": "64c6932cca425604ac7ff0109e98f3d2709424e9",
+      "input_count": 3863,
+      "modules": [
+        "tests/test_edlt_scene_inventory_timeline.py",
+        "tests/test_edlt_scene_inventory_native_plan.py",
+        "tests/test_edlt_scene_inventory_model.py",
+        "tests/test_edlt_scene_inventory_static.py",
+        "tests/test_edlt_parent_scene_inventory.py",
+        "tests/test_cgate_edlt_scene_inventory_interop.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_selector_metadata.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_ci_test_results.py",
+        "tests/test_cli_edlt_scene_manager.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_edlt_scene_manager.py",
+        "tests/test_edlt_scene_names.py",
+        "tests/test_edlt_scene_name_control.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_edlt_parent_auto_cache.py",
+        "tests/test_edlt_parent_add_dialog.py",
+        "tests/test_edlt_parent_form.py",
+        "tests/test_edlt_parent_mra.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_cache_panels.py",
+        "tests/test_edlt_parent_panels.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_parity_register.py",
+        "tests/test_release_gate.py",
+        "tests/test_release_gate_integrity.py",
+        "tests/test_edlt_dltp_index.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 611,
+        "skipped": 13
+      },
+      "phase": "source",
+      "scope": "35 affected/owning modules only; not the full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1326,
+        "reported": 1326,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_edlt_scene_inventory_static.py::SceneInventoryStaticSourceTests::test_static_regeneration_reads_only_explicit_private_inputs",
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_cli_edlt_scene_manager.py::SceneManagerCLITests::test_native_cli_preview_complete64_original_crc_save_close_load_and_guard",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+        "tests/test_edlt_scene_manager.py::NativeSceneManagerTests::test_original_full874_raw_crc_save_close_load_and_metadata_preservation",
+        "tests/test_edlt_scene_manager.py::OriginalSceneManagerTests::test_original_validation_and_retained_control_literals",
+        "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+        "tests/test_edlt_parent_form.py::NativeParentFormTests::test_native_database_save_close_load_preserves_complete_plan",
+        "tests/test_edlt_parent_mra.py::NativeMRAParentTransactionTests::test_native_database_one_save_close_load_preserves_mra_parent_edit",
+        "tests/test_edlt_dltp_index.py::DltpIndexTests::test_ambiguous_case_variants_fail_closed_on_case_sensitive_storage"
+      ],
+      "source_and_binary_inputs_quiet": true
+    },
+    "wheel": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 651046,
+          "sha256": "c499848f03515fb5a4f9be4e5c0b66b57e53940c345f40c3a8d27de46f7bae23"
+        },
+        "inputs-after.json": {
+          "bytes": 689719,
+          "sha256": "9fd4d7fdce63c79712a613bfce2bfc3ecf11fc696216d88e87f7dc8cb0163669"
+        },
+        "inputs-before.json": {
+          "bytes": 689719,
+          "sha256": "9fd4d7fdce63c79712a613bfce2bfc3ecf11fc696216d88e87f7dc8cb0163669"
+        },
+        "junit.xml": {
+          "bytes": 229012,
+          "sha256": "9e3ade51ef2f6f4be8e33ec9167124b1de175210b1428902ccef4058ba34520b"
+        },
+        "pytest.log": {
+          "bytes": 2438,
+          "sha256": "969f742387b98b99347759d9d8e711b7d0ac1ccf72aefcdf85f6454d4123ffc5"
+        },
+        "summary.json": {
+          "bytes": 12387,
+          "sha256": "e7e43aebbc323872fb7340f58584e66ebbbbfea7ed796ccd0e946eadebf7f41a"
+        },
+        "trace.json": {
+          "bytes": 499153,
+          "sha256": "09092fad122b9962cb6b43d04186a5535106f2245b06d050781a61bb9ff188b4"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0,
+        "wheel-build": 0,
+        "wheel-install": 0,
+        "wheel-venv": 0
+      },
+      "executed_base_commit": "64c6932cca425604ac7ff0109e98f3d2709424e9",
+      "input_count": 3863,
+      "installed_wheel": {
+        "artifacts": {
+          "runtime-import-proof.json": {
+            "bytes": 239,
+            "sha256": "df2a007298f64bbb7f8905825731ac21b1ebb14ac2fa2b3ec1a1b0785ac5cd2f"
+          },
+          "runtime-imports.jsonl": {
+            "bytes": 8178271,
+            "sha256": "7c79f39a41da3eda7330f8e43f0e5678d9c1dee2c82bb21b35fac332f893d216"
+          },
+          "wheel-build.log": {
+            "bytes": 58589,
+            "sha256": "7cae7b159b85d72d68ba13b1528a082cd9208479d6b3127888028aecfcf03168"
+          },
+          "wheel-install.log": {
+            "bytes": 1089,
+            "sha256": "22aa57ff6c9a8f13435a2733fb54f5246a9f4c46dcb608a04792c99971a10d94"
+          },
+          "wheel-package-proof.json": {
+            "bytes": 40173,
+            "sha256": "cfb9642c3ce26f898019dc33797aa9721617e9b629ec97d061d68ab40c16d8c3"
+          }
+        },
+        "package_files": 356,
+        "provenance_violations": 0,
+        "required_pytest_phases": [
+          "startup",
+          "terminal"
+        ],
+        "runtime_processes": 242,
+        "runtime_records": 416,
+        "source_zip_installed_bytes_equal": true,
+        "wheel_sha256": "51666e19c45855236bdd839f817c9299c2484151c592616429b80d3828865ea7"
+      },
+      "modules": [
+        "tests/test_edlt_scene_inventory_timeline.py",
+        "tests/test_edlt_scene_inventory_native_plan.py",
+        "tests/test_edlt_scene_inventory_model.py",
+        "tests/test_edlt_scene_inventory_static.py",
+        "tests/test_edlt_parent_scene_inventory.py",
+        "tests/test_cgate_edlt_scene_inventory_interop.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_selector_metadata.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_ci_test_results.py",
+        "tests/test_cli_edlt_scene_manager.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_edlt_scene_manager.py",
+        "tests/test_edlt_scene_names.py",
+        "tests/test_edlt_scene_name_control.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_edlt_parent_auto_cache.py",
+        "tests/test_edlt_parent_add_dialog.py",
+        "tests/test_edlt_parent_form.py",
+        "tests/test_edlt_parent_mra.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_cache_panels.py",
+        "tests/test_edlt_parent_panels.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_parity_register.py",
+        "tests/test_release_gate.py",
+        "tests/test_release_gate_integrity.py",
+        "tests/test_edlt_dltp_index.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 611,
+        "skipped": 13
+      },
+      "phase": "wheel",
+      "scope": "35 affected/owning modules only; not the full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1326,
+        "reported": 1326,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_edlt_scene_inventory_static.py::SceneInventoryStaticSourceTests::test_static_regeneration_reads_only_explicit_private_inputs",
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_cli_edlt_scene_manager.py::SceneManagerCLITests::test_native_cli_preview_complete64_original_crc_save_close_load_and_guard",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+        "tests/test_edlt_scene_manager.py::NativeSceneManagerTests::test_original_full874_raw_crc_save_close_load_and_metadata_preservation",
+        "tests/test_edlt_scene_manager.py::OriginalSceneManagerTests::test_original_validation_and_retained_control_literals",
+        "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+        "tests/test_edlt_parent_form.py::NativeParentFormTests::test_native_database_save_close_load_preserves_complete_plan",
+        "tests/test_edlt_parent_mra.py::NativeMRAParentTransactionTests::test_native_database_one_save_close_load_preserves_mra_parent_edit",
+        "tests/test_edlt_dltp_index.py::DltpIndexTests::test_ambiguous_case_variants_fail_closed_on_case_sensitive_storage"
+      ],
+      "source_and_binary_inputs_quiet": true
+    }
+  },
+  "date": "2026-10-03",
+  "executed_base_commit": "64c6932cca425604ac7ff0109e98f3d2709424e9",
+  "explicit_skip_classification": {
+    "all_required_native_physical_acceptance_closed": false,
+    "case_insensitive_storage": 1,
+    "native_or_original_acceptance": 10,
+    "per_environment": 13,
+    "private_static_regeneration": 2
+  },
+  "final_publication_review": {
+    "derivation": "This successor appends the exact final draft review bindings and a narrowing fixture-history qualification only. All runtime results, input pins and artifact counts remain identical to the reviewed draft. The receipt self-hash is excluded.",
+    "report_only_successor": true,
+    "reviewed_draft": {
+      "bytes": 85449,
+      "sha256": "c2578cc1cd6359a98d55cdf5bfe80092b200441014772f6de1c1aaab350b394e"
+    },
+    "reviews": [
+      {
+        "artifact": {
+          "bytes": 3854,
+          "sha256": "29deff609cf5712fc3c85a4fa3498c1ac530f3318e91234e929cd94a9d52e2b0"
+        },
+        "reviewed_draft": {
+          "bytes": 85449,
+          "sha256": "c2578cc1cd6359a98d55cdf5bfe80092b200441014772f6de1c1aaab350b394e"
+        },
+        "role": "independent-public-counts",
+        "scope": "Read-only final draft/counting/input/privacy review; no additional product or original/hardware execution. Self-authored semantic credit excluded."
+      },
+      {
+        "artifact": {
+          "bytes": 3140,
+          "sha256": "c5d4cee31fc07f946ed33a13eca2b774a5478526398bac0d87f88c595271cfc8"
+        },
+        "reviewed_draft": {
+          "bytes": 85449,
+          "sha256": "c2578cc1cd6359a98d55cdf5bfe80092b200441014772f6de1c1aaab350b394e"
+        },
+        "role": "independent-public-privacy",
+        "scope": "Read-only final draft/counting/input/privacy review; no additional product or original/hardware execution. Self-authored semantic credit excluded."
+      },
+      {
+        "artifact": {
+          "bytes": 17113,
+          "sha256": "662ad22ab7d35e7f59d2976bb2c62c0927c21839da21b4c1969a560a59bdff18"
+        },
+        "reviewed_draft": {
+          "bytes": 85449,
+          "sha256": "c2578cc1cd6359a98d55cdf5bfe80092b200441014772f6de1c1aaab350b394e"
+        },
+        "role": "independent-release-and-inputs",
+        "scope": "Read-only final draft/counting/input/privacy review; no additional product or original/hardware execution. Self-authored semantic credit excluded."
+      }
+    ],
+    "runtime_inputs_changed": false
+  },
+  "format": "cbus-scene-inventory-timeline-owned-release-v1",
+  "modeled_evidence_epoch": {
+    "actual_command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "blocked_predecessor": {
+      "result": "owned listener unavailable under restricted execution; zero cases executed; not a pass",
+      "summary": {
+        "bytes": 1948,
+        "sha256": "67e2e42811415da348af81b73174dec0510e3fcf5b24e73dcb062d2f3ef6a0b1"
+      }
+    },
+    "cases": 64,
+    "combined_checks": 4,
+    "comparison_count": 6,
+    "derivatives": {
+      "cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "0fc55e26a4faa43f74fbe38a1669a3321e8940b53410a908311542b9f0b09a47",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "bb80001efb04fbda1c0a76ae2f81de579f7fe5e4adfac0efcd94d95dd1e256ba"
+      },
+      "cgate-dbsetxml-unit-differential-mock.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "4dfc8c176a5968b798b926ddc5c2281df53a401298167cb53ed1d6aa2df15238",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "d4aefe237ddd531059d82460b6b5e9c800c46850143b6e0170d364c4f8be5aaf"
+      },
+      "cgate-session-differential-cmqttd.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "0b773200373ab6c4d45682d1de71d44fbfc78794a7c2fbf7b23a99abc1d4d66a",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "35fdcc4315cd8aa773d63e67b67ba5745e2237f3733c1f086f90c891e5ab7026"
+      },
+      "cgate-session-differential-fixed.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "d53f75c0e26c7ae47bf4041017f6298fa82dda3a8e088a7b539853530e0b0d65",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "209499d17610d6b75a021088e3c20f0bd286d630e96f2cb4bf19fdfd01ba3c6c"
+      },
+      "cgate-tagged-session-differential-cgate-mock.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "a42b708b14d9f501de9686d453bb7432aca474ba10b843575a61d20a97dbc3aa",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "06993592062cd7b8c2b47ccd409168496ecda7df7e7771c0e7b0d74b6da61ff1"
+      },
+      "cgate-tagged-session-differential-cmqttd.json": {
+        "decoded_private_coordinate_fields": 0,
+        "derivative_sha256": "fe1921cd7895c3c6a2f2aab9cffa32fff969c0f5bb47a9387fc99f2f0ea7d709",
+        "full_noncoordinate_payload_equal": true,
+        "original_execution": false,
+        "raw_sha256": "61c2cd1ad306567cf89d839d4aee1e5458aa2086b9f5bc9be455ede7efd2c5d2"
+      }
+    },
+    "fingerprint_counts": {
+      "session-daemon": 197,
+      "session-mock": 177,
+      "tagged-daemon": 199,
+      "tagged-mock": 179,
+      "unit-daemon": 204,
+      "unit-mock": 185
+    },
+    "frontend_scope": "No current CLI correctness or original execution credit from these six modeled protocol comparisons.",
+    "hardware_execution": false,
+    "original_execution": false,
+    "summary": {
+      "bytes": 18911,
+      "sha256": "b72e7303444a6f0017c516222edc37b4a4e9b2a88ad681e77bf3afa757c0d583"
+    }
+  },
+  "prior_baseline_ci": {
+    "diagnosis": "Two stale presentation-option subcases used empty operations and hit schema preflight. Test-only valid two-Blank-operation correction preserves production validation and passes focused/current source/wheel checks. This is not a claim that the prior full CI run passed.",
+    "head": "64c6932cca425604ac7ff0109e98f3d2709424e9",
+    "installed_wheel_failed": true,
+    "provisioned_native_and_physical_skipped": true,
+    "run_id": 37053126918,
+    "rust_workspace_passed": true,
+    "snapshot": {
+      "bytes": 8531,
+      "sha256": "54b4198eaa693d7d19f71aadaca7a442c5947b87ee8a83eb9b9739a50718adae"
+    }
+  },
+  "public_fixture_history_qualification": {
+    "add_only_loader_profiles": "Two public loader profiles append an explicit valid get-selector-view after Add to the Add-only literal history. The original vectors, eight-scene facts and PP literals are preserved, but these adapted whole histories are distinct and are not presented as unmodified original execution.",
+    "ordered_parent_and_getter_history": "The ordered 99/2/100 prior/later parent Add and getter history is independently supplied synthetic history; it is not promoted to captured original whole-form GUI execution.",
+    "original_instruction_execution": false,
+    "runtime_replayed_for_receipt": false
+  },
+  "public_owned_journeys": {
+    "source": {
+      "cases": 46,
+      "cli_calls": 80,
+      "closed_graph_trap_contacts": 0,
+      "evidence_artifacts": [
+        {
+          "bytes": 3772192,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]",
+          "sha256": "473723ec19b62b0222ad4d9b64a19982531acc53b5e3061a0e5c6dff5924264d"
+        },
+        {
+          "bytes": 3773884,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]",
+          "sha256": "f6b0cf077b50807fd5a28a6d654590c75d7f74a1894b3790f1422f59413e3d36"
+        },
+        {
+          "bytes": 3731182,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]",
+          "sha256": "43705e08b5f1513f676fd9ece285f6ce266c98123463f86edf8be48015817126"
+        },
+        {
+          "bytes": 3732718,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]",
+          "sha256": "ca259eb24b635ce6c4c35671b015e36c14edc57e1d3da1971a9818897e787536"
+        },
+        {
+          "bytes": 3732330,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]",
+          "sha256": "fc3dd37d3d8391acaf350bc0ec52ac4419a15589537b422314938b2b13a00ca5"
+        },
+        {
+          "bytes": 3733866,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]",
+          "sha256": "7cf362f863f36bce865600e07e2c84a810dd1fb320597691519a6e52d3c3ef36"
+        },
+        {
+          "bytes": 4278901,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[mock]",
+          "sha256": "9a5959099638ae0f0ad96f6baac7aaeedf52f4d2635eef76c7651639f0c3d991"
+        },
+        {
+          "bytes": 4280549,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[daemon]",
+          "sha256": "4877514b91296f2f81fbfadefdfec2207d9b0ec89ab87a2c0d0457a27bfee8ad"
+        },
+        {
+          "bytes": 4091498,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-mock]",
+          "sha256": "dcac8ada7378b264b960bf0e7350938bc3ce0520233e7b89271a1c4a4ae85fe7"
+        },
+        {
+          "bytes": 4093226,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-daemon]",
+          "sha256": "abad23ae5314da96e46c5739fab2eae454d876918a354dcb94824f1fba7935f0"
+        },
+        {
+          "bytes": 3866130,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-mock]",
+          "sha256": "c6a16e6eb457992ee9067715f45199c1d44c48067db75351365569f029fe2d8b"
+        },
+        {
+          "bytes": 3867860,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-daemon]",
+          "sha256": "65576d1e30c3c5ebeb5c63749b249632433273abce5b57fb217841344d51fe4d"
+        },
+        {
+          "bytes": 3648533,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-mock]",
+          "sha256": "5b475d0c58953ec370515a45874cc7cdd22bacf16b4e356078abb3af05d742d8"
+        },
+        {
+          "bytes": 3650303,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-daemon]",
+          "sha256": "c9df0821e42c750a88e3ee2aa1f06067ea11ff9112b75eda6e22fab074aa76a2"
+        },
+        {
+          "bytes": 3896472,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-mock]",
+          "sha256": "5a95720027e069d803f34a2c250f9ef1894c7bd82e6e50799dd3397a170816a1"
+        },
+        {
+          "bytes": 3898202,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-daemon]",
+          "sha256": "fb7e2a154a5a8bafae50b40e90839785e8325c525db1c4ca11db51976f1c6289"
+        },
+        {
+          "bytes": 3651942,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-mock]",
+          "sha256": "56ca86fac9e449c27df1b258ff3238a33d33d6980be9a9b6b8c448dc6adcac72"
+        },
+        {
+          "bytes": 3653672,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-daemon]",
+          "sha256": "004c972f6f21424baa33efc57d8d3688a453358b8bac7a3726830d9384cb622d"
+        },
+        {
+          "bytes": 3562713,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-mock]",
+          "sha256": "751327ab8ea48524df926e093e86ffa1a6aee33e0737d146ebde0a5ad1287f4b"
+        },
+        {
+          "bytes": 3564403,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-daemon]",
+          "sha256": "68414206461ababf37482cdf955ba1fd9a9880f48fa415017816be9a4fe5a86f"
+        },
+        {
+          "bytes": 3733508,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-mock]",
+          "sha256": "6b070e85aa3f5af40d7e3d8056871d3ba9bee607076d5abdec4a06a7633b9c02"
+        },
+        {
+          "bytes": 3836389,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-mock]",
+          "sha256": "2c918c9bb82d56463f5a217a77203be60f5ab48ae625caf85a7a8f74df9c4dbc"
+        },
+        {
+          "bytes": 3837799,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-daemon]",
+          "sha256": "521f382afa55421a12d9b66a426dcce26aeb0c7ba2add2554afa2e62bf37ad14"
+        },
+        {
+          "bytes": 3488736,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-mock]",
+          "sha256": "f13d5a81e16cebcb10f5a53608811fcb92e9cabee3d5a6eda9c4f18ea82e7be6"
+        },
+        {
+          "bytes": 3490466,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-daemon]",
+          "sha256": "ff7746b26c5daee983e0b804336f84544d8ab2357c7fbd088f04e2c84d1c81c2"
+        },
+        {
+          "bytes": 3576403,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-mock]",
+          "sha256": "bbe61212fc62ba673d12277ad22090e8fa51a85ccf0f7deee66dea28f4f5f0e1"
+        },
+        {
+          "bytes": 3578133,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-daemon]",
+          "sha256": "e6ab6ec13b8ddf3e8776c5888208d2d1d8d3ad4e00b4b151342981e95b733931"
+        },
+        {
+          "bytes": 3735236,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-daemon]",
+          "sha256": "a1abfe082404f603749ab2790a4e94828fc0369ff4ae7dfc9b04cc29a8d43919"
+        },
+        {
+          "bytes": 3307408,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-mock]",
+          "sha256": "5e59059c1a91e85307d232b51ad12a3ed014cc5d2f184d0d15e853dfbfefac8f"
+        },
+        {
+          "bytes": 3309176,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-daemon]",
+          "sha256": "07a348cde3cd60905d4b04dba18ef3ba91010bee737e25ea2147ed0548737aea"
+        },
+        {
+          "bytes": 3954040,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-mock]",
+          "sha256": "b0eb027b1cd8d66efc7d8551cadf6bb67533eaae5026a3b53f0f35daed925ef5"
+        },
+        {
+          "bytes": 3955768,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-daemon]",
+          "sha256": "544c1bcf6b3ad117ce26f5100e6244e2a2caad73e72145c94d3be59fa81b13d7"
+        },
+        {
+          "bytes": 3307142,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-mock]",
+          "sha256": "7bc9f820716e3c85af5bfa2734a0a845bf29f53c92d8c0d3111aa558dd8d221b"
+        },
+        {
+          "bytes": 3308910,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-daemon]",
+          "sha256": "f238c6bf6df3eed09cde743188744b5a7f6c2bc157cbfab44d6d0b61de1f4b45"
+        },
+        {
+          "bytes": 345523,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-mock]",
+          "sha256": "3f129a7cc6bc92122e6de12289844325ea751682c8998dca7825043cf10ada76"
+        },
+        {
+          "bytes": 347415,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-daemon]",
+          "sha256": "98325fbda438ac7337af047fe7e624813070ce703655b8ff7f428774de64ca44"
+        },
+        {
+          "bytes": 345707,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-mock]",
+          "sha256": "85df9d189803ccbe7c4839f7e274149a404128e8ad0eb09a86be518c3286b56f"
+        },
+        {
+          "bytes": 347599,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-daemon]",
+          "sha256": "7fe39b2366283786d8dae4345b22872e58e1c9c7a2595eb4305516165420b17c"
+        },
+        {
+          "bytes": 345671,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-mock]",
+          "sha256": "bd295e8f15853e8b96c7e0536f9ef6b7b23b06cb610b2d99dc4f25528ac9a4da"
+        },
+        {
+          "bytes": 347563,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-daemon]",
+          "sha256": "7ef5b739610ec5d09eb48b8d874708bda0af3c3f42c8d914fce8701debbac506"
+        },
+        {
+          "bytes": 3328061,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-mock]",
+          "sha256": "7e2b78453b928ebbcb4868a47b8105188d6266bc048f552b38bbcb07732a7663"
+        },
+        {
+          "bytes": 3329789,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-daemon]",
+          "sha256": "6ced549057e9976fc1d5e84135ab66772d0ac5481588e30dfafac3aab50f6b90"
+        },
+        {
+          "bytes": 3116886,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-mock]",
+          "sha256": "e5b697124bb23c866bdb5f5dbdca4a8cf675f65ce28fcca0f76e47291537116c"
+        },
+        {
+          "bytes": 3118614,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-daemon]",
+          "sha256": "c894b342f7cf447bbe2d4431abfffcb72eb7ea0a69dd740b7a6831dc79c50ff4"
+        },
+        {
+          "bytes": 3068602,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-mock]",
+          "sha256": "786daac30c19c3dd630347fbf72485fc9e44e854725cffb14f22f7474065b140"
+        },
+        {
+          "bytes": 3070330,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-daemon]",
+          "sha256": "b099fac9961ee73e927b2cab515d8650d99516c61bda02b28fe53d6f4bd2b5db"
+        }
+      ],
+      "fresh_offline_cli_reads": 42,
+      "hardware_execution": false,
+      "later_pci_frames": 0,
+      "lost_successful_save_terminals": 4,
+      "original_execution": false,
+      "owned_processes_cleaned": 46,
+      "parent_roster": [
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-mock]"
+      ],
+      "per_backend": {
+        "cgate-mock": 23,
+        "cmqttd": 23
+      },
+      "scene_bucket_bytes": 232,
+      "scene_pointers": 8,
+      "startup_only_frames": 184,
+      "static_rows": 64,
+      "structural_xml_comparison_whitespace_only_exclusion": true,
+      "synthetic_pp_fields": 844,
+      "tagged_commands": 1684,
+      "wire_records": 80
+    },
+    "wheel": {
+      "cases": 46,
+      "cli_calls": 80,
+      "closed_graph_trap_contacts": 0,
+      "evidence_artifacts": [
+        {
+          "bytes": 3772279,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]",
+          "sha256": "6f757bd1dbc33a1186e88092d7c66440b33dc0938e017f64e0db02e11bfb0392"
+        },
+        {
+          "bytes": 3773969,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]",
+          "sha256": "6b7bc977c00f6a2e4cd87170e9ab25223d2cbd7135e37cf8e0b1f8ce275e22b2"
+        },
+        {
+          "bytes": 3731269,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]",
+          "sha256": "d657418aa9f25a09bb076923050da7863818ace758c975582707a1512ae9cb57"
+        },
+        {
+          "bytes": 3732803,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]",
+          "sha256": "af7949b1d7dd66a4c05697e91a217020697407d7c010e347b0da6b6228adc07c"
+        },
+        {
+          "bytes": 3732417,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]",
+          "sha256": "06b4e603297f8a9f1755def9a8c41c8843ee0a4d5ed70a8b8af5702eb2bd9274"
+        },
+        {
+          "bytes": 3733951,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]",
+          "sha256": "8a062e487ddd7f84f38ae357735e61e70d8605f085a5fe06ddd9c3dd3af67b50"
+        },
+        {
+          "bytes": 4279248,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[mock]",
+          "sha256": "7211712040a0eaf4870b6099d6fd694dbe3d063051340af0c910088abffdc360"
+        },
+        {
+          "bytes": 4280894,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[daemon]",
+          "sha256": "6a7ad41db704be0cc7f19506767721b800815413500a73fe13658e3acf82f6b0"
+        },
+        {
+          "bytes": 4091759,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-mock]",
+          "sha256": "d96805e97febd54e6cd38a0d14bffca1052b1776c60591cab7d998231682b930"
+        },
+        {
+          "bytes": 4093485,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-daemon]",
+          "sha256": "55c3b3d7eb828474134703c5d14946ec0b4dd27c1f51559e3776afd37ce69486"
+        },
+        {
+          "bytes": 3866391,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-mock]",
+          "sha256": "8f589b90fb5c5d0ab7e66cdb35939c91373298948cdcac8bb6d8d74c30309961"
+        },
+        {
+          "bytes": 3868119,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-daemon]",
+          "sha256": "98c75ce79a4d2d1233dc701c40f094b82164cb2433098aa317c6f39a78329190"
+        },
+        {
+          "bytes": 3648794,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-mock]",
+          "sha256": "1433bfc8882ec9de51f7700273f54feb44459f1194d5cfe2be060c623baaf00d"
+        },
+        {
+          "bytes": 3650562,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-daemon]",
+          "sha256": "a708aac8f646948c3eded328a4f74ee86baac67b6ef36eacb33d7d3b3b2c8eda"
+        },
+        {
+          "bytes": 3896733,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-mock]",
+          "sha256": "201e2c25953aa1b9611f7c7b2498bbf0dc2358548844d387304f27df5bd78806"
+        },
+        {
+          "bytes": 3898461,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-daemon]",
+          "sha256": "881a127cfaecd75ccb3668879ee9af2e54319a9ecc06e2ed9dc543551ae63d89"
+        },
+        {
+          "bytes": 3652203,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-mock]",
+          "sha256": "4d227939004c4254d649079cd924fe19b6efb37ba8e2ea9abf5d65b90ec98150"
+        },
+        {
+          "bytes": 3653931,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-daemon]",
+          "sha256": "c0349f17f0d0702b099e4102a6c301745e9ce06a7fbf2d801d6eafca671d51e1"
+        },
+        {
+          "bytes": 3562974,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-mock]",
+          "sha256": "480b119563991d2ac71cfe1bde7a96a9b364917c1f9a5170f1f6ce61fbfe204f"
+        },
+        {
+          "bytes": 3564662,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-daemon]",
+          "sha256": "845ee39abc9638ecc6806a074b130b1af08237fd9777ba4c073087e186059825"
+        },
+        {
+          "bytes": 3733769,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-mock]",
+          "sha256": "cf1766be941af918ffe6720f1fbc6a1b7821ff16a294d17eebe95c25e3a6c637"
+        },
+        {
+          "bytes": 3836650,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-mock]",
+          "sha256": "74a75c76a2759eabf25d2a8f56d37e9e3656f0c830dd6254c644e738f58ed294"
+        },
+        {
+          "bytes": 3838058,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-daemon]",
+          "sha256": "e1fbecd2e35eb8c00c7124dff3724ffc1f1f8434e53abf82d3913be24d89a1de"
+        },
+        {
+          "bytes": 3488997,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-mock]",
+          "sha256": "ef0e016c389739e9b25b9f844d6e3c4bc4e754612261215030b01ad1874276a1"
+        },
+        {
+          "bytes": 3490725,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-daemon]",
+          "sha256": "28ee076773dcf70a7836851d3abd6faee267bc54ae5996e135cc9f710b611fc6"
+        },
+        {
+          "bytes": 3576664,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-mock]",
+          "sha256": "5b0f1a80fc692935d7aa0b3468a2edda61dabe7c2d99f3dac8a5305e49e2c7ba"
+        },
+        {
+          "bytes": 3578392,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-daemon]",
+          "sha256": "3e73f8dbd4f6af13343c26ba0e50d19c950ba1195ef44bdbe37087dfcbf158b6"
+        },
+        {
+          "bytes": 3735495,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-daemon]",
+          "sha256": "7962f4dabf21f0603b68d442a0f150c954fb7a864c0a06d00b68dc0d8ba3d422"
+        },
+        {
+          "bytes": 3307669,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-mock]",
+          "sha256": "0327c9caceff495a33e32de2f0a4e9a30d0ae99df6e8505ff8f05b7c4febb6a0"
+        },
+        {
+          "bytes": 3309435,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-daemon]",
+          "sha256": "461a0ecacd908ccf022d980537eb1c0d1d713de6dfb3e9f6a0fef2900c5c842e"
+        },
+        {
+          "bytes": 3954301,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-mock]",
+          "sha256": "158d1b114da35e2bde72d3d8304048fd398f2d2a6fcd498cae4143045c3ff82e"
+        },
+        {
+          "bytes": 3956027,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-daemon]",
+          "sha256": "12a4bf22022837c2e69c1bc4c6b026ae00596576a867e38371ca0e5bed221390"
+        },
+        {
+          "bytes": 3307403,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-mock]",
+          "sha256": "84dfb7ab3cb4f27c32776664d6b23ec743e2d78e644b1c332c1c7f23e2f495f8"
+        },
+        {
+          "bytes": 3309169,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-daemon]",
+          "sha256": "5c0ccf635b7f6501d15c489f362bae718bd4f12ef4d1f1f8d885dd9cfc01ba2f"
+        },
+        {
+          "bytes": 345610,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-mock]",
+          "sha256": "7ecddccb5bf2b3ebc8de9c9345c7061e2ba77caef9b715c9c0e02d521398a33f"
+        },
+        {
+          "bytes": 347500,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-daemon]",
+          "sha256": "3e65226c795adaa8932c74b1e941b0f27f504d1091d89d03505a6424e7b86e36"
+        },
+        {
+          "bytes": 345794,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-mock]",
+          "sha256": "afd7b5ae663f0a95cf72c6516181d80e62ad0810541a17d5fa7a97835c4c4c48"
+        },
+        {
+          "bytes": 347684,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-daemon]",
+          "sha256": "93bf18242e4e8ac9173ff135965399f8e14eb550f4be2c97eb2315fb13045118"
+        },
+        {
+          "bytes": 345758,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-mock]",
+          "sha256": "1ccaa5722bfc6d0ef0ea8f09feac9e41e74089b2e95a48f236fe98d7a53dcdd5"
+        },
+        {
+          "bytes": 347648,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-daemon]",
+          "sha256": "1716c93a444363c586e75ee24d83edce8246148a04080910e4e5f49b2c784883"
+        },
+        {
+          "bytes": 3328408,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-mock]",
+          "sha256": "6bacff39828c8542060dc4f0f65bb7f863e1f53d169a5a96d93cf0efbfab3c7d"
+        },
+        {
+          "bytes": 3330134,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-daemon]",
+          "sha256": "d958b803e00c463654bd4722bca9b1c21fc4bbbff219a3cc1c73b4ce68887abf"
+        },
+        {
+          "bytes": 3117233,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-mock]",
+          "sha256": "9a31b5acd45776fa2369841b2a1f5222180acda1a552643b09fed93a7c6b05c9"
+        },
+        {
+          "bytes": 3118959,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-daemon]",
+          "sha256": "92aff64a2c67a9f6e7dfa6a48242d52aefb53b2a8b77bbde1ad84390696070fe"
+        },
+        {
+          "bytes": 3068949,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-mock]",
+          "sha256": "3fe2adaeb356dc0f527a1a638529f6ea7c6892397ae142f21136c8489a130eb1"
+        },
+        {
+          "bytes": 3070675,
+          "nodeid": "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-daemon]",
+          "sha256": "8d9ddf770f90ebba714a6217629b37116495d6bff2c0ac387e030936892dbf6b"
+        }
+      ],
+      "fresh_offline_cli_reads": 42,
+      "hardware_execution": false,
+      "later_pci_frames": 0,
+      "lost_successful_save_terminals": 4,
+      "original_execution": false,
+      "owned_processes_cleaned": 46,
+      "parent_roster": [
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-mock]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-daemon]",
+        "tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-mock]"
+      ],
+      "per_backend": {
+        "cgate-mock": 23,
+        "cmqttd": 23
+      },
+      "scene_bucket_bytes": 232,
+      "scene_pointers": 8,
+      "startup_only_frames": 184,
+      "static_rows": 64,
+      "structural_xml_comparison_whitespace_only_exclusion": true,
+      "synthetic_pp_fields": 844,
+      "tagged_commands": 1684,
+      "wire_records": 80
+    }
+  },
+  "publication_derivation": "Report-only successor adds actual current source/fresh-wheel results, author/failure history, explicit skip classification and independent review pins after runtime inputs freeze. No product/package file changed. Receipt self-hash is excluded from its input map. Complete original/physical acceptance remains unfinished.",
+  "publication_input_pins": {
+    ".agents/skills/cbus-cli/SKILL.md": {
+      "bytes": 24222,
+      "sha256": "bdb8936f0f2900b9a4c08ebfc9fa4a48ae6c92b8019b9fac004c21713509599c"
+    },
+    ".agents/skills/cbus-cli/references/toolkit.md": {
+      "bytes": 69467,
+      "sha256": "df23ca67b1a94e3810434d89dd0f4de62bcc23679edd465c5497e5e3871f5330"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 17409,
+      "sha256": "0ef2ba3fc2e9d81d06dc62681e765485606900c865a24c9559d6961b5274f7a0"
+    },
+    "README.md": {
+      "bytes": 76208,
+      "sha256": "5c63f56680da957fecc0bc29af9b421daf9e9437e14c130089b5383f4178e452"
+    },
+    "docs/parity-review-and-roadmap.md": {
+      "bytes": 77362,
+      "sha256": "a3362a55854ffc6523c4954cf12e8393c74cc7070ad4270e5f458f2530516c7f"
+    },
+    "docs/testing.md": {
+      "bytes": 25710,
+      "sha256": "f05b9c5ce9b997026b1a1e3aa6aa33290846020fd391d5154bff84103b24d1fd"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 67971,
+      "sha256": "19455e34c9911a802efd990fb68ae9187492c58f3fdd67386bb3f925380366f8"
+    },
+    "toolkit-cli/README.md": {
+      "bytes": 145070,
+      "sha256": "cff349839ef428473a5d31c3b33f657332976442d76a0034a6ac917141baa5ab"
+    },
+    "toolkit-cli/docs/edlt-scene-inventory-release-test-modules.txt": {
+      "bytes": 812,
+      "sha256": "af279a72803ce26fa09dc1d1104b499d4ce07361964d66efd4ae3bd35e4d8724"
+    },
+    "toolkit-cli/docs/edlt-scene-inventory-timeline.md": {
+      "bytes": 5200,
+      "sha256": "c8f57f1de3e8ed760360bef06834decec2db48553151b4156436fcca5fa1f76c"
+    },
+    "toolkit-cli/docs/edlt-scene-selector-control.md": {
+      "bytes": 6144,
+      "sha256": "cf2e054ead212ed10e86cb841653c48316eee0893ed4a7d4bc8ebacd64c64ccc"
+    },
+    "toolkit-cli/docs/edlt-scene-selector-metadata.md": {
+      "bytes": 4578,
+      "sha256": "48b0b091676f4fd8cfb6156100defa5cd0d41103c77c2d256b266a26ab62ffd4"
+    },
+    "toolkit-cli/docs/feature-batch-2026-10-03-scene-inventory-timeline.md": {
+      "bytes": 4328,
+      "sha256": "a83bc3b61f0597ef688e38858280ae30d60fbd1e36e6e3df72e1d413e4d5fbe6"
+    },
+    "toolkit-cli/docs/implementation-status.md": {
+      "bytes": 123524,
+      "sha256": "6c279948d9e05f8822aff294ce01e0277e6de22d5e8f236600620d34a4251bde"
+    },
+    "toolkit-cli/research/edlt_scene_inventory_static.py": {
+      "bytes": 25748,
+      "sha256": "19978f130b1da1497a233fcc5e2b2df163b7c88d4d2ec011b3d1533af55752fd"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "bytes": 62684,
+      "sha256": "0fc55e26a4faa43f74fbe38a1669a3321e8940b53410a908311542b9f0b09a47"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "bytes": 60779,
+      "sha256": "4dfc8c176a5968b798b926ddc5c2281df53a401298167cb53ed1d6aa2df15238"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+      "bytes": 34899,
+      "sha256": "0b773200373ab6c4d45682d1de71d44fbfc78794a7c2fbf7b23a99abc1d4d66a"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+      "bytes": 32504,
+      "sha256": "d53f75c0e26c7ae47bf4041017f6298fa82dda3a8e088a7b539853530e0b0d65"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+      "bytes": 2877,
+      "sha256": "31cd8f6280bec8e93af9f7ce7c2f4ef5404908adce8a436299b9faedf2344735"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "bytes": 31960,
+      "sha256": "a42b708b14d9f501de9686d453bb7432aca474ba10b843575a61d20a97dbc3aa"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "bytes": 34085,
+      "sha256": "fe1921cd7895c3c6a2f2aab9cffa32fff969c0f5bb47a9387fc99f2f0ea7d709"
+    },
+    "toolkit-cli/research/fixtures/edlt-scene-inventory-source-annex.json": {
+      "bytes": 421922,
+      "sha256": "6e404c513e218df6df74ad964d8881b6542fee6ac42393f6c731374ea023df57"
+    },
+    "toolkit-cli/research/fixtures/edlt-scene-inventory-vectors.json": {
+      "bytes": 1190209,
+      "sha256": "d39635c9f90a74cdd4fba64cd81914234c95bbce93afa14c2741ed2f6b3d30e8"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 374447,
+      "sha256": "5c3c045b372338a75eea13a2cbbe44a45754e0f9c8a4ebbfbab572fcc781e698"
+    },
+    "toolkit-cli/src/cbus_toolkit/capabilities.json": {
+      "bytes": 210171,
+      "sha256": "04ccf6c2d5c78447aa11dbf40f91cf8d1fde1c02f196a8b650446be60379fa63"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_metadata.py": {
+      "bytes": 145225,
+      "sha256": "02afa1bef7f946e2879e1e9af6eee4b17177883852be2d147d158db795f70421"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py": {
+      "bytes": 96213,
+      "sha256": "bb2b6cd44d2afc5f2bfeff0189bf9b77a10a2043b232a65959beb0eb23e11c98"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_inventory_timeline.py": {
+      "bytes": 19063,
+      "sha256": "40e92db327d8efc0e281319247e63936ff14989819f719e3df7b189cc514c34c"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_manager.py": {
+      "bytes": 62698,
+      "sha256": "0006aeb6d15167a7ffab04f8ba724fbcb28cab60c720fa53e0347d157a1b40a3"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_metadata.py": {
+      "bytes": 78434,
+      "sha256": "269944bdf55f277307b7646af3a651329be6399b4567e7854db11c131796016c"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_selector_views.py": {
+      "bytes": 8264,
+      "sha256": "e00ce55ccf1079f95d1a507144674661742c29bae6b38ab7ac5ff63758432316"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 32143,
+      "sha256": "40065b732f030491296d7cca3500b99e6c6bc1f5eda2dea0c72b85af4b7d314f"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "cda650de79ec5538b422c12f12e121efb95b794b255787d98802dac0fff7b9b5"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_inventory_interop.py": {
+      "bytes": 33503,
+      "sha256": "a9e98ce2a22679677bac8cb6375af31bb08f36bf4540610993e9af536a7e71c1"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": {
+      "bytes": 23270,
+      "sha256": "f9ab71fc61f42e95aa1bee2fcb970f5786004703a3fe8027b1a2a160ead2e81b"
+    },
+    "toolkit-cli/tests/test_ci_test_results.py": {
+      "bytes": 32283,
+      "sha256": "675e1199ba617eeeb6c8f6c711cef2f5716234059f4c9389f2cd76b3ccca5772"
+    },
+    "toolkit-cli/tests/test_edlt_dltp_index.py": {
+      "bytes": 14890,
+      "sha256": "00462e3026bfba49cb4cb0c73969794a9853a08a219931be36d7f0ce94fc7732"
+    },
+    "toolkit-cli/tests/test_edlt_parent_scene_inventory.py": {
+      "bytes": 8302,
+      "sha256": "08e4d2edff7c8f436e3cbb440c177884b0b4d452199966075af7649bafe8f04f"
+    },
+    "toolkit-cli/tests/test_edlt_scene_inventory_model.py": {
+      "bytes": 21277,
+      "sha256": "52449e4acf0b6475262d89c95a07568fde7161e78dd93e5bc5483bff4461a5a5"
+    },
+    "toolkit-cli/tests/test_edlt_scene_inventory_native_plan.py": {
+      "bytes": 16136,
+      "sha256": "669ca3275d23d13fe9af5c9140276b4fbb4a6c5c63452eb87105e08cdfd06a00"
+    },
+    "toolkit-cli/tests/test_edlt_scene_inventory_static.py": {
+      "bytes": 23446,
+      "sha256": "8748801b42099bb888c44674abf86fd812a55bc7cd53dc263c2918a3bb8b1dbf"
+    },
+    "toolkit-cli/tests/test_edlt_scene_inventory_timeline.py": {
+      "bytes": 10197,
+      "sha256": "3a649fc347067f3643ea7d461b6de29662ceff0d9efc5bc014ffaa40f1b1993b"
+    }
+  },
+  "retained_rust_bindings": {
+    "all_current_inputs_equal_previous_publication": true,
+    "full_suite_repeated": false,
+    "input_count": 461,
+    "prior_private_ignored": 1,
+    "prior_workspace_passed": 8702,
+    "proof": {
+      "bytes": 78487,
+      "sha256": "57e6193c1e84c76c5d677188347b11e174ca7c586792b643024c4c381e22d594"
+    },
+    "published_prior_receipt": "scene-selector-controls-owned-release-20261003.json",
+    "published_prior_receipt_sha256": "9c9fbae00f2c606ed39c63068d3bf1e8674bb428099bf76d7c95b38bf173abe1"
+  },
+  "reviews": [
+    {
+      "artifact": {
+        "bytes": 5043,
+        "sha256": "353ab5444315bac29d297984b0d8a3f83397e5492880c728e59deaa0a8886f94"
+      },
+      "role": "independent-native-parent-source",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 10176,
+        "sha256": "1dcdc92e968bb1f501e2b54c92680d47ead26dbc2953e5ebcdc5b22dbc20dfd6"
+      },
+      "role": "independent-public-prose-successor",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 112645,
+        "sha256": "09a5c785a83f9ebf519abfdb118c714c2cce483b006644d2b40f5883510f0a51"
+      },
+      "role": "independent-public-raw-and-package",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 18013,
+        "sha256": "57824264dbfb0e1ccc8769da752c8cc6265d46b490533425e9b537417957838a"
+      },
+      "role": "independent-input-binary-module-skip-binding",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 181027,
+        "sha256": "7ed61fd6e95057552a759ec39c7fd22f9e76f3b863359d97e4b041fb2cad15d3"
+      },
+      "role": "independent-actual-release-and-installed-wheel",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 11127,
+        "sha256": "0d317b8da544924d7044e96e7dc6aa13134cdf5dd4a8c7db006536b03b96cce8"
+      },
+      "role": "independent-modeled-metadata-epoch",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 43332,
+        "sha256": "10beb694ea8cc504715d776c3ced161b531b7f970b1d85ae2fcbf73d1c491e20"
+      },
+      "role": "independent-public-wire-recount",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    },
+    {
+      "artifact": {
+        "bytes": 2264,
+        "sha256": "372de3c60b20ec8b7addf24efb61f806afa50e2f9a76b2fe2bb7d72f1812504f"
+      },
+      "role": "independent-public-current-source-and-imports",
+      "scope": "Read-only artifact/source review; no additional product, original or hardware execution. Semantic self-authorship excluded by each reviewer."
+    }
+  ],
+  "scope": "Causal SceneManager native getter/Add inventories, ordered parent integration and owned loopback CLI transactions; bounded major implementation within issue45.",
+  "skill_validation": {
+    "actual_exit": 0,
+    "log": {
+      "bytes": 16,
+      "sha256": "db349825903d66adffea3ecf1bd8e1803043e8a71cf1a051235dabc5371f5bb0"
+    },
+    "prior_missing_yaml_attempts": "retained privately; not successful validation",
+    "scope": "Existing skill frontmatter/reference validation using isolated temporary validator dependency; no product dependency change."
+  },
+  "source_annex": {
+    "compatibility_checks": 36,
+    "declarative_additional_refusal_contracts": 7,
+    "declarative_parent_edge_plans": 5,
+    "executed_literal_refusal_histories": 5,
+    "managed_spans": 48,
+    "native_owner_literal_histories": 25,
+    "native_spans": 15,
+    "scope": "Static recovered source and literal modeled synthetic fixtures; no original instructions, GUI scheduler or hardware executed.",
+    "source_declarations": 41
+  },
+  "status": "bounded-software-scope-passed; full acceptance remains unfinished"
+}

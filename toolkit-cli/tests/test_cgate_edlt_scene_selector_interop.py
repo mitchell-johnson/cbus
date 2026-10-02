@@ -24,7 +24,7 @@ PROFILES = ('application-secondary-selector-one', 'trigger-callback-action-valid
             'action-selected-duplicate-name-exact-identity', 'null-current-retains-stale-action-binding',
             'scene-two-rebinding-does-not-leak-first-labels', 'label-selection-3')
 CASES = [next(row for row in FACTS['cases'] if row['name'] == name) for name in PROFILES]
-REFUSALS = ('cache-injection', 'post-load-getter-creation', 'scene-add-timeline', 'future-parent-action')
+REFUSALS = ('cache-injection', 'future-parent-action')
 
 
 def scalar(parent_node, name, value):
@@ -254,12 +254,6 @@ def refused_operations(kind):
     if kind == 'cache-injection':
         bind['events'][0]['choices'] = []
         return [{'op':'scene-manager','operations':[bind]}], 0
-    if kind == 'post-load-getter-creation':
-        bind['events'] += [{'event':'trigger-selected','value':44,'choice_index':2,'choice_identity':'trigger:202/44'},
-                           {'event':'trigger-current-changed'}]
-        return [{'op':'scene-manager','operations':[bind]}], 1
-    if kind == 'scene-add-timeline':
-        return [{'op':'scene-manager','operations':[bind,{'op':'add-action-dialog','scene':1,'name':'Later'}]}], 1
     return [{'op':'scene-manager','operations':[{'op':'scene-selector-control','scene':1,'events':[
         {'event':'scene-current-changed','current':True},
         {'event':'action-selected','value':99,'choice_index':3,'choice_identity':'action:202/42/99'}]}]},

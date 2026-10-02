@@ -37,16 +37,23 @@ has not been established. This restriction applies to the new selector profile;
 the existing v1/direct operation paths keep their historical admission rules.
 
 Initial retained getter reservations precede the control history. Native selector
-histories currently require existing post-load trigger/action objects and refuse
-interleaved SceneManager Add dialogs. They do not borrow all later projected
-objects from a final cache. Supporting source create-enabled getters and those
-Add histories needs an exact per-callback creation timeline. Existing v1/direct
-operation paths retain their historical creation behavior.
+histories now use an owner-issued [causal inventory timeline](edlt-scene-inventory-timeline.md)
+for later create-enabled getters, accepted/cancelled SceneManager Add dialogs,
+validation and terminal save. Each creation refreshes the whole Network's
+Levels and DynamicAll objects. Bound controls retain their old collection until
+an explicit rebind; earlier scene labels also retain their initialization epoch
+when a later initial getter creates an object. A final projected cache cannot
+supply an earlier callback. Existing v1/direct paths and declared manual caches
+retain their separate historical behavior.
 
-Earlier parent Add results enter the SceneManager's actual inventory at its
-position. Its trigger/action lists stay separate from the final outer lifecycle
-facts, so a later parent Add cannot influence its callbacks, validation or scene
-save. Pending SceneName text remains pending across selector callbacks and
+Earlier parent controls and Add results enter the SceneManager's actual inventory
+at its position. Issued initial getter provenance distinguishes those creations
+from later Adds, and Reset establishes fresh scene bindings. Complete outer
+parent facts stay separate from its actual choice lists, so a later parent
+widget or Add cannot influence its callbacks, validation or scene save.
+Combining an earlier Network language mutation with this initializer-backed
+selector timeline remains unqualified and refuses: the changed XML cannot
+replace the original label ownership evidence. Pending SceneName text remains pending across selector callbacks and
 continues to prevent saving. When a direct Name binding is established, a
 Name callback for a different scene refuses; explicitly rebind first. Shared
 Name control text/read timing across scene switches remains unqualified. New owners and Reset start fresh control state;

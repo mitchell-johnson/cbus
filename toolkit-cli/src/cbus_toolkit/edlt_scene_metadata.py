@@ -8,7 +8,7 @@ Trigger Control objects and creates them during one guarded native apply.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 import re
 from uuid import uuid4
@@ -112,7 +112,8 @@ def _dialog_name(value):
 
 def _operation_facts(values, engine, snapshot, operations,
                      projected_containers=(), dialog_project_name=None,
-                     projected_level_receipts=(), display_preferences=None):
+                     projected_level_receipts=(), display_preferences=None,
+                     initialization_timeline=None):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -133,10 +134,9 @@ def _operation_facts(values, engine, snapshot, operations,
         # Value/Address conflicts have no established source reconciliation;
         # preserve the separate historical v1 admission outside this profile.
         raise EdltError('Selector controls require matching native action Address and Value')
-    if selector_profile and any(row['op'] in ('add-trigger-dialog', 'add-action-dialog')
-                                for row in operations):
-        raise EdltError('Native selector controls with SceneManager Add require an ordered creation timeline')
-    initial_getters_complete = False
+    from .edlt_scene_inventory_timeline import SceneInventory, SceneInventoryFrame
+    frames, save_frames = [], []
+    base_generation = 0
     scenes = []
     pairs = set()
     groups = {}
@@ -197,8 +197,6 @@ def _operation_facts(values, engine, snapshot, operations,
             return 255
         key = (TRIGGER_APPLICATION, trigger)
         if key not in present_groups:
-            if selector_profile and initial_getters_complete:
-                raise EdltError('Native selector controls require existing post-load trigger objects; an ordered creation timeline is not implemented')
             group_creation_reasons.setdefault(trigger, []).append(reason)
             present_groups.add(key)
             levels[key] = set()
@@ -212,8 +210,6 @@ def _operation_facts(values, engine, snapshot, operations,
         key = (TRIGGER_APPLICATION, trigger)
         present = levels[key]
         if address not in present:
-            if selector_profile and initial_getters_complete:
-                raise EdltError('Native selector controls require existing post-load action objects; an ordered creation timeline is not implemented')
             if len(present) >= MAX_LEVELS:
                 raise ValueError(
                     f'Trigger group {trigger} has no level capacity')
@@ -244,6 +240,7 @@ def _operation_facts(values, engine, snapshot, operations,
             return trigger, -1
         return trigger, requested
 
+    initial_scene_bindings = []
     for slot, _pointer, header, _items in engine.lifecycle._scenes(values):
         variant = 1 if header[0] & 1 and secondary != 255 else 0
         trigger, action, _returned = get_action(
@@ -253,10 +250,57 @@ def _operation_facts(values, engine, snapshot, operations,
             # an absent trigger's stored action to -1.
             action = -1
         scenes.append([variant, trigger, action])
+        initial_scene_bindings.append((trigger, action,
+            int(bool(application_reasons)) + len(group_creation_reasons) + len(creation_reasons)))
 
-    initial_getters_complete = True
+    def inventory():
+        return SceneInventory(tuple(sorted(applications)), tuple(sorted(present_groups)),
+            tuple((app, address, tuple(level_names.get((app, address), {})))
+                  for app, address in sorted(present_groups)),
+            base_generation + int(bool(application_reasons)) + len(group_creation_reasons) + len(creation_reasons))
+
+    if initialization_timeline is not None and selector_profile:
+        initialized = initialization_timeline._initial
+        current = inventory()
+        old_levels = {(app, group): set(rows) for app, group, rows in initialized.levels}
+        current_levels = {(app, group): set(rows) for app, group, rows in current.levels}
+        if (not set(initialized.applications) <= set(current.applications)
+                or not set(initialized.groups) <= set(current.groups)
+                or any(not rows <= current_levels.get(key, set()) for key, rows in old_levels.items())):
+            raise EdltError('Parent scene initialization objects are not present in the causal projected inventory')
+        if any((group, action) != previous[:2]
+               for (group, action, _epoch), previous in zip(initial_scene_bindings,
+                                                          initialization_timeline._initial_scene_bindings)):
+            raise EdltError('Changed parent scene trigger/action owners require issued retained-model provenance')
+        prior_refreshes = len(set(current.applications) - set(initialized.applications))
+        prior_refreshes += len(set(current.groups) - set(initialized.groups))
+        prior_refreshes += sum(len(rows - old_levels.get(key, set()))
+                               for key, rows in current_levels.items())
+        base_generation = initialized.refresh_generation + prior_refreshes - current.refresh_generation
+        initial_scene_bindings = list(initialization_timeline._initial_scene_bindings)
+
+    def causes():
+        return tuple([*('Application202: ' + row for row in application_reasons),
+                      *(f'Group{group}: {reason}' for group, reasons in group_creation_reasons.items() for reason in reasons),
+                      *(f'Level{group}/{level}: {reason}' for (group, level), reasons in creation_reasons.items() for reason in reasons)])
+
+    previous_causes = causes()
+    def checkpoint(phase, *, operation=None, callback=0, scene=0, terminal=False):
+        nonlocal previous_causes
+        current = causes()
+        frame = SceneInventoryFrame(phase, None if operation is None else _json(operation),
+            callback, scene, inventory(), tuple(row for row in current if row not in previous_causes))
+        previous_causes = current
+        (save_frames if terminal else frames).append(frame)
+
+    initial_inventory = inventory()
     selector_control = None
     selector_labels = {}
+    callback_number = 0
+    bound_actions, bound_generation, combo_target = [], None, None
+
+    def collection_generation(trigger):
+        return (inventory().refresh_generation, tuple(level_names.get((202, trigger), {})))
 
     def labels_for(trigger, action):
         if trigger == 255 or action < 0:
@@ -314,29 +358,65 @@ def _operation_facts(values, engine, snapshot, operations,
             'dynamic_labels': selector_labels[target]}
 
     def bind_selector(target):
+        nonlocal callback_number, bound_actions, bound_generation, combo_target
         selected = scenes[target - 1]
         selected[1] = retain_trigger(selected[1], 'explicit selector scene-current callback')
-        return selector_view(target)
+        callback_number += 1
+        checkpoint('bind-scene', callback=callback_number, scene=target)
+        view = selector_view(target)
+        bound_actions = view['action_choices']
+        bound_generation = (selected[1], collection_generation(selected[1]))
+        combo_target = (target, selected[1])
+        return view
 
     def trigger_selector(target):
+        nonlocal callback_number
         selected = scenes[target - 1]
         selected[1], selected[2], returned = get_action(
             selected[1], selected[2], 'explicit selector trigger-current callback')
         selector_labels[target] = labels_for(selected[1], returned)
-        return selector_view(target)
+        callback_number += 1
+        checkpoint('trigger-current', callback=callback_number, scene=target)
+        view = selector_view(target)
+        if bound_generation != (selected[1], collection_generation(selected[1])):
+            view['action_choices'] = bound_actions
+        return view
 
     def write_selector(target, value, field):
+        nonlocal callback_number, combo_target
         selected = scenes[target - 1]
         # Capture old DynamicAll ownership before a trigger property changes.
         selector_view(target)
         if field in (0, 1):
             selected[field] = value
+            if field == 1:
+                combo_target = (target, value)
         elif field == 2:
             selected[1], selected[2] = set_action(
                 selected[1], selected[2], value, 'explicit selector action WriteValue')
             if selected[1] != 255:
                 selector_labels[target] = labels_for(selected[1], selected[2])
-        return selector_view(target)
+        callback_number += 1
+        checkpoint(('write-application', 'write-trigger', 'write-action', 'write-label')[field],
+                   callback=callback_number, scene=target)
+        view = selector_view(target)
+        if bound_generation != (selected[1], collection_generation(selected[1])):
+            view['action_choices'] = bound_actions
+        return view
+
+    def observe_choices(field, target, source_trigger):
+        if field == 'dynamic_labels':
+            return selector_labels[target]
+        if field != 'action_choices':
+            return selector_view(target)[field]
+        if bound_generation != (source_trigger, collection_generation(source_trigger)):
+            return bound_actions
+        rows = [] if source_trigger == 255 else ordered('level', [
+            CachedDisplay(address, name, name)
+            for address, name in level_names.get((202, source_trigger), {}).items()])
+        return [{'identity': f'action:202/{source_trigger}/{row.address}',
+                 'value': row.address, 'name': row.name,
+                 'formatted_display': row.formatted_display} for row in rows]
 
     if selector_profile:
         selector_labels.update({slot: labels_for(scene[1], scene[2])
@@ -352,9 +432,9 @@ def _operation_facts(values, engine, snapshot, operations,
             from .edlt_scene_add_dialog import resolve
             ensure_trigger_application(reason)
             if kind == 'add-trigger-dialog':
-                inventory = {address: name for (app, address), name in group_names.items()
-                             if app == TRIGGER_APPLICATION}
-                dialog = resolve(operation, inventory, dialog_project_name)
+                dialog_inventory = {address: name for (app, address), name in group_names.items()
+                                    if app == TRIGGER_APPLICATION}
+                dialog = resolve(operation, dialog_inventory, dialog_project_name)
                 if dialog['outcome'] == 'accepted':
                     name = _dialog_name(dialog['name'])
                     address = dialog['address']
@@ -362,12 +442,18 @@ def _operation_facts(values, engine, snapshot, operations,
                     group_names[(TRIGGER_APPLICATION, address)] = name
                     creation_names[('Group', address)] = name
                     scene[1] = address
+                    if selector_profile and selector_control is not None:
+                        combo_target = (slot + 1, address)
                     resolved_operations.append({'op': 'set-trigger', 'scene': slot + 1,
                                                 'group': address})
             else:
                 scene[1] = retain_trigger(scene[1], reason)
                 if scene[1] == 255:
                     raise EdltError('Action Add dialog requires a non-255 trigger group')
+                if (selector_profile and selector_control is not None
+                        and (selector_control.current_scene != slot + 1
+                             or combo_target != (slot + 1, scene[1]))):
+                    raise EdltError('Action Add target needs an explicit trigger selection/rebinding; stale host combo selection is unestablished')
                 key = (TRIGGER_APPLICATION, scene[1])
                 dialog = resolve(operation, level_names.setdefault(key, {}),
                                  dialog_project_name, group=scene[1])
@@ -378,10 +464,15 @@ def _operation_facts(values, engine, snapshot, operations,
                     level_names[key][address] = name
                     creation_names[('Level', scene[1], address)] = name
                     scene[2] = address
+                    if selector_profile:
+                        selector_labels[slot + 1] = labels_for(scene[1], address)
                     group(TRIGGER_APPLICATION, scene[1], reason, levels=True)
                     resolved_operations.append({'op': 'set-action', 'scene': slot + 1,
                                                 'action': address})
             dialogs.append(_json({'operation_number': number, **dialog}))
+            if dialog['outcome'] == 'accepted':
+                checkpoint('operation-start', operation=resolved_operations[-1], scene=slot + 1)
+                checkpoint('operation-end', scene=slot + 1)
             continue
         resolved_operations.append(operation)
         if kind == 'set-application':
@@ -408,12 +499,15 @@ def _operation_facts(values, engine, snapshot, operations,
             scene[1], scene[2], _returned = get_action(scene[1], scene[2], reason)
         elif kind == 'scene-selector-control':
             from .edlt_scene_selector_control import run_scene_selector_control
+            checkpoint('operation-start', operation=operation, scene=slot + 1)
+            callback_number = 0
             selector_result = run_scene_selector_control(operation['events'],
                 scene=slot + 1, bind_scene=bind_selector, trigger_current=trigger_selector,
                 write_application=lambda target, value: write_selector(target, value, 0),
                 write_trigger=lambda target, value: write_selector(target, value, 1),
                 write_action=lambda target, value: write_selector(target, value, 2),
                 write_label_index=lambda target, value: write_selector(target, value, 3),
+                observe_choices=observe_choices,
                 initial_state=selector_control)
             selector_control = selector_result.state
         elif kind == 'copy':
@@ -429,6 +523,11 @@ def _operation_facts(values, engine, snapshot, operations,
         elif kind == 'clear-scene':
             scenes[slot] = [0, 255, -1]
 
+        if kind != 'scene-selector-control':
+            checkpoint('operation-start', operation=operation, scene=slot + 1)
+        checkpoint('operation-end', scene=slot + 1)
+
+    validation_targets = tuple((scene[1], scene[2]) for scene in scenes)
     for slot, scene in enumerate(scenes, 1):
         scene[1], scene[2], returned = get_action(
             scene[1], scene[2], f'Scene{slot} terminal trigger/action')
@@ -439,6 +538,7 @@ def _operation_facts(values, engine, snapshot, operations,
             scene[1], scene[2], _returned = get_action(
                 scene[1], scene[2],
                 f'Scene{slot} terminal fallback action')
+        checkpoint('before-save-scene', scene=slot, terminal=True)
     containers = []
     if application_reasons:
         containers.append(SceneContainerCreation(
@@ -449,14 +549,14 @@ def _operation_facts(values, engine, snapshot, operations,
             'Group', TRIGGER_APPLICATION, trigger,
             creation_names.get(('Group', trigger), f'Group {trigger}'),
             tuple(dict.fromkeys(group_creation_reasons[trigger])))
-        for trigger in (group_creation_reasons if dialogs else sorted(group_creation_reasons))
+        for trigger in (group_creation_reasons if dialogs or selector_profile else sorted(group_creation_reasons))
     )
     level_creations = tuple(
         SceneLevelCreation(
             trigger, address, creation_names.get(
                 ('Level', trigger, address), f'Action Selector {address}'),
             tuple(dict.fromkeys(creation_reasons[(trigger, address)])))
-        for trigger, address in (creation_reasons if dialogs else sorted(creation_reasons))
+        for trigger, address in (creation_reasons if dialogs or selector_profile else sorted(creation_reasons))
     )
     projected = {
         key: tuple(sorted(value)) for key, value in levels.items()
@@ -464,7 +564,9 @@ def _operation_facts(values, engine, snapshot, operations,
     return (groups, level_groups, tuple(sorted(pairs)),
             tuple(containers) + level_creations, projected,
             frozenset(applications), frozenset(present_groups),
-            tuple(resolved_operations), tuple(dialogs))
+            tuple(resolved_operations), tuple(dialogs),
+            (initial_inventory, tuple(frames), tuple(save_frames), validation_targets,
+             tuple(initial_scene_bindings)))
 
 
 @dataclass(frozen=True)
@@ -485,6 +587,8 @@ class ResolvedSceneMetadata:
             'format': 'cbus-native-edlt-scene-cache-v3',
             'profile': PROFILE,
             'cache': self.cache.as_dict(),
+            'inventory_timeline': (None if self.cache._inventory_timeline is None
+                                   else self.cache._inventory_timeline.as_dict()),
             'requirements': json.loads(self.requirements),
             'consumed_trigger_actions': [
                 {'group': group, 'action': action}
@@ -522,6 +626,7 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
                                   *, _projected_containers=(),
                                   _projected_levels=(),
                                   _projected_values=None,
+                                  _initialization_timeline=None,
                                   display_preferences=None, dltp_index=None):
     """Resolve one immutable SceneManager cache without native mutation.
 
@@ -549,6 +654,12 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         raise ValueError('Projected scene Levels must be exact unique receipts')
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
+    if _initialization_timeline is not None:
+        from .edlt_scene_inventory_timeline import check_timeline
+        initializer = check_timeline(_initialization_timeline, owner=engine._owner)
+        binding = json.loads(initializer._binding)
+        if binding['unit'] != unit_path or binding['source_xml_sha256'] != _digest(text):
+            raise EdltError('Parent scene initialization provenance belongs to another XML/unit source')
     snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index)
     dialog_project_name = None
     if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog') for row in operations):
@@ -587,9 +698,9 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
             level_groups.add(key)
     (extra_groups, extra_levels, action_pairs, creations, projected_levels,
      projected_applications, projected_groups, resolved_operations,
-     dialogs) = _operation_facts(
+     dialogs, timeline_facts) = _operation_facts(
         supplied, engine, snapshot, operations, _projected_containers, dialog_project_name,
-        _projected_levels, display_preferences)
+        _projected_levels, display_preferences, _initialization_timeline)
     selectors = any(row['op'] in ('scene-selector-control', 'get-selector-view')
                     for row in operations)
     if selectors:
@@ -756,6 +867,20 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
             action_lists.append(SceneActionList(trigger.address, True, tuple(rows)))
         action_lists = tuple(action_lists)
     cache = SceneManagerCache(application_cache, tuple(level_labels), trigger_list, action_lists)
+    if selectors:
+        from .edlt_scene_inventory_timeline import issue_timeline
+        initial, frames, save_frames, validation_targets, initial_scene_bindings = timeline_facts
+        timeline = issue_timeline(cache, initial=initial, frames=frames,
+            save_frames=save_frames, validation_targets=validation_targets,
+            initial_scene_bindings=initial_scene_bindings,
+            binding={'source_xml_sha256': _digest(text), 'unit': unit_path,
+                     'requested_operations': operations,
+                     'resolved_operations': resolved_operations,
+                     'add_dialogs': [json.loads(row) for row in dialogs],
+                     'initialization_timeline_sha256': (None if _initialization_timeline is None
+                                                       else _initialization_timeline.fingerprint)},
+            source_values=supplied, owner=engine._owner)
+        cache = replace(cache, _inventory_timeline=timeline)
     reasons = _json([
         {'application': application, 'group': group,
          'reasons': list(dict.fromkeys(group_reasons[(application, group)]))}

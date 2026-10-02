@@ -128,6 +128,11 @@ def dynamic_label_rows(cache, scene):
     # silently relabelled using the new trigger number.
     owners = [row for row in cache.level_labels if len(row.labels) == len(labels)
               and all(a is b for a, b in zip(row.labels, labels))]
+    if not owners and cache._inventory_timeline is not None:
+        # An evidenced native XML refresh replaces the current DataStore
+        # objects. A valid getter can still retain its prior DynamicAll list;
+        # its issued historical owner is separate from the current inventory.
+        owners = [cache._inventory_timeline.label_owner(labels)]
     if len(owners) != 1:
         _missing('Retained dynamic-label object ownership is ambiguous', application=202,
                  field='dynamic_label_identity')

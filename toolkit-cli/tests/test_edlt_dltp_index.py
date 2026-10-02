@@ -263,7 +263,10 @@ class PresentationCLITests(unittest.TestCase):
             values = Path(root) / 'values.json'
             values.write_text('{}')
             ops = Path(root) / 'operations.json'
-            ops.write_text('[]')
+            ops.write_text(json.dumps([
+                {'op': 'blank', 'page': 1, 'position': 1},
+                {'op': 'blank', 'page': 1, 'position': 2},
+            ]))
             for extra, message in (
                     (['--toolkit-dltp-dir', root], 'supplied together'),
                     (['--display-preferences', metadata], 'require --project-xml'),

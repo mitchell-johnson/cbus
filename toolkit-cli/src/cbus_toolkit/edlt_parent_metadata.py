@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from .edlt_static_grid import retained_history
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import re
@@ -1338,7 +1338,11 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         application_cache = _merge_application_cache(
             application_cache, ordered_cache)
     cache = SceneManagerCache(application_cache, resolved.cache.level_labels,
-                              resolved.cache.trigger_list, resolved.cache.action_lists)
+                              resolved.cache.trigger_list, resolved.cache.action_lists,
+                              _inventory_timeline=resolved.cache._inventory_timeline)
+    if cache._inventory_timeline is not None:
+        cache = replace(cache,
+            _inventory_timeline=cache._inventory_timeline.rebase_outer(cache))
 
     scene_creations = []
     for row in resolved.creations:
@@ -1485,7 +1489,11 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     requirements = editor.lifecycle.requirements(supplied).as_dict()
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
     from .edlt_static_grid import requires_retained_names
+    native_scene_inventory = any(row['op'] == 'scene-manager' and any(
+        child['op'] in ('get-selector-view', 'scene-selector-control')
+        for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
+            or native_scene_inventory
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1739,6 +1747,17 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     from dataclasses import replace
     from .edlt_parent_add_dialog import KINDS, resolve
     from .edlt_scene_metadata import _dialog_name
+    native_scene_inventory = any(row['op'] == 'scene-manager' and any(
+        child['op'] in ('get-selector-view', 'scene-selector-control')
+        for child in row['operations']) for row in operations)
+    scene_initialization = None
+    if native_scene_inventory:
+        from .edlt_scene_metadata import resolve_native_scene_metadata
+        initialized = resolve_native_scene_metadata(text, unit_path, supplied,
+            editor._editor('scene-manager'),
+            ({'op':'get-selector-view','scene':1},),
+            dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+        scene_initialization = initialized.cache._inventory_timeline
     if any(row['op'] == KINDS[0] for row in operations) and display_preferences is None:
         raise ValueError('Corridor Add requires explicit display preferences for its refreshed ordered list')
     project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
@@ -1859,7 +1878,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         return cache if display_preferences is None else present_application_cache(cache, display_preferences)
 
     def advance(index, row, state, groups, level_names):
-        nonlocal reset_transition, reset_dependency_values, language_text
+        nonlocal reset_transition, reset_dependency_values, language_text, scene_initialization
         row = dict(row)
         show_missing = row.pop('_show_missing', None)
         application_name = row.pop('_application_name', None)
@@ -1917,13 +1936,20 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             from .edlt_static_grid import initialize as initialize_static_grid
             initialize_static_grid(state)
             reset_dependency_values = dict(state)
+            if native_scene_inventory:
+                from .edlt_scene_metadata import resolve_native_scene_metadata
+                initialized = resolve_native_scene_metadata(language_text, unit_path,
+                    supplied, editor._editor('scene-manager'),
+                    ({'op':'get-selector-view','scene':1},), _projected_values=state,
+                    dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+                scene_initialization = initialized.cache._inventory_timeline
         elif kind == 'static-text-dialog':
             from .edlt_static_text_dialog import project as project_static_text
             changes, _receipt = project_static_text(state, row)
             state = {**state, **changes}
         elif kind in WIDGET_OPERATION_NAMES and kind not in ('scene', 'blank') and not scene_results:
             from .edlt_static_grid import _parent_history_active
-            if _parent_history_active():
+            if _parent_history_active() or native_scene_inventory:
                 # An earlier widget reserves its label slot before SceneName
                 # asks the shared retained allocator for a cached name/free
                 # row. The canonical parent still owns validation and save.
@@ -1984,6 +2010,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             outcome = resolve_native_scene_metadata(language_text, unit_path, supplied, engine,
                 row['operations'], _projected_containers=tuple(projected),
                 _projected_levels=projected_levels, _projected_values=state,
+                _initialization_timeline=scene_initialization,
                 dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
             scene_state = engine.edit(engine.load(state, metadata=outcome.cache),
                                       operations=outcome.operations)
@@ -2119,8 +2146,13 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         if scene_results:
             from .edlt_scene_manager import SceneManagerCache
             observed = scene_results[0].cache
-            return SceneManagerCache(projection, observed.level_labels,
-                                     observed.trigger_list, observed.action_lists)
+            combined = SceneManagerCache(projection, observed.level_labels,
+                                     observed.trigger_list, observed.action_lists,
+                                     _inventory_timeline=observed._inventory_timeline)
+            if combined._inventory_timeline is not None:
+                combined = replace(combined,
+                    _inventory_timeline=combined._inventory_timeline.rebase_outer(combined))
+            return combined
         return projection
 
     result = _plan_unordered(text, unit_path, supplied, editor, resolved,

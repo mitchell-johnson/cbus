@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from .edlt_static_grid import retained_history
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 from types import MappingProxyType
 from typing import Mapping
@@ -769,6 +769,11 @@ class EdltParentTransaction:
         if isinstance(metadata, SceneManagerCache):
             scene_manager_cache = SceneManagerCache.from_dict(
                 metadata.as_dict())
+            if type(metadata) is SceneManagerCache:
+                # The native resolver issues this capability for one exact
+                # owner/source/history. Its JSON remains review-only.
+                scene_manager_cache = replace(scene_manager_cache,
+                    _inventory_timeline=metadata._inventory_timeline)
             application_cache = scene_manager_cache.application_cache
             cache = application_cache.lifecycle
         elif (isinstance(metadata, Mapping) and
@@ -870,7 +875,6 @@ class EdltParentTransaction:
                        if name != 'op'}
             dialog_binding = kind == 'parent-add-binding'
             if kind == 'parent-language-binding':
-                from dataclasses import replace
                 images = {(row['application'], row['group']): row
                           for row in operation['group_images']}
                 cache = replace(cache, groups=tuple(replace(row,

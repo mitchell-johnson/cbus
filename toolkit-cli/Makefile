@@ -252,12 +252,33 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[scene-two-rebinding-does-not-leak-first-labels-mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[label-selection-3-mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[cache-injection-mock]' \
-		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[post-load-getter-creation-mock]' \
-		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[scene-add-timeline-mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[future-parent-action-mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_prior_parent_add_visible_later_add_excluded[mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[pp-save-mock]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[project-save-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-mock]' \
@@ -449,12 +470,33 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[scene-two-rebinding-does-not-leak-first-labels-daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[label-selection-3-daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[cache-injection-daemon]' \
-		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[post-load-getter-creation-daemon]' \
-		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[scene-add-timeline-daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[future-parent-action-daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_prior_parent_add_visible_later_add_excluded[daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[pp-save-daemon]' \
 		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[project-save-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-explicit-rebind-sees-new-generation-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[action-add-current-getter-view-new-old-binding-separate-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-action-add-keeps-bound-generation-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-add-then-explicit-callback-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[canceled-trigger-add-keeps-current-and-inventory-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-choice-writes-current43-setter-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[old42-existing-choice-current43-existing-labels-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[trigger-callback-creates-missing-retained-action-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[missing-trigger-getter-requested-not-first-free-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[initial-loader-reserves-before-first-dialog-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[all-eight-loader-getters-reserve-before-first-dialog-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[later-initial-getter-keeps-earlier-label-generation-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_ordered_parent_add99_scene_add2_later_add100[daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_preview_apply_fresh_complete_graph[terminal-fallback-zero-not-borrowed-early-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[action-add-explicit-rebind-sees-new-generation-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[missing-trigger-getter-requested-not-first-free-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_standalone_owner[terminal-fallback-zero-not-borrowed-early-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[new-choice-stale-bound-generation-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[divergent-action-add-combo-target-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_refusal_before_creation[pending-name-wrong-bound-target-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]' \
+		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-daemon]' \

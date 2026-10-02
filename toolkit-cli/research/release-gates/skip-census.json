@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 677,
-    "modules_without_skip_sites": 368,
-    "modules_with_skip_sites": 309,
+    "test_modules": 683,
+    "modules_without_skip_sites": 373,
+    "modules_with_skip_sites": 310,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 33,
+      "unclassified": 34,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 149
+      "none": 150
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -5574,6 +5574,42 @@
           ],
           "tests": [
             "NativeSceneWidgetTests::test_original_dll_vectors_and_native_scene_reference_raw_save_reload"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_scene_inventory_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_scene_inventory_static.py::SceneInventoryStaticSourceTests::test_static_regeneration_reads_only_explicit_private_inputs",
+          "kind": "body.call",
+          "condition": "not vendor or not original",
+          "reason": "Explicit pinned SceneInventory static vendor/EXE/MAP inputs are not configured",
+          "environment": [
+            "CBUS_SCENE_INVENTORY_STATIC_ORIGINAL_APP",
+            "CBUS_SCENE_INVENTORY_STATIC_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "SceneInventoryStaticSourceTests::test_static_regeneration_reads_only_explicit_private_inputs"
           ]
         }
       ]

@@ -14,6 +14,15 @@ batch. These are execution tasks, not a new functionality denominator.
 Unchecked items retain open exit conditions; checked items cover only their
 declared scope. The working subsets remain in the implementation status.
 
+The 3 October [SceneManager inventory batch](../toolkit-cli/docs/feature-batch-2026-10-03-scene-inventory-timeline.md)
+adds bounded native create-enabled getter and accepted/cancelled Add histories,
+initial per-scene label generations, retained old collections and ordered
+parent/Reset ownership. This advances P6.01 without closing its full original
+host/physical acceptance contract. The current ledger is 18 implemented,
+22 in progress and 2 pending out of 42; its 42.86% category ratio is separate
+from the still-unmeasured functional percentage. Earlier review tables below
+retain their explicitly dated scope.
+
 Start with the [first delivery batch](#first-delivery-batch), follow the
 [dependency order](#dependency-order-and-delivery-stages), and use the
 [completion contract](#completion-contract-and-progress-accounting) to decide

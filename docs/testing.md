@@ -13,6 +13,16 @@ cargo build --release --workspace
 
 CI runs the same four checks for pull requests and pushes to `main`.
 
+For a Python-only feature chunk, the current user-directed local workflow uses
+focused owning and affected historical modules rather than rerunning every
+suite. The SceneManager inventory release selection is declared in
+[`toolkit-cli/docs/edlt-scene-inventory-release-test-modules.txt`](../toolkit-cli/docs/edlt-scene-inventory-release-test-modules.txt).
+Run that selection in both source and a fresh installed wheel, require every
+module in the trace/JUnit auditor, and retain the exact public roster on both
+owned backends. Record separate parent/subtest counts and each provisioning
+skip. Pin source inputs before/after; retain Rust gates only when their entire
+input set and owned binary hashes are unchanged. CI still runs the full gates.
+
 ## Toolkit CLI checks
 
 Install Python 3.13 or newer and the development extras from the repository root:
