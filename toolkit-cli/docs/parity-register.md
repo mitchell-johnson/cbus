@@ -1,5 +1,10 @@
 # Functional parity register
 
+The optional `coverage --reconciliation-bundle FILE` diagnostic joins declared
+source profiles, obligation variants and pinned evidence without promoting the
+global register. Read [source/obligation reconciliation](toolkit-obligation-reconciliation.md)
+for trusted artifact roots and the original/physical gate boundary.
+
 `cbus-toolkit coverage` now derives its completion result from packaged
 functional-obligation and evidence records. The 39-row feature ledger remains
 visible as historical planning information, but changing its labels cannot

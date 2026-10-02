@@ -895,6 +895,12 @@ class EdltParentTransaction:
                             for row in scene_manager_cache.level_labels
                             if ((row.group, row.action) not in labels
                                 or labels[(row.group, row.action)]['labels'] is not None)))
+                    if (not scene_manager_seen
+                            and scene_manager_cache._inventory_timeline is not None):
+                        timeline = scene_manager_cache._inventory_timeline.rebase_outer(
+                            scene_manager_cache)
+                        scene_manager_cache = replace(scene_manager_cache,
+                            _inventory_timeline=timeline)
                 receipt = dict(operation['receipt'])
                 receipt.update(operation=number, metadata_only=True,
                     terminal_save_deferred_to_parent=True)

@@ -1,0 +1,505 @@
+{
+  "format": "cbus-edlt-scene-language-static-v1",
+  "inputs": [
+    {
+      "name": "CBusLogicModel.dll",
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "bytes": 258048,
+      "role": "original-managed-static-input"
+    },
+    {
+      "name": "CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c",
+      "bytes": 14751,
+      "role": "pinned-decompiled-static-input"
+    },
+    {
+      "name": "CBusLevel.cs",
+      "sha256": "4578b91fd17a688e99cdba16d7c9c1dcc983a88f156caca88e8b55a9ad8194e1",
+      "bytes": 4033,
+      "role": "pinned-decompiled-static-input"
+    },
+    {
+      "name": "EDLTScene.cs",
+      "sha256": "91fb4aa7438f3ba911062902f022d9bbdc196bc6ce809ecf29cb2ff9bd514774",
+      "bytes": 8002,
+      "role": "pinned-decompiled-static-input"
+    },
+    {
+      "name": "EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+      "bytes": 49270,
+      "role": "pinned-decompiled-static-input"
+    }
+  ],
+  "managed_method_spans": [
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::get_DefaultLanguage",
+      "token": "0x0600025a",
+      "rva": "0x9394",
+      "file_offset": 30100,
+      "header_bytes": 1,
+      "code_bytes": 7,
+      "body_bytes": 8,
+      "extra_sections": 0,
+      "body_sha256": "9570be080db5e398f908bbf69012c2aab85eb132f031e3a52eebe0300a0032b0",
+      "il_sha256": "a9c2a46d99930743f53c32a6aee8f2edc21fe4d6a5c761563dad546e66b41e75"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::set_DefaultLanguage",
+      "token": "0x0600025b",
+      "rva": "0x939c",
+      "file_offset": 30108,
+      "header_bytes": 1,
+      "code_bytes": 56,
+      "body_bytes": 57,
+      "extra_sections": 0,
+      "body_sha256": "25522b4900f1e1e9fe68ec6172653b3679825cbe7e4f58899db8d3952297554a",
+      "il_sha256": "2b26a9e2071d2f360da8c14e7b8fa2041b4274565e24445420e41179280fa4e4"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::ReadXmlData",
+      "token": "0x06000292",
+      "rva": "0x9ef8",
+      "file_offset": 33016,
+      "header_bytes": 12,
+      "code_bytes": 1216,
+      "body_bytes": 1352,
+      "extra_sections": 1,
+      "body_sha256": "385e64a609c166655e6d3852ced41f6e6fb30e42c3e263dd0ecb7134fff4a102",
+      "il_sha256": "e58edd886f0289c5454012cc477eb7b4159f551e8d3687fd659812ba893bc05c"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::RefreshData",
+      "token": "0x06000293",
+      "rva": "0xa440",
+      "file_offset": 34368,
+      "header_bytes": 1,
+      "code_bytes": 55,
+      "body_bytes": 56,
+      "extra_sections": 0,
+      "body_sha256": "3375d342e54834639d9aabedf32b61fbe9c9ffdabe459f11a1d91b846e8190fa",
+      "il_sha256": "9b9e1da7d6850f1ad87ed2b65b456aa2b20a9e2acbdc25f51c0da11bbda70346"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::ReadXmlData",
+      "token": "0x0600024b",
+      "rva": "0x8ed0",
+      "file_offset": 28880,
+      "header_bytes": 12,
+      "code_bytes": 267,
+      "body_bytes": 296,
+      "extra_sections": 1,
+      "body_sha256": "eac536addfe605d22d36c6eeb22f0ee5bf5afbdfecdd664271161f1aad59cc13",
+      "il_sha256": "15e1a027ca5ad2e60687d38216491266a3e782dd30ebbca9f9c1c540e79ce7d3"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::PopulateDynamicAll",
+      "token": "0x06000255",
+      "rva": "0x910c",
+      "file_offset": 29452,
+      "header_bytes": 12,
+      "code_bytes": 184,
+      "body_bytes": 212,
+      "extra_sections": 1,
+      "body_sha256": "b3afc9f0534da85480bc8c1cae382a3ee9fe015b71b73eab97db0b16d2225852",
+      "il_sha256": "47d242c05e4866ca475f30435bc4e8ce2df5ae9470047b35c102973dab5c7a23"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::InitialiseGroup",
+      "token": "0x0600022d",
+      "rva": "0x8228",
+      "file_offset": 25640,
+      "header_bytes": 12,
+      "code_bytes": 72,
+      "body_bytes": 84,
+      "extra_sections": 0,
+      "body_sha256": "9c6b825b20a8dbaf6569d64bf0b414924645f15054d7bf7c0d37b611d8276467",
+      "il_sha256": "65a4ada5bdad7f37502a4cac10ca34f4ecf94129813472458e2988f5a9a09c3f"
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::ReadXmlData",
+      "token": "0x06000244",
+      "rva": "0x8abc",
+      "file_offset": 27836,
+      "header_bytes": 12,
+      "code_bytes": 735,
+      "body_bytes": 872,
+      "extra_sections": 1,
+      "body_sha256": "eb0129a0ef266864b719426d7eee1280e7545e2d26366ec718ab3a838055eede",
+      "il_sha256": "45ffa04086d393581d84a9fa9c4e355072c3c411692bf06f8adaaac6e057ed84"
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::LoadScenes",
+      "token": "0x06000460",
+      "rva": "0x121ec",
+      "file_offset": 66540,
+      "header_bytes": 12,
+      "code_bytes": 701,
+      "body_bytes": 713,
+      "extra_sections": 0,
+      "body_sha256": "9a2b1b555e9c06f8d4c9568f3a1f6a0d4ca31367657f37ac218d6011a3b8d39d",
+      "il_sha256": "9be204e45f261fcac359ffa8f87537848c99fc65afd74ae24e0bb56df0d6b4c0"
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::get_ActionSelector",
+      "token": "0x06000389",
+      "rva": "0xf79c",
+      "file_offset": 55708,
+      "header_bytes": 12,
+      "code_bytes": 95,
+      "body_bytes": 107,
+      "extra_sections": 0,
+      "body_sha256": "aaf3e5506bde488fbaa373405825049b207158ad0ae69d9430006f0a97ba9724",
+      "il_sha256": "2e4009439de270bd8042581004e61ac7ca7a58ef5a072a1d180969f0ad5ecd97"
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::set_ActionSelector",
+      "token": "0x0600038a",
+      "rva": "0xf808",
+      "file_offset": 55816,
+      "header_bytes": 12,
+      "code_bytes": 110,
+      "body_bytes": 122,
+      "extra_sections": 0,
+      "body_sha256": "5a7c89cf552a3d63b686db517856418abd160da13649b2a1f16b31ba0158f93a",
+      "il_sha256": "1bf7984d523bce583adc0bb054f1d913a42df0779970549fa8d29c729093521c"
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::RefreshDynamicLables",
+      "token": "0x0600038b",
+      "rva": "0xf884",
+      "file_offset": 55940,
+      "header_bytes": 12,
+      "code_bytes": 193,
+      "body_bytes": 224,
+      "extra_sections": 1,
+      "body_sha256": "947b363644271daa3d4c2e3becd7b8c92d670968c377a419cc51ec85f55bc881",
+      "il_sha256": "3fc40d22802ef83d4ce5803a9c86ce7d12e073f6003aa1c2277f322db01bca98"
+    }
+  ],
+  "decompiled_declarations": [
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::DefaultLanguage",
+      "start_line": 71,
+      "end_line": 90,
+      "utf8_bytes": 333,
+      "sha256": "ca88f3f8782592939a02eec766df8d6807c9fe05a356b9ad2569a471ee954fec",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::ReadXmlData",
+      "start_line": 363,
+      "end_line": 516,
+      "utf8_bytes": 3914,
+      "sha256": "ee1615a9f84e143fe2b74c806509b08298fe8767650f31af8bf58ff43494cb5e",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::RefreshData",
+      "start_line": 518,
+      "end_line": 525,
+      "utf8_bytes": 191,
+      "sha256": "fcb650917565b012beeeb7e3479ee4e93c6e68d10df5dd330755434dad092f68",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::ReadXmlData",
+      "start_line": 83,
+      "end_line": 107,
+      "utf8_bytes": 881,
+      "sha256": "c54512f435b4fd94076b6dc90ad024d778859d85d666f66d2d25df853dad72aa",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::PopulateDynamicAll",
+      "start_line": 127,
+      "end_line": 144,
+      "utf8_bytes": 524,
+      "sha256": "1579fab3af8a1e22b3468cfdf2c79835c2e2e25d6147863a0feb1f0e5c62fcf8",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::ActionSelector",
+      "start_line": 137,
+      "end_line": 176,
+      "utf8_bytes": 911,
+      "sha256": "9d58e5e85f10ff2b292c0ec4f8800a0c0274d1dc1d70783a61c3dabacf7a8c29",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::RefreshDynamicLables",
+      "start_line": 330,
+      "end_line": 362,
+      "utf8_bytes": 817,
+      "sha256": "777c676c7007732ec645a78a24a2f5c2ae7befd9e5122cfab19b18ce7d292697",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::LoadScenes",
+      "start_line": 1563,
+      "end_line": 1620,
+      "utf8_bytes": 2401,
+      "sha256": "ed779f79696b0b4827c2e5fc65cc07c8e929fde3d0f22ba0d14fe40c45867f39",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    }
+  ],
+  "static_checks": [
+    {
+      "id": "default-import-precedes-application-reload-with-language-events-suppressed",
+      "symbol": "CBusLogicModel.CBusNetwork::ReadXmlData",
+      "ordered_calls": [
+        "get_Languages",
+        "set_RaiseListChangedEvents",
+        "ReadXmlData",
+        "SelectNodes",
+        "ReadXmlData",
+        "get_AddressAsInt",
+        "TryParse",
+        "set_DefaultLanguage",
+        "GetApplicationByAddress",
+        "ReadXmlData"
+      ],
+      "passed": true
+    },
+    {
+      "id": "default-language-selects-tags-before-new-dynamic-all",
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::ReadXmlData",
+      "ordered_calls": [
+        "ReadXmlData",
+        "InitialiseLevel",
+        "get_TagsDLTAll",
+        "Add",
+        "get_DefaultLanguage",
+        "ToString",
+        "set_Item",
+        "PopulateDynamicAll"
+      ],
+      "passed": true
+    },
+    {
+      "id": "dynamic-all-repopulates-current-level-objects",
+      "symbol": "CBusLogicModel.CBusObjects.CBusLevel::PopulateDynamicAll",
+      "ordered_calls": [
+        "get_DynamicAll",
+        "set_DynamicAll",
+        "set_RaiseListChangedEvents",
+        "get_DynamicAll",
+        "Clear",
+        "get_TagsDLT",
+        ".ctor",
+        "Add",
+        "NotifyPropertyChanged"
+      ],
+      "passed": true
+    },
+    {
+      "id": "initial-scenes-capture-labels-one-slot-at-a-time",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::LoadScenes",
+      "ordered_calls": [
+        "GetGroupByAddress",
+        "GetLevelByAddress",
+        "set_ActionSelector",
+        "set_NameIndex",
+        "Add"
+      ],
+      "passed": true
+    },
+    {
+      "id": "explicit-setter-adopts-current-level-labels",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::set_ActionSelector",
+      "ordered_calls": [
+        "GetLevelByAddress",
+        "RefreshDynamicLables"
+      ],
+      "passed": true
+    },
+    {
+      "id": "valid-getter-no-unconditional-label-refresh",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::get_ActionSelector",
+      "passed": true,
+      "qualification": "Missing/negative getter can invoke the setter; valid existing getter does not."
+    }
+  ],
+  "retained_refresh_bridge_checks": [
+    {
+      "id": "bridge-binds-network-refresh-and-add-delegates",
+      "symbol": "SharpContainer.SharkUnitDialogFactory::CreateUnitsDialogWithDefault",
+      "ordered_call_suffixes": [
+        "GetNetwork",
+        "RefreshData",
+        ".ctor",
+        "add_NetworkRefreshEvent",
+        "FrmKeyUnitAddGroupDialogRequest",
+        "add_addGroupEvent",
+        "FrmKeyUnitAddLevelDialogRequest",
+        "add_addLevelEvent"
+      ],
+      "passed": true
+    },
+    {
+      "id": "group-initializer-replaces-levels",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::InitialiseGroup",
+      "ordered_call_suffixes": [
+        "get_TagsDLT",
+        "Clear",
+        ".ctor",
+        "Add",
+        ".ctor",
+        "set_Levels"
+      ],
+      "passed": true
+    },
+    {
+      "id": "native-embedded-form-registers-project-xml-callback",
+      "symbol": "CIS_TfrmKEYGL5.TfrmKEYGL5.CreateAndEmbedDialog",
+      "instruction_address": "0x11c48ad",
+      "registered_callback": "CIS_TfrmKEYGL5.TfrmKEYGL5.ProjectXMLChanged",
+      "passed": true
+    },
+    {
+      "id": "native-project-xml-callback-dispatches-managed-update",
+      "symbol": "CIS_TfrmKEYGL5.TfrmKEYGL5.ProjectXMLChanged",
+      "direct_call_target": "SharpContainer_TLB.TSharkUnitDialogFactory.UpdateDatabase",
+      "passed": true
+    },
+    {
+      "id": "managed-update-uses-retained-network-refresh-event",
+      "symbol": "SharpContainer.SharkUnitDialogFactory::UpdateDatabase",
+      "exact_field_references": [
+        {
+          "il_offset": 1,
+          "field_token": "0x04000019",
+          "field": "NetworkRefreshEvent"
+        },
+        {
+          "il_offset": 67,
+          "field_token": "0x04000019",
+          "field": "NetworkRefreshEvent"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "retained_bridge_inputs": [
+    {
+      "name": "edlt_scene_name_static.py",
+      "sha256": "7bb4f3137bf6da42524cc512d94fe6c711f28b5a80532d018411777f9f573223",
+      "bytes": 31245,
+      "role": "static-reader"
+    },
+    {
+      "name": "edlt_scene_selector_static.py",
+      "sha256": "cc88faa1c43fb801ebcfaf7e891c08d79be80c0fd378734496f0020fe794ce4a",
+      "bytes": 22657,
+      "role": "static-reader"
+    },
+    {
+      "name": "eDLT.dll",
+      "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "bytes": 663552,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusLogicModel.dll",
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "bytes": 258048,
+      "role": "original-static-input"
+    },
+    {
+      "name": "SceneManager.cs",
+      "sha256": "c2aa9a75cf7e128eba6cab952ddbdd45cb7e363b4128dc96ff15bd90adf9d72c",
+      "bytes": 83371,
+      "role": "original-static-input"
+    },
+    {
+      "name": "EDLTScene.cs",
+      "sha256": "91fb4aa7438f3ba911062902f022d9bbdc196bc6ce809ecf29cb2ff9bd514774",
+      "bytes": 8002,
+      "role": "original-static-input"
+    },
+    {
+      "name": "EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+      "bytes": 49270,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c",
+      "bytes": 14751,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusApplication.cs",
+      "sha256": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933",
+      "bytes": 4574,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusGroup.cs",
+      "sha256": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2",
+      "bytes": 8372,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusLevel.cs",
+      "sha256": "4578b91fd17a688e99cdba16d7c9c1dcc983a88f156caca88e8b55a9ad8194e1",
+      "bytes": 4033,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusBaseObject.cs",
+      "sha256": "b49db12edd5be47e4c1ad362a8ea62c41fe84107d768f6bd0d5bb8c5b523b99d",
+      "bytes": 7439,
+      "role": "original-static-input"
+    },
+    {
+      "name": "SharpContainer.dll",
+      "sha256": "5cba17be19a783e4b0c1e99025c9556fea605b97003ed6a3e9f3f182fb2c3ed0",
+      "bytes": 35840,
+      "role": "original-static-input"
+    },
+    {
+      "name": "GlobalSoftwareParameters.cs",
+      "sha256": "08a79965131c84e87becd4294218c66737fe9e641ca6bea5728e07c901934b6f",
+      "bytes": 2854,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusToolkit.exe",
+      "sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "bytes": 20518992,
+      "role": "original-static-input"
+    },
+    {
+      "name": "CBusToolkit.map",
+      "sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+      "bytes": 19819281,
+      "role": "original-static-input"
+    }
+  ],
+  "contract": {
+    "admitted_refresh": "Explicit final text-only Language XML refresh after independently reprojected typed mutations.",
+    "default_before_labels": true,
+    "old_scene_dynamic_all_retained": true,
+    "current_labels_adopted_by": [
+      "explicit ActionSelector setter",
+      "explicit RefreshDynamicLables"
+    ],
+    "valid_existing_getter_keeps_old_labels": true,
+    "whole_network_collections_replaced": true,
+    "language_events_suppressed_during_xml_default_import": true,
+    "cancel_or_semantic_noop_refresh_count": 0,
+    "changed_final_language_xml_refresh_count": 1,
+    "original_per_row_saves_reproduced": false,
+    "implicit_callback_schedule_verified": false,
+    "framework_instructions_executed": false,
+    "original_instructions_executed": false
+  },
+  "limits": [
+    "Text-only native labels; no Image/FONT/DYNAMIC/ICON/DLTP admission.",
+    "Unique canonical Languages IDs and one valid default marker.",
+    "Original GUI notifications, scheduling and per-row saves remain unexecuted."
+  ]
+}

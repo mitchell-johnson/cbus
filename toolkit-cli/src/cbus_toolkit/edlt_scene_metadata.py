@@ -113,7 +113,7 @@ def _dialog_name(value):
 def _operation_facts(values, engine, snapshot, operations,
                      projected_containers=(), dialog_project_name=None,
                      projected_level_receipts=(), display_preferences=None,
-                     initialization_timeline=None):
+                     initialization_timeline=None, initialization_refresh_count=0):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -124,7 +124,7 @@ def _operation_facts(values, engine, snapshot, operations,
     """
     primary = engine.lifecycle._primary(values)
     secondary = values['SecondaryApplication'][0]
-    selector_profile = any(row['op'] in ('scene-selector-control', 'get-selector-view')
+    selector_profile = any(row['op'] in ('scene-selector-control', 'get-selector-view', 'scene-button-control')
                            for row in operations)
     if selector_profile and any(
             level.value != level.address
@@ -162,6 +162,7 @@ def _operation_facts(values, engine, snapshot, operations,
     group_creation_reasons = {}
     creation_reasons = {}
     creation_names = {}
+    button_container_creations = []
     group_names = {
         (app.address, child.address): child.tag
         for app in snapshot.applications for child in app.groups}
@@ -257,7 +258,7 @@ def _operation_facts(values, engine, snapshot, operations,
         return SceneInventory(tuple(sorted(applications)), tuple(sorted(present_groups)),
             tuple((app, address, tuple(level_names.get((app, address), {})))
                   for app, address in sorted(present_groups)),
-            base_generation + int(bool(application_reasons)) + len(group_creation_reasons) + len(creation_reasons))
+            base_generation + int(bool(application_reasons)) + len(group_creation_reasons) + len(creation_reasons) + len(button_container_creations))
 
     if initialization_timeline is not None and selector_profile:
         initialized = initialization_timeline._initial
@@ -276,13 +277,16 @@ def _operation_facts(values, engine, snapshot, operations,
         prior_refreshes += len(set(current.groups) - set(initialized.groups))
         prior_refreshes += sum(len(rows - old_levels.get(key, set()))
                                for key, rows in current_levels.items())
-        base_generation = initialized.refresh_generation + prior_refreshes - current.refresh_generation
+        if type(initialization_refresh_count) is not int or initialization_refresh_count < 0:
+            raise EdltError('Parent initialization refresh count requires issued nonnegative provenance')
+        base_generation = initialized.refresh_generation + prior_refreshes + initialization_refresh_count - current.refresh_generation
         initial_scene_bindings = list(initialization_timeline._initial_scene_bindings)
 
     def causes():
         return tuple([*('Application202: ' + row for row in application_reasons),
                       *(f'Group{group}: {reason}' for group, reasons in group_creation_reasons.items() for reason in reasons),
-                      *(f'Level{group}/{level}: {reason}' for (group, level), reasons in creation_reasons.items() for reason in reasons)])
+                      *(f'Level{group}/{level}: {reason}' for (group, level), reasons in creation_reasons.items() for reason in reasons),
+                      *(f'Group{row.application}/{row.address}: {reason}' for row in button_container_creations for reason in row.reasons)])
 
     previous_causes = causes()
     def checkpoint(phase, *, operation=None, callback=0, scene=0, terminal=False):
@@ -298,6 +302,7 @@ def _operation_facts(values, engine, snapshot, operations,
     selector_labels = {}
     callback_number = 0
     bound_actions, bound_generation, combo_target = [], None, None
+    button_selected_trigger = None
 
     def collection_generation(trigger):
         return (inventory().refresh_generation, tuple(level_names.get((202, trigger), {})))
@@ -383,7 +388,7 @@ def _operation_facts(values, engine, snapshot, operations,
         return view
 
     def write_selector(target, value, field):
-        nonlocal callback_number, combo_target
+        nonlocal callback_number, combo_target, button_selected_trigger
         selected = scenes[target - 1]
         # Capture old DynamicAll ownership before a trigger property changes.
         selector_view(target)
@@ -391,6 +396,7 @@ def _operation_facts(values, engine, snapshot, operations,
             selected[field] = value
             if field == 1:
                 combo_target = (target, value)
+                button_selected_trigger = {'identity': f'trigger:202/{value}', 'address': str(value)}
         elif field == 2:
             selected[1], selected[2] = set_action(
                 selected[1], selected[2], value, 'explicit selector action WriteValue')
@@ -475,7 +481,117 @@ def _operation_facts(values, engine, snapshot, operations,
                 checkpoint('operation-end', scene=slot + 1)
             continue
         resolved_operations.append(operation)
-        if kind == 'set-application':
+        if kind == 'scene-button-control':
+            from .edlt_scene_button_control import issue_button_context, run_scene_button_control
+            checkpoint('operation-start', operation=operation, scene=slot + 1)
+            callback_number = 0
+            current = None if selector_control is None else selector_control.current_scene
+            if operation['button'] == 'new-lighting-group' and len(operation['selected_scenes']) == 1 and current is None:
+                raise EdltError('Lighting Add requires an explicit current Scene binding')
+            owner_view = {} if selector_control is None else selector_control.as_dict()['view']
+            def items(field):
+                if field == 'trigger_items':
+                    rows = selector_view(current or slot + 1)['trigger_choices']
+                else:
+                    rows = owner_view.get('action_choices' if field == 'action_items' else 'application_choices', [])
+                return [{'identity': row['identity'], 'value': str(row['value']), 'name': row['name']} for row in rows]
+            source_pin = _digest(_json(values))
+            history_pin = _digest(_json({'operation': operation, 'operation_number': len(resolved_operations)}))
+            context = issue_button_context(owner=engine._owner, source_fingerprint=source_pin,
+                history_fingerprint=history_pin, scene=slot + 1,
+                current_scene=current, selected_scene_count=len(operation.get('selected_scenes', [slot + 1])),
+                primary_application=primary, secondary_application=secondary,
+                application_selector=0 if current is None else scenes[current - 1][0],
+                raw_trigger_group=scene[1], selected_trigger_group=button_selected_trigger,
+                trigger_items=items('trigger_items'), action_items=items('action_items'),
+                application_items=items('application_items'))
+            component_receipts = []
+            def requested_dialog(application, trigger=None):
+                nonlocal callback_number
+                from .edlt_scene_add_dialog import resolve
+                from .edlt_add_dialog import accept_group_dialog
+                options = operation.get('dialog', {'cancel': False})
+                if not options['cancel'] and dialog_project_name is None:
+                    raise EdltError('Accepted button dialog requires the exact native Project.TagName')
+                if trigger is not None:
+                    key = (202, int(trigger))
+                    if key not in present_groups:
+                        raise EdltError('Selected trigger object is absent from the actual button inventory')
+                    dialog = resolve({'op': 'add-action-dialog', 'scene': slot + 1, **options},
+                        level_names.setdefault(key, {}), dialog_project_name, group=int(trigger))
+                    if dialog['outcome'] == 'accepted':
+                        address, name = dialog['address'], _dialog_name(dialog['name'])
+                        ensure_level(int(trigger), address, reason + ' Add button')
+                        level_names[key][address] = name
+                        creation_names[('Level', int(trigger), address)] = name
+                        group(202, int(trigger), reason, levels=True)
+                elif int(application) == 202:
+                    dialog_inventory = {address: name for (app, address), name in group_names.items() if app == 202}
+                    dialog = resolve({'op': 'add-trigger-dialog', 'scene': slot + 1, **options},
+                        dialog_inventory, dialog_project_name)
+                    if dialog['outcome'] == 'accepted':
+                        address, name = dialog['address'], _dialog_name(dialog['name'])
+                        retain_trigger(address, reason + ' Add button')
+                        group_names[(202, address)] = name
+                        creation_names[('Group', address)] = name
+                else:
+                    address_app = int(application)
+                    if address_app not in applications:
+                        raise EdltError('Lighting Add application is absent from the actual inventory')
+                    existing = {address: name for (app, address), name in group_names.items() if app == address_app}
+                    from .edlt_add_dialog import (AddDialogError, _message, _rewrite,
+                        default_group_name, standard_group_name)
+                    free = [n for n in range(255) if n not in existing]
+                    if not free:
+                        raise AddDialogError(_message(2271, standard_group_name(address_app)))
+                    first = free[0]
+                    seeded = default_group_name(address_app) + ' ' + str(first)
+                    shown = _rewrite(seeded, standard_group_name(address_app), first)
+                    dialog = {'operation': operation, 'kind': 'NetVar' if address_app == 203 else 'Group', 'application': address_app,
+                        'outcome': 'cancelled' if options['cancel'] else 'accepted',
+                        'object_created': False, 'original_dialog_executed': False,
+                        'first_free_address': first, 'seeded_name': seeded, 'shown_name': shown}
+                    if not options['cancel']:
+                        accepted = accept_group_dialog('SceneLightingGroup', address_app, existing,
+                            dialog_project_name, name=options.get('name'))
+                        address, name = accepted.address, _dialog_name(accepted.name)
+                        key = (address_app, address)
+                        present_groups.add(key); levels[key] = set(); level_names[key] = {}
+                        group_names[key] = name
+                        group(address_app, address, reason)
+                        button_container_creations.append(SceneContainerCreation(dialog['kind'], address_app, address, name, (reason + ' Add button',)))
+                        dialog.update(address=address, name=name)
+                component_receipts.append(dialog)
+                callback_number += 1
+                checkpoint('button-request', callback=callback_number, scene=slot + 1)
+                return None if dialog['outcome'] == 'cancelled' else str(dialog['address'])
+            def button_ui(action, facts):
+                nonlocal callback_number, button_selected_trigger, selector_control, combo_target
+                if action == 'SetSelectedIndex' and facts['control'] == 'trigger':
+                    button_selected_trigger = {'identity': facts['item']['identity'], 'address': facts['item']['value']}
+                    combo_target = (current, int(facts['item']['value']))
+                if action == 'WriteValue':
+                    target = facts['binding_scene']
+                    if target is None:
+                        raise EdltError('Button SelectedValue needs an explicit current Scene binding')
+                    field = 1 if facts['control'] == 'trigger' else 0
+                    scenes[target - 1][field] = int(facts['item']['value'])
+                    callback_number += 1
+                    checkpoint('button-write-trigger' if field else 'button-write-application', callback=callback_number, scene=target)
+                    if selector_control is not None:
+                        from .edlt_scene_selector_control import update_selector_properties
+                        selector_control = update_selector_properties(selector_control, target,
+                            trigger_group=scenes[target - 1][1] if field else None,
+                            application_selector=scenes[target - 1][0] if not field else None)
+            button = run_scene_button_control(operation, context=context, owner=engine._owner,
+                source_fingerprint=source_pin, history_fingerprint=history_pin,
+                request_add_group=lambda app: requested_dialog(app),
+                request_add_level=lambda app, trigger: requested_dialog(app, trigger),
+                ui_callback=button_ui, observe_items=items)
+            dialogs.append(_json({'operation_number': len(resolved_operations),
+                'button_operation': operation, 'component_dialogs': component_receipts,
+                'button_control': button.as_dict()}))
+        elif kind == 'set-application':
             scene[0] = operation['selector']
         elif kind == 'add-groups':
             application = secondary if scene[0] else primary
@@ -523,7 +639,7 @@ def _operation_facts(values, engine, snapshot, operations,
         elif kind == 'clear-scene':
             scenes[slot] = [0, 255, -1]
 
-        if kind != 'scene-selector-control':
+        if kind not in ('scene-selector-control', 'scene-button-control'):
             checkpoint('operation-start', operation=operation, scene=slot + 1)
         checkpoint('operation-end', scene=slot + 1)
 
@@ -551,6 +667,7 @@ def _operation_facts(values, engine, snapshot, operations,
             tuple(dict.fromkeys(group_creation_reasons[trigger])))
         for trigger in (group_creation_reasons if dialogs or selector_profile else sorted(group_creation_reasons))
     )
+    containers.extend(button_container_creations)
     level_creations = tuple(
         SceneLevelCreation(
             trigger, address, creation_names.get(
@@ -654,19 +771,33 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         raise ValueError('Projected scene Levels must be exact unique receipts')
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
+    language_initializer = None
     if _initialization_timeline is not None:
+        from .edlt_scene_language_initializer import SceneLanguageInitializer, check_language_initializer
         from .edlt_scene_inventory_timeline import check_timeline
-        initializer = check_timeline(_initialization_timeline, owner=engine._owner)
-        binding = json.loads(initializer._binding)
-        if binding['unit'] != unit_path or binding['source_xml_sha256'] != _digest(text):
-            raise EdltError('Parent scene initialization provenance belongs to another XML/unit source')
+        if type(_initialization_timeline) is SceneLanguageInitializer:
+            language_initializer = check_language_initializer(_initialization_timeline,
+                projected_xml=text, unit=unit_path, editor=engine)
+            initializer = language_initializer.original_timeline
+        else:
+            initializer = check_timeline(_initialization_timeline, owner=engine._owner)
+            binding = json.loads(initializer._binding)
+            if binding['unit'] != unit_path or binding['source_xml_sha256'] != _digest(text):
+                raise EdltError('Parent scene initialization provenance belongs to another XML/unit source')
+    else:
+        initializer = None
     snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index)
     dialog_project_name = None
-    if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog') for row in operations):
+    if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog', 'scene-button-control') for row in operations):
         # Native name validation compares Project.TagName, not the command
         # address. Require the exact scalar; do not invent an address fallback.
         project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
-        dialog_project_name = _field(project, 'TagName')
+        # Preserve the legacy component's required field. The new button may
+        # return before Add or cancel before OnOK; those paths never compare
+        # Project.TagName. A real accepted callback validates it at that point.
+        if (_children(project, 'TagName')
+                or any(row['op'] in ('add-trigger-dialog', 'add-action-dialog') for row in operations)):
+            dialog_project_name = _field(project, 'TagName')
     source = engine.snapshot(values)
     if source != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
@@ -700,8 +831,9 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
      projected_applications, projected_groups, resolved_operations,
      dialogs, timeline_facts) = _operation_facts(
         supplied, engine, snapshot, operations, _projected_containers, dialog_project_name,
-        _projected_levels, display_preferences, _initialization_timeline)
-    selectors = any(row['op'] in ('scene-selector-control', 'get-selector-view')
+        _projected_levels, display_preferences, initializer,
+        initialization_refresh_count=0 if language_initializer is None else language_initializer.refresh_count)
+    selectors = any(row['op'] in ('scene-selector-control', 'get-selector-view', 'scene-button-control')
                     for row in operations)
     if selectors:
         # Complete actual selector inventories are separate from the legacy
@@ -870,6 +1002,36 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
     if selectors:
         from .edlt_scene_inventory_timeline import issue_timeline
         initial, frames, save_frames, validation_targets, initial_scene_bindings = timeline_facts
+        label_epochs, label_seeds = None, ()
+        if language_initializer is not None:
+            label_epochs, label_seeds = language_initializer.timeline_labels(
+                current_generation=initial.refresh_generation, current_template=cache.level_labels)
+        elif initializer is not None:
+            # A plain original initializer also carries exact old DataStore
+            # objects across genuine prior object-creation refreshes.
+            epochs = []
+            observed_pairs = {(group.address, level.address)
+                for application in snapshot.applications if application.address == TRIGGER_APPLICATION
+                for group in application.groups for level in group.level_records}
+            for generation, rows in initializer._label_epochs:
+                keys = {(row.group, row.action) for row in rows}
+                added = tuple(row for row in cache.level_labels if (row.group, row.action) not in keys)
+                if any(label.name or label.image_present
+                       for row in added if (row.group, row.action) not in observed_pairs
+                       for label in row.labels):
+                    raise EdltError('Unstored causal Levels require blank original label defaults')
+                epochs.append((generation, (*rows, *added)))
+            label_epochs = tuple(epochs)
+            seeds = []
+            for generation in sorted({initializer._initial.refresh_generation,
+                                     *(row[2] for row in initializer._initial_scene_bindings)}):
+                original = {(row.group, row.action): row for row in initializer.labels_at(generation)}
+                expected = next(rows for start, rows in reversed(label_epochs) if start <= generation)
+                seeds.append((generation, tuple(original.get((row.group, row.action), row)
+                                                for row in expected)))
+            label_seeds = tuple(seeds)
+            if initial.refresh_generation > initializer._initial.refresh_generation:
+                label_epochs = (*label_epochs, (initial.refresh_generation, cache.level_labels))
         timeline = issue_timeline(cache, initial=initial, frames=frames,
             save_frames=save_frames, validation_targets=validation_targets,
             initial_scene_bindings=initial_scene_bindings,
@@ -877,9 +1039,11 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
                      'requested_operations': operations,
                      'resolved_operations': resolved_operations,
                      'add_dialogs': [json.loads(row) for row in dialogs],
-                     'initialization_timeline_sha256': (None if _initialization_timeline is None
-                                                       else _initialization_timeline.fingerprint)},
-            source_values=supplied, owner=engine._owner)
+                     'initialization_timeline_sha256': (None if initializer is None else initializer.fingerprint),
+                     'language_initializer_sha256': (None if language_initializer is None else language_initializer.fingerprint),
+                     'language_initializer': (None if language_initializer is None else language_initializer.as_dict())},
+            source_values=supplied, owner=engine._owner,
+            label_epochs=label_epochs, label_seeds=label_seeds)
         cache = replace(cache, _inventory_timeline=timeline)
     reasons = _json([
         {'application': application, 'group': group,

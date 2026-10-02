@@ -871,4 +871,30 @@ For KEYGL5 / 5055EDL firmware 5.5.00, `get-name` and `scene-name-control` are re
 
 For KEYGL5 /5055EDL firmware 5.5.00, `get-selector-view` reads the source TriggerGroup then ActionSelector and returns complete ordered application, actual trigger, named action and dynamic-label rows. Choose the exact current ordinal, identity and value before preparing `scene-selector-control` callbacks. Primary/secondary values are 0/1. Actual trigger lists do not inherit the legacy synthetic unused255. The global retained form keeps direct action/label bindings when Current is null; a later levels callback can still write the old bound scene while disabled. Trigger setter and explicit resolve/bind/getter/refresh remain separate. A fresh owner or Reset starts unbound; pending SceneName text is never committed/discarded by these callbacks and still prevents saving.
 
-Manual cache v2 supplies exact trigger_list and action_lists in addition to unchanged v1 facts. Native automatic metadata now issues a private causal timeline for create-enabled getters and accepted/cancelled SceneManager Add histories. Each initial scene retains its loaded label epoch. Creation refreshes all modeled network collections; old bound lists survive until an explicit callback rebinds them. Read the current complete choice rows and use their exact ordinal, identity and value; a newly created action cannot be selected from an old binding. Earlier parent edits/Add are visible at the SceneManager position, while later widget objects stay out of earlier lists and validation/save contexts. Reset reissues a fresh initializer. Earlier Network language mutation refuses this profile because changed XML cannot establish original label ownership. Exported cache/state/timeline JSON is review material, never an issuer. Native apply materializes reviewed objects before PP staging and does not run original COM/WinForms scheduling. Keep legacy direct-operation creation paths separate. Do not infer host currency selection, null parsing, notification cascades, async/modal behavior or original/physical acceptance. Read toolkit-cli/docs/edlt-scene-selector-control.md, toolkit-cli/docs/edlt-scene-selector-metadata.md, toolkit-cli/docs/edlt-scene-inventory-timeline.md and the causal inventory batch report. Preserve one owning PP save, separate project save and no replay after uncertainty.
+Manual cache v2 supplies exact trigger_list and action_lists in addition to unchanged v1 facts. Native automatic metadata now issues a private causal timeline for create-enabled getters and accepted/cancelled SceneManager Add histories. Each initial scene retains its loaded label epoch. Creation refreshes all modeled network collections; old bound lists survive until an explicit callback rebinds them. Read the current complete choice rows and use their exact ordinal, identity and value; a newly created action cannot be selected from an old binding. Earlier parent edits/Add are visible at the SceneManager position, while later widget objects stay out of earlier lists and validation/save contexts. Reset reissues a fresh initializer. Earlier text-only Language mutation now uses a sealed initializer that independently replays the public parent prefix and exact XML projection while preserving original scene-label ownership. Initial valid getters and scene-current callbacks keep old DynamicAll; an ActionSelector setter or explicit trigger-current refresh uses current text labels. Image/FONT/opaque DLTP or ambiguous Language histories refuse. Read toolkit-cli/docs/edlt-scene-buttons-language.md before combining these operations. Exported cache/state/timeline JSON is review material, never an issuer. Native apply materializes reviewed objects before PP staging and does not run original COM/WinForms scheduling. Keep legacy direct-operation creation paths separate. Do not infer host currency selection, null parsing, notification cascades, async/modal behavior or original/physical acceptance. Read toolkit-cli/docs/edlt-scene-selector-control.md, toolkit-cli/docs/edlt-scene-selector-metadata.md, toolkit-cli/docs/edlt-scene-inventory-timeline.md and the causal inventory batch report. Preserve one owning PP save, separate project save and no replay after uncertainty.
+
+
+## SceneManager Add buttons and reconciliation
+
+Use `scene-button-control` with `button` equal to `add-trigger-group`,
+`add-action-selector` or `new-lighting-group`, an explicit `dialog` outcome and
+`scene` 1..8. Lighting additionally requires `selected_scenes`; zero/multiple
+rows return without creating. Read selector views first and bind actual returned
+identities/ordinals/values. Action Add consumes the retained selected Trigger,
+not a later raw Trigger edit, and cannot select a new action absent from old
+Items. Lighting compares returned Group address with application-choice values;
+it does not insert a scene item. Inspect `scene_button_control` callbacks and
+`planned_creations`. Cancellation skips accepted OnOK checks but setup still
+needs a free provisional address. Accepted naming requires explicit native
+Project.TagName. JSON cannot issue owner/control/initializer authority.
+
+`coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
+diagnoses declared source profiles, obligation variants, mappings and pinned
+evidence. Report its nested `complete_for_declared_surface` separately from
+global completion. Supplied JSON cannot issue original/physical gate authority
+or make `--require-complete` pass. Read
+`toolkit-cli/docs/toolkit-obligation-reconciliation.md`; do not infer functional
+profiles from control names, forwarded commands or test filenames. Treat
+OnColor as a scalar only for `TLEDStatusIndicator` and
+`TFlashLEDStatusIndicator`; other OnColor bindings remain events requiring
+handler evidence.

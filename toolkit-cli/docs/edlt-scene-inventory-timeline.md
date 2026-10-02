@@ -1,5 +1,9 @@
 # Causal SceneManager inventories
 
+Explicit Add-button callbacks and text-only Language ownership now extend this
+timeline. Read [buttons and Language boundaries](edlt-scene-buttons-language.md)
+for the schemas, retained selections and old-label rules.
+
 Native SceneManager metadata resolves the inventory at each admitted operation
 and explicit selector callback. This allows missing Trigger Control groups and
 action levels to be created after load, and allows accepted or cancelled
@@ -66,7 +70,9 @@ cache, but cannot enter an earlier SceneManager choice list. The parent still
 admits one SceneManager operation, which must precede its Scene widget edits.
 Reset starts fresh initialization and control state and retains its existing
 ordering restrictions.
-Earlier Network language mutations still refuse this initializer-backed
+Earlier text-only Network Language mutations now use the sealed Language
+initializer described in [buttons and Language boundaries](edlt-scene-buttons-language.md).
+Unverified or image-dependent Network language mutations still refuse this initializer-backed
 profile because original label ownership cannot be inferred from changed XML.
 
 Native execution keeps the closed-project, exact network lock, freshness,

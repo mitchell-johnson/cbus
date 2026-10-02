@@ -99,6 +99,51 @@ class NewInteropSelectionTests(unittest.TestCase):
         self.assertEqual(len(selected),16)
         self.assertEqual(set(selected),retained | pure | {module})
 
+    def test_scene_buttons_language_reconciliation_owning_modules_and_rosters(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root/'toolkit-cli/Makefile').read_text()
+        workflow = (root/'.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgate_edlt_scene_controls_language_interop.py'
+        profiles = ('action-new-retains-old-items', 'action-old-selected-trigger-new-raw-trigger',
+            'action-cancel', 'trigger-new-explicit-write', 'trigger-cancel',
+            'lighting-zero-address', 'lighting-one-address', 'lighting-two-address',
+            'lighting-secondary-zero-address', 'lighting-no-selected-row',
+            'lighting-multiple-selected-rows', 'language-valid-getter-retains-old-labels',
+            'language-explicit-setter', 'language-explicit-refresh', 'language-cancel',
+            'language-noop', 'later-language-cannot-enter-earlier-view', 'language-and-action-old-binding')
+        fault_names = ('action-new-retains-old-items', 'language-explicit-setter')
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                           ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module+'::test_public_controls_language_preview_apply_fresh['+name+'-'+backend+']'
+                        for name in profiles}
+            expected |= {module+'::test_public_controls_language_known_failure_restores_source['+name+'-'+backend+']'
+                         for name in fault_names}
+            expected |= {module+'::test_public_controls_language_lost_success_never_replayed['+phase+'-'+name+'-'+backend+']'
+                         for phase in ('pp-save', 'project-save') for name in fault_names}
+            body = make.split(target+': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/test_[^']+)'", body)
+                      if row.startswith(module+'::')]
+            self.assertEqual(len(actual), 24)
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            section = workflow.split('--selection '+selection+'\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(section.count('--require-module '+module), 1)
+        pure = {'tests/test_edlt_scene_button_control.py', 'tests/test_edlt_scene_button_model.py',
+            'tests/test_edlt_scene_button_native.py', 'tests/test_edlt_scene_language_initializer.py',
+            'tests/test_edlt_scene_language_native.py', 'tests/test_edlt_parent_scene_language.py',
+            'tests/test_toolkit_obligation_reconcile.py', 'tests/test_cli_coverage_reconcile.py'}
+        offline = workflow.split('--selection offline\n', 1)[1].split('\n      - name:', 1)[0]
+        for name in pure:
+            self.assertEqual(offline.count('--require-module '+name), 1)
+        def names(path):
+            return [line.strip() for line in path.read_text().splitlines()
+                    if line.strip() and not line.lstrip().startswith('#')]
+        selected = names(root/'toolkit-cli/docs/edlt-scene-controls-language-release-test-modules.txt')
+        retained = names(root/'toolkit-cli/docs/edlt-scene-inventory-release-test-modules.txt')
+        self.assertEqual(len(selected), len(set(selected)))
+        self.assertEqual(len(selected), 25)
+        self.assertEqual(set(selected), set(retained) | pure | {module})
+
     def test_make_and_ci_retain_exact_new_backend_rosters(self):
         root = Path(__file__).resolve().parents[2]
         make = (root / "toolkit-cli/Makefile").read_text()

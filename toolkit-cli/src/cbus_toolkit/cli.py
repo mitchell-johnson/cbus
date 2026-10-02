@@ -2352,6 +2352,14 @@ def build_parser():
         "--evidence-root", type=Path,
         help="Verify every evidence input and report against this trusted Toolkit source or acceptance snapshot root",
     )
+    coverage.add_argument(
+        "--reconciliation-bundle", type=Path,
+        help="Also reconcile an explicitly declared source/obligation bundle; does not close global Toolkit parity",
+    )
+    coverage.add_argument(
+        "--reconciliation-artifact-root", type=Path,
+        help="Verify reconciliation artifacts as contained relative files under this explicit root; requires --reconciliation-bundle",
+    )
 
     memory = commands.add_parser("memory", help="Encode/decode logical unit memory and masked patches; no hardware I/O")
     memory.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -4473,6 +4481,15 @@ def run(args):
         result = spec.validate_value(args.parameter, args.value)
         return {"parameter": args.parameter, "value": result}, int(not result["valid"])
     if args.area == "coverage":
+        if args.reconciliation_artifact_root is not None and args.reconciliation_bundle is None:
+            raise ValueError("--reconciliation-artifact-root requires --reconciliation-bundle")
+        reconciliation = None
+        if args.reconciliation_bundle is not None:
+            from .toolkit_obligation_reconcile import reconcile_bundle_file
+
+            reconciliation = reconcile_bundle_file(
+                args.reconciliation_bundle, artifact_root=args.reconciliation_artifact_root,
+            )
         ledger = json.loads(files("cbus_toolkit").joinpath("capabilities.json").read_text())
         from .parity import evaluate_packaged
 
@@ -4485,6 +4502,7 @@ def run(args):
             "complete": complete,
             "progress": progress,
             **ledger,
+            **({"reconciliation": reconciliation} if reconciliation is not None else {}),
         }, int(args.require_complete and not complete)
     raise ValueError("Unknown command area")
 

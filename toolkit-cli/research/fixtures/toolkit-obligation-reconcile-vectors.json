@@ -1,0 +1,1668 @@
+{
+  "artifact_documents": {
+    "synthetic-evidence.json": {
+      "case_ids": [
+        "case:empty",
+        "case:populated"
+      ],
+      "execution_kind": "modeled",
+      "format": "cbus-toolkit-obligation-reconciliation-evidence-v1",
+      "gate_id": null,
+      "id": "evidence:synthetic-modeled",
+      "observations": [
+        {
+          "case_id": "case:empty",
+          "dimension": "nominal",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "empty"
+        },
+        {
+          "case_id": "case:empty",
+          "dimension": "invalid_input",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "empty"
+        },
+        {
+          "case_id": "case:empty",
+          "dimension": "persistence_recovery",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "empty"
+        },
+        {
+          "case_id": "case:populated",
+          "dimension": "nominal",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "populated"
+        },
+        {
+          "case_id": "case:populated",
+          "dimension": "invalid_input",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "populated"
+        },
+        {
+          "case_id": "case:populated",
+          "dimension": "persistence_recovery",
+          "obligation_id": "workflow:synthetic-save",
+          "profile": "synthetic-profile",
+          "result": "passed",
+          "source_ids": [
+            "scope:anchor:fb4f5d3973529ccf5dc3",
+            "scope:dialog:a781afa287882fd95466",
+            "scope:executable-control:2aafcd8c47fa9c2d0c03",
+            "scope:executable-control:8686d933d62c8b993588",
+            "scope:executable-control:dace71cc8404b601c251",
+            "scope:executable-event:1c7273b0bf93f9c2ee0b",
+            "scope:executable-event:6af04d57d9eab06309b8",
+            "scope:executable-form:bac5d401412d7536",
+            "scope:executable-property:583c5d2fdff783caaa0b",
+            "scope:heading:8538055932e9c107fd4e",
+            "scope:macro-leaf:c5d09cbc54077cd94913",
+            "scope:managed-api:f0a3b7bcdb99a5113075",
+            "scope:managed-control:2cad454f3f44a2218b63",
+            "scope:managed-declaration:38b345a7e838e8e5f44c",
+            "scope:managed-event:efb29e3ce487f1970025",
+            "scope:managed-method:bb899c954efedbb70402",
+            "scope:native-method:87c6e2603ca177c3a2b5",
+            "scope:native-method:c6bf120a5e1562fbd960",
+            "scope:public-command:04c383d58ebc3af43b28",
+            "scope:topic:c5d09cbc54077cd94913",
+            "scope:unindexed-html:9455cface2105d135a71"
+          ],
+          "variant": "populated"
+        }
+      ],
+      "result": "passed",
+      "source_pins": {
+        "scope:anchor:fb4f5d3973529ccf5dc3": "d6c5424182575f3c4bc5ffdaeb7456b0630eedd7b763ba699aa532491687e5e8",
+        "scope:dialog:a781afa287882fd95466": "f3aa5ba3270a853bd41c70ac982874896000bb018957ceaa9d5d8da1bf0bf625",
+        "scope:executable-control:2aafcd8c47fa9c2d0c03": "76da0411829af5489f776e385af0e03f4e06543cd160348db9f9baebabc081ce",
+        "scope:executable-control:8686d933d62c8b993588": "767497041f6ad3e9a172764b175fd1ffd400b5c95119cca6e7f27d3d6f794d2b",
+        "scope:executable-control:dace71cc8404b601c251": "06aff04062c859414a134ce0a77513d54b016ac820ad8a61431ee65a093550d0",
+        "scope:executable-event:1c7273b0bf93f9c2ee0b": "39637adb06d74c65e5871219978f6dfc13032046362d8ae94019ff49c6373cd2",
+        "scope:executable-event:6af04d57d9eab06309b8": "be5f3ece73c6d20c907c1feaf7442a8e2c9e1a2a272641a53d7582f791266f7f",
+        "scope:executable-form:bac5d401412d7536": "f934fcc0dfe3e58e6781a9cd3cea90f82cb60662990fddc16f2f9dc755ef0d7e",
+        "scope:executable-property:583c5d2fdff783caaa0b": "30f37712351e8887a7be164e241069e2f9b38fbd4b6810f50f094b85c9f23342",
+        "scope:heading:8538055932e9c107fd4e": "cee524814c61d547f4d83b77de6859703439a6390376e98106fff596c75fadff",
+        "scope:macro-leaf:c5d09cbc54077cd94913": "eb0f8885e6f5112257507f16c0b135a425f455f6ca41a035e74419fc5b895e21",
+        "scope:managed-api:f0a3b7bcdb99a5113075": "9f59fc90db1b29c1a91975672e20b8ca8bde4911d2664f026e2ae75854472c82",
+        "scope:managed-control:2cad454f3f44a2218b63": "a2bd146c5cef7886b7e081266a92b5d821ff6ef34b180bbaf57d40efe100ac1e",
+        "scope:managed-declaration:38b345a7e838e8e5f44c": "a82b5af3446d33f18e8a0c1d73cd23efa8e27c37a213cfbe81744e31bf188bb2",
+        "scope:managed-event:efb29e3ce487f1970025": "70e36f871d1b193bba66d5ea9ba16fc5e3c108b187d04bea6dbd75cf84deddf5",
+        "scope:managed-method:bb899c954efedbb70402": "c6d8e45fc0dfd0b2d8b9bf00a417cb3492721bdd78ac94cfb845b05167312cd2",
+        "scope:native-method:87c6e2603ca177c3a2b5": "b99020c710c98fae16163e6085ad3bcfdc7ee2393229b7117188771ce1c20e26",
+        "scope:native-method:c6bf120a5e1562fbd960": "caec4bf301db2782666cee571cc5358f6793d9c6f254edced3c555099bbfe88e",
+        "scope:public-command:04c383d58ebc3af43b28": "9738c1cf93407ef0b5cbd6bc607db1521bbffaa20a3fe34780c1a1134ab84b49",
+        "scope:topic:c5d09cbc54077cd94913": "5dbe74a7f1031d5d3f472faabf917bd0c5bf3b6a133b6931083ca63382bf006b",
+        "scope:unindexed-html:9455cface2105d135a71": "696966e91ce853d99ae6d162915dd143e30a013b96ef793c863c3ac5ee45208b"
+      }
+    },
+    "synthetic-managed-annex": {
+      "decompiled_source_symbols": [
+        {
+          "path": "synthetic/Name.cs",
+          "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+          "symbol": "OnTextChanged"
+        }
+      ],
+      "format": "synthetic-static-surface-v1",
+      "framework_api_declarations": [
+        {
+          "member": "TextChanged",
+          "path": "synthetic/TextBox-api.xml",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "managed_controls": [
+        {
+          "class": "TextBox",
+          "events": [
+            {
+              "event": "TextChanged",
+              "handler": "OnTextChanged",
+              "handler_id": "scope:managed-method:bb899c954efedbb70402"
+            }
+          ],
+          "owner": "Synthetic.Name",
+          "path": "Text"
+        }
+      ],
+      "managed_method_spans": [
+        {
+          "assembly": "synthetic/Controls.dll",
+          "body_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+          "symbol": "Synthetic.Name::OnTextChanged"
+        }
+      ],
+      "native_method_spans": [
+        {
+          "assembly": "synthetic/Toolkit.exe",
+          "body_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+          "symbol": "TSyntheticForm::FormShow"
+        },
+        {
+          "assembly": "synthetic/Toolkit.exe",
+          "body_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "symbol": "TSyntheticForm::SaveClick"
+        }
+      ]
+    },
+    "toolkit-executable-surface": {
+      "counts": {
+        "components": 3,
+        "event_bindings": 3,
+        "parse_errors": 0,
+        "parsed_form_resources": 1
+      },
+      "resources": [
+        {
+          "components": [
+            {
+              "class": "TSyntheticForm",
+              "name": "SyntheticForm",
+              "path": "SyntheticForm"
+            },
+            {
+              "class": "TButton",
+              "name": "SaveButton",
+              "path": "SyntheticForm/SaveButton"
+            },
+            {
+              "class": "TLEDStatusIndicator",
+              "name": "Indicator",
+              "path": "SyntheticForm/Indicator"
+            }
+          ],
+          "event_bindings": [
+            {
+              "component_path": "SyntheticForm",
+              "handler": "FormShow",
+              "property": "OnShow"
+            },
+            {
+              "component_path": "SyntheticForm/SaveButton",
+              "handler": "SaveClick",
+              "property": "OnClick"
+            },
+            {
+              "component_path": "SyntheticForm/Indicator",
+              "handler": "clRed",
+              "property": "OnColor"
+            }
+          ],
+          "resource_name": "TSYNTHETICFORM",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "root_class": "TSyntheticForm",
+          "root_name": "SyntheticForm"
+        }
+      ],
+      "schema_version": 1
+    },
+    "toolkit-help-surface": {
+      "counts": {
+        "indexed_topics": 1
+      },
+      "device_dialog_candidates": [
+        {
+          "id": "dialog:synthetic.htm",
+          "topic_id": "help:synthetic.htm"
+        }
+      ],
+      "macro_reference": {
+        "leaf_topic_ids": [
+          "help:synthetic.htm"
+        ]
+      },
+      "public_commands": [
+        {
+          "id": "cgate:SYNTHETIC SAVE",
+          "source": {
+            "syntax_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+          }
+        }
+      ],
+      "schema_version": 1,
+      "topics": [
+        {
+          "file": "synthetic.htm",
+          "id": "help:synthetic.htm",
+          "page": {
+            "anchors": [
+              {
+                "name": "save"
+              }
+            ],
+            "headings": [
+              {
+                "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+              }
+            ],
+            "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+          }
+        }
+      ],
+      "unindexed_html": [
+        {
+          "id": "help-unindexed:synthetic-shell.htm",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+        }
+      ]
+    }
+  },
+  "bundle": {
+    "bindings": [
+      {
+        "disposition": "workflow",
+        "id": "binding:0-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:anchor:fb4f5d3973529ccf5dc3",
+        "source_sha256": "d6c5424182575f3c4bc5ffdaeb7456b0630eedd7b763ba699aa532491687e5e8",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:0-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:anchor:fb4f5d3973529ccf5dc3",
+        "source_sha256": "d6c5424182575f3c4bc5ffdaeb7456b0630eedd7b763ba699aa532491687e5e8",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:1-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:dialog:a781afa287882fd95466",
+        "source_sha256": "f3aa5ba3270a853bd41c70ac982874896000bb018957ceaa9d5d8da1bf0bf625",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:1-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:dialog:a781afa287882fd95466",
+        "source_sha256": "f3aa5ba3270a853bd41c70ac982874896000bb018957ceaa9d5d8da1bf0bf625",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:2-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:2aafcd8c47fa9c2d0c03",
+        "source_sha256": "76da0411829af5489f776e385af0e03f4e06543cd160348db9f9baebabc081ce",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:2-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:2aafcd8c47fa9c2d0c03",
+        "source_sha256": "76da0411829af5489f776e385af0e03f4e06543cd160348db9f9baebabc081ce",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:3-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:8686d933d62c8b993588",
+        "source_sha256": "767497041f6ad3e9a172764b175fd1ffd400b5c95119cca6e7f27d3d6f794d2b",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:3-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:8686d933d62c8b993588",
+        "source_sha256": "767497041f6ad3e9a172764b175fd1ffd400b5c95119cca6e7f27d3d6f794d2b",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:4-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:dace71cc8404b601c251",
+        "source_sha256": "06aff04062c859414a134ce0a77513d54b016ac820ad8a61431ee65a093550d0",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:4-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-control:dace71cc8404b601c251",
+        "source_sha256": "06aff04062c859414a134ce0a77513d54b016ac820ad8a61431ee65a093550d0",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:5-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-event:1c7273b0bf93f9c2ee0b",
+        "source_sha256": "39637adb06d74c65e5871219978f6dfc13032046362d8ae94019ff49c6373cd2",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:5-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-event:1c7273b0bf93f9c2ee0b",
+        "source_sha256": "39637adb06d74c65e5871219978f6dfc13032046362d8ae94019ff49c6373cd2",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:6-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-event:6af04d57d9eab06309b8",
+        "source_sha256": "be5f3ece73c6d20c907c1feaf7442a8e2c9e1a2a272641a53d7582f791266f7f",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:6-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-event:6af04d57d9eab06309b8",
+        "source_sha256": "be5f3ece73c6d20c907c1feaf7442a8e2c9e1a2a272641a53d7582f791266f7f",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:7-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-form:bac5d401412d7536",
+        "source_sha256": "f934fcc0dfe3e58e6781a9cd3cea90f82cb60662990fddc16f2f9dc755ef0d7e",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:7-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-form:bac5d401412d7536",
+        "source_sha256": "f934fcc0dfe3e58e6781a9cd3cea90f82cb60662990fddc16f2f9dc755ef0d7e",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:8-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-property:583c5d2fdff783caaa0b",
+        "source_sha256": "30f37712351e8887a7be164e241069e2f9b38fbd4b6810f50f094b85c9f23342",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:8-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:executable-property:583c5d2fdff783caaa0b",
+        "source_sha256": "30f37712351e8887a7be164e241069e2f9b38fbd4b6810f50f094b85c9f23342",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:9-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:heading:8538055932e9c107fd4e",
+        "source_sha256": "cee524814c61d547f4d83b77de6859703439a6390376e98106fff596c75fadff",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:9-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:heading:8538055932e9c107fd4e",
+        "source_sha256": "cee524814c61d547f4d83b77de6859703439a6390376e98106fff596c75fadff",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:10-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:macro-leaf:c5d09cbc54077cd94913",
+        "source_sha256": "eb0f8885e6f5112257507f16c0b135a425f455f6ca41a035e74419fc5b895e21",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:10-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:macro-leaf:c5d09cbc54077cd94913",
+        "source_sha256": "eb0f8885e6f5112257507f16c0b135a425f455f6ca41a035e74419fc5b895e21",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:11-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-api:f0a3b7bcdb99a5113075",
+        "source_sha256": "9f59fc90db1b29c1a91975672e20b8ca8bde4911d2664f026e2ae75854472c82",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:11-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-api:f0a3b7bcdb99a5113075",
+        "source_sha256": "9f59fc90db1b29c1a91975672e20b8ca8bde4911d2664f026e2ae75854472c82",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:12-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-control:2cad454f3f44a2218b63",
+        "source_sha256": "a2bd146c5cef7886b7e081266a92b5d821ff6ef34b180bbaf57d40efe100ac1e",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:12-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-control:2cad454f3f44a2218b63",
+        "source_sha256": "a2bd146c5cef7886b7e081266a92b5d821ff6ef34b180bbaf57d40efe100ac1e",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:13-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-declaration:38b345a7e838e8e5f44c",
+        "source_sha256": "a82b5af3446d33f18e8a0c1d73cd23efa8e27c37a213cfbe81744e31bf188bb2",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:13-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-declaration:38b345a7e838e8e5f44c",
+        "source_sha256": "a82b5af3446d33f18e8a0c1d73cd23efa8e27c37a213cfbe81744e31bf188bb2",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:14-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-event:efb29e3ce487f1970025",
+        "source_sha256": "70e36f871d1b193bba66d5ea9ba16fc5e3c108b187d04bea6dbd75cf84deddf5",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:14-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-event:efb29e3ce487f1970025",
+        "source_sha256": "70e36f871d1b193bba66d5ea9ba16fc5e3c108b187d04bea6dbd75cf84deddf5",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:15-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-method:bb899c954efedbb70402",
+        "source_sha256": "c6d8e45fc0dfd0b2d8b9bf00a417cb3492721bdd78ac94cfb845b05167312cd2",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:15-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:managed-method:bb899c954efedbb70402",
+        "source_sha256": "c6d8e45fc0dfd0b2d8b9bf00a417cb3492721bdd78ac94cfb845b05167312cd2",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:16-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:native-method:87c6e2603ca177c3a2b5",
+        "source_sha256": "b99020c710c98fae16163e6085ad3bcfdc7ee2393229b7117188771ce1c20e26",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:16-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:native-method:87c6e2603ca177c3a2b5",
+        "source_sha256": "b99020c710c98fae16163e6085ad3bcfdc7ee2393229b7117188771ce1c20e26",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:17-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:native-method:c6bf120a5e1562fbd960",
+        "source_sha256": "caec4bf301db2782666cee571cc5358f6793d9c6f254edced3c555099bbfe88e",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:17-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:native-method:c6bf120a5e1562fbd960",
+        "source_sha256": "caec4bf301db2782666cee571cc5358f6793d9c6f254edced3c555099bbfe88e",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:18-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:public-command:04c383d58ebc3af43b28",
+        "source_sha256": "9738c1cf93407ef0b5cbd6bc607db1521bbffaa20a3fe34780c1a1134ab84b49",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:18-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:public-command:04c383d58ebc3af43b28",
+        "source_sha256": "9738c1cf93407ef0b5cbd6bc607db1521bbffaa20a3fe34780c1a1134ab84b49",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:19-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:topic:c5d09cbc54077cd94913",
+        "source_sha256": "5dbe74a7f1031d5d3f472faabf917bd0c5bf3b6a133b6931083ca63382bf006b",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:19-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:topic:c5d09cbc54077cd94913",
+        "source_sha256": "5dbe74a7f1031d5d3f472faabf917bd0c5bf3b6a133b6931083ca63382bf006b",
+        "variant": "populated"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:20-empty",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:unindexed-html:9455cface2105d135a71",
+        "source_sha256": "696966e91ce853d99ae6d162915dd143e30a013b96ef793c863c3ac5ee45208b",
+        "variant": "empty"
+      },
+      {
+        "disposition": "workflow",
+        "id": "binding:20-populated",
+        "obligation_id": "workflow:synthetic-save",
+        "profile": "synthetic-profile",
+        "source_id": "scope:unindexed-html:9455cface2105d135a71",
+        "source_sha256": "696966e91ce853d99ae6d162915dd143e30a013b96ef793c863c3ac5ee45208b",
+        "variant": "populated"
+      }
+    ],
+    "current_artifacts": {
+      "synthetic-evidence.json": {
+        "bytes": 9064,
+        "sha256": "9b584c8e6b94227785787634501c73c5d5338a71acfe7e4f93dd13ba5d9ff869"
+      },
+      "synthetic-managed-annex": {
+        "bytes": 1083,
+        "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+      },
+      "toolkit-executable-surface": {
+        "bytes": 814,
+        "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+      },
+      "toolkit-help-surface": {
+        "bytes": 750,
+        "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+      }
+    },
+    "format": "cbus-toolkit-obligation-reconciliation-bundle-v1",
+    "obligations": [
+      {
+        "definition_status": "defined",
+        "id": "workflow:synthetic-save",
+        "implementation_basis": "typed_workflow",
+        "implementation_status": "implemented",
+        "profiles": [
+          {
+            "id": "synthetic-profile",
+            "required_dimensions": [
+              "nominal",
+              "invalid_input",
+              "persistence_recovery"
+            ],
+            "variants": [
+              "empty",
+              "populated"
+            ]
+          }
+        ]
+      }
+    ],
+    "receipts": [
+      {
+        "artifact": {
+          "bytes": 9064,
+          "id": "synthetic-evidence.json",
+          "sha256": "9b584c8e6b94227785787634501c73c5d5338a71acfe7e4f93dd13ba5d9ff869"
+        },
+        "case_ids": [
+          "case:empty",
+          "case:populated"
+        ],
+        "execution_kind": "modeled",
+        "format": "cbus-toolkit-obligation-reconciliation-evidence-v1",
+        "gate_id": null,
+        "id": "evidence:synthetic-modeled",
+        "observations": [
+          {
+            "case_id": "case:empty",
+            "dimension": "nominal",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "empty"
+          },
+          {
+            "case_id": "case:empty",
+            "dimension": "invalid_input",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "empty"
+          },
+          {
+            "case_id": "case:empty",
+            "dimension": "persistence_recovery",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "empty"
+          },
+          {
+            "case_id": "case:populated",
+            "dimension": "nominal",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "populated"
+          },
+          {
+            "case_id": "case:populated",
+            "dimension": "invalid_input",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "populated"
+          },
+          {
+            "case_id": "case:populated",
+            "dimension": "persistence_recovery",
+            "obligation_id": "workflow:synthetic-save",
+            "profile": "synthetic-profile",
+            "result": "passed",
+            "source_ids": [
+              "scope:anchor:fb4f5d3973529ccf5dc3",
+              "scope:dialog:a781afa287882fd95466",
+              "scope:executable-control:2aafcd8c47fa9c2d0c03",
+              "scope:executable-control:8686d933d62c8b993588",
+              "scope:executable-control:dace71cc8404b601c251",
+              "scope:executable-event:1c7273b0bf93f9c2ee0b",
+              "scope:executable-event:6af04d57d9eab06309b8",
+              "scope:executable-form:bac5d401412d7536",
+              "scope:executable-property:583c5d2fdff783caaa0b",
+              "scope:heading:8538055932e9c107fd4e",
+              "scope:macro-leaf:c5d09cbc54077cd94913",
+              "scope:managed-api:f0a3b7bcdb99a5113075",
+              "scope:managed-control:2cad454f3f44a2218b63",
+              "scope:managed-declaration:38b345a7e838e8e5f44c",
+              "scope:managed-event:efb29e3ce487f1970025",
+              "scope:managed-method:bb899c954efedbb70402",
+              "scope:native-method:87c6e2603ca177c3a2b5",
+              "scope:native-method:c6bf120a5e1562fbd960",
+              "scope:public-command:04c383d58ebc3af43b28",
+              "scope:topic:c5d09cbc54077cd94913",
+              "scope:unindexed-html:9455cface2105d135a71"
+            ],
+            "variant": "populated"
+          }
+        ],
+        "result": "passed",
+        "source_pins": {
+          "scope:anchor:fb4f5d3973529ccf5dc3": "d6c5424182575f3c4bc5ffdaeb7456b0630eedd7b763ba699aa532491687e5e8",
+          "scope:dialog:a781afa287882fd95466": "f3aa5ba3270a853bd41c70ac982874896000bb018957ceaa9d5d8da1bf0bf625",
+          "scope:executable-control:2aafcd8c47fa9c2d0c03": "76da0411829af5489f776e385af0e03f4e06543cd160348db9f9baebabc081ce",
+          "scope:executable-control:8686d933d62c8b993588": "767497041f6ad3e9a172764b175fd1ffd400b5c95119cca6e7f27d3d6f794d2b",
+          "scope:executable-control:dace71cc8404b601c251": "06aff04062c859414a134ce0a77513d54b016ac820ad8a61431ee65a093550d0",
+          "scope:executable-event:1c7273b0bf93f9c2ee0b": "39637adb06d74c65e5871219978f6dfc13032046362d8ae94019ff49c6373cd2",
+          "scope:executable-event:6af04d57d9eab06309b8": "be5f3ece73c6d20c907c1feaf7442a8e2c9e1a2a272641a53d7582f791266f7f",
+          "scope:executable-form:bac5d401412d7536": "f934fcc0dfe3e58e6781a9cd3cea90f82cb60662990fddc16f2f9dc755ef0d7e",
+          "scope:executable-property:583c5d2fdff783caaa0b": "30f37712351e8887a7be164e241069e2f9b38fbd4b6810f50f094b85c9f23342",
+          "scope:heading:8538055932e9c107fd4e": "cee524814c61d547f4d83b77de6859703439a6390376e98106fff596c75fadff",
+          "scope:macro-leaf:c5d09cbc54077cd94913": "eb0f8885e6f5112257507f16c0b135a425f455f6ca41a035e74419fc5b895e21",
+          "scope:managed-api:f0a3b7bcdb99a5113075": "9f59fc90db1b29c1a91975672e20b8ca8bde4911d2664f026e2ae75854472c82",
+          "scope:managed-control:2cad454f3f44a2218b63": "a2bd146c5cef7886b7e081266a92b5d821ff6ef34b180bbaf57d40efe100ac1e",
+          "scope:managed-declaration:38b345a7e838e8e5f44c": "a82b5af3446d33f18e8a0c1d73cd23efa8e27c37a213cfbe81744e31bf188bb2",
+          "scope:managed-event:efb29e3ce487f1970025": "70e36f871d1b193bba66d5ea9ba16fc5e3c108b187d04bea6dbd75cf84deddf5",
+          "scope:managed-method:bb899c954efedbb70402": "c6d8e45fc0dfd0b2d8b9bf00a417cb3492721bdd78ac94cfb845b05167312cd2",
+          "scope:native-method:87c6e2603ca177c3a2b5": "b99020c710c98fae16163e6085ad3bcfdc7ee2393229b7117188771ce1c20e26",
+          "scope:native-method:c6bf120a5e1562fbd960": "caec4bf301db2782666cee571cc5358f6793d9c6f254edced3c555099bbfe88e",
+          "scope:public-command:04c383d58ebc3af43b28": "9738c1cf93407ef0b5cbd6bc607db1521bbffaa20a3fe34780c1a1134ab84b49",
+          "scope:topic:c5d09cbc54077cd94913": "5dbe74a7f1031d5d3f472faabf917bd0c5bf3b6a133b6931083ca63382bf006b",
+          "scope:unindexed-html:9455cface2105d135a71": "696966e91ce853d99ae6d162915dd143e30a013b96ef793c863c3ac5ee45208b"
+        }
+      }
+    ],
+    "source_inventory_complete": true,
+    "sources": [
+      {
+        "anchor": {
+          "name": "save",
+          "page_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:anchor:fb4f5d3973529ccf5dc3",
+        "kind": "anchor",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "help:synthetic.htm#anchor-0",
+        "source_sha256": "d6c5424182575f3c4bc5ffdaeb7456b0630eedd7b763ba699aa532491687e5e8"
+      },
+      {
+        "anchor": {
+          "page_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "topic_id": "help:synthetic.htm"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:dialog:a781afa287882fd95466",
+        "kind": "dialog",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "dialog:synthetic.htm",
+        "source_sha256": "f3aa5ba3270a853bd41c70ac982874896000bb018957ceaa9d5d8da1bf0bf625"
+      },
+      {
+        "anchor": {
+          "class": "TSyntheticForm",
+          "name": "SyntheticForm",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:executable-control:2aafcd8c47fa9c2d0c03",
+        "kind": "executable_control",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm",
+        "source_sha256": "76da0411829af5489f776e385af0e03f4e06543cd160348db9f9baebabc081ce"
+      },
+      {
+        "anchor": {
+          "class": "TButton",
+          "name": "SaveButton",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:executable-control:8686d933d62c8b993588",
+        "kind": "executable_control",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm/SaveButton",
+        "source_sha256": "767497041f6ad3e9a172764b175fd1ffd400b5c95119cca6e7f27d3d6f794d2b"
+      },
+      {
+        "anchor": {
+          "class": "TLEDStatusIndicator",
+          "name": "Indicator",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:executable-control:dace71cc8404b601c251",
+        "kind": "executable_control",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm/Indicator",
+        "source_sha256": "06aff04062c859414a134ce0a77513d54b016ac820ad8a61431ee65a093550d0"
+      },
+      {
+        "anchor": {
+          "component_class": "TSyntheticForm",
+          "form_class": "TSyntheticForm",
+          "handler": "FormShow",
+          "property": "OnShow",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": "scope:native-method:87c6e2603ca177c3a2b5",
+        "id": "scope:executable-event:1c7273b0bf93f9c2ee0b",
+        "kind": "executable_event",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm#OnShow=FormShow",
+        "source_sha256": "39637adb06d74c65e5871219978f6dfc13032046362d8ae94019ff49c6373cd2"
+      },
+      {
+        "anchor": {
+          "component_class": "TButton",
+          "form_class": "TSyntheticForm",
+          "handler": "SaveClick",
+          "property": "OnClick",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": "scope:native-method:c6bf120a5e1562fbd960",
+        "id": "scope:executable-event:6af04d57d9eab06309b8",
+        "kind": "executable_event",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm/SaveButton#OnClick=SaveClick",
+        "source_sha256": "be5f3ece73c6d20c907c1feaf7442a8e2c9e1a2a272641a53d7582f791266f7f"
+      },
+      {
+        "anchor": {
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "root_class": "TSyntheticForm",
+          "root_name": "SyntheticForm"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:executable-form:bac5d401412d7536",
+        "kind": "executable_form",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM",
+        "source_sha256": "f934fcc0dfe3e58e6781a9cd3cea90f82cb60662990fddc16f2f9dc755ef0d7e"
+      },
+      {
+        "anchor": {
+          "component_class": "TLEDStatusIndicator",
+          "form_class": "TSyntheticForm",
+          "property": "OnColor",
+          "resource_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "value": "clRed"
+        },
+        "artifacts": [
+          {
+            "bytes": 814,
+            "id": "toolkit-executable-surface",
+            "sha256": "b5f32c5b7358fa124e493d8dbf8bdb912bd60805bbc9735437b2fb4658fdc615"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:executable-property:583c5d2fdff783caaa0b",
+        "kind": "executable_property",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "TSYNTHETICFORM/SyntheticForm/Indicator#OnColor",
+        "source_sha256": "30f37712351e8887a7be164e241069e2f9b38fbd4b6810f50f094b85c9f23342"
+      },
+      {
+        "anchor": {
+          "heading_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:heading:8538055932e9c107fd4e",
+        "kind": "heading",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "help:synthetic.htm#heading-0",
+        "source_sha256": "cee524814c61d547f4d83b77de6859703439a6390376e98106fff596c75fadff"
+      },
+      {
+        "anchor": {
+          "page_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:macro-leaf:c5d09cbc54077cd94913",
+        "kind": "macro_leaf",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "help:synthetic.htm",
+        "source_sha256": "eb0f8885e6f5112257507f16c0b135a425f455f6ca41a035e74419fc5b895e21"
+      },
+      {
+        "anchor": {
+          "declaration_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:managed-api:f0a3b7bcdb99a5113075",
+        "kind": "managed_api",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "synthetic/TextBox-api.xml:TextChanged",
+        "source_sha256": "9f59fc90db1b29c1a91975672e20b8ca8bde4911d2664f026e2ae75854472c82"
+      },
+      {
+        "anchor": {
+          "class": "TextBox"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:managed-control:2cad454f3f44a2218b63",
+        "kind": "managed_control",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "Synthetic.Name/Text",
+        "source_sha256": "a2bd146c5cef7886b7e081266a92b5d821ff6ef34b180bbaf57d40efe100ac1e"
+      },
+      {
+        "anchor": {
+          "declaration_sha256": "9999999999999999999999999999999999999999999999999999999999999999"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:managed-declaration:38b345a7e838e8e5f44c",
+        "kind": "managed_declaration",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "synthetic/Name.cs:OnTextChanged",
+        "source_sha256": "a82b5af3446d33f18e8a0c1d73cd23efa8e27c37a213cfbe81744e31bf188bb2"
+      },
+      {
+        "anchor": {
+          "event": "TextChanged",
+          "handler": "OnTextChanged",
+          "owner": "Synthetic.Name"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": "scope:managed-method:bb899c954efedbb70402",
+        "id": "scope:managed-event:efb29e3ce487f1970025",
+        "kind": "managed_event",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "Synthetic.Name/Text#TextChanged=OnTextChanged",
+        "source_sha256": "70e36f871d1b193bba66d5ea9ba16fc5e3c108b187d04bea6dbd75cf84deddf5"
+      },
+      {
+        "anchor": {
+          "assembly": "synthetic/Controls.dll",
+          "body_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+          "symbol": "Synthetic.Name::OnTextChanged"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:managed-method:bb899c954efedbb70402",
+        "kind": "managed_method",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "synthetic/Controls.dll:Synthetic.Name::OnTextChanged",
+        "source_sha256": "c6d8e45fc0dfd0b2d8b9bf00a417cb3492721bdd78ac94cfb845b05167312cd2"
+      },
+      {
+        "anchor": {
+          "assembly": "synthetic/Toolkit.exe",
+          "body_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+          "symbol": "TSyntheticForm::FormShow"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:native-method:87c6e2603ca177c3a2b5",
+        "kind": "native_method",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "synthetic/Toolkit.exe:TSyntheticForm::FormShow",
+        "source_sha256": "b99020c710c98fae16163e6085ad3bcfdc7ee2393229b7117188771ce1c20e26"
+      },
+      {
+        "anchor": {
+          "assembly": "synthetic/Toolkit.exe",
+          "body_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+          "symbol": "TSyntheticForm::SaveClick"
+        },
+        "artifacts": [
+          {
+            "bytes": 1083,
+            "id": "synthetic-managed-annex",
+            "sha256": "1fe29764ad89a37dcbe9ea2d89c4af153ba9578bb9a5365ff8551ab05b73096f"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:native-method:c6bf120a5e1562fbd960",
+        "kind": "native_method",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "synthetic/Toolkit.exe:TSyntheticForm::SaveClick",
+        "source_sha256": "caec4bf301db2782666cee571cc5358f6793d9c6f254edced3c555099bbfe88e"
+      },
+      {
+        "anchor": {
+          "syntax_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:public-command:04c383d58ebc3af43b28",
+        "kind": "public_command",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "cgate:SYNTHETIC SAVE",
+        "source_sha256": "9738c1cf93407ef0b5cbd6bc607db1521bbffaa20a3fe34780c1a1134ab84b49"
+      },
+      {
+        "anchor": {
+          "page_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:topic:c5d09cbc54077cd94913",
+        "kind": "topic",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "help:synthetic.htm",
+        "source_sha256": "5dbe74a7f1031d5d3f472faabf917bd0c5bf3b6a133b6931083ca63382bf006b"
+      },
+      {
+        "anchor": {
+          "page_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "artifacts": [
+          {
+            "bytes": 750,
+            "id": "toolkit-help-surface",
+            "sha256": "589d5c71bf617284a928a89d1b70b09566cf18339a0e7de25b5321674f185c3a"
+          }
+        ],
+        "handler_id": null,
+        "id": "scope:unindexed-html:9455cface2105d135a71",
+        "kind": "unindexed_html",
+        "profile_variants": [
+          {
+            "profile": "synthetic-profile",
+            "variant": "empty"
+          },
+          {
+            "profile": "synthetic-profile",
+            "variant": "populated"
+          }
+        ],
+        "source_id": "help-unindexed:synthetic-shell.htm",
+        "source_sha256": "696966e91ce853d99ae6d162915dd143e30a013b96ef793c863c3ac5ee45208b"
+      }
+    ]
+  },
+  "expected_bounded_complete": true,
+  "expected_census_completeness_verified": false,
+  "expected_counts": {
+    "discovered_source_records": 21,
+    "mapping_resolved_sources": 21,
+    "obligation_profile_variants": 2,
+    "obligations": 1,
+    "omitted_source_records": 0,
+    "receipt_records": 1,
+    "required_variant_gates": 6,
+    "satisfied_variant_gates": 6,
+    "source_kinds": {
+      "anchor": 1,
+      "dialog": 1,
+      "executable_control": 3,
+      "executable_event": 2,
+      "executable_form": 1,
+      "executable_property": 1,
+      "heading": 1,
+      "macro_leaf": 1,
+      "managed_api": 1,
+      "managed_control": 1,
+      "managed_declaration": 1,
+      "managed_event": 1,
+      "managed_method": 1,
+      "native_method": 2,
+      "public_command": 1,
+      "topic": 1,
+      "unindexed_html": 1
+    },
+    "source_profiles": 42,
+    "source_records": 21,
+    "verified_artifacts": 4
+  },
+  "expected_denominator_ready": true,
+  "expected_global_parity": false,
+  "expected_scope": "declared-modeled-input-surface-only",
+  "format": "cbus-toolkit-obligation-reconcile-synthetic-vectors-v1",
+  "purpose": "Invented metadata and receipt documents test deterministic reconciliation; no vendor bytes, original execution or hardware observations. Hashes/IDs use an independent standard-library recipe, not the producer."
+}

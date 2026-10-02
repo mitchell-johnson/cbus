@@ -279,6 +279,30 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[trigger-new-explicit-write-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[trigger-cancel-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-zero-address-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-one-address-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-two-address-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-secondary-zero-address-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-no-selected-row-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-multiple-selected-rows-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-valid-getter-retains-old-labels-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-explicit-setter-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-explicit-refresh-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-cancel-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-noop-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[later-language-cannot-enter-earlier-view-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-and-action-old-binding-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_known_failure_restores_source[action-new-retains-old-items-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_known_failure_restores_source[language-explicit-setter-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[pp-save-action-new-retains-old-items-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[pp-save-language-explicit-setter-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[project-save-action-new-retains-old-items-mock]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[project-save-language-explicit-setter-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-mock]' \
@@ -497,6 +521,30 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[trigger-new-explicit-write-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[trigger-cancel-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-zero-address-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-one-address-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-two-address-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-secondary-zero-address-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-no-selected-row-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[lighting-multiple-selected-rows-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-valid-getter-retains-old-labels-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-explicit-setter-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-explicit-refresh-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-cancel-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-noop-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[later-language-cannot-enter-earlier-view-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[language-and-action-old-binding-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_known_failure_restores_source[action-new-retains-old-items-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_known_failure_restores_source[language-explicit-setter-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[pp-save-action-new-retains-old-items-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[pp-save-language-explicit-setter-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[project-save-action-new-retains-old-items-daemon]' \
+		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_lost_success_never_replayed[project-save-language-explicit-setter-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-daemon]' \

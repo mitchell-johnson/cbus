@@ -1,0 +1,29 @@
+{
+  "format": "cbus-edlt-scene-language-literals-v1",
+  "original_execution": false,
+  "fixture": {
+    "initial_default": 2,
+    "initial_rows": [
+      {"id": 0, "tag_value": "2"},
+      {"id": 1, "tag_value": "English"},
+      {"id": 2, "tag_value": "English (Australia)"}
+    ],
+    "new_selected_ids": [1],
+    "old_labels": ["Australian zero", "Australian one", "Australian two", "Australian three"],
+    "current_labels": ["English zero", "English one", "English two", "English three"]
+  },
+  "cases": [
+    {"name": "changed-default", "refresh_count": 1, "old_scene_labels": "old_labels", "new_setter_labels": "current_labels"},
+    {"name": "canceled", "refresh_count": 0, "old_scene_labels": "old_labels", "current_labels": "old_labels"},
+    {"name": "same-selection", "refresh_count": 0, "old_scene_labels": "old_labels", "current_labels": "old_labels"},
+    {"name": "valid-getter", "labels_refreshed": false},
+    {"name": "explicit-setter", "labels_refreshed": true},
+    {"name": "later-language", "earlier_scene_labels": "old_labels"},
+    {"name": "reset-fresh", "old_initial_scene_bindings": false},
+    {"name": "pending-name", "discarded": false}
+  ],
+  "refusals": ["raw-receipt", "foreign-editor", "changed-PP", "changed-scene-owner", "changed-unrelated-XML", "duplicate-default", "duplicate-language-ID", "Image", "FONT", "DYNAMIC", "ICON", "DLTP", "future-receipt", "changed-receipt-facts"],
+  "profile": "explicit-final-text-only-Language-XML-refresh",
+  "implicit_notification_schedule_verified": false,
+  "original_per_row_saves_reproduced": false
+}

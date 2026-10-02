@@ -1427,8 +1427,9 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
                 if r['oid'] is None and r['id'] == identifier: r['oid'] = key
         receipt['rows_after'] = [r.as_dict() for r in state.rows]
         receipt['operation'] = index
-        projected = replace_native_rows(text, unit_path, state.rows,
-            collection_oid=collection_oid or '@languages')
+        projected = (text if state.rows == rows else
+            replace_native_rows(text, unit_path, state.rows,
+                collection_oid=collection_oid or '@languages'))
         snapshot = _snapshot(projected, unit_path, editor, dltp_index=dltp_index,
                              _language_default=state.default)
         images = [{'application': app.address, 'group': group.address,
@@ -1447,7 +1448,7 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
         steps.append(receipt)
     base = plan_native_parent_metadata(text, unit_path, values, editor, tuple(lowered),
         networks=networks, display_preferences=display_preferences, dltp_index=dltp_index,
-        _language_default=initial_default)
+        _language_default=initial_default, _language_operations=operations)
     history = {'format': 'cbus-edlt-native-language-history-v1',
         'network_oid': network_oid, 'collection_oid': collection_oid,
         'collection_plan_key': '@languages' if collection_oid is None else collection_oid,
@@ -1465,7 +1466,8 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
 
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,
                                 *, networks=(), display_preferences=None,
-                                dltp_index=None, _language_default=None):
+                                dltp_index=None, _language_default=None,
+                                _language_operations=None):
     """Build the projected cache and parent plan without native I/O.
 
     ``display_preferences`` optionally applies the eDLT registry display/sort
@@ -1490,7 +1492,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
     from .edlt_static_grid import requires_retained_names
     native_scene_inventory = any(row['op'] == 'scene-manager' and any(
-        child['op'] in ('get-selector-view', 'scene-selector-control')
+        child['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control')
         for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
@@ -1502,7 +1504,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         return _plan_parent_add_dialogs(
             text, unit_path, supplied, editor, operations, snapshot,
             requirements, networks=networks,
-            display_preferences=display_preferences)
+            display_preferences=display_preferences,
+            language_operations=_language_operations)
     if any(row['op'] == 'add-dialog' for row in operations):
         return _plan_add_dialogs(
             text, unit_path, supplied, editor, operations, snapshot,
@@ -1737,7 +1740,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
 @retained_history
 def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                              snapshot, requirements, *, networks,
-                             display_preferences):
+                             display_preferences, language_operations=None):
     """Compose complete dialog inventories with one native parent save.
 
     Database XML supplies the complete inventory; exact creation receipts
@@ -1748,9 +1751,12 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     from .edlt_parent_add_dialog import KINDS, resolve
     from .edlt_scene_metadata import _dialog_name
     native_scene_inventory = any(row['op'] == 'scene-manager' and any(
-        child['op'] in ('get-selector-view', 'scene-selector-control')
+        child['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control')
         for child in row['operations']) for row in operations)
     scene_initialization = None
+    scene_initialization_values = supplied
+    scene_initialization_xml = text
+    language_mutations = []
     if native_scene_inventory:
         from .edlt_scene_metadata import resolve_native_scene_metadata
         initialized = resolve_native_scene_metadata(text, unit_path, supplied,
@@ -1879,6 +1885,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
 
     def advance(index, row, state, groups, level_names):
         nonlocal reset_transition, reset_dependency_values, language_text, scene_initialization
+        nonlocal scene_initialization_values, scene_initialization_xml
         row = dict(row)
         show_missing = row.pop('_show_missing', None)
         application_name = row.pop('_application_name', None)
@@ -1917,11 +1924,15 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             if type(operations[index]) is not _NativeLanguageBinding:
                 raise EdltError('Language binding is internal; use add-language-dialog')
             row = _NativeLanguageBinding(row)
-            from .edlt_language_add_dialog import LanguageRow, replace_native_rows
+            from .edlt_language_add_dialog import LanguageRow, native_inventory, replace_native_rows
             collection = _children(_one_by_address(project, 'Network', snapshot.network), 'Languages')
-            language_text = replace_native_rows(text, unit_path,
-                tuple(LanguageRow(r['id'], r['tag_value'], r['oid']) for r in row['receipt']['rows_after']),
-                collection_oid=_field(collection[0], 'OID') if collection else '@languages')
+            projected_rows = tuple(LanguageRow(r['id'], r['tag_value'], r['oid'])
+                                   for r in row['receipt']['rows_after'])
+            original_rows = native_inventory(text, unit_path)[2]
+            language_text = (text if projected_rows == original_rows else
+                replace_native_rows(text, unit_path, projected_rows,
+                    collection_oid=_field(collection[0], 'OID') if collection else '@languages'))
+            language_mutations.append(row)
             for images in row['group_images']:
                 key = (images['application'], images['group'])
                 if key in records:
@@ -1943,6 +1954,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                     ({'op':'get-selector-view','scene':1},), _projected_values=state,
                     dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
                 scene_initialization = initialized.cache._inventory_timeline
+                scene_initialization_values = dict(state)
+                scene_initialization_xml = language_text
+                language_mutations.clear()
         elif kind == 'static-text-dialog':
             from .edlt_static_text_dialog import project as project_static_text
             changes, _receipt = project_static_text(state, row)
@@ -2007,10 +2021,23 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             projected_levels = tuple(SceneLevelCreation(group, address, name, ('prior parent Add',))
                 for (app, group), rows in level_names.items() if app == 202
                 for address, name in rows.items() if address not in levels.get((app, group), {}))
+            initialization = scene_initialization
+            if language_mutations and initialization is not None:
+                if language_operations is None:
+                    raise EdltError('Language scene initialization requires original typed history provenance')
+                from .edlt_scene_language_initializer import issue_language_initializer
+                # Use only the prefix already consumed; a later dialog cannot
+                # alter this SceneManager's label generation or choices.
+                last = language_mutations[-1]['receipt']['operation']
+                initialization = issue_language_initializer(initialization,
+                    original_xml=scene_initialization_xml, projected_xml=language_text,
+                    unit=unit_path, editor=engine,
+                    original_values=scene_initialization_values,
+                    operations=language_operations[:last], mutations=tuple(language_mutations))
             outcome = resolve_native_scene_metadata(language_text, unit_path, supplied, engine,
                 row['operations'], _projected_containers=tuple(projected),
                 _projected_levels=projected_levels, _projected_values=state,
-                _initialization_timeline=scene_initialization,
+                _initialization_timeline=initialization,
                 dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
             scene_state = engine.edit(engine.load(state, metadata=outcome.cache),
                                       operations=outcome.operations)

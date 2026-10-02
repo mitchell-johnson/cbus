@@ -1,0 +1,40 @@
+{
+  "format": "cbus-edlt-scene-button-vectors-v1",
+  "provenance": "Independent invented complete synchronous-control facts; source-conditioned literals, not original GUI observations or producer output.",
+  "items": {
+    "trigger": [
+      {"identity": "trigger:202/42", "value": "42", "name": "Duplicate"},
+      {"identity": "trigger:202/43", "value": "43", "name": "Duplicate"}
+    ],
+    "action": [
+      {"identity": "action:202/42/0", "value": "0", "name": "Zero"},
+      {"identity": "action:202/42/1", "value": "1", "name": "Duplicate"},
+      {"identity": "action:202/42/7", "value": "7", "name": "Duplicate"}
+    ],
+    "application": [
+      {"identity": "application:0/56", "value": "0", "name": "(P) Main"},
+      {"identity": "application:1/57", "value": "1", "name": "(S) Secondary"}
+    ]
+  },
+  "cases": [
+    {"name":"trigger-existing-first-match", "button":"add-trigger-group", "returned":"43", "request":["group","202"], "selection":["trigger",1,"trigger:202/43"], "ui":["SetSelectedIndex","SetCurrencyPosition","WriteValue","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-cancel", "button":"add-trigger-group", "returned":null, "request":["group","202"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-return-not-observed", "button":"add-trigger-group", "returned":"2", "request":["group","202"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-no-parent", "button":"add-trigger-group", "returned":"43", "context":{"parent_form_present":false}, "request":null, "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-no-unit-form", "button":"add-trigger-group", "returned":"43", "context":{"unit_form_present":false}, "request":null, "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-no-currency", "button":"add-trigger-group", "returned":"43", "context":{"trigger_currency_present":false}, "request":["group","202"], "selection":["trigger",1,"trigger:202/43"], "ui":["SetSelectedIndex","WriteValue","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"trigger-no-binding", "button":"add-trigger-group", "returned":"43", "context":{"trigger_binding_present":false}, "request":["group","202"], "selection":["trigger",1,"trigger:202/43"], "ui":["SetSelectedIndex","SetCurrencyPosition","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"action-selected42-raw43-new2-absent-old-items", "button":"add-action-selector", "returned":"2", "context":{"raw_trigger_group":43}, "request":["level","202","42"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"action-existing-item-assignment-only", "button":"add-action-selector", "returned":"7", "request":["level","202","42"], "selection":["action",2,"action:202/42/7"], "ui":["SetSelectedItem","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"action-cancel", "button":"add-action-selector", "returned":null, "request":["level","202","42"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"action-no-selected-trigger", "button":"add-action-selector", "returned":"7", "context":{"selected_trigger_group":null}, "request":null, "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"lighting-primary-return2-no-application-match", "button":"new-lighting-group", "selected_scenes":[1], "returned":"2", "request":["group","56"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"lighting-secondary-return0-changes-selector", "button":"new-lighting-group", "selected_scenes":[1], "returned":"0", "context":{"application_selector":1}, "request":["group","57"], "selection":["application",0,"application:0/56"], "ui":["SetSelectedIndex","SetCurrencyPosition","WriteValue","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"lighting-primary-return1-changes-selector", "button":"new-lighting-group", "selected_scenes":[1], "returned":"1", "request":["group","56"], "selection":["application",1,"application:1/57"], "ui":["SetSelectedIndex","SetCurrencyPosition","WriteValue","ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"lighting-cancel", "button":"new-lighting-group", "selected_scenes":[1], "returned":null, "request":["group","56"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]},
+    {"name":"lighting-zero-scenes-early-return", "button":"new-lighting-group", "selected_scenes":[], "returned":"0", "context":{"selected_scene_count":0,"current_scene":null}, "request":null, "selection":null, "ui":[]},
+    {"name":"lighting-multiple-scenes-early-return", "button":"new-lighting-group", "selected_scenes":[1,2], "returned":"1", "context":{"selected_scene_count":2}, "request":null, "selection":null, "ui":[]},
+    {"name":"lighting-parent-form-does-not-gate", "button":"new-lighting-group", "selected_scenes":[1], "returned":"2", "context":{"parent_form_present":false}, "request":["group","56"], "selection":null, "ui":["ResetCurrentItem","ResetBindings","ResetBindings"]}
+  ],
+  "limits": {"original_instructions_executed":0,"framework_instructions_executed":0,"modal_dialog_executed":false,"automatic_event_schedule_verified":false,"physical_device_verified":false,"scene_items_inserted_by_lighting_add":false}
+}

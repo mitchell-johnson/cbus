@@ -2,6 +2,16 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [buttons, Language and reconciliation batch](feature-batch-2026-10-03-scene-controls-language-reconciliation.md)
+adds explicit SceneManager Add-button callbacks, sealed text-only Language
+initialization across ordered parent histories, and a public declared
+source/obligation reconciliation diagnostic. Three parallel implementation
+lanes deliver these functions with separate public CLI integration and
+acceptance. Read [button/Language schemas](edlt-scene-buttons-language.md) and
+[reconciliation](toolkit-obligation-reconciliation.md). Original host binding,
+complete source census and physical acceptance remain open; the global
+functional percentage is still unavailable.
+
 The [causal inventory batch](feature-batch-2026-10-03-scene-inventory-timeline.md)
 extends complete application/trigger/action/dynamic-label views and retained
 control histories with create-enabled getters and accepted or cancelled
@@ -11,8 +21,9 @@ silently changing old control bindings. Earlier parent edits and Add results
 are visible at the SceneManager position; later objects cannot enter its lists.
 Reset starts fresh initialization and control state. Read
 [creation and save rules](edlt-scene-inventory-timeline.md).
-Automatic host notification, initializer composition after Network language
-mutation, and original/physical acceptance remain open. This completes another
+Automatic host notification, image-dependent initializer composition after
+Network language mutation, and original/physical acceptance remain open.
+Text-only Language composition is covered by the newer batch above. This completes another
 bounded major function within issue45, without closing its full lifecycle
 obligation or changing the functional completion percentage.
 

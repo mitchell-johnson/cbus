@@ -1,0 +1,27 @@
+# Mandatory affected and new modules for the SceneManager buttons, Language bridge and reconciliation batch.
+# Owning regressions may extend this set; this is not the full suite.
+tests/test_edlt_scene_inventory_timeline.py
+tests/test_edlt_scene_inventory_native_plan.py
+tests/test_edlt_scene_inventory_model.py
+tests/test_edlt_scene_inventory_static.py
+tests/test_edlt_parent_scene_inventory.py
+tests/test_cgate_edlt_scene_inventory_interop.py
+tests/test_edlt_scene_selectors.py
+tests/test_edlt_scene_selector_control.py
+tests/test_edlt_scene_selector_static.py
+tests/test_edlt_scene_selector_metadata.py
+tests/test_cgate_edlt_scene_selector_interop.py
+tests/test_ci_test_results.py
+tests/test_cli_edlt_scene_manager.py
+tests/test_edlt_scene_metadata.py
+tests/test_edlt_parent_scene_metadata.py
+tests/test_cli_edlt_parent_transaction.py
+tests/test_edlt_scene_button_control.py
+tests/test_edlt_scene_button_model.py
+tests/test_edlt_scene_button_native.py
+tests/test_edlt_scene_language_initializer.py
+tests/test_edlt_scene_language_native.py
+tests/test_edlt_parent_scene_language.py
+tests/test_toolkit_obligation_reconcile.py
+tests/test_cli_coverage_reconcile.py
+tests/test_cgate_edlt_scene_controls_language_interop.py

@@ -600,3 +600,33 @@ command never loads physical programming or opens a network. Output must be
 new. `--network N` selects within the same snapshot, and `--catalog FILE`
 adds explicit calculator facts. Read
 `toolkit-cli/docs/native-project-documentation.md` for limits.
+
+
+## Explicit SceneManager Add buttons and Language ownership
+
+Within `scene-manager-plan` or one parent `scene-manager` history:
+
+```json
+{"op":"scene-button-control","scene":1,"button":"add-action-selector",
+ "dialog":{"cancel":false,"name":"New action"}}
+```
+
+The other buttons are `add-trigger-group` and `new-lighting-group`; Lighting
+requires distinct `selected_scenes` numbers 1..8. Inspect retained selector
+Items before constructing explicit callbacks. A creation does not imply a new
+selection. Read `toolkit-cli/docs/edlt-scene-buttons-language.md` for literal
+source quirks and cancellation/setup limits. Text-only `add-language-dialog`
+can precede the parent SceneManager: original labels remain until an
+ActionSelector setter or trigger-current refresh. A later Language change
+cannot enter an earlier view. No original binding/modal or physical execution
+is implied.
+
+```sh
+cbus-toolkit coverage --reconciliation-bundle bundle.json \
+  --reconciliation-artifact-root artifacts --require-complete
+```
+
+The nested declared-surface diagnostic never promotes the global parity gate.
+Without artifact-root bytes, evidence remains unverified. Relative artifact
+identities must remain inside the explicit root; outside links/traversal refuse.
+Read `toolkit-cli/docs/toolkit-obligation-reconciliation.md`.

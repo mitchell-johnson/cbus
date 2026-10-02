@@ -126,6 +126,7 @@ class SceneInventoryTimeline:
     _save_frames: tuple[SceneInventoryFrame, ...]
     _validation_targets: tuple[tuple[int, int], ...]
     _initial_scene_bindings: tuple[tuple[int, int, int], ...]
+    _label_epochs: tuple[tuple[int, tuple], ...]
     _binding: str
     _source_values: str
     _seal: _Seal
@@ -142,7 +143,9 @@ class SceneInventoryTimeline:
                 'frames': [row.as_dict() for row in self._frames],
                 'save_frames': [row.as_dict() for row in self._save_frames],
                 'validation_targets': self._validation_targets,
-                'initial_scene_bindings': self._initial_scene_bindings}
+                'initial_scene_bindings': self._initial_scene_bindings,
+                'label_epochs': [[generation, [row.as_dict() for row in rows]]
+                                 for generation, rows in self._label_epochs]}
 
     def as_dict(self):
         check_timeline(self)
@@ -155,6 +158,8 @@ class SceneInventoryTimeline:
                 'save_frames': [row.as_dict() for row in self._save_frames],
                 'validation_targets': [list(row) for row in self._validation_targets],
                 'initial_scene_bindings': [list(row) for row in self._initial_scene_bindings],
+                'label_epochs': [[generation, [row.as_dict() for row in rows]]
+                                 for generation, rows in self._label_epochs],
                 'serialized_input_capability': False,
                 'database_execution': False, 'original_execution': False}
 
@@ -191,6 +196,8 @@ class SceneInventoryTimeline:
         return issue_timeline(template, initial=self._initial, frames=self._frames,
             save_frames=self._save_frames, validation_targets=self._validation_targets,
             initial_scene_bindings=self._initial_scene_bindings,
+            label_epochs=self._label_epochs,
+            label_seeds=tuple(self._seal.labels.items()),
             binding=json.loads(self._binding), source_values=json.loads(self._source_values),
             owner=self._seal.owner)
 
@@ -200,21 +207,28 @@ class SceneInventoryTimeline:
         if type(generation) is not int or not 0 <= generation <= maximum:
             raise EdltError('Native scene label generation exceeds its issued creation history')
         if generation not in self._seal.labels:
+            source = self.label_template_at(generation)
             self._seal.labels[generation] = tuple(
                 replace(row, labels=tuple(replace(label) for label in row.labels))
-                for row in self._template.level_labels)
+                for row in source)
         return self._seal.labels[generation]
+
+    def label_template_at(self, generation):
+        # The XML/default-language fact belongs to its causal refresh epoch.
+        # A future text refresh must never replace earlier label facts.
+        return next(rows for start, rows in reversed(self._label_epochs)
+                    if start <= generation)
 
     def label_owner(self, labels):
         """Resolve retained DataStore references from any issued refresh epoch."""
         check_timeline(self)
-        matches = [row for rows in self._seal.labels.values() for row in rows
+        matches = [(generation, row) for generation, rows in self._seal.labels.items() for row in rows
                    if len(row.labels) == len(labels)
                    and all(a is b for a, b in zip(row.labels, labels))]
         if len(matches) != 1:
             raise EdltError('Retained native label references have no unique issued owner')
-        row = matches[0]
-        original = next(v for v in self._template.level_labels
+        generation, row = matches[0]
+        original = next(v for v in self.label_template_at(generation)
                         if (v.group, v.action) == (row.group, row.action))
         if row.as_dict() != original.as_dict():
             raise EdltError('Retained native label generation was modified')
@@ -223,7 +237,7 @@ class SceneInventoryTimeline:
 
 def issue_timeline(template, *, initial, frames, save_frames,
                    validation_targets, binding, source_values, owner,
-                   initial_scene_bindings=None):
+                   initial_scene_bindings=None, label_epochs=None, label_seeds=()):
     """Native resolver factory; no from_dict/import or caller operation exists."""
     if (type(initial) is not SceneInventory
             or len(validation_targets) != 8 or len(save_frames) != 8
@@ -235,10 +249,31 @@ def issue_timeline(template, *, initial, frames, save_frames,
                                       for group, action in validation_targets)
     if len(initial_scene_bindings) != 8:
         raise EdltError('Native timeline requires eight initial scene label owners')
+    from .edlt_scene_manager import SceneLevelLabels
+    if label_epochs is None:
+        label_epochs = ((0, template.level_labels),)
+    if (type(label_epochs) is not tuple or not label_epochs or label_epochs[0][0] != 0
+            or any(type(epoch) is not tuple or len(epoch) != 2
+                   or type(epoch[0]) is not int or epoch[0] < 0
+                   or type(epoch[1]) is not tuple
+                   or any(type(row) is not SceneLevelLabels for row in epoch[1])
+                   or len({(row.group, row.action) for row in epoch[1]}) != len(epoch[1])
+                   for epoch in label_epochs)
+            or tuple(start for start, _ in label_epochs) != tuple(sorted(set(start for start, _ in label_epochs)))):
+        raise EdltError('Native timeline label epochs are invalid')
     value = SceneInventoryTimeline(template, initial, tuple(frames), tuple(save_frames),
         tuple(validation_targets), tuple(initial_scene_bindings),
+        label_epochs,
         _json(binding), _json(source_values), _Seal(owner))
     value._seal.fingerprint = value.fingerprint
+    maximum = max(row.inventory.refresh_generation for row in save_frames)
+    for generation, rows in label_seeds:
+        if (type(generation) is not int or not 0 <= generation <= maximum
+                or type(rows) is not tuple
+                or [row.as_dict() for row in rows] != [row.as_dict() for row in value.label_template_at(generation)]
+                or generation in value._seal.labels):
+            raise EdltError('Native timeline retained label seed differs from its epoch')
+        value._seal.labels[generation] = rows
     return value
 
 

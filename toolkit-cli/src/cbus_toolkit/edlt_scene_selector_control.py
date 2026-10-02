@@ -148,6 +148,25 @@ class SceneSelectorControlResult:
         return json.loads(self._receipt_json)
 
 
+def update_selector_properties(state, scene, *, trigger_group=None, application_selector=None):
+    """Owner callback projection after a button's explicit SelectedValue write.
+
+    This updates observed scalar properties only. Bound choice collections,
+    DynamicAll references, direct targets and pending Name controls do not
+    acquire an implicit current-changed or ReadValue callback.
+    """
+    if type(state) is not SceneSelectorControlState or state.current_scene != scene or state.bound_scene != scene:
+        raise EdltError('Button property projection requires the actual current selector binding')
+    view = _view(json.loads(state._view_json), scene)
+    if trigger_group is not None:
+        view['trigger_group'] = _integer(trigger_group, 0, 255, 'TriggerGroup must be a byte')
+    if application_selector is not None:
+        view['application_selector'] = _integer(application_selector, 0, 1, 'Application selector must be0/1')
+    return SceneSelectorControlState(state.current_scene, state.bound_scene,
+        state.controls_enabled, state.action_source_trigger,
+        json.dumps(view, ensure_ascii=False, allow_nan=False))
+
+
 def run_scene_selector_control(
         events, *, scene: int, bind_scene: Callable[[int], Mapping],
         trigger_current: Callable[[int], Mapping],

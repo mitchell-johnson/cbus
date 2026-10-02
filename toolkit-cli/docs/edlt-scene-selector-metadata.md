@@ -51,9 +51,11 @@ at its position. Issued initial getter provenance distinguishes those creations
 from later Adds, and Reset establishes fresh scene bindings. Complete outer
 parent facts stay separate from its actual choice lists, so a later parent
 widget or Add cannot influence its callbacks, validation or scene save.
-Combining an earlier Network language mutation with this initializer-backed
-selector timeline remains unqualified and refuses: the changed XML cannot
-replace the original label ownership evidence. Pending SceneName text remains pending across selector callbacks and
+Earlier text-only Language mutations now use a sealed initializer that checks
+the original public prefix and exact projected XML while preserving old scene
+label ownership. Read [buttons and Language boundaries](edlt-scene-buttons-language.md).
+Image-dependent or otherwise unproved Language mutation still refuses this
+profile. Pending SceneName text remains pending across selector callbacks and
 continues to prevent saving. When a direct Name binding is established, a
 Name callback for a different scene refuses; explicitly rebind first. Shared
 Name control text/read timing across scene switches remains unqualified. New owners and Reset start fresh control state;

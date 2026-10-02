@@ -1,0 +1,1152 @@
+{
+  "format": "cbus-edlt-scene-button-source-annex-v1",
+  "original_inputs": [
+    {
+      "logical_name": "static-managed-parser",
+      "sha256": "7bb4f3137bf6da42524cc512d94fe6c711f28b5a80532d018411777f9f573223",
+      "bytes": 31245,
+      "role": "repository-static-parser"
+    },
+    {
+      "logical_name": "eDLT.dll",
+      "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "bytes": 663552,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "CBusLogicModel.dll",
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "bytes": 258048,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "SceneManager.cs",
+      "sha256": "c2aa9a75cf7e128eba6cab952ddbdd45cb7e363b4128dc96ff15bd90adf9d72c",
+      "bytes": 83371,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c",
+      "bytes": 14751,
+      "role": "original-static-input"
+    }
+  ],
+  "managed_method_spans": [
+    {
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddTriggerGroupClick",
+      "token": "0x0600014b",
+      "rva": "0x91f4",
+      "file_offset": 29684,
+      "header_bytes": 12,
+      "code_bytes": 278,
+      "body_bytes": 308,
+      "extra_sections": 1,
+      "body_sha256": "ae52e609a313e1462ded41f9e6f9fcd9574f0fd89d93f8efee6a2552a78e32dd",
+      "il_sha256": "f03012377834a003f3d472395014168352429920688999cf9505f84fbc7be6fe",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 7,
+          "opcode": "0x28",
+          "token": "0x0a0001fe",
+          "symbol": "System.Windows.Forms.ContainerControl::get_ParentForm"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x06000146",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_FormBaseUnit"
+        },
+        {
+          "il_offset": 33,
+          "opcode": "0x6f",
+          "token": "0x0a000143",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_Network"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x28",
+          "token": "0x0a000153",
+          "symbol": "System.Globalization.CultureInfo::get_InvariantCulture"
+        },
+        {
+          "il_offset": 52,
+          "opcode": "0x28",
+          "token": "0x0a000154",
+          "symbol": "System.Int32::ToString"
+        },
+        {
+          "il_offset": 62,
+          "opcode": "0x6f",
+          "token": "0x0a00014d",
+          "symbol": "CBusLogicModel.CBusNetwork::AddGroupRequest"
+        },
+        {
+          "il_offset": 82,
+          "opcode": "0x6f",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 87,
+          "opcode": "0x6f",
+          "token": "0x0a000146",
+          "symbol": ".ObjectCollection::GetEnumerator"
+        },
+        {
+          "il_offset": 98,
+          "opcode": "0x6f",
+          "token": "0x0a000115",
+          "symbol": "System.Collections.IEnumerator::get_Current"
+        },
+        {
+          "il_offset": 110,
+          "opcode": "0x6f",
+          "token": "0x0a000147",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Value"
+        },
+        {
+          "il_offset": 116,
+          "opcode": "0x28",
+          "token": "0x0a000148",
+          "symbol": "System.String::Equals"
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0x6f",
+          "token": "0x0a0000e9",
+          "symbol": "System.Windows.Forms.ListControl::set_SelectedIndex"
+        },
+        {
+          "il_offset": 141,
+          "opcode": "0x6f",
+          "token": "0x0a000051",
+          "symbol": "System.Windows.Forms.ComboBox::get_DataSource"
+        },
+        {
+          "il_offset": 159,
+          "opcode": "0x6f",
+          "token": "0x0a000149",
+          "symbol": "System.Windows.Forms.BindingSource::get_CurrencyManager"
+        },
+        {
+          "il_offset": 165,
+          "opcode": "0x6f",
+          "token": "0x0a00014a",
+          "symbol": "System.Windows.Forms.BindingManagerBase::set_Position"
+        },
+        {
+          "il_offset": 176,
+          "opcode": "0x6f",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 186,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 199,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 212,
+          "opcode": "0x6f",
+          "token": "0x0a000117",
+          "symbol": "System.Collections.IEnumerator::MoveNext"
+        },
+        {
+          "il_offset": 236,
+          "opcode": "0x6f",
+          "token": "0x0a00001d",
+          "symbol": "System.IDisposable::Dispose"
+        },
+        {
+          "il_offset": 248,
+          "opcode": "0x6f",
+          "token": "0x0a000205",
+          "symbol": "System.Windows.Forms.BindingSource::ResetCurrentItem"
+        },
+        {
+          "il_offset": 260,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        },
+        {
+          "il_offset": 272,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 38,
+          "value": 202
+        },
+        {
+          "il_offset": 74,
+          "value": 0
+        },
+        {
+          "il_offset": 207,
+          "value": 1
+        },
+        {
+          "il_offset": 259,
+          "value": 0
+        },
+        {
+          "il_offset": 271,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 12,
+          "opcode": "0x39",
+          "target": 242
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x2c",
+          "target": 68
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x39",
+          "target": 242
+        },
+        {
+          "il_offset": 94,
+          "opcode": "0x2b",
+          "target": 210
+        },
+        {
+          "il_offset": 121,
+          "opcode": "0x2c",
+          "target": 206
+        },
+        {
+          "il_offset": 155,
+          "opcode": "0x2c",
+          "target": 170
+        },
+        {
+          "il_offset": 195,
+          "opcode": "0x2c",
+          "target": 219
+        },
+        {
+          "il_offset": 204,
+          "opcode": "0x2b",
+          "target": 219
+        },
+        {
+          "il_offset": 217,
+          "opcode": "0x2d",
+          "target": 96
+        },
+        {
+          "il_offset": 219,
+          "opcode": "0xde",
+          "target": 242
+        },
+        {
+          "il_offset": 232,
+          "opcode": "0x2c",
+          "target": 241
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddActionSelectorClick",
+      "token": "0x0600014a",
+      "rva": "0x90f8",
+      "file_offset": 29432,
+      "header_bytes": 12,
+      "code_bytes": 221,
+      "body_bytes": 252,
+      "extra_sections": 1,
+      "body_sha256": "2c37abcbec1e3fb437d0319681d53448490a03e7e88ac3842c6126c6afef7b1b",
+      "il_sha256": "ce99a7dabd91345fb6b79c4412a603a0850e86aa7d25dc710e28c7baeea19444",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 7,
+          "opcode": "0x28",
+          "token": "0x0a0001fe",
+          "symbol": "System.Windows.Forms.ContainerControl::get_ParentForm"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x06000146",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_FormBaseUnit"
+        },
+        {
+          "il_offset": 33,
+          "opcode": "0x6f",
+          "token": "0x0a0000e7",
+          "symbol": "System.Windows.Forms.ComboBox::get_SelectedItem"
+        },
+        {
+          "il_offset": 53,
+          "opcode": "0x6f",
+          "token": "0x0a000143",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_Network"
+        },
+        {
+          "il_offset": 67,
+          "opcode": "0x28",
+          "token": "0x0a0000f0",
+          "symbol": "System.Int32::ToString"
+        },
+        {
+          "il_offset": 73,
+          "opcode": "0x6f",
+          "token": "0x0a0000ef",
+          "symbol": "CBusLogicModel.CBusObjects.BaseObjects.CBusBaseObject::get_Address"
+        },
+        {
+          "il_offset": 83,
+          "opcode": "0x6f",
+          "token": "0x0a0000f1",
+          "symbol": "CBusLogicModel.CBusNetwork::AddLevelRequest"
+        },
+        {
+          "il_offset": 98,
+          "opcode": "0x6f",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 103,
+          "opcode": "0x6f",
+          "token": "0x0a000146",
+          "symbol": ".ObjectCollection::GetEnumerator"
+        },
+        {
+          "il_offset": 114,
+          "opcode": "0x6f",
+          "token": "0x0a000115",
+          "symbol": "System.Collections.IEnumerator::get_Current"
+        },
+        {
+          "il_offset": 126,
+          "opcode": "0x6f",
+          "token": "0x0a000147",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Value"
+        },
+        {
+          "il_offset": 132,
+          "opcode": "0x28",
+          "token": "0x0a000148",
+          "symbol": "System.String::Equals"
+        },
+        {
+          "il_offset": 146,
+          "opcode": "0x6f",
+          "token": "0x0a0000e8",
+          "symbol": "System.Windows.Forms.ComboBox::set_SelectedItem"
+        },
+        {
+          "il_offset": 155,
+          "opcode": "0x6f",
+          "token": "0x0a000117",
+          "symbol": "System.Collections.IEnumerator::MoveNext"
+        },
+        {
+          "il_offset": 179,
+          "opcode": "0x6f",
+          "token": "0x0a00001d",
+          "symbol": "System.IDisposable::Dispose"
+        },
+        {
+          "il_offset": 191,
+          "opcode": "0x6f",
+          "token": "0x0a000205",
+          "symbol": "System.Windows.Forms.BindingSource::ResetCurrentItem"
+        },
+        {
+          "il_offset": 203,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        },
+        {
+          "il_offset": 215,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 58,
+          "value": 202
+        },
+        {
+          "il_offset": 202,
+          "value": 0
+        },
+        {
+          "il_offset": 214,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 12,
+          "opcode": "0x39",
+          "target": 185
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x2c",
+          "target": 89
+        },
+        {
+          "il_offset": 45,
+          "opcode": "0x2c",
+          "target": 89
+        },
+        {
+          "il_offset": 90,
+          "opcode": "0x2c",
+          "target": 185
+        },
+        {
+          "il_offset": 110,
+          "opcode": "0x2b",
+          "target": 153
+        },
+        {
+          "il_offset": 137,
+          "opcode": "0x2c",
+          "target": 153
+        },
+        {
+          "il_offset": 151,
+          "opcode": "0x2b",
+          "target": 162
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0x2d",
+          "target": 112
+        },
+        {
+          "il_offset": 162,
+          "opcode": "0xde",
+          "target": 185
+        },
+        {
+          "il_offset": 175,
+          "opcode": "0x2c",
+          "target": 184
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::btnNewGroup_Click",
+      "token": "0x06000159",
+      "rva": "0x99ec",
+      "file_offset": 31724,
+      "header_bytes": 12,
+      "code_bytes": 460,
+      "body_bytes": 488,
+      "extra_sections": 1,
+      "body_sha256": "49fb587bea148b46106814f56b0db67133aebe1179b528a7b11c4fe3551e04ef",
+      "il_sha256": "45d438579ff551ab0fdc310b594a1e38d23849a9a518862b65c4ca47ffed4150",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 6,
+          "opcode": "0x6f",
+          "token": "0x0a0001f5",
+          "symbol": "System.Windows.Forms.DataGridView::get_SelectedRows"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x6f",
+          "token": "0x0a0001f6",
+          "symbol": "System.Windows.Forms.BaseCollection::get_Count"
+        },
+        {
+          "il_offset": 32,
+          "opcode": "0x6f",
+          "token": "0x0a0001f5",
+          "symbol": "System.Windows.Forms.DataGridView::get_SelectedRows"
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x28",
+          "token": "0x2b000006",
+          "symbol": "System.Linq.Enumerable::Cast"
+        },
+        {
+          "il_offset": 50,
+          "opcode": "0xfe06",
+          "token": "0x06000171",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::<btnNewGroup_Click>b__4"
+        },
+        {
+          "il_offset": 56,
+          "opcode": "0x73",
+          "token": "0x0a0001f8",
+          "symbol": "parent(4,19)::.ctor"
+        },
+        {
+          "il_offset": 71,
+          "opcode": "0x28",
+          "token": "0x2b000007",
+          "symbol": "System.Linq.Enumerable::Select"
+        },
+        {
+          "il_offset": 76,
+          "opcode": "0x28",
+          "token": "0x2b000008",
+          "symbol": "System.Linq.Enumerable::ToList"
+        },
+        {
+          "il_offset": 88,
+          "opcode": "0x6f",
+          "token": "0x0a000206",
+          "symbol": "System.Windows.Forms.BindingSource::get_Current"
+        },
+        {
+          "il_offset": 102,
+          "opcode": "0x6f",
+          "token": "0x0a00021b",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTScene::get_PriSecApplication"
+        },
+        {
+          "il_offset": 110,
+          "opcode": "0x28",
+          "token": "0x06000148",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_Unit"
+        },
+        {
+          "il_offset": 115,
+          "opcode": "0x6f",
+          "token": "0x0a000143",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_Network"
+        },
+        {
+          "il_offset": 121,
+          "opcode": "0x28",
+          "token": "0x06000148",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_Unit"
+        },
+        {
+          "il_offset": 126,
+          "opcode": "0x6f",
+          "token": "0x0a00021c",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_PrimaryApplication"
+        },
+        {
+          "il_offset": 131,
+          "opcode": "0x6f",
+          "token": "0x0a00021d",
+          "symbol": "CBusLogicModel.ProgramableProperties.PPAttributeLogic::get_PPAttributeValue"
+        },
+        {
+          "il_offset": 137,
+          "opcode": "0x6f",
+          "token": "0x0a00021e",
+          "symbol": "CBusLogicModel.CBusNetwork::GetApplicationByAddress"
+        },
+        {
+          "il_offset": 146,
+          "opcode": "0x28",
+          "token": "0x06000148",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_Unit"
+        },
+        {
+          "il_offset": 151,
+          "opcode": "0x6f",
+          "token": "0x0a000143",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_Network"
+        },
+        {
+          "il_offset": 157,
+          "opcode": "0x28",
+          "token": "0x06000148",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_Unit"
+        },
+        {
+          "il_offset": 162,
+          "opcode": "0x6f",
+          "token": "0x0a00021f",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_SecondaryApplication"
+        },
+        {
+          "il_offset": 167,
+          "opcode": "0x6f",
+          "token": "0x0a00021d",
+          "symbol": "CBusLogicModel.ProgramableProperties.PPAttributeLogic::get_PPAttributeValue"
+        },
+        {
+          "il_offset": 173,
+          "opcode": "0x6f",
+          "token": "0x0a00021e",
+          "symbol": "CBusLogicModel.CBusNetwork::GetApplicationByAddress"
+        },
+        {
+          "il_offset": 180,
+          "opcode": "0x28",
+          "token": "0x06000146",
+          "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::get_FormBaseUnit"
+        },
+        {
+          "il_offset": 195,
+          "opcode": "0x6f",
+          "token": "0x0a000143",
+          "symbol": "CBusLogicModel.Units.CBusBaseUnit::get_Network"
+        },
+        {
+          "il_offset": 201,
+          "opcode": "0x6f",
+          "token": "0x0a00014c",
+          "symbol": "CBusLogicModel.CBusObjects.BaseObjects.CBusBaseObject::get_AddressAsInt"
+        },
+        {
+          "il_offset": 210,
+          "opcode": "0x28",
+          "token": "0x0a0000f0",
+          "symbol": "System.Int32::ToString"
+        },
+        {
+          "il_offset": 220,
+          "opcode": "0x6f",
+          "token": "0x0a00014d",
+          "symbol": "CBusLogicModel.CBusNetwork::AddGroupRequest"
+        },
+        {
+          "il_offset": 241,
+          "opcode": "0x6f",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 246,
+          "opcode": "0x6f",
+          "token": "0x0a000146",
+          "symbol": ".ObjectCollection::GetEnumerator"
+        },
+        {
+          "il_offset": 260,
+          "opcode": "0x6f",
+          "token": "0x0a000115",
+          "symbol": "System.Collections.IEnumerator::get_Current"
+        },
+        {
+          "il_offset": 274,
+          "opcode": "0x6f",
+          "token": "0x0a000147",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Value"
+        },
+        {
+          "il_offset": 280,
+          "opcode": "0x28",
+          "token": "0x0a000148",
+          "symbol": "System.String::Equals"
+        },
+        {
+          "il_offset": 295,
+          "opcode": "0x6f",
+          "token": "0x0a0000e9",
+          "symbol": "System.Windows.Forms.ListControl::set_SelectedIndex"
+        },
+        {
+          "il_offset": 306,
+          "opcode": "0x6f",
+          "token": "0x0a000051",
+          "symbol": "System.Windows.Forms.ComboBox::get_DataSource"
+        },
+        {
+          "il_offset": 320,
+          "opcode": "0x6f",
+          "token": "0x0a000149",
+          "symbol": "System.Windows.Forms.BindingSource::get_CurrencyManager"
+        },
+        {
+          "il_offset": 327,
+          "opcode": "0x6f",
+          "token": "0x0a00014a",
+          "symbol": "System.Windows.Forms.BindingManagerBase::set_Position"
+        },
+        {
+          "il_offset": 338,
+          "opcode": "0x6f",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 348,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 361,
+          "opcode": "0x6f",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 371,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 376,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 391,
+          "opcode": "0x6f",
+          "token": "0x0a000117",
+          "symbol": "System.Collections.IEnumerator::MoveNext"
+        },
+        {
+          "il_offset": 418,
+          "opcode": "0x6f",
+          "token": "0x0a00001d",
+          "symbol": "System.IDisposable::Dispose"
+        },
+        {
+          "il_offset": 430,
+          "opcode": "0x6f",
+          "token": "0x0a000205",
+          "symbol": "System.Windows.Forms.BindingSource::ResetCurrentItem"
+        },
+        {
+          "il_offset": 442,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        },
+        {
+          "il_offset": 454,
+          "opcode": "0x6f",
+          "token": "0x0a000203",
+          "symbol": "System.Windows.Forms.BindingSource::ResetBindings"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 16,
+          "value": 1
+        },
+        {
+          "il_offset": 136,
+          "value": 1
+        },
+        {
+          "il_offset": 172,
+          "value": 1
+        },
+        {
+          "il_offset": 232,
+          "value": 0
+        },
+        {
+          "il_offset": 385,
+          "value": 1
+        },
+        {
+          "il_offset": 441,
+          "value": 0
+        },
+        {
+          "il_offset": 453,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 17,
+          "opcode": "0x2e",
+          "target": 20
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x2d",
+          "target": 66
+        },
+        {
+          "il_offset": 107,
+          "opcode": "0x2d",
+          "target": 145
+        },
+        {
+          "il_offset": 143,
+          "opcode": "0x2b",
+          "target": 179
+        },
+        {
+          "il_offset": 187,
+          "opcode": "0x2c",
+          "target": 226
+        },
+        {
+          "il_offset": 227,
+          "opcode": "0x39",
+          "target": 424
+        },
+        {
+          "il_offset": 253,
+          "opcode": "0x38",
+          "target": 389
+        },
+        {
+          "il_offset": 285,
+          "opcode": "0x2c",
+          "target": 383
+        },
+        {
+          "il_offset": 353,
+          "opcode": "0x2c",
+          "target": 401
+        },
+        {
+          "il_offset": 381,
+          "opcode": "0x2b",
+          "target": 401
+        },
+        {
+          "il_offset": 396,
+          "opcode": "0x3a",
+          "target": 258
+        },
+        {
+          "il_offset": 401,
+          "opcode": "0xde",
+          "target": 424
+        },
+        {
+          "il_offset": 414,
+          "opcode": "0x2c",
+          "target": 423
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::AddGroupRequest",
+      "token": "0x0600028b",
+      "rva": "0x9c28",
+      "file_offset": 32296,
+      "header_bytes": 12,
+      "code_bytes": 27,
+      "body_bytes": 39,
+      "extra_sections": 0,
+      "body_sha256": "679191ceb88cd0fcd0635157bc38658265ab95a1557cabf27b6030c74d3cd8ef",
+      "il_sha256": "d4b0d0c1e0b8c7eb12fe15f0267b2dcc983a9d0625f957b944edf80a977b660d",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 20,
+          "opcode": "0x6f",
+          "token": "0x060002a3",
+          "symbol": "CBusLogicModel.CBusNetwork+AddGroupEvent::Invoke"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x2c",
+          "target": 25
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.CBusNetwork::AddLevelRequest",
+      "token": "0x0600028d",
+      "rva": "0x9c78",
+      "file_offset": 32376,
+      "header_bytes": 12,
+      "code_bytes": 28,
+      "body_bytes": 40,
+      "extra_sections": 0,
+      "body_sha256": "55e6e1f7537d9adc47a4c9a8d92e7074dd828ea242514d02ff6ff3254254f848",
+      "il_sha256": "e8dce82fe1c6f466efeed1182bc1476e3df359fe4962ca1faad33e7144609acc",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 21,
+          "opcode": "0x6f",
+          "token": "0x060002ab",
+          "symbol": "CBusLogicModel.CBusNetwork+AddLevelEvent::Invoke"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x2c",
+          "target": 26
+        }
+      ],
+      "static_decode_only": true
+    }
+  ],
+  "decompiled_source_symbols": [
+    {
+      "logical_name": "SceneManager.cs",
+      "symbol": "BtnAddTriggerGroupClick",
+      "start_line": 269,
+      "end_line": 307,
+      "utf8_bytes": 1148,
+      "sha256": "4827d884a8e0264c2268e2a04e34d10dca040cfdd5896879e11cd4fbdc81ccbe",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "SceneManager.cs",
+      "symbol": "BtnAddActionSelectorClick",
+      "start_line": 242,
+      "end_line": 267,
+      "utf8_bytes": 750,
+      "sha256": "1c9478edf257ec4fd12c9024499b7e521e4fb1d6a58bfd5cca2eb01f7e7317ca",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "SceneManager.cs",
+      "symbol": "btnNewGroup_Click",
+      "start_line": 541,
+      "end_line": 581,
+      "utf8_bytes": 1586,
+      "sha256": "0be622c6092b48229448c2ee33b7cd57a76efd452f0f3e7f98448037f4998a6d",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusNetwork.cs",
+      "symbol": "AddGroupRequest",
+      "start_line": 273,
+      "end_line": 281,
+      "utf8_bytes": 197,
+      "sha256": "314fe119d173ad143ffa3469746c4d3d580655c07959de63750359cb4dd03a53",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusNetwork.cs",
+      "symbol": "AddLevelRequest",
+      "start_line": 293,
+      "end_line": 301,
+      "utf8_bytes": 252,
+      "sha256": "d8fa98ecfa536618105de39f83a8414de23c2ca8ee7c33ffaac53bbcaedcda2e",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    }
+  ],
+  "static_checks": [
+    {
+      "id": "trigger-exact-match-selection-currency-write-reset-order",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddTriggerGroupClick",
+      "ordered_call_suffixes": [
+        "get_ParentForm",
+        "get_FormBaseUnit",
+        "AddGroupRequest",
+        "get_Items",
+        "get_Value",
+        "Equals",
+        "set_SelectedIndex",
+        "get_DataSource",
+        "get_CurrencyManager",
+        "set_Position",
+        "get_DataBindings",
+        "get_Item",
+        "WriteValue",
+        "ResetCurrentItem",
+        "ResetBindings",
+        "ResetBindings"
+      ],
+      "passed": true
+    },
+    {
+      "id": "action-selected-group-request-item-selection-reset-order",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddActionSelectorClick",
+      "ordered_call_suffixes": [
+        "get_ParentForm",
+        "get_FormBaseUnit",
+        "get_SelectedItem",
+        "get_Address",
+        "AddLevelRequest",
+        "get_Items",
+        "get_Value",
+        "Equals",
+        "set_SelectedItem",
+        "ResetCurrentItem",
+        "ResetBindings",
+        "ResetBindings"
+      ],
+      "passed": true
+    },
+    {
+      "id": "action-no-explicit-write-currency-or-read",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddActionSelectorClick",
+      "absent_call_suffixes": [
+        "WriteValue",
+        "set_Position",
+        "ReadValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-selected-row-target-application-currency-write-reset-order",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::btnNewGroup_Click",
+      "ordered_call_suffixes": [
+        "get_SelectedRows",
+        "get_Count",
+        "get_SelectedRows",
+        "Select",
+        "ToList",
+        "get_Current",
+        "get_PriSecApplication",
+        "GetApplicationByAddress",
+        "get_FormBaseUnit",
+        "get_AddressAsInt",
+        "AddGroupRequest",
+        "get_Items",
+        "get_Value",
+        "Equals",
+        "set_SelectedIndex",
+        "get_CurrencyManager",
+        "set_Position",
+        "get_DataBindings",
+        "get_Item",
+        "WriteValue",
+        "ResetCurrentItem",
+        "ResetBindings",
+        "ResetBindings"
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-no-parent-form-gate-or-scene-item-write",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::btnNewGroup_Click",
+      "absent_call_suffixes": [
+        "get_ParentForm",
+        "InsertSceneItem",
+        "AddSceneItem",
+        "RemoveSceneItem"
+      ],
+      "passed": true
+    },
+    {
+      "id": "BtnAddTriggerGroupClick-no-explicit-read",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::BtnAddTriggerGroupClick",
+      "absent_call_suffixes": [
+        "ReadValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "btnNewGroup_Click-no-explicit-read",
+      "symbol": "eDLT.Controls.SceneManagerControls.SceneManager::btnNewGroup_Click",
+      "absent_call_suffixes": [
+        "ReadValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "AddGroupRequest-optional-delegate-call",
+      "symbol": "CBusLogicModel.CBusNetwork::AddGroupRequest",
+      "ordered_call_suffixes": [
+        "Invoke"
+      ],
+      "passed": true
+    },
+    {
+      "id": "AddLevelRequest-optional-delegate-call",
+      "symbol": "CBusLogicModel.CBusNetwork::AddLevelRequest",
+      "ordered_call_suffixes": [
+        "Invoke"
+      ],
+      "passed": true
+    },
+    {
+      "id": "declaration-BtnAddTriggerGroupClick",
+      "symbol": "BtnAddTriggerGroupClick",
+      "required_anchors": 4,
+      "forbidden_anchors": 0,
+      "passed": true
+    },
+    {
+      "id": "declaration-BtnAddActionSelectorClick",
+      "symbol": "BtnAddActionSelectorClick",
+      "required_anchors": 4,
+      "forbidden_anchors": 1,
+      "passed": true
+    },
+    {
+      "id": "declaration-btnNewGroup_Click",
+      "symbol": "btnNewGroup_Click",
+      "required_anchors": 5,
+      "forbidden_anchors": 1,
+      "passed": true
+    },
+    {
+      "id": "declaration-AddGroupRequest",
+      "symbol": "AddGroupRequest",
+      "required_anchors": 3,
+      "forbidden_anchors": 0,
+      "passed": true
+    },
+    {
+      "id": "declaration-AddLevelRequest",
+      "symbol": "AddLevelRequest",
+      "required_anchors": 3,
+      "forbidden_anchors": 0,
+      "passed": true
+    }
+  ],
+  "source_contract": {
+    "trigger_add": "Application202; exact first DataStore.Value match; selected index, optional CurrencyManager Position, optional explicit SelectedValue WriteValue.",
+    "action_add": "Application202 and actual selected CBusGroup.Address; first exact retained Items Value match assigns SelectedItem only; no explicit WriteValue.",
+    "lighting_add": "Exactly one selected Scene row; candidate group cast/list result discarded; current Scene chooses independently resolved primary/secondary Application; no SceneItems insertion.",
+    "lighting_selection": "Returned group string is compared with application selector Values0/1; match sets index, dereferences CurrencyManager, then optional explicit SelectedValue WriteValue.",
+    "null_empty": "Null returned result skips Items scan; empty initialization/result remains a distinct exact string.",
+    "resets": "Every non-early successful handler resets current Scene, Scene bindings false and available-group bindings false, in that order.",
+    "profile": "Explicit synchronous handlers with complete owner-observed Items. Current-culture numeric ToString is bounded to supplied byte decimal digits; no host culture or automatic notification claim."
+  },
+  "omissions": {
+    "raw_instruction_bytes_published": false,
+    "decompiled_source_text_published": false,
+    "original_literal_heaps_published": false,
+    "local_coordinate_fields_published": 0,
+    "private_coordinate_occurrences_omitted": 0
+  },
+  "limits": {
+    "original_instructions_executed": 0,
+    "framework_instructions_executed": 0,
+    "host_gui_executed": false,
+    "modal_dialog_executed": false,
+    "automatic_currency_selection_verified": false,
+    "automatic_event_schedule_verified": false,
+    "original_host_null_exception_verified": false,
+    "physical_device_verified": false,
+    "global_refresh_implies_control_rebind": false,
+    "historical_fixtures_rewritten": false,
+    "private_vendor_code_published": false
+  }
+}

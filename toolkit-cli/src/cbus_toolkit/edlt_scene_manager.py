@@ -194,6 +194,7 @@ class SceneManagerState:
     _origin: _Origin = field(repr=False, compare=False)
     _inventory_cursor: object | None = field(default=None, repr=False, compare=False, kw_only=True)
     _selector_bound_collection: tuple[int, str] | None = field(default=None, repr=False, compare=False, kw_only=True)
+    _button_selected_trigger: tuple[str, str] | None = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self):
         object.__setattr__(self, 'static_text_overlay', MappingProxyType(dict(self.static_text_overlay)))
@@ -217,6 +218,10 @@ class SceneManagerState:
                     or type(row[1]) is not str or len(row[1]) != 64
                     or any(char not in '0123456789abcdef' for char in row[1])):
                 raise EdltError('SceneManager requires an internal source-bound collection generation')
+        if self._button_selected_trigger is not None:
+            row = self._button_selected_trigger
+            if type(row) is not tuple or len(row) != 2 or any(type(v) is not str or not v or '\0' in v for v in row):
+                raise EdltError('SceneManager requires an internal selected CBusGroup identity')
 
     def static_text_evidence(self):
         overlay = {name: list(value) for name, value in self.static_text_overlay.items()}
@@ -238,6 +243,8 @@ class SceneManagerState:
             scene_name_controls=[None if control is None else control.as_dict() for control in self.name_controls],
             pending_name_controls=any(control is not None and control.pending for control in self.name_controls),
             scene_selector_control=None if self.selector_control is None else self.selector_control.as_dict(),
+            button_selected_trigger=(None if self._button_selected_trigger is None else
+                {'identity': self._button_selected_trigger[0], 'address': self._button_selected_trigger[1]}),
             clipboard=None if self.clipboard is None else self.clipboard.as_dict(),
             item_count=total, storage_used_percent=100 * total * 3 // 191,
             operations=[json.loads(v) for v in self.history], validation=None if self.validation is None else json.loads(self.validation),
@@ -373,7 +380,8 @@ class EdltSceneManager:
                  'retained_parent_names': value._retained_parent_names,
                  'source_profile_identity_verified': value._source_profile_identity_verified,
                  'inventory_cursor': None if value._inventory_cursor is None else value._inventory_cursor.fingerprint,
-                 'selector_bound_collection': value._selector_bound_collection} if type(value) is SceneManagerState else {}
+                 'selector_bound_collection': value._selector_bound_collection,
+                 'button_selected_trigger': value._button_selected_trigger} if type(value) is SceneManagerState else {}
         return hashlib.sha256(_json({'value': value.as_dict(), **extra}).encode()).hexdigest()
 
     def _check(self, value, expected_type=SceneManagerState):
@@ -486,7 +494,8 @@ class EdltSceneManager:
 
     @staticmethod
     def _group(state, application, group):
-        fact = state.loaded.metadata.find(application, group)
+        fact = (state.cache.application_cache.lifecycle.find(application, group)
+                if state._inventory_cursor is not None else state.loaded.metadata.find(application, group))
         if fact is None:
             presence = state.cache.application_cache.group_presence(application, group)
             if presence is False: return None
@@ -574,7 +583,7 @@ class EdltSceneManager:
 
     @staticmethod
     def _uses_selector_inventory(state):
-        return any(json.loads(row)['op'] in ('get-selector-view', 'scene-selector-control')
+        return any(json.loads(row)['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control')
                    for row in state.history)
 
     def available_groups(self, state, *, scene):
@@ -657,6 +666,9 @@ class EdltSceneManager:
         if kind == 'scene-selector-control':
             from .edlt_scene_selector_control import normalize_operation
             return normalize_operation(op)
+        if kind == 'scene-button-control':
+            from .edlt_scene_button_control import normalize_operation
+            return normalize_operation(op)
         fields = {'set-application': ('selector',), 'add-groups': ('groups',), 'remove-items': ('item_ids',),
             'clear-items': (), 'copy': (), 'paste': (), 'clear-scene': (), 'set-level': ('item_id', 'level'),
             'set-percent': ('item_id', 'percent'), 'set-ramp': ('item_id', 'ramp_rate'), 'sync-levels': ('item_id',),
@@ -703,8 +715,9 @@ class EdltSceneManager:
         names, controls = list(state.static_names), list(state.name_controls)
         selector_control = state.selector_control
         bound_collection = state._selector_bound_collection
+        button_selected_trigger = state._button_selected_trigger
         selector_inventory = (self._uses_selector_inventory(state)
-                              or any(row['op'] in ('get-selector-view', 'scene-selector-control') for row in ops))
+                              or any(row['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control') for row in ops))
         def getter_state(scene):
             return self._selector_context(state, scene) if selector_inventory else state
         for op in ops:
@@ -782,6 +795,75 @@ class EdltSceneManager:
                 result['value'] = scene_name(tuple(names), s.name_index)
             elif kind == 'get-selector-view':
                 s, result['view'] = self._selector_observation(state, s, getter=True)
+            elif kind == 'scene-button-control':
+                from .edlt_scene_button_control import issue_button_context, run_scene_button_control
+                if state._inventory_cursor is None:
+                    raise EdltError('Scene Add buttons require an owner-issued automatic native inventory timeline')
+                binding = json.loads(state._inventory_cursor.timeline._binding)
+                number = len(state.history) + len(results) + 1
+                recorded = [row for row in binding['add_dialogs']
+                            if row.get('operation_number') == number and row.get('button_operation') == op]
+                if len(recorded) != 1:
+                    raise EdltError('Scene Add button lacks its exact owner-issued callback history')
+                expected_button = recorded[0]['button_control']
+                current = None if selector_control is None else selector_control.current_scene
+                owner_view = {} if selector_control is None else selector_control.as_dict()['view']
+                def items(field):
+                    if field == 'trigger_items':
+                        rows = trigger_choices(state.cache)
+                    else:
+                        rows = owner_view.get('action_choices' if field == 'action_items' else 'application_choices', [])
+                    return [{'identity': row['identity'], 'value': str(row['value']), 'name': row['name']} for row in rows]
+                source_pin = hashlib.sha256(_json(dict(state.loaded.expected)).encode()).hexdigest()
+                history_pin = hashlib.sha256(_json({'operation': op, 'operation_number': number}).encode()).hexdigest()
+                context = issue_button_context(owner=self._owner, source_fingerprint=source_pin,
+                    history_fingerprint=history_pin, scene=slot,
+                    current_scene=current, selected_scene_count=len(op.get('selected_scenes', [slot])),
+                    primary_application=state.loaded.after_load['PrimaryApplication'][0],
+                    secondary_application=state.loaded.after_load['SecondaryApplication'][0],
+                    application_selector=0 if current is None else scenes[current - 1].primary_secondary,
+                    raw_trigger_group=s.raw_trigger,
+                    selected_trigger_group=(None if button_selected_trigger is None else
+                        {'identity': button_selected_trigger[0], 'address': button_selected_trigger[1]}),
+                    trigger_items=items('trigger_items'), action_items=items('action_items'), application_items=items('application_items'))
+                callback_number = 0
+                def request(action, *arguments):
+                    nonlocal state, callback_number
+                    expected = expected_button['request']
+                    if expected is None or expected['action'] != action or expected['arguments'] != list(arguments):
+                        raise EdltError('Scene Add button request differs from its issued source callback')
+                    callback_number += 1
+                    state = self._inventory_advance(state, phase='button-request', callback=callback_number, scene=slot)
+                    return expected['returned_value']
+                def button_ui(action, facts):
+                    nonlocal state, callback_number, button_selected_trigger, selector_control
+                    if action == 'SetSelectedIndex' and facts['control'] == 'trigger':
+                        button_selected_trigger = (facts['item']['identity'], facts['item']['value'])
+                    if action == 'WriteValue':
+                        target = facts['binding_scene']
+                        if target is None:
+                            raise EdltError('Button SelectedValue needs an explicit current Scene binding')
+                        trigger = facts['control'] == 'trigger'
+                        callback_number += 1
+                        state = self._inventory_advance(state,
+                            phase='button-write-trigger' if trigger else 'button-write-application', callback=callback_number, scene=target)
+                        scenes[target - 1] = replace(scenes[target - 1],
+                            **({'raw_trigger': int(facts['item']['value'])} if trigger
+                               else {'primary_secondary': int(facts['item']['value'])}))
+                        if selector_control is not None:
+                            from .edlt_scene_selector_control import update_selector_properties
+                            selector_control = update_selector_properties(selector_control, target,
+                                trigger_group=scenes[target - 1].raw_trigger if trigger else None,
+                                application_selector=scenes[target - 1].primary_secondary if not trigger else None)
+                button = run_scene_button_control(op, context=context, owner=self._owner,
+                    source_fingerprint=source_pin, history_fingerprint=history_pin,
+                    request_add_group=lambda app: request('AddGroupRequest', app),
+                    request_add_level=lambda app, group: request('AddLevelRequest', app, group),
+                    ui_callback=button_ui, observe_items=items)
+                if button.as_dict() != expected_button:
+                    raise EdltError('Scene Add button replay differs from its issued callback receipt')
+                result['scene_button_control'] = button.as_dict()
+                s = scenes[slot - 1]
             elif kind == 'scene-selector-control':
                 from .edlt_scene_selector_control import run_scene_selector_control
                 # One source form retains one direct scene binding. A later
@@ -838,7 +920,9 @@ class EdltSceneManager:
                         secondary=state.loaded.after_load['SecondaryApplication'][0],
                         actions=bound_actions if actions is None else actions)
                 def write_trigger(target, value):
+                    nonlocal button_selected_trigger
                     advance('write-trigger', target)
+                    button_selected_trigger = (f'trigger:202/{value}', str(value))
                     scenes[target - 1] = replace(scenes[target - 1], raw_trigger=value)
                     return retained(target)
                 def write_action(target, value):
@@ -906,7 +990,7 @@ class EdltSceneManager:
             history=(*state.history, *(_json(op) for op in ops[:len(results)])), validation=None,
             static_text_overlay=overlay, name_allocations=tuple(allocations),
             static_names=tuple(names), name_controls=tuple(controls), selector_control=selector_control,
-            _selector_bound_collection=bound_collection)
+            _selector_bound_collection=bound_collection, _button_selected_trigger=button_selected_trigger)
         return SceneEditOutcome(issued, complete, tuple(results))
 
     def validate(self, state):

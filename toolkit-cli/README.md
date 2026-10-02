@@ -11,6 +11,17 @@ generation until an explicit callback rebinds them. Read
 [creation order and retained inventories](docs/edlt-scene-inventory-timeline.md).
 Full Toolkit GUI and hardware parity remains unfinished.
 
+`scene-button-control` adds explicit Trigger, Action and Lighting Add clicks,
+with retained Items and explicit property writes. Earlier text-only Language
+changes now compose with SceneManager while preserving old initial labels
+until an ActionSelector setter or trigger-current callback refreshes them. Read
+[buttons and Language ownership](docs/edlt-scene-buttons-language.md).
+For a declared source/obligation bundle, use
+`coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR` to
+report mapping and evidence gaps. Its scoped result cannot make the global
+`--require-complete` gate pass. See
+[reconciliation](docs/toolkit-obligation-reconciliation.md).
+
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
 current ledger has **42 areas: 18 implemented, 22 in progress and 2 pending**.

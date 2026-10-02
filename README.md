@@ -60,6 +60,17 @@ an explicit rebind. Read [selector callbacks](toolkit-cli/docs/edlt-scene-select
 [creation timelines](toolkit-cli/docs/edlt-scene-inventory-timeline.md) and
 [native metadata limits](toolkit-cli/docs/edlt-scene-selector-metadata.md).
 
+Explicit SceneManager Add-button histories now preserve the actual retained
+control selection rules, including an action created outside an old bound
+list. Text-only Language changes can precede the parent SceneManager sequence
+while initial scenes retain their original labels until an ActionSelector setter
+or explicit trigger-current refresh.
+Read [buttons and Language ownership](toolkit-cli/docs/edlt-scene-buttons-language.md).
+`coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
+also diagnoses declared source/obligation mappings and evidence gaps. Its
+bounded result leaves the global parity gate unchanged; see
+[reconciliation](toolkit-cli/docs/toolkit-obligation-reconciliation.md).
+
 The [network definition workflow](toolkit-cli/docs/network-definitions.md)
 now carries closed runtime definitions into the project with `NET SAVE DB`.
 The CLI and cmqttd preserve exact native tag addresses such as `0254`, `0xff`
