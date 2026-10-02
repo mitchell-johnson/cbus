@@ -98,6 +98,8 @@ jobs:
           --require-module tests/test_rust_cgate_interop.py
           --require-module tests/test_cgate_named_database_interop.py
           --require-module tests/test_cgate_barcode_database_interop.py
+          --require-module tests/test_cgate_neopro_csv_interop.py
+          --require-module tests/test_cgate_toolkit_tweaker_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -122,6 +124,8 @@ jobs:
           --require-module tests/test_cmqtt_network_new_cli.py
           --require-module tests/test_cgate_named_database_interop.py
           --require-module tests/test_cgate_barcode_database_interop.py
+          --require-module tests/test_cgate_neopro_csv_interop.py
+          --require-module tests/test_cgate_toolkit_tweaker_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

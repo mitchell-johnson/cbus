@@ -338,11 +338,14 @@ fn cgate_args(state: &Path, specs: &Path) -> Vec<String> {
 /// cmqttd over a reconnecting ESP32-WiFi endpoint (plain `-t` exits on PCI
 /// loss by design), with the embedded C-Gate service enabled.
 async fn start_reconnecting(state: &Path, specs: &Path) -> System {
+    start_reconnecting_project(state, specs, &project_file()).await
+}
+
+async fn start_reconnecting_project(state: &Path, specs: &Path, project: &str) -> System {
     let broker = MiniBroker::start().await;
     let pci = FakePci::start(false).await;
     let broker_port = broker.port().to_string();
     let wifi = format!("127.0.0.1:{}", pci.port());
-    let project = project_file();
     let mut args: Vec<String> = [
         "-b",
         "127.0.0.1",
@@ -354,7 +357,7 @@ async fn start_reconnecting(state: &Path, specs: &Path) -> System {
         "--esp32-reconnect-interval",
         "1",
         "-P",
-        &project,
+        project,
         "-T",
         "0",
         "-v",
@@ -953,5 +956,1104 @@ async fn broker_outage_mid_save_keeps_programming_and_cgate_events() {
 
     drop(sys);
     let _ = std::fs::remove_file(state);
+    std::fs::remove_dir_all(specs).unwrap();
+}
+
+// Independent scripted peers for every currently admitted routed PP method.
+// The JSON roster is an owned scheduling contract, not a native transcript.
+struct RoutedUnit {
+    case: serde_json::Value,
+    memory: Vec<u8>,
+    page: usize,
+    pointer: usize,
+    stores: Vec<(usize, Vec<u8>)>,
+    held: Option<(Vec<u8>, usize, Vec<u8>)>,
+    polls: usize,
+    executes: usize,
+    release: bool,
+    stop: bool,
+}
+
+fn liveness_vector() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_pp_programming_liveness.json"
+    ))
+    .unwrap()
+}
+
+impl RoutedUnit {
+    fn new(case: &serde_json::Value) -> Arc<Mutex<Self>> {
+        Arc::new(Mutex::new(Self {
+            case: case.clone(),
+            memory: vec![0; 1024],
+            page: 0,
+            pointer: 0,
+            stores: Vec::new(),
+            held: None,
+            polls: 0,
+            executes: 0,
+            release: false,
+            stop: false,
+        }))
+    }
+
+    fn route(&self) -> Vec<u8> {
+        self.case["route"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_u64().unwrap() as u8)
+            .collect()
+    }
+
+    fn response(&self, cal: &[u8]) -> Vec<u8> {
+        let route = self.route();
+        let mut body = vec![0x86, route[0], 0x10, route.len() as u8];
+        body.extend_from_slice(&route[1..]);
+        body.push(UNIT);
+        body.extend_from_slice(cal);
+        pci_wire(&body)
+    }
+
+    fn read(&self, parameter: u8, address: usize, count: usize) -> Vec<Vec<u8>> {
+        self.memory[address..address + count]
+            .chunks(30)
+            .enumerate()
+            .map(|(index, chunk)| {
+                let parameter = if matches!(self.case["method"].as_str(), Some("paged" | "ncc")) {
+                    parameter.wrapping_add((index * 30) as u8)
+                } else {
+                    parameter
+                };
+                let mut cal = vec![0x80 | (chunk.len() as u8 + 1), parameter];
+                cal.extend_from_slice(chunk);
+                self.response(&cal)
+            })
+            .collect()
+    }
+
+    fn respond(&mut self, payload: &str) -> Vec<Vec<u8>> {
+        let Some(bytes) = hex::decode(payload).ok() else {
+            return Vec::new();
+        };
+        let route = self.route();
+        let prefix = [
+            vec![0x46, route[0], route.len() as u8 * 9],
+            route[1..].to_vec(),
+            vec![UNIT],
+        ]
+        .concat();
+        let Some(cal) = bytes.strip_prefix(&prefix[..]) else {
+            return Vec::new();
+        };
+        let method = self.case["method"].as_str().unwrap();
+        match cal[0] {
+            0x21 => {
+                let text: &[u8] = if cal[1] == 1 { b"TESTUNIT" } else { b"1.2.03" };
+                let mut answer = vec![0x80 | (text.len() as u8 + 1), cal[1]];
+                answer.extend_from_slice(text);
+                vec![self.response(&answer)]
+            }
+            0x1A => {
+                let address = match method {
+                    "edlt" | "giu" | "sgiu" | "dali" | "goc" | "gocbyt" | "goc2" => self.pointer,
+                    _ => usize::from(cal[1]),
+                };
+                self.read(cal[1], address, usize::from(cal[2]))
+            }
+            0x1B => self.read(
+                cal[2],
+                usize::from(cal[1]) * 256 + usize::from(cal[2]),
+                usize::from(cal[3]),
+            ),
+            0x39 => {
+                self.page = usize::from(cal[1]);
+                vec![self.response(&[0x81, cal[1]])]
+            }
+            0xE3 if cal[1..4] == [0x81, 0, 4] => {
+                self.executes += 1;
+                vec![self.response(&[0xE4, 0x83, 0, 4, 1])]
+            }
+            0xE3 if cal[1..4] == [0x82, 0, 4] => {
+                self.polls += 1;
+                vec![self.response(&[0xE4, 0x83, 0, 4, u8::from(!self.release)])]
+            }
+            header if header & 0xE0 == 0xA0 => {
+                let parameter = cal[1];
+                let data = &cal[2..1 + usize::from(header & 0x1F)];
+                if parameter == 0xFC && method == "giu" {
+                    return vec![self.response(&[0x32, parameter, data[0]])];
+                }
+                if parameter == 0
+                    && data[0] == 0x41
+                    && matches!(method, "edlt" | "giu" | "sgiu" | "dali")
+                {
+                    self.pointer = usize::from(data[1]) | usize::from(data[2]) << 8;
+                    return vec![self.response(&[0x32, parameter, 0x41])];
+                }
+                let (address, ack_parameter, stored) = match method {
+                    "edlt" | "giu" | "sgiu" | "dali" => {
+                        (self.pointer, parameter, data[1..].to_vec())
+                    }
+                    "goc" | "gocbyt" | "goc2" => {
+                        let address = usize::from(data[1]) << 8 | usize::from(data[2]);
+                        let ack_parameter = if method == "goc2" {
+                            address as u8
+                        } else {
+                            parameter
+                        };
+                        if data[0] == 0x42 {
+                            self.pointer = address;
+                            return vec![self.response(&[0x32, ack_parameter, 0x42])];
+                        }
+                        (address, ack_parameter, data[3..].to_vec())
+                    }
+                    "paged" | "ncc" => (
+                        self.page * 256 + usize::from(parameter),
+                        parameter,
+                        data[1..].to_vec(),
+                    ),
+                    _ => (usize::from(parameter), parameter, data[1..].to_vec()),
+                };
+                self.stores.push((address, stored.clone()));
+                let ack = self.response(&[0x32, ack_parameter, data[0]]);
+                if self.stores.len() == 3 && self.case["hold"] == "store-3" {
+                    self.held = Some((ack, address, stored));
+                    return Vec::new();
+                }
+                self.memory[address..address + stored.len()].copy_from_slice(&stored);
+                vec![ack]
+            }
+            _ => Vec::new(),
+        }
+    }
+}
+
+async fn run_routed_unit(pci: &FakePci, unit: &Mutex<RoutedUnit>, mut cursor: usize) {
+    loop {
+        let frames = pci.frames();
+        let mut replies = Vec::new();
+        {
+            let mut unit = unit.lock().unwrap();
+            if unit.stop {
+                return;
+            }
+            for frame in &frames[cursor..] {
+                replies.extend(unit.respond(&frame.payload));
+            }
+            if unit.release {
+                if let Some((ack, address, data)) = unit.held.take() {
+                    unit.memory[address..address + data.len()].copy_from_slice(&data);
+                    replies.push(ack);
+                }
+            }
+        }
+        cursor = frames.len();
+        for wire in replies {
+            pci.inject(&wire);
+        }
+        tokio::time::sleep(Duration::from_millis(2)).await;
+    }
+}
+
+fn routed_fixture(case: &serde_json::Value, tag: &str) -> (PathBuf, PathBuf, PathBuf) {
+    let state = temp_path(&format!("pp-liveness-{tag}.json"));
+    let specs = temp_path(&format!("pp-liveness-{tag}-spec"));
+    let project = temp_path(&format!("pp-liveness-{tag}-project.xml"));
+    std::fs::create_dir_all(&specs).unwrap();
+    std::fs::write(specs.join("TESTUNIT.xml"), format!(
+        "<UnitSpecification><Parameters><Param><Name>Block</Name><Type>int</Type><Address>${:X}</Address><ArraySize>48</ArraySize><ProgramMethod>{}</ProgramMethod><Protection>none</Protection><Tag>Core</Tag></Param></Parameters></UnitSpecification>",
+        case["logical_address"].as_u64().unwrap(), case["method"].as_str().unwrap()
+    )).unwrap();
+    let route = case["route"].as_array().unwrap();
+    let networks = std::iter::once(254u8)
+        .chain(route.iter().map(|v| v.as_u64().unwrap() as u8))
+        .collect::<Vec<_>>();
+    let mut xml =
+        String::from("<Installation><Project oid=\"liveness-project\"><TagName>HARNESS</TagName>");
+    for (index, &network) in networks.iter().enumerate() {
+        xml.push_str(&format!("<Network oid=\"network-{network}\"><TagName>Network{network}</TagName><Address>{network}</Address>"));
+        if index == 0 {
+            xml.push_str("<Interface><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><Address>56</Address><TagName>Lighting</TagName><Group><Address>1</Address><TagName>One</TagName></Group><Group><Address>10</Address><TagName>Ten</TagName></Group></Application>");
+        } else {
+            xml.push_str(&format!("<Interface><InterfaceType>Bridge</InterfaceType><InterfaceAddress>{}/p/{network}</InterfaceAddress></Interface><Unit><Address>{}</Address><UnitType>BRIDGE2N</UnitType></Unit>", networks[index - 1], networks[index - 1]));
+        }
+        if let Some(next) = networks.get(index + 1) {
+            xml.push_str(&format!(
+                "<Unit><Address>{next}</Address><UnitType>BRIDGE2N</UnitType></Unit>"
+            ));
+        }
+        xml.push_str("</Network>");
+    }
+    xml.push_str("</Project></Installation>");
+    std::fs::write(&project, xml).unwrap();
+    (state, specs, project)
+}
+
+async fn stage_routed_session(reader: &mut Reader, writer: &mut Writer, case: &serde_json::Value) {
+    let network = case["network"].as_u64().unwrap();
+    for text in [
+        "PROJECT USE HARNESS".into(),
+        format!("PP LOCK L //HARNESS/{network}"),
+        "PP START S L".into(),
+        "PP NEW S TESTUNIT 1.2.03".into(),
+        format!(
+            "PP SET S Block {}",
+            (1..=48)
+                .map(|v| format!("0x{v:02X}"))
+                .collect::<Vec<_>>()
+                .join(" ")
+        ),
+        "EVENT e7s1c0".into(),
+    ] {
+        let response = command(reader, writer, &text).await;
+        assert!(response.contains("200 OK"), "{text}: {response}");
+    }
+}
+
+async fn routed_method_liveness(id: &str) {
+    let vector = liveness_vector();
+    let case = vector["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == id)
+        .unwrap();
+    let (state, specs, project) = routed_fixture(case, id);
+    let mut extra = cgate_args(&state, &specs);
+    extra.extend(["-P".into(), project.to_string_lossy().into_owned()]);
+    let sys = start_with(Options {
+        project: false,
+        extra,
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    let observer_rows = collect_events(&sys).await;
+    let (mut reader, mut writer) = cgate_connect(&sys).await;
+    stage_routed_session(&mut reader, &mut writer, case).await;
+    let unit = RoutedUnit::new(case);
+    let cursor = sys.pci.frames().len();
+    let rows = Arc::new(Mutex::new(Vec::<String>::new()));
+    let queued = vector["queued_commands"].as_u64().unwrap() as usize;
+    writer
+        .write_all(
+            format!(
+                "[save] {}\r\n{}[done] NOOP\r\n",
+                case["save"].as_str().unwrap(),
+                (0..queued)
+                    .map(|i| format!("[queue-{i}] NOOP\r\n"))
+                    .collect::<String>()
+            )
+            .as_bytes(),
+        )
+        .await
+        .unwrap();
+    let saving = async {
+        loop {
+            let mut row = String::new();
+            assert_ne!(reader.read_line(&mut row).await.unwrap(), 0, "{id}");
+            let done = row.starts_with("[done] ");
+            rows.lock().unwrap().push(row.trim_end().to_string());
+            if done {
+                break;
+            }
+        }
+        unit.lock().unwrap().stop = true;
+    };
+    let commands: Vec<_> = (0..vector["mqtt_commands"].as_u64().unwrap())
+        .map(|i| (if i % 2 == 0 { 1u8 } else { 10 }, i % 4 < 2))
+        .collect();
+    let observations: Vec<_> = (0..vector["observations"].as_u64().unwrap())
+        .map(|i| (100 + i as u8, i % 3 != 0))
+        .collect();
+    let mut published = Vec::new();
+    let driver = async {
+        require(COMMAND_DRAIN, "routed programming held", || {
+            let unit = unit.lock().unwrap();
+            unit.held.is_some() || unit.polls >= 2
+        })
+        .await;
+        if case["method"] == "ncc" {
+            // Earlier/direct and incorrectly correlated completions cannot
+            // release this routed save while its NVM poll remains busy.
+            sys.pci.inject(&reply(&[0xE4, 0x83, 0, 4, 0]));
+            sys.pci
+                .inject(&unit.lock().unwrap().response(&[0xE4, 0x83, 0, 5, 0]));
+            let route = unit.lock().unwrap().route();
+            let mut wrong_route = vec![0x86, route[0] - 1, 0x10, route.len() as u8];
+            wrong_route.extend_from_slice(&route[1..]);
+            wrong_route.extend_from_slice(&[UNIT, 0xE4, 0x83, 0, 4, 0]);
+            sys.pci.inject(&pci_wire(&wrong_route));
+        }
+        for &(group, on) in &commands {
+            published.push(Instant::now());
+            sys.broker.inject_qos1(
+                &format!("homeassistant/light/cbus_{group}/set"),
+                if on {
+                    br#"{"state":"ON"}"#
+                } else {
+                    br#"{"state":"OFF"}"#
+                },
+            );
+        }
+        for &(group, on) in &observations {
+            sys.pci.inject(&observation(group, on));
+        }
+        require(
+            Duration::from_secs(3),
+            "same command socket events while SAVE is pending",
+            || observation_rows(&rows).len() == observations.len(),
+        )
+        .await;
+        require(
+            Duration::from_secs(3),
+            "independent socket events while SAVE is pending",
+            || observation_rows(&observer_rows).len() == observations.len(),
+        )
+        .await;
+        require(
+            command_latency_bound() * commands.len() as u32,
+            "MQTT commands during routed save",
+            || {
+                sys.pci
+                    .payloads()
+                    .iter()
+                    .filter(|p| is_lighting_command(p))
+                    .count()
+                    == commands.len()
+            },
+        )
+        .await;
+        assert!(
+            !rows
+                .lock()
+                .unwrap()
+                .iter()
+                .any(|row| row.starts_with("[save]")
+                    || row.starts_with("[queue-")
+                    || row.starts_with("[done]")),
+            "serial command receipts escaped before SAVE completion"
+        );
+        unit.lock().unwrap().release = true;
+    };
+    tokio::time::timeout(Duration::from_secs(60), async {
+        tokio::join!(saving, run_routed_unit(&sys.pci, &unit, cursor), driver);
+    })
+    .await
+    .expect("routed save must complete with bounded scheduling");
+    let all_rows = rows.lock().unwrap().clone();
+    let receipt_rows: Vec<_> = all_rows
+        .iter()
+        .filter(|row| row.starts_with('['))
+        .cloned()
+        .collect();
+    let expected = std::iter::once(case["expected_final"].as_str().unwrap().to_string())
+        .chain((0..queued).map(|i| format!("[queue-{i}] 200 OK.")))
+        .chain(std::iter::once("[done] 200 OK.".to_string()))
+        .collect::<Vec<_>>();
+    assert_eq!(receipt_rows, expected, "{id}: serial pipelined receipts");
+    for received in [&rows, &observer_rows] {
+        let events = observation_rows(received);
+        assert_eq!(events.len(), observations.len(), "{id}");
+        for (row, &(group, on)) in events.iter().zip(&observations) {
+            assert!(
+                row.starts_with(&expected_observation_row(group, on)),
+                "{id}: {row}"
+            );
+        }
+    }
+    let frames = sys.pci.frames();
+    let lighting: Vec<_> = frames
+        .iter()
+        .filter(|frame| is_lighting_command(&frame.payload))
+        .collect();
+    assert_eq!(
+        lighting
+            .iter()
+            .map(|frame| frame.payload.clone())
+            .collect::<Vec<_>>(),
+        commands
+            .iter()
+            .map(|&(group, on)| lighting_payload(group, on))
+            .collect::<Vec<_>>(),
+        "{id}: command order and no replay"
+    );
+    let mut previous = None::<Instant>;
+    for (i, frame) in lighting.iter().enumerate() {
+        let eligible = previous.map_or(published[i], |last| last.max(published[i]));
+        assert!(
+            frame.ts.saturating_duration_since(eligible) <= command_latency_bound(),
+            "{id}: command {i} latency"
+        );
+        previous = Some(frame.ts);
+    }
+    require(STARTUP, "all confirmed MQTT receipts", || {
+        command_results(&sys).len() == commands.len()
+    })
+    .await;
+    assert!(command_results(&sys)
+        .iter()
+        .all(|r| r["delivery"] == "confirmed"));
+    for &(group, on) in &observations {
+        require(STARTUP, "routed-save observation fanout to MQTT", || {
+            sys.broker
+                .retained(&format!("homeassistant/light/cbus_{group}/state"))
+                .is_some_and(|payload| {
+                    let payload = parse_json(&payload);
+                    payload["state"] == if on { "ON" } else { "OFF" }
+                        && payload["cbus_source_addr"] == OBSERVER
+                })
+        })
+        .await;
+    }
+    {
+        let unit = unit.lock().unwrap();
+        let start = case["memory_address"].as_u64().unwrap() as usize;
+        assert_eq!(
+            &unit.memory[start..start + 48],
+            &(1..=48).collect::<Vec<_>>()[..],
+            "{id}: verified memory"
+        );
+        let mut addresses = std::collections::HashSet::new();
+        assert!(
+            unit.stores
+                .iter()
+                .all(|(address, _)| addresses.insert(*address)),
+            "{id}: no STORE replay"
+        );
+        assert!(
+            frames.iter().any(|frame| frame
+                .payload
+                .starts_with(case["identify_request"].as_str().unwrap())),
+            "exact route"
+        );
+        assert_eq!(unit.executes, usize::from(case["method"] == "ncc"));
+        if case["method"] == "ncc" {
+            assert!(unit.polls >= 3);
+            assert_eq!(
+                frames
+                    .iter()
+                    .filter(|frame| frame
+                        .payload
+                        .starts_with(case["execute_request"].as_str().unwrap()))
+                    .count(),
+                1
+            );
+            assert_eq!(
+                frames
+                    .iter()
+                    .filter(|frame| frame
+                        .payload
+                        .starts_with(case["poll_request"].as_str().unwrap()))
+                    .count(),
+                unit.polls
+            );
+        }
+    }
+    // Mode changes stay serial behind the completed SAVE and do not affect
+    // its earlier event prefix. A later observation still reaches MQTT and
+    // independent subscribers, but cannot leak into this disabled stream.
+    assert!(command(&mut reader, &mut writer, "EVENT e0s0c0")
+        .await
+        .contains("200 OK"));
+    sys.pci.inject(&observation(210, true));
+    require(STARTUP, "observation after same-socket EVENT OFF", || {
+        sys.broker
+            .retained("homeassistant/light/cbus_210/state")
+            .is_some_and(|payload| parse_json(&payload)["cbus_source_addr"] == OBSERVER)
+    })
+    .await;
+    let mut disabled = String::new();
+    assert!(
+        tokio::time::timeout(Duration::from_millis(100), reader.read_line(&mut disabled))
+            .await
+            .is_err(),
+        "mode OFF leaked {disabled:?}"
+    );
+    drop(sys);
+    let _ = std::fs::remove_file(state);
+    std::fs::remove_file(project).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
+}
+
+macro_rules! routed_liveness_case {
+    ($name:ident, $id:literal) => {
+        #[tokio::test]
+        async fn $name() {
+            routed_method_liveness($id).await;
+        }
+    };
+}
+routed_liveness_case!(
+    routed_direct_one_hop_keeps_same_socket_events_and_fifo_receipts,
+    "direct-1-hop"
+);
+routed_liveness_case!(
+    routed_direct_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "direct-6-hop"
+);
+routed_liveness_case!(
+    routed_paged_save_keeps_same_socket_events_and_fifo_receipts,
+    "paged-1-hop"
+);
+routed_liveness_case!(
+    routed_ncc_nvm_save_keeps_same_socket_events_and_fifo_receipts,
+    "ncc-6-hop"
+);
+routed_liveness_case!(
+    routed_edlt_save_keeps_same_socket_events_and_fifo_receipts,
+    "edlt-1-hop"
+);
+routed_liveness_case!(
+    routed_giu_save_keeps_same_socket_events_and_fifo_receipts,
+    "giu-6-hop"
+);
+routed_liveness_case!(
+    routed_sgiu_save_keeps_same_socket_events_and_fifo_receipts,
+    "sgiu-1-hop"
+);
+routed_liveness_case!(
+    routed_dali_save_keeps_same_socket_events_and_fifo_receipts,
+    "dali-6-hop"
+);
+routed_liveness_case!(
+    routed_goc_save_keeps_same_socket_events_and_fifo_receipts,
+    "goc-1-hop"
+);
+routed_liveness_case!(
+    routed_gocbyt_save_keeps_same_socket_events_and_fifo_receipts,
+    "gocbyt-6-hop"
+);
+routed_liveness_case!(
+    routed_goc2_save_keeps_same_socket_events_and_fifo_receipts,
+    "goc2-1-hop"
+);
+
+#[tokio::test]
+async fn routed_nvm_pci_loss_never_replays_or_accepts_stale_completion() {
+    let vector = liveness_vector();
+    let case = vector["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == "ncc-6-hop")
+        .unwrap();
+    let (state, specs, project) = routed_fixture(case, "nvm-pci-loss");
+    let sys = start_reconnecting_project(&state, &specs, &project.to_string_lossy()).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = cgate_connect(&sys).await;
+    stage_routed_session(&mut reader, &mut writer, case).await;
+    let staged = command(&mut reader, &mut writer, "PP GET S Block").await;
+    let unit = RoutedUnit::new(case);
+    let cursor = sys.pci.frames().len();
+    let saving = async { command(&mut reader, &mut writer, case["save"].as_str().unwrap()).await };
+    let driver = async {
+        require(
+            COMMAND_DRAIN,
+            "routed NVM busy poll before PCI loss",
+            || unit.lock().unwrap().polls >= 2,
+        )
+        .await;
+        unit.lock().unwrap().stop = true;
+        sys.pci.kick();
+    };
+    let (failed, (), ()) = tokio::time::timeout(Duration::from_secs(30), async {
+        tokio::join!(saving, run_routed_unit(&sys.pci, &unit, cursor), driver)
+    })
+    .await
+    .unwrap();
+    assert!(
+        failed
+            .lines()
+            .filter(|line| line.starts_with("[5]"))
+            .eq(std::iter::once(
+                vector["nvm_pci_loss_receipt"].as_str().unwrap()
+            )),
+        "{failed}"
+    );
+    let before = sys.pci.payloads();
+    let executes = before
+        .iter()
+        .filter(|p| p.starts_with(case["execute_request"].as_str().unwrap()))
+        .count();
+    assert_eq!(executes, 1);
+    require(STARTUP, "fresh PCI connection after NVM loss", || {
+        sys.pci.connections() == 2
+            && sys
+                .daemon
+                .stderr()
+                .contains("reconnected; MQTT bridge re-bound")
+    })
+    .await;
+    let stale = unit.lock().unwrap().response(&[0xE4, 0x83, 0, 4, 0]);
+    sys.pci.inject(&stale);
+    sys.pci.inject(&observation(210, true));
+    require(
+        STARTUP,
+        "new generation observation after stale NVM completion",
+        || {
+            sys.broker
+                .retained("homeassistant/light/cbus_210/state")
+                .is_some_and(|p| parse_json(&p)["cbus_source_addr"] == OBSERVER)
+        },
+    )
+    .await;
+    let after_stale = command(&mut reader, &mut writer, "PP GET S Block").await;
+    assert_eq!(after_stale.lines().filter(|line| line.starts_with("[5]")).collect::<Vec<_>>(), staged.lines().filter(|line| line.starts_with("[5]")).collect::<Vec<_>>(), "stale NVM reply cannot clear or rewrite staged values; separate subscribed events remain eligible");
+    sys.broker
+        .inject_qos1("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+    require(COMMAND_DRAIN, "MQTT command on fresh generation", || {
+        command_results(&sys)
+            .iter()
+            .any(|r| r["delivery"] == "confirmed")
+    })
+    .await;
+    assert_eq!(sys.pci.count_payload(&lighting_payload(1, true)), 1);
+    let after = sys.pci.payloads();
+    let routed_prefix = case["identify_request"]
+        .as_str()
+        .unwrap()
+        .strip_suffix("2101")
+        .unwrap();
+    assert_eq!(
+        after
+            .iter()
+            .filter(|p| p.starts_with(routed_prefix))
+            .cloned()
+            .collect::<Vec<_>>(),
+        before
+            .iter()
+            .filter(|p| p.starts_with(routed_prefix))
+            .cloned()
+            .collect::<Vec<_>>(),
+        "reconnect and late completion never replay any routed request"
+    );
+    drop(sys);
+    let _ = std::fs::remove_file(state);
+    std::fs::remove_file(project).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
+}
+
+#[tokio::test]
+async fn routed_nvm_broker_outage_preserves_same_socket_events_and_save_completion() {
+    let vector = liveness_vector();
+    let case = vector["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["id"] == "ncc-6-hop")
+        .unwrap();
+    let (state, specs, project) = routed_fixture(case, "nvm-broker-outage");
+    let mut extra = cgate_args(&state, &specs);
+    extra.extend(["-P".into(), project.to_string_lossy().into_owned()]);
+    let sys = start_with(Options {
+        project: false,
+        extra,
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = cgate_connect(&sys).await;
+    stage_routed_session(&mut reader, &mut writer, case).await;
+    let unit = RoutedUnit::new(case);
+    let cursor = sys.pci.frames().len();
+    let rows = Arc::new(Mutex::new(Vec::<String>::new()));
+    writer
+        .write_all(format!("[save] {}\r\n", case["save"].as_str().unwrap()).as_bytes())
+        .await
+        .unwrap();
+    let save = async {
+        loop {
+            let mut row = String::new();
+            assert_ne!(reader.read_line(&mut row).await.unwrap(), 0);
+            let done = row.starts_with("[save] ");
+            rows.lock().unwrap().push(row.trim_end().to_string());
+            if done {
+                break;
+            }
+        }
+        unit.lock().unwrap().stop = true;
+    };
+    let first = sys.broker.connections();
+    let driver = async {
+        require(COMMAND_DRAIN, "NVM poll before broker loss", || {
+            unit.lock().unwrap().polls >= 2
+        })
+        .await;
+        sys.broker.set_refusing(true);
+        sys.broker.disconnect_clients();
+        require(STARTUP, "broker refuses reconnect", || {
+            sys.broker.refused_connections() >= 1
+        })
+        .await;
+        for i in 0..80u8 {
+            sys.pci.inject(&observation(100 + i, i % 3 != 0));
+        }
+        require(
+            Duration::from_secs(3),
+            "same socket events during NVM and broker outage",
+            || observation_rows(&rows).len() == 80,
+        )
+        .await;
+        assert!(!rows.lock().unwrap().iter().any(|r| r.starts_with("[save]")));
+        unit.lock().unwrap().release = true;
+    };
+    tokio::time::timeout(Duration::from_secs(40), async {
+        tokio::join!(save, run_routed_unit(&sys.pci, &unit, cursor), driver);
+    })
+    .await
+    .unwrap();
+    assert_eq!(
+        rows.lock()
+            .unwrap()
+            .iter()
+            .filter(|r| r.starts_with("[save]"))
+            .cloned()
+            .collect::<Vec<_>>(),
+        ["[save] 200 OK"]
+    );
+    assert_eq!(
+        sys.broker.connections(),
+        first,
+        "save finished while broker remained unavailable"
+    );
+    assert_eq!(unit.lock().unwrap().executes, 1);
+    sys.broker.set_refusing(false);
+    require(STARTUP, "broker reconnect after NVM completion", || {
+        sys.broker.connections() > first
+            && sys
+                .broker
+                .subscriptions()
+                .iter()
+                .filter(|s| *s == COMMAND_WILDCARD)
+                .count()
+                >= 2
+    })
+    .await;
+    for i in 0..80u8 {
+        require(STARTUP, "queued outage observation reaches MQTT", || {
+            sys.broker
+                .retained(&format!("homeassistant/light/cbus_{}/state", 100 + i))
+                .is_some_and(|p| {
+                    let p = parse_json(&p);
+                    p["cbus_source_addr"] == OBSERVER
+                        && p["state"] == if i % 3 != 0 { "ON" } else { "OFF" }
+                })
+        })
+        .await;
+    }
+    let cgate = observation_rows(&rows);
+    for (i, row) in cgate.iter().enumerate() {
+        assert!(row.starts_with(&expected_observation_row(100 + i as u8, i % 3 != 0)));
+    }
+    assert_eq!(sys.pci.connections(), 1);
+    drop(sys);
+    let _ = std::fs::remove_file(state);
+    std::fs::remove_file(project).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
+}
+
+/// A real subscriber that stops reading cannot hold its physical save or
+/// lock ownership indefinitely. Its event write has a finite timeout; the
+/// live programming transaction is dropped and the PCI lane requires a
+/// reconnect before any later programming, even after a late ACK.
+#[tokio::test]
+async fn subscribed_slow_socket_retires_routed_programming_without_replay() {
+    let vector = liveness_vector();
+    let case = vector["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["id"] == "direct-1-hop")
+        .unwrap();
+    let (state, specs, project) = routed_fixture(case, "slow-subscriber");
+    let sys = start_reconnecting_project(&state, &specs, &project.to_string_lossy()).await;
+    wait_started(&sys).await;
+    let (mut reader, mut writer) = cgate_connect(&sys).await;
+    stage_routed_session(&mut reader, &mut writer, case).await;
+    writer
+        .write_all(format!("[save] {}\r\n", case["save"].as_str().unwrap()).as_bytes())
+        .await
+        .unwrap();
+    let unit = RoutedUnit::new(case);
+    let cursor = sys.pci.frames().len();
+    let (mut producer_reader, mut producer_writer) = cgate_connect(&sys).await;
+    let driver = async {
+        require(
+            COMMAND_DRAIN,
+            "slow subscriber has outstanding STORE",
+            || unit.lock().unwrap().held.is_some(),
+        )
+        .await;
+        // Keep its read half alive without consuming it. Each owned local
+        // broadcast exceeds its small receive window; no PCI IO is involved.
+        #[cfg(unix)]
+        {
+            use std::os::fd::AsRawFd;
+            let bytes: libc::c_int = 1024;
+            let result = unsafe {
+                libc::setsockopt(
+                    reader.get_ref().as_ref().as_raw_fd(),
+                    libc::SOL_SOCKET,
+                    libc::SO_RCVBUF,
+                    (&bytes as *const libc::c_int).cast(),
+                    std::mem::size_of_val(&bytes) as libc::socklen_t,
+                )
+            };
+            assert_eq!(result, 0);
+        }
+        let payload = "x".repeat(vector["slow_client"]["payload_bytes"].as_u64().unwrap() as usize);
+        for _ in 0..vector["slow_client"]["broadcasts"].as_u64().unwrap() {
+            let response = command(
+                &mut producer_reader,
+                &mut producer_writer,
+                &format!("BROADCAST_EVENT SP class {payload}"),
+            )
+            .await;
+            assert!(response.contains("[5] 200 OK."));
+        }
+        require(
+            Duration::from_secs(vector["slow_client"]["deadline_seconds"].as_u64().unwrap()),
+            "slow event subscriber connection retired",
+            || {
+                sys.daemon
+                    .stderr()
+                    .contains("C-Gate event client is not reading")
+                    || sys.daemon.stderr().contains("C-Gate event queue overflow")
+            },
+        )
+        .await;
+        require(
+            STARTUP,
+            "cancelled programming retires PCI and establishes a fresh generation",
+            || {
+                sys.pci.connections()
+                    == vector["slow_client"]["fresh_connections"].as_u64().unwrap() as usize
+                    && sys
+                        .daemon
+                        .stderr()
+                        .contains("C-Bus connection lost; reconnecting")
+                    && sys
+                        .daemon
+                        .stderr()
+                        .contains("reconnected; MQTT bridge re-bound")
+            },
+        )
+        .await;
+        let caps = command(
+            &mut producer_reader,
+            &mut producer_writer,
+            "CMQTT CAPABILITIES",
+        )
+        .await;
+        assert!(
+            caps.contains("\"pci_generation\":1")
+                && caps.contains(&format!(
+                    "\"programming_lane_state\":\"{}\"",
+                    vector["slow_client"]["fresh_lane_state"].as_str().unwrap()
+                )),
+            "{caps}"
+        );
+        assert_eq!(
+            unit.lock().unwrap().stores.len(),
+            3,
+            "no write followed the cancelled outstanding exchange"
+        );
+        // Connection cleanup releases only this former owner's PP names.
+        for text in [
+            format!("PP LOCK L //HARNESS/{}", case["network"]),
+            "PP START S L".into(),
+            "PP NEW S TESTUNIT 1.2.03".into(),
+            "PP SET S Block 1".into(),
+        ] {
+            assert!(
+                command(&mut producer_reader, &mut producer_writer, &text)
+                    .await
+                    .contains("200 OK"),
+                "{text}"
+            );
+        }
+        let staged = command(&mut producer_reader, &mut producer_writer, "PP GET S Block").await;
+        let stale = unit.lock().unwrap().held.as_ref().unwrap().0.clone();
+        sys.pci.inject(&stale);
+        sys.pci.inject(&observation(210, true));
+        require(STARTUP, "new generation remains live after old ACK", || {
+            sys.broker
+                .retained("homeassistant/light/cbus_210/state")
+                .is_some()
+        })
+        .await;
+        let current = command(&mut producer_reader, &mut producer_writer, "PP GET S Block").await;
+        assert_eq!(
+            staged, current,
+            "late ACK cannot rewrite a new owner's session"
+        );
+        assert_eq!(
+            unit.lock().unwrap().stores.len(),
+            3,
+            "old generation and reconnect never replay its uncertain STORE"
+        );
+        unit.lock().unwrap().stop = true;
+    };
+    tokio::time::timeout(Duration::from_secs(40), async {
+        tokio::join!(run_routed_unit(&sys.pci, &unit, cursor), driver);
+    })
+    .await
+    .unwrap();
+    drop(reader);
+    drop(writer);
+    drop(sys);
+    let _ = std::fs::remove_file(state);
+    std::fs::remove_file(project).unwrap();
+    std::fs::remove_dir_all(specs).unwrap();
+}
+
+/// A separate physical C-Gate command queued on the service's FIFO mutex
+/// must still receive events while another connection programs a unit.
+/// Physical actions execute after SAVE, in receipt order and exactly once;
+/// MQTT lighting can independently use its live command lane during SAVE.
+#[tokio::test]
+async fn queued_physical_cgate_commands_receive_events_without_overtaking_save() {
+    let vector = liveness_vector();
+    let case = vector["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["id"] == "direct-1-hop")
+        .unwrap();
+    let (state, specs, project) = routed_fixture(case, "queued-physical");
+    let mut extra = cgate_args(&state, &specs);
+    extra.extend(["-P".into(), project.to_string_lossy().into_owned()]);
+    let sys = start_with(Options {
+        project: false,
+        extra,
+        ..Default::default()
+    })
+    .await;
+    wait_started(&sys).await;
+    let (mut save_reader, mut save_writer) = cgate_connect(&sys).await;
+    stage_routed_session(&mut save_reader, &mut save_writer, case).await;
+    let (mut queued_reader, mut queued_writer) = cgate_connect(&sys).await;
+    assert!(
+        command(&mut queued_reader, &mut queued_writer, "EVENT e7s1c0")
+            .await
+            .contains("200 OK")
+    );
+    let unit = RoutedUnit::new(case);
+    let cursor = sys.pci.frames().len();
+    let rows = Arc::new(Mutex::new(Vec::<String>::new()));
+    let saving = async {
+        let reply = command(
+            &mut save_reader,
+            &mut save_writer,
+            case["save"].as_str().unwrap(),
+        )
+        .await;
+        unit.lock().unwrap().stop = true;
+        assert!(reply.lines().any(|line| line == "[5] 200 OK"));
+    };
+    let reading = async {
+        loop {
+            let mut row = String::new();
+            assert_ne!(queued_reader.read_line(&mut row).await.unwrap(), 0);
+            let done = row.starts_with("[off] ");
+            rows.lock().unwrap().push(row.trim_end().to_string());
+            if done {
+                break;
+            }
+        }
+    };
+    let driver = async {
+        require(COMMAND_DRAIN, "SAVE owns physical command lane", || {
+            unit.lock().unwrap().held.is_some()
+        })
+        .await;
+        for request in vector["queued_physical"]["requests"].as_array().unwrap() {
+            queued_writer
+                .write_all(format!("{}\r\n", request.as_str().unwrap()).as_bytes())
+                .await
+                .unwrap();
+        }
+        for i in 0..vector["queued_physical"]["observations"].as_u64().unwrap() {
+            sys.pci.inject(&observation(100 + i as u8, i % 2 == 0));
+        }
+        sys.broker
+            .inject_qos1("homeassistant/light/cbus_1/set", br#"{"state":"ON"}"#);
+        require(
+            Duration::from_secs(3),
+            "events reach queued physical command socket",
+            || observation_rows(&rows).len() == 6,
+        )
+        .await;
+        require(
+            command_latency_bound(),
+            "MQTT remains live beside queued C-Gate command",
+            || sys.pci.count_payload(&lighting_payload(1, true)) == 1,
+        )
+        .await;
+        assert!(!rows
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|r| r.starts_with("[on]") || r.starts_with("[off]")));
+        assert_eq!(sys.pci.count_payload(&lighting_payload(30, true)), 0);
+        assert_eq!(sys.pci.count_payload(&lighting_payload(31, false)), 0);
+        unit.lock().unwrap().release = true;
+    };
+    tokio::time::timeout(Duration::from_secs(30), async {
+        tokio::join!(
+            saving,
+            reading,
+            run_routed_unit(&sys.pci, &unit, cursor),
+            driver
+        );
+    })
+    .await
+    .unwrap();
+    let actual = rows
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|r| r.starts_with('['))
+        .cloned()
+        .collect::<Vec<_>>();
+    assert_eq!(
+        actual,
+        vector["queued_physical"]["responses"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|r| r.as_str().unwrap())
+            .collect::<Vec<_>>()
+    );
+    let frames = sys.pci.frames();
+    let on = frames
+        .iter()
+        .position(|f| f.payload == lighting_payload(30, true))
+        .unwrap();
+    let off = frames
+        .iter()
+        .position(|f| f.payload == lighting_payload(31, false))
+        .unwrap();
+    assert!(on < off);
+    assert_eq!(sys.pci.count_payload(&lighting_payload(30, true)), 1);
+    assert_eq!(sys.pci.count_payload(&lighting_payload(31, false)), 1);
+    let route_prefix = case["identify_request"]
+        .as_str()
+        .unwrap()
+        .strip_suffix("2101")
+        .unwrap();
+    assert!(
+        frames
+            .iter()
+            .enumerate()
+            .filter(|(_, f)| f.payload.starts_with(route_prefix))
+            .all(|(i, _)| i < on),
+        "every programming readback precedes queued physical actions"
+    );
+    drop(sys);
+    let _ = std::fs::remove_file(state);
+    std::fs::remove_file(project).unwrap();
     std::fs::remove_dir_all(specs).unwrap();
 }

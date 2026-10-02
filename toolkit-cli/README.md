@@ -95,6 +95,13 @@ Rows follow snapshot network order and numeric unit-address order within each
 network. The per-network sort comes from pinned original Toolkit code; full
 interactive manager behavior remains unverified. See [CSV profiles and limits](docs/toolkit-database-csv.md).
 
+[NeoPro CSV](docs/toolkit-database-csv-neopro.md) now admits KEYB2/KEYB4/KEYB6
+at exactly 2.5.00 from native XML or one live project snapshot. All eight blocks
+are reported with their primary/secondary application selection; Area 255
+belongs to the primary application. These types remain refused by public
+cached-projection JSON, whose schema cannot identify that primary application.
+Original GUI reports, cold native acceptance and other profiles remain open.
+
 ## Install and run
 
 Python 3.13 or newer, from the repository root:
@@ -1967,6 +1974,18 @@ PP. Both require private specifications and exclusive closed-project ownership.
 Keep the durable attempt journal; `conversion recover --journal FILE` reads
 the current project and backup without replaying an uncertain conversion or
 save. See the [integrated workflow](docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).
+
+`cgate conversion tweak` exposes all 123 admitted client-side Toolkit tweaker
+pairs. Preview with the canonical source path, source/target types, private
+specification filenames, unused target address, target firmware and catalogue.
+After reviewing the returned plan, repeat with
+`--apply --exclusive-project --expect-plan-sha256 HASH`. Apply verifies a fresh
+issued Unit and one PP save against the source and unrelated project
+tree within the documented structural comparison (whitespace-only text is
+ignored). It retains uncertain scaffolds for inspection and never replays or
+deletes after a lost receipt. See [the command, examples and boundaries](docs/toolkit-conversion-tweakers.md).
+Source metadata copying/deletion/readdressing, retained editor history,
+project save/reopen and physical programming remain unfinished.
 
 The [Rust database conversion batch](docs/feature-batch-2026-10-01-conversion-pp.md)
 compares 30 original catalogue/move results with both cgate-mock and cmqttd,

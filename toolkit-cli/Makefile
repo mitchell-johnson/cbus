@@ -102,6 +102,19 @@ check-cgate-interop: compile
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[mock]' \
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[mock]' \
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[mock]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_project_network_selection_on_owned_backend[mock]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_late_unsupported_profile_refuses_atomically[mock]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_lost_snapshot_terminal_is_not_retried[mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[dimmer-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[relay-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[classic-key-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[coupler-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[input-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_stale_plan_and_alias_collision_refuse[mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-add-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-save-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-set-mock]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_declared_assignment_failure_keeps_reviewed_plan[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -122,6 +135,21 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[daemon]' \
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[daemon]' \
 		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[daemon]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_project_network_selection_on_owned_backend[daemon]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_late_unsupported_profile_refuses_atomically[daemon]' \
+		'tests/test_cgate_neopro_csv_interop.py::test_public_neopro_csv_lost_snapshot_terminal_is_not_retried[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[dimmer-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[relay-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[classic-key-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[coupler-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_preview_apply_family[input-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_stale_plan_and_alias_collision_refuse[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-add-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-save-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-set-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_declared_assignment_failure_keeps_reviewed_plan[daemon]' \
+		tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_authentication_refuses_before_planning_or_writes \
+		tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_local_guards_never_connect \
 		tests/test_cgate_barcode_database_interop.py::test_public_barcode_owned_login_denial_and_positive_apply \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 

@@ -33,6 +33,9 @@ _KEYE_TYPES = frozenset((
     'KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
     'KEYEIR1', 'KEYEIR2', 'KEYEIR3', 'KEYEIR4',
 ))
+# Exact NeoPro Saturn registrations; eight input blocks are CSV-visible even
+# when the physical key count is two, four or six. See the NeoPro source vector.
+_NEOPRO_TYPES = {'KEYB2': 'TKEYB2', 'KEYB4': 'TKEYB4', 'KEYB6': 'TKEYB6'}
 # DIN-output agent classes and their GetMaxChannels value. The shared agent
 # reloads one group per channel from GroupAddress[0:max], so later stored slots
 # are unavailable in the report. The 2026-09-30 factory registry pins each row.
@@ -68,6 +71,7 @@ def admitted_profiles():
     """Every admitted (unit type, firmware, selected class) point, in order."""
     rows = [('RELAY4', firmware, 'TRELAY4') for firmware in ('0', '4.4', '9')]
     rows += [(kind, '2.5.00', 'TKEYEx') for kind in sorted(_KEYE_TYPES)]
+    rows += [(kind, '2.5.00', klass) for kind, klass in _NEOPRO_TYPES.items()]
     rows += [(kind, '2.7.00', klass) for kind, klass in _DIN_TYPES.items()]
     rows += [(kind, '2.7.00', klass) for kind, (klass, _) in _REMAP_TYPES.items()]
     rows += [(kind, firmware, klass) for kind, (firmware, klass) in _SENSOR_TYPES.items()]
@@ -244,6 +248,10 @@ def _class(unit):
         if len(unit.group_identities) != 9:
             raise ValueError('Cached KEYE profile requires exactly nine stored groups')
         return 'TKEYEx'
+    if kind in _NEOPRO_TYPES and unit.firmware == '2.5.00':
+        if len(unit.group_identities) != 8:
+            raise ValueError('Cached NeoPro profile requires exactly eight stored groups')
+        return _NEOPRO_TYPES[kind]
     if kind in _DIN_TYPES and unit.firmware == '2.7.00':
         if len(unit.group_identities) != 16:
             raise ValueError('Cached DIN profile requires exactly sixteen stored groups')
@@ -256,7 +264,7 @@ def _class(unit):
         return _SENSOR_TYPES[kind][1]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, DIN, marshalling-box, sensor and KEYGL5 type/firmware pairs; ' + refusal_reason(unit.unit_type, unit.firmware))
+    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, NeoPro, DIN, marshalling-box, sensor and KEYGL5 type/firmware pairs; ' + refusal_reason(unit.unit_type, unit.firmware))
 
 
 def _validated_groups(unit, groups):
@@ -293,7 +301,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
     if group_save is not None and type(group_save) is not CSVGroupSaveObservation:
         raise ValueError('group_save must be an exact CSVGroupSaveObservation or absent')
-    has_area = (selected_class in _DIN_CHANNELS or selected_class in (
+    has_area = (selected_class in _DIN_CHANNELS or selected_class in _NEOPRO_TYPES.values() or selected_class in (
         'TRELAY4', 'TKEYEx', 'TRELDN8', 'TRELDN8SP', 'TRELMB8',
         'TST7SENPIROA', 'TST7SENPIRSS'))
     if has_area and len(area_observations) != 2:
@@ -381,6 +389,11 @@ def parse_cached_projection(value, *, columns):
                             else _UNIT_FIELDS)
     if set(raw_unit) != expected_unit_fields:
         raise ValueError('Cached unit must provide every documented field, without extras')
+    if type(raw_unit['unit_type']) is str and raw_unit['unit_type'].upper() in _NEOPRO_TYPES:
+        # This public schema has tags but no primary Application identity.
+        # Only the native adapter can establish the primary Area cache order.
+        raise ValueError('NeoPro CSV requires an explicit native XML snapshot; '
+                         'cached JSON cannot establish primary Application identity')
     group_identities = raw_unit['group_identities']
     if type(group_identities) is not list:
         raise ValueError('Cached unit group identities must be a JSON array')

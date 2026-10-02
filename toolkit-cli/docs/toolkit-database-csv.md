@@ -2,6 +2,12 @@
 
 `toolkit-database-csv` exports an explicit captured report, the bounded original-backed cached-object projection, or one admitted native XML snapshot. Portable UTF-8 without a BOM is the default; an explicit Windows mode reproduces Toolkit's native text conversion. `cgate database-csv` acquires the snapshot directly from a live C-Gate database. Both preserve the original Toolkit 1.18.0.2754 row serializer's column order, serial text, quoting and unavailable-group placement. They do not accept arbitrary project profiles.
 
+The [NeoPro extension](toolkit-database-csv-neopro.md) adds KEYB2/KEYB4/KEYB6
+firmware 2.5.00 to native XML and live export, retaining all eight block
+associations and primary Area identity. Public cached JSON remains refused for
+that family. The current derived registry admits 35 types; historical receipts
+and original/native acceptance boundaries remain unchanged.
+
 ```sh
 cbus-toolkit toolkit-database-csv capture.json --output report.csv
 cbus-toolkit toolkit-database-csv capture.json --output names.csv --columns address tag_name serial

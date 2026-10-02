@@ -542,6 +542,31 @@ interrupted, do not replay the command: `saved=false` means unconfirmed, while
 the transaction evidence marks both save outcome and current PP/database state
 uncertain.
 
+## New conversion and NeoPro report commands
+
+`cgate conversion tweak` previews all 123 currently admitted Toolkit client-side
+pairs from a canonical source path, exact private source/target specs, unused
+target address, firmware and catalogue. Review `plan_sha256`; apply requires
+`--apply --exclusive-project --expect-plan-sha256 HASH`. It binds all project
+Networks closed/idle, source and defaults, and original plus schema-staged
+assignments. One fresh Unit and one PP save are verified against the entire
+source/unrelated graph. A declined assignment exits 1 with a separately
+verified fallback; a lost receipt retains the scaffold and uncertainty without
+reconnect/replay/deletion. Source metadata/delete/readdress, project save/reopen,
+retained GUI history and physical acceptance remain open. Read
+`toolkit-cli/docs/toolkit-conversion-tweakers.md` before using this command.
+
+Native XML/live CSV admits KEYB2/KEYB4/KEYB6 at exactly 2.5.00. All eight blocks
+select their own primary/secondary Application through SecondApplicationBlocks;
+Area 255 stays in primary. Complete consumed groups and ordinary report fields
+are required. Whole selections refuse atomically before output creation, using
+one live DBGETXML. Public cached JSON refuses these types because its schema
+lacks primary Application identity. The current static registry admits 35 types;
+historical 32-type and native receipts are unchanged. Static EXE/MAP reading is
+not original-instruction acceptance. See
+`toolkit-cli/docs/toolkit-database-csv-neopro.md` and the October 2
+conversion/CSV/liveness batch for current proof and remaining gates.
+
 ## Compatibility and tests
 
 Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` derives its result from the packaged functional-obligation and evidence register and deliberately exits 1 until the census, implementation and acceptance requirements are complete. The provisional register currently accounts for 22,103 source records, including the sanitized 412-form, 10,102-control and 1,839-event executable census in `toolkit-cli/docs/toolkit-executable-surface.json`. Reproduce that census with `research/extract_toolkit_executable_surface.py` and explicit vendor EXE/MAP paths; never commit those vendor inputs. Functional percentages are unavailable while `denominator_ready` is false. The separately reported 42-row category percentage is not a functionality estimate. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.

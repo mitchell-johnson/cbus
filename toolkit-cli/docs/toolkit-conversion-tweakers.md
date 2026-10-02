@@ -8,6 +8,121 @@ it issues PP SET only for attributes that are still writable. A failed PP SET
 is caught and ignored. This is separate from the native engine described in
 [conversion.md](conversion.md).
 
+## Public preview and guarded apply
+
+`cgate conversion tweak` exposes all **123 currently admitted pairs** through
+one operator workflow: eight DIMDN/DIMDU4, seven RELDN, 93 classic key to fresh
+Neo, five coupler/auxiliary to fresh Neo and ten classic InputUnit pairs. The
+registry and firmware/schema boundaries below remain the admission authority.
+Unsupported pairs fail before connecting; the frontend does not widen them.
+
+Preview an existing source and a fresh replacement at an unused address:
+
+```sh
+cbus-toolkit cgate --host 127.0.0.1 --port 20023 conversion tweak //TEST/254/p/20 \
+  --source-type DIMDN8 --target-type DIMDU4 \
+  --source-spec DIMDN8.xml --target-spec DIMDU4.xml --spec-dir /private/specifications \
+  --target-address 40 --firmware 2.7.00 --catalog-number L5504D2U \
+  --tag-name Replacement
+```
+
+The source path must use canonical decimal Network and Unit addresses in
+`0..255`. The target address must differ from the source. The operator supplies
+the exact source/target specification files, target firmware and catalogue
+number. `CBUS_UNITSPEC_DIR` may supply the directory. Includes are captured as
+immutable, bounded private snapshots; their actual XML hashes enter the plan.
+Firmware and catalogue must be single command tokens. TagName may contain
+spaces and Unicode; metadata must be trimmed nonempty XML text without controls
+or the SAFE `#` delimiter. The default TagName is `Tweaked<address>`.
+
+Preview reads the complete selected project and requires **every Network to be
+closed and idle**, including unrelated Networks. It loads the source through
+an offline `/db//...` PP session and uses a temporary `PP NEW` session to read
+the target's defaults. These sessions lock, start, end and unlock; they do not
+create or save a database Unit. Preview verifies that the stored project XML
+has stayed unchanged. It returns `plan` and `plan_sha256`, binding the endpoint,
+whole project, specification snapshots, source PP, target defaults, original
+ordered assignments and their expected native schema effects.
+
+Review that JSON, then repeat the same command with these additional flags:
+
+```sh
+  --apply --exclusive-project --expect-plan-sha256 <reviewed-plan-sha256>
+```
+
+Apply recomputes the plan and requires the exact reviewed digest. It rechecks
+the specification bytes, every Network's closed/idle state and the project
+snapshot immediately before ADD. `--exclusive-project` is an assertion that
+the operator controls the whole project; it is not a server transaction lock.
+The frontend refuses occupied destination addresses, including decimal aliases
+such as `040` and `+40`, before ADD. Do not let another client edit the project
+during this workflow.
+
+One `DBADDSAFE` creates the replacement. Its canonical UUID must be absent from
+every identity present in the baseline XML, including Project OID when emitted,
+and resolve through the exact addressed Unit XML before initialization. Legacy
+numeric project export can omit Project OID; this is not a separate proof of
+freshness against the service's opaque internal identity index. Narrow metadata writes set
+UnitType, UnitName, firmware, catalogue and the requested TagName without
+re-admitting unrelated raw or opaque XML. PP is reset to native defaults,
+checked against the reviewed baseline, then receives the ordered assignments.
+The frontend submits the declared schema effect of each original assignment:
+overlong numeric arrays are truncated, partial arrays retain their target tail,
+and sixbit text is normalized. Both the original hook string and submitted value
+are reported. This gives the same intended native result on modeled backends
+whose sparse PP store otherwise retains the literal overlong string.
+
+One `PP SAVE_TO_SOURCE` persists the target PP, followed by a fresh PP session
+and full project readback. Acceptance requires the planned values and destination
+identity to match, with source and unrelated data preserved within the structural
+comparison bound. Attributes, comments, processing instructions, namespaces and
+non-whitespace text are checked. The shared comparison omits whitespace-only text
+around element children, including significant spaces in opaque mixed markup or
+under `xml:space="preserve"`; full XML text fidelity remains open. Output records
+this boundary in `xml_comparison`. Like the original tweaker API, copied `UnitAddress` PP retains
+the source address while the new database Unit stays at the requested address.
+
+Complete parameter assignment refusals remain recorded, following the original
+setter's declared-failure behavior. The frontend saves and checks the retained
+default for a refused parameter but exits **1**, with `accepted=false` and
+`planned_assignments_complete=false`. `verified_expected_parameters` describes
+that observed fallback separately; it does not alter the reviewed plan or digest.
+A server failure or lost reply stops the workflow. Evidence retains attempted
+and confirmed writes, phase, issued OID when bound and possible-send uncertainty.
+Temporary PP SET, reset and new-session sends have separate `staging_writes`
+and `staging_uncertain` evidence; a lost staging reply also stops before save.
+Uncertain staging from a completed assignment refusal clears only after the
+fresh target PP readback verifies its precise retained fallback.
+The command never reconnects, replays, rolls back or deletes a scaffold after a
+possible ADD or save. Inspect the database before planning another attempt.
+
+For an authenticated service, add `--auth-token-file <private-file>`. The token
+is used for LOGIN before selection and excluded from plan/operator evidence.
+Each CLI connection selects the requested project once.
+
+This workflow creates a database replacement at another address. It does not
+copy source tag/description/serial metadata, delete or readdress the source,
+save/reopen the project, or program a physical unit. Original Toolkit GUI
+replacement, retained/editor model history, other profiles and final controller
+handoff remain separate acceptance. The existing native receipts below apply to
+the earlier API checks; they do not establish new native acceptance of this
+public frontend. Issues #73 and #74 remain outside this work.
+
+Focused public verification uses generated synthetic profiles and owned
+`cgate-mock`/`cmqttd`, with literal wire capture, controlled lost receipts and
+startup-only fake PCI. It is runnable from source or an installed wheel:
+
+```sh
+CBUS_CGATE_MOCK_BIN=/path/to/cgate-mock CBUS_CMQTTD_BIN=/path/to/cmqttd \
+  PYTHONPATH=src:tests .venv/bin/python -m pytest -q \
+  tests/test_toolkit_tweaker_workflow.py tests/test_cgate_toolkit_tweaker_interop.py
+```
+
+For wheel acceptance, stage the tests and their committed helper modules while
+importing `cbus_toolkit` from the installed package. Do not add the checkout's
+`src` directory to that run. These owned checks add no original/vendor/VM or
+physical-house execution credit.
+
 ## Registry receipt
 
 `research/fixtures/toolkit-conversion-tweaker-registry.json` is the

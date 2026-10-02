@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 622,
-    "modules_without_skip_sites": 325,
-    "modules_with_skip_sites": 297,
+    "test_modules": 626,
+    "modules_without_skip_sites": 328,
+    "modules_with_skip_sites": 298,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 26,
+      "unclassified": 27,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 137
+      "none": 138
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -510,6 +510,41 @@
             "test_public_named_safe_graph_separate_project_selected_sessions",
             "test_public_renamed_associated_level_cli_auth_and_restart",
             "test_public_renamed_associated_level_cli_owner_and_wire"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_neopro_csv_interop.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 3,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_neopro_csv_interop.py",
+          "kind": "helper.selected_binary.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned NeoPro CSV journey",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_public_neopro_csv_late_unsupported_profile_refuses_atomically",
+            "test_public_neopro_csv_lost_snapshot_terminal_is_not_retried",
+            "test_public_neopro_csv_project_network_selection_on_owned_backend"
           ]
         }
       ]

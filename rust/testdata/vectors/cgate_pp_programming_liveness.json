@@ -1,0 +1,239 @@
+{
+  "description": "Owned real-daemon scheduling contracts; scripted programming peers are not original or hardware acceptance. Exact routed prefixes exclude the trailing transport checksum.",
+  "cases": [
+    {
+      "id": "direct-1-hop",
+      "method": "direct",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 32,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "direct-6-hop",
+      "method": "direct",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 32,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "paged-1-hop",
+      "method": "paged",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 496,
+      "memory_address": 496,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "ncc-6-hop",
+      "method": "ncc",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 496,
+      "memory_address": 496,
+      "bytes": 48,
+      "hold": "nvm-poll",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "edlt-1-hop",
+      "method": "edlt",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "giu-6-hop",
+      "method": "giu",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "sgiu-1-hop",
+      "method": "sgiu",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "dali-6-hop",
+      "method": "dali",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "goc-1-hop",
+      "method": "goc",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "gocbyt-6-hop",
+      "method": "gocbyt",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "goc2-1-hop",
+      "method": "goc2",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    }
+  ],
+  "queued_commands": 64,
+  "observations": 80,
+  "mqtt_commands": 8,
+  "nvm_pci_loss_receipt": "[5] 502 Physical PP Save-to-NVM failed after 1 confirmed write(s): PCI disconnected",
+  "slow_client": {
+    "broadcasts": 32,
+    "payload_bytes": 65536,
+    "deadline_seconds": 25,
+    "fresh_connections": 2,
+    "fresh_lane_state": "ready"
+  },
+  "queued_physical": {
+    "requests": [
+      "[on] ON //HARNESS/254/56/30",
+      "[off] OFF //HARNESS/254/56/31"
+    ],
+    "responses": [
+      "[on] 200 OK",
+      "[off] 200 OK"
+    ],
+    "observations": 6
+  }
+}

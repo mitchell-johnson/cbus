@@ -5,6 +5,8 @@ use super::*;
 pub(crate) mod calculator;
 pub(crate) mod cgl;
 mod connection_admission;
+mod connection_events;
+use connection_events::CommandEventDelivery;
 mod dali;
 mod dali_journal;
 mod dali_specialized;
@@ -104,6 +106,7 @@ use tokio::{
 };
 
 const MAX_LINE: usize = 1024 * 1024;
+const SERVICE_EVENT_CAPACITY: usize = 512;
 const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
 const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
@@ -2078,7 +2081,7 @@ impl Service {
             network,
             state_path,
             move_journal_dir,
-            events: broadcast::channel(512).0,
+            events: broadcast::channel(SERVICE_EVENT_CAPACITY).0,
             observed_labels: Mutex::new(ObservedLabels::default()),
             measurement_state: Mutex::new(HashMap::new()),
             command_sessions: Mutex::new(CommandSessions::default()),
@@ -15296,7 +15299,15 @@ impl Service {
                             let command = if tagged { head } else { format!("[untagged] {head}") };
                             let (mut response, close_after_reply) = match bounded_document(&mut reader, &delimiter).await? {
                                 DocumentRead::Complete(document) => {
-                                    (self.handle_document(&mut client, &command, &document).await, false)
+                                    {
+                                        let delivery = CommandEventDelivery::new(self, mode, &client, command_session);
+                                        let response = delivery.wait(
+                                            self.handle_document(&mut client, &command, &document),
+                                            &mut writer,
+                                            &mut events,
+                                        ).await?;
+                                        (response, false)
+                                    }
                                 }
                                 DocumentRead::Exceeded => {
                                     let tag = parse_command(&command).map_or_else(|_| String::new(), |c| c.tag);
@@ -15354,7 +15365,14 @@ impl Service {
                                     Err(reason) => err(&c.tag, 408, &format!("408 Operation failed: {reason}")),
                                 }
                             }
-                        } else { self.handle(&mut client, &command).await };
+                        } else if parsed.as_ref().is_some_and(|c| c.body.split_whitespace().next().is_some_and(|w| w.eq_ignore_ascii_case("EVENT_CHANNEL"))) {
+                            // These local subscription mutations retain their
+                            // existing receipt-before-new-filter boundary.
+                            self.handle(&mut client, &command).await
+                        } else {
+                            let delivery = CommandEventDelivery::new(self, mode, &client, command_session);
+                            delivery.wait(self.handle(&mut client, &command), &mut writer, &mut events).await?
+                        };
                         // Retained C-Gate 3.4 has one oddity: a tagged hash
                         // marker is rejected with an untagged syntax error,
                         // while a tagged double-slash marker echoes its tag.
@@ -15387,28 +15405,8 @@ impl Service {
                     }
                     event = events.recv() => match event {
                         Ok(event) => {
-                            if let Some(reply) = event.strip_prefix(PROGRAMMER_REPLY_MARKER) {
-                                if let Some((session, line)) = reply.split_once(' ') {
-                                    if session.parse::<u64>().ok() == Some(command_session) {
-                                        tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{line}\r\n").as_bytes())).await
-                                            .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate client is not reading"))??;
-                                    }
-                                }
-                                continue;
-                            }
-                            if is_own_command_trace(&event, command_session) {
-                                continue;
-                            }
-                            let deploy_channel = deploy_queue_event_channel(&event);
-                            let delivery = deploy_channel.map_or_else(
-                                || cgate_event_delivery(mode, self.global_event_level, &event),
-                                |channel| client.event_channels.contains(channel).then_some(event.as_str()),
-                            );
-                            if let Some(delivery) = delivery {
-                                let delivery = event_oid_column(delivery, self.event_display_oids);
-                                tokio::time::timeout(Duration::from_secs(10), writer.write_all(format!("{delivery}\r\n").as_bytes())).await
-                                    .map_err(|_| io::Error::new(io::ErrorKind::TimedOut,"C-Gate event client is not reading"))??;
-                            }
+                            CommandEventDelivery::new(self, mode, &client, command_session)
+                                .write(&mut writer, &event).await?;
                         }
                         Err(broadcast::error::RecvError::Lagged(_)) if !mode.is_off() || !client.event_channels.is_empty() => return Err(io::Error::other("C-Gate event queue overflow")),
                         _ => {},

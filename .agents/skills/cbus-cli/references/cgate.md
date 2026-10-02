@@ -2250,6 +2250,19 @@ filters it, while `e3...`, higher numeric modes and `e+...` deliver it. The
 first argument is preserved and need not literally be `SP`; an empty command
 is 400 and any accepted form is one volatile fanout event plus `200 OK.`.
 
+The embedded cmqttd service now delivers subscribed events while its serial
+command awaits programming, using its existing 512-entry bounded broadcast
+receiver. Owner-only programmer replies and event filters remain in effect.
+Continuous events cannot starve a ready command; a finite queued prefix drains
+before its terminal response. Each stalled event write has a 10-second timeout;
+this is not an aggregate command deadline. Overflow for subscribed delivery
+fails explicitly and dropping incomplete programming retires its PCI generation.
+Later command input remains under TCP backpressure without a detached task.
+The separate mock TCP fanout below is unchanged and still unbounded. See
+`docs/cmqttd-cgate.md` and
+`toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md` for owned
+software tests and outstanding native/hardware acceptance.
+
 ## Resource bounds
 
 - Input line: 1 MiB maximum.

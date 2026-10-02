@@ -86,6 +86,15 @@ incomplete Units while initializing the new object. Project saving and device
 programming are explicit later steps; original GUI, physical scanner and
 PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
 
+The [conversion, NeoPro report and event-delivery batch](toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
+adds `cgate conversion tweak` for all 123 currently admitted Toolkit tweaker
+pairs, with a reviewed plan digest and guarded creation of a database
+replacement. CSV export now includes KEYB2/KEYB4/KEYB6 at firmware 2.5.00,
+including per-block secondary applications. cmqttd also delivers subscribed
+events on the command connection while programming is running. These features
+have bounded software acceptance; complete original Toolkit and hardware
+acceptance remain outstanding.
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the
@@ -246,12 +255,17 @@ independent of the device's `TemperatureUnits` setting. Template 9 allocation
 requires its documented initially empty application and explicit
 `--group-sort address-ascending` profile.
 
-The separate [Toolkit conversion API](toolkit-cli/docs/toolkit-conversion-tweakers.md)
-admits 123 of 292 registered source/target pairs with native database evidence,
+The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
+admits 123 of 292 registered source/target pairs with historical native database
+evidence for the API,
 including seven relay, 93 classic-to-Neo, five coupler-to-Neo and ten non-sensor
 InputUnit directions at the documented exact firmware profiles. Its
-source-preservation and refusal rules are documented independently of the
-typed C-Gate conversion command. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
+source-preservation and refusal rules also govern `cgate conversion tweak`.
+Preview binds the closed project, private specifications and PP defaults;
+apply requires `--exclusive-project --expect-plan-sha256 HASH`. It creates a
+fresh replacement and verifies one PP save, preserving the source. Source
+deletion/readdressing, project save/reopen and physical programming remain
+separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
 for these workflows.

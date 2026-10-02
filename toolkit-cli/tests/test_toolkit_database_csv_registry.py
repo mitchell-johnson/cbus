@@ -28,6 +28,7 @@ from tests.test_cgate import peer
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / 'research/experiments/2026-09-30/csv-factory-registry-static.json'
+CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-neopro-registry.json'
 FIXTURE = ROOT / 'research/fixtures/toolkit-database-csv-registry-batch-synthetic.xml'
 HEADER = ('Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,'
           'Firmware Version,Primary Application,Secondary Application,Area,'
@@ -120,7 +121,7 @@ class FactoryRegistryTests(unittest.TestCase):
                     self.assertNotIn('association_model', row)
 
     def test_admitted_profiles_match_their_registered_class_and_firmware_range(self):
-        rows = receipt()['registrations']
+        rows = json.loads(CURRENT_RECEIPT.read_text(encoding='utf-8'))['registrations']
         for kind, firmware, klass in admitted_profiles():
             with self.subTest(kind=kind, firmware=firmware):
                 matches = [row for row in registry.registrations_for(kind, firmware)
@@ -160,7 +161,7 @@ class FactoryRegistryTests(unittest.TestCase):
     def test_generated_module_matches_receipt(self):
         expected = tuple((row['unit_type'], row['firmware_min'], row['firmware_max'], row['class'],
                           row['agent'] or '', '' if row['admitted'] else row['refusal_reason'])
-                         for row in receipt()['registrations'])
+                         for row in json.loads(CURRENT_RECEIPT.read_text(encoding='utf-8'))['registrations'])
         self.assertEqual(registry.REGISTRATIONS, expected)
 
     def test_refusal_reasons_name_the_registry_decision(self):
@@ -181,8 +182,8 @@ class FactoryRegistryTests(unittest.TestCase):
         from research.csv_factory_registry_static import dumps, registry_module, source_registry
         actual = source_registry(os.environ['CBUS_TOOLKIT_EXE'], os.environ['CBUS_TOOLKIT_MAP'],
                                  admitted_profiles())
-        self.assertEqual(dumps(actual), RECEIPT.read_text(encoding='utf-8'))
-        self.assertEqual(registry_module(actual),
+        self.assertEqual(dumps(actual), CURRENT_RECEIPT.read_text(encoding='utf-8'))
+        self.assertEqual(registry_module(actual, receipt_path=CURRENT_RECEIPT.relative_to(ROOT).as_posix()),
                          (ROOT / 'src/cbus_toolkit/toolkit_database_csv_registry.py')
                          .read_text(encoding='utf-8'))
 

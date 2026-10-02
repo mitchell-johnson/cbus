@@ -24,6 +24,18 @@ fragmented memory reads, then permanently retires that generation and signals
 connection loss. cmqttd reconnects a fresh generation through its existing
 connection manager; it never replays, resumes, or reuses the partial snapshot.
 
+Subscribed command connections now continue receiving eligible events while
+their serial command awaits programming. Delivery shares the existing bounded
+512-entry service broadcast queue, preserves owner-only programmer replies and
+event filtering, and times out a stalled writer after ten seconds. Ready
+commands receive priority over continuous event arrivals, then drain a finite
+queued prefix before their terminal response. Later commands remain under TCP
+backpressure; no detached command task or application backlog is introduced.
+An incomplete programming exchange is retired if its connection delivery fails.
+The [software liveness batch](../toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
+covers routed and specialized methods, subscriber cancellation and PCI/broker
+faults. Original/hardware timing and global fanout guarantees remain separate.
+
 `DBGETXML //PROJECT` now returns a read-only modeled
 `Installation/Project/Network` snapshot for an existing loaded project,
 independently of the connection's current project selection. It composes the

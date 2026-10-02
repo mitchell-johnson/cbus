@@ -1,0 +1,378 @@
+{
+  "format": "cbus-toolkit-database-csv-neopro-v1",
+  "scope": "Bounded KEYB2/4/6 firmware 2.5.00 saved native XML projection; original source inspected statically, no original/native service or hardware execution.",
+  "source_evidence": {
+    "original_inputs": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "fresh_static_original_bytes_inspected": true,
+    "original_instructions_executed": false,
+    "registry_reference": "toolkit-cli/research/fixtures/toolkit-database-csv-neopro-registry.json",
+    "registry_sha256": "d79d4becb551a1d4c12a4b229a09ccc061a456385f384e3b89c84f88f42aa0b3",
+    "historical_registry_sha256": "21ba29e53b54976166d9e3e8f03c9a676fe5f27350bd1e5289a294e479136778",
+    "registrations": [
+      {
+        "unit_type": "KEYB2",
+        "firmware_min": "1.5.03",
+        "firmware_max": "2.9.99",
+        "class": "TKEYB2",
+        "class_registration": "0x1383f3c",
+        "agent": "TCBusNeoProInputCGateAgent",
+        "agent_registration": "0x13976b8",
+        "agent_methods": {
+          "agent_load": "TCBusNeoInputCGateAgent.AgentLoad",
+          "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+        },
+        "documentors": [
+          [
+            "TNeoInputDocumentor",
+            "1.3.01",
+            "1.5.02"
+          ],
+          [
+            "TNeoProInputDocumentor",
+            "1.5.03",
+            "2.9.99"
+          ]
+        ],
+        "report_slots": {
+          "area": "TCBusInputUnit.GetAreaIfAvailable",
+          "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+          "primary": "TCBUSUnit.GetApplicationObject",
+          "secondary": "TCBUSUnit.GetApplication2Object"
+        },
+        "admitted": true,
+        "admitted_firmware": "2.5.00",
+        "association_model": "Eight stored NeoPro input blocks in order; all eight CSV-visible; SecondApplicationBlocks selects each slot application; Area is primary."
+      },
+      {
+        "unit_type": "KEYB4",
+        "firmware_min": "1.5.03",
+        "firmware_max": "2.9.99",
+        "class": "TKEYB4",
+        "class_registration": "0x1384060",
+        "agent": "TCBusNeoProInputCGateAgent",
+        "agent_registration": "0x13976d0",
+        "agent_methods": {
+          "agent_load": "TCBusNeoInputCGateAgent.AgentLoad",
+          "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+        },
+        "documentors": [
+          [
+            "TNeoInputDocumentor",
+            "1.3.01",
+            "1.5.02"
+          ],
+          [
+            "TNeoProInputDocumentor",
+            "1.5.03",
+            "2.9.99"
+          ]
+        ],
+        "report_slots": {
+          "area": "TCBusInputUnit.GetAreaIfAvailable",
+          "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+          "primary": "TCBUSUnit.GetApplicationObject",
+          "secondary": "TCBUSUnit.GetApplication2Object"
+        },
+        "admitted": true,
+        "admitted_firmware": "2.5.00",
+        "association_model": "Eight stored NeoPro input blocks in order; all eight CSV-visible; SecondApplicationBlocks selects each slot application; Area is primary."
+      },
+      {
+        "unit_type": "KEYB6",
+        "firmware_min": "1.5.03",
+        "firmware_max": "2.9.99",
+        "class": "TKEYB6",
+        "class_registration": "0x1384184",
+        "agent": "TCBusNeoProInputCGateAgent",
+        "agent_registration": "0x13976e8",
+        "agent_methods": {
+          "agent_load": "TCBusNeoInputCGateAgent.AgentLoad",
+          "load_groups": "TCoreKeyInputCGateAgent.LoadGroups"
+        },
+        "documentors": [
+          [
+            "TNeoInputDocumentor",
+            "1.3.01",
+            "1.5.02"
+          ],
+          [
+            "TNeoProInputDocumentor",
+            "1.5.03",
+            "2.9.99"
+          ]
+        ],
+        "report_slots": {
+          "area": "TCBusInputUnit.GetAreaIfAvailable",
+          "interaction": "TCBusNeoInputUnit.IsInteractionGroup",
+          "primary": "TCBUSUnit.GetApplicationObject",
+          "secondary": "TCBUSUnit.GetApplication2Object"
+        },
+        "admitted": true,
+        "admitted_firmware": "2.5.00",
+        "association_model": "Eight stored NeoPro input blocks in order; all eight CSV-visible; SecondApplicationBlocks selects each slot application; Area is primary."
+      }
+    ],
+    "unit_vmt_slots": {
+      "KEYB2": {
+        "0xec": "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable",
+        "0x10c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup",
+        "0xb0": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "0xb4": "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0xf4": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HasApplication2"
+      },
+      "KEYB4": {
+        "0xec": "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable",
+        "0x10c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup",
+        "0xb0": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "0xb4": "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0xf4": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HasApplication2"
+      },
+      "KEYB6": {
+        "0xec": "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable",
+        "0x10c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup",
+        "0xb0": "CIS_TCommonCBus.TCBUSUnit.GetApplicationObject",
+        "0xb4": "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object",
+        "0x16c": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+        "0xf4": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HasApplication2"
+      }
+    },
+    "agent_vmt_slots": {
+      "0x94": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AgentLoad",
+      "0xd4": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadGroups",
+      "0xe8": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object",
+      "0xf4": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadUnitGroupAddresses",
+      "0x118": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications"
+    },
+    "method_spans": {
+      "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+        "start": "0xd0871c",
+        "end": "0xd08734",
+        "bytes_sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+      },
+      "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AgentLoad": {
+        "start": "0xcebbe4",
+        "end": "0xcebc08",
+        "bytes_sha256": "fef6e4759e63a2ec8ae37192293a71e967c8e25df732737058e98196981badbb"
+      },
+      "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadDBParametersForLoadGroups": {
+        "start": "0xcecae4",
+        "end": "0xcecbbc",
+        "bytes_sha256": "1391a2938452336e7f76fefbce03478b1e757296e01f29d3fa3b796e412a301a"
+      },
+      "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadUnitGroupAddresses": {
+        "start": "0xcecbbc",
+        "end": "0xcecd78",
+        "bytes_sha256": "167b97485f5e93671a352756479f549d1cf1214dd6047bb0be7c4efc15bbb5bf"
+      },
+      "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadGroups": {
+        "start": "0xcc7bf0",
+        "end": "0xcc7d04",
+        "bytes_sha256": "bfc5368eb3b13722627c3db492e2207adb7ca8a0009aec16528553f6c70ea941"
+      },
+      "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+        "start": "0xcc75e4",
+        "end": "0xcc76f8",
+        "bytes_sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+      },
+      "CIS_TCBusInputUnit.TCBusInputUnit.GetAreaIfAvailable": {
+        "start": "0xc9d34c",
+        "end": "0xc9d42c",
+        "bytes_sha256": "e1ff3e49018b4ed286598e5d3cece5a75a63d745a953d455149a7beaf229fdbf"
+      },
+      "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsInteractionGroup": {
+        "start": "0xd08700",
+        "end": "0xd0871c",
+        "bytes_sha256": "212ba930cc1f3ea5741181ed92b5b92ff25ffd8c692ee24b3b5a6f3d353cfa1a"
+      },
+      "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadDBParametersForLoadGroups": {
+        "start": "0xcc7a24",
+        "end": "0xcc7bf0",
+        "bytes_sha256": "1dc060a65fe5ac2cdd72500c7de16f78bfe9cab679612d4535b2c7917ec2348f"
+      },
+      "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockApplications": {
+        "start": "0xcc9948",
+        "end": "0xcc9954",
+        "bytes_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+      },
+      "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AgentLoad": {
+        "start": "0xcca2d8",
+        "end": "0xcca350",
+        "bytes_sha256": "24e4dbbc6bcd4d2671fb53ab9bd5bcbd33be5e49e31e894b4acc388b109c689c"
+      },
+      "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AgentLoad": {
+        "start": "0xcc9a10",
+        "end": "0xcc9a34",
+        "bytes_sha256": "cdbaa3a2da97ac5e22b7be758e92e2b468cd20da825bd38a5e9418b70f8bc014"
+      },
+      "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadGroups": {
+        "start": "0xcb8b84",
+        "end": "0xcb8c44",
+        "bytes_sha256": "c3da804e6c685117639f52cc90af0e0422e59ad9fbb456cf9f02154f501460a1"
+      },
+      "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object": {
+        "start": "0xcb82b4",
+        "end": "0xcb84c4",
+        "bytes_sha256": "7d0c8b38f42081349c96e981905e6033de2079d09bf64548024e34a9608273af"
+      },
+      "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications": {
+        "start": "0xcecf80",
+        "end": "0xced05c",
+        "bytes_sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833"
+      },
+      "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HasApplication2": {
+        "start": "0xd066f0",
+        "end": "0xd06704",
+        "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+      }
+    },
+    "facts": {
+      "blocks": "MaximumBlockCount returns eight for all three exact classes, independently of physical key count.",
+      "secondary": "HasApplication2 returns true. NeoPro GetBlockApplications applies each SecondApplicationBlocks bit to the ordered input-block collection. GetBlockGroup resolves Application2 for true, otherwise the block primary application.",
+      "group_order": "Core LoadGroups clears the manager, visits blocks by increasing index and appends each non-nil resolved group. Duplicate associations retain their positions.",
+      "area": "Input GetAreaIfAvailable resolves AreaGroupAddress in the primary application with creation enabled; the read-only profile requires existing Area255 instead. AsCSV retains two Area getter observations, even when the Area column is absent.",
+      "report": "The inherited Neo IsInteractionGroup admits zero-based indices through seven. Slots nine through sixteen are unavailable.",
+      "unit_order": "Existing selection policy sorts units by numeric address within each Network and retains Network document order for project export; this is not full original report-manager execution."
+    }
+  },
+  "fixture": {
+    "project": "//NEOCSV",
+    "xml": "<Installation><Project><Address>NEOCSV</Address><Network><Address>254</Address><NetworkNumber>254</NetworkNumber><Unit><OID>00000000-0000-0000-0000-0000018392d5</OID><Address>21</Address><UnitName>Neo synthetic</UnitName><TagName>Synthetic KEYB2</TagName><UnitType>KEYB2</UnitType><CatalogNumber>OWNED</CatalogNumber><SerialNumber>No serial #</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"GroupAddress\" Value=\"8 1 8 255 2 7 3 6\" /><PP Name=\"AreaGroupAddress\" Value=\"255\" /><PP Name=\"SecondApplicationBlocks\" Value=\"85\" /><PP Name=\"UnusedSentinel\" Value=\"99\" /></Unit><Unit><OID>00000000-0000-0000-0000-0000018392c3</OID><Address>3</Address><UnitName>Neo synthetic</UnitName><TagName>Synthetic KEYB4</TagName><UnitType>KEYB4</UnitType><CatalogNumber>OWNED</CatalogNumber><SerialNumber>No serial #</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"GroupAddress\" Value=\"8 1 8 255 2 7 3 6\" /><PP Name=\"AreaGroupAddress\" Value=\"255\" /><PP Name=\"SecondApplicationBlocks\" Value=\"170\" /><PP Name=\"UnusedSentinel\" Value=\"99\" /></Unit><Unit><OID>00000000-0000-0000-0000-00000183931a</OID><Address>90</Address><UnitName>Neo synthetic</UnitName><TagName>Synthetic KEYB6</TagName><UnitType>KEYB6</UnitType><CatalogNumber>OWNED</CatalogNumber><SerialNumber>No serial #</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"GroupAddress\" Value=\"8 1 8 255 2 7 3 6\" /><PP Name=\"AreaGroupAddress\" Value=\"255\" /><PP Name=\"SecondApplicationBlocks\" Value=\"255\" /><PP Name=\"UnusedSentinel\" Value=\"99\" /></Unit><Application><Address>57</Address><TagName>HVAC, west</TagName><Group><OID>00000000-0000-0000-0000-00000184745b</OID><Address>255</Address><TagName>AreaSecondary</TagName></Group><Group><OID>00000000-0000-0000-0000-000001847364</OID><Address>8</Address><TagName>Secondary8</TagName></Group><Group><OID>00000000-0000-0000-0000-000001847363</OID><Address>7</Address><TagName>Secondary7</TagName></Group><Group><OID>00000000-0000-0000-0000-000001847362</OID><Address>6</Address><TagName>Secondary6</TagName></Group><Group><OID>00000000-0000-0000-0000-000001847361</OID><Address>5</Address><TagName>Secondary5</TagName></Group><Group><OID>00000000-0000-0000-0000-000001847360</OID><Address>4</Address><TagName>Secondary4</TagName></Group><Group><OID>00000000-0000-0000-0000-00000184735f</OID><Address>3</Address><TagName>Secondary3</TagName></Group><Group><OID>00000000-0000-0000-0000-00000184735e</OID><Address>2</Address><TagName>Secondary2</TagName></Group><Group><OID>00000000-0000-0000-0000-00000184735d</OID><Address>1</Address><TagName>Secondary1</TagName></Group></Application><Application><Address>56</Address><TagName>Lighting</TagName><Group><OID>00000000-0000-0000-0000-000001847073</OID><Address>255</Address><TagName>AreaPrimary</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f7c</OID><Address>8</Address><TagName>Primary8</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f7b</OID><Address>7</Address><TagName>Primary7</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f7a</OID><Address>6</Address><TagName>Primary6</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f79</OID><Address>5</Address><TagName>Primary5</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f78</OID><Address>4</Address><TagName>Primary4</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f77</OID><Address>3</Address><TagName>Primary3</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f76</OID><Address>2</Address><TagName>Primary2</TagName></Group><Group><OID>00000000-0000-0000-0000-000001846f75</OID><Address>1</Address><TagName>Primary1</TagName></Group></Application></Network><Network><Address>11</Address><NetworkNumber>11</NetworkNumber><Unit><OID>00000000-0000-0000-0000-00000010c8e8</OID><Address>8</Address><UnitName>Neo synthetic</UnitName><TagName>Synthetic KEYB2</TagName><UnitType>KEYB2</UnitType><CatalogNumber>OWNED</CatalogNumber><SerialNumber>No serial #</SerialNumber><FirmwareVersion>2.5.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 255\" /><PP Name=\"GroupAddress\" Value=\"8 1 8 255 2 7 3 6\" /><PP Name=\"AreaGroupAddress\" Value=\"255\" /><PP Name=\"SecondApplicationBlocks\" Value=\"0\" /><PP Name=\"UnusedSentinel\" Value=\"99\" /></Unit><Application><Address>57</Address><TagName>HVAC, west</TagName><Group><OID>00000000-0000-0000-0000-00000011aa7b</OID><Address>255</Address><TagName>AreaSecondary</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a984</OID><Address>8</Address><TagName>Secondary8</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a983</OID><Address>7</Address><TagName>Secondary7</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a982</OID><Address>6</Address><TagName>Secondary6</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a981</OID><Address>5</Address><TagName>Secondary5</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a980</OID><Address>4</Address><TagName>Secondary4</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a97f</OID><Address>3</Address><TagName>Secondary3</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a97e</OID><Address>2</Address><TagName>Secondary2</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a97d</OID><Address>1</Address><TagName>Secondary1</TagName></Group></Application><Application><Address>56</Address><TagName>Lighting</TagName><Group><OID>00000000-0000-0000-0000-00000011a693</OID><Address>255</Address><TagName>AreaPrimary</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a59c</OID><Address>8</Address><TagName>Primary8</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a59b</OID><Address>7</Address><TagName>Primary7</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a59a</OID><Address>6</Address><TagName>Primary6</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a599</OID><Address>5</Address><TagName>Primary5</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a598</OID><Address>4</Address><TagName>Primary4</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a597</OID><Address>3</Address><TagName>Primary3</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a596</OID><Address>2</Address><TagName>Primary2</TagName></Group><Group><OID>00000000-0000-0000-0000-00000011a595</OID><Address>1</Address><TagName>Primary1</TagName></Group></Application></Network></Project></Installation>",
+    "xml_sha256": "764958478d1e669885e2fc2aa73c46dc3e000a2c76ab45ba8393379b33efbddb",
+    "columns": [
+      "address",
+      "unit_type",
+      "primary",
+      "secondary",
+      "area",
+      "group_1",
+      "group_2",
+      "group_3",
+      "group_4",
+      "group_5",
+      "group_6",
+      "group_7",
+      "group_8",
+      "group_9",
+      "group_16"
+    ],
+    "project_unit_paths": [
+      "//NEOCSV/254/p/3",
+      "//NEOCSV/254/p/21",
+      "//NEOCSV/254/p/90",
+      "//NEOCSV/11/p/8"
+    ],
+    "csv_rows": [
+      "Unit Address,Unit Type,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 16,",
+      "3,KEYB4,Lighting,\"HVAC, west\",AreaPrimary,Primary8,Secondary1,Primary8,AreaSecondary,Primary2,Secondary7,Primary3,Secondary6,<N/A>,<N/A>,",
+      "21,KEYB2,Lighting,\"HVAC, west\",AreaPrimary,Secondary8,Primary1,Secondary8,AreaPrimary,Secondary2,Primary7,Secondary3,Primary6,<N/A>,<N/A>,",
+      "90,KEYB6,Lighting,\"HVAC, west\",AreaPrimary,Secondary8,Secondary1,Secondary8,AreaSecondary,Secondary2,Secondary7,Secondary3,Secondary6,<N/A>,<N/A>,",
+      "8,KEYB2,Lighting,,AreaPrimary,Primary8,Primary1,Primary8,AreaPrimary,Primary2,Primary7,Primary3,Primary6,<N/A>,<N/A>,"
+    ],
+    "csv_utf8": "Unit Address,Unit Type,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 16,\r\n3,KEYB4,Lighting,\"HVAC, west\",AreaPrimary,Primary8,Secondary1,Primary8,AreaSecondary,Primary2,Secondary7,Primary3,Secondary6,<N/A>,<N/A>,\r\n21,KEYB2,Lighting,\"HVAC, west\",AreaPrimary,Secondary8,Primary1,Secondary8,AreaPrimary,Secondary2,Primary7,Secondary3,Primary6,<N/A>,<N/A>,\r\n90,KEYB6,Lighting,\"HVAC, west\",AreaPrimary,Secondary8,Secondary1,Secondary8,AreaSecondary,Secondary2,Secondary7,Secondary3,Secondary6,<N/A>,<N/A>,\r\n8,KEYB2,Lighting,,AreaPrimary,Primary8,Primary1,Primary8,AreaPrimary,Primary2,Primary7,Primary3,Primary6,<N/A>,<N/A>,\r\n\r\n",
+    "csv_sha256": "683cb5174e95f46c4dee5bdbebc9347a364a7ef9c9c1b99e8a6307a8f4c329bb"
+  },
+  "mask_cases": [
+    {
+      "mask": 0,
+      "group_tags": [
+        "Primary8",
+        "Primary1",
+        "Primary8",
+        "AreaPrimary",
+        "Primary2",
+        "Primary7",
+        "Primary3",
+        "Primary6"
+      ]
+    },
+    {
+      "mask": 1,
+      "group_tags": [
+        "Secondary8",
+        "Primary1",
+        "Primary8",
+        "AreaPrimary",
+        "Primary2",
+        "Primary7",
+        "Primary3",
+        "Primary6"
+      ]
+    },
+    {
+      "mask": 128,
+      "group_tags": [
+        "Primary8",
+        "Primary1",
+        "Primary8",
+        "AreaPrimary",
+        "Primary2",
+        "Primary7",
+        "Primary3",
+        "Secondary6"
+      ]
+    },
+    {
+      "mask": 85,
+      "group_tags": [
+        "Secondary8",
+        "Primary1",
+        "Secondary8",
+        "AreaPrimary",
+        "Secondary2",
+        "Primary7",
+        "Secondary3",
+        "Primary6"
+      ]
+    },
+    {
+      "mask": 170,
+      "group_tags": [
+        "Primary8",
+        "Secondary1",
+        "Primary8",
+        "AreaSecondary",
+        "Primary2",
+        "Secondary7",
+        "Primary3",
+        "Secondary6"
+      ]
+    },
+    {
+      "mask": 255,
+      "group_tags": [
+        "Secondary8",
+        "Secondary1",
+        "Secondary8",
+        "AreaSecondary",
+        "Secondary2",
+        "Secondary7",
+        "Secondary3",
+        "Secondary6"
+      ]
+    }
+  ],
+  "wire": {
+    "request": "[1] DBGETXML //NEOCSV\r\n",
+    "response_codes": [
+      343,
+      347,
+      344
+    ],
+    "mutation_commands": [],
+    "server_refusal": {
+      "response": "[1] 401 Bad object or device ID\r\n",
+      "cli_exit": 1
+    }
+  },
+  "limits": [
+    "Exactly firmware spelling 2.5.00, eight stored groups, two byte applications, one byte mask and existing primary Area255.",
+    "Every selected application and consumed group must already resolve uniquely; no group or application creation, PP LOAD or save is performed.",
+    "All other Neo/NeoPro registrations/revisions remain refused.",
+    "Static source facts and owned scripted wire tests are separate from original GUI report, fresh native cold-load, Windows ordering/encoding and physical acceptance."
+  ]
+}
