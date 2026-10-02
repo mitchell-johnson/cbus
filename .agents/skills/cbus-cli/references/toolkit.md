@@ -552,22 +552,40 @@ Networks closed/idle, source and defaults, and original plus schema-staged
 assignments. One fresh Unit and one PP save are verified against the entire
 source/unrelated graph. A declined assignment exits 1 with a separately
 verified fallback; a lost receipt retains the scaffold and uncertainty without
-reconnect/replay/deletion. Source metadata/delete/readdress, project save/reopen,
-retained GUI history and physical acceptance remain open. Read
+reconnect/replay/deletion. For admitted metadata/delete/readdress and
+save/reopen, use the separate `cgate conversion tweak-replace` lifecycle with
+a distinct backup, fresh journal and reviewed digest. It stages the first free
+address, replaces once, and verifies fresh project/PP after reopen. Keep the
+journal; `tweak-recover` only observes on the same bound endpoint, never replays
+or restores. Original cleanup/catalogue selection, retained GUI history and
+physical acceptance remain open. Read `toolkit-cli/docs/toolkit-tweaker-lifecycle.md` and
 `toolkit-cli/docs/toolkit-conversion-tweakers.md` before using this command.
 
 Native XML/live CSV admits KEYB2/KEYB4/KEYB6 at exactly 2.5.00. All eight blocks
 select their own primary/secondary Application through SecondApplicationBlocks;
 Area 255 stays in primary. Complete consumed groups and ordinary report fields
 are required. Whole selections refuse atomically before output creation, using
-one live DBGETXML. Public cached JSON refuses these types because its schema
-lacks primary Application identity. The current static registry admits 35 types;
+one live DBGETXML. Public NeoPro cached v2 binds primary/secondary Application
+identities, complete Group membership and mask, validating each block before
+projection. This caller-supplied cache is not a fresh live read. Existing
+families retain v1 and NeoPro v1 is refused; read
+`toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. The current static registry admits 35 types;
 historical 32-type and native receipts are unchanged. Static EXE/MAP reading is
 not original-instruction acceptance. See
 `toolkit-cli/docs/toolkit-database-csv-neopro.md` and the October 2
 conversion/CSV/liveness batch for current proof and remaining gates.
 
 ## Compatibility and tests
+
+`make refresh-parity-receipts` produces actual modeled comparison captures.
+Before publishing them, use the maintained
+`research/sanitize_evidence_receipts.py` for the six session/tagged/unit
+receipts, keeping its raw archives in a private directory. Then regenerate
+physical applicability and the parity register and run their consumers.
+Sanitation changes publication coordinates and artifact labels, preserving
+captured observations and source fingerprints. Preserve earlier gate pins;
+if packaged evidence changes after a wheel gate, verify a fresh final wheel
+and the changed resource consumers instead of rebinding earlier executions.
 
 Target: Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001. Full Toolkit parity is unfinished. `coverage --require-complete` derives its result from the packaged functional-obligation and evidence register and deliberately exits 1 until the census, implementation and acceptance requirements are complete. The provisional register currently accounts for 22,103 source records, including the sanitized 412-form, 10,102-control and 1,839-event executable census in `toolkit-cli/docs/toolkit-executable-surface.json`. Reproduce that census with `research/extract_toolkit_executable_surface.py` and explicit vendor EXE/MAP paths; never commit those vendor inputs. Functional percentages are unavailable while `denominator_ready` is false. The separately reported 42-row category percentage is not a functionality estimate. Command forwarding, the Rust mock's 431 paths, and simulator results do not establish physical-device or full Toolkit equivalence.
 
@@ -649,7 +667,10 @@ source/target pairs: eight dimmer, seven RELDN, 93 classic-to-Neo, five
 coupler-to-Neo (1.2.67→2.2.00) and ten non-sensor InputUnit directions
 (1.2.67→1.2.67). SENPILL self-conversion remains refused. This is separate from typed C-Gate conversion. A RELDN4 short
 four-token baseline is refused before I/O; require the admitted complete source
-profile. Metadata/delete/readdress lifecycle and physical conversion remain open.
+profile. For admitted metadata/delete/readdress and save/reopen, use the separate
+`conversion tweak-replace` lifecycle and read-only `tweak-recover`; read
+`toolkit-cli/docs/toolkit-tweaker-lifecycle.md` first. Original catalogue lookup,
+exception cleanup, editor history and physical conversion remain open.
 Read `toolkit-cli/docs/toolkit-conversion-tweakers.md`.
 
 Wireless Connection admits WGATE5N/F 2.2.90..2.4.99; Scenes and Remotes

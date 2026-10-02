@@ -17,6 +17,8 @@ from .toolkit_database_csv_projection import (
     _REMAP_TYPES,
     _SENSOR_TYPES,
     CSVAreaObservation,
+    CachedCSVApplication,
+    CachedCSVApplicationContext,
     CachedCSVGroup,
     CachedCSVProjection,
     CachedCSVUnit,
@@ -374,10 +376,10 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
 
     groups = []
     application_groups = {}
-    # Area belongs to Application1, including an all-secondary block mask.
-    # Keep its cache first for the cached Area getter when both applications
-    # contain the same address (especially their separate Group255 objects).
-    cache_applications = ((primary, *group_applications)
+    # Retain both configured Application caches and their authoritative
+    # membership. NeoPro Area lookup must not depend on cache traversal order.
+    cache_applications = ((primary, *((secondary_node,) if secondary_node is not None else ()),
+                           *group_applications)
                           if unit_type in _NEOPRO_TYPES else group_applications)
     for application in dict.fromkeys(cache_applications):
         application_address = _byte(_field(application, 'Address'), 'Application address')
@@ -413,8 +415,20 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         loader_associations=identities if unit_type in _REMAP_TYPES else ())
     observations = () if area_address is None else (
         CSVAreaObservation(str(area_address)), CSVAreaObservation(str(area_address)))
+    context = None
+    if unit_type in _NEOPRO_TYPES:
+        def application_identity(node):
+            address = _byte(_field(node, 'Address'), 'Application address')
+            return _optional_oid(node) or f'//{project_name}/{network_address}/{address}'
+
+        context = CachedCSVApplicationContext(application_identity(primary),
+            None if secondary_node is None else application_identity(secondary_node),
+            secondary_mask, tuple(CachedCSVApplication(application_identity(node),
+                _byte(_field(node, 'Address'), 'Application address'), _field(node, 'TagName'),
+                tuple(group.identity for group in by_address.values()))
+                for node, by_address in application_groups.items()))
     cached = project_cached_csv_unit(cached_unit, group_cache=tuple(groups),
-                                     area_observations=observations, columns=columns)
+        area_observations=observations, columns=columns, application_context=context)
     return NativeXMLCSVProjection(unit_path, xml_sha256, cached)
 
 

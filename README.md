@@ -86,7 +86,16 @@ incomplete Units while initializing the new object. Project saving and device
 programming are explicit later steps; original GUI, physical scanner and
 PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
 
-The [conversion, NeoPro report and event-delivery batch](toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
+The [replacement, cached NeoPro CSV and bounded TCP batch](toolkit-cli/docs/feature-batch-2026-10-02-cached-csv-event-bounds.md)
+adds `cgate conversion tweak-replace` and read-only `tweak-recover` for the
+123 admitted tweaker pairs. The database replacement stages a fresh Unit,
+copies admitted metadata, verifies a backup, deletes/readdresses once and
+saves/reopens with a durable journal. NeoPro cached v2 now binds Application
+ownership explicitly. The mock bounds each peer's queued/active replies and
+events to 512 batches and 32 MiB. Each feature has a separate software evidence
+boundary; original Toolkit and physical acceptance remain open.
+
+The preceding [conversion, NeoPro report and event-delivery batch](toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
 adds `cgate conversion tweak` for all 123 currently admitted Toolkit tweaker
 pairs, with a reviewed plan digest and guarded creation of a database
 replacement. CSV export now includes KEYB2/KEYB4/KEYB6 at firmware 2.5.00,
@@ -167,6 +176,7 @@ retains its separate source-bound acceptance record.
 | Edit or copy a loaded project's named Applications, Groups, NetVars or Levels | `cbus-toolkit cgate database get`, `set`, `add`, `copy`, `delete`, `validate`, with `--project NAME` ([selected sessions and persistence](toolkit-cli/docs/network-definitions.md)) |
 | Upload a local file for the server's FILE service and portable conversions | `cbus-toolkit cgate file-upload PATH SOURCE [--project PROJECT]`; cmqttd uses a virtual repository namespace |
 | Review a supported database unit move, retain a backup, save/reopen and inspect an interrupted attempt | `cbus-toolkit cgate conversion plan-move`, `apply-move`, `recover` ([workflow and bounds](toolkit-cli/docs/conversion.md#reviewed-move-with-save-reopen-and-recovery)) |
+| Replace a database Unit using an admitted Toolkit tweaker, copy metadata and save/reopen with a journal | `cbus-toolkit cgate conversion tweak-replace`, `tweak-recover` ([lifecycle and bounds](toolkit-cli/docs/toolkit-tweaker-lifecycle.md)) |
 | Inspect or edit a supported physical unit through cmqttd, then verify it with a fresh physical load | `cbus-toolkit cgate physical-pp` ([workflow contract](toolkit-cli/docs/physical-programming.md)) |
 | Deliver a reviewed KEYML5 Indicators plan to the physical unit and inspect an interrupted attempt | `cbus-toolkit cgate physical-pp dlt-indicators` and `recover` ([complete command sequence](toolkit-cli/docs/classic-dlt-physical-workflow.md)) |
 | Plan supported keypad, sensor, eDLT, scene, or unit-conversion settings offline | `cbus-toolkit keys`, `sensors`, `edlt`, `scene`, and `unit-conversion` |
@@ -263,9 +273,12 @@ InputUnit directions at the documented exact firmware profiles. Its
 source-preservation and refusal rules also govern `cgate conversion tweak`.
 Preview binds the closed project, private specifications and PP defaults;
 apply requires `--exclusive-project --expect-plan-sha256 HASH`. It creates a
-fresh replacement and verifies one PP save, preserving the source. Source
-deletion/readdressing, project save/reopen and physical programming remain
-separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
+fresh replacement and verifies one PP save, preserving the source. For source
+deletion/readdressing and save/reopen, use the separately guarded
+`cgate conversion tweak-replace` workflow with a distinct backup and new
+journal; `tweak-recover` observes an interrupted attempt without replay. Read
+[its metadata, persistence and recovery boundaries](toolkit-cli/docs/toolkit-tweaker-lifecycle.md).
+Physical programming remains separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
 for these workflows.

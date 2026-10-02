@@ -98,8 +98,11 @@ interactive manager behavior remains unverified. See [CSV profiles and limits](d
 [NeoPro CSV](docs/toolkit-database-csv-neopro.md) now admits KEYB2/KEYB4/KEYB6
 at exactly 2.5.00 from native XML or one live project snapshot. All eight blocks
 are reported with their primary/secondary application selection; Area 255
-belongs to the primary application. These types remain refused by public
-cached-projection JSON, whose schema cannot identify that primary application.
+belongs to the primary application. Public
+[cached-projection v2](docs/toolkit-database-csv-neopro-cached.md) binds the
+primary/secondary Application identities, complete Group membership and mask.
+It validates every block route before projection or output creation. Existing
+families retain v1; NeoPro v1 remains refused.
 Original GUI reports, cold native acceptance and other profiles remain open.
 
 ## Install and run
@@ -1984,8 +1987,14 @@ issued Unit and one PP save against the source and unrelated project
 tree within the documented structural comparison (whitespace-only text is
 ignored). It retains uncertain scaffolds for inspection and never replays or
 deletes after a lost receipt. See [the command, examples and boundaries](docs/toolkit-conversion-tweakers.md).
-Source metadata copying/deletion/readdressing, retained editor history,
-project save/reopen and physical programming remain unfinished.
+For a complete admitted database replacement, use
+`cgate conversion tweak-replace` with a distinct backup and new journal. It
+derives the first free staging address, copies admitted metadata, deletes and
+readdresses once, saves/reopens and verifies fresh PP. After an uncertain
+attempt, `tweak-recover --journal FILE` performs read-only classification on
+the same endpoint. See [the lifecycle and its limits](docs/toolkit-tweaker-lifecycle.md).
+Retained editor history, original exception cleanup/catalogue selection and
+physical programming remain unfinished.
 
 The [Rust database conversion batch](docs/feature-batch-2026-10-01-conversion-pp.md)
 compares 30 original catalogue/move results with both cgate-mock and cmqttd,

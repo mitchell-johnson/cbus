@@ -28,6 +28,7 @@ from .toolkit_database_csv_registry import refusal_reason
 
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
+IDENTITY_PROFILE = 'cbus-toolkit-database-cached-projection-v2'
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
 _KEYE_TYPES = frozenset((
     'KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
@@ -83,6 +84,9 @@ _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_
                           'catalog', 'serial', 'firmware', 'primary', 'secondary',
                           'group_identities'))
 _GROUP_FIELDS = frozenset(('identity', 'address', 'tag', 'oid', 'references'))
+_CONTEXT_FIELDS = frozenset(('primary_identity', 'secondary_identity',
+                            'secondary_mask', 'applications'))
+_APPLICATION_FIELDS = frozenset(('identity', 'address', 'tag', 'group_identities'))
 
 
 def _identity(value, label):
@@ -190,6 +194,52 @@ class CSVGroupSaveObservation:
 
 
 @dataclass(frozen=True)
+class CachedCSVApplication:
+    identity: str
+    address: int
+    tag: str
+    group_identities: tuple[str, ...]
+
+    def __post_init__(self):
+        _identity(self.identity, 'Application identity')
+        if type(self.address) is not int or not 0 <= self.address <= 255:
+            raise ValueError('Application address must be a byte integer')
+        _text(self.tag, 'Application tag')
+        if (type(self.group_identities) is not tuple or len(self.group_identities) > 256
+                or any(type(value) is not str or not value for value in self.group_identities)
+                or len(set(self.group_identities)) != len(self.group_identities)):
+            raise ValueError('Application groups must be unique identities in an exact bounded tuple')
+
+    def as_dict(self):
+        return {'identity': self.identity, 'address': self.address, 'tag': self.tag,
+                'group_identities': list(self.group_identities)}
+
+
+@dataclass(frozen=True)
+class CachedCSVApplicationContext:
+    primary_identity: str
+    secondary_identity: str | None
+    secondary_mask: int
+    applications: tuple[CachedCSVApplication, ...]
+
+    def __post_init__(self):
+        _identity(self.primary_identity, 'Primary Application identity')
+        if self.secondary_identity is not None:
+            _identity(self.secondary_identity, 'Secondary Application identity')
+        if type(self.secondary_mask) is not int or not 0 <= self.secondary_mask <= 255:
+            raise ValueError('Secondary application mask must be a byte integer')
+        if (type(self.applications) is not tuple or not 1 <= len(self.applications) <= 2
+                or any(type(value) is not CachedCSVApplication for value in self.applications)):
+            raise ValueError('Application context requires one or two exact Application records')
+
+    def as_dict(self):
+        return {'primary_identity': self.primary_identity,
+                'secondary_identity': self.secondary_identity,
+                'secondary_mask': self.secondary_mask,
+                'applications': [value.as_dict() for value in self.applications]}
+
+
+@dataclass(frozen=True)
 class CSVProjectionEvent:
     event: str
     fields: tuple[tuple[str, object], ...] = ()
@@ -216,6 +266,7 @@ class CachedCSVProjection:
     report: DatabaseCSV | None
     stop_reason: str | None
     csv_unit: CSVUnitValues | None = None
+    application_context: CachedCSVApplicationContext | None = None
 
     @property
     def rows(self):
@@ -224,7 +275,8 @@ class CachedCSVProjection:
         return (''.join(COLUMN_LABELS[name] + ',' for name in self.columns),)
 
     def as_dict(self):
-        return {'format': PROFILE, 'complete': self.complete,
+        result = {'format': IDENTITY_PROFILE if self.application_context is not None else PROFILE,
+                'complete': self.complete,
                 'selected_class': self.selected_class, 'columns': list(self.columns),
                 'unit': self.unit.as_dict(), 'groups': [group.as_dict() for group in self.groups],
                 'events': [event.as_dict() for event in self.events],
@@ -236,6 +288,9 @@ class CachedCSVProjection:
                 'original_cached_projection_replayed': True,
                 'native_database_loaded': False, 'native_mutation_performed': False,
                 'original_instructions_executed': False, 'physical_device_accessed': False}
+        if self.application_context is not None:
+            result['application_context'] = self.application_context.as_dict()
+        return result
 
 
 def _class(unit):
@@ -284,8 +339,54 @@ def _validated_groups(unit, groups):
     return tuple(replace(group, references=tuple(group.references)) for group in groups)
 
 
+def _validated_application_context(unit, groups, context):
+    if type(context) is not CachedCSVApplicationContext:
+        raise ValueError('NeoPro cached projection requires explicit primary Application identity context')
+    applications = {app.identity: app for app in context.applications}
+    if (len(applications) != len(context.applications)
+            or len({app.address for app in context.applications}) != len(applications)):
+        raise ValueError('Application identities and addresses must be unique')
+    selected = {context.primary_identity}
+    if context.secondary_identity is not None:
+        selected.add(context.secondary_identity)
+    if selected != set(applications):
+        raise ValueError('Application cache must resolve exactly the declared primary and secondary identities')
+    primary = applications[context.primary_identity]
+    secondary = (None if context.secondary_identity is None else
+                 applications[context.secondary_identity])
+    if secondary is not None and secondary.address == 255:
+        raise ValueError('Secondary Application address 255 must be represented as an unused null identity')
+    if unit.primary != primary.tag or unit.secondary != ('' if secondary is None else secondary.tag):
+        raise ValueError('Unit application tags disagree with the authoritative Application identities')
+    if secondary is None and context.secondary_mask:
+        raise ValueError('Secondary group blocks require a configured secondary Application identity')
+    cache = {group.identity: group for group in groups}
+    if (unit.identity in cache or set(applications) &
+            (set(cache) | {group.oid for group in groups if group.oid} | {unit.identity})):
+        raise ValueError('Application identities must not collide with Unit or Group identities')
+    membership = {}
+    for app in context.applications:
+        if any(identity not in cache for identity in app.group_identities):
+            raise ValueError('Application membership refers to a missing cached Group identity')
+        addresses = [cache[identity].address for identity in app.group_identities]
+        if len(set(addresses)) != len(addresses):
+            raise ValueError('Application membership contains ambiguous Group addresses')
+        for identity in app.group_identities:
+            if identity in membership:
+                raise ValueError('Cached Group identity belongs to more than one Application')
+            membership[identity] = app.identity
+    if set(membership) != set(cache):
+        raise ValueError('Every cached Group must have exactly one authoritative Application membership')
+    for index, identity in enumerate(unit.group_identities):
+        expected = (context.secondary_identity if context.secondary_mask & (1 << index)
+                    else context.primary_identity)
+        if membership[identity] != expected:
+            raise ValueError('Stored NeoPro block order disagrees with its secondary Application mask')
+    return context
+
+
 def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
-                            group_save=None, columns):
+                            group_save=None, columns, application_context=None):
     """Replay one captured cached unit projection without external I/O.
 
     Provider failures are completed partial outcomes rather than exceptions.
@@ -296,6 +397,10 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     selected = validate_columns(columns)
     selected_class = _class(unit)
     current = list(_validated_groups(unit, group_cache))
+    if selected_class in _NEOPRO_TYPES.values():
+        application_context = _validated_application_context(unit, current, application_context)
+    elif application_context is not None:
+        raise ValueError('Application identity context is supported only for the exact NeoPro profile')
     if type(area_observations) is not tuple or any(type(value) is not CSVAreaObservation
                                                    for value in area_observations):
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
@@ -315,7 +420,8 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
 
     def partial(reason):
         return CachedCSVProjection(selected_class, False, selected, unit, tuple(current),
-            tuple(events), raw_area, area_identity, save_required, None, reason)
+            tuple(events), raw_area, area_identity, save_required, None, reason,
+            application_context=application_context)
 
     if has_area:
         for index, observation in enumerate(area_observations, 1):
@@ -325,7 +431,11 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
                 return partial('area_load_failed')
             raw_area = observation.raw
             address = int(raw_area) if raw_area.isdecimal() else 255
-            found = next((group for group in current if group.address == address), None)
+            primary_groups = (None if application_context is None else set(next(
+                app.group_identities for app in application_context.applications
+                if app.identity == application_context.primary_identity)))
+            found = next((group for group in current if group.address == address
+                          and (primary_groups is None or group.identity in primary_groups)), None)
             events.append(_event('group_lookup', address=address, found=found is not None))
             if found is None:
                 if address != 255:
@@ -333,7 +443,19 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
                 if len(current) >= 256:
                     raise ValueError('Cached group collection has no capacity for the missing Area group')
                 found = CachedCSVGroup('created-255', 255, '<Unused>', 'OID-created-255')
+                if application_context is not None:
+                    retained = ({unit.identity}
+                                | {app.identity for app in application_context.applications}
+                                | {group.identity for group in current}
+                                | {group.oid for group in current if group.oid})
+                    if {found.identity, found.oid} & retained:
+                        raise ValueError('Modeled created Area identity collides with the retained cache')
                 current.append(found)
+                if application_context is not None:
+                    application_context = replace(application_context, applications=tuple(
+                        replace(app, group_identities=(*app.group_identities, found.identity))
+                        if app.identity == application_context.primary_identity else app
+                        for app in application_context.applications))
                 save_required = True
                 events.append(_event('group_created', identity=found.identity,
                                      address=255, tag='<Unused>'))
@@ -373,13 +495,17 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     report = document_database_csv((csv_unit,), columns=selected)
     events.append(_event('row_projected', columns=len(selected), bytes=len(report.utf8_bytes)))
     return CachedCSVProjection(selected_class, True, selected, unit, tuple(current),
-        tuple(events), raw_area, area_identity, save_required, report, None, csv_unit)
+        tuple(events), raw_area, area_identity, save_required, report, None, csv_unit,
+        application_context)
 
 
 def parse_cached_projection(value, *, columns):
     """Validate and project the exact bounded cached-object JSON schema."""
-    if type(value) is not dict or set(value) != _ROOT_FIELDS or value.get('format') != PROFILE:
+    if type(value) is not dict or value.get('format') not in (PROFILE, IDENTITY_PROFILE):
         raise ValueError('Expected the cbus-toolkit-database-cached-projection-v1 object')
+    with_identity = value['format'] == IDENTITY_PROFILE
+    if set(value) != (_ROOT_FIELDS | {'application_context'} if with_identity else _ROOT_FIELDS):
+        raise ValueError('Cached projection must provide every documented root field, without extras')
     raw_unit = value['unit']
     if type(raw_unit) is not dict or not _UNIT_FIELDS <= set(raw_unit):
         raise ValueError('Cached unit must provide every documented field, without extras')
@@ -389,11 +515,14 @@ def parse_cached_projection(value, *, columns):
                             else _UNIT_FIELDS)
     if set(raw_unit) != expected_unit_fields:
         raise ValueError('Cached unit must provide every documented field, without extras')
-    if type(raw_unit['unit_type']) is str and raw_unit['unit_type'].upper() in _NEOPRO_TYPES:
+    neopro = type(raw_unit['unit_type']) is str and raw_unit['unit_type'].upper() in _NEOPRO_TYPES
+    if neopro and not with_identity:
         # This public schema has tags but no primary Application identity.
-        # Only the native adapter can establish the primary Area cache order.
-        raise ValueError('NeoPro CSV requires an explicit native XML snapshot; '
-                         'cached JSON cannot establish primary Application identity')
+        # The v2 contract or native adapter must bind primary membership.
+        raise ValueError('NeoPro cached v1 JSON cannot establish primary Application identity; '
+                         'use cached v2 or an explicit native XML snapshot')
+    if with_identity and not neopro:
+        raise ValueError('Cached v2 Application identity context supports only NeoPro')
     group_identities = raw_unit['group_identities']
     if type(group_identities) is not list:
         raise ValueError('Cached unit group identities must be a JSON array')
@@ -417,6 +546,26 @@ def parse_cached_projection(value, *, columns):
         groups.append(CachedCSVGroup(**{name: raw_group[name]
             for name in _GROUP_FIELDS - {'references'}}, references=tuple(references)))
 
+    context = None
+    if with_identity:
+        raw_context = value['application_context']
+        if type(raw_context) is not dict or set(raw_context) != _CONTEXT_FIELDS:
+            raise ValueError('Application context must provide every documented field, without extras')
+        raw_apps = raw_context['applications']
+        if type(raw_apps) is not list or not 1 <= len(raw_apps) <= 2:
+            raise ValueError('Application cache must contain one or two JSON records')
+        applications = []
+        for raw_app in raw_apps:
+            if type(raw_app) is not dict or set(raw_app) != _APPLICATION_FIELDS:
+                raise ValueError('Cached Application must provide every documented field, without extras')
+            if type(raw_app['group_identities']) is not list:
+                raise ValueError('Application Group identities must be a JSON array')
+            applications.append(CachedCSVApplication(**{name: raw_app[name]
+                for name in _APPLICATION_FIELDS - {'group_identities'}},
+                group_identities=tuple(raw_app['group_identities'])))
+        context = CachedCSVApplicationContext(**{name: raw_context[name]
+            for name in _CONTEXT_FIELDS - {'applications'}}, applications=tuple(applications))
+
     raw_observations = value['area_observations']
     if type(raw_observations) is not list or len(raw_observations) > 2:
         raise ValueError('Area observations must be a JSON array of at most two entries')
@@ -434,7 +583,8 @@ def parse_cached_projection(value, *, columns):
     else:
         raise ValueError('group_save must be null or an object containing completed')
     return project_cached_csv_unit(unit, group_cache=tuple(groups),
-        area_observations=tuple(observations), group_save=save, columns=columns)
+        area_observations=tuple(observations), group_save=save, columns=columns,
+        application_context=context)
 
 
 def loads_cached_projection(raw, *, columns):

@@ -16,9 +16,12 @@
 //! unlevelled model events pass any `e` but `e0`; native timestamped events
 //! such as `BROADCAST_EVENT` also honor their encoded reporting level.
 //!
-//! Test-double limits, stated plainly: fanout channels are unbounded, so a
-//! subscribed connection that stops reading while a writer stays chatty
-//! grows memory without backpressure.
+//! Each connection admits at most 512 output batches and 32 MiB of wire
+//! payload, including its active write. Admission never waits under the
+//! shared model lock. Overflow or a ten-second stalled write closes that
+//! connection; an executed command's receipt may then be unknown. These are
+//! modeled per-connection policies, not captured native overflow semantics or
+//! a global bound on clients, shared model data, or formatting allocations.
 //!
 //! Programming-lock rights are granted (this is a test double, not an
 //! access model); pass `--deny-programming` to reproduce the default-deny
@@ -41,9 +44,12 @@ use chrono::Local;
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::io::BufReader;
 use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::Mutex;
+
+mod mock_delivery;
+use mock_delivery::{Delivery, InputLine};
 
 const MAX_LINE_BYTES: usize = 1024 * 1024;
 /// Cap for a single here-document body.
@@ -73,12 +79,7 @@ struct HubSub {
     connected_at: String,
     session_tag: Option<String>,
     /// Outbound lines (events and replies alike, in order).
-    tx: mpsc::UnboundedSender<Outbound>,
-}
-
-enum Outbound {
-    Line(String),
-    Wire(String),
+    tx: Delivery,
 }
 
 /// Shared model plus per-connection subscriptions.
@@ -117,29 +118,36 @@ impl Hub {
     /// the connection's event mode.
     fn emit(&mut self, origin: u64, resp: &Response, events: &[String], native_xml: bool) {
         if let Some(sub) = self.subs.get(&origin) {
+            let mut wire = String::new();
             for event in events {
                 if sub.mode.delivers_line(event) {
-                    let _ = sub.tx.send(Outbound::Line(event.clone()));
+                    wire.push_str(event);
+                    wire.push_str("\r\n");
                 }
             }
-            if let Some(wire) = native_xml
+            if let Some(document) = native_xml
                 .then(|| format_native_dbgetxml_wire_response(resp))
                 .flatten()
             {
-                let _ = sub.tx.send(Outbound::Wire(wire));
+                wire.push_str(&document);
             } else {
                 for line in format_response(resp).lines() {
-                    let _ = sub.tx.send(Outbound::Line(line.to_string()));
+                    wire.push_str(line);
+                    wire.push_str("\r\n");
                 }
             }
+            let _ = sub.tx.send(wire);
         }
         for (id, sub) in self.subs.iter() {
             if *id != origin && sub.subscribed {
+                let mut wire = String::new();
                 for event in events {
                     if sub.mode.delivers_line(event) {
-                        let _ = sub.tx.send(Outbound::Line(event.clone()));
+                        wire.push_str(event);
+                        wire.push_str("\r\n");
                     }
                 }
+                let _ = sub.tx.send(wire);
             }
         }
     }
@@ -281,7 +289,8 @@ async fn main() {
 }
 
 async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
-    let (tx, mut rx) = mpsc::unbounded_channel::<Outbound>();
+    let (tx, rx) = mock_delivery::channel();
+    let mut stopped = tx.subscribe();
     let peer = stream
         .peer_addr()
         .expect("accepted TCP connection has a peer");
@@ -303,46 +312,35 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         );
         id
     };
-    let (reader, mut writer) = stream.into_split();
+    let (reader, writer) = stream.into_split();
     // Single ordered writer: everything the session sends, replies and
     // broadcast events alike, flows through this task.
-    let mut pump = tokio::spawn(async move {
-        while let Some(outbound) = rx.recv().await {
-            let (text, terminator) = match outbound {
-                Outbound::Line(line) => (line, true),
-                Outbound::Wire(wire) => (wire, false),
-            };
-            if writer.write_all(text.as_bytes()).await.is_err() {
-                break;
-            }
-            if terminator && writer.write_all(b"\r\n").await.is_err() {
-                break;
-            }
-        }
-    });
+    let mut pump = tokio::spawn(rx.write_to(writer));
     {
         let hub = hub.lock().await;
         if let Some(sub) = hub.subs.get(&id) {
-            let _ = sub.tx.send(Outbound::Line("201 Service ready".to_string()));
+            let _ = sub.tx.send("201 Service ready\r\n".to_string());
         }
     }
-    let mut lines = BufReader::new(reader).lines();
+    let mut reader = BufReader::new(reader);
     loop {
-        let mut raw = match lines.next_line().await {
-            Ok(Some(l)) => l,
+        let line = tokio::select! {
+            biased;
+            _ = mock_delivery::stopped(&mut stopped) => break,
+            line = mock_delivery::read_line(&mut reader, MAX_LINE_BYTES, false) => line,
+        };
+        let raw = match line {
+            Ok(Some(InputLine::Line(line))) => line,
+            Ok(Some(InputLine::TooLong)) => {
+                // Untagged: the tag itself may be the overlong/malformed part,
+                // so no command ID can be echoed. The connection closes with a
+                // close-on-framing-error posture; the client
+                // must reconnect rather than reuse this stream.
+                let _ = send_raw(&hub, id, "400 C-Gate line exceeded configured limit").await;
+                break;
+            }
             _ => break,
         };
-        if raw.len() > MAX_LINE_BYTES {
-            // Untagged: the tag itself may be the overlong/malformed part,
-            // so no command ID can be echoed. The connection closes with a
-            // close-on-framing-error posture; the client
-            // must reconnect rather than reuse this stream.
-            let _ = send_raw(&hub, id, "400 C-Gate line exceeded configured limit").await;
-            break;
-        }
-        if raw.ends_with('\r') {
-            raw.pop();
-        }
         let untagged_body = raw.trim_start();
         if !untagged_body.starts_with('[')
             && (untagged_body.starts_with('#') || untagged_body.starts_with("//"))
@@ -364,23 +362,24 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             let mut document = String::new();
             let mut truncated = false;
             let closed = loop {
-                match lines.next_line().await {
-                    Ok(Some(mut l)) => {
-                        if l.ends_with('\r') {
-                            l.pop();
-                        }
+                let line = tokio::select! {
+                    biased;
+                    _ = mock_delivery::stopped(&mut stopped) => break false,
+                    line = mock_delivery::read_line(&mut reader, MAX_LINE_BYTES, true) => line,
+                };
+                match line {
+                    Ok(Some(InputLine::Line(l))) => {
                         if l == delimiter {
                             break true;
                         }
-                        if l.len() > MAX_LINE_BYTES
-                            || document.len() + l.len() + 1 > MAX_DOCUMENT_BYTES
-                        {
+                        if document.len() + l.len() + 1 > MAX_DOCUMENT_BYTES {
                             truncated = true;
                         } else if !truncated {
                             document.push_str(&l);
                             document.push('\n');
                         }
                     }
+                    Ok(Some(InputLine::TooLong)) => truncated = true,
                     // EOF before the delimiter: answer on the command's own
                     // tag (known from the head line) instead of vanishing,
                     // so the client sees a synchronized error, then close.
@@ -413,6 +412,9 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
             }
             let resp = {
                 let mut hub = hub.lock().await;
+                if hub.subs.get(&id).is_none_or(|sub| sub.tx.is_closed()) {
+                    break;
+                }
                 hub.dispatch(id, false, |server| server.handle_document(&head, &document))
             };
             track_subscription(&hub, id, &head, &resp).await;
@@ -437,6 +439,9 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         });
         let resp = {
             let mut hub = hub.lock().await;
+            if hub.subs.get(&id).is_none_or(|sub| sub.tx.is_closed()) {
+                break;
+            }
             hub.session_identity(id, &raw)
                 .unwrap_or_else(|| hub.dispatch(id, native_xml, |server| server.handle(&raw)))
         };
@@ -446,6 +451,12 @@ async fn serve(stream: TcpStream, hub: Arc<Mutex<Hub>>) {
         }
     }
     hub.lock().await.subs.remove(&id);
+    if let Some(reason) = *stopped.borrow() {
+        eprintln!(
+            "cgate-mock: disconnected session cmd{}: {reason}; pending receipts are unconfirmed",
+            id * 2 + 1
+        );
+    }
     // Dropping the last sender lets the writer drain the final reply.
     // Aborting immediately used to discard the queued 400 on truncated
     // documents and could discard ordinary replies after a half-close.
@@ -517,11 +528,10 @@ async fn event_mode_query(hub: &Arc<Mutex<Hub>>, id: u64, head: &str) -> Option<
 
 async fn send_raw(hub: &Arc<Mutex<Hub>>, id: u64, line: &str) -> Result<(), ()> {
     let hub = hub.lock().await;
-    hub.subs.get(&id).ok_or(()).and_then(|sub| {
-        sub.tx
-            .send(Outbound::Line(line.to_string()))
-            .map_err(|_| ())
-    })
+    hub.subs
+        .get(&id)
+        .ok_or(())
+        .and_then(|sub| sub.tx.send(format!("{line}\r\n")).map_err(|_| ()))
 }
 
 /// Split a `[tag] COMMAND << DELIMITER` line; `None` for ordinary commands.
@@ -551,6 +561,62 @@ fn head_tag(head: &str) -> &str {
 mod tests {
     use super::*;
     use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+    #[tokio::test]
+    async fn overflow_after_execution_preserves_model_with_unconfirmed_receipt() {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_mock_delivery_bounds.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            MAX_LINE_BYTES as u64,
+            vector["bounds"]["line_bytes"].as_u64().unwrap()
+        );
+        assert_eq!(
+            MAX_DOCUMENT_BYTES as u64,
+            vector["bounds"]["document_bytes"].as_u64().unwrap()
+        );
+        let mut hub = Hub::new(true, None, false);
+        let (tx, rx) = mock_delivery::channel();
+        let signal = tx.clone();
+        hub.subs.insert(
+            1,
+            HubSub {
+                subscribed: false,
+                mode: EventMode::DEFAULT,
+                current: None,
+                peer: "127.0.0.1:1234".parse().unwrap(),
+                connected_at: "owned".into(),
+                session_tag: None,
+                tx,
+            },
+        );
+        for _ in 0..mock_delivery::MAX_BATCHES {
+            signal.send("queued\r\n".into()).unwrap();
+        }
+        let response = hub.dispatch(1, false, |server| {
+            server.handle("[unknown] PROJECT NEW EXECUTED")
+        });
+        assert_eq!(
+            response.status, 200,
+            "execution succeeded but its receipt cannot be admitted"
+        );
+        assert!(signal.is_closed());
+        assert_eq!(
+            hub.server.handle("[read] PROJECT USE EXECUTED").status,
+            200,
+            "disconnect is not rollback"
+        );
+        let (writer, mut reader) = tokio::io::duplex(100);
+        use tokio::io::AsyncReadExt;
+        rx.write_to(writer).await;
+        let mut wire = String::new();
+        reader.read_to_string(&mut wire).await.unwrap();
+        assert!(
+            !wire.contains("[unknown] 200"),
+            "never fabricate confirmed success after refusal"
+        );
+    }
 
     #[test]
     fn native_project_archives_opt_in_restores_complete_named_graph_only() {

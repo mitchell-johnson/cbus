@@ -1,0 +1,109 @@
+{
+  "format": "cbus-toolkit-tweaker-lifecycle-static-v1",
+  "evidence_kind": "read-only static source inspection",
+  "original_instruction_execution": 0,
+  "vendor_bytes_included": false,
+  "gui_acceptance": false,
+  "hardware_acceptance": false,
+  "inputs": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "name": "TCBusUnitConversion.Convert",
+      "start": "0xcaeaf0",
+      "end": "0xcaf4ec",
+      "bytes_sha256": "2161e9fb86f6781a52e117b2c1822f2cedd64f07cbaccbdad5a6221bbd07d9a4"
+    },
+    {
+      "name": "TCBUSUnitManager.GetNextAvailableAddress",
+      "start": "0xf2e0cc",
+      "end": "0xf2e118",
+      "effect": "first free address beginning1"
+    },
+    {
+      "name": "TCBUSUnitManager.GetMaximumPossibleAddress",
+      "start": "0xf2e118",
+      "effect": "inclusive255"
+    },
+    {
+      "name": "MakeLegalPartNameStringFromTag",
+      "start": "0x7f2b94",
+      "end": "0x7f2c8c",
+      "effect": "uppercase; retain ASCII33..96 except60/62; first8 UTF16 characters"
+    },
+    {
+      "name": "TCBusUnitCGateAgent.AgentSave",
+      "start": "0xcb72bc",
+      "end": "0xcb8010",
+      "effect": "UnitCreate and DBReaddress branches"
+    },
+    {
+      "name": "TCBusUnitCGateAgent.AgentDelete",
+      "start": "0xcbec94",
+      "end": "0xcbeca8",
+      "effect": "delegates inherited TCGateAgent.AgentDelete"
+    },
+    {
+      "name": "TProject.BeginSaveLock",
+      "start": "0xf2d370",
+      "end": "0xf2d384",
+      "effect": "increment save lock counter"
+    },
+    {
+      "name": "TProject.EndSaveLock",
+      "start": "0xf2d384",
+      "effect": "decrement lock and flush pending ProjectSave at outer unlock"
+    }
+  ],
+  "virtual_methods": {
+    "unit_slot_80": "StorageSave",
+    "unit_slot_84": "StorageDelete",
+    "unit_slot_88": "StorageLoad",
+    "manager_slot_68": "Append",
+    "manager_slot_78": "IndexOf",
+    "manager_slot_70": "Delete"
+  },
+  "metadata": {
+    "TagName": "copy source; blank->NEWUNIT",
+    "Description": "copy source",
+    "UnitName": "copy source; blank->legal tag name",
+    "SerialNumber": "copy database source when displayable serial is present; physical fallback/input override branches remain separate",
+    "CatalogNumber": "clear target before UnitCreate; AgentSave may resolve blank through software catalogue"
+  },
+  "recovered_sequence": [
+    "first-free staging address",
+    "factory target type and firmware",
+    "BeginSaveLock",
+    "target metadata and State=New in Toolkit object",
+    "source UnitAttributes/Database/LiveAgentMode load",
+    "source ProgrammingParameters/Database load",
+    "target UnitCreate/Database save",
+    "target UnitAttributes/Database load",
+    "target AlignUnit save with admitted tweaker",
+    "conditional source ProgrammingUnlock/Database load",
+    "source StorageDelete",
+    "source manager removal",
+    "target Address=original source address",
+    "target DBReaddress save",
+    "ProjectSave request",
+    "EndSaveLock"
+  ],
+  "exception_path": [
+    "conditional source programming unlock",
+    "attempt target StorageDelete",
+    "attempt ProjectSave",
+    "remove target from manager",
+    "EndSaveLock"
+  ],
+  "portable_boundaries": [
+    "new backup plus save-close-load readback are explicit operator protections, not recovered GUI ordering",
+    "explicit target catalogue does not reproduce original software catalogue lookup",
+    "State=New remains internal; it is not emitted as Unit XML",
+    "ASCII-only blank UnitName fallback conservatively fences non-ASCII uppercase differences",
+    "uncertain attempts retain scaffold/journal and do not reproduce original exception deletion",
+    "123 admitted transformation pairs reuse existing exact profile/unsupported-registration gates",
+    "full original GUI/history/physical/controller and exception-lifecycle acceptance remain open"
+  ]
+}

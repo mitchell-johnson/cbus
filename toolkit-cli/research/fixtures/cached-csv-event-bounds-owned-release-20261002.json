@@ -1,0 +1,791 @@
+{
+  "acceptance_scope": "Owned software acceptance and read-only static vendor-byte inspection; no current native/original instruction/VM/hardware acceptance",
+  "author_lifecycle": {
+    "focused_parents": 83,
+    "focused_skips": 0,
+    "focused_subtests": 0,
+    "literal_recount": {
+      "artifact": "author-attempt7-literal-recount.json",
+      "bytes": 105784,
+      "retained_privately": true,
+      "sha256": "09db9afab08310d6cfbc3ca102c920ab2b3737bcb2cddf886bbb97b9edb0e988"
+    },
+    "manifest": {
+      "artifact": "manifest.json",
+      "bytes": 823874,
+      "retained_privately": true,
+      "sha256": "7299fc241370d314709d231a4b9daea967c9e29d6f45290259db9062023b0f7a"
+    },
+    "overlap_with_final_source_wheel": true
+  },
+  "binaries": {
+    "cgate-mock": {
+      "artifact": "release/cgate-mock",
+      "bytes": 3600432,
+      "retained_privately": true,
+      "sha256": "7ed0cda421d57ddf949f0734f8154c6e6940bd0892fbf3cefa89905d611c6690"
+    },
+    "cmqttd": {
+      "artifact": "release/cmqttd",
+      "bytes": 12942320,
+      "retained_privately": true,
+      "sha256": "d32a95185094d8af2c2442426d8b96af1c1f509638ec90dc1deb474ac95b6cb1"
+    }
+  },
+  "canonical_publication": {
+    "freeze": {
+      "artifact": "final-publication-resource-freeze.json",
+      "bytes": 38716,
+      "retained_privately": true,
+      "sha256": "10ca49e89c8c3b64a73c9ea1421b74fb11fc770b84446101f9bec157d4202351"
+    },
+    "proof": {
+      "artifact": "canonical-publication-proof.json",
+      "bytes": 186027,
+      "retained_privately": true,
+      "sha256": "d05940bbeeb5dde2cf24ad60a91de83fec5b3f38e26f1e92abe89e71c76f82c7"
+    },
+    "scope": "maintained sanitized derivatives of six actual captures plus regenerated parity resources; exact raw markers retained privately; no new comparator execution"
+  },
+  "completed": [
+    "123-pair admitted database Toolkit replacement lifecycle and read-only journal recovery",
+    "NeoPro exact2.5 public cached-v2 Application identity and finite Area/provider outcomes",
+    "Per-peer bounded mock event/reply delivery, framing and no replay after overflow"
+  ],
+  "completion_gate": {
+    "exit": 1,
+    "record": {
+      "artifact": "stdout.json",
+      "bytes": 220421,
+      "retained_privately": true,
+      "sha256": "83a9b50007732bbdcacddd1ffb67193ef3f1b85887004ad1025bea5e6752a8fe"
+    },
+    "scope": "installed wheel declaration/evidence gate; not original/hardware execution",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "83a9b50007732bbdcacddd1ffb67193ef3f1b85887004ad1025bea5e6752a8fe",
+    "trusted_evidence_root_supplied": false
+  },
+  "current_publication_ci": "No current commit CI success claimed by this precommit receipt",
+  "final_resource_installed_wheel": {
+    "audit": {
+      "artifact": "wheel-2/audit-results.json",
+      "bytes": 206225,
+      "retained_privately": true,
+      "sha256": "96f677084504c3055dfd7014f122b6c850f56a4dfae51a3b25ec276dc0ad140d"
+    },
+    "binary_quiet": true,
+    "commands": [
+      {
+        "elapsed_seconds": 1.257,
+        "exit": 0,
+        "log_sha256": "42ea1a5869dd22233ba440369b774ced4fb5652ca07498f17e16ce0dbc366c81"
+      },
+      {
+        "elapsed_seconds": 0.012,
+        "exit": 0,
+        "log_sha256": "19dab8af34414e64c38a4b126c06b4fe1361709c21af9ed36e45a9c0e73f3ea4"
+      },
+      {
+        "elapsed_seconds": 0.137,
+        "exit": 0,
+        "log_sha256": "10c3d827ef6d008b340529bae603e631040ac3f9c1ec961b923f30a6012f1fba"
+      },
+      {
+        "elapsed_seconds": 26.562,
+        "exit": 0,
+        "log_sha256": "c243f038501e86066888da6e4af0d1e2dbedf2a0c4ed1b5337aeecba47555f2a"
+      },
+      {
+        "elapsed_seconds": 0.129,
+        "exit": 0,
+        "log_sha256": "16ee0b1d78f8469002cbdc48d627a29098a1ae69190feb0200dfe8c5391b8dce"
+      }
+    ],
+    "executed_head": "7d57f35801581b85c804a17923569821746e44a8",
+    "input_count": 3669,
+    "inputs_after": {
+      "artifact": "wheel-2/inputs-after.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "4139480941267c7ce5a66182b5b5fff85ffb12975722c078eb19e308f8194b34"
+    },
+    "inputs_before": {
+      "artifact": "wheel-2/inputs-before.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "4139480941267c7ce5a66182b5b5fff85ffb12975722c078eb19e308f8194b34"
+    },
+    "junit": {
+      "artifact": "wheel-2/junit.xml",
+      "bytes": 58868,
+      "retained_privately": true,
+      "sha256": "209b9616c2435efca5442e86280f5ce2c5c93b935c3f0ac39cbf4bfe53611c46"
+    },
+    "parents": {
+      "passed": 167
+    },
+    "required_modules": [
+      "tests/test_parity_register.py",
+      "tests/test_cgate_contract_inventory.py",
+      "tests/test_cgate_session_differential.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py",
+      "tests/test_skip_census.py",
+      "tests/test_ci_test_results.py"
+    ],
+    "source_quiet": true,
+    "subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 552,
+      "reported": 552,
+      "skipped": 0
+    },
+    "summary": {
+      "artifact": "wheel-2/summary.json",
+      "bytes": 7326,
+      "retained_privately": true,
+      "sha256": "412e42efd3f5f19479d463657551c70dfe31aa96c7118a021672b422d80b796e"
+    },
+    "trace": {
+      "artifact": "wheel-2/trace.json",
+      "bytes": 161502,
+      "retained_privately": true,
+      "sha256": "b8d5db13998d87c1473c112715b5a632b82af29a3e066b821dbbc14a1adb1afb"
+    }
+  },
+  "final_resource_source": {
+    "audit": {
+      "artifact": "source-2/audit-results.json",
+      "bytes": 206226,
+      "retained_privately": true,
+      "sha256": "95b02d6f9e2c8e07223d2f9afcbbb4df1d97366c4c8c4b51a8393ca12fb8ed25"
+    },
+    "binary_quiet": true,
+    "commands": [
+      {
+        "elapsed_seconds": 26.682,
+        "exit": 0,
+        "log_sha256": "ada1a852e66ae14889ce6f4bc56f7357960e70b06336f632f91abc49aa2ac97a"
+      },
+      {
+        "elapsed_seconds": 0.132,
+        "exit": 0,
+        "log_sha256": "f48ae37f7ce80bd58d4b358b434ad221ba07b77e6caecf99b51ef3f1660b6155"
+      }
+    ],
+    "executed_head": "7d57f35801581b85c804a17923569821746e44a8",
+    "input_count": 3669,
+    "inputs_after": {
+      "artifact": "source-2/inputs-after.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "4139480941267c7ce5a66182b5b5fff85ffb12975722c078eb19e308f8194b34"
+    },
+    "inputs_before": {
+      "artifact": "source-2/inputs-before.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "4139480941267c7ce5a66182b5b5fff85ffb12975722c078eb19e308f8194b34"
+    },
+    "junit": {
+      "artifact": "source-2/junit.xml",
+      "bytes": 58868,
+      "retained_privately": true,
+      "sha256": "74d0c3789de29c4aeb8d38b8fee813418a8f3f84a130c4364771ce84c854665a"
+    },
+    "parents": {
+      "passed": 167
+    },
+    "required_modules": [
+      "tests/test_parity_register.py",
+      "tests/test_cgate_contract_inventory.py",
+      "tests/test_cgate_session_differential.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py",
+      "tests/test_skip_census.py",
+      "tests/test_ci_test_results.py"
+    ],
+    "source_quiet": true,
+    "subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 552,
+      "reported": 552,
+      "skipped": 0
+    },
+    "summary": {
+      "artifact": "source-2/summary.json",
+      "bytes": 4124,
+      "retained_privately": true,
+      "sha256": "83efdc5faa2d81be1f663f2b35491557c4d1e7f8cf0dea782127db0c6fd4ed71"
+    },
+    "trace": {
+      "artifact": "source-2/trace.json",
+      "bytes": 161502,
+      "retained_privately": true,
+      "sha256": "b8d5db13998d87c1473c112715b5a632b82af29a3e066b821dbbc14a1adb1afb"
+    }
+  },
+  "final_wheel_package": {
+    "earlier650_functional_execution_rebound": false,
+    "files": 329,
+    "proof": {
+      "artifact": "wheel-package-proof.json",
+      "bytes": 36829,
+      "retained_privately": true,
+      "sha256": "0cab91d091531afc16b42e5149a2a297c7db590016d6d6cc7986b505faf8de06"
+    },
+    "runtime_imports": {
+      "processes": 2,
+      "proof": {
+        "artifact": "runtime-import-proof.json",
+        "bytes": 234,
+        "retained_privately": true,
+        "sha256": "c1a9c3954964224a83486518c329ad9c86fb0d2129017babab23b10ffb687983"
+      },
+      "pytest_pid": 2133,
+      "raw_record_sha256": "fbafd7f683693d121f00835bf65951a6e4ee58883f5587f83b2ebd98a2950907",
+      "records": 4,
+      "required_pytest_phases": [
+        "startup",
+        "terminal"
+      ],
+      "violations": 0
+    },
+    "scope": "fresh current package byte equality plus actual narrow evidence-resource consumer tests; Python code unchanged from earlier650-parent execution",
+    "wheel_sha256": "d40b4d101b0945919a841a117f5961f72061c9123123e2d7df44cb4abf52215f"
+  },
+  "format": "cbus-cached-csv-event-bounds-owned-release-v1",
+  "full_python_suite_repeated": false,
+  "functional_completeness": {
+    "categories": 42,
+    "fully_accepted_obligations": 0,
+    "functional_denominator_ready": false,
+    "functional_percent": null,
+    "implemented_categories": 18
+  },
+  "independent_release_reviews": [
+    {
+      "artifact": "source-wheel-independent-review.json",
+      "bytes": 2297333,
+      "retained_privately": true,
+      "sha256": "01ec672eb94bb60c248eafd8a3543b362962e9f090f2815852ae6e2dfa2b532c"
+    },
+    {
+      "artifact": "checkpoint3-author-attempt7-readonly-recount.json",
+      "bytes": 53144,
+      "retained_privately": true,
+      "sha256": "6a490be126615ce81d5d3d719220c22137fc792fb5a4d8ec75bc81a034b48dab"
+    },
+    {
+      "artifact": "required-rust2-readonly-recount.json",
+      "bytes": 6320,
+      "retained_privately": true,
+      "sha256": "5d41187662b7bad05f85ad7bec04d4109869a05da31ff2d0c40d70e99b95e0a2"
+    },
+    {
+      "artifact": "source-wheel-raw-workflow-independent-review.json",
+      "bytes": 392619,
+      "retained_privately": true,
+      "sha256": "d1d66b6fbf9b310217740aacb772fa6e694d1272b4203f0ff1105c7b706e4f1a"
+    },
+    {
+      "artifact": "source2-wheel2-independent-review.json",
+      "bytes": 2290443,
+      "retained_privately": true,
+      "sha256": "6653581b46c72fee580b3d9ad82078fe41cf23d9cff47ae3a7166d44071de3a3"
+    },
+    {
+      "artifact": "canonical-publication2-readonly-review.json",
+      "bytes": 13816,
+      "retained_privately": true,
+      "sha256": "145f74003a2937fec6a7b051e258b905ea60e15a65058ec382c0c24b4965f403"
+    }
+  ],
+  "independent_static_reviews": [
+    {
+      "artifact": "final-readonly-review.json",
+      "bytes": 10450,
+      "retained_privately": true,
+      "sha256": "047edb1bffc5e82054389ea6adfda927eeda19005506f4cb3c190a64ad50bc01"
+    },
+    {
+      "artifact": "final-static-review.json",
+      "bytes": 5207,
+      "retained_privately": true,
+      "sha256": "d5be82c33dce1870c1271e00cefa11ae04cb855c9a6efac6e3cc71a5fa29c2e7"
+    },
+    {
+      "artifact": "checkpoint3-static-tests-wiring-review.json",
+      "bytes": 12842,
+      "retained_privately": true,
+      "sha256": "8384733be5a7148ddd6577ec02d35790bf7fe807280ac657da8b6630b3a6018d"
+    }
+  ],
+  "installed_wheel": {
+    "audit": {
+      "artifact": "wheel-1/audit-results.json",
+      "bytes": 948672,
+      "retained_privately": true,
+      "sha256": "9f93940415e23287fd69b8584bc74ec91cad69e3d2c4b1068dc4c26c7af8d5bf"
+    },
+    "binary_quiet": true,
+    "commands": [
+      {
+        "elapsed_seconds": 1.25,
+        "exit": 0,
+        "log_sha256": "84045cf7427a3ec9ff586ad0b5fb9f8e53e0815185131e17290f9fd9de77dd5e"
+      },
+      {
+        "elapsed_seconds": 0.014,
+        "exit": 0,
+        "log_sha256": "f687a8b90df9e8419ca1accc8094b573b70e7d03618f9037a4c8ad1fe3b111ab"
+      },
+      {
+        "elapsed_seconds": 0.145,
+        "exit": 0,
+        "log_sha256": "a721437264181cedd6b90b60405105cb2777a5ecb547abfc40ea18b7cad8d787"
+      },
+      {
+        "elapsed_seconds": 140.652,
+        "exit": 0,
+        "log_sha256": "99dd850830594d9eccc9e785563e5f836a197a8dce69d17498dffa47a02905ef"
+      },
+      {
+        "elapsed_seconds": 0.152,
+        "exit": 0,
+        "log_sha256": "8c1e115bd00d9e363052f724ea8269e96b12c66c09d7615d1352136024fc8d6a"
+      }
+    ],
+    "executed_head": "7d57f35801581b85c804a17923569821746e44a8",
+    "input_count": 3669,
+    "inputs_after": {
+      "artifact": "wheel-1/inputs-after.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "299c9e53f11ec91bfbf61ee0f9d34a5466a3e5087a7926b71b4f85f3edfaea8a"
+    },
+    "inputs_before": {
+      "artifact": "wheel-1/inputs-before.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "299c9e53f11ec91bfbf61ee0f9d34a5466a3e5087a7926b71b4f85f3edfaea8a"
+    },
+    "junit": {
+      "artifact": "wheel-1/junit.xml",
+      "bytes": 247631,
+      "retained_privately": true,
+      "sha256": "47234b973eac9efbe925b151e024f3cefebd1faee6f873fab64ac1b4307fee94"
+    },
+    "parents": {
+      "passed": 650,
+      "skipped": 13
+    },
+    "required_modules": [
+      "tests/test_toolkit_database_csv_neopro.py",
+      "tests/test_toolkit_database_csv_registry.py",
+      "tests/test_toolkit_database_csv_native.py",
+      "tests/test_toolkit_database_csv_projection.py",
+      "tests/test_toolkit_database_csv_selection_export.py",
+      "tests/test_toolkit_database_csv_project_export.py",
+      "tests/test_toolkit_database_csv_keye_family.py",
+      "tests/test_cgate_neopro_csv_interop.py",
+      "tests/test_toolkit_tweaker_workflow.py",
+      "tests/test_cgate_toolkit_tweaker_interop.py",
+      "tests/test_toolkit_conversion_tweakers.py",
+      "tests/test_toolkit_conversion_reldn.py",
+      "tests/test_toolkit_conversion_coupler_to_neo.py",
+      "tests/test_toolkit_conversion_input_unit.py",
+      "tests/test_toolkit_database_csv_native_batch.py",
+      "tests/test_parity_register.py",
+      "tests/test_cgate_contract_inventory.py",
+      "tests/test_cgate_session_differential.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py",
+      "tests/test_skip_census.py",
+      "tests/test_ci_test_results.py",
+      "tests/test_toolkit_database_csv_neopro_cached.py",
+      "tests/test_toolkit_tweaker_lifecycle.py",
+      "tests/test_cgate_toolkit_tweaker_lifecycle_interop.py",
+      "tests/test_classic_replacement.py",
+      "tests/test_conversion_workflow.py",
+      "tests/test_cli_conversion_workflow.py"
+    ],
+    "source_quiet": true,
+    "subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2512,
+      "reported": 2512,
+      "skipped": 0
+    },
+    "summary": {
+      "artifact": "wheel-1/summary.json",
+      "bytes": 10211,
+      "retained_privately": true,
+      "sha256": "529a2213c38aa9dbdad79ed17a75e7c5aeb6efc3a5c12ecb9020da0925f5f032"
+    },
+    "trace": {
+      "artifact": "wheel-1/trace.json",
+      "bytes": 760726,
+      "retained_privately": true,
+      "sha256": "ba4c8404b730048e0b2557fdc9944a8a9a6a93adec8dec8d1ae7ffb624e631ac"
+    }
+  },
+  "maintained_interop": {
+    "daemon": {
+      "audit": {
+        "artifact": "interop-1/daemon-audit-results.json",
+        "bytes": 137606,
+        "retained_privately": true,
+        "sha256": "8c818b37f920b74d4decee1b49820a4f2a0393d2e8cbfa395b8efb9ff642d411"
+      },
+      "junit": {
+        "artifact": "interop-1/daemon.xml",
+        "bytes": 70117,
+        "retained_privately": true,
+        "sha256": "8925fc088cbcf0f44af4b441aa9f4c00686c8fa55d46ac6556a84ebb91410229"
+      },
+      "parents": {
+        "passed": 195,
+        "skipped": 1
+      },
+      "subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 69,
+        "reported": 69,
+        "skipped": 0
+      },
+      "trace": {
+        "artifact": "interop-1/daemon-trace.json",
+        "bytes": 97186,
+        "retained_privately": true,
+        "sha256": "4338b35f69a292b4e1eef4d2d232b89a393fac1743a81f19bdd813f7989d144a"
+      }
+    },
+    "framing_checks": 2,
+    "framing_log": {
+      "artifact": "interop-1/maintained-interop.log",
+      "bytes": 14727,
+      "retained_privately": true,
+      "sha256": "a3454caa18ea9466bf1300670ec487cbe15f9bf772a356574fdfcddd65b07472"
+    },
+    "isolation_correction": {
+      "artifact": "maintained-interop-isolation-correction.json",
+      "bytes": 526452,
+      "retained_privately": true,
+      "sha256": "639f1663635457b49f77611a4aaa0c0867db976b4827fc12b7abe260c47bf4a2"
+    },
+    "mock": {
+      "audit": {
+        "artifact": "interop-1/mock-audit-results.json",
+        "bytes": 62079,
+        "retained_privately": true,
+        "sha256": "f42447e401251f35116cb68629ae4ab0156f20755356916117a07a75f3c96e04"
+      },
+      "junit": {
+        "artifact": "interop-1/mock.xml",
+        "bytes": 20024,
+        "retained_privately": true,
+        "sha256": "6ff01ef437b7878e27f5558a02d12fb860ec675d613ee4896a3f0e1fd25a7908"
+      },
+      "parents": {
+        "passed": 57,
+        "skipped": 1
+      },
+      "subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 158,
+        "reported": 158,
+        "skipped": 0
+      },
+      "trace": {
+        "artifact": "interop-1/mock-trace.json",
+        "bytes": 47105,
+        "retained_privately": true,
+        "sha256": "5fbf5e9fe56d414e1848a21a64223c44613e5f02d1541c127334631f04d249c8"
+      }
+    },
+    "private_pytest_parent_pre_execution_claimed": false,
+    "summary": {
+      "artifact": "interop-1/summary.json",
+      "bytes": 5876,
+      "retained_privately": true,
+      "sha256": "9c79939a66b6b542a53d19fe1fd748cfe582514346f4593dc26f3e658eb498fb"
+    }
+  },
+  "maintained_interop_handoff": {
+    "artifact": "maintained-interop-final-handoff.json",
+    "bytes": 54508,
+    "retained_privately": true,
+    "sha256": "987b54657d0e3fa25b9991b7276b330ad988d758d7541a435f66657f72613677"
+  },
+  "manual_deferred_issues_untouched": [
+    73,
+    74
+  ],
+  "metadata": {
+    "coverage_and_skip_census_regenerated": true,
+    "generated_changes_expected": true,
+    "six_actual_comparisons": [
+      {
+        "passed": 9,
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+        "result": "passed",
+        "sha256": "36cd251f5c83df2cfb5e2b98c3aee01b248ed02fc1e8f8c980e45db5a9dc4ac1"
+      },
+      {
+        "passed": 9,
+        "path": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+        "result": "passed",
+        "sha256": "6bf1fed720611d49911052c9e5fb06ec628e9403fa9d96f0e6c3c0f90abab5e2"
+      },
+      {
+        "passed": 11,
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "result": "passed",
+        "sha256": "19845484303b878778d243ba2952c3aaad57669a5d6981df692b5be25b6aef92"
+      },
+      {
+        "passed": 11,
+        "path": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "result": "passed",
+        "sha256": "5c5564daceb31516cfcef14249c32d5b5bc50b660ef231056ddb9461c50dda35"
+      },
+      {
+        "passed": 12,
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "result": "passed",
+        "sha256": "be901c3289eaf3b77c59f83ad53e4c7b00cc3828e14e3383117ee3141851bd38"
+      },
+      {
+        "passed": 12,
+        "path": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "result": "passed",
+        "sha256": "84f2618df287a0a9b00f48fa07e1890b962aca7b21fbe1e5e4ae4ea4ab496062"
+      }
+    ],
+    "summary": {
+      "artifact": "summary.json",
+      "bytes": 7176,
+      "retained_privately": true,
+      "sha256": "458bff46da815d73aa48141c4b4f8a311dbdf058b6fbe5e6834f9525fef41d0f"
+    }
+  },
+  "preserved_failures": [
+    "Rust attempt1 test-only borrowed_box Clippy failure; no full tests ran in that attempt",
+    "NeoPro initial sandbox loopback provisioning failure and all later author attempts",
+    "Lifecycle backup metadata/readdress harness failures and endpoint/PP context whitelist failures in attempts5/6",
+    "Mock response punctuation/workload guard and all author preparation attempts",
+    "Private receipt/harness preparation failures remain separate from product execution"
+  ],
+  "previous_published_ci": {
+    "conclusion": "success",
+    "native_and_hardware_jobs": "skipped; no acceptance credit",
+    "sha": "7d57f35801581b85c804a17923569821746e44a8",
+    "url": "https://github.com/mitchell-johnson/cbus/actions/runs/36955852990"
+  },
+  "publication_delta": "Canonical comparison-coordinate sanitation, regenerated parity resources, late AI-reference prose and final batch/status prose/receipt follow the original3669-pin product gates. Source2 and fresh-wheel2 execute only changed evidence-resource consumers on final package bytes; the earlier650 tests are not rebound",
+  "runtime_imports": {
+    "all_process_terminal_cleanup_claimed": false,
+    "processes": 262,
+    "proof": {
+      "artifact": "runtime-import-proof.json",
+      "bytes": 239,
+      "retained_privately": true,
+      "sha256": "e669a2129b5fa5e380a243f09d837b3e8979fba2ed9f88396e43897aca08556b"
+    },
+    "pytest_pid": 85293,
+    "raw_record_sha256": "e04c0877ff0f65ef3c29be9fe35bca59dadccfd9aef3b981adc73234ea4951c6",
+    "records": 470,
+    "required_pytest_phases": [
+      "startup",
+      "terminal"
+    ],
+    "startup_only_processes": 54,
+    "violations": 0
+  },
+  "rust_required_checks": {
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "elapsed_seconds": 1.985,
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "elapsed_seconds": 2.767,
+        "exit": 0,
+        "log_sha256": "22f186de421dab675c5997b2b9252bd8d231d0225177d10a5130cfd1b3dc78c6"
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace"
+        ],
+        "elapsed_seconds": 388.995,
+        "exit": 0,
+        "log_sha256": "ca65f5543bc4757c8c472c7eb88772ef66c861076ae0fbcfe6edaa8af7d0ae28"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "elapsed_seconds": 91.155,
+        "exit": 0,
+        "log_sha256": "0a2fb498f972d38566290f265c900040cd105d9a9507d1b8e3cd980a0cdc1164"
+      }
+    ],
+    "input_count": 440,
+    "source_quiet": true,
+    "summary": {
+      "artifact": "rust-2/summary.json",
+      "bytes": 2884,
+      "retained_privately": true,
+      "sha256": "0be17dd0ceea0802e577bb8490a369df374f6e104d7b9f3f198d4952ccb6b5d9"
+    },
+    "tests": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 8690,
+      "summary_rows": 98
+    }
+  },
+  "rust_vector_post_gate_delta": {
+    "changes": [
+      {
+        "after_sha256": "488ae0e1ed1b809932cbac54197f1f1807c60200bd3f5e7ddbef8b4c856d69c5",
+        "before_sha256": "79274e4b01e3a701980e771ff1347b531a21bd1e3e2df5e25602be37c45483c6",
+        "path": "rust/testdata/vectors/cgate_toolkit_tweaker_lifecycle_wire.json"
+      }
+    ],
+    "rust_gates_rebound": false,
+    "rust_source_quiet_during_gates": true,
+    "scope": "lifecycle vector recovery declaration only; no Rust test source references this vector; final Python policy/public consumers will execute new bytes"
+  },
+  "source": {
+    "audit": {
+      "artifact": "source-1/audit-results.json",
+      "bytes": 948673,
+      "retained_privately": true,
+      "sha256": "db98cbf3c817a3b66119cd6dee2ae642a4dfd505bb3b74f0898c53a482abd5b5"
+    },
+    "binary_quiet": true,
+    "commands": [
+      {
+        "elapsed_seconds": 140.468,
+        "exit": 0,
+        "log_sha256": "45e31e1febd1a1565be702884f6f7ae2ef8ed0802812639e6a574d50caa9e184"
+      },
+      {
+        "elapsed_seconds": 0.188,
+        "exit": 0,
+        "log_sha256": "ee45d55c6815316b23407a46040de56f989a672511e6b7904687c8d7ce8a1f09"
+      }
+    ],
+    "executed_head": "7d57f35801581b85c804a17923569821746e44a8",
+    "input_count": 3669,
+    "inputs_after": {
+      "artifact": "source-1/inputs-after.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "299c9e53f11ec91bfbf61ee0f9d34a5466a3e5087a7926b71b4f85f3edfaea8a"
+    },
+    "inputs_before": {
+      "artifact": "source-1/inputs-before.json",
+      "bytes": 655870,
+      "retained_privately": true,
+      "sha256": "299c9e53f11ec91bfbf61ee0f9d34a5466a3e5087a7926b71b4f85f3edfaea8a"
+    },
+    "junit": {
+      "artifact": "source-1/junit.xml",
+      "bytes": 247149,
+      "retained_privately": true,
+      "sha256": "6ebb829fa64effa9647eaed02fb00e7ea0c8cc8603076afa6a255fa6d3d28184"
+    },
+    "parents": {
+      "passed": 650,
+      "skipped": 13
+    },
+    "required_modules": [
+      "tests/test_toolkit_database_csv_neopro.py",
+      "tests/test_toolkit_database_csv_registry.py",
+      "tests/test_toolkit_database_csv_native.py",
+      "tests/test_toolkit_database_csv_projection.py",
+      "tests/test_toolkit_database_csv_selection_export.py",
+      "tests/test_toolkit_database_csv_project_export.py",
+      "tests/test_toolkit_database_csv_keye_family.py",
+      "tests/test_cgate_neopro_csv_interop.py",
+      "tests/test_toolkit_tweaker_workflow.py",
+      "tests/test_cgate_toolkit_tweaker_interop.py",
+      "tests/test_toolkit_conversion_tweakers.py",
+      "tests/test_toolkit_conversion_reldn.py",
+      "tests/test_toolkit_conversion_coupler_to_neo.py",
+      "tests/test_toolkit_conversion_input_unit.py",
+      "tests/test_toolkit_database_csv_native_batch.py",
+      "tests/test_parity_register.py",
+      "tests/test_cgate_contract_inventory.py",
+      "tests/test_cgate_session_differential.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py",
+      "tests/test_skip_census.py",
+      "tests/test_ci_test_results.py",
+      "tests/test_toolkit_database_csv_neopro_cached.py",
+      "tests/test_toolkit_tweaker_lifecycle.py",
+      "tests/test_cgate_toolkit_tweaker_lifecycle_interop.py",
+      "tests/test_classic_replacement.py",
+      "tests/test_conversion_workflow.py",
+      "tests/test_cli_conversion_workflow.py"
+    ],
+    "source_quiet": true,
+    "subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2512,
+      "reported": 2512,
+      "skipped": 0
+    },
+    "summary": {
+      "artifact": "source-1/summary.json",
+      "bytes": 7007,
+      "retained_privately": true,
+      "sha256": "6942b96ee23c56a354b5c14af5774a1bd5b93343808dda7054929ddc63459ee4"
+    },
+    "trace": {
+      "artifact": "source-1/trace.json",
+      "bytes": 760726,
+      "retained_privately": true,
+      "sha256": "ba4c8404b730048e0b2557fdc9944a8a9a6a93adec8dec8d1ae7ffb624e631ac"
+    }
+  },
+  "wheel_package": {
+    "files": 329,
+    "proof": {
+      "artifact": "wheel-package-proof.json",
+      "bytes": 36829,
+      "retained_privately": true,
+      "sha256": "3897c61038ff8e9bb3f0971f76e9021a3e1c86cf4416825d96f797201bd44070"
+    },
+    "wheel_sha256": "df4f69ab4d04b27aaee85e26e445b580a59e35a28b112839cdb9404ecf518e6e"
+  }
+}

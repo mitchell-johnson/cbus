@@ -78,6 +78,8 @@ class Prepared:
     apply: bool
     expected_plan: str | None
     auth_token: str | None
+    metadata: dict | None = None
+    plan_context: dict | None = None
 
 
 def prepare(args):
@@ -254,13 +256,14 @@ def _closed(client, document, project):
             raise ValueError("Every project Network must be closed and idle")
 
 
-def execute(prepared, client, state):
+def execute(prepared, client, state, *, before_add=None):
     p = prepared
     client = _Client(client, state, p.project)
     database, programmer = NativeDatabase(client), Programmer(client)
     if p.auth_token is not None:
         try:
-            client.command("LOGIN " + p.auth_token)
+            if client.command("LOGIN " + p.auth_token).code != 200:
+                raise RuntimeError("Authentication did not return the required 200 receipt")
         except CGateError as error:
             raise RuntimeError("Authentication was refused before the tweaker workflow") from error
     client.command("PROJECT USE " + p.project)
@@ -313,6 +316,10 @@ def execute(prepared, client, state):
                "project_sha256": hashlib.sha256(before).hexdigest(), "specifications": p.spec_pins,
                "source_pp": source_values, "target_defaults": defaults, "tweaker": plan.as_dict(),
                "assignments": assignments, "expected_parameters": deepcopy(expected)}
+    if p.metadata is not None:
+        binding["metadata"] = deepcopy(p.metadata)
+    if p.plan_context is not None:
+        binding["lifecycle"] = deepcopy(p.plan_context)
     state["plan"], state["plan_sha256"] = binding, _digest(binding)
     if _document(client, p.project)[0] != before:
         raise ValueError("Project changed during preview")
@@ -327,6 +334,8 @@ def execute(prepared, client, state):
     _closed(client, baseline, p.project)
     if _document(client, p.project)[0] != before:
         raise ValueError("Project changed before Unit ADD")
+    if before_add is not None:
+        before_add(client, binding, before, baseline)
     state["phase"] = "add"
     response = database.add(p.network, "unit", p.address, p.tag_name)
     state["created"] = True
@@ -353,14 +362,26 @@ def execute(prepared, client, state):
     fields = (("OID", oid), ("TagName", p.tag_name), ("Address", str(p.address)),
               ("UnitType", p.target_type), ("UnitName", p.target_type), ("SerialNumber", ""),
               ("FirmwareVersion", p.firmware), ("CatalogNumber", p.catalog))
+    if p.metadata is not None:
+        fields = tuple((name, p.metadata.get(name, value)) for name, value in fields)
+        fields += tuple((name, value) for name, value in p.metadata.items() if name not in dict(fields))
     # Scalar initialization does not re-admit a whole numeric Network, which
     # could reject or normalize a retained raw/opaque sibling. Set TagName
     # last: legacy UnitName projection can otherwise replace the ADD label.
     for name, value in (("UnitType", p.target_type), ("UnitName", p.target_type),
                         ("FirmwareVersion", p.firmware), ("CatalogNumber", p.catalog), ("TagName", p.tag_name)):
+        if p.metadata is not None:
+            value = p.metadata.get(name, value)
         if database.set(target + "/" + name, value).code != 200:
             state["outcome_uncertain"] = True
             raise RuntimeError("Unexpected database initializer receipt")
+    if p.metadata is not None:
+        for name in ("SerialNumber", "Description"):
+            value = p.metadata.get(name, "")
+            # The recovered agent uses DBSET, including empty metadata tails.
+            if client.command("DBSET " + target + "/" + name + (" " + _tail(value) if value else "")).code != 200:
+                state["outcome_uncertain"] = True
+                raise RuntimeError("Unexpected metadata initializer receipt")
     with programmer.load(p.network, "/db" + target) as session:
         session.reset_defaults()
         native_defaults = session.values()

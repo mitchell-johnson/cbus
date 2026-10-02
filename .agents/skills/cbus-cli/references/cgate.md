@@ -2258,7 +2258,8 @@ before its terminal response. Each stalled event write has a 10-second timeout;
 this is not an aggregate command deadline. Overflow for subscribed delivery
 fails explicitly and dropping incomplete programming retires its PCI generation.
 Later command input remains under TCP backpressure without a detached task.
-The separate mock TCP fanout below is unchanged and still unbounded. See
+The separate mock TCP fanout now bounds each peer's whole batches and active
+wire payload as described below. See
 `docs/cmqttd-cgate.md` and
 `toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md` for owned
 software tests and outstanding native/hardware acceptance.
@@ -2269,7 +2270,7 @@ software tests and outstanding native/hardware acceptance.
 - Here-document body: 16 MiB maximum.
 - CGL import: 10,000 modeled application/group/level objects maximum.
 - Library event queue: 4,096 entries by default, with an overflow marker.
-- TCP fanout: unbounded channels; a subscribed client that never reads can consume growing memory while writers continue.
+- Mock TCP peer delivery: at most 512 admitted whole batches and 32 MiB of active/queued wire payload. Origin-filtered events and the complete reply/document are admitted atomically; continuation count is not the batch count. Overflow or a ten-second batch write timeout closes that peer. A lost receipt may follow execution; never replay based on reconnection. Model, aggregate clients, transient formatting, allocator metadata and socket buffers are outside these bounds.
 - Unit-spec file: 8 MiB maximum; include traversal is capped at 128 files and checked for directory containment.
 
 Use loopback and an ephemeral port in automated work. Stop the child process after the check. Do not expose the mock listener beyond the intended test environment.

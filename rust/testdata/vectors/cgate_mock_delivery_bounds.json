@@ -1,0 +1,17 @@
+{
+  "schema": "cbus-owned-interaction-v1",
+  "attribution": "Modeled loopback resource and ordering contract; no native overflow or hardware acceptance",
+  "bounds": {"outbound_batches": 512, "outbound_wire_bytes": 33554432, "write_seconds": 10, "line_bytes": 1048576, "document_bytes": 16777216},
+  "overflow": {"outcome": "connection closes; pending command receipts unconfirmed", "count_reason": "outbound batch capacity exceeded", "byte_reason": "outbound byte capacity exceeded", "rollback": false, "automatic_replay": false},
+  "slow_count": {"payload_bytes": 32768, "commands": 1600},
+  "slow_bytes": {"payload_bytes": 921600, "commands": 96},
+  "continuous": {"commands": 800, "payload_bytes": 128, "poll_after": 20, "reply_seconds": 2},
+  "backlog": {"downloads": 24, "tail_command": "PROJECT NEW MUST_NOT_REPLAY", "tail_readback": "PROJECT USE MUST_NOT_REPLAY", "readback_status": 404},
+  "ordering": [
+    {"command": "PROJECT NEW ORDERED", "status": 200, "terminal": "200 OK.", "event_contains": "project ORDERED created"},
+    {"command": "DBCREATENET 11 Local Cni 127.0.0.1:1", "status": 200, "terminal": "200 OK", "event_contains": "net 11 created"},
+    {"command": "DBGETXML //ORDERED/11", "status": 344, "wire_statuses": [343, 347, 347, 344]},
+    {"command": "NOOP", "status": 200}
+  ],
+  "input": {"overlong_command": "400 C-Gate line exceeded configured limit", "overlong_document": "400 document exceeded configured limit", "truncated_document": "400 truncated here-document", "large_base64_bytes": 4194304}
+}

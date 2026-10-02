@@ -373,8 +373,8 @@ def test_public_neopro_cached_json_refuses_missing_primary_application_identity(
                           '--output', output], artifact_dir=tmp_path)
     assert code == 1
     assert result['error'] == {'type': 'ValueError', 'message': (
-        'NeoPro CSV requires an explicit native XML snapshot; '
-        'cached JSON cannot establish primary Application identity')}
+        'NeoPro cached v1 JSON cannot establish primary Application identity; '
+        'use cached v2 or an explicit native XML snapshot')}
     assert result['toolkit_database_csv_evidence']['output_create_attempted'] is False
     assert result['toolkit_database_csv_evidence']['network_io_attempted'] is False
     assert not output.exists()

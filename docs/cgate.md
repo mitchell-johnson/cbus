@@ -36,7 +36,15 @@ The TCP server shares model state across connections. Project selection remains 
 - Input lines are limited to 1 MiB.
 - Here-document bodies are limited to 16 MiB.
 - The library event queue defaults to 4,096 entries and emits an overflow marker when it fills.
-- TCP fanout channels are unbounded; a subscribed client that never reads can grow memory while other clients continue writing.
+- Each TCP peer admits at most 512 complete event/reply batches and 32 MiB of active/queued wire payload. An originating command's events and complete reply form one batch, so continuation rows and documents remain contiguous. Budget exhaustion or a ten-second batch write timeout closes that peer; unrelated clients continue. A command may already have executed when its receipt is lost, so reconnection does not authorize replay.
+
+These limits exclude allocator metadata, socket buffers, transient response
+formatting, the shared model and aggregate clients. Input reading retains at
+most the one MiB line limit plus one byte and drains oversized rows to their
+delimiter. The [delivery vector](../rust/testdata/vectors/cgate_mock_delivery_bounds.json)
+and `rust/cbus-cgate/tests/tcp_delivery_bounds.rs` cover controlled slow peers,
+framing, cancellation and no replay with owned loopback sockets. Native-server
+overflow semantics and hardware/load acceptance remain separate work.
 
 ## Programming and unit specifications
 

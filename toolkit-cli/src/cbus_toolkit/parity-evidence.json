@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "956604cb8c1f92bf247e6c18e4fde3c160e3b11e",
+      "source_revision": "7d57f35801581b85c804a17923569821746e44a8",
       "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/run_cgate_session_cmqttd_differential.py --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -64,6 +64,7 @@
           "rust/cbus-cgate/src/lib.rs",
           "rust/cbus-cgate/src/main.rs",
           "rust/cbus-cgate/src/manual.rs",
+          "rust/cbus-cgate/src/mock_delivery.rs",
           "rust/cbus-cgate/src/native_archive.rs",
           "rust/cbus-cgate/src/object_access.rs",
           "rust/cbus-cgate/src/object_access_table.rs",
@@ -216,6 +217,7 @@
           "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl",
           "rust/testdata/vectors/cgate_event_fanout.jsonl",
           "rust/testdata/vectors/cgate_final_authorization.jsonl",
+          "rust/testdata/vectors/cgate_mock_delivery_bounds.json",
           "rust/testdata/vectors/cgate_named_safe_graph.json",
           "rust/testdata/vectors/cgate_net_db_reconciliation.jsonl",
           "rust/testdata/vectors/cgate_net_save_db_materialization.jsonl",
@@ -234,7 +236,7 @@
           "toolkit-cli/tests/test_cgate_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "231bc0d8b4b63d55d243d6a163be341ca6a6a365c41f2411548e9ad43ac47fcb"
+        "fingerprint_sha256": "d18c94fd44c6d2dd84221521903a191e74b73f16809b05570fa6e4853aa6f3bf"
       },
       "report_verification": {
         "format": "cgate-session-differential-v2",
@@ -249,11 +251,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "3439970d14ac7fa708cf5c5e47c575825a8f575a23b77fc15154822ed721e165"
+          "sha256": "6bf1fed720611d49911052c9e5fb06ec628e9403fa9d96f0e6c3c0f90abab5e2"
         }
       ],
       "skips": [],
-      "record_sha256": "d2caca32250942796d9e09029b502d8158ea2ee93ee99af9fc25d580dea144c1"
+      "record_sha256": "cb561319cadd21909cd77d1660854ec56e76b2a70d896acd43f735172d4bb1c6"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -288,7 +290,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "956604cb8c1f92bf247e6c18e4fde3c160e3b11e",
+      "source_revision": "7d57f35801581b85c804a17923569821746e44a8",
       "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_tagged_session_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir research/runtime",
       "exit_code": 0,
       "invalidates_on": {
@@ -320,6 +322,7 @@
           "rust/cbus-cgate/src/lib.rs",
           "rust/cbus-cgate/src/main.rs",
           "rust/cbus-cgate/src/manual.rs",
+          "rust/cbus-cgate/src/mock_delivery.rs",
           "rust/cbus-cgate/src/native_archive.rs",
           "rust/cbus-cgate/src/object_access.rs",
           "rust/cbus-cgate/src/object_access_table.rs",
@@ -471,6 +474,7 @@
           "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl",
           "rust/testdata/vectors/cgate_event_fanout.jsonl",
           "rust/testdata/vectors/cgate_final_authorization.jsonl",
+          "rust/testdata/vectors/cgate_mock_delivery_bounds.json",
           "rust/testdata/vectors/cgate_named_safe_graph.json",
           "rust/testdata/vectors/cgate_net_db_reconciliation.jsonl",
           "rust/testdata/vectors/cgate_net_save_db_materialization.jsonl",
@@ -491,7 +495,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "661a500b2f1f098ba8963e30dd4f22a32067023395eb7073a6b8aa30726c5511"
+        "fingerprint_sha256": "359f178fb651874b8e75d2f91cae75c3d92b37307a8d9614da81eaed500579b4"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -506,11 +510,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "5300001c90965d819b3513742106ccdee2687a5ca2cc0f2cd1d583cda62ae581"
+          "sha256": "5c5564daceb31516cfcef14249c32d5b5bc50b660ef231056ddb9461c50dda35"
         }
       ],
       "skips": [],
-      "record_sha256": "13a0b4ddf140df8724a55a90483e4fb47192492a315374d2f97ba7957ccef0ea"
+      "record_sha256": "94737dd904ca87ee472ba9cf617c33dd4140333ac4ca3adbab3d5e13a1be6433"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -551,7 +555,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "956604cb8c1f92bf247e6c18e4fde3c160e3b11e",
+      "source_revision": "7d57f35801581b85c804a17923569821746e44a8",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -587,11 +591,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "44d82ce8ef1e34821e58e0833d6811cc0be171457ea2bfa1f3f75e923b00ecbb"
+          "sha256": "da7bc1214bac193f52077c5c968336950baa82bb61c1dc759444fc67b36d6b7d"
         }
       ],
       "skips": [],
-      "record_sha256": "3199ca8e63488318d4d4ecdc99698a17ad2f137715cc62885337b3a73e04efe0"
+      "record_sha256": "834f7d23c8a87efdf665b09a92c67635901a983ed7043ad232ce6ac6b13140e1"
     }
   ]
 }

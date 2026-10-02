@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import dataclasses
 import enum
 import json
@@ -2060,6 +2061,24 @@ def build_parser():
     p.add_argument("--exclusive-project", action="store_true", help="Assert exclusive ownership of every closed/idle project Network")
     p.add_argument("--expect-plan-sha256", type=_sha256_digest, help="Required on apply; exact digest returned by the reviewed preview")
     p.add_argument("--auth-token-file", type=Path, help="Private recovery LOGIN token; never included in operator evidence")
+    p = convops.add_parser("tweak-replace", help="Review or apply a backed-up Toolkit tweaker replacement, then save/reopen and verify")
+    p.add_argument("source", help="Canonical //PROJECT/NETWORK/p/UNIT source path")
+    p.add_argument("--source-type", required=True)
+    p.add_argument("--target-type", required=True)
+    p.add_argument("--source-spec", required=True)
+    p.add_argument("--target-spec", required=True)
+    p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
+    p.add_argument("--firmware", required=True)
+    p.add_argument("--catalog-number", required=True, help="Explicit catalogue for target PP defaults; separate from source catalogue metadata")
+    p.add_argument("--backup-project", required=True, help="New project backup bound to the reviewed plan")
+    p.add_argument("--journal", type=Path, help="New private attempt journal; required on apply and never overwritten")
+    p.add_argument("--apply", action="store_true", help="Replace once using the reviewed plan; default previews")
+    p.add_argument("--exclusive-project", action="store_true", help="Assert exclusive ownership of every closed/idle project Network")
+    p.add_argument("--expect-plan-sha256", type=_sha256_digest, help="Required on apply; exact digest returned by preview")
+    p.add_argument("--auth-token-file", type=Path, help="Private recovery LOGIN token; never included in evidence")
+    p = convops.add_parser("tweak-recover", help="Inspect a Toolkit tweaker replacement journal without replay or restore")
+    p.add_argument("--journal", type=Path, required=True)
+    p.add_argument("--auth-token-file", type=Path, help="Private recovery LOGIN token; never included in evidence")
     p = convops.add_parser("plan-move", help="Review one backed-up RELDN4 to RELDN4A database move")
     p.add_argument("source")
     p.add_argument("destination")
@@ -2857,9 +2876,16 @@ def _cgate(args):
     file_upload_plan = None
     barcode_plan = None
     tweaker_plan = None
+    tweaker_lifecycle_plan = None
     if args.action == "conversion" and args.remote_action == "tweak":
         from .toolkit_tweaker_workflow import prepare
         tweaker_plan = prepare(args)
+    if args.action == "conversion" and args.remote_action == "tweak-replace":
+        from .toolkit_tweaker_lifecycle import prepare
+        tweaker_lifecycle_plan = prepare(args)
+    if args.action == "conversion" and args.remote_action == "tweak-recover":
+        from .toolkit_tweaker_lifecycle import prepare_recovery
+        prepare_recovery(args)
     if args.action == "database" and args.remote_action == "barcode-add":
         from .barcode_database import prepare
         barcode_plan = prepare(args)
@@ -2887,6 +2913,10 @@ def _cgate(args):
     from .edlt_control_cli import connection_guard
     from .barcode_database import connection_guard as barcode_connection_guard
     from .toolkit_tweaker_workflow import connection_guard as tweaker_connection_guard
+    tweaker_lifecycle_guard = nullcontext()
+    if args.action == "conversion" and args.remote_action in ("tweak-replace", "tweak-recover"):
+        from .toolkit_tweaker_lifecycle import connection_guard as lifecycle_connection_guard
+        tweaker_lifecycle_guard = lifecycle_connection_guard(args)
     # Native C-Gate and cmqttd return the network document in one potentially
     # large 347 row after the short XML declaration. Leave room for the 4 MiB
     # document bound plus its status envelope.
@@ -2895,7 +2925,7 @@ def _cgate(args):
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
     connection_limits.update(wireless_limits)
-    with tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
+    with tweaker_lifecycle_guard, tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "file-upload":
             from .file_transfer import upload
@@ -3142,6 +3172,12 @@ def _cgate(args):
                     return {"type": "event-summary", "received": received, "events_lost": True}, 1
             return {"type": "event-summary", "received": received, "events_lost": client.events_lost}, int(client.events_lost)
         if args.action == "conversion":
+            if args.remote_action == "tweak-replace":
+                from .toolkit_tweaker_lifecycle import execute
+                return execute(tweaker_lifecycle_plan, client, args._toolkit_tweaker_lifecycle_evidence)
+            if args.remote_action == "tweak-recover":
+                from .toolkit_tweaker_lifecycle import recover
+                return recover(args, client), 0
             if args.remote_action == "tweak":
                 from .toolkit_tweaker_workflow import execute
                 return execute(tweaker_plan, client, args._toolkit_tweaker_evidence)
@@ -4467,6 +4503,9 @@ def main(argv=None):
         except BaseException as output_error:
             if args.area == "cgate" and args.action == "conversion" and args.remote_action == "tweak":
                 from .toolkit_tweaker_workflow import record_output_error
+                record_output_error(args, output_error)
+            if args.area == "cgate" and args.action == "conversion" and args.remote_action in ("tweak-replace", "tweak-recover"):
+                from .toolkit_tweaker_lifecycle import record_output_error
                 record_output_error(args, output_error)
             if args.area == "cgate" and args.action == "database" and args.remote_action == "barcode-add":
                 from .barcode_database import record_output_error

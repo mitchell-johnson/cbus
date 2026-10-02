@@ -1,0 +1,98 @@
+{
+  "format": "cbus-toolkit-tweaker-lifecycle-wire-v1",
+  "mode": "owned-modeled-public-cli",
+  "original_instruction_execution": false,
+  "full_replacement_parity": false,
+  "source_static_pins": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "convert_bytes_sha256": "2161e9fb86f6781a52e117b2c1822f2cedd64f07cbaccbdad5a6221bbd07d9a4"
+  },
+  "families": [
+    {
+      "id": "dimmer",
+      "source": "DIMDN8",
+      "target": "DIMDU4"
+    },
+    {
+      "id": "relay",
+      "source": "RELDN8",
+      "target": "RELDN12"
+    },
+    {
+      "id": "classic-key",
+      "source": "KEY4",
+      "target": "KEYC4"
+    },
+    {
+      "id": "coupler",
+      "source": "KEYBC2",
+      "target": "BCN2B"
+    },
+    {
+      "id": "input",
+      "source": "KEY1",
+      "target": "KEY2"
+    }
+  ],
+  "stage_address": {
+    "first": 1,
+    "last": 255,
+    "policy": "first free byte; all numeric aliases collide; ambiguity refuses before backup"
+  },
+  "metadata": {
+    "TagName": "source; empty -> NEWUNIT",
+    "UnitName": "source; empty -> ASCII uppercase/legal-name first8",
+    "Description": "source",
+    "SerialNumber": "source database branch",
+    "CatalogNumber": "explicit target default; source catalogue is not copied; original catalogue lookup remains separate"
+  },
+  "ordered_once": [
+    "PROJECT COPY WFTEST BACKUP",
+    "DBADDSAFE //WFTEST/11 Unit 1 Source & exact",
+    "DBDELETE //WFTEST/11/p/20",
+    "DBSET //WFTEST/11/p/1/Address 20",
+    "PROJECT SAVE WFTEST",
+    "PROJECT CLOSE WFTEST",
+    "PROJECT LOAD WFTEST"
+  ],
+  "ordered_statuses": [
+    200,
+    301,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "lost_receipt_verbs": [
+    "PROJECT COPY",
+    "DBADDSAFE",
+    "PP SET",
+    "PP SAVE_TO_SOURCE",
+    "DBDELETE",
+    "DBSET //WFTEST/11/p/1/Address",
+    "PROJECT SAVE",
+    "PROJECT CLOSE",
+    "PROJECT LOAD"
+  ],
+  "recovery": {
+    "database_writes": 0,
+    "replay_authorized": false,
+    "automatic_rollback": false,
+    "fresh_xml": true,
+    "fresh_pp_when_final_matches": true,
+    "persistence_requires_complete_confirmed_journal": true,
+    "persistent_project_operations": 0,
+    "permitted_project_use": "at most one exact bound project selection for temporary PP read"
+  },
+  "limits": [
+    "123 currently admitted tweaker pairs; profile/firmware/unsupported registration gates unchanged",
+    "Backup and save-close-load verification are explicit operator protection; original GUI order is not claimed",
+    "Original exception-path target deletion and full GUI/physical/history acceptance remain open",
+    "Explicit target catalogue does not reproduce original FindUnitByCodeAndVersion software selection",
+    "Blank UnitName with non-ASCII TagName is conservatively refused before creation",
+    "Structural XML comparison omits whitespace-only child text including opaque/xml:space-preserve content",
+    "No associated Level #73/#74 route changes or retries"
+  ]
+}

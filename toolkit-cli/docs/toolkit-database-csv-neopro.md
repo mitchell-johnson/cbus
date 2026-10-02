@@ -50,12 +50,13 @@ including an all-secondary mask and separate Group 255 objects in both
 Applications. The inherited cached projection retains its two ordered Area
 observations even when the Area column is omitted.
 
-Public `--cached-projection` JSON remains refused for these three types. Its
-current schema contains application tags but cannot establish primary
-Application identity for the Area lookup. Use an explicit native XML snapshot.
-Extending the cached identity contract and accepting exact provider/Area
-outcomes remain concrete work in #56; the internal cache built from validated
-native XML continues to support the new projection.
+Public `--cached-projection` now admits these three types through the strict
+[cached v2 identity contract](toolkit-database-csv-neopro-cached.md). It names
+primary/secondary Applications, their Group membership and the block mask;
+Area lookup uses primary membership rather than cache order. The legacy v1
+JSON remains refused for NeoPro because its tags cannot establish that identity.
+Existing families retain their v1 contract. The native adapter derives the same
+explicit context from the selected XML Applications.
 
 The existing report serializer keeps column order, quoting and CRLF output.
 Network selection sorts Units by numeric address; project selection retains

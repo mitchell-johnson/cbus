@@ -115,6 +115,23 @@ check-cgate-interop: compile
 		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-save-mock]' \
 		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_lost_receipt_retains_scaffold_without_replay[lost-set-mock]' \
 		'tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_declared_assignment_failure_keeps_reviewed_plan[mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[dimmer-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[relay-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[classic-key-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[coupler-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[input-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[backup-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[add-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[set-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[pp-save-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[delete-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[readdress-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[project-save-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[close-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[load-mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_stale_plan_and_occupied_backup_no_write[mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_declared_assignment_refusal_preserves_source[mock]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_malformed_recovery_and_apply_guards_never_connect' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -151,6 +168,23 @@ check-cmqtt-interop: compile
 		tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_authentication_refuses_before_planning_or_writes \
 		tests/test_cgate_toolkit_tweaker_interop.py::test_public_toolkit_tweaker_local_guards_never_connect \
 		tests/test_cgate_barcode_database_interop.py::test_public_barcode_owned_login_denial_and_positive_apply \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[dimmer-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[relay-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[classic-key-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[coupler-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_replace_full_family_lifecycle[input-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[backup-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[add-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[set-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[pp-save-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[delete-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[readdress-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[project-save-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[close-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_lost_receipt_never_replays[load-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_stale_plan_and_occupied_backup_no_write[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_declared_assignment_refusal_preserves_source[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_authentication_redacts_and_stops_before_write' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop
