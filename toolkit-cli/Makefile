@@ -203,6 +203,26 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_lost_save_success_is_not_replayed[mock]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-create-mock]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-replace-mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_all_literals_and_ordered_selection[mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_lost_snapshot_is_terminal_without_replay[mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[bad-profile-mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-application-mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-secondary-input-group-mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-unused-temperature-group-mock]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[bad-fan-route-mock]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_snapshot_and_literal_bodies[mock]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_absent_network_is_atomic[mock]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_lost_snapshot_has_no_output_or_retry[mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[application-description-group-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[cancel-repeated-primary-secondary-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-application-group-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-cancelled-application-fresh-primary-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-initial-scene-before-action-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-application-scene-corridor-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[preceding-and-future-owner-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[expanded-reserved-confirmed-mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_lost_save_is_not_replayed[mock]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_add_guards_refuse_without_persistent_send[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -328,6 +348,26 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_parent_add_dialog_interop.py::test_public_parent_add_lost_save_success_is_not_replayed[daemon]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-create-daemon]' \
 		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keybir2-literal-keyb2-catalogue-alias-replace-daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_all_literals_and_ordered_selection[daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_lost_snapshot_is_terminal_without_replay[daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[bad-profile-daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-application-daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-secondary-input-group-daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[missing-unused-temperature-group-daemon]' \
+		'tests/test_cgate_csv_last_profiles_interop.py::test_public_csv_last_profiles_refusal_is_atomic[bad-fan-route-daemon]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_snapshot_and_literal_bodies[daemon]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_absent_network_is_atomic[daemon]' \
+		'tests/test_cgate_project_documentation_interop.py::test_public_database_document_lost_snapshot_has_no_output_or_retry[daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[application-description-group-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[cancel-repeated-primary-secondary-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-application-group-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-cancelled-application-fresh-primary-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-initial-scene-before-action-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[reset-application-scene-corridor-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[preceding-and-future-owner-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_complete_history[expanded-reserved-confirmed-daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_reset_add_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_edlt_application_reset_add_interop.py::test_public_application_add_guards_refuse_without_persistent_send[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

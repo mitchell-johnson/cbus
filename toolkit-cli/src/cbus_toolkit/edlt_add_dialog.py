@@ -41,14 +41,8 @@ TARGETS = MappingProxyType({
 })
 # Source-evidenced combos that this operation deliberately refuses.
 REFUSED_TARGETS = MappingProxyType({
-    'PrimaryApplication': (
-        'the original application Add passes the low byte of the hosting '
-        'TfrmKEYGL5 pointer as the dialog maximum address, so its candidate '
-        'range is not deterministic'),
-    'SecondaryApplication': (
-        'the original application Add passes the low byte of the hosting '
-        'TfrmKEYGL5 pointer as the dialog maximum address, so its candidate '
-        'range is not deterministic'),
+    'PrimaryApplication': 'use add-application-dialog with explicit creation_preferences',
+    'SecondaryApplication': 'use add-application-dialog with explicit creation_preferences',
     'CorridorLinkingLinkGroup': (
         'Corridor consumes the complete ordered group list, and DBGETXML does '
         'not establish where a new group appears in that list'),

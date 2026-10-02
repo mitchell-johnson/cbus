@@ -178,7 +178,16 @@ class NativeDatabase:
                 raise RuntimeError(f"Unit initialization failed: {error}; unable to remove new database unit {path}: {cleanup}") from error
             raise
 
-    def add(self, parent, kind, address, name):
+    def add(self, parent, kind, address, name, *, pre_initializer=None):
+        """Add metadata, optionally admitting its receipt before initialization.
+
+        A guarded workflow can reject an unbound issued OID before Level
+        initialization performs any identity read, value write, or cleanup.
+        The callback owns receipt admission; ordinary callers keep the existing
+        initialization behavior.
+        """
+        if pre_initializer is not None and not callable(pre_initializer):
+            raise ValueError("Metadata receipt admission must be callable")
         if kind.lower() not in ("network", "application", "group", "unit", "level", "netvar"):
             raise ValueError("Expected network, application, group, unit, level or netvar")
         name = _tail(name)
@@ -186,6 +195,8 @@ class NativeDatabase:
             raise ValueError("Tag name cannot be blank")
         element = "NetVar" if kind.lower() == "netvar" else kind.title()
         response = _command(self.client, f"DBADDSAFE {_token(parent)} {element} {_address(address)} {name}")
+        if pre_initializer is not None:
+            pre_initializer(response)
         if kind.lower() == "level":
             self._initialize_level(response, address)
         return response

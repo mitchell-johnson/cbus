@@ -440,6 +440,17 @@ byte/visual parity and printing are unassessed. See
 cbus-toolkit project document house.cbz --output house.html
 ```
 
+For a loaded cmqttd/C-Gate database, `cgate database-document --project //PROJECT`
+reads one fresh complete XML snapshot and creates the same exclusive HTML file.
+It includes supported light-level, WHAA audio and DALI gateway tables. This
+documents saved programming; original live programming loading, complete-page
+byte/visual comparisons and printing remain open. Read the
+[snapshot workflow](docs/native-project-documentation.md).
+
+```sh
+cbus-toolkit cgate --host HOST database-document --project //PROJECT --output database.html
+```
+
 ## C-Gate and PCI
 
 Outgoing CAL routes can also be encoded and inspected offline:
@@ -2557,10 +2568,14 @@ census is in [toolkit-surface.md](docs/toolkit-surface.md), and
 [capabilities.json](src/cbus_toolkit/capabilities.json) is the completion gate's
 machine-readable input.
 
-Current source profiles also admit214/262 CSV unit types. Read
-[CSV completion profiles](docs/database-csv-completion.md) for authoritative
+Current source profiles admit all 262 statically registered CSV unit types
+and 424/425 registration rows. The duplicate KEYGL5 class without an exact
+agent remains refused; this is type admission under explicit profiles, not
+all firmware/state combinations. Read
+[final CSV profiles](docs/database-csv-last-profiles.md) for authoritative
 application identities, firmware bounds and atomic output refusal, and
 [eDLT parent Add histories](docs/edlt-parent-add-dialog.md) for ordered Corridor,
-Activation and SceneManager creation through one save. Full Toolkit parity
+Activation, Application and SceneManager creation, including operation-1 Reset,
+through one save. Full Toolkit parity
 remains unfinished; catalogue admission is separate from original and hardware
 acceptance.

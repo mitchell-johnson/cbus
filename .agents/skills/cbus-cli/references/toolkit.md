@@ -573,7 +573,7 @@ identities, complete Group membership and mask, validating each block before
 projection. This caller-supplied cache is not a fresh live read. The
 then-admitted older families retained v1; NeoPro v1 remains refused; read
 `toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. That checkpoint registry admitted 35 types; the later historical family registry admitted 126/262 with v2/v3 inputs described in `toolkit-cli/docs/database-csv-source-families.md`.
-The current completion registry admits 214/262 types; its additional source
+The historical completion registry admitted 214/262 types; its additional source
 profiles use cached v4 and require both authoritative Application objects.
 Base formatting defaults a missing secondary address to255, which requires a
 real existing Application255 in a read-only native snapshot. Read
@@ -764,10 +764,47 @@ complete installed-output tails, even beyond visible report columns. The
 remaining conversion/CSV profiles, original GUI/cold native family acceptance
 and physical behavior remain open.
 
-The current batch adds 45 conversion directions (288/292 total) and 88 CSV
+An earlier batch added 45 conversion directions (288/292 total) and 88 CSV
 types (214/262 total), with exact firmware, loader and consumed-state boundaries
 in `toolkit-cli/docs/toolkit-remaining-conversions.md` and
 `toolkit-cli/docs/database-csv-completion.md`. These are static/synthetic and
 owned-service software scopes. They do not promote historical receipts to the
 current source or establish new original GUI, cold native family, VM or hardware
 acceptance. Remaining refused registrations and full Toolkit parity stay open.
+
+
+## Final CSV admission and database documentation
+
+The maintained CSV registry admits all 262 statically registered types and
+424/425 registration rows under explicit firmware, exact-class and consumed-PP
+profiles. The duplicate KEYGL5/TKEYGL5 row has no exact agent; its separate
+5.5.00/5055EDL profile remains supported. Read
+`toolkit-cli/docs/database-csv-last-profiles.md` for temperature, IOPE, fan,
+wireless and infrastructure Application255 dependencies. Complete authoritative
+Application/Group identities remain required; cached v4 is resolved manager
+state, not physical programming. Type admission is not full functional parity.
+
+Use `cbus-toolkit cgate database-document --project //PROJECT --output NEW.html`
+for a loaded cmqttd/C-Gate database. It sends one complete343/347/344 DBGETXML,
+binds Project.Address independently of TagName and exclusively writes HTML.
+`--network N`, `--generated-at ISO` and `--catalog FILE` are optional. It reads
+saved programming only: no OPEN, scan, physical programming LOAD or project
+SAVE. Interrupted reads never retry or create output. Saved legacy/native
+commands share the renderer, including bounded light-level, WHAA and DALI
+bodies. Inspect unresolved markers and the false original-page/physical flags.
+Read `toolkit-cli/docs/native-project-documentation.md` and
+`toolkit-cli/docs/project-documentation-remaining.md`.
+
+For ordered eDLT `add-application-dialog`, require explicit
+`creation_preferences` with Boolean `allow_user_defined` and `allow_legacy`.
+The original owner/eDLT overload supplies the catalogue, not caller pointer
+bounds. Inspect the offered addresses, locked standard names, native validation
+order and reserved confirmation before apply. Description is a separate
+DBSETSAFE after issued creation. Nonempty values require exact issued-OID scalar
+342 before PP save and after project reload; blanks make no assignment or
+null-readback claim. Description XML parity remains open in issue75. The parent
+checks issued OIDs against the observed complete Project snapshots before any
+initializer or inverse deletion. Operation-1 Reset plus Add binds fresh
+defaults; initial scene/proximity getters retain their earlier allocations.
+One parent PP save still crosses a separate target project save. Never replay
+an uncertain save. See `toolkit-cli/docs/edlt-application-reset-add.md`.

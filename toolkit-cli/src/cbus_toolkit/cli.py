@@ -1587,6 +1587,10 @@ def build_parser():
     database_csv_live_parser = cgops.add_parser(
         "database-csv", help="Export admitted units from a read-only live C-Gate database snapshot")
     database_csv_live_options(database_csv_live_parser)
+    from .native_project_documentation import options as database_document_options
+    database_document_parser = cgops.add_parser(
+        "database-document", help="Write Toolkit HTML from one read-only C-Gate project snapshot")
+    database_document_options(database_document_parser)
     from .edlt_global_cli import options as global_options
     global_parser = cgops.add_parser("edlt-global", help="Copy selected eDLT categories to existing closed database units")
     global_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
@@ -2837,6 +2841,9 @@ def _cgate(args):
     if args.action == "database-csv":
         from .toolkit_database_csv_cli import live as database_csv_live
         return database_csv_live(args, CGateClient, context)
+    if args.action == "database-document":
+        from .native_project_documentation import live as database_document_live
+        return database_document_live(args, CGateClient, context)
     if args.action == "edlt-scene-broadcast":
         from .edlt_scene_live_cli import broadcast
         return broadcast(args, CGateClient, context)

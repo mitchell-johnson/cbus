@@ -17,10 +17,11 @@ edlt-scene-manager --auto-metadata` commands:
 Each operation requires `scene` 1..8. Optional `address` selects a free 0..254
 address, optional `name` replaces the seeded text, and `cancel:true` records a
 cancelled outcome without adding the provisional object or changing its
-binding. Omit `cancel` or use false to accept. Application Add remains refused:
-the retained original maximum depends on the low byte of the hosting form
-pointer, so a deterministic candidate range is not established. Corridor Add
-and the separate Activation Action Add are outside this addition.
+binding. Omit `cancel` or use false to accept. Application Add belongs to the
+ordered parent `add-application-dialog` workflow, which uses the corrected
+owner/eDLT overload; see [Application Add and Reset/Add](edlt-application-reset-add.md).
+Corridor and Activation Add also belong to that parent workflow rather than
+these standalone SceneManager operations.
 
 Use `--project-xml` and an exact `--unit` for offline commands. A supplied
 manual cache cannot authorize object creation. Parent transactions may put

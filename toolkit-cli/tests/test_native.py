@@ -94,6 +94,62 @@ class NativeGrammarTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "did not complete"):
             NativeDatabase(client).set("//TEST/254/TagName", "Example")
 
+    def test_add_receipt_rejection_precedes_level_initialization_and_cleanup(self):
+        from cbus_toolkit.cgate import CGateResponse
+
+        class ReceiptClient(CaptureClient):
+            def command(self, command):
+                self.commands.append(command)
+                return CGateResponse(("301 OID=11111111-1111-4111-8111-111111111111",),
+                                     "301 OID=11111111-1111-4111-8111-111111111111", 301)
+
+        client = ReceiptClient()
+        def reject(receipt):
+            self.assertEqual(receipt.code, 301)
+            self.assertEqual(client.commands, ["DBADDSAFE //TEST/254/202/7 Level 1 Action"])
+            raise RuntimeError("Existing OID")
+
+        with self.assertRaisesRegex(RuntimeError, "Existing OID"):
+            NativeDatabase(client).add("//TEST/254/202/7", "level", 1, "Action",
+                                       pre_initializer=reject)
+        self.assertEqual(client.commands, ["DBADDSAFE //TEST/254/202/7 Level 1 Action"])
+        client.commands.clear()
+        with self.assertRaisesRegex(ValueError, "must be callable"):
+            NativeDatabase(client).add("//TEST/254/202/7", "level", 1, "Action",
+                                       pre_initializer="invalid")
+        self.assertEqual(client.commands, [])
+
+    def test_accepted_add_hook_and_default_call_keep_level_initialization_order(self):
+        from cbus_toolkit.cgate import CGateResponse
+        identity = "11111111-1111-4111-8111-111111111111"
+        expected = ["DBADDSAFE //TEST/254/202/7 Level 1 Action",
+                    "DBGET !" + identity + "/OID",
+                    "DBSETSAFE !" + identity + "/Value 1"]
+
+        class LevelClient(CaptureClient):
+            def command(self, command):
+                self.commands.append(command)
+                if command.startswith("DBADDSAFE "):
+                    line, code = "301 OID=" + identity, 301
+                elif command.startswith("DBGET "):
+                    line, code = "342 !" + identity + "/OID=" + identity, 342
+                else:
+                    line, code = "200 OK", 200
+                return CGateResponse((line,), line, code)
+
+        for guarded in (False, True):
+            with self.subTest(guarded=guarded):
+                client = LevelClient()
+                observed = []
+                def admit(receipt):
+                    self.assertEqual(client.commands, expected[:1])
+                    observed.append(receipt)
+                kwargs = {"pre_initializer": admit} if guarded else {}
+                receipt = NativeDatabase(client).add("//TEST/254/202/7", "level", 1,
+                                                     "Action", **kwargs)
+                self.assertEqual(client.commands, expected)
+                self.assertEqual(observed, [receipt] if guarded else [])
+
 
 @unittest.skipUnless(os.environ.get("CBUS_CGATE_TEST_HOST"), "set CBUS_CGATE_TEST_HOST for disposable real-server acceptance")
 class NativeOracleTests(unittest.TestCase):

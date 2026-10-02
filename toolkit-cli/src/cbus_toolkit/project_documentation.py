@@ -297,6 +297,10 @@ RECOVERED_BODIES = {
     "PIR": "partial",
     "ST7PIRSensor": "partial",
     "BytecraftDimmer": "partial",  # Old DIMPR12 explicit records; L1/loader state remain open.
+    "LightLevelSensor": "recovered",  # Old SENLL/PE_CELL consumed PP and groups required.
+    "ST7LightLevelSensor": "partial",  # Nonzero or explicitly idle zero broadcast timer.
+    "WHAA": "recovered",
+    "DALI2B": "recovered",
 }
 PARITY = {
     "model_basis": "static_disassembly_of_original_toolkit",
@@ -760,11 +764,15 @@ def document_unit(out: _Writer, network: Network, unit: Unit, model: ProjectMode
     from .project_documentation_temperature import document_temperature
     from .project_documentation_pir import document_pir
     from .project_documentation_bytecraft import document_bytecraft
+    from .project_documentation_light_level import document_light_level
+    from .project_documentation_gateways import document_dali, document_whaa
     documentors = {**device_documentors, **neo_documentors, "DLT": document_dlt,
                    "CustomSceneController": document_scene_controller, "FanController": document_fan,
                    **{name: document_temperature for name in ("SENTEMP", "SENTEMPPro", "DigitalTemperatureSensor")},
                    "PIR": document_pir, "ST7PIRSensor": document_pir,
-                   "BytecraftDimmer": document_bytecraft}
+                   "BytecraftDimmer": document_bytecraft,
+                   "LightLevelSensor": document_light_level, "ST7LightLevelSensor": document_light_level,
+                   "DALI2B": document_dali, "WHAA": document_whaa}
     out.add(f'<h3><a name="{network.address}_unit_{unit.address}">{unit.name} - {unit.unit_type}</a>'
             ' [ <a href="#contents">top</a> ]</h3>')
     record = {"network": network.address, "unit": unit.address, "unit_type": unit.unit_type}

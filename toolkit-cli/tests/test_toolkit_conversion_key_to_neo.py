@@ -301,12 +301,18 @@ class KeyToNeoGuardTests(unittest.TestCase):
 
     def test_recovered_key_rules_do_not_broaden_other_hooks_or_unregistered_pairs(self):
         for source_type, target_type in (
-            ('KEYIR1', 'KEY2'), ('KEYC1', 'KEY1'), ('KEYM6', 'KEYDL4'),
-            ('KEYBIR2', 'KEYDL4'), ('SENPIRSS', 'SENPIRIA'), ('PC_DAL2', 'PC_DAL2B'),
+            ('KEYIR1', 'KEY2'), ('KEYM6', 'KEYDL4'),
             ('KEY1', 'KEYCIR1'), ('KEYIR1', 'KEYC1'), ('KEY1', 'KEYM6'),
         ):
             with self.subTest(source=source_type, target=target_type):
                 with self.assertRaises(tweakers.TweakerRefused):
+                    tweakers.ToolkitTweakerConversion(NoIO(), source_type, None, target_type, None)
+
+    def test_newly_admitted_other_hooks_still_require_exact_specs_before_io(self):
+        for source_type, target_type in (('KEYC1', 'KEY1'), ('KEYBIR2', 'KEYDL4'),
+                                         ('SENPIRSS', 'SENPIRIA'), ('PC_DAL2', 'PC_DAL2B')):
+            with self.subTest(source=source_type, target=target_type):
+                with self.assertRaisesRegex(tweakers.TweakerConversionError, 'source-pinned specification and firmware'):
                     tweakers.ToolkitTweakerConversion(NoIO(), source_type, None, target_type, None)
 
     def test_pure_plan_requires_the_exact_fresh_target_firmware(self):

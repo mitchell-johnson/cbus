@@ -10914,11 +10914,14 @@ impl Server {
                 );
             }
         }
-        // Imported Application/Group objects have both a canonical path and
-        // a stable OID. Keep their mutable TagName in the same project-scoped
-        // record whichever address form the caller used. An unscoped
-        // `!oid/TagName` db_fields alias could leak across project copies.
-        if let Some((object_address, "TagName")) = words[1].rsplit_once('/') {
+        // Application/Group objects have both a canonical path and a stable
+        // OID. Keep TagName and Description in the same project-scoped record
+        // whichever address form the caller used, so issued-OID readback and
+        // saved project images see the acknowledged value. This scalar field
+        // store does not widen the separately bounded XML representation.
+        if let Some((object_address, field @ ("TagName" | "Description"))) =
+            words[1].rsplit_once('/')
+        {
             if let Some(project) = self.current.as_deref() {
                 let key = if let Some(oid) = object_address.strip_prefix('!') {
                     self.pending_object_key(project, oid)
@@ -10932,11 +10935,15 @@ impl Server {
                 };
                 if let Some(key) = key {
                     if let Some(object) = self.db_pending.get_mut(&key) {
-                        if let Some(path) = object.path.as_deref() {
-                            self.db_fields
-                                .insert(format!("{path}/TagName"), value.clone());
-                            object.fields.insert("TagName".to_string(), value);
-                            return ok(tag, vec![], "200 OK");
+                        if field == "TagName"
+                            || matches!(object.element.as_str(), "Application" | "Group")
+                        {
+                            if let Some(path) = object.path.as_deref() {
+                                self.db_fields
+                                    .insert(format!("{path}/{field}"), value.clone());
+                                object.fields.insert(field.to_string(), value);
+                                return ok(tag, vec![], "200 OK");
+                            }
                         }
                     }
                 }

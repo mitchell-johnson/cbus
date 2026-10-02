@@ -120,9 +120,10 @@ Address. Accepted names must survive the current database line parser and XML
 readback: literal `#`, repeated spaces, non-ASCII whitespace and U+FFFE/U+FFFF
 are refused before backup or mutation. These are declared software input bounds,
 not recovered original refusal rules. Manual caller caches cannot authorize
-these creations. Application Add remains refused because its recovered maximum
-is nondeterministic; the separate Activation Action and Corridor Add paths are
-outside this addition. See [the Add-dialog contract](edlt-scene-add-dialog.md)
+these creations. Application Add, Activation Action and Corridor Add belong
+to the [ordered parent workflow](edlt-application-reset-add.md), outside this
+standalone SceneManager addition. The Application overload uses the owner's
+eDLT catalogue rather than pointer bounds. See [the Add-dialog contract](edlt-scene-add-dialog.md)
 for original seed/address-change and entered-name versus trimmed-name rules.
 
 This automatic creation boundary applies only to Trigger Control objects

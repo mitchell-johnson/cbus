@@ -26,6 +26,8 @@ import struct
 import capstone
 import pefile
 
+from cbus_toolkit.toolkit_database_csv_last_profiles import LAST_CLASSES, last_profile
+
 
 EXE_SHA256 = '9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab'
 MAP_SHA256 = 'f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb'
@@ -141,6 +143,9 @@ FAMILY_MODELS.update({agent: 'Source-pinned initialized block/channel count and 
 FAMILY_MODELS.update({agent: 'Exact fresh base Unit lifecycle and base group loader; '
     'empty Unit group manager and unavailable Area; two resolved base-formatted Application objects.'
     for agent in _SOURCE_GENERIC_CLASSES.values()})
+FAMILY_MODELS.update({row['agent']: 'Recovered fresh constructor/load lifecycle and exact final '
+    'report-manager order; resolved Application dependencies; independent Area provider where available.'
+    for row in LAST_CLASSES.values()})
 
 
 def _sha(data):
@@ -315,6 +320,11 @@ def _source_bindings(image, unit_reference, agent_reference):
         'primary_provider': 'CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject',
         'secondary_provider': 'CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object',
     }
+    last = LAST_CLASSES.get(image.class_name(unit_reference))
+    if last is not None:
+        formatter = last.get('formatter', 'TCBusUnitCGateAgent.FormatCgApplication')
+        expected['format_application'] = next(name for name in image.by_name
+                                              if name.endswith('.' + formatter))
     if {key: row['symbol'] for key, row in result['application'].items()} != expected:
         raise ValueError('Source completion Application provider binding changed')
     if image.class_name(unit_reference) in _SOURCE_GENERIC_CLASSES and {
@@ -323,7 +333,8 @@ def _source_bindings(image, unit_reference, agent_reference):
             'internal_create': 'CIS_TCommonCBus.TCBUSUnit.InternalCreate'}:
         raise ValueError('Generic completion requires the exact base Unit lifecycle')
     agent = image.class_name(agent_reference)
-    if _SOURCE_FAMILY_EXPECTATIONS[agent][0] == 'TCoreKeyInputCGateAgent.LoadGroups':
+    if (_SOURCE_FAMILY_EXPECTATIONS.get(agent, (None,))[0] ==
+            'TCoreKeyInputCGateAgent.LoadGroups'):
         start = image.pointer(image.pointer(unit_reference) + 0x16C)
         end = image.starts[bisect.bisect_right(image.starts, start)]
         code = image.raw(start, end - start)
@@ -351,7 +362,14 @@ def _decision(row, admitted):
     points = [point for point in admitted.get((row['unit_type'].upper(), klass), ())
               if firmware_in(point, row['firmware_min'], row['firmware_max'])]
     if points:
-        if _SOURCE_GENERIC_CLASSES.get(klass) == agent:
+        last = last_profile(klass, agent)
+        if last is not None:
+            parameter = last['group_parameter']
+            model = (f'Exact source {last["loader"]} final report manager; '
+                     f'parameters {parameter!r}; initialized maximum {last["blocks"]}; '
+                     f'primary default {last["application_default"]}, secondary255; '
+                     f'Area provider {last["has_area"]}; both resolved Application objects required.')
+        elif _SOURCE_GENERIC_CLASSES.get(klass) == agent:
             model = 'Fresh base Unit Init/InternalCreate and base AgentLoad/LoadGroups; no Unit group associations; base formatting defaults primary56/secondary255; both Application objects required.'
         elif agent == RELAY_AGENT and row['unit_type'].upper() == 'RELAY4':
             model = ADMITTED_MODELS[klass]
@@ -446,7 +464,8 @@ def source_registry(exe_path, map_path, admitted_profiles):
             result['report_slots']['visible_groups'] = visible
         result.update(_decision(result, admitted))
         registrations.append(result)
-        if result['admitted'] and (agent or (None,))[0] in _SOURCE_FAMILY_EXPECTATIONS:
+        if result['admitted'] and ((agent or (None,))[0] in _SOURCE_FAMILY_EXPECTATIONS
+                                  or last_profile(klass, (agent or (None,))[0]) is not None):
             source_bindings[klass] = _source_bindings(image, row['class_reference'], agent[1])
 
     for kind, firmware, klass in admitted_profiles:
@@ -461,6 +480,17 @@ def source_registry(exe_path, map_path, admitted_profiles):
     by_agent = Counter(row['agent'] for row in registrations if not row['admitted'])
     family_rows = [row for row in registrations if row['agent'] in FAMILY_MODELS]
     for row in family_rows:
+        last = last_profile(row['class'], row['agent'])
+        if last is not None:
+            area = ('TIOPEUnit.GetAreaIfAvailable' if row['agent'] == 'TIOPECGateAgent' else
+                    'TGOCUnit.GetAreaIfAvailable' if row['class'] in ('TDMXDO12', 'TDIMPR12L1') else
+                    'TCBusInputUnit.GetAreaIfAvailable' if last['has_area'] else
+                    'TCBUSUnit.GetAreaIfAvailable')
+            if (row['agent_methods']['load_groups'] != last['loader']
+                    or row['report_slots']['interaction'] != 'TCBUSUnit.IsInteractionGroup'
+                    or row['report_slots']['area'] != area):
+                raise ValueError('Final source loader/report binding changed for ' + row['class'])
+            continue
         if row['agent'] in _SOURCE_FAMILY_EXPECTATIONS:
             loader, area, interaction = _SOURCE_FAMILY_EXPECTATIONS[row['agent']]
             if (row['agent_methods']['load_groups'], row['report_slots']['area'],

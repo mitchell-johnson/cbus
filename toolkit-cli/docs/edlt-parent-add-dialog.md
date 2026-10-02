@@ -1,7 +1,8 @@
-# Corridor and Activation Add dialogs in one eDLT parent save
+# Application, Corridor and Activation Add in one eDLT parent save
 
 The automatic KEYGL5 / 5055EDL firmware 5.5.00 parent transaction accepts
-Corridor Group Add, Activation Group Add and Activation Action Add histories.
+Application Add, Corridor Group Add, Activation Group Add and Activation
+Action Add histories, including operation-1 Reset composition.
 It models accepted and cancelled dialog outcomes from pinned Toolkit 1.18.0
 sources. It creates the accepted database metadata and stages all supported
 parent controls through one PP SAVE and one target PROJECT SAVE.
@@ -129,10 +130,13 @@ code or executable bytes. The independent pure vector is
 mock/daemon journeys do not execute the original forms, render their controls,
 observe a physical wake event or establish full Toolkit parity.
 
-Application Add remains unresolved because its native dialog maximum depends
-on the hosting form pointer's low byte. Static-text/language Add and a
-Reset-fresh Add binding history remain outside this new contract; retained
-pre-Reset inventories cannot represent the fresh Reset graph. A previous
+Application Add uses the recovered owner/eDLT overload and explicit creation
+preferences; the earlier pointer-limit premise confused it with the separate
+MinMax overload. See [Application Add and Reset/Add](edlt-application-reset-add.md)
+for its address, name, confirmation and project-wide duplicate rules. Reset
+must be first and must satisfy the existing exact 874-parameter profile and
+supported control-binding variant. Later Add sees the issued fresh Reset
+graph. Static-text/language Add remains outside this contract. A previous
 Toolkit process that declined auto-add is also unmodeled: exact getter
 creation uses the source model's fresh `bAdd=true` default. Image-dependent
 metadata still requires established project/DLTP facts.

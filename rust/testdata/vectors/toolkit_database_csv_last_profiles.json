@@ -1,0 +1,1951 @@
+{
+  "format": "cbus-toolkit-database-csv-last-profiles-v1",
+  "original_execution": false,
+  "columns": [
+    "address",
+    "part_name",
+    "tag_name",
+    "unit_type",
+    "catalog",
+    "serial",
+    "firmware",
+    "primary",
+    "secondary",
+    "area",
+    "group_1",
+    "group_2",
+    "group_3",
+    "group_4",
+    "group_5",
+    "group_6",
+    "group_7",
+    "group_8",
+    "group_9",
+    "group_10",
+    "group_11",
+    "group_12",
+    "group_13",
+    "group_14",
+    "group_15",
+    "group_16"
+  ],
+  "source_evidence": {
+    "original_inputs": {
+      "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+      "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+    },
+    "registry_sha256": "b3976477d5eb6ff48f8a2c5238d0ad94ae9b85ce70417a6cc7bbea2f039a82bf",
+    "source_proof_sha256": "3f7286b408e8ec8f040fda4964b925b5dfefb92058adb8e76f9dedd796424bc7",
+    "historical_registry_sha256": "2be9ac2029c7e4bb0a541e3b4ee97446e00c1715e47fdc7ebdf78722203f5575"
+  },
+  "fixture": {
+    "xml": "<Installation DBVersion=\"2.3\"><Project><OID>90000000-0000-0000-0000-000000000001</OID><Address>LASTCSV</Address><TagName>Invented final CSV source profiles</TagName><Network><OID>90000000-0000-0000-0000-000000000002</OID><Address>254</Address><NetworkNumber>254</NetworkNumber><TagName>Invented network</TagName><InterfaceType>CNI</InterfaceType><InterfaceAddress>127.0.0.1:0</InterfaceAddress><Application><OID>90000000-0000-0000-0001-000000000056</OID><Address>56</Address><TagName>Primary</TagName><Group><OID>90000000-0000-0056-0002-000000000001</OID><Address>1</Address><TagName>P01</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000002</OID><Address>2</Address><TagName>P02</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000003</OID><Address>3</Address><TagName>P03</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000004</OID><Address>4</Address><TagName>P04</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000005</OID><Address>5</Address><TagName>P05</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000006</OID><Address>6</Address><TagName>P06</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000007</OID><Address>7</Address><TagName>P07</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000008</OID><Address>8</Address><TagName>P08</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000009</OID><Address>9</Address><TagName>P09</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000010</OID><Address>10</Address><TagName>P10</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000011</OID><Address>11</Address><TagName>P11</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000012</OID><Address>12</Address><TagName>P12</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000013</OID><Address>13</Address><TagName>P13</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000014</OID><Address>14</Address><TagName>P14</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000015</OID><Address>15</Address><TagName>P15</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000016</OID><Address>16</Address><TagName>P16</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000042</OID><Address>42</Address><TagName>P42</TagName></Group><Group><OID>90000000-0000-0056-0002-000000000255</OID><Address>255</Address><TagName>PUnused</TagName></Group></Application><Application><OID>90000000-0000-0000-0001-000000000057</OID><Address>57</Address><TagName>Secondary</TagName><Group><OID>90000000-0000-0057-0002-000000000001</OID><Address>1</Address><TagName>S01</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000002</OID><Address>2</Address><TagName>S02</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000003</OID><Address>3</Address><TagName>S03</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000004</OID><Address>4</Address><TagName>S04</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000005</OID><Address>5</Address><TagName>S05</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000006</OID><Address>6</Address><TagName>S06</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000007</OID><Address>7</Address><TagName>S07</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000008</OID><Address>8</Address><TagName>S08</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000009</OID><Address>9</Address><TagName>S09</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000010</OID><Address>10</Address><TagName>S10</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000011</OID><Address>11</Address><TagName>S11</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000012</OID><Address>12</Address><TagName>S12</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000013</OID><Address>13</Address><TagName>S13</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000014</OID><Address>14</Address><TagName>S14</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000015</OID><Address>15</Address><TagName>S15</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000016</OID><Address>16</Address><TagName>S16</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000042</OID><Address>42</Address><TagName>S42</TagName></Group><Group><OID>90000000-0000-0057-0002-000000000255</OID><Address>255</Address><TagName>SUnused</TagName></Group></Application><Application><OID>90000000-0000-0000-0001-000000000255</OID><Address>255</Address><TagName>Application255</TagName><Group><OID>90000000-0000-0255-0002-000000000001</OID><Address>1</Address><TagName>U01</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000002</OID><Address>2</Address><TagName>U02</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000003</OID><Address>3</Address><TagName>U03</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000004</OID><Address>4</Address><TagName>U04</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000005</OID><Address>5</Address><TagName>U05</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000006</OID><Address>6</Address><TagName>U06</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000007</OID><Address>7</Address><TagName>U07</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000008</OID><Address>8</Address><TagName>U08</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000009</OID><Address>9</Address><TagName>U09</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000010</OID><Address>10</Address><TagName>U10</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000011</OID><Address>11</Address><TagName>U11</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000012</OID><Address>12</Address><TagName>U12</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000013</OID><Address>13</Address><TagName>U13</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000014</OID><Address>14</Address><TagName>U14</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000015</OID><Address>15</Address><TagName>U15</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000016</OID><Address>16</Address><TagName>U16</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000042</OID><Address>42</Address><TagName>U42</TagName></Group><Group><OID>90000000-0000-0255-0002-000000000255</OID><Address>255</Address><TagName>UUnused</TagName></Group></Application><Application><OID>90000000-0000-0000-0001-000000000025</OID><Address>25</Address><TagName>Temperature25</TagName><Group><OID>90000000-0000-0025-0002-000000000001</OID><Address>1</Address><TagName>T01</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000002</OID><Address>2</Address><TagName>T02</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000003</OID><Address>3</Address><TagName>T03</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000004</OID><Address>4</Address><TagName>T04</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000005</OID><Address>5</Address><TagName>T05</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000006</OID><Address>6</Address><TagName>T06</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000007</OID><Address>7</Address><TagName>T07</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000008</OID><Address>8</Address><TagName>T08</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000009</OID><Address>9</Address><TagName>T09</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000010</OID><Address>10</Address><TagName>T10</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000011</OID><Address>11</Address><TagName>T11</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000012</OID><Address>12</Address><TagName>T12</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000013</OID><Address>13</Address><TagName>T13</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000014</OID><Address>14</Address><TagName>T14</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000015</OID><Address>15</Address><TagName>T15</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000016</OID><Address>16</Address><TagName>T16</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000042</OID><Address>42</Address><TagName>T42</TagName></Group><Group><OID>90000000-0000-0025-0002-000000000255</OID><Address>255</Address><TagName>TUnused</TagName></Group></Application><Application><OID>90000000-0000-0000-0001-000000000172</OID><Address>172</Address><TagName>Measurement172</TagName><Group><OID>90000000-0000-0172-0002-000000000001</OID><Address>1</Address><TagName>M01</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000002</OID><Address>2</Address><TagName>M02</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000003</OID><Address>3</Address><TagName>M03</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000004</OID><Address>4</Address><TagName>M04</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000005</OID><Address>5</Address><TagName>M05</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000006</OID><Address>6</Address><TagName>M06</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000007</OID><Address>7</Address><TagName>M07</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000008</OID><Address>8</Address><TagName>M08</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000009</OID><Address>9</Address><TagName>M09</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000010</OID><Address>10</Address><TagName>M10</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000011</OID><Address>11</Address><TagName>M11</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000012</OID><Address>12</Address><TagName>M12</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000013</OID><Address>13</Address><TagName>M13</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000014</OID><Address>14</Address><TagName>M14</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000015</OID><Address>15</Address><TagName>M15</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000016</OID><Address>16</Address><TagName>M16</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000042</OID><Address>42</Address><TagName>M42</TagName></Group><Group><OID>90000000-0000-0172-0002-000000000255</OID><Address>255</Address><TagName>MUnused</TagName></Group></Application><Application><OID>90000000-0000-0000-0001-000000000228</OID><Address>228</Address><TagName>HVAC228</TagName><Group><OID>90000000-0000-0228-0002-000000000001</OID><Address>1</Address><TagName>H01</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000002</OID><Address>2</Address><TagName>H02</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000003</OID><Address>3</Address><TagName>H03</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000004</OID><Address>4</Address><TagName>H04</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000005</OID><Address>5</Address><TagName>H05</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000006</OID><Address>6</Address><TagName>H06</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000007</OID><Address>7</Address><TagName>H07</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000008</OID><Address>8</Address><TagName>H08</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000009</OID><Address>9</Address><TagName>H09</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000010</OID><Address>10</Address><TagName>H10</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000011</OID><Address>11</Address><TagName>H11</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000012</OID><Address>12</Address><TagName>H12</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000013</OID><Address>13</Address><TagName>H13</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000014</OID><Address>14</Address><TagName>H14</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000015</OID><Address>15</Address><TagName>H15</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000016</OID><Address>16</Address><TagName>H16</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000042</OID><Address>42</Address><TagName>H42</TagName></Group><Group><OID>90000000-0000-0228-0002-000000000255</OID><Address>255</Address><TagName>HUnused</TagName></Group></Application><Unit><OID>90000000-0000-0000-0003-000000000001</OID><Address>1</Address><UnitType>SENLL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"LevelGroupAddress\" Value=\"3\" /><PP Name=\"OnOffGroupAddress\" Value=\"2\" /><PP Name=\"EnableGroupAddress\" Value=\"1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000002</OID><Address>2</Address><UnitType>PE_CELL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"LevelGroupAddress\" Value=\"3\" /><PP Name=\"OnOffGroupAddress\" Value=\"2\" /><PP Name=\"EnableGroupAddress\" Value=\"1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000003</OID><Address>3</Address><UnitType>PC_SHAC</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000004</OID><Address>4</Address><UnitType>SYS_SHAC</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000005</OID><Address>5</Address><UnitType>PC_NAC</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000006</OID><Address>6</Address><UnitType>SYS_NAC</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000007</OID><Address>7</Address><UnitType>PC_AC2</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000008</OID><Address>8</Address><UnitType>SYS_AC2</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000009</OID><Address>9</Address><UnitType>PC_NAC2</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000010</OID><Address>10</Address><UnitType>SYS_NAC2</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000011</OID><Address>11</Address><UnitType>PC_GIM</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000012</OID><Address>12</Address><UnitType>BRIDGE1N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000013</OID><Address>13</Address><UnitType>BRIDGE1F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000014</OID><Address>14</Address><UnitType>BRIDGE2N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000015</OID><Address>15</Address><UnitType>BRIDGE2F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000016</OID><Address>16</Address><UnitType>GATEWLSN</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000017</OID><Address>17</Address><UnitType>GATEWLSF</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000018</OID><Address>18</Address><UnitType>GATEWLS</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000019</OID><Address>19</Address><UnitType>WGATE5N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000020</OID><Address>20</Address><UnitType>WGATE5F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000021</OID><Address>21</Address><UnitType>WGATE5N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.2.0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000022</OID><Address>22</Address><UnitType>WGATE5F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.2.0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000023</OID><Address>23</Address><UnitType>WGATE5N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.4.92</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000024</OID><Address>24</Address><UnitType>WGATE5F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.4.92</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000025</OID><Address>25</Address><UnitType>WGATE5N</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000026</OID><Address>26</Address><UnitType>WGATE5F</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000027</OID><Address>27</Address><UnitType>WTXU</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000028</OID><Address>28</Address><UnitType>WTXUP</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000029</OID><Address>29</Address><UnitType>NEOI 1FL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000030</OID><Address>30</Address><UnitType>NEOI 4FL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000031</OID><Address>31</Address><UnitType>NEOI HHR</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000032</OID><Address>32</Address><UnitType>WTXU 2FL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000033</OID><Address>33</Address><UnitType>WTXU 6FL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000034</OID><Address>34</Address><UnitType>IOPE1R1</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0.0.0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"InputGroupAddress\" Value=\"8 7 6 5 4 3 2 1\" /><PP Name=\"OutputGroupAddress\" Value=\"12\" /><PP Name=\"SecondApplicationBlocks\" Value=\"85\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000035</OID><Address>35</Address><UnitType>IOPE2R2</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0.0.0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"InputGroupAddress\" Value=\"8 7 6 5 4 3 2 1\" /><PP Name=\"OutputGroupAddress\" Value=\"12 11\" /><PP Name=\"SecondApplicationBlocks\" Value=\"85\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000036</OID><Address>36</Address><UnitType>IOPE2C4</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0.0.0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"InputGroupAddress\" Value=\"8 7 6 5 4 3 2 1\" /><PP Name=\"OutputGroupAddress\" Value=\"12 11 10 9\" /><PP Name=\"SecondApplicationBlocks\" Value=\"85\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000037</OID><Address>37</Address><UnitType>SENTEMP</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.00</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"ControlGroupAddress\" Value=\"3\" /><PP Name=\"EnableGroupAddress\" Value=\"2\" /><PP Name=\"OffsetGroupAddress\" Value=\"1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000038</OID><Address>38</Address><UnitType>SENTEMPB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"GroupAddress\" Value=\"3\" /><PP Name=\"EconomyGroup\" Value=\"2\" /><PP Name=\"ControlledGroup\" Value=\"1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000039</OID><Address>39</Address><UnitType>PC_TSA</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000040</OID><Address>40</Address><UnitType>PC_TSA5</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000041</OID><Address>41</Address><UnitType>PC_TSB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000042</OID><Address>42</Address><UnitType>PC_TSB5</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000043</OID><Address>43</Address><UnitType>SENCT4</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000044</OID><Address>44</Address><UnitType>KEYSCEN4</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000045</OID><Address>45</Address><UnitType>SCNCTL5</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000046</OID><Address>46</Address><UnitType>DIMPR12</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>1.9.03</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"GroupAddress\" Value=\"12 11 10 9 8 7 6 5 4 3 2 1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000047</OID><Address>47</Address><UnitType>PC_DAL2B</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000048</OID><Address>48</Address><UnitType>PC_DAL2C</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000049</OID><Address>49</Address><UnitType>PC_WHAD</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000050</OID><Address>50</Address><UnitType>PC_WHAR</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000051</OID><Address>51</Address><UnitType>PC_WHARB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000052</OID><Address>52</Address><UnitType>WPCI</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000053</OID><Address>53</Address><UnitType>WPCLOCAL</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000054</OID><Address>54</Address><UnitType>DMXDO12</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000055</OID><Address>55</Address><UnitType>WRD4F1</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"InstalledKeys\" Value=\"4\" /><PP Name=\"InstalledChannels\" Value=\"1\" /><PP Name=\"ChannelRelayMask\" Value=\"1\" /><PP Name=\"OutputGroup\" Value=\"1\" /><PP Name=\"OutputGroupSecondary\" Value=\"0\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000056</OID><Address>56</Address><UnitType>SENTEMP4</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000057</OID><Address>57</Address><UnitType>SENTEMPB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Mode25</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"25 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"TemperatureGroup\" Value=\"2\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000058</OID><Address>58</Address><UnitType>SENTEMPB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Mode172</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"172 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /><PP Name=\"GroupAddress\" Value=\"3\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000059</OID><Address>59</Address><UnitType>SENTEMPB</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Mode228</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>0</FirmwareVersion><PP Name=\"Application\" Value=\"228 57\" /><PP Name=\"AreaGroupAddress\" Value=\"42\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000060</OID><Address>60</Address><UnitType>WRD4F1</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Channels0</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"InstalledKeys\" Value=\"4\" /><PP Name=\"InstalledChannels\" Value=\"0\" /><PP Name=\"ChannelRelayMask\" Value=\"0\" /><PP Name=\"OutputGroup\" Value=\"\" /><PP Name=\"OutputGroupSecondary\" Value=\"\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000061</OID><Address>61</Address><UnitType>WRD4F1</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Channels4</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"InstalledKeys\" Value=\"4\" /><PP Name=\"InstalledChannels\" Value=\"4\" /><PP Name=\"ChannelRelayMask\" Value=\"15\" /><PP Name=\"OutputGroup\" Value=\"4 3 2 1\" /><PP Name=\"OutputGroupSecondary\" Value=\"0 1 0 1\" /></Unit><Unit><OID>90000000-0000-0000-0003-000000000062</OID><Address>62</Address><UnitType>WRD4F1</UnitType><UnitName>Synthetic Part</UnitName><TagName>Last, Ω Channels16</TagName><CatalogNumber>9999CSV</CatalogNumber><SerialNumber>123456</SerialNumber><FirmwareVersion>2.2.90</FirmwareVersion><PP Name=\"Application\" Value=\"56 57\" /><PP Name=\"InstalledKeys\" Value=\"4\" /><PP Name=\"InstalledChannels\" Value=\"16\" /><PP Name=\"ChannelRelayMask\" Value=\"65535\" /><PP Name=\"OutputGroup\" Value=\"16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1\" /><PP Name=\"OutputGroupSecondary\" Value=\"0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1\" /></Unit></Network></Project></Installation>",
+    "units": [
+      {
+        "path": "//LASTCSV/254/p/1",
+        "kind": "SENLL",
+        "firmware": "1.00",
+        "class": "TSENLL",
+        "agent": "TSENLLCGateAgent",
+        "groups": 3,
+        "row": "1,Synthetic Part,\"Last, Ω\",SENLL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "LevelGroupAddress": "3",
+          "OnOffGroupAddress": "2",
+          "EnableGroupAddress": "1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/2",
+        "kind": "PE_CELL",
+        "firmware": "1.00",
+        "class": "TSENLL",
+        "agent": "TSENLLCGateAgent",
+        "groups": 3,
+        "row": "2,Synthetic Part,\"Last, Ω\",PE_CELL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "LevelGroupAddress": "3",
+          "OnOffGroupAddress": "2",
+          "EnableGroupAddress": "1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/3",
+        "kind": "PC_SHAC",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "3,Synthetic Part,\"Last, Ω\",PC_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/4",
+        "kind": "SYS_SHAC",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "4,Synthetic Part,\"Last, Ω\",SYS_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/5",
+        "kind": "PC_NAC",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "5,Synthetic Part,\"Last, Ω\",PC_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/6",
+        "kind": "SYS_NAC",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "6,Synthetic Part,\"Last, Ω\",SYS_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/7",
+        "kind": "PC_AC2",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "7,Synthetic Part,\"Last, Ω\",PC_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/8",
+        "kind": "SYS_AC2",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "8,Synthetic Part,\"Last, Ω\",SYS_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/9",
+        "kind": "PC_NAC2",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "9,Synthetic Part,\"Last, Ω\",PC_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/10",
+        "kind": "SYS_NAC2",
+        "firmware": "0",
+        "class": "TPCSHAC",
+        "agent": "TPCSHACCGateAgent",
+        "groups": 0,
+        "row": "10,Synthetic Part,\"Last, Ω\",SYS_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/11",
+        "kind": "PC_GIM",
+        "firmware": "0",
+        "class": "TPC_GIM",
+        "agent": "TPC_GIMCGateAgent",
+        "groups": 0,
+        "row": "11,Synthetic Part,\"Last, Ω\",PC_GIM,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/12",
+        "kind": "BRIDGE1N",
+        "firmware": "0",
+        "class": "TBridge1",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "12,Synthetic Part,\"Last, Ω\",BRIDGE1N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/13",
+        "kind": "BRIDGE1F",
+        "firmware": "0",
+        "class": "TBridge1",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "13,Synthetic Part,\"Last, Ω\",BRIDGE1F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/14",
+        "kind": "BRIDGE2N",
+        "firmware": "0",
+        "class": "TBridge2",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "14,Synthetic Part,\"Last, Ω\",BRIDGE2N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/15",
+        "kind": "BRIDGE2F",
+        "firmware": "0",
+        "class": "TBridge2",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "15,Synthetic Part,\"Last, Ω\",BRIDGE2F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/16",
+        "kind": "GATEWLSN",
+        "firmware": "0",
+        "class": "TWGWiresSide",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "16,Synthetic Part,\"Last, Ω\",GATEWLSN,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/17",
+        "kind": "GATEWLSF",
+        "firmware": "0",
+        "class": "TWGWiresSide",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "17,Synthetic Part,\"Last, Ω\",GATEWLSF,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/18",
+        "kind": "GATEWLS",
+        "firmware": "0",
+        "class": "TWGWiresSide",
+        "agent": "TCBusBridgeCGateAgent",
+        "groups": 0,
+        "row": "18,Synthetic Part,\"Last, Ω\",GATEWLS,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/19",
+        "kind": "WGATE5N",
+        "firmware": "0",
+        "class": "TCBusWGUnitNoSynchroniseToWired",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "19,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/20",
+        "kind": "WGATE5F",
+        "firmware": "0",
+        "class": "TCBusWGUnitNoSynchroniseToWired",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "20,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/21",
+        "kind": "WGATE5N",
+        "firmware": "1.2.0",
+        "class": "TCBusWGUnitNoRepeatSALTransmission",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "21,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/22",
+        "kind": "WGATE5F",
+        "firmware": "1.2.0",
+        "class": "TCBusWGUnitNoRepeatSALTransmission",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "22,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/23",
+        "kind": "WGATE5N",
+        "firmware": "1.4.92",
+        "class": "TCBusWirelessGatewayUnit",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "23,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/24",
+        "kind": "WGATE5F",
+        "firmware": "1.4.92",
+        "class": "TCBusWirelessGatewayUnit",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "24,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/25",
+        "kind": "WGATE5N",
+        "firmware": "2.2.90",
+        "class": "TCBusWirelessGatewayUnit",
+        "agent": "TCBusWirelessGatewayCGateAgent",
+        "groups": 0,
+        "row": "25,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/26",
+        "kind": "WGATE5F",
+        "firmware": "2.2.90",
+        "class": "TCBusWirelessGatewayAdvancedUnit",
+        "agent": "TCBusWirelessGatewayAdvancedCGateAgent",
+        "groups": 0,
+        "row": "26,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/27",
+        "kind": "WTXU",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "27,Synthetic Part,\"Last, Ω\",WTXU,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/28",
+        "kind": "WTXUP",
+        "firmware": "0",
+        "class": "TWTXUP",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "28,Synthetic Part,\"Last, Ω\",WTXUP,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/29",
+        "kind": "NEOI 1FL",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "29,Synthetic Part,\"Last, Ω\",NEOI 1FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/30",
+        "kind": "NEOI 4FL",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "30,Synthetic Part,\"Last, Ω\",NEOI 4FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/31",
+        "kind": "NEOI HHR",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "31,Synthetic Part,\"Last, Ω\",NEOI HHR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/32",
+        "kind": "WTXU 2FL",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "32,Synthetic Part,\"Last, Ω\",WTXU 2FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/33",
+        "kind": "WTXU 6FL",
+        "firmware": "0",
+        "class": "TWTXU",
+        "agent": "TCBusRemoteControlCGateAgent",
+        "groups": 0,
+        "row": "33,Synthetic Part,\"Last, Ω\",WTXU 6FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/34",
+        "kind": "IOPE1R1",
+        "firmware": "0.0.0",
+        "class": "TIOPE1R1",
+        "agent": "TIOPECGateAgent",
+        "groups": 9,
+        "row": "34,Synthetic Part,\"Last, Ω\",IOPE1R1,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "InputGroupAddress": "8 7 6 5 4 3 2 1",
+          "OutputGroupAddress": "12",
+          "SecondApplicationBlocks": "85"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/35",
+        "kind": "IOPE2R2",
+        "firmware": "0.0.0",
+        "class": "TIOPE2R2",
+        "agent": "TIOPECGateAgent",
+        "groups": 10,
+        "row": "35,Synthetic Part,\"Last, Ω\",IOPE2R2,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "InputGroupAddress": "8 7 6 5 4 3 2 1",
+          "OutputGroupAddress": "12 11",
+          "SecondApplicationBlocks": "85"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/36",
+        "kind": "IOPE2C4",
+        "firmware": "0.0.0",
+        "class": "TIOPE2C4",
+        "agent": "TIOPECGateAgent",
+        "groups": 12,
+        "row": "36,Synthetic Part,\"Last, Ω\",IOPE2C4,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,P10,P09,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "InputGroupAddress": "8 7 6 5 4 3 2 1",
+          "OutputGroupAddress": "12 11 10 9",
+          "SecondApplicationBlocks": "85"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/37",
+        "kind": "SENTEMP",
+        "firmware": "1.00",
+        "class": "TSENTEMP",
+        "agent": "TSENTEMPCGateAgent",
+        "groups": 3,
+        "row": "37,Synthetic Part,\"Last, Ω\",SENTEMP,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "ControlGroupAddress": "3",
+          "EnableGroupAddress": "2",
+          "OffsetGroupAddress": "1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/38",
+        "kind": "SENTEMPB",
+        "firmware": "0",
+        "class": "TSENTEMPPro",
+        "agent": "TSENTEMPProCGateAgent",
+        "groups": 3,
+        "row": "38,Synthetic Part,\"Last, Ω\",SENTEMPB,9999CSV,000000123456,0,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "GroupAddress": "3",
+          "EconomyGroup": "2",
+          "ControlledGroup": "1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/39",
+        "kind": "PC_TSA",
+        "firmware": "0",
+        "class": "TPC_TSA",
+        "agent": "TCBusProgrammableThermostatCGateAgent",
+        "groups": 0,
+        "row": "39,Synthetic Part,\"Last, Ω\",PC_TSA,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/40",
+        "kind": "PC_TSA5",
+        "firmware": "0",
+        "class": "TPC_TSA5",
+        "agent": "TCBusProgrammableThermostatCGateAgent",
+        "groups": 0,
+        "row": "40,Synthetic Part,\"Last, Ω\",PC_TSA5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/41",
+        "kind": "PC_TSB",
+        "firmware": "0",
+        "class": "TPC_TSB",
+        "agent": "TCBusBasicThermostatCGateAgent",
+        "groups": 0,
+        "row": "41,Synthetic Part,\"Last, Ω\",PC_TSB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/42",
+        "kind": "PC_TSB5",
+        "firmware": "0",
+        "class": "TPC_TSB5",
+        "agent": "TCBusBasicThermostatCGateAgent",
+        "groups": 0,
+        "row": "42,Synthetic Part,\"Last, Ω\",PC_TSB5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/43",
+        "kind": "SENCT4",
+        "firmware": "0",
+        "class": "TSENCT4",
+        "agent": "TSENCT4CGateAgent",
+        "groups": 0,
+        "row": "43,Synthetic Part,\"Last, Ω\",SENCT4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/44",
+        "kind": "KEYSCEN4",
+        "firmware": "0",
+        "class": "TKEYSCEN4",
+        "agent": "TCustomSceneKeyCGateAgent",
+        "groups": 0,
+        "row": "44,Synthetic Part,\"Last, Ω\",KEYSCEN4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/45",
+        "kind": "SCNCTL5",
+        "firmware": "0",
+        "class": "TSCNCTL5",
+        "agent": "TCustomSceneControllerCGateAgent",
+        "groups": 0,
+        "row": "45,Synthetic Part,\"Last, Ω\",SCNCTL5,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/46",
+        "kind": "DIMPR12",
+        "firmware": "1.9.03",
+        "class": "TDIMPR12L1",
+        "agent": "TDIMPR12L1CGateAgent",
+        "groups": 12,
+        "row": "46,Synthetic Part,\"Last, Ω\",DIMPR12,9999CSV,000000123456,1.9.03,Primary,Secondary,P42,P12,P11,P10,P09,P08,P07,P06,P05,P04,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42",
+          "GroupAddress": "12 11 10 9 8 7 6 5 4 3 2 1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/47",
+        "kind": "PC_DAL2B",
+        "firmware": "0",
+        "class": "TPC_DAL2B",
+        "agent": "TCBusPC_DAL2BCGateAgent",
+        "groups": 0,
+        "row": "47,Synthetic Part,\"Last, Ω\",PC_DAL2B,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/48",
+        "kind": "PC_DAL2C",
+        "firmware": "0",
+        "class": "TPC_DAL2C",
+        "agent": "TCBusPC_DAL2BCGateAgent",
+        "groups": 0,
+        "row": "48,Synthetic Part,\"Last, Ω\",PC_DAL2C,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/49",
+        "kind": "PC_WHAD",
+        "firmware": "0",
+        "class": "TPC_WHAD",
+        "agent": "TCBusPC_WHAACGateAgent",
+        "groups": 0,
+        "row": "49,Synthetic Part,\"Last, Ω\",PC_WHAD,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/50",
+        "kind": "PC_WHAR",
+        "firmware": "0",
+        "class": "TPC_WHAR",
+        "agent": "TCBusPC_WHAACGateAgent",
+        "groups": 0,
+        "row": "50,Synthetic Part,\"Last, Ω\",PC_WHAR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/51",
+        "kind": "PC_WHARB",
+        "firmware": "0",
+        "class": "TPC_WHARB",
+        "agent": "TCBusPC_WHAACGateAgent",
+        "groups": 0,
+        "row": "51,Synthetic Part,\"Last, Ω\",PC_WHARB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/52",
+        "kind": "WPCI",
+        "firmware": "0",
+        "class": "TCBusWirelessPCIUnit",
+        "agent": "TCBusWirelessPCICGateAgent",
+        "groups": 0,
+        "row": "52,Synthetic Part,\"Last, Ω\",WPCI,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/53",
+        "kind": "WPCLOCAL",
+        "firmware": "0",
+        "class": "TCBusWirelessPCIUnit",
+        "agent": "TCBusWirelessPCICGateAgent",
+        "groups": 0,
+        "row": "53,Synthetic Part,\"Last, Ω\",WPCLOCAL,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 255,
+        "secondary_address": 255,
+        "parameters": {
+          "Application": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/54",
+        "kind": "DMXDO12",
+        "firmware": "0",
+        "class": "TDMXDO12",
+        "agent": "TCBusDMXGatewayCGateAgent",
+        "groups": 0,
+        "row": "54,Synthetic Part,\"Last, Ω\",DMXDO12,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/55",
+        "kind": "WRD4F1",
+        "firmware": "2.2.90",
+        "class": "TWRD4F1",
+        "agent": "TCBusWirelessFanControllerCGateAgent",
+        "groups": 1,
+        "row": "55,Synthetic Part,\"Last, Ω\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "InstalledKeys": "4",
+          "InstalledChannels": "1",
+          "ChannelRelayMask": "1",
+          "OutputGroup": "1",
+          "OutputGroupSecondary": "0"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/56",
+        "kind": "SENTEMP4",
+        "firmware": "0",
+        "class": "TPC_RDTS",
+        "agent": "TCBusDigitalTemperatureSensorCGateAgent",
+        "groups": 0,
+        "row": "56,Synthetic Part,\"Last, Ω\",SENTEMP4,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/57",
+        "kind": "SENTEMPB",
+        "firmware": "0",
+        "class": "TSENTEMPPro",
+        "agent": "TSENTEMPProCGateAgent",
+        "groups": 1,
+        "row": "57,Synthetic Part,\"Last, Ω Mode25\",SENTEMPB,9999CSV,000000123456,0,Temperature25,Secondary,T42,T02,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 25,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "25 57",
+          "AreaGroupAddress": "42",
+          "TemperatureGroup": "2"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/58",
+        "kind": "SENTEMPB",
+        "firmware": "0",
+        "class": "TSENTEMPPro",
+        "agent": "TSENTEMPProCGateAgent",
+        "groups": 1,
+        "row": "58,Synthetic Part,\"Last, Ω Mode172\",SENTEMPB,9999CSV,000000123456,0,Measurement172,Secondary,M42,M03,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 172,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "172 57",
+          "AreaGroupAddress": "42",
+          "GroupAddress": "3"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/59",
+        "kind": "SENTEMPB",
+        "firmware": "0",
+        "class": "TSENTEMPPro",
+        "agent": "TSENTEMPProCGateAgent",
+        "groups": 0,
+        "row": "59,Synthetic Part,\"Last, Ω Mode228\",SENTEMPB,9999CSV,000000123456,0,HVAC228,Secondary,H42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 228,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "228 57",
+          "AreaGroupAddress": "42"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/60",
+        "kind": "WRD4F1",
+        "firmware": "2.2.90",
+        "class": "TWRD4F1",
+        "agent": "TCBusWirelessFanControllerCGateAgent",
+        "groups": 0,
+        "row": "60,Synthetic Part,\"Last, Ω Channels0\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "InstalledKeys": "4",
+          "InstalledChannels": "0",
+          "ChannelRelayMask": "0",
+          "OutputGroup": "",
+          "OutputGroupSecondary": ""
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/61",
+        "kind": "WRD4F1",
+        "firmware": "2.2.90",
+        "class": "TWRD4F1",
+        "agent": "TCBusWirelessFanControllerCGateAgent",
+        "groups": 4,
+        "row": "61,Synthetic Part,\"Last, Ω Channels4\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P04,S03,P02,S01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "InstalledKeys": "4",
+          "InstalledChannels": "4",
+          "ChannelRelayMask": "15",
+          "OutputGroup": "4 3 2 1",
+          "OutputGroupSecondary": "0 1 0 1"
+        }
+      },
+      {
+        "path": "//LASTCSV/254/p/62",
+        "kind": "WRD4F1",
+        "firmware": "2.2.90",
+        "class": "TWRD4F1",
+        "agent": "TCBusWirelessFanControllerCGateAgent",
+        "groups": 16,
+        "row": "62,Synthetic Part,\"Last, Ω Channels16\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P16,S15,P14,S13,P12,S11,P10,S09,P08,S07,P06,S05,P04,S03,P02,S01,",
+        "primary_address": 56,
+        "secondary_address": 57,
+        "parameters": {
+          "Application": "56 57",
+          "InstalledKeys": "4",
+          "InstalledChannels": "16",
+          "ChannelRelayMask": "65535",
+          "OutputGroup": "16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1",
+          "OutputGroupSecondary": "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"
+        }
+      }
+    ],
+    "rows": [
+      "Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,Firmware Version,Primary Application,Secondary Application,Area,Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8,Group 9,Group 10,Group 11,Group 12,Group 13,Group 14,Group 15,Group 16,",
+      "1,Synthetic Part,\"Last, Ω\",SENLL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "2,Synthetic Part,\"Last, Ω\",PE_CELL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "3,Synthetic Part,\"Last, Ω\",PC_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "4,Synthetic Part,\"Last, Ω\",SYS_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "5,Synthetic Part,\"Last, Ω\",PC_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "6,Synthetic Part,\"Last, Ω\",SYS_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "7,Synthetic Part,\"Last, Ω\",PC_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "8,Synthetic Part,\"Last, Ω\",SYS_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "9,Synthetic Part,\"Last, Ω\",PC_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "10,Synthetic Part,\"Last, Ω\",SYS_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "11,Synthetic Part,\"Last, Ω\",PC_GIM,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "12,Synthetic Part,\"Last, Ω\",BRIDGE1N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "13,Synthetic Part,\"Last, Ω\",BRIDGE1F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "14,Synthetic Part,\"Last, Ω\",BRIDGE2N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "15,Synthetic Part,\"Last, Ω\",BRIDGE2F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "16,Synthetic Part,\"Last, Ω\",GATEWLSN,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "17,Synthetic Part,\"Last, Ω\",GATEWLSF,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "18,Synthetic Part,\"Last, Ω\",GATEWLS,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "19,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "20,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "21,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "22,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "23,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "24,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "25,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "26,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "27,Synthetic Part,\"Last, Ω\",WTXU,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "28,Synthetic Part,\"Last, Ω\",WTXUP,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "29,Synthetic Part,\"Last, Ω\",NEOI 1FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "30,Synthetic Part,\"Last, Ω\",NEOI 4FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "31,Synthetic Part,\"Last, Ω\",NEOI HHR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "32,Synthetic Part,\"Last, Ω\",WTXU 2FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "33,Synthetic Part,\"Last, Ω\",WTXU 6FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "34,Synthetic Part,\"Last, Ω\",IOPE1R1,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "35,Synthetic Part,\"Last, Ω\",IOPE2R2,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "36,Synthetic Part,\"Last, Ω\",IOPE2C4,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,P10,P09,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "37,Synthetic Part,\"Last, Ω\",SENTEMP,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "38,Synthetic Part,\"Last, Ω\",SENTEMPB,9999CSV,000000123456,0,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "39,Synthetic Part,\"Last, Ω\",PC_TSA,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "40,Synthetic Part,\"Last, Ω\",PC_TSA5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "41,Synthetic Part,\"Last, Ω\",PC_TSB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "42,Synthetic Part,\"Last, Ω\",PC_TSB5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "43,Synthetic Part,\"Last, Ω\",SENCT4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "44,Synthetic Part,\"Last, Ω\",KEYSCEN4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "45,Synthetic Part,\"Last, Ω\",SCNCTL5,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "46,Synthetic Part,\"Last, Ω\",DIMPR12,9999CSV,000000123456,1.9.03,Primary,Secondary,P42,P12,P11,P10,P09,P08,P07,P06,P05,P04,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "47,Synthetic Part,\"Last, Ω\",PC_DAL2B,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "48,Synthetic Part,\"Last, Ω\",PC_DAL2C,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "49,Synthetic Part,\"Last, Ω\",PC_WHAD,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "50,Synthetic Part,\"Last, Ω\",PC_WHAR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "51,Synthetic Part,\"Last, Ω\",PC_WHARB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "52,Synthetic Part,\"Last, Ω\",WPCI,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "53,Synthetic Part,\"Last, Ω\",WPCLOCAL,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "54,Synthetic Part,\"Last, Ω\",DMXDO12,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "55,Synthetic Part,\"Last, Ω\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "56,Synthetic Part,\"Last, Ω\",SENTEMP4,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "57,Synthetic Part,\"Last, Ω Mode25\",SENTEMPB,9999CSV,000000123456,0,Temperature25,Secondary,T42,T02,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "58,Synthetic Part,\"Last, Ω Mode172\",SENTEMPB,9999CSV,000000123456,0,Measurement172,Secondary,M42,M03,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "59,Synthetic Part,\"Last, Ω Mode228\",SENTEMPB,9999CSV,000000123456,0,HVAC228,Secondary,H42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "60,Synthetic Part,\"Last, Ω Channels0\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "61,Synthetic Part,\"Last, Ω Channels4\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P04,S03,P02,S01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,",
+      "62,Synthetic Part,\"Last, Ω Channels16\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P16,S15,P14,S13,P12,S11,P10,S09,P08,S07,P06,S05,P04,S03,P02,S01,"
+    ],
+    "csv_sha256": "51d735c1455e34c4a68a5449df01dc8be6d2d7ecf079a85d269ec71defb4eaa6"
+  },
+  "range_cases": [
+    {
+      "kind": "SENLL",
+      "firmware": "1.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent",
+      "template_path": "//LASTCSV/254/p/1",
+      "row": "1,Synthetic Part,\"Last, Ω\",SENLL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENLL",
+      "firmware": "2.0.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent",
+      "template_path": "//LASTCSV/254/p/1",
+      "row": "1,Synthetic Part,\"Last, Ω\",SENLL,9999CSV,000000123456,2.0.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PE_CELL",
+      "firmware": "1.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent",
+      "template_path": "//LASTCSV/254/p/2",
+      "row": "2,Synthetic Part,\"Last, Ω\",PE_CELL,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PE_CELL",
+      "firmware": "2.0.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent",
+      "template_path": "//LASTCSV/254/p/2",
+      "row": "2,Synthetic Part,\"Last, Ω\",PE_CELL,9999CSV,000000123456,2.0.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_SHAC",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/3",
+      "row": "3,Synthetic Part,\"Last, Ω\",PC_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_SHAC",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/3",
+      "row": "3,Synthetic Part,\"Last, Ω\",PC_SHAC,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_SHAC",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/4",
+      "row": "4,Synthetic Part,\"Last, Ω\",SYS_SHAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_SHAC",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/4",
+      "row": "4,Synthetic Part,\"Last, Ω\",SYS_SHAC,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_NAC",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/5",
+      "row": "5,Synthetic Part,\"Last, Ω\",PC_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_NAC",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/5",
+      "row": "5,Synthetic Part,\"Last, Ω\",PC_NAC,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_NAC",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/6",
+      "row": "6,Synthetic Part,\"Last, Ω\",SYS_NAC,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_NAC",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/6",
+      "row": "6,Synthetic Part,\"Last, Ω\",SYS_NAC,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_AC2",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/7",
+      "row": "7,Synthetic Part,\"Last, Ω\",PC_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_AC2",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/7",
+      "row": "7,Synthetic Part,\"Last, Ω\",PC_AC2,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_AC2",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/8",
+      "row": "8,Synthetic Part,\"Last, Ω\",SYS_AC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_AC2",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/8",
+      "row": "8,Synthetic Part,\"Last, Ω\",SYS_AC2,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_NAC2",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/9",
+      "row": "9,Synthetic Part,\"Last, Ω\",PC_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_NAC2",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/9",
+      "row": "9,Synthetic Part,\"Last, Ω\",PC_NAC2,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_NAC2",
+      "firmware": "0",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/10",
+      "row": "10,Synthetic Part,\"Last, Ω\",SYS_NAC2,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SYS_NAC2",
+      "firmware": "9",
+      "class": "TPCSHAC",
+      "agent": "TPCSHACCGateAgent",
+      "template_path": "//LASTCSV/254/p/10",
+      "row": "10,Synthetic Part,\"Last, Ω\",SYS_NAC2,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_GIM",
+      "firmware": "0",
+      "class": "TPC_GIM",
+      "agent": "TPC_GIMCGateAgent",
+      "template_path": "//LASTCSV/254/p/11",
+      "row": "11,Synthetic Part,\"Last, Ω\",PC_GIM,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_GIM",
+      "firmware": "9",
+      "class": "TPC_GIM",
+      "agent": "TPC_GIMCGateAgent",
+      "template_path": "//LASTCSV/254/p/11",
+      "row": "11,Synthetic Part,\"Last, Ω\",PC_GIM,9999CSV,000000123456,9,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE1N",
+      "firmware": "0",
+      "class": "TBridge1",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/12",
+      "row": "12,Synthetic Part,\"Last, Ω\",BRIDGE1N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE1N",
+      "firmware": "9",
+      "class": "TBridge1",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/12",
+      "row": "12,Synthetic Part,\"Last, Ω\",BRIDGE1N,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE1F",
+      "firmware": "0",
+      "class": "TBridge1",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/13",
+      "row": "13,Synthetic Part,\"Last, Ω\",BRIDGE1F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE1F",
+      "firmware": "9",
+      "class": "TBridge1",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/13",
+      "row": "13,Synthetic Part,\"Last, Ω\",BRIDGE1F,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE2N",
+      "firmware": "0",
+      "class": "TBridge2",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/14",
+      "row": "14,Synthetic Part,\"Last, Ω\",BRIDGE2N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE2N",
+      "firmware": "9",
+      "class": "TBridge2",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/14",
+      "row": "14,Synthetic Part,\"Last, Ω\",BRIDGE2N,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE2F",
+      "firmware": "0",
+      "class": "TBridge2",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/15",
+      "row": "15,Synthetic Part,\"Last, Ω\",BRIDGE2F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "BRIDGE2F",
+      "firmware": "9",
+      "class": "TBridge2",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/15",
+      "row": "15,Synthetic Part,\"Last, Ω\",BRIDGE2F,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLSN",
+      "firmware": "0",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/16",
+      "row": "16,Synthetic Part,\"Last, Ω\",GATEWLSN,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLSN",
+      "firmware": "9",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/16",
+      "row": "16,Synthetic Part,\"Last, Ω\",GATEWLSN,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLSF",
+      "firmware": "0",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/17",
+      "row": "17,Synthetic Part,\"Last, Ω\",GATEWLSF,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLSF",
+      "firmware": "9",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/17",
+      "row": "17,Synthetic Part,\"Last, Ω\",GATEWLSF,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLS",
+      "firmware": "0",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/18",
+      "row": "18,Synthetic Part,\"Last, Ω\",GATEWLS,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "GATEWLS",
+      "firmware": "9",
+      "class": "TWGWiresSide",
+      "agent": "TCBusBridgeCGateAgent",
+      "template_path": "//LASTCSV/254/p/18",
+      "row": "18,Synthetic Part,\"Last, Ω\",GATEWLS,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "0",
+      "class": "TCBusWGUnitNoSynchroniseToWired",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/19",
+      "row": "19,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "1.1.0",
+      "class": "TCBusWGUnitNoSynchroniseToWired",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/19",
+      "row": "19,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.1.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "0",
+      "class": "TCBusWGUnitNoSynchroniseToWired",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/20",
+      "row": "20,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "1.1.0",
+      "class": "TCBusWGUnitNoSynchroniseToWired",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/20",
+      "row": "20,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.1.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "1.2.0",
+      "class": "TCBusWGUnitNoRepeatSALTransmission",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/21",
+      "row": "21,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "1.4.91",
+      "class": "TCBusWGUnitNoRepeatSALTransmission",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/21",
+      "row": "21,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.4.91,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "1.2.0",
+      "class": "TCBusWGUnitNoRepeatSALTransmission",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/22",
+      "row": "22,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.2.0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "1.4.91",
+      "class": "TCBusWGUnitNoRepeatSALTransmission",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/22",
+      "row": "22,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.4.91,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "1.4.92",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/23",
+      "row": "23,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "2.2.89",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/23",
+      "row": "23,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,2.2.89,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "1.4.92",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/24",
+      "row": "24,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,1.4.92,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "2.2.89",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/24",
+      "row": "24,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,2.2.89,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "2.2.90",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/25",
+      "row": "25,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5N",
+      "firmware": "2.4.99",
+      "class": "TCBusWirelessGatewayUnit",
+      "agent": "TCBusWirelessGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/25",
+      "row": "25,Synthetic Part,\"Last, Ω\",WGATE5N,9999CSV,000000123456,2.4.99,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "2.2.90",
+      "class": "TCBusWirelessGatewayAdvancedUnit",
+      "agent": "TCBusWirelessGatewayAdvancedCGateAgent",
+      "template_path": "//LASTCSV/254/p/26",
+      "row": "26,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,2.2.90,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WGATE5F",
+      "firmware": "2.4.99",
+      "class": "TCBusWirelessGatewayAdvancedUnit",
+      "agent": "TCBusWirelessGatewayAdvancedCGateAgent",
+      "template_path": "//LASTCSV/254/p/26",
+      "row": "26,Synthetic Part,\"Last, Ω\",WGATE5F,9999CSV,000000123456,2.4.99,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/27",
+      "row": "27,Synthetic Part,\"Last, Ω\",WTXU,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/27",
+      "row": "27,Synthetic Part,\"Last, Ω\",WTXU,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXUP",
+      "firmware": "0",
+      "class": "TWTXUP",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/28",
+      "row": "28,Synthetic Part,\"Last, Ω\",WTXUP,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXUP",
+      "firmware": "9",
+      "class": "TWTXUP",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/28",
+      "row": "28,Synthetic Part,\"Last, Ω\",WTXUP,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI 1FL",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/29",
+      "row": "29,Synthetic Part,\"Last, Ω\",NEOI 1FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI 1FL",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/29",
+      "row": "29,Synthetic Part,\"Last, Ω\",NEOI 1FL,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI 4FL",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/30",
+      "row": "30,Synthetic Part,\"Last, Ω\",NEOI 4FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI 4FL",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/30",
+      "row": "30,Synthetic Part,\"Last, Ω\",NEOI 4FL,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI HHR",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/31",
+      "row": "31,Synthetic Part,\"Last, Ω\",NEOI HHR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "NEOI HHR",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/31",
+      "row": "31,Synthetic Part,\"Last, Ω\",NEOI HHR,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU 2FL",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/32",
+      "row": "32,Synthetic Part,\"Last, Ω\",WTXU 2FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU 2FL",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/32",
+      "row": "32,Synthetic Part,\"Last, Ω\",WTXU 2FL,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU 6FL",
+      "firmware": "0",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/33",
+      "row": "33,Synthetic Part,\"Last, Ω\",WTXU 6FL,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WTXU 6FL",
+      "firmware": "9",
+      "class": "TWTXU",
+      "agent": "TCBusRemoteControlCGateAgent",
+      "template_path": "//LASTCSV/254/p/33",
+      "row": "33,Synthetic Part,\"Last, Ω\",WTXU 6FL,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE1R1",
+      "firmware": "0.0.0",
+      "class": "TIOPE1R1",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/34",
+      "row": "34,Synthetic Part,\"Last, Ω\",IOPE1R1,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE1R1",
+      "firmware": "9",
+      "class": "TIOPE1R1",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/34",
+      "row": "34,Synthetic Part,\"Last, Ω\",IOPE1R1,9999CSV,000000123456,9,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE2R2",
+      "firmware": "0.0.0",
+      "class": "TIOPE2R2",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/35",
+      "row": "35,Synthetic Part,\"Last, Ω\",IOPE2R2,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE2R2",
+      "firmware": "9",
+      "class": "TIOPE2R2",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/35",
+      "row": "35,Synthetic Part,\"Last, Ω\",IOPE2R2,9999CSV,000000123456,9,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE2C4",
+      "firmware": "0.0.0",
+      "class": "TIOPE2C4",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/36",
+      "row": "36,Synthetic Part,\"Last, Ω\",IOPE2C4,9999CSV,000000123456,0.0.0,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,P10,P09,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "IOPE2C4",
+      "firmware": "9",
+      "class": "TIOPE2C4",
+      "agent": "TIOPECGateAgent",
+      "template_path": "//LASTCSV/254/p/36",
+      "row": "36,Synthetic Part,\"Last, Ω\",IOPE2C4,9999CSV,000000123456,9,Primary,Secondary,P42,P08,P07,P06,P05,P04,P03,P02,P01,P12,P11,P10,P09,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMP",
+      "firmware": "1.00",
+      "class": "TSENTEMP",
+      "agent": "TSENTEMPCGateAgent",
+      "template_path": "//LASTCSV/254/p/37",
+      "row": "37,Synthetic Part,\"Last, Ω\",SENTEMP,9999CSV,000000123456,1.00,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMP",
+      "firmware": "1.2.68",
+      "class": "TSENTEMP",
+      "agent": "TSENTEMPCGateAgent",
+      "template_path": "//LASTCSV/254/p/37",
+      "row": "37,Synthetic Part,\"Last, Ω\",SENTEMP,9999CSV,000000123456,1.2.68,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMPB",
+      "firmware": "0",
+      "class": "TSENTEMPPro",
+      "agent": "TSENTEMPProCGateAgent",
+      "template_path": "//LASTCSV/254/p/38",
+      "row": "38,Synthetic Part,\"Last, Ω\",SENTEMPB,9999CSV,000000123456,0,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMPB",
+      "firmware": "9",
+      "class": "TSENTEMPPro",
+      "agent": "TSENTEMPProCGateAgent",
+      "template_path": "//LASTCSV/254/p/38",
+      "row": "38,Synthetic Part,\"Last, Ω\",SENTEMPB,9999CSV,000000123456,9,Primary,Secondary,P42,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSA",
+      "firmware": "0",
+      "class": "TPC_TSA",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/39",
+      "row": "39,Synthetic Part,\"Last, Ω\",PC_TSA,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSA",
+      "firmware": "9",
+      "class": "TPC_TSA",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/39",
+      "row": "39,Synthetic Part,\"Last, Ω\",PC_TSA,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSA5",
+      "firmware": "0",
+      "class": "TPC_TSA5",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/40",
+      "row": "40,Synthetic Part,\"Last, Ω\",PC_TSA5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSA5",
+      "firmware": "9",
+      "class": "TPC_TSA5",
+      "agent": "TCBusProgrammableThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/40",
+      "row": "40,Synthetic Part,\"Last, Ω\",PC_TSA5,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSB",
+      "firmware": "0",
+      "class": "TPC_TSB",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/41",
+      "row": "41,Synthetic Part,\"Last, Ω\",PC_TSB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSB",
+      "firmware": "9",
+      "class": "TPC_TSB",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/41",
+      "row": "41,Synthetic Part,\"Last, Ω\",PC_TSB,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSB5",
+      "firmware": "0",
+      "class": "TPC_TSB5",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/42",
+      "row": "42,Synthetic Part,\"Last, Ω\",PC_TSB5,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_TSB5",
+      "firmware": "9",
+      "class": "TPC_TSB5",
+      "agent": "TCBusBasicThermostatCGateAgent",
+      "template_path": "//LASTCSV/254/p/42",
+      "row": "42,Synthetic Part,\"Last, Ω\",PC_TSB5,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENCT4",
+      "firmware": "0",
+      "class": "TSENCT4",
+      "agent": "TSENCT4CGateAgent",
+      "template_path": "//LASTCSV/254/p/43",
+      "row": "43,Synthetic Part,\"Last, Ω\",SENCT4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENCT4",
+      "firmware": "9",
+      "class": "TSENCT4",
+      "agent": "TSENCT4CGateAgent",
+      "template_path": "//LASTCSV/254/p/43",
+      "row": "43,Synthetic Part,\"Last, Ω\",SENCT4,9999CSV,000000123456,9,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "KEYSCEN4",
+      "firmware": "0",
+      "class": "TKEYSCEN4",
+      "agent": "TCustomSceneKeyCGateAgent",
+      "template_path": "//LASTCSV/254/p/44",
+      "row": "44,Synthetic Part,\"Last, Ω\",KEYSCEN4,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "KEYSCEN4",
+      "firmware": "9",
+      "class": "TKEYSCEN4",
+      "agent": "TCustomSceneKeyCGateAgent",
+      "template_path": "//LASTCSV/254/p/44",
+      "row": "44,Synthetic Part,\"Last, Ω\",KEYSCEN4,9999CSV,000000123456,9,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SCNCTL5",
+      "firmware": "0",
+      "class": "TSCNCTL5",
+      "agent": "TCustomSceneControllerCGateAgent",
+      "template_path": "//LASTCSV/254/p/45",
+      "row": "45,Synthetic Part,\"Last, Ω\",SCNCTL5,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SCNCTL5",
+      "firmware": "9",
+      "class": "TSCNCTL5",
+      "agent": "TCustomSceneControllerCGateAgent",
+      "template_path": "//LASTCSV/254/p/45",
+      "row": "45,Synthetic Part,\"Last, Ω\",SCNCTL5,9999CSV,000000123456,9,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "DIMPR12",
+      "firmware": "1.9.03",
+      "class": "TDIMPR12L1",
+      "agent": "TDIMPR12L1CGateAgent",
+      "template_path": "//LASTCSV/254/p/46",
+      "row": "46,Synthetic Part,\"Last, Ω\",DIMPR12,9999CSV,000000123456,1.9.03,Primary,Secondary,P42,P12,P11,P10,P09,P08,P07,P06,P05,P04,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "DIMPR12",
+      "firmware": "9",
+      "class": "TDIMPR12L1",
+      "agent": "TDIMPR12L1CGateAgent",
+      "template_path": "//LASTCSV/254/p/46",
+      "row": "46,Synthetic Part,\"Last, Ω\",DIMPR12,9999CSV,000000123456,9,Primary,Secondary,P42,P12,P11,P10,P09,P08,P07,P06,P05,P04,P03,P02,P01,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_DAL2B",
+      "firmware": "0",
+      "class": "TPC_DAL2B",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "template_path": "//LASTCSV/254/p/47",
+      "row": "47,Synthetic Part,\"Last, Ω\",PC_DAL2B,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_DAL2B",
+      "firmware": "9",
+      "class": "TPC_DAL2B",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "template_path": "//LASTCSV/254/p/47",
+      "row": "47,Synthetic Part,\"Last, Ω\",PC_DAL2B,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_DAL2C",
+      "firmware": "0",
+      "class": "TPC_DAL2C",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "template_path": "//LASTCSV/254/p/48",
+      "row": "48,Synthetic Part,\"Last, Ω\",PC_DAL2C,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_DAL2C",
+      "firmware": "9",
+      "class": "TPC_DAL2C",
+      "agent": "TCBusPC_DAL2BCGateAgent",
+      "template_path": "//LASTCSV/254/p/48",
+      "row": "48,Synthetic Part,\"Last, Ω\",PC_DAL2C,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHAD",
+      "firmware": "0",
+      "class": "TPC_WHAD",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/49",
+      "row": "49,Synthetic Part,\"Last, Ω\",PC_WHAD,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHAD",
+      "firmware": "9",
+      "class": "TPC_WHAD",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/49",
+      "row": "49,Synthetic Part,\"Last, Ω\",PC_WHAD,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHAR",
+      "firmware": "0",
+      "class": "TPC_WHAR",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/50",
+      "row": "50,Synthetic Part,\"Last, Ω\",PC_WHAR,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHAR",
+      "firmware": "9",
+      "class": "TPC_WHAR",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/50",
+      "row": "50,Synthetic Part,\"Last, Ω\",PC_WHAR,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHARB",
+      "firmware": "0",
+      "class": "TPC_WHARB",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/51",
+      "row": "51,Synthetic Part,\"Last, Ω\",PC_WHARB,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "PC_WHARB",
+      "firmware": "9",
+      "class": "TPC_WHARB",
+      "agent": "TCBusPC_WHAACGateAgent",
+      "template_path": "//LASTCSV/254/p/51",
+      "row": "51,Synthetic Part,\"Last, Ω\",PC_WHARB,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WPCI",
+      "firmware": "0",
+      "class": "TCBusWirelessPCIUnit",
+      "agent": "TCBusWirelessPCICGateAgent",
+      "template_path": "//LASTCSV/254/p/52",
+      "row": "52,Synthetic Part,\"Last, Ω\",WPCI,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WPCI",
+      "firmware": "9",
+      "class": "TCBusWirelessPCIUnit",
+      "agent": "TCBusWirelessPCICGateAgent",
+      "template_path": "//LASTCSV/254/p/52",
+      "row": "52,Synthetic Part,\"Last, Ω\",WPCI,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WPCLOCAL",
+      "firmware": "0",
+      "class": "TCBusWirelessPCIUnit",
+      "agent": "TCBusWirelessPCICGateAgent",
+      "template_path": "//LASTCSV/254/p/53",
+      "row": "53,Synthetic Part,\"Last, Ω\",WPCLOCAL,9999CSV,000000123456,0,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WPCLOCAL",
+      "firmware": "9",
+      "class": "TCBusWirelessPCIUnit",
+      "agent": "TCBusWirelessPCICGateAgent",
+      "template_path": "//LASTCSV/254/p/53",
+      "row": "53,Synthetic Part,\"Last, Ω\",WPCLOCAL,9999CSV,000000123456,9,Application255,Application255,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "DMXDO12",
+      "firmware": "0",
+      "class": "TDMXDO12",
+      "agent": "TCBusDMXGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/54",
+      "row": "54,Synthetic Part,\"Last, Ω\",DMXDO12,9999CSV,000000123456,0,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "DMXDO12",
+      "firmware": "9",
+      "class": "TDMXDO12",
+      "agent": "TCBusDMXGatewayCGateAgent",
+      "template_path": "//LASTCSV/254/p/54",
+      "row": "54,Synthetic Part,\"Last, Ω\",DMXDO12,9999CSV,000000123456,9,Primary,Secondary,P42,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WRD4F1",
+      "firmware": "2.2.90",
+      "class": "TWRD4F1",
+      "agent": "TCBusWirelessFanControllerCGateAgent",
+      "template_path": "//LASTCSV/254/p/55",
+      "row": "55,Synthetic Part,\"Last, Ω\",WRD4F1,9999CSV,000000123456,2.2.90,Primary,Secondary,<Unused>,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "WRD4F1",
+      "firmware": "2.3.99",
+      "class": "TWRD4F1",
+      "agent": "TCBusWirelessFanControllerCGateAgent",
+      "template_path": "//LASTCSV/254/p/55",
+      "row": "55,Synthetic Part,\"Last, Ω\",WRD4F1,9999CSV,000000123456,2.3.99,Primary,Secondary,<Unused>,P01,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMP4",
+      "firmware": "0",
+      "class": "TPC_RDTS",
+      "agent": "TCBusDigitalTemperatureSensorCGateAgent",
+      "template_path": "//LASTCSV/254/p/56",
+      "row": "56,Synthetic Part,\"Last, Ω\",SENTEMP4,9999CSV,000000123456,0,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    },
+    {
+      "kind": "SENTEMP4",
+      "firmware": "9",
+      "class": "TPC_RDTS",
+      "agent": "TCBusDigitalTemperatureSensorCGateAgent",
+      "template_path": "//LASTCSV/254/p/56",
+      "row": "56,Synthetic Part,\"Last, Ω\",SENTEMP4,9999CSV,000000123456,9,Primary,Secondary,<Unused>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,<N/A>,"
+    }
+  ],
+  "refusals": [
+    {
+      "kind": "KEYGL5",
+      "class": "TKEYGL5",
+      "reason": "no exact-class CGate agent registration; the report group manager is not populated by an admitted loader"
+    }
+  ],
+  "limits": [
+    "All 262 static types have at least one admitted report profile; duplicate no-agent KEYGL5 remains refused.",
+    "Firmware selection gaps, overlaps and unregistered runtime-INIs remain unsupported.",
+    "Synthetic literal rows are source-derived; original GUI/native cold-load/VM/hardware were not executed.",
+    "Cached v4 represents final resolved report-manager associations, not physical channel programming or complete auxiliary loader state."
+  ]
+}

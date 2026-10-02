@@ -28,7 +28,7 @@ from tests.test_cgate import peer
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / 'research/experiments/2026-09-30/csv-factory-registry-static.json'
-CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-completion-registry.json'
+CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-last-registry.json'
 FIXTURE = ROOT / 'research/fixtures/toolkit-database-csv-registry-batch-synthetic.xml'
 HEADER = ('Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,'
           'Firmware Version,Primary Application,Secondary Application,Area,'
@@ -166,8 +166,8 @@ class FactoryRegistryTests(unittest.TestCase):
 
     def test_refusal_reasons_name_the_registry_decision(self):
         for kind, firmware, needle in (
-            ('IOPE1R1', '1.0', 'TIOPECGateAgent has no admitted CSV association model'),
-            ('PC_SHAC', '1.0', 'TPCSHACCGateAgent has no admitted CSV association model'),
+            ('KEYGL5', '5.5.00', 'no exact-class CGate agent registration'),
+            ('IOPE1R1', '99', 'no static registration covers firmware 99'),
             ('KEY4', '1.0', 'TCBusKeyInputCGateAgent'),
             ('SENPIRIB', '2.4.00', 'TCBusSurfaceMountPIRSensorCGateAgent'),
             ('DIMDN8', '2.6.00', 'admitted only at its pinned firmware'),
@@ -263,9 +263,12 @@ class RegistryBatchCSVTests(unittest.TestCase):
                                     if group.findtext('Address') == '12'))
 
         for name, kind, change, needle in (
-            ('temperature agent', 'DIMPR1', temperature, 'TSENTEMPCGateAgent'),
-            ('SHAC agent', 'DIMDS8', shac, 'TPCSHACCGateAgent'),
-            ('old SENLL agent', 'SENPIRIB', old_light_sensor, 'TSENLLCGateAgent'),
+            ('temperature missing Application255', 'DIMPR1', temperature,
+             'Expected exactly one native Application at address 255'),
+            ('SHAC missing Application255', 'DIMDS8', shac,
+             'Expected exactly one native Application at address 255'),
+            ('old SENLL missing LevelGroupAddress', 'SENPIRIB', old_light_sensor,
+             'Expected exactly one stored native parameter: LevelGroupAddress'),
             ('firmware', 'RELDC4', firmware, 'pinned firmware'),
             ('secondary', 'ANOMB8', secondary, 'unused secondary'),
             ('mask without secondary', 'SENPIRIB', unused_secondary, 'secondary group blocks'),

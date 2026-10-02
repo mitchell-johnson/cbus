@@ -132,16 +132,71 @@ def _parameter(unit, name):
     return rows[0].getAttribute('Value')
 
 
-def _source_applications(unit):
+def _source_applications(unit, *, default_primary=56):
     """Bounded base FormatCgApplication input, before object resolution."""
     raw = _parameter(unit, 'Application')
     if raw == '':
-        return 56, 255
+        return default_primary, 255
     values = raw.split(' ')
     if len(values) not in (1, 2):
         raise ValueError('Source Application requires zero, one or two decimal byte addresses')
     addresses = tuple(_byte(value, 'Source Application') for value in values)
     return addresses if len(addresses) == 2 else (addresses[0], 255)
+
+
+def _source_array(unit, parameter, count):
+    stored = _tokens(_parameter(unit, parameter), parameter)
+    if len(stored) > 32:
+        raise ValueError('Source loader stored group array exceeds thirty-two slots')
+    return (stored + (255,) * count)[:count]
+
+
+def _last_group_addresses(unit, family, primary, secondary_node):
+    """Exact final group-manager order, including consumed pre-report lookups."""
+    parameter = family['group_parameter']
+    if parameter is None:
+        return (), 0
+    if type(parameter) is tuple:
+        return tuple(_tokens(_parameter(unit, name), name, count=1)[0]
+                     for name in parameter), 0
+    if parameter == 'temperature_mode':
+        address = _byte(_field(primary, 'Address'), 'Primary Application')
+        names = (('TemperatureGroup',) if address == 25 else
+                 ('GroupAddress',) if address == 172 else () if address == 228 else
+                 ('GroupAddress', 'EconomyGroup', 'ControlledGroup'))
+        # In non-lighting modes the loader also resolves three unused primary
+        # groups, although those references are omitted from the manager.
+        if address in (25, 172, 228):
+            _one_by_address(primary, 'Group', 255)
+        return tuple(_tokens(_parameter(unit, name), name, count=1)[0]
+                     for name in names), 0
+    if parameter == 'iope':
+        inputs = _source_array(unit, 'InputGroupAddress', 8)
+        mask, = _tokens(_parameter(unit, 'SecondApplicationBlocks'),
+                        'SecondApplicationBlocks', count=1)
+        # LoadInputBlocks resolves secondary per-block references first. The
+        # final report-manager reload deliberately uses primary for all eight.
+        for index, address in enumerate(inputs):
+            _one_by_address(secondary_node if mask & (1 << index) else primary,
+                            'Group', address)
+        outputs = _source_array(unit, 'OutputGroupAddress', family['output_channels'])
+        return inputs + outputs, 0
+    if parameter == 'wireless_channels':
+        keys, = _tokens(_parameter(unit, 'InstalledKeys'), 'InstalledKeys', count=1)
+        count, = _tokens(_parameter(unit, 'InstalledChannels'), 'InstalledChannels', count=1)
+        raw_mask = _parameter(unit, 'ChannelRelayMask')
+        if not re.fullmatch(r'[0-9]+|0[xX][0-9a-fA-F]+', raw_mask):
+            raise ValueError('Stored ChannelRelayMask must be a bounded nonnegative integer')
+        mask = int(raw_mask, 16 if raw_mask.lower().startswith('0x') else 10)
+        routes = _tokens(_parameter(unit, 'OutputGroupSecondary'),
+                         'OutputGroupSecondary', count=count)
+        if not 0 <= keys <= 16 or not 0 <= count <= 16 or mask >= 1 << count:
+            raise ValueError('Wireless fan installed counts or relay mask exceed the loader bounds')
+        if any(route not in (0, 1) for route in routes):
+            raise ValueError('Stored wireless secondary arrays must contain only zero or one')
+        groups = _tokens(_parameter(unit, 'OutputGroup'), 'OutputGroup', count=count)
+        return groups, sum(route << index for index, route in enumerate(routes))
+    return _source_array(unit, parameter, family['blocks']), 0
 
 
 def _one_by_address(parent, kind, address):
@@ -252,6 +307,17 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
             secondary_node if index < 8 and secondary_mask & (1 << index) else primary
             for index in range(len(group_addresses)))
         area_address = 255
+    elif family is not None and family.get('last_source_model'):
+        app_values = _source_applications(unit, default_primary=family['application_default'])
+        primary = _one_by_address(network, 'Application', app_values[0])
+        secondary_node = _one_by_address(network, 'Application', app_values[1])
+        secondary = _field(secondary_node, 'TagName')
+        group_addresses, secondary_mask = _last_group_addresses(
+            unit, family, primary, secondary_node)
+        group_applications = tuple(secondary_node if secondary_mask & (1 << index)
+                                   else primary for index in range(len(group_addresses)))
+        area_address = (_tokens(_parameter(unit, 'AreaGroupAddress'),
+                                'AreaGroupAddress', count=1)[0] if family['has_area'] else None)
     elif family is not None and family.get('generic'):
         app_values = _source_applications(unit)
         primary = _one_by_address(network, 'Application', app_values[0])

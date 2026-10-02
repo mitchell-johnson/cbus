@@ -253,6 +253,7 @@ def _operation(value, *, allow_add_dialog=False):
         permitted.update(('corridor', field) for field in
                          ('link_group', 'office_group', 'corridor_group'))
         permitted.add(('activation', 'action'))
+        permitted.update(('applications', field) for field in ('primary', 'secondary'))
         if (set(value) - {'op', 'panel', 'option', 'value', 'cancelled'}
                 or (value.get('panel'), value.get('option')) not in permitted
                 or (value.get('cancelled') is not True and
@@ -824,6 +825,9 @@ class EdltParentTransaction:
                 if kind == 'corridor':
                     options = {'edits': ([] if operation.get('cancelled') else
                                [{'field': operation['option'], 'value': operation['value']}])}
+                elif kind == 'applications':
+                    options = {'edits': ([] if operation.get('cancelled') else
+                               [{'field': operation['option'], 'address': operation['value']}])}
             if kind in dialog_panels:
                 owner = 'ordered parent Add panel (' + kind + ')'
             if kind == 'reset':

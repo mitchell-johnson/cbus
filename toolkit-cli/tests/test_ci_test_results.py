@@ -81,6 +81,62 @@ class NewInteropSelectionTests(unittest.TestCase):
                 for module in modules:
                     self.assertEqual(audit_body.count("--require-module tests/" + module), 1)
 
+    def test_final_csv_and_documentation_public_rosters_are_required(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        csv = 'tests/test_cgate_csv_last_profiles_interop.py'
+        document = 'tests/test_cgate_project_documentation_interop.py'
+        for backend, target, selection in [('mock', 'check-cgate-interop', 'cgate-mock'),
+                                            ('daemon', 'check-cmqtt-interop', 'cmqttd')]:
+            with self.subTest(backend=backend):
+                expected = {
+                    csv + '::test_public_csv_last_profiles_all_literals_and_ordered_selection[' + backend + ']',
+                    csv + '::test_public_csv_last_profiles_lost_snapshot_is_terminal_without_replay[' + backend + ']',
+                }
+                expected.update(csv + '::test_public_csv_last_profiles_refusal_is_atomic[' + fault + '-'
+                                + backend + ']' for fault in ('bad-profile', 'missing-application',
+                                    'missing-secondary-input-group', 'missing-unused-temperature-group', 'bad-fan-route'))
+                expected.update(document + '::' + name + '[' + backend + ']' for name in (
+                    'test_public_database_document_snapshot_and_literal_bodies',
+                    'test_public_database_document_absent_network_is_atomic',
+                    'test_public_database_document_lost_snapshot_has_no_output_or_retry'))
+                body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+                actual = [node for node in re.findall(r"'(tests/test_[^']+)'", body)
+                          if node.startswith((csv + '::', document + '::'))]
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                self.assertEqual(len(expected), 10)
+                audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+                for module in (csv, document):
+                    self.assertEqual(audit.count('--require-module ' + module), 1)
+
+    def test_application_reset_add_public_roster_is_required(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgate_edlt_application_reset_add_interop.py'
+        for backend, target, selection in [('mock', 'check-cgate-interop', 'cgate-mock'),
+                                            ('daemon', 'check-cmqtt-interop', 'cmqttd')]:
+            with self.subTest(backend=backend):
+                expected = {module + '::test_public_application_reset_add_complete_history[' + case + '-'
+                            + backend + ']' for case in ('application-description-group',
+                                'cancel-repeated-primary-secondary', 'reset-application-group',
+                                'reset-cancelled-application-fresh-primary',
+                                'reset-initial-scene-before-action', 'reset-application-scene-corridor',
+                                'preceding-and-future-owner', 'expanded-reserved-confirmed')}
+                expected.update(module + '::' + name + '[' + backend + ']' for name in (
+                    'test_public_application_reset_add_lost_save_is_not_replayed',
+                    'test_public_application_add_guards_refuse_without_persistent_send'))
+                body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+                actual = [node for node in re.findall(r"'(tests/test_[^']+)'", body)
+                          if node.startswith(module + '::')]
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                self.assertEqual(len(expected), 10)
+                audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+                self.assertEqual(audit.count('--require-module ' + module), 1)
+
 
 class CITestResultsTests(unittest.TestCase):
     def setUp(self):

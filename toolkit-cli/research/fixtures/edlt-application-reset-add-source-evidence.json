@@ -1,0 +1,275 @@
+{
+  "format": "cbus-edlt-application-reset-add-source-v1",
+  "source": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "static_only": true,
+  "original_instruction_execution": 0,
+  "methods": [
+    {
+      "method": "CIS_TfrmKEYGL5.TfrmKEYGL5.AddSharpApplication",
+      "start": "0x11c5b44",
+      "end": "0x11c5c60",
+      "bytes": 284,
+      "sha256": "297cefed1af7767b8fdaf70f4f8d7ff2ebd6bee7eab3291c1e3a4ca7e9de52cf"
+    },
+    {
+      "method": "CIS_TCBusNetworkGUIAgent.ExecuteDialogWithParentHandle_AddApplication",
+      "start": "0xd8e344",
+      "end": "0xd8e404",
+      "bytes": 192,
+      "sha256": "f89eee4dc87807df4a8290802131babffd4707ecf2b4f70df910dea40f260fd5"
+    },
+    {
+      "method": "CIS_TCBusNetworkGUIAgent.ExecuteDialogWithParentHandle_AddApplication",
+      "start": "0xd8e404",
+      "end": "0xd8e4e8",
+      "bytes": 228,
+      "sha256": "b1785ad018ca40b3f37f8134d76d0bdc0e258b606b000b1f80099d6d1b75b509"
+    },
+    {
+      "method": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.AddApplication_MinMax",
+      "start": "0xd8dfe4",
+      "end": "0xd8e140",
+      "bytes": 348,
+      "sha256": "6adaad1a7400ff534ce6a61a9a7b6ebbd2caa4ca5006f1ce280f5f22d298a27c"
+    },
+    {
+      "method": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.AddApplication_eDLT",
+      "start": "0xd8e140",
+      "end": "0xd8e28c",
+      "bytes": 332,
+      "sha256": "9d6826292feb9f9d8ec154693bbe1b832b17218cec5838396beffc41a708c0d9"
+    },
+    {
+      "method": "CIS_TCBusNetworkGUIAgent.TCBusNetworkGUIAgent.AddApplication",
+      "start": "0xd8de88",
+      "end": "0xd8dfe4",
+      "bytes": 348,
+      "sha256": "07f6c69864c1b5e8198017df8577ebe5904ceb99efcefeb79dde3d8a327e4ca8"
+    },
+    {
+      "method": "CIS_TddApplication.TddApplication.SetValues",
+      "start": "0xcd4250",
+      "end": "0xcd42e4",
+      "bytes": 148,
+      "sha256": "6d73c2e70191933e94722b0b8fa3574b36859d9453f314d30be804ec6c8781ea"
+    },
+    {
+      "method": "CIS_TfrmApplication.TfrmApplication.IsAllowedApplication",
+      "start": "0xefb2f0",
+      "end": "0xefb3b0",
+      "bytes": 192,
+      "sha256": "716d63507a69b7a72f23911f8643ed47acf41a431097d412c1b5c823d1a36062"
+    },
+    {
+      "method": "CIS_TfrmApplication.TfrmApplication.FormShow",
+      "start": "0xefa9e4",
+      "end": "0xefb1fc",
+      "bytes": 2072,
+      "sha256": "9f4fa139cd835eaa412e95631109ae8af1449d58da96d6dfa066c8b8d629c706"
+    },
+    {
+      "method": "CIS_TfrmApplication.TfrmApplication.actOKExecute",
+      "start": "0xef9ed4",
+      "end": "0xefa414",
+      "bytes": 1344,
+      "sha256": "c7578bca2cff031d5de68c4a6ad40737f161d3cee2da55eee5b91f54e813a3be"
+    },
+    {
+      "method": "CIS_TfrmApplication.TfrmApplication.cmbApplicationPropertiesChange",
+      "start": "0xefa5fc",
+      "end": "0xefa76c",
+      "bytes": 368,
+      "sha256": "c8928ca8c238bea1cf124e123f230fd14b2ab628e94abb555e4eb20a6ef39346"
+    },
+    {
+      "method": "CIS_TddApplication.TddApplication.Initialise",
+      "start": "0xcd41ec",
+      "end": "0xcd423c",
+      "bytes": 80,
+      "sha256": "a0fed3d0ce8adb521a3d3e3bd053a93ad48c5e8ad40c08edaf7dbcc0bae5382b"
+    },
+    {
+      "method": "CIS_TddApplication.TddApplication.SetEvents",
+      "start": "0xcd423c",
+      "end": "0xcd4250",
+      "bytes": 20,
+      "sha256": "b3e4f6d43f8b4d80ba72f8d9daf628d971606b946bea73dd7f347b959de12baf"
+    },
+    {
+      "method": "CIS_TfrmApplication.TfrmApplication.FormCreate",
+      "start": "0xefa874",
+      "end": "0xefa948",
+      "bytes": 212,
+      "sha256": "4469f7265cdcff9e4f66ba8cf637b05c3bd46fb7d361dfc224e619f1a1785385"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBUSApplicationManager.IsAllowedApplication",
+      "start": "0xf2698c",
+      "end": "0xf26a48",
+      "bytes": 188,
+      "sha256": "ce004e4d773386bb9043c659bbd99ca3e93dca053b5c7299e8010a2ecf9da2b3"
+    },
+    {
+      "method": "CIS_TddApplication.TddApplication.Direct",
+      "start": "0xcd40ac",
+      "end": "0xcd41ec",
+      "bytes": 320,
+      "sha256": "121f98efffba0777001489b2cd15ef5f22e084fbaff9993e3c9af823656d0b61"
+    },
+    {
+      "method": "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications",
+      "start": "0x136bc30",
+      "end": "0x136c174",
+      "bytes": 1348,
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    },
+    {
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplications.GetApplicationName",
+      "start": "0x85adc4",
+      "end": "0x85ae74",
+      "bytes": 176,
+      "sha256": "078c110ccb2e15efbdbf43b63ddbaf997656c4204b41ee33081491af4ee86309"
+    },
+    {
+      "method": "CIS_TKipperPreferences.CIS_TKipperPreferences",
+      "start": "0x136b1bc",
+      "end": "0x136bc30",
+      "bytes": 2676,
+      "sha256": "d9d91d491b8bd0d7547b12acf9820746689873e7216e89e07c2a21ba3940a48e"
+    },
+    {
+      "method": "CIS_TCommonCBus.ApplicationRangeByAddress",
+      "start": "0xf2622c",
+      "end": "0xf26278",
+      "bytes": 76,
+      "sha256": "fea3769fab4639e187ba2636815bd3809de814d3fc3026094647d03ed4371e9a"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusNetwork.ApplicationByNameExcludingCurrent",
+      "start": "0xf3187c",
+      "end": "0xf3196c",
+      "bytes": 240,
+      "sha256": "79c39a47f52b44ec79ce786d3934a8e8cc64d2d3f1162602cbe86b715852c5e6"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusNetworkManager.ApplicationWithSameNameDiffAddress",
+      "start": "0xf29660",
+      "end": "0xf29734",
+      "bytes": 212,
+      "sha256": "46c8e9b5ee9730ef1a93dc4860e74aa2e675aed3a1b5389e2e1fc06e3fd14d65"
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusNetworkManager.ApplicationWithSameAddressDiffName",
+      "start": "0xf29734",
+      "end": "0xf29828",
+      "bytes": 244,
+      "sha256": "eaecc8b512a17fd2a9fac1e9bdeb9471e193a78b04c25c4d3488dad4dd67671e"
+    }
+  ],
+  "overload_correction": {
+    "earlier_source": "edlt-add-dialog-evidence.json",
+    "earlier_sha256": "8668e520d3e1d94a70ba18b0394922b51865569266634c44f464d70848be2c81",
+    "misread": "AddSharpApplication was associated with the distinct MinMax overload",
+    "actual_call": "0x11c5c15 -> 0xd8e404",
+    "actual_arguments": {
+      "owner": "hosting TfrmKEYGL5 pointer",
+      "edlt": true,
+      "window_handle": "hosting form handle"
+    },
+    "minmax_overload": "0xd8e344 is not this call",
+    "director_flag": "AddApplication_eDLT sets director+0x58=1; Direct copies it to form+0x3f1 before ShowModal"
+  },
+  "rules": {
+    "creation_preferences": {
+      "explicit_input_required": true,
+      "original_registry_defaults": {
+        "allow_legacy": false,
+        "allow_user_defined": false
+      },
+      "legacy_pointer": "0x13c2060 -> 0x144def0",
+      "user_defined_pointer": "0x13c2ddc -> 0x144def4"
+    },
+    "normal_addresses": [
+      [
+        48,
+        95
+      ],
+      [
+        112,
+        114
+      ],
+      [
+        136,
+        136
+      ]
+    ],
+    "either_pref_enabled_edlt_addresses": [
+      [
+        48,
+        127
+      ],
+      [
+        136,
+        136
+      ]
+    ],
+    "allocator": "ascending unused network addresses; dialog may select another listed address",
+    "standard_names": {
+      "56": "Lighting",
+      "95": "DALI",
+      "113": "Irrigation Control",
+      "114": "Pool, Spa, Pond Control",
+      "136": "Heating (Legacy)"
+    },
+    "other_names": "blank editable name; acceptance requires explicit nonblank trimmed name",
+    "warning_order": [
+      "2241 blank name",
+      "2247 exact Project TagName equality",
+      "2242 selected-network ASCII case duplicate",
+      "3171 confirm reserved range96..127",
+      "2244 project-wide same case-insensitive name at different address",
+      "2245 other-network same address with different exact name"
+    ],
+    "description": "Trim on accept; default empty",
+    "cancel": "no add/save/SelectedValue; refresh still sees unchanged state",
+    "hosting_boundary": "standalone eDLT host; concurrent unrelated DIMDD4/DIMDD8 dialog history is not modeled"
+  },
+  "reset_sequence": [
+    "BeforeChangePpAttributes radio+RestorePreset",
+    "PP ResetToDefaults except retained identity fields",
+    "clear byte1 of all21 oldWidgets",
+    "AfterChangePpAttributes -> AfterLoadPPData fresh graph",
+    "SetupForm and SetUpControls",
+    "PopulatePrimarySecondaryApplication and ResetBindings",
+    "insert fresh Widget10 TimeDate",
+    "later Add uses fresh current controls and progressive metadata",
+    "one parent terminal normalization, CRC and PP/project save"
+  ],
+  "managed_sources": [
+    {
+      "component": "EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+      "bytes": 49270
+    },
+    {
+      "component": "FrmBaseUnit.cs",
+      "sha256": "060323b11494c7a697656d048f97351526a143e339db767731675a87ba1b1b16",
+      "bytes": 300441
+    },
+    {
+      "component": "ComboBoxAddEdit.cs",
+      "sha256": "77a6f18293f1213797a48193e153387b2caa30103a1061c40a3f1a82e5996027",
+      "bytes": 13923
+    }
+  ],
+  "limits": [
+    "no original GUI or device execution",
+    "Application preferences are supplied snapshots, not observed local Toolkit registry",
+    "all whitespace-only XML text is outside the existing structural comparator",
+    "Reset remains first, with supported existing binding variants and exact874-profile requirements",
+    "existing protected/deferred Level COPY/plain LOAD and selector issues unchanged"
+  ]
+}

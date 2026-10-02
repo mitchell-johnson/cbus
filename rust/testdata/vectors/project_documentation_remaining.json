@@ -1,0 +1,3488 @@
+{
+  "format": "cbus-project-documentor-remaining-v1",
+  "basis": "Authored synthetic saved PP and literal source-transcribed report/usage/action expectations; no original vendor execution or generated-page comparison.",
+  "project": "DOCREST",
+  "network": 254,
+  "generated_at": "2026-10-02T12:00:00Z",
+  "applications": [
+    {
+      "address": 56,
+      "name": "Lighting",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 57,
+      "name": "Second Lighting",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 202,
+      "name": "Trigger Control",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 203,
+      "name": "Enable Control",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 206,
+      "name": "Error Reporting",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "address": 255,
+      "name": "<Unused>",
+      "description": "",
+      "groups": [
+        {
+          "address": 1,
+          "name": "G1",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 2,
+          "name": "G2",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 3,
+          "name": "G3",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 4,
+          "name": "G4",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 5,
+          "name": "G5",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 6,
+          "name": "G6",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 7,
+          "name": "G7",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 8,
+          "name": "G8",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 9,
+          "name": "G9",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "address": 255,
+          "name": "<Unused>",
+          "description": "",
+          "levels": [
+            {
+              "address": 11,
+              "name": "L11",
+              "value": 99
+            },
+            {
+              "address": 22,
+              "name": "L22",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "old-senll-exponential",
+      "family": "LightLevelSensor",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "1.2.67",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "LevelGroupAddress": [
+            1
+          ],
+          "OnOffGroupAddress": [
+            2
+          ],
+          "EnableGroupAddress": [
+            3
+          ],
+          "AreaGroupAddress": [
+            4
+          ],
+          "TargetLUX": [
+            52
+          ],
+          "Hystersis": [
+            52
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_1\">G1</a><br />",
+        "On/Off Group: <a href=\"#254_56_2\">G2</a><br />",
+        "Enable Group: <a href=\"#254_56_3\">G3</a><br />",
+        "Target: 105 Lux, 10 ft-candle<br />",
+        "Margin: 160 Lux, 15 ft-candle (100%)<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "Level Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 2,
+          "kind": "other",
+          "html": "On/Off Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 3,
+          "kind": "other",
+          "html": "Enable Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 4,
+          "kind": "other",
+          "html": "Area Group",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 1,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 7,
+          "address": 11,
+          "value": 99,
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    },
+    {
+      "id": "pe-cell-unused",
+      "family": "LightLevelSensor",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PE_CELL",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "1.2.67",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "LevelGroupAddress": [
+            255
+          ],
+          "OnOffGroupAddress": [
+            255
+          ],
+          "EnableGroupAddress": [
+            255
+          ],
+          "AreaGroupAddress": [
+            1
+          ],
+          "TargetLUX": [
+            0
+          ],
+          "Hystersis": [
+            0
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: &#60;Unused&#62;<br />",
+        "On/Off Group: &#60;Unused&#62;<br />",
+        "Enable Group: &#60;Unused&#62;<br />",
+        "Target: 25 Lux, 2 ft-candle<br />",
+        "Margin: 0 Lux, 0 ft-candle (0%)<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 255,
+          "kind": "other",
+          "html": "On/Off Group<br/>Enable Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 255,
+          "kind": "input",
+          "html": "Level Group",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "st7-senll-secondary-broadcast",
+      "family": "ST7LightLevelSensor",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "2.0.01",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            255,
+            1,
+            2,
+            255,
+            3,
+            255,
+            255,
+            255
+          ],
+          "SecondApplicationBlocks": [
+            20
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            4
+          ],
+          "BroadcastBlock": [
+            4
+          ],
+          "PECTargetLux": [
+            50
+          ],
+          "PECMarginLux": [
+            10
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            61,
+            0,
+            0,
+            0
+          ],
+          "AreaGroupAddress": [
+            4
+          ],
+          "PECFunctionActive": [
+            1
+          ],
+          "PIREnablerGroup": [
+            255
+          ],
+          "CorridorLinkEnablerGroup": [
+            255
+          ],
+          "ControlAppGroupAddress": [
+            255
+          ],
+          "SceneTable": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_1\">G1</a><br />",
+        "On/Off Group: <a href=\"#254_57_2\">G2</a><br />",
+        "Enable Group: <a href=\"#254_56_4\">G4</a><br />",
+        "Broadcast Group: <a href=\"#254_57_3\">G3</a><br />",
+        "Broadcast Time: 0h1m1s<br />",
+        "Target: 500 Lux, 46 ft-candle<br />",
+        "Margin: 20%<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "Light Level Maintenance",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 2,
+          "kind": "input",
+          "html": "Block (Unused)",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 3,
+          "kind": "other",
+          "html": "Light Level Broadcast Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 4,
+          "kind": "other",
+          "html": "Area Group<br/>Light Level Maintenance Enable",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 7,
+          "address": 11,
+          "value": 99,
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    },
+    {
+      "id": "st7-senll-explicit-idle-zero",
+      "family": "ST7LightLevelSensor",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "SENLL",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "2.4.99",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            57
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "GroupAddress": [
+            255,
+            1,
+            2,
+            255,
+            3,
+            255,
+            255,
+            255
+          ],
+          "SecondApplicationBlocks": [
+            20
+          ],
+          "PECFunctionBlock": [
+            1
+          ],
+          "PECEnablerGroup": [
+            4
+          ],
+          "BroadcastBlock": [
+            4
+          ],
+          "PECTargetLux": [
+            0
+          ],
+          "PECMarginLux": [
+            255
+          ],
+          "TimerHighByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "TimerLowByte": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "AreaGroupAddress": [
+            4
+          ],
+          "PECFunctionActive": [
+            1
+          ],
+          "PIREnablerGroup": [
+            255
+          ],
+          "CorridorLinkEnablerGroup": [
+            255
+          ],
+          "ControlAppGroupAddress": [
+            255
+          ],
+          "SceneTable": [
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "JPCommand": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "SRCommand": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "LPCommand": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "LRCommand": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "PIRLightMovement": [
+            0
+          ],
+          "PIRDarkMovement": [
+            0
+          ],
+          "PIRDark": [
+            0
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Light Level Group: <a href=\"#254_56_1\">G1</a><br />",
+        "On/Off Group: <a href=\"#254_57_2\">G2</a><br />",
+        "Enable Group: <a href=\"#254_56_4\">G4</a><br />",
+        "Broadcast Group: <a href=\"#254_57_3\">G3</a><br />",
+        "Broadcast Time: 0h0m0s<br />",
+        "Target: 0 Lux, 0 ft-candle<br />",
+        "Margin: 0%<br />"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "Light Level Maintenance",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 2,
+          "kind": "input",
+          "html": "Block (Unused)",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 3,
+          "kind": "other",
+          "html": "Light Level Broadcast Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 4,
+          "kind": "other",
+          "html": "Area Group<br/>Light Level Maintenance Enable",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "pc_whad-manual-zone",
+      "family": "WHAA",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_WHAD",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            255
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "UsePnP": [
+            0
+          ],
+          "ZoneNumber": [
+            10
+          ],
+          "AlternateApplication": [
+            56
+          ],
+          "AlternateVolumeControlGroup": [
+            1
+          ],
+          "AlternateBassControlGroup": [
+            2
+          ],
+          "AlternateTrebleControlGroup": [
+            3
+          ],
+          "AlternateNextSourceGroup": [
+            4
+          ],
+          "AlternatePrevSourceGroup": [
+            5
+          ],
+          "AlternateButtonAGroup": [
+            6
+          ],
+          "AlternateButtonBGroup": [
+            7
+          ],
+          "AlternateLanguageGroup": [
+            8
+          ],
+          "AlternateAbsoluteSourceGroup": [
+            9
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Use Matrix Switcher Auto Assign Zone: No<br/>",
+        "Matrix Switcher Number: 2<br/>",
+        "Zone Number: 3<br/>",
+        "<br/>",
+        "CBus Control Application: <a href=\"#254_56\">Lighting</a><br/>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Audio Control</th></tr><tr><th>Volume</th><td><a href=\"#254_56_1\">G1</a></td></tr><tr><th>Bass</th><td><a href=\"#254_56_2\">G2</a></td></tr><tr><th>Treble</th><td><a href=\"#254_56_3\">G3</a></td></tr></table>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Source/Dynamic Control Groups</th></tr><tr><th>Next Source</th><td><a href=\"#254_56_4\">G4</a></td></tr><tr><th>Prev Source</th><td><a href=\"#254_56_5\">G5</a></td></tr><tr><th>Absolute</th><td><a href=\"#254_56_9\">G9</a></td></tr><tr><th>Dynamic 1</th><td><a href=\"#254_56_6\">G6</a></td></tr><tr><th>Dynamic 2</th><td><a href=\"#254_56_7\">G7</a></td></tr></table>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "other",
+          "html": "Volume Control",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 8,
+          "kind": "other",
+          "html": "Language Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 9,
+          "kind": "other",
+          "html": "Absolute Source",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 1,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "pc_whar-manual-zone",
+      "family": "WHAA",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_WHAR",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            255
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "UsePnP": [
+            0
+          ],
+          "ZoneNumber": [
+            10
+          ],
+          "AlternateApplication": [
+            56
+          ],
+          "AlternateVolumeControlGroup": [
+            1
+          ],
+          "AlternateBassControlGroup": [
+            2
+          ],
+          "AlternateTrebleControlGroup": [
+            3
+          ],
+          "AlternateNextSourceGroup": [
+            4
+          ],
+          "AlternatePrevSourceGroup": [
+            5
+          ],
+          "AlternateButtonAGroup": [
+            6
+          ],
+          "AlternateButtonBGroup": [
+            7
+          ],
+          "AlternateLanguageGroup": [
+            8
+          ],
+          "AlternateAbsoluteSourceGroup": [
+            9
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Use Matrix Switcher Auto Assign Zone: No<br/>",
+        "Matrix Switcher Number: 2<br/>",
+        "Zone Number: 3<br/>",
+        "<br/>",
+        "CBus Control Application: <a href=\"#254_56\">Lighting</a><br/>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Audio Control</th></tr><tr><th>Volume</th><td><a href=\"#254_56_1\">G1</a></td></tr><tr><th>Bass</th><td><a href=\"#254_56_2\">G2</a></td></tr><tr><th>Treble</th><td><a href=\"#254_56_3\">G3</a></td></tr></table>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Source/Dynamic Control Groups</th></tr><tr><th>Next Source</th><td><a href=\"#254_56_4\">G4</a></td></tr><tr><th>Prev Source</th><td><a href=\"#254_56_5\">G5</a></td></tr><tr><th>Absolute</th><td><a href=\"#254_56_9\">G9</a></td></tr><tr><th>Dynamic 1</th><td><a href=\"#254_56_6\">G6</a></td></tr><tr><th>Dynamic 2</th><td><a href=\"#254_56_7\">G7</a></td></tr></table>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "other",
+          "html": "Volume Control",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 8,
+          "kind": "other",
+          "html": "Language Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 9,
+          "kind": "other",
+          "html": "Absolute Source",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 1,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "pc_wharb-manual-zone",
+      "family": "WHAA",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_WHARB",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            255
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "UsePnP": [
+            0
+          ],
+          "ZoneNumber": [
+            10
+          ],
+          "AlternateApplication": [
+            56
+          ],
+          "AlternateVolumeControlGroup": [
+            1
+          ],
+          "AlternateBassControlGroup": [
+            2
+          ],
+          "AlternateTrebleControlGroup": [
+            3
+          ],
+          "AlternateNextSourceGroup": [
+            4
+          ],
+          "AlternatePrevSourceGroup": [
+            5
+          ],
+          "AlternateButtonAGroup": [
+            6
+          ],
+          "AlternateButtonBGroup": [
+            7
+          ],
+          "AlternateLanguageGroup": [
+            8
+          ],
+          "AlternateAbsoluteSourceGroup": [
+            9
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Use Matrix Switcher Auto Assign Zone: No<br/>",
+        "Matrix Switcher Number: 2<br/>",
+        "Zone Number: 3<br/>",
+        "<br/>",
+        "CBus Control Application: <a href=\"#254_56\">Lighting</a><br/>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Audio Control</th></tr><tr><th>Volume</th><td><a href=\"#254_56_1\">G1</a></td></tr><tr><th>Bass</th><td><a href=\"#254_56_2\">G2</a></td></tr><tr><th>Treble</th><td><a href=\"#254_56_3\">G3</a></td></tr></table>",
+        "<table border=\"1\"><tr><th colspan=\"2\">Source/Dynamic Control Groups</th></tr><tr><th>Next Source</th><td><a href=\"#254_56_4\">G4</a></td></tr><tr><th>Prev Source</th><td><a href=\"#254_56_5\">G5</a></td></tr><tr><th>Absolute</th><td><a href=\"#254_56_9\">G9</a></td></tr><tr><th>Dynamic 1</th><td><a href=\"#254_56_6\">G6</a></td></tr><tr><th>Dynamic 2</th><td><a href=\"#254_56_7\">G7</a></td></tr></table>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "other",
+          "html": "Volume Control",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 8,
+          "kind": "other",
+          "html": "Language Group",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 9,
+          "kind": "other",
+          "html": "Absolute Source",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "output",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 57,
+          "group": 1,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "whaa-auto-unused",
+      "family": "WHAA",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_WHAR",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            56,
+            255
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "UsePnP": [
+            255
+          ],
+          "AlternateApplication": [
+            255
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "Use Matrix Switcher Auto Assign Zone: Yes<br/>",
+        "<br/>",
+        "CBus Control Application: &#60;Unused&#62;<br/>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "id": "pc_dal2b-two-networks",
+      "family": "DALI2B",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_DAL2B",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            206,
+            56
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "CBusToDali": [
+            255,
+            0,
+            64,
+            128,
+            224,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "DaliToCBus": [
+            1,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            9,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            3,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            4,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "DaliARampMatching": [
+            3
+          ],
+          "DaliAErrorReportingStatus": [
+            1
+          ],
+          "DaliAErrorRefreshTime": [
+            255
+          ],
+          "DaliAEnableErrorGroup": [
+            1
+          ],
+          "DaliAEnableErrorLevel": [
+            11
+          ],
+          "DaliADisableErrorGroup": [
+            255
+          ],
+          "DaliATriggerErrorGroup": [
+            7
+          ],
+          "DaliATriggerErrorAcSel": [
+            11
+          ],
+          "DaliBRampMatching": [
+            0
+          ],
+          "DaliBErrorReportingStatus": [
+            0
+          ],
+          "DaliBEnableErrorGroup": [
+            255
+          ],
+          "DaliBDisableErrorGroup": [
+            2
+          ],
+          "DaliBDisableErrorLevel": [
+            22
+          ],
+          "DaliBTriggerErrorGroup": [
+            7
+          ],
+          "DaliBTriggerErrorAcSel": [
+            11
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "<table border=\"0\">",
+        "<tr><th>Dali Network A</th><th>Dali Network B</th></tr><tr>",
+        "<td><table border=\"1\"><tr><th>Live Error Reporting</th><td>On</td></tr><tr><th>Refresh Error Time</th><td>1 min</td></tr><tr><th>Enable Error Reporting Group</th><td><a href=\"#254_203_1\">G1</a></td></tr><tr><th>Enable Error Reporting Value</th><td><a href=\"#254_203_1_11\">L11</a></td></tr><tr><th>Disable Error Reporting Group</th><td>Unused</td></tr><tr><th>Disable Error Reporting Value</th><td>&nbsp;</td></tr><tr><th>Trigger Full Error Report Group</th><td><a href=\"#254_202_7\">G7</a></td></tr><tr><th>Trigger Full Report Action Selector</th><td><a href=\"#254_202_7_11\">L11</a></td></tr><tr><th>Match Ramp Rate</th><td>Yes</td></tr><tr><th>Dali A to C-Bus Mapping</th><td>1:1 Mapping</td></tr></table></td>",
+        "<td><table border=\"1\"><tr><th>Live Error Reporting</th><td>Off</td></tr><tr><th>Refresh Error Time</th><td>&nbsp; min</td></tr><tr><th>Enable Error Reporting Group</th><td>Unused</td></tr><tr><th>Enable Error Reporting Value</th><td>&nbsp;</td></tr><tr><th>Disable Error Reporting Group</th><td><a href=\"#254_203_2\">G2</a></td></tr><tr><th>Disable Error Reporting Value</th><td><a href=\"#254_203_2_22\">L22</a></td></tr><tr><th>Trigger Full Error Report Group</th><td><a href=\"#254_202_7\">G7</a></td></tr><tr><th>Trigger Full Report Action Selector</th><td><a href=\"#254_202_7_11\">L11</a></td></tr><tr><th>Match Ramp Rate</th><td>No</td></tr><tr><th>Dali B to C-Bus Mapping</th><td>1:1 Mapping</td></tr></table></td>",
+        "</tr></table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>C-Bus Group</th><th>Dali Action</th><th>Mapping</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">G1</a></td><td>DALI A Unit 0</td><td>1:1 Mapping</td></tr><tr><td><a href=\"#254_56_2\">G2</a></td><td>DALI A Group 1</td><td>Diabled</td></tr><tr><td><a href=\"#254_56_3\">G3</a></td><td>DALI B Unit 0</td><td>1:1 Mapping</td></tr><tr><td><a href=\"#254_56_4\">G4</a></td><td>DALI B Broadcast</td><td>1:1 Mapping</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "DALI A Unit 0",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 2,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 2,
+          "kind": "output",
+          "html": "DALI A Group 1",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 3,
+          "kind": "input",
+          "html": "DALI B Unit 0",
+          "status": "recovered"
+        },
+        {
+          "application": 203,
+          "group": 1,
+          "kind": "other",
+          "html": "Dali A Enable Error Group",
+          "status": "recovered"
+        },
+        {
+          "application": 203,
+          "group": 2,
+          "kind": "other",
+          "html": "Dali B Disable Error Group",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 7,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 7,
+          "address": 11,
+          "value": 99,
+          "html": "<li />Trigger Dali Network A Error Report<li />Trigger Dali Network B Error Report",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 7,
+          "address": 22,
+          "value": 11,
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 8,
+          "address": 11,
+          "value": 99,
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    },
+    {
+      "id": "pc_dal2c-two-networks",
+      "family": "DALI2B",
+      "unit": {
+        "address": 3,
+        "name": "Documented",
+        "unit_type": "PC_DAL2C",
+        "unit_name": "Synthetic",
+        "serial": "",
+        "firmware": "4.5.00",
+        "description": "Synthetic <note>",
+        "parameters": {
+          "Application": [
+            206,
+            56
+          ],
+          "StatusReportInterval": [
+            3
+          ],
+          "CBusToDali": [
+            255,
+            0,
+            64,
+            128,
+            224,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "DaliToCBus": [
+            1,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            9,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            3,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            4,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255,
+            255
+          ],
+          "DaliARampMatching": [
+            3
+          ],
+          "DaliAErrorReportingStatus": [
+            1
+          ],
+          "DaliAErrorRefreshTime": [
+            255
+          ],
+          "DaliAEnableErrorGroup": [
+            1
+          ],
+          "DaliAEnableErrorLevel": [
+            11
+          ],
+          "DaliADisableErrorGroup": [
+            255
+          ],
+          "DaliATriggerErrorGroup": [
+            7
+          ],
+          "DaliATriggerErrorAcSel": [
+            11
+          ],
+          "DaliBRampMatching": [
+            0
+          ],
+          "DaliBErrorReportingStatus": [
+            0
+          ],
+          "DaliBEnableErrorGroup": [
+            255
+          ],
+          "DaliBDisableErrorGroup": [
+            2
+          ],
+          "DaliBDisableErrorLevel": [
+            22
+          ],
+          "DaliBTriggerErrorGroup": [
+            7
+          ],
+          "DaliBTriggerErrorAcSel": [
+            11
+          ],
+          "DaliARestoreLevel": [
+            254
+          ]
+        },
+        "fields": {
+          "Burden": "false",
+          "ClockGenEnable": "false"
+        }
+      },
+      "body_lines": [
+        "<table border=\"0\">",
+        "<tr><th>Dali Network A</th><th>Dali Network B</th></tr><tr>",
+        "<td><table border=\"1\"><tr><th>Live Error Reporting</th><td>On</td></tr><tr><th>Refresh Error Time</th><td>1 min</td></tr><tr><th>Enable Error Reporting Group</th><td><a href=\"#254_203_1\">G1</a></td></tr><tr><th>Enable Error Reporting Value</th><td><a href=\"#254_203_1_11\">L11</a></td></tr><tr><th>Disable Error Reporting Group</th><td>Unused</td></tr><tr><th>Disable Error Reporting Value</th><td>&nbsp;</td></tr><tr><th>Trigger Full Error Report Group</th><td><a href=\"#254_202_7\">G7</a></td></tr><tr><th>Trigger Full Report Action Selector</th><td><a href=\"#254_202_7_11\">L11</a></td></tr><tr><th>Match Ramp Rate</th><td>Yes</td></tr><tr><th>Status Correction</th><td>On</td></tr><tr><th>Dali A Restore Level</th><td>100%</td></tr></table></td>",
+        "<td><table border=\"1\"><tr><th>Live Error Reporting</th><td>Off</td></tr><tr><th>Refresh Error Time</th><td>&nbsp; min</td></tr><tr><th>Enable Error Reporting Group</th><td>Unused</td></tr><tr><th>Enable Error Reporting Value</th><td>&nbsp;</td></tr><tr><th>Disable Error Reporting Group</th><td><a href=\"#254_203_2\">G2</a></td></tr><tr><th>Disable Error Reporting Value</th><td><a href=\"#254_203_2_22\">L22</a></td></tr><tr><th>Trigger Full Error Report Group</th><td><a href=\"#254_202_7\">G7</a></td></tr><tr><th>Trigger Full Report Action Selector</th><td><a href=\"#254_202_7_11\">L11</a></td></tr><tr><th>Match Ramp Rate</th><td>No</td></tr><tr><th>Status Correction</th><td>Off</td></tr><tr><th>Dali B to C-Bus Mapping</th><td>1:1 Mapping</td></tr></table></td>",
+        "</tr></table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>C-Bus Group</th><th>Dali Action</th><th>Mapping</th></tr>",
+        "<tr><td><a href=\"#254_56_1\">G1</a></td><td>DALI A Unit 0</td><td>1:1 Mapping</td></tr><tr><td><a href=\"#254_56_2\">G2</a></td><td>DALI A Group 1</td><td>Diabled</td></tr><tr><td><a href=\"#254_56_3\">G3</a></td><td>DALI B Unit 0</td><td>1:1 Mapping</td></tr><tr><td><a href=\"#254_56_4\">G4</a></td><td>DALI B Broadcast</td><td>1:1 Mapping</td></tr>",
+        "</table>"
+      ],
+      "group_usage": [
+        {
+          "application": 56,
+          "group": 1,
+          "kind": "input",
+          "html": "DALI A Unit 0",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 2,
+          "kind": "input",
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 2,
+          "kind": "output",
+          "html": "DALI A Group 1",
+          "status": "recovered"
+        },
+        {
+          "application": 56,
+          "group": 3,
+          "kind": "input",
+          "html": "DALI B Unit 0",
+          "status": "recovered"
+        },
+        {
+          "application": 203,
+          "group": 1,
+          "kind": "other",
+          "html": "Dali A Enable Error Group",
+          "status": "recovered"
+        },
+        {
+          "application": 203,
+          "group": 2,
+          "kind": "other",
+          "html": "Dali B Disable Error Group",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 7,
+          "kind": "other",
+          "html": "",
+          "status": "recovered"
+        }
+      ],
+      "actions": [
+        {
+          "application": 202,
+          "group": 7,
+          "address": 11,
+          "value": 99,
+          "html": "<li />Trigger Dali Network A Error Report<li />Trigger Dali Network B Error Report",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 7,
+          "address": 22,
+          "value": 11,
+          "html": "",
+          "status": "recovered"
+        },
+        {
+          "application": 202,
+          "group": 8,
+          "address": 11,
+          "value": 99,
+          "html": "",
+          "status": "recovered"
+        }
+      ]
+    }
+  ]
+}

@@ -90,6 +90,12 @@ def group_usage(unit: UnitSnapshot, application: int, group: int, kind: str) -> 
         return scene_controller_group_usage(unit, application, group, kind)
     from .project_documentation import select_documentor
     documentor = select_documentor(typ, getattr(unit, "firmware", ""))
+    if documentor in {"LightLevelSensor", "ST7LightLevelSensor"}:
+        from .project_documentation_light_level import light_level_group_usage
+        return light_level_group_usage(unit, application, group, kind)
+    if documentor in {"DALI2B", "WHAA"}:
+        from .project_documentation_gateways import gateway_group_usage
+        return gateway_group_usage(unit, application, group, kind)
     from .project_documentation_neoclassic import NEOCLASSIC_TYPES
     if typ in NEOCLASSIC_TYPES:
         from .project_documentation_neoclassic_usage import neoclassic_group_usage
@@ -250,6 +256,9 @@ def action_selector_usage(unit: UnitSnapshot, action_documentor: str, applicatio
     """Reproduce admitted ActionSelectorUse methods, retaining their native quirks."""
     if action_documentor == "UnitType":
         return Usage()
+    if action_documentor == "DALI2B":
+        from .project_documentation_gateways import dali_action_selector_usage
+        return dali_action_selector_usage(unit, application, group, address, value)
     if action_documentor == "ErrorReportOutput":
         from .project_documentation_special_outputs import error_output_action_usage
         return error_output_action_usage(unit, application, group, address, value)

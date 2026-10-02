@@ -116,7 +116,8 @@ class SENPIRIACSVTests(unittest.TestCase):
 
     def test_malformed_or_unsupported_profiles_reject_before_output(self):
         def wrong_firmware(root):
-            root.find('.//Unit/FirmwareVersion').text = '2.0.00'
+            # Older 2.0.00 now has its separate recovered PIR profile.
+            root.find('.//Unit/FirmwareVersion').text = '99'
 
         def wrong_type(root):
             root.find('.//Unit/UnitType').text = 'SENPIRSS'

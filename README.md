@@ -87,12 +87,13 @@ programming are explicit later steps; original GUI, physical scanner and
 PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
 
 The CLI now admits **288 of 292 registered conversion directions** and
-**214 of 262 CSV unit types** at their documented firmware and input profiles.
+**all 262 statically registered CSV unit types** at their documented firmware and input profiles.
 [Conversion rules](toolkit-cli/docs/toolkit-remaining-conversions.md) cover
 Neo-to-classic, DALI, older sensors and the verified KEYBIR catalogue aliases.
-[CSV report profiles](toolkit-cli/docs/database-csv-completion.md) cover the
-additional input, output, relay and generic agents. Ordered eDLT Corridor,
-Activation and Scene Add dialogs can share one parent save; see
+[CSV report profiles](toolkit-cli/docs/database-csv-last-profiles.md) cover
+424 of 425 registration rows; the duplicate KEYGL5 row without an exact
+agent remains refused. Ordered eDLT Application, Corridor,
+Activation and Scene Add dialogs, including operation-1 Reset, can share one parent save; see
 [eDLT parent Add histories](toolkit-cli/docs/edlt-parent-add-dialog.md).
 These counts describe bounded software profiles. Original GUI, cold native
 family acceptance and physical behavior remain tracked separately.
@@ -177,6 +178,7 @@ retains its separate source-bound acceptance record.
 | --- | --- |
 | Create, inspect, edit, validate, or export Toolkit XML/CBZ projects | `cbus-toolkit project` |
 | Generate project HTML with supported device tables, key macros and group/action usage from saved XML/CBZ or native XML | `cbus-toolkit project document` ([profiles and limits](toolkit-cli/docs/project-documentation.md)) |
+| Generate the same HTML from one fresh cmqttd/C-Gate database snapshot | `cbus-toolkit cgate database-document` ([snapshot workflow](toolkit-cli/docs/native-project-documentation.md)) |
 | Edit classic DLT label/display settings, ordered indicator controls, or existing-language project TEXT | `cbus-toolkit dlt labels`, `display`, `indicators`, `text`, `text-dialog` and `cgate unit ... dlt-labels` ([indicators](toolkit-cli/docs/classic-dlt-indicators.md), [TEXT dialog](toolkit-cli/docs/classic-dlt-language-dialog.md)) |
 | Compile one classic DLT label broadcast and assess supplied outcomes offline | `cbus-toolkit dlt broadcast plan` / `assess` ([command and evidence boundary](toolkit-cli/docs/classic-dlt-broadcast.md)) |
 | Plan or save SENLL groups, broadcast interval, power-up state and Global status interval | `cbus-toolkit sensors light-level-plan` and `cgate unit ... sensor-light-level` ([profiles and limits](toolkit-cli/docs/sensors.md)) |
@@ -237,6 +239,7 @@ saved native XML snapshot:
 
 ```sh
 cbus-toolkit project document saved-dbgetxml.xml --native-xml --output project.html
+cbus-toolkit cgate --host HOST database-document --project //PROJECT --output database.html
 cbus-toolkit dlt text plan --project-xml saved-dbgetxml.xml --target //PROJECT/254/56/20 \
   --edit '1:1=Kitchen' > text-plan.json
 cbus-toolkit dlt text apply --project-xml saved-dbgetxml.xml --plan text-plan.json --output labelled.xml

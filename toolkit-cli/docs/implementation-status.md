@@ -1,6 +1,6 @@
 # Implementation status and outstanding work
 
-Updated **2 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **42 areas: 18 implemented, 22 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
@@ -46,11 +46,39 @@ percentages.
 It retains the published ledger baseline and rejects category reclassification
 as evidence of functional completion.
 
-The current source-backed batch adds [120 DLT-target conversion pairs](toolkit-dlt-conversions.md), [91 CSV unit types](database-csv-source-families.md) and [typed eDLT Trigger/Action Add operations](edlt-scene-add-dialog.md). That published checkpoint admitted243/292 conversion pairs and126/262 CSV types. The next batch admits 288/292 and214/262 respectively; see [remaining conversions](toolkit-remaining-conversions.md), [CSV completion](database-csv-completion.md) and [parent Add histories](edlt-parent-add-dialog.md). These scopes do not change the category ratio or establish new original GUI, cold native family or hardware acceptance.
+The source-backed batches now admit **288/292 conversion pairs** and **262/262
+statically registered CSV unit types** under explicit profiles. CSV admits
+424/425 registrations, with one duplicate KEYGL5/no-exact-agent row refused.
+See [remaining conversions](toolkit-remaining-conversions.md),
+[final CSV profiles](database-csv-last-profiles.md) and
+[parent Add histories](edlt-parent-add-dialog.md). Application Add and
+operation-1 Reset/Add composition join the earlier Corridor/Activation/Scene
+workflows. [Database documentation](native-project-documentation.md) reads one
+fresh complete snapshot; eight added factory profiles cover light-level, WHAA
+and DALI bodies. These scopes do not change the category ratio or establish
+new original GUI, cold native family or hardware acceptance. Historical
+126/214-type receipts and their reports retain their original scopes.
 
-The [integrated batch report](feature-batch-2026-10-02-dlt-csv-scene-dialogs.md) records validation, retained failures and the precise remaining boundaries.
+The [current batch report](feature-batch-2026-10-02-final-csv-application-documentation.md)
+records the final CSV type admission, Application/Reset Add and database
+documentation scope. The [earlier integrated report](feature-batch-2026-10-02-dlt-csv-scene-dialogs.md)
+retains its historical validation and acceptance boundaries.
 
 ## Test checkpoints
+
+The [final CSV, Application/Reset Add and database documentation batch](feature-batch-2026-10-02-final-csv-application-documentation.md)
+completed required Rust gates with 8,697 passes and one private-input ignored
+case. Source and isolated-wheel selections covered 48 modules with 13 explicit
+original/source/native provisioning skips. Three stale registry refusal
+subcases kept those recorded runs red; the corrected whole module separately
+passed 11 parents and 1,282 subtests in both environments, with one original-input
+skip. All 338 runtime files match source, wheel and installation. The report and
+[bounded receipt](../research/fixtures/final-csv-application-documentation-owned-release-20261002.json)
+preserve both failed-run count conventions, focused correction, unchanged
+runtime bindings and resource/publication deltas. No new original instruction,
+VM, house or hardware acceptance was executed, and no full Python suite was
+repeated locally. The broad ledger and fully accepted obligation counts remain
+unchanged; Description XML fidelity remains open in issue 75.
 
 The [replacement, cached NeoPro CSV and bounded TCP batch](feature-batch-2026-10-02-cached-csv-event-bounds.md)
 introduced a guarded metadata/delete/readdress/save/reopen lifecycle for the 123 tweaker pairs

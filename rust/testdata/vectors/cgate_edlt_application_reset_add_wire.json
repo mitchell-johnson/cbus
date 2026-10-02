@@ -1,0 +1,674 @@
+{
+  "format": "cbus-edlt-application-reset-add-cli-wire-v1",
+  "scope": {
+    "original_execution": false,
+    "physical_acceptance": false,
+    "synthetic_specification": true,
+    "owner": "complete closed selected Project/Network with explicit ProjectTagName and display preferences",
+    "xml_comparison": "all substantive nodes, attributes, comments, PI, and text; whitespace-only text is not compared"
+  },
+  "native_application_policy": {
+    "ordinary_addresses": [
+      [
+        48,
+        95
+      ],
+      [
+        112,
+        114
+      ],
+      136
+    ],
+    "expanded_addresses": [
+      [
+        48,
+        127
+      ],
+      136
+    ],
+    "reserved_confirmation_addresses": [
+      96,
+      127
+    ],
+    "standard_names": {
+      "56": "Lighting",
+      "95": "DALI",
+      "113": "Irrigation Control",
+      "114": "Pool, Spa, Pond Control",
+      "136": "Heating (Legacy)"
+    }
+  },
+  "persistent_receipts": {
+    "DBADDSAFE": 301,
+    "DBSETSAFE": 200,
+    "PP SAVE_TO_SOURCE": 200,
+    "PROJECT SAVE": 200,
+    "PROJECT COPY": 200,
+    "PROJECT CLOSE": 200,
+    "PROJECT LOAD": 200
+  },
+  "mutation_counts": {
+    "PP_SAVE_TO_SOURCE": 1,
+    "backup_PROJECT_COPY": 1,
+    "PROJECT_SAVE": 2,
+    "PROJECT_CLOSE": 1,
+    "PROJECT_LOAD": 1
+  },
+  "lost_pp_save": {
+    "retained_backend_terminal": 200,
+    "caller_receipt_missing": true,
+    "replay": 0,
+    "later_project_save_close_load": 0
+  },
+  "cases": [
+    {
+      "id": "application-description-group",
+      "ops": [
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "New primary",
+          "description": "New description"
+        },
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Status"
+        }
+      ],
+      "applications": [
+        [
+          48,
+          "New primary",
+          "New description"
+        ]
+      ],
+      "groups": [
+        [
+          48,
+          0,
+          "Status"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          48
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          48,
+          57
+        ],
+        "QuickStatusGroup": [
+          0
+        ]
+      }
+    },
+    {
+      "id": "cancel-repeated-primary-secondary",
+      "ops": [
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "cancel": true
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "Primary"
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "secondary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "Secondary"
+        },
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Status"
+        }
+      ],
+      "applications": [
+        [
+          48,
+          "Primary",
+          ""
+        ],
+        [
+          49,
+          "Secondary",
+          ""
+        ]
+      ],
+      "groups": [
+        [
+          48,
+          0,
+          "Status"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          48
+        ],
+        "SecondaryApplication": [
+          49
+        ],
+        "Application": [
+          48,
+          49
+        ],
+        "QuickStatusGroup": [
+          0
+        ]
+      }
+    },
+    {
+      "id": "reset-application-group",
+      "reset": true,
+      "ops": [
+        {
+          "op": "reset",
+          "active_tab": "widgets",
+          "binding_variant": "audited-local-wiring",
+          "dirty_parameters": [
+            "UnitAddress"
+          ]
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "Fresh primary"
+        },
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Fresh status"
+        }
+      ],
+      "applications": [
+        [
+          48,
+          "Fresh primary",
+          ""
+        ]
+      ],
+      "groups": [
+        [
+          48,
+          0,
+          "Fresh status"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          48
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          48,
+          57
+        ],
+        "QuickStatusGroup": [
+          0
+        ]
+      },
+      "scene_starts": {
+        "1": 0,
+        "2": 5,
+        "3": 10,
+        "4": 15,
+        "5": 20,
+        "6": 25,
+        "7": 30,
+        "8": 35
+      }
+    },
+    {
+      "id": "reset-initial-scene-before-action",
+      "reset": true,
+      "initial_scene": true,
+      "ops": [
+        {
+          "op": "reset",
+          "active_tab": "widgets",
+          "binding_variant": "audited-local-wiring",
+          "dirty_parameters": [
+            "UnitAddress"
+          ]
+        },
+        {
+          "op": "standby",
+          "enabled": true,
+          "after_seconds": 60
+        },
+        {
+          "op": "activation",
+          "wake_mode": "trigger-event",
+          "group": 7
+        },
+        {
+          "op": "add-activation-action-dialog",
+          "name": "After old getter"
+        }
+      ],
+      "applications": [],
+      "groups": [],
+      "levels": [
+        [
+          7,
+          1,
+          "Action Selector 1"
+        ],
+        [
+          7,
+          3,
+          "After old getter"
+        ]
+      ],
+      "pp": {
+        "PrimaryApplication": [
+          56
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          56,
+          57
+        ],
+        "ProximityMode": [
+          3
+        ],
+        "ProximityGroup": [
+          7
+        ],
+        "ProximityLevel": [
+          3
+        ],
+        "SceneCount": [
+          8
+        ],
+        "ActivityDuration": [
+          60
+        ]
+      },
+      "scene_starts": {
+        "1": 0,
+        "2": 5,
+        "3": 10,
+        "4": 15,
+        "5": 20,
+        "6": 25,
+        "7": 30,
+        "8": 35
+      }
+    },
+    {
+      "id": "reset-application-scene-corridor",
+      "reset": true,
+      "ops": [
+        {
+          "op": "reset",
+          "active_tab": "widgets",
+          "binding_variant": "audited-local-wiring",
+          "dirty_parameters": [
+            "UnitAddress"
+          ]
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "New primary"
+        },
+        {
+          "op": "scene-manager",
+          "operations": [
+            {
+              "op": "add-trigger-dialog",
+              "scene": 1,
+              "name": "Trigger"
+            },
+            {
+              "op": "add-action-dialog",
+              "scene": 1,
+              "name": "Action"
+            }
+          ]
+        },
+        {
+          "op": "add-corridor-dialog",
+          "field": "link_group",
+          "name": "Link"
+        }
+      ],
+      "applications": [
+        [
+          48,
+          "New primary",
+          ""
+        ]
+      ],
+      "groups": [
+        [
+          202,
+          0,
+          "Trigger"
+        ],
+        [
+          48,
+          0,
+          "Link"
+        ]
+      ],
+      "levels": [
+        [
+          0,
+          0,
+          "Action"
+        ]
+      ],
+      "scene_starts": {
+        "1": 0,
+        "2": 5,
+        "3": 10,
+        "4": 15,
+        "5": 20,
+        "6": 25,
+        "7": 30,
+        "8": 35
+      },
+      "pp": {
+        "PrimaryApplication": [
+          48
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          48,
+          57
+        ],
+        "CorridorLinkingLinkGroup": [
+          0
+        ],
+        "SceneCount": [
+          8
+        ]
+      }
+    },
+    {
+      "id": "preceding-and-future-owner",
+      "ops": [
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Old status"
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "name": "New primary"
+        },
+        {
+          "op": "add-corridor-dialog",
+          "field": "link_group",
+          "address": 99,
+          "name": "New link"
+        }
+      ],
+      "applications": [
+        [
+          48,
+          "New primary",
+          ""
+        ]
+      ],
+      "groups": [
+        [
+          56,
+          1,
+          "Old status"
+        ],
+        [
+          48,
+          99,
+          "New link"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          48
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          48,
+          57
+        ],
+        "QuickStatusGroup": [
+          1
+        ],
+        "CorridorLinkingLinkGroup": [
+          99
+        ],
+        "CorridorLinkingOfficeGroup": [
+          255
+        ]
+      }
+    },
+    {
+      "id": "expanded-reserved-confirmed",
+      "ops": [
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": true,
+            "allow_legacy": false
+          },
+          "address": 97,
+          "name": "User defined",
+          "description": "Confirmed reserved",
+          "confirm_reserved": true
+        },
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Status"
+        }
+      ],
+      "applications": [
+        [
+          97,
+          "User defined",
+          "Confirmed reserved"
+        ]
+      ],
+      "groups": [
+        [
+          97,
+          0,
+          "Status"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          97
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          97,
+          57
+        ],
+        "QuickStatusGroup": [
+          0
+        ]
+      }
+    },
+    {
+      "id": "reset-cancelled-application-fresh-primary",
+      "reset": true,
+      "initial_primary": 48,
+      "ops": [
+        {
+          "op": "reset",
+          "active_tab": "widgets",
+          "binding_variant": "audited-local-wiring",
+          "dirty_parameters": [
+            "UnitAddress"
+          ]
+        },
+        {
+          "op": "add-application-dialog",
+          "field": "primary",
+          "creation_preferences": {
+            "allow_user_defined": false,
+            "allow_legacy": false
+          },
+          "cancel": true
+        },
+        {
+          "op": "add-dialog",
+          "field": "QuickStatusGroup",
+          "name": "Fresh default owner"
+        }
+      ],
+      "applications": [],
+      "groups": [
+        [
+          56,
+          1,
+          "Fresh default owner"
+        ]
+      ],
+      "levels": [],
+      "pp": {
+        "PrimaryApplication": [
+          56
+        ],
+        "SecondaryApplication": [
+          57
+        ],
+        "Application": [
+          56,
+          57
+        ],
+        "QuickStatusGroup": [
+          1
+        ]
+      },
+      "scene_starts": {
+        "1": 0,
+        "2": 5,
+        "3": 10,
+        "4": 15,
+        "5": 20,
+        "6": 25,
+        "7": 30,
+        "8": 35
+      }
+    }
+  ],
+  "reset_terminal": {
+    "scope": "Retained original Reset BeforeSave model normalization with the separately established later Widget6 Measurement control used by these owned journeys; raw schema defaults are not terminal model defaults.",
+    "reset_source": {
+      "path": "toolkit-cli/research/fixtures/edlt-reset-windows-vectors.json",
+      "sha256": "c09777164fab1689de8e081085ed05baec4399462ea9ebf36a1439b898de7b2f",
+      "case": "reset-matrix-v1/default-multi-base-handler",
+      "phase": "before-save",
+      "phase_changes_are_cumulative": true
+    },
+    "load_source": {
+      "path": "toolkit-cli/research/fixtures/edlt-template-model-original-vectors.json",
+      "sha256": "52810dfdc803c37c9fc55fd15126428f6d2d21ec1f64d889715e350ff6f29b87",
+      "case": "primary-fallback-config",
+      "phase": "second",
+      "property": "InvertDisplay",
+      "before": 1,
+      "after": 0
+    },
+    "later_control_override": {
+      "widget": 6,
+      "type": 12,
+      "device_id": 42,
+      "channel": 1
+    },
+    "widget_types": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      0,
+      0,
+      10,
+      255,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "scene_starts": [
+      0,
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35
+    ],
+    "scene_count": 8,
+    "invert_display": 0,
+    "restore_levels_6_to_21": 0
+  }
+}

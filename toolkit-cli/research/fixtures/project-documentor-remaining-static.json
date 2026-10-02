@@ -1,0 +1,544 @@
+{
+  "format": "cbus-project-documentor-remaining-static-v1",
+  "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_executed": false,
+  "original_generated_page_comparison": "not_obtained",
+  "factory_profiles": [
+    {
+      "unit_type": "SENLL",
+      "firmware_min": "1.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent"
+    },
+    {
+      "unit_type": "PE_CELL",
+      "firmware_min": "1.00",
+      "firmware_max": "2.0.00",
+      "class": "TSENLL",
+      "agent": "TSENLLCGateAgent"
+    },
+    {
+      "unit_type": "SENLL",
+      "firmware_min": "2.0.01",
+      "firmware_max": "9",
+      "class": "TST7SENLL",
+      "agent": "TCBusST7LightLevelSensorCGateAgent"
+    },
+    {
+      "unit_type": "PC_DAL2B",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_DAL2B",
+      "agent": "TCBusPC_DAL2BCGateAgent"
+    },
+    {
+      "unit_type": "PC_DAL2C",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_DAL2C",
+      "agent": "TCBusPC_DAL2BCGateAgent"
+    },
+    {
+      "unit_type": "PC_WHAD",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_WHAD",
+      "agent": "TCBusPC_WHAACGateAgent"
+    },
+    {
+      "unit_type": "PC_WHAR",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_WHAR",
+      "agent": "TCBusPC_WHAACGateAgent"
+    },
+    {
+      "unit_type": "PC_WHARB",
+      "firmware_min": "0",
+      "firmware_max": "9",
+      "class": "TPC_WHARB",
+      "agent": "TCBusPC_WHAACGateAgent"
+    }
+  ],
+  "checks": {
+    "LightLevelSensor:base_first": true,
+    "LightLevelSensor:exact_getters": true,
+    "LightLevelSensor:action_slot": true,
+    "ST7LightLevelSensor:base_first": true,
+    "ST7LightLevelSensor:exact_getters": true,
+    "ST7LightLevelSensor:action_slot": true,
+    "WHAA:base_first": true,
+    "WHAA:exact_getters": true,
+    "WHAA:action_slot": true,
+    "DALI2B:base_first": true,
+    "DALI2B:exact_getters": true,
+    "DALI2B:action_slot": true,
+    "exact_factory_profiles": true,
+    "old:PP_offsets": true,
+    "old:direct_field_load": true,
+    "old:power": true,
+    "old:extended_base": true,
+    "old:divisor_multiplier": true,
+    "old:midpoint_percentage_constants": true,
+    "old:percentage_upper_clamp": true,
+    "foot_candle:extended_constant": true,
+    "report:unit_resources": true,
+    "st7:timer_format": true,
+    "st7:MaximumKeyCount": true,
+    "st7:GetMaximumVirtualKeyCount": true,
+    "st7:IsJoinModeSupported": true,
+    "st7:IsDualJoinModeSupported": true,
+    "st7:neopro_loader_first": true,
+    "st7:margin_math": true,
+    "whaa:PP_offsets": true,
+    "whaa:pnp_positive": true,
+    "whaa:zone_final_clamp": true,
+    "dali:PP_offsets": true,
+    "dali:all_256_mapping_slots": true,
+    "dali:refresh_clamp": true,
+    "dali:SetCBusToDali:earlier_duplicate_clear": true,
+    "dali:SetDaliToCBus:earlier_duplicate_clear": true,
+    "dali:action_ranges": true,
+    "dali:restore_percent": true,
+    "old:bounded_precision_stability": true
+  },
+  "bodies": {
+    "LightLevelSensor": {
+      "literals": [
+        "Light Level Group: ",
+        "<br />",
+        "On/Off Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Target: ",
+        " ",
+        ", ",
+        " ",
+        "<br />",
+        "Margin: ",
+        " ",
+        ", ",
+        " ",
+        " (",
+        "%)<br />"
+      ],
+      "getters": [
+        "GetLevelGroupAddress",
+        "GetOnOffGroupAddress",
+        "GetEnableGroupAddress",
+        "GetTargetLuxAsByte",
+        "GetTargetMarginAsByte",
+        "GetTargetLuxAsByte",
+        "GetTargetMarginAsByte",
+        "GetTargetLuxAsByte",
+        "GetTargetMarginAsByte",
+        "GetTargetLuxAsByte",
+        "GetTargetMarginAsByte"
+      ]
+    },
+    "ST7LightLevelSensor": {
+      "literals": [
+        "Light Level Group: ",
+        "<br />",
+        "On/Off Group: ",
+        "<br />",
+        "Enable Group: ",
+        "<br />",
+        "Broadcast Group: ",
+        "<br />",
+        "Broadcast Time: ",
+        "<br />",
+        "Target: ",
+        " ",
+        ", ",
+        " ",
+        "<br />",
+        "Margin: ",
+        "%<br />"
+      ],
+      "getters": [
+        "GetLightLevelMaintBlock",
+        "GetGroup",
+        "GetItem",
+        "GetGroup",
+        "GetLightLevelMaintEnableGroup",
+        "GetLightLevelBroadcastBlock",
+        "GetGroup",
+        "GetLightLevelBroadcastBlock",
+        "GetTimer",
+        "GetLightLevelTargetLux",
+        "GetLightLevelMarginPerc"
+      ]
+    },
+    "WHAA": {
+      "literals": [
+        "Use Matrix Switcher Auto Assign Zone: Yes<br/>",
+        "Use Matrix Switcher Auto Assign Zone: No<br/>",
+        "Matrix Switcher Number: ",
+        "<br/>",
+        "Zone Number: ",
+        "<br/>",
+        "<br/>",
+        "CBus Control Application: ",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Audio Control</th></tr>",
+        "<tr><th>Volume</th><td>",
+        "</td></tr>",
+        "<tr><th>Bass</th><td>",
+        "</td></tr>",
+        "<tr><th>Treble</th><td>",
+        "</td></tr>",
+        "</table>",
+        "<table border=\"1\">",
+        "<tr><th colspan=\"2\">Source/Dynamic Control Groups</th></tr>",
+        "<tr><th>Next Source</th><td>",
+        "</td></tr>",
+        "<tr><th>Prev Source</th><td>",
+        "</td></tr>",
+        "<tr><th>Absolute</th><td>",
+        "</td></tr>",
+        "<tr><th>Dynamic 1</th><td>",
+        "</td></tr>",
+        "<tr><th>Dynamic 2</th><td>",
+        "</td></tr>",
+        "</table>",
+        "CBus Control Application: ",
+        "<Unused>",
+        "<br/>"
+      ],
+      "getters": [
+        "GetUsePnP",
+        "GetMatrixSwitcherNumber",
+        "GetRelativeProgrammedZoneNumber",
+        "GetAlternateApplication",
+        "GetAddressAsInteger",
+        "GetAlternateApplication",
+        "GetAlternateVolumeControlGroup",
+        "GetAlternateBassControlGroup",
+        "GetAlternateTrebleControlGroup",
+        "GetAlternateNextSourceGroup",
+        "GetAlternatePrevSourceGroup",
+        "GetAlternateAbsoluteSourceGroup",
+        "GetAlternateButtonAGroup",
+        "GetAlternateButtonBGroup"
+      ]
+    },
+    "DALI2B": {
+      "literals": [
+        "<table border=\"0\">",
+        "<tr><th>Dali Network A</th><th>Dali Network B</th></tr><tr>",
+        "<td><table border=\"1\">",
+        "<tr><th>Live Error Reporting</th><td>On</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Live Error Reporting</th><td>Off</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>Unused</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>Yes</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>No</td></tr>",
+        "<tr><th>Status Correction</th><td>On</td></tr>",
+        "<tr><th>Dali A Restore Level</th><td>",
+        "%</td></tr>",
+        "<tr><th>Status Correction</th><td>Off</td></tr>",
+        "<tr><th>Dali A to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "<tr><th>Dali A to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "</table></td>",
+        "<td><table border=\"1\">",
+        "<tr><th>Live Error Reporting</th><td>On</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Live Error Reporting</th><td>Off</td></tr>",
+        "<tr><th>Refresh Error Time</th><td>",
+        " min</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Enable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>Unused</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Disable Error Reporting Value</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>Unused</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Error Report Group</th><td>",
+        "</td></tr>",
+        "<tr><th>Trigger Full Report Action Selector</th><td>",
+        "</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>Yes</td></tr>",
+        "<tr><th>Match Ramp Rate</th><td>No</td></tr>",
+        "<tr><th>Status Correction</th><td>On</td></tr>",
+        "<tr><th>Dali B Restore Level</th><td>",
+        "%</td></tr>",
+        "<tr><th>Status Correction</th><td>Off</td></tr>",
+        "<tr><th>Dali B to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "<tr><th>Dali B to C-Bus Mapping</th><td>",
+        "</td></tr>",
+        "</table></td>",
+        "</tr></table>",
+        "<br/>",
+        "<table border=\"1\">",
+        "<tr><th>C-Bus Group</th><th>Dali Action</th><th>Mapping</th></tr>",
+        "<tr><td>",
+        "</td>",
+        "<td>",
+        "</td>",
+        "<td>1:1 Mapping</td></tr>",
+        "<td>Diabled</td></tr>",
+        "</table>"
+      ],
+      "getters": [
+        "GetDaliAErrorReportingStatus",
+        "GetDaliAErrorRefreshTime",
+        "GetDaliAEnableErrorGroup",
+        "GetDaliAEnableErrorGroup",
+        "GetDaliAEnableErrorLevel",
+        "GetDaliADisableErrorGroup",
+        "GetDaliADisableErrorGroup",
+        "GetDaliADisableErrorLevel",
+        "GetDaliATriggerErrorGroup",
+        "GetDaliATriggerErrorGroup",
+        "GetDaliATriggerErrorAcSel",
+        "GetDaliARampMatching",
+        "GetDaliAStatusCorrection",
+        "GetDaliARestoreLevel",
+        "GetDaliAToCBusMapping",
+        "GetDescriptionFromEnumeratedValueOrdinalValue",
+        "GetDaliAToCBusMapping",
+        "GetDescriptionFromEnumeratedValueOrdinalValue",
+        "GetDaliBErrorReportingStatus",
+        "GetDaliBErrorRefreshTime",
+        "GetDaliBEnableErrorGroup",
+        "GetDaliBEnableErrorGroup",
+        "GetDaliBEnableErrorLevel",
+        "GetDaliBDisableErrorGroup",
+        "GetDaliBDisableErrorGroup",
+        "GetDaliBDisableErrorLevel",
+        "GetDaliBTriggerErrorGroup",
+        "GetDaliBTriggerErrorGroup",
+        "GetDaliBTriggerErrorAcSel",
+        "GetDaliBRampMatching",
+        "GetDaliBStatusCorrection",
+        "GetDaliBRestoreLevel",
+        "GetDaliBToCBusMapping",
+        "GetDescriptionFromEnumeratedValueOrdinalValue",
+        "GetDaliBToCBusMapping",
+        "GetDescriptionFromEnumeratedValueOrdinalValue",
+        "GetCBusToDali",
+        "GetCBusToDali",
+        "GetCBusToDali",
+        "GetDaliToCBus"
+      ]
+    }
+  },
+  "lux1600": {
+    "bounded_exponents": [
+      -255,
+      510
+    ],
+    "vectors": 766,
+    "minimum_distance_from_half_integer": "0.00121132918839949017825742239221300264253862153610191554410773542531076214953243073002",
+    "rounded_result_sha256": "c08f90b44a045f0af345fd85467276cfa415d98dae34308a95ce785a96abc5b7"
+  },
+  "methods": {
+    "CIS_CBus.ByteToLux1600": {
+      "start": "0x7f270c",
+      "end": "0x7f2758",
+      "sha256": "59bb86a2d748601484449a0beaade36518b6b530239b9592e65d383e61b802b6"
+    },
+    "CIS_CBus.LevelToPercent": {
+      "start": "0x7f2ac8",
+      "end": "0x7f2aec",
+      "sha256": "3a160d69301b27c4f68d9b1840afb438693f7ec862cf84175eabf77ef4dc445a"
+    },
+    "CIS_Dates.CBusTimeToStr": {
+      "start": "0xc0d45c",
+      "end": "0xc0d52c",
+      "sha256": "57828d822bcdfb6ecd8b8b168b71d88b299a02b67d5e49cb0befc6b8328eb6ed"
+    },
+    "CIS_TCBusPC_DAL2BCGateAgent.TCBusPC_DAL2BCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x12512f0",
+      "end": "0x1251c94",
+      "sha256": "edfca972f4b964a5c32a315780a1e4a7f3bcf4503c6d0d39f588bd879db45150"
+    },
+    "CIS_TCBusPC_DAL2BCGateAgent.TCBusPC_DAL2BCGateAgent.InternalCreate": {
+      "start": "0x12505dc",
+      "end": "0x1251168",
+      "sha256": "5e91c46533f64f371c14762867d27ca315eed2b16f0dc1651aeb0d8ab39c4ce3"
+    },
+    "CIS_TCBusPC_DAL2BCGateAgent.TCBusPC_DAL2BCGateAgent.LoadDaliActions": {
+      "start": "0x1252ac8",
+      "end": "0x1252ef0",
+      "sha256": "68ed0b5dde2077f58b0f3572dc12090044462b08fa966839043f78359957079d"
+    },
+    "CIS_TCBusPC_WHAACGateAgent.TCBusPC_WHAACGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1253c28",
+      "end": "0x12542e0",
+      "sha256": "0dedb9d73b05f8c4c46ea15126d4b88a0166995c79bc3f939e19950263ea7748"
+    },
+    "CIS_TCBusPC_WHAACGateAgent.TCBusPC_WHAACGateAgent.InternalCreate": {
+      "start": "0x12530c8",
+      "end": "0x1253aa4",
+      "sha256": "b22f00cbce68817be03080d482dd1565ff931f6d6ebaac85507743665cd892c4"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcf4890",
+      "end": "0xcf4cb8",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcfa928",
+      "end": "0xcfad94",
+      "sha256": "0c9203f8c3e771a59f4c0853c2930abc93195cf4c50a448ebb66eca756324387"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcfad94",
+      "end": "0xcfaedc",
+      "sha256": "72a4ee5cf0fc957877e042d76aa560e07f6f9e331dbd4469781f59dac768a948"
+    },
+    "CIS_TDALI2BDocumentor.TDALI2BDocumentor.ActionSelectorUse": {
+      "start": "0x1027da0",
+      "end": "0x1027e94",
+      "sha256": "a514ea7b24ffdd09779e2ee0893378fea2b2fcf308dc5170ff7217b774395e6e"
+    },
+    "CIS_TDALI2BDocumentor.TDALI2BDocumentor.DocumentHTML": {
+      "start": "0x1027e94",
+      "end": "0x1029438",
+      "sha256": "5364f6018a7a0b8991aa5ea45f713691d6d68da4026ea5e22b4e0e9881182322"
+    },
+    "CIS_TLightLevelSensorDocumentor.TLightLevelSensorDocumentor.DocumentHTML": {
+      "start": "0xca92b8",
+      "end": "0xca9700",
+      "sha256": "489fc1cc0ecd0199ee03e4cf35db7dad666b4fb8ccc48c2adfb53bbac2e09c19"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeInputGroupDependencyAdvanced": {
+      "start": "0x102b65c",
+      "end": "0x102b74c",
+      "sha256": "87214c1b0f0436a75dafdaf5aa7713775b466c10075d66b007c664b7ebc7e203"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0x102b74c",
+      "end": "0x102b890",
+      "sha256": "0b3717bce572b5213dc04fa05f1958f14c4f0331b92780ba53c5f044a3741d94"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.DescribeOutputGroupDependencyAdvanced": {
+      "start": "0x102b890",
+      "end": "0x102b970",
+      "sha256": "2120ce3af30609fcc2d6f1ec1c8758b6dc8f9bfffa765fbf2e6d2f58fdf362cd"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.InternalCreate": {
+      "start": "0x1029d70",
+      "end": "0x102ab64",
+      "sha256": "6d60c962bf9f3c97110608126a884e139f3cbd756df96bf48ab3247461f0e285"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetCBusToDali": {
+      "start": "0x102acf8",
+      "end": "0x102adf0",
+      "sha256": "071e48156c8e6fc80feed018283d20e85a37b4e9b41782532587954444a7ef28"
+    },
+    "CIS_TPC_DAL2B.TPC_DAL2B.SetDaliToCBus": {
+      "start": "0x102afec",
+      "end": "0x102b0e4",
+      "sha256": "9f91591be7ba3f3e997d2bb9f37ea36fe7170ec31ab4e84a13f02e5e13e687d3"
+    },
+    "CIS_TPC_WHAA.TPC_WHAA.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0x10c40f4",
+      "end": "0x10c4338",
+      "sha256": "60ed63810c11f2784144f1d19fd006705b867a9cd1e6043863512360b0e2a9e4"
+    },
+    "CIS_TPC_WHAA.TPC_WHAA.ZoneToAmpNo": {
+      "start": "0x10c4618",
+      "end": "0x10c4668",
+      "sha256": "96eb041d056458ac58fafb3fcc36b54a630ecc710f73111fffeffaeeeb724273"
+    },
+    "CIS_TPC_WHAA.TPC_WHAA.ZoneToMSNo": {
+      "start": "0x10c4668",
+      "end": "0x10c46a4",
+      "sha256": "df88baf6b3b6e165a8482fe843d0ea645d5a52fe86d482d293a4a4536f7bf8c8"
+    },
+    "CIS_TSENLL.TSENLL.DescribeInputGroupDependencyAdvanced": {
+      "start": "0xcaaecc",
+      "end": "0xcaaf64",
+      "sha256": "3581c69a47b4efe8a33cba6cc4a584147a13103b07d238753978d73a90dc10e2"
+    },
+    "CIS_TSENLL.TSENLL.DescribeOtherGroupDependencyAdvanced": {
+      "start": "0xcaaf64",
+      "end": "0xcab038",
+      "sha256": "537a01e461a8b153b240b9527490215a255ff5bff61765e0a9e08310408f7d7e"
+    },
+    "CIS_TSENLL.TST7SENLL.GetMaximumVirtualKeyCount": {
+      "start": "0xcab074",
+      "end": "0xcab08c",
+      "sha256": "1a9fba4d5469db81463298a9662e6c0f410e3af5b9dffd8e74dccdda225ed0da"
+    },
+    "CIS_TSENLL.TST7SENLL.IsDualJoinModeSupported": {
+      "start": "0xcab08c",
+      "end": "0xcab0a0",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLL.TST7SENLL.IsJoinModeSupported": {
+      "start": "0xcab0a0",
+      "end": "0xcab0b4",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLL.TST7SENLL.MaximumKeyCount": {
+      "start": "0xcab0e0",
+      "end": "0xcab0f8",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x1221b50",
+      "end": "0x1221ca0",
+      "sha256": "f35b3d0b54c41ccd95f449d955ef8e05417dc250b70501c405ff4599f91fb265"
+    },
+    "CIS_TSENLLCGateAgent.TSENLLCGateAgent.InternalCreate": {
+      "start": "0x1221564",
+      "end": "0x1221798",
+      "sha256": "756adde7586ebe8532255f051bced33e36a93718bf5abb9136df622fec97bfc0"
+    },
+    "CIS_TST7LightLevelSensorDocumentor.TST7LightLevelSensorDocumentor.DocumentHTML": {
+      "start": "0xca9854",
+      "end": "0xca9cb4",
+      "sha256": "7062298ac00307f55165330205bd2ba11f6beaa32f4eab1bb9d095863f61f6d5"
+    },
+    "CIS_TWHAADocumentor.TWHAADocumentor.DocumentHTML": {
+      "start": "0x10c0cbc",
+      "end": "0x10c17a8",
+      "sha256": "17d4bd4f83c94032c6186b820e1f6c495dce9431b29df6bf22eb850c1f841f7e"
+    }
+  }
+}

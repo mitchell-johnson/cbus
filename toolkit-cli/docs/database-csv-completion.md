@@ -1,10 +1,15 @@
 # Additional database CSV source profiles
 
-The current registry admits **214 of 262 statically registered Toolkit 1.18
+This page records the **214-type checkpoint**. The maintained registry now
+admits 262/262 types and424/425 registration rows; read
+[final profiles](database-csv-last-profiles.md) for the additional families,
+exact dependencies and the remaining duplicate KEYGL5 row refusal.
+
+That checkpoint registry admits **214 of 262 statically registered Toolkit 1.18
 unit types**, adding 88 types to the previous 126-type boundary. This is a
 report projection boundary. It does not mean every firmware partition of
 each admitted type is supported, or that full Toolkit parity is complete.
-The [current registry receipt](../research/fixtures/toolkit-database-csv-completion-registry.json)
+The [checkpoint registry receipt](../research/fixtures/toolkit-database-csv-completion-registry.json)
 records every exact type, firmware range, selected class, agent and refusal.
 The earlier 126-type receipt and its literal vectors remain historical.
 

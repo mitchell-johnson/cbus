@@ -1,0 +1,261 @@
+{
+  "format": "cbus-edlt-application-add-dialog-v1",
+  "project_tag_name": "Site",
+  "source": "Toolkit1.18 AddSharpApplication owner/eDLT overload; no original execution",
+  "cases": [
+    {
+      "name": "ordinary_first_free",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "New"
+      },
+      "applications": {
+        "48": "Existing"
+      },
+      "expected": {
+        "address": 49,
+        "name": "New",
+        "first_free_address": 49,
+        "outcome": "accepted"
+      }
+    },
+    {
+      "name": "native_lighting_name",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "address": 56
+      },
+      "applications": {},
+      "expected": {
+        "address": 56,
+        "name": "Lighting",
+        "name_editable": false
+      }
+    },
+    {
+      "name": "native_legacy_heating_name",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "address": 136
+      },
+      "applications": {},
+      "expected": {
+        "address": 136,
+        "name": "Heating (Legacy)"
+      }
+    },
+    {
+      "name": "nonstandard_requires_name",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        }
+      },
+      "applications": {},
+      "error": "2241"
+    },
+    {
+      "name": "occupied",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "address": 48,
+        "name": "New"
+      },
+      "applications": {
+        "48": "Used"
+      },
+      "error": "permitted free"
+    },
+    {
+      "name": "creation_range_not_existing_combo_range",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "address": 100,
+        "name": "New"
+      },
+      "applications": {},
+      "error": "permitted free"
+    },
+    {
+      "name": "reserved_confirmation",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": true,
+          "allow_legacy": false
+        },
+        "address": 100,
+        "name": "New"
+      },
+      "applications": {},
+      "error": "3171"
+    },
+    {
+      "name": "confirmed_reserved",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": true
+        },
+        "address": 100,
+        "name": "New",
+        "confirm_reserved": true
+      },
+      "applications": {},
+      "expected": {
+        "address": 100,
+        "name": "New",
+        "reserved_confirmation": true
+      }
+    },
+    {
+      "name": "project_name_exact",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "Site"
+      },
+      "applications": {},
+      "error": "2247"
+    },
+    {
+      "name": "local_ascii_case_duplicate",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "USED"
+      },
+      "applications": {
+        "56": "Used"
+      },
+      "error": "2242"
+    },
+    {
+      "name": "project_name_other_address",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "New"
+      },
+      "applications": {},
+      "other_networks": [
+        [
+          2,
+          {
+            "49": "NEW"
+          }
+        ]
+      ],
+      "error": "2244"
+    },
+    {
+      "name": "project_address_other_name",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "New"
+      },
+      "applications": {},
+      "other_networks": [
+        [
+          2,
+          {
+            "48": "Other"
+          }
+        ]
+      ],
+      "error": "2245"
+    },
+    {
+      "name": "project_same_identity_allowed",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "name": "New"
+      },
+      "applications": {},
+      "other_networks": [
+        [
+          2,
+          {
+            "48": "New"
+          }
+        ]
+      ],
+      "expected": {
+        "address": 48,
+        "name": "New"
+      }
+    },
+    {
+      "name": "cancel_no_selection",
+      "operation": {
+        "op": "add-application-dialog",
+        "field": "primary",
+        "creation_preferences": {
+          "allow_user_defined": false,
+          "allow_legacy": false
+        },
+        "cancel": true,
+        "name": "",
+        "address": 202
+      },
+      "applications": {},
+      "expected": {
+        "outcome": "cancelled",
+        "first_free_address": 48
+      }
+    }
+  ]
+}

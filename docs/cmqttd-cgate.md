@@ -53,6 +53,16 @@ selects a project nor performs PCI I/O. Missing projects return 401. Other
 project selector aliases, exact native error wording, complete original
 wrapper metadata and original Toolkit report-manager order remain unverified.
 
+The Toolkit CLI's [`cgate database-document`](../toolkit-cli/docs/native-project-documentation.md)
+also renders HTML from one complete project snapshot without opening networks
+or loading physical programming. Application and Group `Description` scalar
+writes through issued OIDs now update the canonical durable object: exact
+`DBGET !OID/Description` readback survives project reload and JSON restart.
+This supports the [ordered eDLT Application Add workflow](../toolkit-cli/docs/edlt-application-reset-add.md).
+Application XML still omits Description and does not admit it on import;
+[issue 75](https://github.com/mitchell-johnson/cbus/issues/75) tracks the native
+observations and XML implementation needed for that separate compatibility gap.
+
 Admitted Level ADD/COPY after a secondary tag-Network rename now delegates to
 the existing numeric database owner. Qualified/bare paths and bare Group/NetVar
 OIDs share that owner, with selected-project, Unit/retired identity, pending

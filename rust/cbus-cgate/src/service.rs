@@ -18167,3 +18167,79 @@ mod pp_namespace_state_tests {
         crate::pp_namespace_tests::assert_namespace(&restored, "RENAMED", 20);
     }
 }
+
+#[cfg(test)]
+mod application_description_state_tests {
+    use super::*;
+
+    #[test]
+    fn issued_application_and_group_description_survive_durable_service_restart() {
+        let mut original = Server::new(AccessLevel::Program);
+        for command in ["PROJECT NEW DESC", "DBCREATENET 254 Local Cni nowhere"] {
+            assert_eq!(original.handle(&format!("[seed] {command}")).status, 200);
+        }
+        let mut identities = Vec::new();
+        for command in [
+            "DBADDSAFE //DESC/254 Application 48 Fresh Application",
+            "DBADDSAFE //DESC/254/48 Group 42 Fresh Group",
+            "DBADDSAFE //DESC/254 Application 49 Empty Application",
+        ] {
+            let added = original.handle(&format!("[add] {command}"));
+            assert_eq!(added.status, 301);
+            identities.push(
+                added
+                    .final_text
+                    .strip_prefix("301 OID=")
+                    .unwrap()
+                    .to_string(),
+            );
+        }
+        for (oid, description) in identities
+            .iter()
+            .zip(["Application description", "Group description"])
+        {
+            assert_eq!(
+                original
+                    .handle(&format!("[set] DBSETSAFE !{oid}/Description {description}"))
+                    .status,
+                200
+            );
+        }
+        assert_eq!(original.handle("[save] PROJECT SAVE DESC").status, 200);
+        let xml = original.handle("[xml] DBGETXML //DESC").lines;
+        let encoded = serde_json::to_vec(&Database::from_server(&original)).unwrap();
+        let database: Database = serde_json::from_slice(&encoded).unwrap();
+        // Exact-OID aliases must not be required by the durable getter.
+        for oid in &identities {
+            assert!(!database
+                .db_fields
+                .contains_key(&format!("!{oid}/Description")));
+        }
+        let mut restored = Server::new(AccessLevel::Program);
+        database.restore(&mut restored).unwrap();
+        assert_eq!(restored.handle("[use] PROJECT USE DESC").status, 200);
+        for boundary in [false, true] {
+            if boundary {
+                assert_eq!(restored.handle("[close] PROJECT CLOSE DESC").status, 200);
+                assert_eq!(restored.handle("[load] PROJECT LOAD DESC").status, 200);
+                assert_eq!(restored.handle("[use] PROJECT USE DESC").status, 200);
+            }
+            for (oid, description) in identities
+                .iter()
+                .zip(["Application description", "Group description"])
+            {
+                let reply = restored.handle(&format!("[read] DBGET !{oid}/Description"));
+                assert_eq!(
+                    crate::format_response(&reply),
+                    format!("[read] 342 !{oid}/Description={description}\n")
+                );
+            }
+            let blank = restored.handle(&format!("[blank] DBGET !{}/Description", identities[2]));
+            assert_eq!(
+                crate::format_response(&blank),
+                "[blank] 401 Bad object or device ID: Object is null\n"
+            );
+            assert_eq!(restored.handle("[xml] DBGETXML //DESC").lines, xml);
+        }
+    }
+}

@@ -221,14 +221,18 @@ class InputUnitGuardTests(unittest.TestCase):
                     with self.assertRaises(tweakers.TweakerConversionError):
                         tweakers.ToolkitTweakerConversion(NoIO(), source_type, source_spec, target_type, target_spec)
 
-    def test_sensor_self_conversion_and_unregistered_cross_family_pairs_are_refused_before_io(self):
+    def test_unregistered_cross_family_pairs_are_refused_before_io(self):
         for source_type, target_type in (
-            ('SENPILL', 'SENPILL'), ('KEY1', 'KEY1'), ('KEYBC2', 'KEYBC2'),
+            ('KEY1', 'KEY1'), ('KEYBC2', 'KEYBC2'),
             ('BCNC4A', 'BCNC4A'), ('KEY1', 'KEYBC2'), ('KEYBC2', 'BCNC4A'), ('BCNC4B', 'KEYBC4'),
         ):
             with self.subTest(source=source_type, target=target_type):
                 with self.assertRaises(tweakers.TweakerRefused):
                     tweakers.ToolkitTweakerConversion(NoIO(), source_type, None, target_type, None)
+
+    def test_admitted_sensor_self_conversion_requires_its_exact_specs_before_io(self):
+        with self.assertRaisesRegex(tweakers.TweakerConversionError, 'source-pinned specification and firmware'):
+            tweakers.ToolkitTweakerConversion(NoIO(), 'SENPILL', None, 'SENPILL', None)
 
     def test_target_firmware_is_exact_and_not_a_neo_profile(self):
         for firmware in (None, '', '1.2.63', '1.2.66', '1.2.68', '1.2.067', '2.2.00', '2.5.00'):

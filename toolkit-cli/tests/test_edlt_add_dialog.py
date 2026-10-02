@@ -155,7 +155,7 @@ class AddDialogPlanTests(unittest.TestCase):
     def test_refusals(self):
         cases = (
             ((({'op': 'add-dialog', 'field': 'PrimaryApplication'},
-               measurement())), 'pointer'),
+               measurement())), 'add-application-dialog'),
             ((({'op': 'add-dialog', 'field': 'CorridorLinkingLinkGroup'},
                measurement())), 'ordered group list'),
             ((({'op': 'add-dialog', 'field': 'Nope'}, measurement())),

@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 641,
-    "modules_without_skip_sites": 341,
-    "modules_with_skip_sites": 300,
+    "test_modules": 648,
+    "modules_without_skip_sites": 345,
+    "modules_with_skip_sites": 303,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,12 +62,12 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 102,
+      "original_toolkit": 103,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 29,
+      "unclassified": 31,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 140
+      "none": 143
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -418,6 +418,41 @@
         }
       ]
     },
+    "tests/test_cgate_csv_last_profiles_interop.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 3,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_csv_last_profiles_interop.py",
+          "kind": "helper.selected_binary.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned final CSV journey",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_public_csv_last_profiles_all_literals_and_ordered_selection",
+            "test_public_csv_last_profiles_lost_snapshot_is_terminal_without_replay",
+            "test_public_csv_last_profiles_refusal_is_atomic"
+          ]
+        }
+      ]
+    },
     "tests/test_cgate_dbgetxml_framing_interop.py": {
       "categories": [
         "rust_binaries"
@@ -615,6 +650,42 @@
             "test_public_neopro_csv_late_unsupported_profile_refuses_atomically",
             "test_public_neopro_csv_lost_snapshot_terminal_is_not_retried",
             "test_public_neopro_csv_project_network_selection_on_owned_backend"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_project_documentation_interop.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 4,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_project_documentation_interop.py",
+          "kind": "helper.journey.call",
+          "condition": "not supplied",
+          "reason": " for owned project documentationSelect ",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_public_database_document_absent_network_is_atomic",
+            "test_public_database_document_lost_snapshot_has_no_output_or_retry",
+            "test_public_database_document_snapshot_and_literal_bodies",
+            "test_public_offline_native_document_uses_the_same_literal_bodies"
           ]
         }
       ]
@@ -7099,7 +7170,7 @@
       "native": "all",
       "gated_tests": 4,
       "native_runnable_tests": 4,
-      "native_selected_tests": 10,
+      "native_selected_tests": 12,
       "sites": [
         {
           "scope": "tests/test_native.py::NativeOracleTests",
@@ -10388,6 +10459,42 @@
           ],
           "tests": [
             "DINFourEightCSVTests::test_fresh_original_exe_map_review_matches_committed_receipt"
+          ]
+        }
+      ]
+    },
+    "tests/test_toolkit_database_csv_last_profiles.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_database_csv_last_profiles.py::test_fresh_static_proof_regeneration_matches_committed_receipt",
+          "kind": "decorator.skipif",
+          "condition": "not (os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP'))",
+          "reason": "Pinned original Toolkit EXE/MAP not provisioned",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_fresh_static_proof_regeneration_matches_committed_receipt"
           ]
         }
       ]

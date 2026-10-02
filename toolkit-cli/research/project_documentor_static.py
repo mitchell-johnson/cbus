@@ -252,7 +252,8 @@ def inspect(exe_path: Path, map_path: Path) -> dict:
                          "project_documentation_pir", "project_documentation_neoclassic",
                          "project_documentation_neoclassic_usage", "project_documentation_bytecraft_usage",
                          "project_documentation_bytecraft_loader", "project_documentation_bytecraft",
-                         "project_documentation_neoclassic_modify")
+                         "project_documentation_neoclassic_modify", "project_documentation_gateways",
+                         "project_documentation_light_level")
         },
         "method_spans": {short: {"start": hex(m["start"]), "end": hex(m["end"]), "bytes": m["end"] - m["start"],
                                  "sha256": m["sha256"]} for short, m in methods.items()},

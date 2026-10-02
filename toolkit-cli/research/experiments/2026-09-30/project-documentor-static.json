@@ -254,7 +254,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "recovered",
       "document_html": "DALI2B"
     },
     "DLT": {
@@ -371,7 +371,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "recovered",
       "document_html": "LightLevelSensor"
     },
     "Multisensor": {
@@ -521,7 +521,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "partial",
       "document_html": "ST7LightLevelSensor"
     },
     "ST7PIRSensor": {
@@ -585,7 +585,7 @@
         "TBASEObject",
         "TObject"
       ],
-      "body_status": "unrecovered",
+      "body_status": "recovered",
       "document_html": "WHAA"
     },
     "WirelessGateway": {
@@ -768,7 +768,7 @@
       "start": "0xf05fcc"
     }
   },
-  "model_module_sha256": "48bd79ea1506fddf7ea2af2e8ec5fc9dab6bb244faaefbed2be7da991d6bc31a",
+  "model_module_sha256": "88928b81a1b9a8b78633ae890efb5e1ade7839008ff1fb9c355bc7b6a6ae8028",
   "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
   "original_executed": false,
   "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
@@ -4204,6 +4204,8 @@
     "project_documentation_classic_profiles": "3411fe362256c68269b59aca2ac67bbf7dfe3aeee9849ee6e5c7ebe98f5b3c37",
     "project_documentation_devices": "b4a1749e75e58da39ac106cf970329b9b8e853fda71da0715540d0f4f456f07d",
     "project_documentation_dlt": "54f9db478cccc7071dc31b57d2190eacfbc38e11a1bfedf8c02752768130898a",
+    "project_documentation_gateways": "e134ffbcd6c10f8b0a3ab0be3cc58b875977650d0a5c40c56a0be73567a44dab",
+    "project_documentation_light_level": "8910a541d8b67d4bda1a1668dc84334f4a1cdbb57bc4423abec5aea4b7d9d99c",
     "project_documentation_native": "c872b42f4641d4f0038138ba5c9c6f0991333174dea43c61958d98bbdd159827",
     "project_documentation_neo": "5c6cbe562dbb1e471595fce350463b2faa82e5d3c118800becfba36bf40e8443",
     "project_documentation_neo_usage": "5c2a9d8463579223ed8ac41731649bda89ea63783273396852bbd2d42d411b57",
@@ -4216,6 +4218,6 @@
     "project_documentation_special_outputs": "f1bc999eed6cf4bcdf28d90048718b90b6f11a55ac31b59e37edb45564b6da58",
     "project_documentation_status": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
     "project_documentation_temperature": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b",
-    "project_documentation_usage": "fa9835cf94d9464fadd6aff22720622e78467c0fd8314cf642573cced9ef28b0"
+    "project_documentation_usage": "32d831cb00f8a7b27b915f0c049d3e6bba44f25dbdf10b63ab7d0adca265ce8c"
   }
 }

@@ -18,7 +18,7 @@ import hashlib
 import json
 import re
 from types import MappingProxyType
-from uuid import uuid4
+from uuid import UUID, uuid4
 from xml.dom import Node
 
 from .addressing import NetworkAddressing, _container
@@ -92,6 +92,26 @@ def _unit_path(value):
             value = '/' + value
     project, network, unit = _path(value)
     return f'//{project}/{network}/p/{unit}', project, network, unit
+
+
+def _observed_oids(text):
+    """Collision fence from the admitted XML, without validating opaque data."""
+    root = _container(text, 'Installation')
+    result = set()
+    for node in root.getElementsByTagName('OID'):
+        if node.namespaceURI:
+            continue
+        value = ''.join(child.data for child in node.childNodes
+                        if child.nodeType in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE)).strip()
+        try:
+            value = str(UUID(value))
+        except (ValueError, AttributeError):
+            # Unconsumed payload is retained without a new schema restriction.
+            # A malformed literal cannot equal an admitted fresh UUID, but is
+            # still represented in the conservative observed collision set.
+            value = value.casefold()
+        result.add(value)
+    return result
 
 
 def _one_by_address(parent, kind, address):
@@ -435,10 +455,10 @@ def _operation_groups(values, operations):
         kind = operation['op']
         if kind == 'parent-add-binding':
             kind = operation['panel']
-            operation = ({'op': kind, **({'edits': []} if kind == 'corridor' else {})}
+            operation = ({'op': kind, **({'edits': []} if kind in ('corridor', 'applications') else {})}
                          if operation.get('cancelled') else
                          {'op': kind, 'edits': [{'field': operation['option'],
-                          'value': operation['value']}]} if kind == 'corridor' else
+                          'address' if kind == 'applications' else 'value': operation['value']}]} if kind in ('corridor', 'applications') else
                          {'op': kind, operation['option']: operation['value']})
         page_mode = operation.get('page_mode')
         if page_mode is not None:
@@ -553,9 +573,12 @@ class MetadataCreation:
     value: int | None = None
     safe_blank_variants: bool = False
     reasons: tuple[str, ...] = ()
+    description: str | None = None
 
     def as_dict(self):
         result = {'kind': self.kind, 'address': self.address, 'name': self.name}
+        if self.description is not None:
+            result['description'] = self.description
         if self.kind != 'Application':
             result['application'] = self.application
         if self.kind == 'Level':
@@ -601,7 +624,7 @@ class NativeEdltParentPlan:
     def as_dict(self):
         ordered_operations = tuple(
             row['op'] for row in self.operations
-            if row['op'] in ('applications', 'corridor', 'reset', 'add-corridor-dialog'))
+            if row['op'] in ('applications', 'corridor', 'reset', 'add-corridor-dialog', 'add-application-dialog'))
         ordered_application_cache = (
             self.cache.application_cache
             if hasattr(self.cache, 'application_cache') else self.cache)
@@ -621,7 +644,7 @@ class NativeEdltParentPlan:
                                    ordered_application_cache),
                 'toolkit_registry_display_and_sort_preferences_observed': False,
                 'projected_list_objects_admitted': bool(self.add_dialogs and
-                    any(row['op'] == 'add-corridor-dialog' for row in self.operations)),
+                    any(row['op'] in ('add-corridor-dialog', 'add-application-dialog') for row in self.operations)),
                 'scene_manager_creations_enter_cache_before_pp_staging': bool(
                     self.scene_metadata is not None and self.creations),
                 'operation_owned_creations_enter_cache_before_pp_staging':
@@ -666,8 +689,10 @@ class NativeEdltParentPlan:
                 None if self.resolved_operations is None
                 else json.loads(_json(list(self.resolved_operations)))),
             'add_dialog_boundary': {
-                'blank_address_group_dialog_modeled': bool(self.add_dialogs),
-                'application_add_dialog_supported': False,
+                'blank_address_group_dialog_modeled': any(row.as_dict().get('kind') in ('Group', 'NetVar')
+                                                          for row in self.add_dialogs),
+                'application_add_dialog_supported': any(row['op'] == 'add-application-dialog'
+                                                         for row in self.operations),
                 'level_add_dialog_supported': any(row['op'] == 'add-activation-action-dialog'
                                                   for row in self.operations),
                 'corridor_add_dialog_supported': any(row['op'] == 'add-corridor-dialog'
@@ -1371,7 +1396,9 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
-    if any(row['op'] in parent_add_kinds for row in operations):
+    if (any(row['op'] in parent_add_kinds for row in operations)
+            or (any(row['op'] == 'add-dialog' for row in operations)
+                and any(row['op'] == 'reset' for row in operations))):
         return _plan_parent_add_dialogs(
             text, unit_path, supplied, editor, operations, snapshot,
             requirements, networks=networks,
@@ -1496,7 +1523,8 @@ def _plan_add_dialogs(text, unit_path, supplied, editor, operations, snapshot,
 def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     requirements, *, networks, display_preferences,
                     source_operations=None, dialogs=(), extra_creations=(),
-                    cache_projector=None, initial_missing=(), dialog_contexts=()):
+                    cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
+                    dependency_values=None):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1509,7 +1537,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
         group_reasons.setdefault(key, []).extend(row['facts']['exists'])
     operation_images = {}
     for application, group, reason, needs_images in _operation_groups(
-            supplied, operations):
+            supplied if dependency_values is None else dependency_values, operations):
         required_apps.add(application)
         group_reasons.setdefault((application, group), []).append(reason)
         if needs_images:
@@ -1591,7 +1619,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
     cache = LifecycleCache(tuple(sorted(required_apps)), tuple(cache_groups))
     if cache_projector is not None:
         cache = cache_projector(cache, creations)
-    parent = editor.plan(supplied, metadata=cache, operations=operations,
+    parent = editor.plan(supplied if parent_input is None else parent_input, metadata=cache, operations=operations,
                          _dialog_initial_missing=initial_missing,
                          _dialog_missing_by_operation=dialog_contexts)
     return NativeEdltParentPlan(
@@ -1615,8 +1643,6 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     from dataclasses import replace
     from .edlt_parent_add_dialog import KINDS, resolve
     from .edlt_scene_metadata import _dialog_name
-    if any(row['op'] == 'reset' for row in operations):
-        raise ValueError('Parent Add after Reset requires the fresh Reset graph and its original binding refresh; retained pre-Reset dialog inventories cannot stand in for that graph')
     if any(row['op'] == KINDS[0] for row in operations) and display_preferences is None:
         raise ValueError('Corridor Add requires explicit display preferences for its refreshed ordered list')
     project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
@@ -1629,6 +1655,33 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
               for app in snapshot.applications for group in app.groups}
     records = {(app.address, group.address): group for app in snapshot.applications for group in app.groups}
     app_names = {app.address: app.tag for app in snapshot.applications}
+    other_application_names = []
+    if any(row['op'] == 'add-application-dialog' for row in operations):
+        for network in _children(project, 'Network'):
+            network_address = _byte(_field(network, 'Address'), 'Network address')
+            if network_address == snapshot.network:
+                continue
+            rows = {}
+            for app in _children(network, 'Application'):
+                address = _byte(_field(app, 'Address'), 'Application address')
+                if address == 255:
+                    continue  # Original virtual unused Application is not stored.
+                if address in rows:
+                    raise ValueError('Application Add requires unambiguous project-wide application addresses')
+                rows[address] = _field(app, 'TagName')
+            other_application_names.append((network_address, rows))
+    other_application_names = tuple(other_application_names)
+    requirements = json.loads(_json(requirements))
+    reset_requirements, control_groups, complete_group_lists = _reset_requirements(snapshot, editor, operations)
+    if reset_requirements is not None:
+        # Reset's initial and fresh AfterLoad getters precede subsequent Add.
+        requirements = json.loads(_json(requirements))
+        for phase in ('initial_load', 'fresh_reset_load'):
+            source = reset_requirements[phase]
+            for key in ('applications', 'groups'):
+                for row in source[key]:
+                    if row not in requirements[key]:
+                        requirements[key].append(row)
     load_groups = [(row['application'], row['group']) for row in requirements['groups']]
     scene_results, scene_creations = [], []
     dialog_contexts = []
@@ -1639,6 +1692,11 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         application = (202 if supplied['ProximityMode'][0] == 3 else
                        56 if supplied['PrimaryApplication'][0] == 255 else supplied['PrimaryApplication'][0])
         load_groups.append((application, supplied['ProximityGroup'][0]))
+        marker = {'application': application, 'group': supplied['ProximityGroup'][0],
+                  'facts': {'exists': ['initial Proximity group getter']}, 'conditional_reasons': []}
+        if not any(row['application'] == application and row['group'] == marker['group']
+                   for row in requirements['groups']):
+            requirements['groups'].append(marker)
     for app, address in load_groups:
         if app != 255 and address != 255:
             seed_groups.setdefault(app, {}).setdefault(address, 'Group ' + str(address))
@@ -1656,9 +1714,28 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 group=trigger, value=action, safe_blank_variants=True,
                 reasons=('Scene' + str(slot) + ' initial trigger/action getter',)))
 
+    for app in complete_group_lists:
+        if app not in existing:
+            raise ValueError('Reset bound-control application is absent: ' + str(app))
+    for app, address in control_groups:
+        if address not in seed_groups.get(app, {}):
+            raise ValueError('Reset does not infer a missing bound control group: '
+                             + str(app) + '/' + str(address))
+        # The initial Reset controls consume these verified existing facts
+        # again during final canonical replay, even when later controls do not
+        # reference the old group after the fresh graph replaces the model.
+        if not any(row['application'] == app and row['group'] == address
+                   for row in requirements['groups']):
+            requirements['groups'].append({'application': app, 'group': address,
+                'facts': {'exists': ['verified initial Reset bound control']},
+                'conditional_reasons': []})
+    reset_transition = None
+    reset_dependency_values = None
+
     def preceding(index):
         keys = load_groups + [(app, group) for app, group, _reason, _images
-                              in _operation_groups(supplied, lowered_so_far)]
+                              in _operation_groups(supplied if reset_dependency_values is None
+                                                   else reset_dependency_values, lowered_so_far)]
         return tuple((app, group, 'Group ' + str(group)) for app, group in keys
                      if app != 255 and group != 255)
 
@@ -1685,8 +1762,10 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         return cache if display_preferences is None else present_application_cache(cache, display_preferences)
 
     def advance(index, row, state, groups, level_names):
+        nonlocal reset_transition, reset_dependency_values
         row = dict(row)
         show_missing = row.pop('_show_missing', None)
+        application_name = row.pop('_application_name', None)
         kind = row['op']
         options = {name: value for name, value in row.items() if name != 'op'}
         binding = kind == 'parent-add-binding'
@@ -1696,6 +1775,13 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             if kind == 'corridor':
                 options = {'edits': [] if row.get('cancelled') else
                            [{'field': row['option'], 'value': row['value']}]}
+            elif kind == 'applications':
+                options = {'edits': [] if row.get('cancelled') else
+                           [{'field': row['option'], 'address': row['value']}]}
+                if not row.get('cancelled'):
+                    # The receipt name was inserted by the ordered resolver.
+                    app_names[row['value']] = application_name
+
         if kind == 'corridor':
             primary = state['PrimaryApplication'][0]
             if show_missing is None:
@@ -1708,7 +1794,22 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             if missing:
                 dialog_contexts.append((index + 1, application, missing))
                 state = {**state, **{name: (255,) for name, _address in missing}}
-        if kind == 'scene-manager':
+        if kind == 'reset':
+            options.setdefault('dirty_parameters', ())
+            _raw, _dirty, _prepared, reset_transition = editor._editor('reset').prepare_unit_reset(
+                snapshot.raw_map(), metadata=inventory_cache(groups, level_names), **options)
+            state = dict(reset_transition.after_controls)
+            reset_dependency_values = dict(state)
+        elif kind == 'blank':
+            slot = _candidate_widget(row, state)
+            if slot is None:
+                raise ValueError('Parent Add could not resolve Blank placement')
+            # Same raw dependency projection as the existing ordered resolver;
+            # the canonical parent owns the issued Blank transition below.
+            state = {**state, _pp_field(slot): (0,)}
+            if slot >= 6:
+                state['Widget' + str(slot) + 'RestoreLevel'] = (0,)
+        elif kind == 'scene-manager':
             if scene_results:
                 raise EdltError('Only one SceneManager may own the retained scene graph')
             for requirement in requirements['applications']:
@@ -1720,7 +1821,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             for app, rows in groups.items():
                 if app not in existing:
                     projected.append(SceneContainerCreation('Application', app, app,
-                        APPLICATION_NAMES.get(app, 'Application ' + str(app)), ('prior parent getter',)))
+                        app_names.get(app, APPLICATION_NAMES.get(app, 'Application ' + str(app))), ('prior parent getter',)))
                 for address, name in rows.items():
                     if address == 255:
                         continue
@@ -1780,24 +1881,34 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
 
     initial_controls = editor.lifecycle.load(supplied,
         metadata=inventory_cache(seed_groups, seed_levels).lifecycle).after_load
+    for application in seed_groups:
+        app_names.setdefault(application, APPLICATION_NAMES.get(application, 'Application ' + str(application)))
     initial_missing = ()
-    if any(row['op'] == KINDS[0] for row in operations):
+    if reset_requirements is None and any(row['op'] == KINDS[0] for row in operations):
         primary = initial_controls['PrimaryApplication'][0]
         initial_missing = tuple(name for name in _SETTING_FIELDS['corridor'][:3]
             if initial_controls[name][0] != 255
             and initial_controls[name][0] not in seed_groups.get(primary, {}))
         initial_controls = {**initial_controls, **{name: (255,) for name in initial_missing}}
     resolved, receipts, groups, actions = resolve(
-        operations, initial_controls, project_name, seed_groups, seed_levels, preceding, advance=advance)
+        operations, initial_controls, project_name, seed_groups, seed_levels, preceding, advance=advance,
+        application_names=app_names, other_networks=other_application_names)
     for receipt in receipts:
         row = receipt.as_dict()
         if row['outcome'] == 'accepted':
             _dialog_name(row['name'])
+            description = row.get('description', '')
+            if (len(description.encode('utf-8', 'strict')) > 1024 * 1024 - 128
+                    or any(ord(c) < 32 or ord(c) == 127 or c in '#\ufffe\uffff' for c in description)
+                    or description != ' '.join(description.split())):
+                raise ValueError('Application description is unsupported by the native line/XML transport')
     resolved = normalize_operations(resolved)
     extra = (*tuple(MetadataCreation(
-        'Level', 202, row['address'], row['name'], group=row['group'],
-        value=row['address'], safe_blank_variants=True,
-        reasons=('add-activation-action-dialog',)) for row in actions), *scene_creations)
+        row['kind'], row['address'] if row['kind'] == 'Application' else 202, row['address'], row['name'],
+        group=row.get('group'), value=row['address'] if row['kind'] == 'Level' else None,
+        safe_blank_variants=row['kind'] == 'Level',
+        reasons=('add-application-dialog' if row['kind'] == 'Application' else 'add-activation-action-dialog',),
+        description=row.get('description')) for row in actions), *scene_creations)
 
     def complete(cache, creations):
         # Only source objects and the exact owned creation plan enter lists.
@@ -1855,7 +1966,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         source_operations=operations, dialogs=groups,
         extra_creations=extra, cache_projector=complete,
         initial_missing=initial_missing,
-        dialog_contexts=tuple(dialog_contexts))
+        dialog_contexts=tuple(dialog_contexts),
+        parent_input=snapshot.raw_map() if reset_requirements is not None else None,
+        dependency_values=reset_dependency_values)
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 
@@ -2093,27 +2206,26 @@ class NativeEdltParentTransaction:
             **creation.as_dict(), 'attempted': True, 'created': False,
             'value_initialized': False,
         }
+        identity = None
+
+        def admit(response):
+            nonlocal identity
+            identities = [match[1].lower() for line in response.lines
+                          if (match := re.fullmatch(
+                              r'301[- ]OID=([0-9a-fA-F-]{36})', line))]
+            if response.code != 301 or len(identities) != 1:
+                raise RuntimeError('Created metadata did not return exactly one OID')
+            identity = _oid(identities[0])
+            if identity in known:
+                raise RuntimeError('Created metadata returned an existing OID')
+
         try:
-            response = self.database.add(
+            self.database.add(
                 parent, kind, creation.address,
-                _name(creation.name, 'Metadata name'))
+                _name(creation.name, 'Metadata name'), pre_initializer=admit)
         except BaseException:
             self._evidence['unidentified_metadata_mutation'] = True
             raise
-        identities = [match[1].lower() for line in response.lines
-                      if (match := re.fullmatch(
-                          r'301[- ]OID=([0-9a-fA-F-]{36})', line))]
-        if len(identities) != 1:
-            self._evidence['unidentified_metadata_mutation'] = True
-            raise RuntimeError('Created metadata did not return exactly one OID')
-        try:
-            identity = _oid(identities[0])
-        except ValueError:
-            self._evidence['unidentified_metadata_mutation'] = True
-            raise
-        if identity in known:
-            self._evidence['unidentified_metadata_mutation'] = True
-            raise RuntimeError('Created metadata returned an existing OID')
         known.add(identity)
         receipt.update(
             oid=identity, created=True,
@@ -2121,8 +2233,11 @@ class NativeEdltParentTransaction:
         self._evidence['objects'].append(receipt)
         self._evidence['metadata_objects_created'] = len(
             self._evidence['objects'])
+        if creation.description:
+            self.database.set('!' + identity + '/Description', creation.description)
+            receipt['description_initialized'] = True
 
-    def _verify_created(self, plan, text):
+    def _verify_created(self, plan, text, *, description_phase):
         snapshot = _snapshot(text, plan.unit, self.editor,
                              dltp_index=plan.snapshot.dltp_index)
         before_apps = {row.address: row for row in plan.snapshot.applications}
@@ -2162,6 +2277,18 @@ class NativeEdltParentTransaction:
                         or after_app.tag != creation.name):
                     raise RuntimeError(
                         'Created parent application differs after native readback')
+                if creation.description:
+                    path = '!' + receipt['oid'] + '/Description'
+                    response = self.database.get(path)
+                    expected = '342 ' + path + '=' + creation.description
+                    if (response.code != 342 or response.lines != (expected,)
+                            or response.final != expected):
+                        raise RuntimeError('Created Application description scalar differs after native readback')
+                    self._evidence.setdefault('application_description_readbacks', []).append({
+                        'phase': description_phase, 'oid': receipt['oid'], 'address': app_address,
+                        'property': 'Description', 'verified': True,
+                        'value_sha256': _digest(creation.description),
+                        'native_xml_description_fidelity_verified': False})
             elif (after_app.oid, after_app.tag, after_app.metadata) != (
                     before_app.oid, before_app.tag, before_app.metadata):
                 raise RuntimeError('Existing application metadata changed')
@@ -2298,9 +2425,10 @@ class NativeEdltParentTransaction:
             self._operation('copy', plan.snapshot.project, backup)
             self._evidence['backup_copy_confirmed'] = True
             self._evidence['backup_created'] = True
-            self._fresh(plan)
+            fresh_text = self._fresh(plan)
             self._operation('use', plan.snapshot.project)
-            known = {plan.snapshot.unit_oid}
+            known = (_observed_oids(plan.before_xml) | _observed_oids(fresh_text)
+                     | {plan.snapshot.unit_oid})
             for app in plan.snapshot.applications:
                 known.add(app.oid)
                 for group in app.groups:
@@ -2312,7 +2440,7 @@ class NativeEdltParentTransaction:
             for creation in plan.creations:
                 self._add(plan, creation, known)
             if plan.creations:
-                self._verify_created(plan, self._xml(plan.snapshot.project))
+                self._verify_created(plan, self._xml(plan.snapshot.project), description_phase='before_pp')
 
             self._evidence.update(state='pp', pp_mutation_attempted=True)
             lock = f'//{plan.snapshot.project}/{plan.snapshot.network}'
@@ -2343,7 +2471,7 @@ class NativeEdltParentTransaction:
             for action in ('close', 'load'):
                 self._operation(action, plan.snapshot.project)
             final_text = self._xml(plan.snapshot.project)
-            final = self._verify_created(plan, final_text)
+            final = self._verify_created(plan, final_text, description_phase='after_project_reload')
             expected = {**plan.parent_plan.expected, **plan.parent_plan.changes}
             if final.value_map() != expected:
                 raise RuntimeError('Persisted native PP differs from the parent transaction')

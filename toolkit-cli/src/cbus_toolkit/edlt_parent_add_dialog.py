@@ -16,7 +16,7 @@ from .edlt_corridor import FIELDS
 from .edlt_scene_add_dialog import resolve as level_dialog
 
 KINDS = ('add-corridor-dialog', 'add-activation-group-dialog',
-         'add-activation-action-dialog')
+         'add-activation-action-dialog', 'add-application-dialog')
 
 
 @dataclass(frozen=True)
@@ -29,6 +29,9 @@ class ParentAddDialog:
 
 def normalize(value):
     kind = value.get('op')
+    if kind == 'add-application-dialog':
+        from .edlt_application_add_dialog import normalize as application_normalize
+        return application_normalize(value)
     fields = {'op', 'address', 'name', 'cancel'}
     if kind == KINDS[0]:
         fields.add('field')
@@ -48,7 +51,7 @@ def normalize(value):
 
 
 def resolve(operations, values, project_name, existing_groups, existing_levels,
-            preceding_groups, *, advance=None):
+            preceding_groups, *, advance=None, application_names=None, other_networks=()):
     """Replay controls and Add replies in order against complete inventories.
 
     ``advance`` projects ordinary controls using the owning source-bound
@@ -59,6 +62,8 @@ def resolve(operations, values, project_name, existing_groups, existing_levels,
     groups = {app: dict(rows) for app, rows in existing_groups.items()}
     levels = {key: dict(rows) for key, rows in existing_levels.items()}
     state = dict(values)
+    application_names = ({app: 'Application ' + str(app) for app in groups}
+                         if application_names is None else dict(application_names))
     receipts, accepted_groups, accepted_levels, rewritten = [], [], [], []
     for index, original in enumerate(operations):
         for app, address, tag in preceding_groups(index):
@@ -68,6 +73,28 @@ def resolve(operations, values, project_name, existing_groups, existing_levels,
             if advance is not None:
                 state, row = advance(index, row, state, groups, levels)
             rewritten.append(row)
+            continue
+        if row['op'] == 'add-application-dialog':
+            from .edlt_application_add_dialog import resolve as application_dialog
+            receipt = application_dialog(row, application_names, project_name, other_networks)
+            receipt.update(operation_index=index + 1, object_created=False,
+                           created_before_pp_staging=False)
+            receipts.append(ParentAddDialog(json.dumps(receipt, sort_keys=True)))
+            binding = dict(op='parent-add-binding', panel='applications', option=row['field'])
+            if receipt['outcome'] == 'cancelled':
+                binding['cancelled'] = True
+            else:
+                application_names[receipt['address']] = receipt['name']
+                groups[receipt['address']] = {}
+                accepted_levels.append(receipt)
+                binding['value'] = receipt['address']
+                if advance is not None:
+                    binding['_application_name'] = receipt['name']
+            if advance is not None:
+                state, binding = advance(index, binding, state, groups, levels)
+            elif receipt['outcome'] == 'accepted':
+                state['PrimaryApplication' if row['field'] == 'primary' else 'SecondaryApplication'] = (receipt['address'],)
+            rewritten.append(binding)
             continue
         primary = state['PrimaryApplication'][0]
         mode, trigger = state['ProximityMode'][0], state['ProximityGroup'][0]

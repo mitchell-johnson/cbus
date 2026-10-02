@@ -585,3 +585,18 @@ native combined Network/Unit readback. It does not contact a C-Gate listener.
 ## Docker
 
 Copy `.env.example` to `.env`, set the broker plus either a CNI or serial endpoint, then run `docker compose up --build`. Docker uses host networking. Project backups, authentication files, and certificates in `cmqttd_config/` are site-specific ignored files; do not commit or expose them.
+
+
+## Document a loaded native database
+
+```sh
+cbus-toolkit cgate --host HOST database-document --project //PROJECT \
+  --output NEW.html --generated-at 2026-10-02T12:00:00Z
+```
+
+One fresh complete DBGETXML supplies the saved Unit PP and metadata. Inspect
+`source_snapshot`, `units`, `unrecovered`, output hash and `parity`; this
+command never loads physical programming or opens a network. Output must be
+new. `--network N` selects within the same snapshot, and `--catalog FILE`
+adds explicit calculator facts. Read
+`toolkit-cli/docs/native-project-documentation.md` for limits.

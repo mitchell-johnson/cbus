@@ -25,6 +25,9 @@ from .toolkit_database_csv import (
     validate_columns,
 )
 from .toolkit_database_csv_registry import refusal_reason, registrations_for
+from .toolkit_database_csv_last_profiles import (
+    LAST_CLASSES, last_profile, temperature_group_count,
+)
 
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
@@ -88,7 +91,8 @@ FAMILY_AGENTS = ('TCBusKeyInputCGateAgent', 'TCBusNeoInputCGateAgent',
                  'TCBusWirelessInputUnit8RemotesCGateAgent',
                  'TCBusWirelessDecoratorInputUnitCGateAgent',
                  *_SOURCE_INPUT_AGENTS, *_SOURCE_OUTPUT_AGENTS,
-                 *dict.fromkeys(_SOURCE_GENERIC_CLASSES.values()))
+                 *dict.fromkeys(_SOURCE_GENERIC_CLASSES.values()),
+                 *dict.fromkeys(row['agent'] for row in LAST_CLASSES.values()))
 
 
 def family_profile(unit_type, firmware):
@@ -105,6 +109,9 @@ def family_profile(unit_type, firmware):
     if _firmware(firmware) is None or len(rows) != 1:
         raise ValueError('CSV family firmware must select exactly one static registration')
     row, = candidates
+    last = last_profile(row[3], row[4])
+    if last is not None:
+        return last
     if _SOURCE_GENERIC_CLASSES.get(row[3]) == row[4]:
         return {'class': row[3], 'agent': row[4], 'wireless': False,
                 'blocks': 0, 'has_area': False, 'secondary_blocks': False,
@@ -459,7 +466,10 @@ def _class(unit):
     profile = family_profile(kind, unit.firmware)
     if profile is not None:
         count = len(unit.group_identities)
-        if (not profile['wireless'] and count != profile['blocks']
+        dynamic = profile.get('dynamic_blocks')
+        if (dynamic == 'temperature_mode' and count not in (0, 1, 3)
+                or dynamic == 'wireless_channels' and not 0 <= count <= 16
+                or not dynamic and not profile['wireless'] and count != profile['blocks']
                 or profile['wireless'] and not 16 <= count <= 32):
             raise ValueError('Cached family group count disagrees with the selected static loader')
         return profile['class']
@@ -558,10 +568,16 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     selected = validate_columns(columns)
     selected_class = _class(unit)
     family = family_profile(unit.unit_type, unit.firmware)
-    current = list(_validated_groups(unit, group_cache, allow_empty=bool((family or {}).get('generic'))))
+    current = list(_validated_groups(unit, group_cache, allow_empty=bool(
+        (family or {}).get('generic') or (family or {}).get('dynamic_blocks'))))
     if family is not None:
         application_context = _validated_application_context(unit, current, application_context,
             source_model=family.get('source_model', False))
+        if family.get('dynamic_blocks') == 'temperature_mode':
+            primary = next(app for app in application_context.applications
+                           if app.identity == application_context.primary_identity)
+            if len(unit.group_identities) != temperature_group_count(primary.address):
+                raise ValueError('Temperature CSV associations disagree with primary Application mode')
         if family['wireless']:
             if (type(wireless_loader) is not CSVWirelessLoader
                     or len(unit.group_identities) != 16 + wireless_loader.installed_channels
@@ -591,7 +607,7 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Captured generic observations are absent or an ignored pair')
     if wireless_loader is not None and area_observations:
         raise ValueError('Wireless loader has no Area provider observations')
-    if (family or {}).get('generic') and area_observations:
+    if (family or {}).get('generic') and not has_area and area_observations:
         raise ValueError('Source generic loader has no Area provider observations')
 
     if not (family or {}).get('source_model') and any(
@@ -677,7 +693,8 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     interaction_count = {'TRELAY4': 6, 'TRELDN8': 8, 'TRELDN8SP': 9, 'TRELMB8': 9,
                          'TCBusEDLTUnit': 16, **_DIN_CHANNELS}.get(selected_class, 8)
     if family is not None:
-        interaction_count = 16 if family['wireless'] else family['blocks']
+        interaction_count = (len(unit.group_identities) if family.get('dynamic_blocks') else
+                             16 if family['wireless'] else family['blocks'])
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
                    for index, identity in enumerate(unit.group_identities[:16]))
     area = cache[area_identity].tag if area_identity is not None else None
@@ -736,7 +753,8 @@ def parse_cached_projection(value, *, columns):
                          loader_associations=tuple(raw_loader))
 
     raw_groups = value['group_cache']
-    if (type(raw_groups) is not list or not int(not bool((family or {}).get('generic')))
+    if (type(raw_groups) is not list or not int(not bool(
+            (family or {}).get('generic') or (family or {}).get('dynamic_blocks')))
             <= len(raw_groups) <= 256):
         raise ValueError('Cached groups must be a nonempty JSON array of at most 256 entries')
     groups = []

@@ -385,7 +385,7 @@ class ParentAddTests(unittest.TestCase):
     def test_no_partial_cache_path_or_unknown_application_add(self):
         with self.assertRaisesRegex(EdltError, 'automatic'):
             normalize_operations((dict(op='add-activation-action-dialog'), widget()))
-        with self.assertRaisesRegex(EdltError, 'pointer'):
+        with self.assertRaisesRegex(EdltError, 'add-application-dialog'):
             self.plan((dict(op='add-dialog', field='PrimaryApplication'),))
         for row in (dict(op='add-corridor-dialog', field='seconds'),
                     dict(op='add-activation-action-dialog', address=255),

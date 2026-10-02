@@ -14,6 +14,11 @@ cbus-toolkit project document house.cbz --output house.html \
     --generated-at 2026-09-30T07:05 --catalog /path/to/cbusunits.xml
 ```
 
+For one fresh loaded cmqttd/C-Gate snapshot, use
+[`cgate database-document --project //PROJECT`](native-project-documentation.md).
+The same renderer now also admits eight source-pinned light-level, WHAA and
+DALI factory profiles; see [their exact saved-PP boundaries](project-documentation-remaining.md).
+
 The command never overwrites. If the output file exists, it fails with
 `FileExistsError` and leaves the file unchanged. The default name is
 `<project TagName>.html` in the current directory. The Toolkit uses the same
@@ -106,7 +111,9 @@ and its verified receipt.
 | `TCustomSceneControllerDocumentor` | `SCNCTL5` with an explicit registered firmware | Recovered five-scene body, commands, trigger selectors and master-off fields for complete admitted snapshots |
 | `TPIRDocumentor`, `TST7PIRSensorDocumentor` | registered `SENPIRSS`, `SENPIROA`, `SENPIRIA`, `SENPIRIB` classes | Recovered four-key ordinary controls, enable-group appendix and bounded group/action usage; surface multisensor and encoded scene keys excluded |
 | `TSENTEMPDocumentor`, `TSENTEMPProDocumentor`, `TDigitalTemperatureSensorDocumentor` | registered `SENTEMP`, `SENTEMPB`, `SENTEMP4` classes | Recovered consumed control/broadcast fields and four-channel reports under explicit Celsius/period-decimal formatting |
-| every other documentor | other Neo key inputs, light-level sensors, multisensor, thermostat, WHAA, DALI, architectural and Bytecraft L1 dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
+| `TLightLevelSensorDocumentor`, `TST7LightLevelSensorDocumentor` | old `SENLL`, `PE_CELL`, ST7 `SENLL` under exact selected factory profiles | Recovered saved control/lux/broadcast bodies and independently bounded usage; scene and omitted loader-state dependencies remain marked |
+| `TWHAADocumentor`, `TDALI2BDocumentor` | `PC_WHAD/WHAR/WHARB`, `PC_DAL2B/C` under exact selected factory profiles | Recovered audio roles/zones and DALI mappings/error references; complete consumed programming required |
+| every other documentor | other Neo key inputs, multisensor, thermostat, architectural and Bytecraft L1 dimmers, remote controls, wireless inputs and gateways | Unrecovered: base block and a marker |
 
 The [Neo body note](project-documentation-neo.md) records physical and virtual
 key labels, secondary applications, the native scene-ramp indexing quirk and
