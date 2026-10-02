@@ -125,6 +125,12 @@ The previous published `7d57f358` commit has green
 Its native/hardware jobs were skipped. This precommit report makes no current
 publication CI-success claim.
 
+After publication, Linux CI exposed a slow-peer test timing assumption. The
+supported write deadline retired that peer before the test's expected count
+overflow. See the [separate deterministic-test follow-up](ci-mock-delivery-retirement-2026-10-02.md)
+for the failure, correction and new execution context. The original receipt
+and counts above remain tied to their recorded inputs.
+
 ## Outstanding work
 
 #43 retains 169 unadmitted tweaker registrations, original catalogue lookup and
@@ -136,8 +142,9 @@ report acceptance, remaining device/firmware profiles and associations.
 physical/MQTT coexistence acceptance, and aggregate model/client resource
 guarantees. This batch closes these named software pieces, not those umbrellas.
 
-Manual cyber-deferred [#73](https://github.com/mitchell-johnson/cbus/issues/73)
-and [#74](https://github.com/mitchell-johnson/cbus/issues/74) are untouched.
+Open numeric-selector [#73](https://github.com/mitchell-johnson/cbus/issues/73)
+and manual cyber-deferred [#74](https://github.com/mitchell-johnson/cbus/issues/74)
+are untouched.
 Current original instruction execution, VM, real broker/CNI and hardware
 operation are zero; static original-byte inspection is recorded separately.
 `coverage --require-complete` must continue to refuse full parity.

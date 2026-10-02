@@ -1,0 +1,291 @@
+{
+  "base_revision": "09b1be1ef7b94b340b23fbb45a5cec58de2c1a78",
+  "changed_test_inputs": [
+    {
+      "bytes": 16706,
+      "path": "rust/cbus-cgate/src/mock_delivery.rs",
+      "sha256": "bff9e04be12189de046207f3fde661b33521736587985757b6c47a3bc78d738e"
+    },
+    {
+      "bytes": 17252,
+      "path": "rust/cbus-cgate/tests/tcp_delivery_bounds.rs",
+      "sha256": "27cc866724628bdaab87f26ba1e617256aa6e11ce0c3253dc53ba49c2d31d62a"
+    }
+  ],
+  "focused": {
+    "failed": 0,
+    "ignored": 0,
+    "included_in_workspace_count": true,
+    "new_deterministic_parents": 2,
+    "os": "macOS",
+    "parent_passes": 17,
+    "results": {
+      "artifact_role": "focused-results.json",
+      "bytes": 9077,
+      "sha256": "d8d4280335b808695dda3aae9275df88b7e94b7e54eff1729fe3cea8e0ed735c"
+    }
+  },
+  "format": "cbus-mock-delivery-ci-fix-owned-release-v1",
+  "fresh_modeled_comparisons": {
+    "backend_results": 6,
+    "build_prerequisite": "make -o build-interop; completed required release build supplies frozen binaries; no metadata Cargo build",
+    "canonical_commands": 10,
+    "combined_network_checks": 4,
+    "comparison_driver_invocations": 4,
+    "freeze": {
+      "artifact_role": "final-publication-resource-freeze.json",
+      "bytes": 720853,
+      "sha256": "1b5d0f14163750bdb118bc83d21f0fa9c256a66ece775effe8038f7d4450fa9d"
+    },
+    "primary_passed_cases": 64,
+    "proof": {
+      "artifact_role": "canonical-publication-proof.json",
+      "bytes": 183466,
+      "sha256": "26852214b0495cce91ad43d5511399d5169141b5d2e0b2f621c5fb7ab226c11c"
+    },
+    "source_bindings": 1141,
+    "source_union": 213
+  },
+  "independent_reviews": {
+    "canonical_metadata": {
+      "artifact_role": "canonical3-independent-readonly-review.json",
+      "bytes": 15056,
+      "sha256": "7407a5807cf2fed72fc9ac35471c12fef3552780e860230b82fadf30b3e6a5a5"
+    },
+    "focused_retained_binary": {
+      "artifact_role": "focused-historical-binary-retention-addendum.json",
+      "bytes": 2041,
+      "sha256": "c47e455a7fcb090f45aef3f9099509b31ab303effda9f43ad375557bdfc1be84"
+    },
+    "focused_terminal": {
+      "artifact_role": "focused-terminal-and-archive-readonly-recount.json",
+      "bytes": 9521,
+      "sha256": "158a79b9551f110e796b1a111d9b886513246984115ac7c2a3201e1bed5085f6"
+    },
+    "release_binary_copies": {
+      "artifact_role": "required-rust3-release-copies-readonly-addendum.json",
+      "bytes": 2667,
+      "sha256": "ad6a18e6db4ff80298e082e53c7511bdee6c04af7ae976a7081e75dafc3391c9"
+    },
+    "rust_gates": {
+      "artifact_role": "required-rust3-independent-readonly-review.json",
+      "bytes": 10549,
+      "sha256": "0ec81cd4be7c442d427545e384c538e1729283cc2b22f9190d31ae5b4a56fa93"
+    },
+    "source_and_wheel": {
+      "artifact_role": "independent-source3-wheel3-review.json",
+      "bytes": 6402,
+      "sha256": "863687942f89feda89e1909dd192f75eb2d45ea1d6115a4ad6522711ce3f660f"
+    },
+    "static_test_patch": {
+      "artifact_role": "source-static-review.json",
+      "bytes": 5026,
+      "sha256": "8f42d985ae245ed5a06a9f6772dda64745f3e93175a41a33a170c343e6780525"
+    }
+  },
+  "installed_package": {
+    "actual_pytest_pid": 28526,
+    "import_proof": {
+      "artifact_role": "runtime-import-proof.json",
+      "bytes": 235,
+      "sha256": "e7a6ab570a66cd5abcb182e2a0330cd962875e6a7713913bc10786f5aceb2e42"
+    },
+    "import_records": 4,
+    "matching_source_zip_installed_files": 329,
+    "package_proof": {
+      "artifact_role": "wheel-package-proof.json",
+      "bytes": 36829,
+      "sha256": "332ff9d78c2cbb069d13cd8b94edc8fdc2f9a73166b980807d873688d9b37c34"
+    },
+    "processes": 2,
+    "pytest_phases": [
+      "startup",
+      "terminal"
+    ],
+    "violations": 0,
+    "wheel_sha256": "7d0078b2e8ea2bbcefa2135c448610e8aefc2900e4f42f76b07936f7e011e60d"
+  },
+  "linux_ci_failure": {
+    "actual_reason": "outbound socket write timed out; pending receipts are unconfirmed",
+    "corrected_linux_execution_claimed": false,
+    "job_id": 110702477171,
+    "literal_log": {
+      "artifact_role": "ci-rust-36963616488.connector.log",
+      "bytes": 126350,
+      "sha256": "8c0ad85b346ef1e6e059b0c5d2e37812e9f64fa1888eed461d6158300239b0de"
+    },
+    "run_id": 36963616488,
+    "tcp_failed": 1,
+    "tcp_passed": 6
+  },
+  "prior_release_receipt": {
+    "artifact_role": "cached-csv-event-bounds-owned-release-20261002.json",
+    "bytes": 27323,
+    "path": "toolkit-cli/research/fixtures/cached-csv-event-bounds-owned-release-20261002.json",
+    "sha256": "d3db480cad0c5804623a59da729f66e5a7cf058e2de2c23f404c0ca30428ce90"
+  },
+  "production": {
+    "changed": false,
+    "main_and_vector_exact_equal": true,
+    "prefix_bytes": 6433,
+    "prefix_exact_equal": true,
+    "prefix_sha256": "8ddd018e5ee0ec0b64f52fa8771d34c0b790616cf2f4c5295e07cc4ca426872a",
+    "release_binary_bytes_equal_prior_batch": true
+  },
+  "qualification": {
+    "broader_maintained_interop_repeated": false,
+    "coverage_complete": false,
+    "current_original_VM_hardware_executions": 0,
+    "cyber_deferred_issue_untouched": 74,
+    "earlier_650_and_167_runs_rebound": false,
+    "full_python_suite_repeated_locally": false,
+    "fully_accepted_obligations_delta": 0,
+    "open_selector_issue_untouched": 73,
+    "post_consumer_publication_delta": [
+      "finalize CI follow-up prose",
+      "clarify earlier batch note: open selector issue73 versus cyber-deferred issue74",
+      "add this sanitized release receipt"
+    ],
+    "preparation_failures_retained": [
+      "disk prevented focused launch; zero product execution",
+      "empty gh log rejected as CI proof",
+      "first archive failed; preserved alongside verified restorable archive",
+      "read-only focused audit saw subsequent shared-debug drift; preserved and historical retained bytes separately verified"
+    ]
+  },
+  "release_binaries": {
+    "cgate-mock": {
+      "bytes": 3600432,
+      "sha256": "7ed0cda421d57ddf949f0734f8154c6e6940bd0892fbf3cefa89905d611c6690"
+    },
+    "cmqttd": {
+      "bytes": 12942320,
+      "sha256": "d32a95185094d8af2c2442426d8b96af1c1f509638ec90dc1deb474ac95b6cb1"
+    }
+  },
+  "required_rust": {
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "exit": 0,
+        "log": {
+          "artifact_role": "format.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log": {
+          "artifact_role": "clippy.log",
+          "bytes": 240,
+          "sha256": "9d81d9282678287f2e6dc857395598b2d0bde8533aa4a3633cc0284a1b8d41d7"
+        }
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace"
+        ],
+        "exit": 0,
+        "log": {
+          "artifact_role": "workspace.log",
+          "bytes": 447935,
+          "sha256": "9a79e3328df06b2fb5d33e914544e2ce8fdc81a9b00eca151a4432b7191916d2"
+        }
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit": 0,
+        "log": {
+          "artifact_role": "release.log",
+          "bytes": 231,
+          "sha256": "78a071547bde882f7b9b1ec630780f81ff9ebac88f9850b2e010f46717f8a54b"
+        }
+      }
+    ],
+    "failed": 0,
+    "ignored": 1,
+    "inputs": 440,
+    "passed": 8692,
+    "source_quiet": true,
+    "summary": {
+      "artifact_role": "summary.json",
+      "bytes": 3321,
+      "sha256": "a4fefac70ff0c3c7815697d7c8544de0cd4b28b860da1434e7158aa41a265753"
+    },
+    "summary_rows": 98
+  },
+  "resource_consumers": {
+    "source-3": {
+      "audit": {
+        "artifact_role": "audit-results.json",
+        "bytes": 206226,
+        "sha256": "9b25948c4e245064d91f63c42af38ea1cbc4e703e053cb6f30c3ce49c25606fb"
+      },
+      "binary_quiet": true,
+      "failures": 0,
+      "input_count": 3671,
+      "junit_aggregate_passes": 719,
+      "parent_passes": 167,
+      "pytest_log": {
+        "artifact_role": "pytest.log",
+        "bytes": 234,
+        "sha256": "fc359841aaa9de89f4e67bc98e3d38a315788376151686327675bf6a0484e57d"
+      },
+      "separate_passing_subtests": 552,
+      "skips": 0,
+      "source_quiet": true,
+      "summary": {
+        "artifact_role": "summary.json",
+        "bytes": 4154,
+        "sha256": "73dcb2e05bad3ef510afe407a50353e644f9973f368f3359fb9843e5da388d65"
+      }
+    },
+    "wheel-3": {
+      "audit": {
+        "artifact_role": "audit-results.json",
+        "bytes": 206225,
+        "sha256": "9012f7020100b576de4ee837371286a63b4d7752d180a4063fb202f2b4dd8c0c"
+      },
+      "binary_quiet": true,
+      "failures": 0,
+      "input_count": 3671,
+      "junit_aggregate_passes": 719,
+      "parent_passes": 167,
+      "pytest_log": {
+        "artifact_role": "pytest.log",
+        "bytes": 234,
+        "sha256": "252809b3e488b2b1de60b88b5d0395070be69513a017b48d3235a3b9c594efab"
+      },
+      "separate_passing_subtests": 552,
+      "skips": 0,
+      "source_quiet": true,
+      "summary": {
+        "artifact_role": "summary.json",
+        "bytes": 7358,
+        "sha256": "7e31310f58e3e3bfcdbb94f03a5f3c84b129a28842e2bde9050c400847d5d4a8"
+      }
+    }
+  },
+  "scope": "test-only deterministic mock delivery correction; modeled metadata/source and noneditable installed-wheel resource validation"
+}

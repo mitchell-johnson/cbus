@@ -205,7 +205,131 @@ pub(super) async fn read_line<R: AsyncBufRead + Unpin>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::pin::Pin;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::task::{Context, Poll};
     use tokio::io::AsyncReadExt;
+
+    struct PendingWriter {
+        entered: Option<tokio::sync::oneshot::Sender<()>>,
+        dropped: Arc<AtomicBool>,
+    }
+
+    impl AsyncWrite for PendingWriter {
+        fn poll_write(
+            mut self: Pin<&mut Self>,
+            _cx: &mut Context<'_>,
+            _bytes: &[u8],
+        ) -> Poll<io::Result<usize>> {
+            if let Some(entered) = self.entered.take() {
+                entered.send(()).unwrap();
+            }
+            // No bytes can be accepted before cancellation. The handshake
+            // proves one batch is already held by write_to, outside the queue.
+            Poll::Pending
+        }
+
+        fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(Ok(()))
+        }
+
+        fn poll_shutdown(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(Ok(()))
+        }
+    }
+
+    impl Drop for PendingWriter {
+        fn drop(&mut self) {
+            self.dropped.store(true, Ordering::SeqCst);
+        }
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn actual_count_cap_includes_one_active_write_and_511_queued_batches() {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_mock_delivery_bounds.json"
+        ))
+        .unwrap();
+        assert_eq!(MAX_BATCHES, 512);
+        assert_eq!(
+            MAX_BATCHES as u64,
+            vector["bounds"]["outbound_batches"].as_u64().unwrap()
+        );
+        let (tx, rx) = channel();
+        let wire = "event\r\n[1] 200 OK.\r\n";
+        tx.send(wire.into()).unwrap();
+        let (entered, active) = tokio::sync::oneshot::channel();
+        let dropped = Arc::new(AtomicBool::new(false));
+        let started = tokio::time::Instant::now();
+        let pump = tokio::spawn(rx.write_to(PendingWriter {
+            entered: Some(entered),
+            dropped: dropped.clone(),
+        }));
+        active.await.unwrap();
+        assert_eq!(tx.count.available_permits(), MAX_BATCHES - 1);
+        for _ in 1..MAX_BATCHES {
+            tx.send(wire.into()).unwrap();
+        }
+        assert_eq!(tx.count.available_permits(), 0);
+        assert_eq!(
+            tx.bytes.available_permits(),
+            MAX_BYTES - MAX_BATCHES * wire.len()
+        );
+        assert!(tx.bytes.available_permits() > MAX_BYTES / 2);
+        assert!(tx.send("event\r\n[rejected] 200 OK.\r\n".into()).is_err());
+        assert_eq!(tx.count.available_permits(), 0);
+        assert_eq!(
+            tx.bytes.available_permits(),
+            MAX_BYTES - MAX_BATCHES * wire.len()
+        );
+        assert_eq!(
+            *tx.stop.borrow(),
+            Some(vector["overflow"]["count_reason"].as_str().unwrap())
+        );
+        pump.await.unwrap();
+        assert_eq!(tokio::time::Instant::now(), started);
+        assert!(dropped.load(Ordering::SeqCst));
+        assert_eq!(tx.count.available_permits(), MAX_BATCHES);
+        assert_eq!(tx.bytes.available_permits(), MAX_BYTES);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn actual_byte_cap_includes_active_payload_with_count_capacity_remaining() {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_mock_delivery_bounds.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            MAX_BYTES as u64,
+            vector["bounds"]["outbound_wire_bytes"].as_u64().unwrap()
+        );
+        let (tx, rx) = channel();
+        tx.send("A".repeat(MAX_BYTES / 2)).unwrap();
+        let (entered, active) = tokio::sync::oneshot::channel();
+        let dropped = Arc::new(AtomicBool::new(false));
+        let started = tokio::time::Instant::now();
+        let pump = tokio::spawn(rx.write_to(PendingWriter {
+            entered: Some(entered),
+            dropped: dropped.clone(),
+        }));
+        active.await.unwrap();
+        assert_eq!(tx.bytes.available_permits(), MAX_BYTES / 2);
+        tx.send("B".repeat(MAX_BYTES / 2)).unwrap();
+        assert_eq!(tx.bytes.available_permits(), 0);
+        assert_eq!(tx.count.available_permits(), MAX_BATCHES - 2);
+        assert!(tx.send("C".into()).is_err());
+        assert_eq!(tx.bytes.available_permits(), 0);
+        assert_eq!(tx.count.available_permits(), MAX_BATCHES - 2);
+        assert_eq!(
+            *tx.stop.borrow(),
+            Some(vector["overflow"]["byte_reason"].as_str().unwrap())
+        );
+        pump.await.unwrap();
+        assert_eq!(tokio::time::Instant::now(), started);
+        assert!(dropped.load(Ordering::SeqCst));
+        assert_eq!(tx.count.available_permits(), MAX_BATCHES);
+        assert_eq!(tx.bytes.available_permits(), MAX_BYTES);
+    }
 
     #[tokio::test]
     async fn whole_batches_are_ordered_and_count_inflight_bytes() {
