@@ -5,8 +5,8 @@ C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
 current ledger has **42 areas: 18 implemented, 22 in progress and 2 pending**.
 The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate
 of Toolkit functionality. The new [functional parity register](docs/parity-register.md)
-accounts for 22,156 committed source-surface records. That inventory now
-includes 412 parsed Toolkit forms, 10,102 executable controls and 1,892 event
+accounts for 22,103 committed source-surface records. That inventory now
+includes 412 parsed Toolkit forms, 10,102 executable controls and 1,839 event
 bindings, but all remain provisional until P0 resolves them into a complete,
 deduplicated functional denominator.
 Run `cbus-toolkit coverage --require-complete` to inspect the evidence-derived
@@ -17,7 +17,7 @@ and the command deliberately exits nonzero while census or acceptance work is
 unfinished.
 
 See [completed functions and outstanding work](docs/implementation-status.md)
-for the current status of all 39 feature areas, detailed eDLT functions,
+for the current status of all 42 feature areas, detailed eDLT functions,
 accepted test checkpoints and the remaining implementation plan.
 
 For supported physical operations without Windows, connect this CLI to the
@@ -40,6 +40,15 @@ SHA-256. `cgate database set-xml PATH EDITED.xml --project NAME
 --expect-current-sha256 HASH --readback` submits one complete document and
 reports the server's mapped readback without implicitly saving the project.
 See the [native XML file workflow and limits](docs/native-database-xml-files.md).
+
+For barcode commissioning of a loaded database, preview with
+`cgate database barcode-add //PROJECT/NETWORK --project PROJECT --catalog
+PRIVATE_CATALOG.xml --barcode SCAN`. Add `--apply --exclusive-project` to
+create and independently verify the Unit; a matching serial selects its
+existing project-wide Unit without mutation. Optional `--address`, `--tag-name`
+and snapshot hash guards make the choice explicit. This leaves project save
+and physical programming to separate commands. See [barcode formats, catalogue
+rules and remaining scanner/controller acceptance](docs/barcode.md).
 
 Create a closed Cni, Serial or Bridge project network through cmqttd with
 `cgate database network-new PROJECT ADDRESS NAME TYPE INTERFACE`. The separate

@@ -100,6 +100,102 @@ fn event_lines_never_complete_commands() {
 }
 
 #[test]
+fn barcode_unit_numeric_safe_receipts_match_all_retained_original_route_setups() {
+    let native: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/fixtures/native_cgate_cgl_routes.json"
+    ))
+    .unwrap();
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../testdata/vectors/cgate_barcode_unit_initialization.json"
+    ))
+    .unwrap();
+    fn collect<'a>(value: &'a serde_json::Value, rows: &mut Vec<&'a serde_json::Value>) {
+        match value {
+            serde_json::Value::Object(object) => {
+                if object
+                    .get("command")
+                    .and_then(serde_json::Value::as_str)
+                    .is_some_and(|command| {
+                        command.starts_with("DBADDSAFE ") && command.contains(" Unit ")
+                    })
+                {
+                    rows.push(value);
+                }
+                for child in object.values() {
+                    collect(child, rows);
+                }
+            }
+            serde_json::Value::Array(array) => {
+                for child in array {
+                    collect(child, rows);
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut rows = Vec::new();
+    collect(&native, &mut rows);
+    assert_eq!(
+        rows.len() as u64,
+        vector["numeric_safe_receipt"]["retained_original_cases"]
+            .as_u64()
+            .unwrap()
+    );
+    for row in rows {
+        let command = row["command"].as_str().unwrap();
+        assert_eq!(row["reply"], serde_json::json!(["301 OID=<oid>"]));
+        let words = command.split_whitespace().collect::<Vec<_>>();
+        let (project, network) = words[1].trim_start_matches('/').split_once('/').unwrap();
+        let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(
+            server
+                .handle(&format!("[project] PROJECT NEW {project}"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server
+                .handle(&format!(
+                    "[network] DBCREATENET {network} Local Cni loopback"
+                ))
+                .status,
+            200
+        );
+        let response = server.handle(&format!("[native-receipt] {command}"));
+        assert_eq!(response.status, 301, "{command}: {response:?}");
+        assert!(response.lines.is_empty());
+        let oid = response.final_text.strip_prefix("301 OID=").unwrap();
+        assert_eq!(
+            server.handle(&format!("[oid] DBGET !{oid}/OID")).final_text,
+            format!("342 !{oid}/OID={oid}")
+        );
+        let addressed = server.handle(&format!("[address] DBGETXML {}/p/{}", words[1], words[3]));
+        assert_eq!(addressed.status, 200);
+        let xml = addressed
+            .lines
+            .iter()
+            .filter_map(|line| line.strip_prefix("347-"))
+            .collect::<String>();
+        let parsed = roxmltree::Document::parse(&xml).unwrap();
+        assert_eq!(
+            parsed
+                .root_element()
+                .children()
+                .find(|node| node.has_tag_name("OID"))
+                .unwrap()
+                .text(),
+            Some(oid)
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[name] DBGET !{oid}/UnitName"))
+                .final_text,
+            format!("342 !{oid}/UnitName={}", words[4])
+        );
+    }
+}
+
+#[test]
 fn native_diagnostic_event_levels_are_source_captured_and_bounded() {
     let native: serde_json::Value = serde_json::from_str(include_str!(
         "../../testdata/fixtures/native_cgate_event_catalogue.json"
@@ -550,7 +646,7 @@ fn edlt_factory_default_method_has_a_bounded_mock_contract() {
     assert_eq!(
         s.handle("[3] DBADDSAFE //TEST/254 Unit 5 Kitchen_eDLT")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[4] DBSETSAFE //TEST/254/p/5/UnitType KEYGL5")
@@ -960,11 +1056,11 @@ fn scalar_set_move_contract_and_guards() {
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
         s.handle("[4] DBADDSAFE //TEST/254 Unit 30 Study").status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[5] DBADDSAFE //TEST/254 Unit 31 Spare").status,
-        200
+        301
     );
     // Malformed shapes fail before any lookup.
     for (line, fragment) in [
@@ -998,7 +1094,7 @@ fn scalar_set_move_contract_and_guards() {
     assert_eq!(
         s.handle("[10b] DBADDSAFE //TEST/254 Unit 40 Scratch")
             .status,
-        200
+        301
     );
     let zero = s.handle("[10c] SET //TEST/254/p/40 Address 0");
     assert_eq!(zero.status, 200);
@@ -1105,7 +1201,7 @@ fn dbdelete_boundary_repeat_and_unselected() {
         assert_eq!(
             s.handle(&format!("[{tag}] DBADDSAFE //TEST/254 Unit {addr} {name}"))
                 .status,
-            200
+            301
         );
     }
     // Capture unit 20's nested OID from the network document while it exists;
@@ -1170,7 +1266,7 @@ fn dbdelete_boundary_repeat_and_unselected() {
         unselected
             .handle("[3] DBADDSAFE //T2/254 Unit 20 Present")
             .status,
-        200
+        301
     );
     assert_eq!(unselected.handle("[4] PROJECT NEW T3").status, 200);
     assert_eq!(unselected.handle("[5] PROJECT USE T3").status, 200);
@@ -1206,7 +1302,7 @@ fn dbcopy_unit_copy_fresh_identity_and_conflicts() {
         200
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
-    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Src").status, 200);
+    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Src").status, 301);
     let copied = s.handle("[5] DBCOPYSAFE //TEST/254/p/20 //TEST/254 21 Hall");
     assert_eq!(copied.status, 200);
     assert_eq!(copied.final_text, "200 OK");
@@ -1300,7 +1396,7 @@ fn dbset_unit_field_store_readback_and_absent() {
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
         s.handle("[4] DBADDSAFE //TEST/254 Unit 30 Study").status,
-        200
+        301
     );
     // No record on either layer: 401, never an invented store. (An
     // unknown *network* instead stores opaquely with 200: unit_of only
@@ -1356,7 +1452,7 @@ fn network_rename_chain_moves_units_and_guards() {
     assert_eq!(
         s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Traveller")
             .status,
-        200
+        301
     );
     // Malformed shapes fail before any lookup.
     for (line, status, fragment) in [
@@ -1568,7 +1664,7 @@ fn project_rename_selection_follow_and_guards() {
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
         s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Mover").status,
-        200
+        301
     );
     for (line, status, fragment) in [
         ("[5] PROJECT RENAME", 400, "source and destination"),
@@ -1656,7 +1752,7 @@ fn calculator_catalogue_arithmetic_envelope_and_guards() {
                 "[add-{address}] DBADDSAFE //TEST/254 Unit {address} U{address}"
             ))
             .status,
-            200
+            301
         );
         assert_eq!(
             s.handle(&format!(
@@ -1703,7 +1799,7 @@ fn calculator_catalogue_arithmetic_envelope_and_guards() {
     );
     assert_eq!(
         s.handle("[6c] DBADDSAFE //TEST/253 Unit 1 Load").status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[6d] DBSETSAFE //TEST/253/p/1/CatalogNumber 5034N")
@@ -1929,7 +2025,7 @@ fn mock_bus_del_drops_physical_keeps_database() {
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
         s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Ghost").status,
-        200
+        301
     );
     // Opaque database fields survive the physical drop.
     assert_eq!(
@@ -2020,7 +2116,7 @@ fn document_store_mirror_import_and_rejects() {
         200
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
-    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Doc").status, 200);
+    assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Doc").status, 301);
     // Malformed document verbs fail closed.
     for (line, doc, status, fragment) in [
         // Bare verbs never reach a document arm at all.
@@ -2108,7 +2204,7 @@ fn dbsetxml_replaces_typed_unit_and_discards_unmodeled_xml_markup() {
         server
             .handle("[4] DBADDSAFE //TEST/254 Unit 20 Original")
             .status,
-        200
+        301
     );
     for (tag, field, value) in [
         ("type", "UnitType", "KEYE1"),
@@ -2240,7 +2336,7 @@ fn dbsetxml_replaces_typed_unit_and_discards_unmodeled_xml_markup() {
         server
             .handle("[11] DBADDSAFE //TEST/254 Unit 22 Occupied")
             .status,
-        200
+        301
     );
     let occupied = replacement.replace("<Address>21</Address>", "<Address>22</Address>");
     assert_eq!(
@@ -2329,7 +2425,7 @@ fn dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity()
         server
             .handle("[4] DBADDSAFE //UOID/254 Unit 20 Original")
             .status,
-        200
+        301
     );
     for (field, value) in [("UnitType", "KEYE1"), ("FirmwareVersion", "1.2.67")] {
         assert_eq!(
@@ -2633,7 +2729,7 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         server
             .handle("[4] DBADDSAFE //MIXED/254 Unit 20 Old")
             .status,
-        200
+        301
     );
     for (field, value) in [("UnitType", "KEYE1"), ("FirmwareVersion", "1.2.67")] {
         assert_eq!(
@@ -2682,7 +2778,7 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         server
             .handle("[other-unit] DBADDSAFE //MIXED/253 Unit 21 Other")
             .status,
-        200
+        301
     );
     let external_unit_oid = first_oid(server.handle("[other-unit-oid] DBGETXML //MIXED/253/p/21"));
 
@@ -5491,7 +5587,7 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
         server
             .handle("[4] DBADDSAFE //DBL1/254 Unit 20 Original")
             .status,
-        200
+        301
     );
     let network_xml = server.handle("[6] DBGETXML //DBL1/254");
     let document = network_xml.lines.join("\n");
@@ -5597,7 +5693,7 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
         server
             .handle("[21a] DBADDSAFE //DBL1/254 Unit 21 Occupied")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -6064,11 +6160,11 @@ fn legacy_database_create_update_verify_and_new_track_physical_inventory() {
     );
     assert_eq!(
         server.handle("[3] DBADDSAFE //LIFE/254 Unit 1 One").status,
-        200
+        301
     );
     assert_eq!(
         server.handle("[4] DBADDSAFE //LIFE/254 Unit 2 Two").status,
-        200
+        301
     );
     assert_eq!(
         server

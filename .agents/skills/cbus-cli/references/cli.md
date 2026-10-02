@@ -39,6 +39,23 @@ readback, then explicitly `cgate project save NAME` on original C-Gate. The
 command does not program physical eDLT cache labels. See
 `toolkit-cli/docs/native-database-xml-files.md` for bounds and acceptance.
 
+### Loaded-project barcode commissioning
+
+Use `cbus-toolkit cgate database barcode-add //PROJECT/NETWORK --project
+PROJECT --catalog PRIVATE_CATALOG.xml --barcode SCAN` to preview one scan.
+Pass `--barcode -` for one line on stdin, or use `CBUS_UNIT_CATALOG` for the
+private catalogue path. Apply with `--apply --exclusive-project`; optionally
+bind `--expect-project-sha256` and `--expect-catalog-sha256` to reviewed bytes.
+The command performs one project selection, then either returns a project-wide
+serial match or issues one Unit ADD and one Unit XML initializer with the
+server-issued OID. It verifies the new Unit and the preserved whole project.
+It does not save, program, roll back or replay. On failure retain
+`barcode_database_evidence`, including attempted/confirmed writes and uncertain
+identity, before inspecting the database independently. `--auth-token-file`
+supports the embedded cmqttd one-token LOGIN and redacts the credential.
+Original GUI/scanner and PICED/controller acceptance remains open; see
+`toolkit-cli/docs/barcode.md`.
+
 ### CNI interface discovery
 
 Run `cbus-toolkit interface discover-cni` for the Python workflow or

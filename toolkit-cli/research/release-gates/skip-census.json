@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 619,
-    "modules_without_skip_sites": 324,
-    "modules_with_skip_sites": 295,
+    "test_modules": 622,
+    "modules_without_skip_sites": 325,
+    "modules_with_skip_sites": 297,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 10,
+      "host_tool": 11,
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 25,
+      "unclassified": 26,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 135
+      "none": 137
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -195,6 +195,39 @@
         }
       ]
     },
+    "tests/test_barcode_database.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_barcode_database.py::test_regular_file_check_cannot_block_on_a_fifo",
+          "kind": "decorator.skipif",
+          "condition": "not hasattr(adapter.os, 'mkfifo')",
+          "reason": "POSIX FIFO input guard",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "host_tool"
+          ],
+          "tests": [
+            "test_regular_file_check_cannot_block_on_a_fifo"
+          ]
+        }
+      ]
+    },
     "tests/test_calculator.py": {
       "categories": [
         "cgate_test_host",
@@ -275,6 +308,43 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cgate_barcode_database_interop.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 5,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_barcode_database_interop.py",
+          "kind": "helper.selected_binary.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned barcode database journey",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_public_barcode_failure_is_exact_once_without_rollback",
+            "test_public_barcode_guards_are_read_only",
+            "test_public_barcode_named_unit_preservation_and_lifecycle",
+            "test_public_barcode_numeric_unit_issued_identity",
+            "test_public_barcode_owned_login_denial_and_positive_apply"
+          ]
         }
       ]
     },

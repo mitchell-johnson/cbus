@@ -345,10 +345,16 @@ class BarcodeCatalog:
 
     @classmethod
     def load(cls, path: str | Path) -> BarcodeCatalog:
+        return cls.from_snapshot(Path(path).read_bytes())
+
+    @classmethod
+    def from_snapshot(cls, data: bytes) -> BarcodeCatalog:
+        """Parse and fingerprint the same immutable catalogue bytes."""
         import hashlib
-        raw = Path(path).read_bytes()
+        if type(data) is not bytes:
+            raise BarcodeError("Unit catalogue snapshot must be bytes", code="invalid_catalog")
         try:
-            root = ET.fromstring(raw)
+            root = ET.fromstring(data)
         except ET.ParseError as exc:
             raise BarcodeError(f"Unit catalogue is not well-formed XML: {exc}", code="invalid_catalog") from exc
         if root.tag != "CBusUnits":
@@ -369,7 +375,7 @@ class BarcodeCatalog:
             for alternative in item.alternatives.split(";"):
                 if alternative:
                     clones.append(CatalogType(alternative, "", item.unit_title, item.revisions, item.subunits, True))
-        return cls(types + clones, hashlib.sha256(raw).hexdigest())
+        return cls(types + clones, hashlib.sha256(data).hexdigest())
 
     def find(self, catalog_code: str) -> CatalogType | None:
         code = _ascii_upper(catalog_code)
@@ -431,13 +437,14 @@ def _is_wireless_type(unit_type: str) -> bool:
     return is_wireless_unit_type(unit_type)
 
 
-def add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog, *,
-             address: int | None = None, tag_name: str | None = None) -> dict[str, Any]:
-    """Apply one Units-view scan to an offline legacy project.
+def plan_add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog, *,
+                  address: int | None = None, tag_name: str | None = None) -> dict[str, Any]:
+    """Plan one Units-view scan without mutating the supplied project.
 
-    Mirrors the original branch order. A serial already present in any project
-    network selects that unit and adds nothing. ``address`` replaces the Tag
-    Name dialog's address choice; ``tag_name`` replaces its Tag field.
+    XML traversal order owns duplicate selection. A conceptual new Unit is
+    visible to the independent second serial-lookup branch, just as it is
+    after the original AddUnit call. ``fields`` excludes the legacy editor's
+    State marker: it is not part of the native Unit XML schema.
     """
     from .project import ProjectError, _address, _elements, _field, _is_entity, _name
 
@@ -453,30 +460,30 @@ def add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog,
     if _name(network_node) != "Network":
         raise BarcodeError(MESSAGES[2300], code="not_units_node", message_id=2300, network=network)
 
-    def all_units() -> list[Any]:
-        return [unit for net in _elements(document.project, "Network") if _is_entity(net)
-                for unit in _elements(net, "Unit") if _is_entity(unit)]
+    inventory = [{"path": document.path_of(unit), "serial": _field(unit, "SerialNumber")}
+                 for net in _elements(document.project, "Network") if _is_entity(net)
+                 for unit in _elements(net, "Unit") if _is_entity(unit)]
 
-    def lookup(serial: str) -> Any | None:
-        return next((unit for unit in all_units() if serials_match(serial, _field(unit, "SerialNumber"))), None)
+    def lookup(serial: str) -> str | None:
+        return next((unit["path"] for unit in inventory if serials_match(serial, unit["serial"])), None)
 
     result: dict[str, Any] = {"barcode": text, "network": document.path_of(network_node), "changed": False,
-                              "catalog_sha256": catalog.sha256}
+                              "would_change": False, "catalog_sha256": catalog.sha256}
     warnings: list[dict[str, Any]] = []
     for action in actions:
         if action["action"] == "find_by_serial":
             found = lookup(action["serial"])
-            result["serial_lookup"] = {"serial": action["serial"], "found": document.path_of(found) if found is not None else None}
+            result["serial_lookup"] = {"serial": action["serial"], "found": found}
             if found is None:
                 warnings.append({"toolkit_message_id": 2096, "message": MESSAGES[2096]})
             elif "unit" not in result:
-                result.update(action="selected_existing", unit=document.path_of(found))
+                result.update(action="selected_existing", unit=found)
             continue
         config = split_software_config(text)
         result["software_config"] = config.as_dict()
         existing = lookup(config.serial)
         if existing is not None:
-            result.update(action="selected_existing", unit=document.path_of(existing), duplicate_serial=True)
+            result.update(action="selected_existing", unit=existing, duplicate_serial=True)
             continue
         unit_type = catalog.find(config.catalog_lookup)
         if unit_type is None:
@@ -508,9 +515,10 @@ def add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog,
         fields = {"UnitType": unit_type.unit_code, "SerialNumber": stored_serial(config.serial),
                   "CatalogNumber": config.catalog_field,
                   "FirmwareVersion": catalog.default_firmware(unit_type.unit_code),
-                  "UnitName": DEFAULT_NAME, "State": NEW_UNIT_STATE}
-        created = document.add("unit", document.path_of(network_node), address=chosen, name=name, fields=fields)
-        result.update(action="added", changed=True, unit=created["path"], automatic_address=automatic,
+                  "UnitName": DEFAULT_NAME}
+        path = document.path_of(network_node) + "/unit/" + str(chosen)
+        inventory.append({"path": path, "serial": fields["SerialNumber"]})
+        result.update(action="add", would_change=True, unit=path, automatic_address=automatic,
                       address=chosen, tag_name=name, fields=fields,
                       catalog_entry={"catalog_number": unit_type.catalog_number, "clone": unit_type.clone,
                                      "family": unit_type.family})
@@ -518,4 +526,129 @@ def add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog,
             warnings.append({"toolkit_message_id": 45141,
                              "message": MESSAGES[45141].format(network=_field(network_node, "TagName"))})
     result["warnings"] = warnings
+    result.setdefault("action", "not_found")
     return result
+
+
+def add_unit(document: Any, network: str, barcode: str, catalog: BarcodeCatalog, *,
+             address: int | None = None, tag_name: str | None = None) -> dict[str, Any]:
+    """Apply a barcode plan to the offline editor, preserving its legacy result."""
+    result = plan_add_unit(document, network, barcode, catalog, address=address, tag_name=tag_name)
+    would_change = result.pop("would_change")
+    if would_change:
+        fields = {**result["fields"], "State": NEW_UNIT_STATE}
+        created = document.add("unit", result["network"], address=result["address"],
+                               name=result["tag_name"], fields=fields)
+        result.update(action="added", changed=True, unit=created["path"], fields=fields)
+    elif result["action"] == "not_found":
+        result.pop("action")
+    return result
+
+
+def plan_native_add_unit(snapshot: bytes, network: str, barcode: str, catalog: BarcodeCatalog, *,
+                         address: int | None = None, tag_name: str | None = None) -> dict[str, Any]:
+    """Pure add/select policy for one complete saved native Project snapshot.
+
+    The existing ProjectDocument parser owns Installation/Project roots and
+    native versus legacy Network address normalization. Only consumed native
+    inventory scalars are validated here. Unknown XML stays in the snapshot;
+    callers separately own complete-document representability, fresh OID
+    allocation, mutation, authentication and save/readback boundaries.
+    """
+    import hashlib
+    import re
+    from xml.dom import Node
+
+    from .project import ProjectDocument, _elements, _name, _xml_string
+    from .toolkit_database_csv_native import _byte, _field as native_field, _optional_oid
+
+    if type(snapshot) is not bytes or not 1 <= len(snapshot) <= 16 * 1024 * 1024:
+        raise BarcodeError("Native snapshot must be nonempty bytes within 16 MiB", code="invalid_native_snapshot")
+    match = re.fullmatch(r"//([A-Za-z0-9_]{1,8})/([^/\s#]+)", network) if isinstance(network, str) else None
+    if match is None:
+        raise BarcodeError("Use an exact //PROJECT/NETWORK path", code="network_not_selected", message_id=2098)
+    scans = wedge_lines(barcode)
+    if len(scans) != 1:
+        raise BarcodeError("Supply exactly one nonempty scan", code="invalid_input", scans=len(scans))
+
+    def scalar(node, name, *, required=False):
+        shadows = [child for child in node.childNodes if child.nodeType == Node.ELEMENT_NODE
+                   and _name(child) == name and (child.namespaceURI or child.tagName != name)]
+        if shadows:
+            raise ValueError("Native inventory fields must be unnamespaced: " + name)
+        if not required and not _elements(node, name):
+            return ""
+        return native_field(node, name)
+
+    try:
+        text = snapshot.decode("utf-8-sig")
+        declaration = re.match(r"\s*<\?xml\s+[^?]*encoding=['\"]([^'\"]+)['\"]", text, re.I)
+        if declaration and declaration[1].lower() not in ("utf-8", "utf8"):
+            raise ValueError("Native snapshot must declare UTF-8")
+        document = ProjectDocument.from_bytes(snapshot)
+        if document.document.documentElement.namespaceURI or document.project.namespaceURI:
+            raise ValueError("Native project entities must be unnamespaced")
+        project = scalar(document.project, "Address", required=True)
+        if project != match[1]:
+            raise ValueError("Native snapshot does not contain the selected project")
+        identities = {}
+        network_addresses = set()
+        for net in _elements(document.project):
+            if _name(net) != "Network":
+                continue
+            if net.namespaceURI or net.tagName != "Network":
+                raise ValueError("Native Network entities must be unnamespaced")
+            network_address = scalar(net, "Address", required=True)
+            if not network_address or network_address in network_addresses:
+                raise ValueError("Native Network addresses must be nonempty and unique")
+            network_addresses.add(network_address)
+            scalar(net, "TagName")
+            unit_addresses = set()
+            for unit in _elements(net):
+                if _name(unit) != "Unit":
+                    continue
+                if unit.namespaceURI or unit.tagName != "Unit":
+                    raise ValueError("Native Unit entities must be unnamespaced")
+                unit_address = _byte(scalar(unit, "Address", required=True), "Unit Address")
+                if unit_address in unit_addresses:
+                    raise ValueError("Native Unit addresses must be unique in each Network")
+                unit_addresses.add(unit_address)
+                unit_type = scalar(unit, "UnitType")
+                if unit_type != unit_type.strip() or any(ord(c) < 32 for c in unit_type):
+                    raise ValueError("Native UnitType must be trimmed text")
+                scalar(unit, "SerialNumber")
+                scalar(unit, "OID")
+                identities[document.path_of(unit)] = _optional_oid(unit)
+        result = plan_add_unit(document, "/network/" + match[2], scans[0], catalog,
+                               address=address, tag_name=tag_name)
+        if result["would_change"]:
+            if type(result["address"]) is not int or not 0 <= result["address"] <= 255:
+                raise ValueError("Unit address must be an integer byte")
+            for value in [result["tag_name"], *result["fields"].values()]:
+                _xml_string(value)
+        elif result["action"] == "selected_existing":
+            oid = identities.get(result["unit"])
+            if not oid:
+                raise ValueError("Selected native Unit requires a valid OID")
+            result["oid"] = oid
+
+        def native_path(path):
+            if path is None:
+                return None
+            parts = path.split("/")
+            if len(parts) == 3:
+                return f"//{project}/{parts[2]}"
+            return f"//{project}/{parts[2]}/p/{parts[4]}"
+
+        result["network"] = native_path(result["network"])
+        if "unit" in result:
+            result["unit"] = native_path(result["unit"])
+        if "serial_lookup" in result:
+            result["serial_lookup"]["found"] = native_path(result["serial_lookup"]["found"])
+        result.update(project=project, snapshot_sha256=hashlib.sha256(snapshot).hexdigest())
+        return result
+    except (UnicodeError, ValueError) as error:
+        if isinstance(error, BarcodeError):
+            raise
+        raise BarcodeError("Invalid native barcode snapshot or plan: " + str(error),
+                           code="invalid_native_snapshot") from error

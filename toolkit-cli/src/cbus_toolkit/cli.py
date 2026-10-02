@@ -1818,6 +1818,19 @@ def build_parser():
     p.add_argument("unit_type")
     p.add_argument("firmware")
     p.add_argument("--catalog-number")
+    p = dbop.add_parser("barcode-add", help="Preview or add/select a scanned unit in a loaded project")
+    p.add_argument("network", help="Exact //PROJECT/NETWORK path")
+    p.add_argument("--project", required=True, help="Select this loaded project once before reading it")
+    p.add_argument("--barcode", required=True, help="One scanner line, or - for stdin")
+    p.add_argument("--catalog", type=Path, default=os.environ.get("CBUS_UNIT_CATALOG"),
+                   help="Private Toolkit unit catalogue XML; defaults to CBUS_UNIT_CATALOG")
+    p.add_argument("--address", type=_byte, help="Choose a free dialog address instead of the first free address")
+    p.add_argument("--tag-name", help="Chosen Tag Name; UnitName retains NEWUNIT")
+    p.add_argument("--apply", action="store_true", help="Create and initialize the database Unit without saving or programming")
+    p.add_argument("--exclusive-project", action="store_true", help="Assert exclusive project editing and reloading ownership")
+    p.add_argument("--expect-project-sha256", type=_sha256_digest, help="Require this exact initial DBGETXML snapshot")
+    p.add_argument("--expect-catalog-sha256", type=_sha256_digest, help="Require these exact catalogue bytes")
+    p.add_argument("--auth-token-file", type=Path, help="Private one-token cmqttd LOGIN credential file")
     for action in ("get", "get-xml", "set", "add", "copy", "delete", "validate", "rename-network"):
         p = dbop.add_parser(action)
         p.add_argument("path")
@@ -2827,6 +2840,10 @@ def _cgate(args):
     database_xml_sha256 = None
     database_project = None
     file_upload_plan = None
+    barcode_plan = None
+    if args.action == "database" and args.remote_action == "barcode-add":
+        from .barcode_database import prepare
+        barcode_plan = prepare(args)
     if args.action == "file-upload":
         from .file_transfer import prepare_upload
         file_upload_plan = prepare_upload(args.server_path, args.source, project=args.project)
@@ -2849,15 +2866,16 @@ def _cgate(args):
         from .edlt_label_audit import load_baseline
         edlt_audit_expected = load_baseline(args.baseline)
     from .edlt_control_cli import connection_guard
+    from .barcode_database import connection_guard as barcode_connection_guard
     # Native C-Gate and cmqttd return the network document in one potentially
     # large 347 row after the short XML declaration. Leave room for the 4 MiB
     # document bound plus its status envelope.
-    large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml"))
+    large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml", "barcode-add"))
                  or args.action == "conversion"
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
     connection_limits.update(wireless_limits)
-    with connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
+    with barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "file-upload":
             from .file_transfer import upload
@@ -2932,6 +2950,9 @@ def _cgate(args):
                                      xslt_file=getattr(args, "xslt_file", None),
                                      output_file=getattr(args, "output_file", None)), 0
         if args.action == "database":
+            if args.remote_action == "barcode-add":
+                from .barcode_database import run as barcode_add
+                return barcode_add(barcode_plan, client, args._barcode_database_evidence)
             import hashlib
             from .programming import xml_text
             from .native import NativeDatabase
@@ -4421,6 +4442,9 @@ def main(argv=None):
         try:
             print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
         except BaseException as output_error:
+            if args.area == "cgate" and args.action == "database" and args.remote_action == "barcode-add":
+                from .barcode_database import record_output_error
+                record_output_error(args, output_error)
             if args.area == "cgate" and args.action == "dali":
                 output_error.dali_commissioning_evidence = result
             if args.area == "cgate" and args.action in ("thermostat-schedule-levels", "thermostat-schedule-compose"):

@@ -1374,7 +1374,7 @@ async fn cgate_mqtt_share_one_connection_and_unknown_levels_are_not_zero() {
         "DBADDSAFE //HARNESS/254 Unit 5 Fixture_eDLT"
     )
     .await
-    .contains("200 OK"));
+    .contains("301 OID="));
     assert!(command(
         &mut reader,
         &mut writer,
@@ -1759,7 +1759,7 @@ async fn keygl5_sync_populates_native_metadata_properties_in_classfile_order() {
         "DBADDSAFE //HARNESS/254 Unit 5 Fixture_eDLT",
     )
     .await
-    .contains("200 OK"));
+    .contains("301 OID="));
     assert!(command(
         &mut reader,
         &mut writer,

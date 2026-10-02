@@ -198,6 +198,17 @@ Do not equate offline test success with complete Toolkit parity. Run `cbus-toolk
 
 ## Test data
 
+The loaded-project barcode CLI module runs four public parents against
+`cgate-mock` and five against `cmqttd`, including authenticated apply, separate
+save/reload and daemon restart. Synthetic catalogue/project fixtures cover
+duplicate selection, first-free and explicit addresses, unrelated raw labels,
+incomplete Units, stale inputs, lost replies and initializer refusals. The
+tests retain exact tagged wire bytes and verify that no PP, implicit save,
+delete, rollback or retry occurs. These owned software peers establish the
+documented workflow only; the retained original scanner vectors and native
+Unit receipts are separate component evidence, and physical scanner/Toolkit
+GUI/controller acceptance remains open.
+
 The named database CLI journey runs in both interoperability selections through
 explicit `[mock]` and `[daemon]` test nodes. Every CLI subprocess selects its
 project on the same connection before using OIDs; the journey checks fresh copy

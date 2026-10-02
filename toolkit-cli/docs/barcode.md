@@ -5,7 +5,7 @@ Toolkit 1.18.0.2754 treats the C-Bus barcode scanner as a USB keyboard wedge (he
 - **Units view, F10.** A C-Bus *software configuration* barcode adds a unit to the selected network, or selects an existing unit (help 4596/4597).
 - **Unit dialog, F10.** A serial or software configuration barcode fills the Serial Number field on the Unit Identification page.
 
-`cbus_toolkit.barcode_scanner` reproduces these rules. `cbus-toolkit barcode parse` classifies scanner text without changing any files. `cbus-toolkit project add-unit --barcode` applies a Units-view scan to an offline legacy XML/CBZ project.
+`cbus_toolkit.barcode_scanner` reproduces these rules. `cbus-toolkit barcode parse` classifies scanner text without changing any files. `cbus-toolkit project add-unit --barcode` applies a Units-view scan to an offline legacy XML/CBZ project. `cbus-toolkit cgate database barcode-add` previews or applies the same add/select policy to one loaded database project.
 
 ## Evidence
 
@@ -146,6 +146,33 @@ These differ deliberately from Toolkit:
 - A catalogue entry without a revision `UnitType` is refused. Toolkit would create a unit with an empty type.
 - Offline projects have no physical units, so serial lookup covers database units only.
 
+### Loaded database project
+
+Use an exact Network address from the loaded project's XML. A native Network can have a name such as `CustomA`; its Address is distinct from its physical `NetworkNumber`.
+
+```sh
+cbus-toolkit cgate --host HOST --port PORT database barcode-add //PROJECT/NETWORK \
+  --project PROJECT --catalog cbusunits.xml --barcode '5031NL          123456789012'
+```
+
+The default is a preview. It reads the complete project after one `PROJECT USE`, then reports the plan without creating a Unit. The plan includes the catalogue and project snapshot SHA-256, matched catalogue entry, chosen address, tag and native fields. `--barcode -` accepts exactly one wedge line from stdin; `--catalog` also uses `CBUS_UNIT_CATALOG` when set. The selected project and Network must already exist.
+
+To create the planned database Unit, repeat the command with `--apply --exclusive-project`. The latter asserts that you own project editing and reloading for this operation. `--expect-project-sha256 HASH` and `--expect-catalog-sha256 HASH` optionally bind the initial project export and exact catalogue bytes to a reviewed preview. Before creation, the command rechecks the catalogue file and project snapshot and refuses drift. These checks do not provide server-side compare-and-swap; maintain exclusive ownership through readback.
+
+The add path sends one `DBADDSAFE` and one Unit `DBSETXML` initializer, verifies the issued fresh OID at the exact address, reads every planned scalar and Unit XML, and checks the whole project while preserving unrelated XML. `--address` uses the same first-free/dialog choices as the offline command; `--tag-name` changes `TagName` while `UnitName` remains `NEWUNIT`. Native Unit fields omit the offline editor's `State=New` marker. Existing minimal database Units still occupy their addresses and participate in serial lookup.
+
+A duplicate serial in any project Network selects the first matching Unit in project XML order. Its path and OID are reported, and no add or initializer is sent. Valid supplied address/tag choices do not alter that selection. A serial-only miss reports `not_found` with warning 2096 and no write. A zero-prefixed software configuration scan runs the second serial branch after the conceptual creation; its result and warning order are retained in the plan.
+
+`--auth-token-file FILE` supplies a private one-token cmqttd LOGIN credential before `PROJECT USE`. Credential values are redacted from command evidence and authentication errors. Catalogue XML, scan count/type, project/Network syntax and supplied tag text are validated before connection. Catalogue matching and address/family checks use the project snapshot after project-wide duplicate lookup.
+
+The result uses `cbus-cgate-barcode-add-v1` and records phase, plan, attempted/confirmed writes, readback and `outcome_uncertain`. The command does not save the project, load programming defaults, or program hardware. Save separately with the existing project workflow when persistence is intended. An error after ADD can leave a new or partially initialized Unit. There is no automatic retry, rollback or delete: retain the failure evidence and inspect the reported path/OID through a fresh read before taking further action. Do not rerun an uncertain apply automatically.
+
+The policy retains the original-instruction barcode component evidence. Database workflow tests use owned mock/cmqttd fixtures. These do not establish original Toolkit GUI behavior, Schneider native-server acceptance, physical inventory/scanner behavior or PICED integration.
+
+Input bounds are 16 MiB for a regular-file catalogue, 4 MiB characters for a
+scan and 4 MiB UTF-8 bytes for the planned Unit document. A UnitType or firmware
+containing control characters and an oversized initializer refuse before ADD.
+
 ## Unresolved
 
 - Sibling routines `TfrmKEYGL5.IsSerialNumber`/`AcquireBarCode`, `TfrmHydraWPFBase.BarCodeScan` and `THydraDataModule.BarCodeScan` were not analyzed.
@@ -154,5 +181,5 @@ These differ deliberately from Toolkit:
 - Emulation does not cover the Tag Name dialog's tag validation, if any.
 - Emulation does not cover `FindUnitByCatalogCode` or `HasCatalogNumberInAlternates`; the model follows static disassembly only.
 - It is not established that `pp get_unit_catalog` output equals the catalogue file byte for byte.
-- There is no native C-Gate database equivalent. `add-unit` edits legacy XML/CBZ only, and a native `DBSETXML` add path is not implemented for barcode scans.
+- Barcode add/select against an owned loaded database has a CLI workflow; broad Schneider native-server and original GUI acceptance remain open.
 - No GUI, physical scanner or hardware acceptance exists.

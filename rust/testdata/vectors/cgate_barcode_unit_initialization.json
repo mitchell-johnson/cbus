@@ -1,0 +1,106 @@
+{
+  "format": "cbus-cgate-barcode-unit-initialization-v1",
+  "scope": "Modeled independent named Unit ADD and target-only complete Unit XML; numeric SAFE creation receipt separately checked against 16 retained original CGL route cases. No current vendor or hardware execution.",
+  "unit_xml": "<Unit><OID>%UNIT%</OID><Address>8</Address><TagName>Kitchen East</TagName><UnitName>NEWUNIT</UnitName><UnitType>SYNTH</UnitType><FirmwareVersion>1.0.00</FirmwareVersion><SerialNumber>123456</SerialNumber><CatalogNumber>SYNTH-8</CatalogNumber></Unit>",
+  "safe_add": {
+    "command": "DBADDSAFE //NAMED/CustomA Unit 8 New Kitchen",
+    "reply": [
+      "301 OID=%UNIT%"
+    ]
+  },
+  "reads": [
+    {
+      "path": "!%UNIT%/OID",
+      "value": "%UNIT%"
+    },
+    {
+      "path": "!%UNIT%/Address",
+      "value": "8"
+    },
+    {
+      "path": "!%UNIT%/UnitName",
+      "value": "NEWUNIT"
+    },
+    {
+      "path": "//NAMED/CustomA/p/8/TagName",
+      "value": "Kitchen East"
+    },
+    {
+      "path": "//NAMED/CustomA/p/8/UnitType",
+      "value": "SYNTH"
+    },
+    {
+      "path": "//NAMED/CustomA/p/8/FirmwareVersion",
+      "value": "1.0.00"
+    },
+    {
+      "path": "!%UNIT%/SerialNumber",
+      "value": "123456"
+    },
+    {
+      "path": "!%UNIT%/CatalogNumber",
+      "value": "SYNTH-8"
+    }
+  ],
+  "refusals": [
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit 8 Duplicate",
+      "status": 401
+    },
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit 256 OutOfRange",
+      "status": 401
+    },
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit 9 Bad#Tag",
+      "status": 400
+    },
+    {
+      "command": "DBCOPY !%UNIT% //NAMED/CustomA",
+      "status": 408
+    },
+    {
+      "command": "DBCOPYSAFE !%UNIT% //NAMED/CustomA 20 Copy",
+      "status": 408
+    },
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit 08 AliasDuplicate",
+      "status": 401
+    },
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit +8 AliasDuplicate",
+      "status": 401
+    }
+  ],
+  "unsafe_add": {
+    "command": "DBADD //NAMED/CustomA Unit",
+    "status": 301,
+    "present_fields": [
+      "OID"
+    ],
+    "absent_fields": [
+      "Address",
+      "TagName",
+      "UnitName",
+      "UnitType",
+      "FirmwareVersion"
+    ]
+  },
+  "numeric_safe_receipt": {
+    "fixture": "../fixtures/native_cgate_cgl_routes.json",
+    "retained_original_cases": 16,
+    "reply": [
+      "301 OID=%UNIT%"
+    ]
+  },
+  "unit_address_aliases": [
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit 012 AliasTwelve",
+      "canonical_address": "12"
+    },
+    {
+      "command": "DBADDSAFE //NAMED/CustomA Unit +13 AliasThirteen",
+      "canonical_address": "13"
+    }
+  ]
+}

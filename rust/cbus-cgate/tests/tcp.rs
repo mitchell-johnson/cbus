@@ -889,7 +889,15 @@ fn tcp_parameters_complete_with_315_and_keep_next_reply_synchronized() {
         "PP SET S A first",
         "PP SET S B second",
     ] {
-        assert_eq!(s.command(command).status, 200, "{command}");
+        assert_eq!(
+            s.command(command).status,
+            if command == "DBADDSAFE //TEST/254 Unit 20 Lounge" {
+                301
+            } else {
+                200
+            },
+            "{command}"
+        );
     }
     let all = s.command("PP GET S *");
     assert_eq!(all.status, 315);

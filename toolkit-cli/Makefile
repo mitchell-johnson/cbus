@@ -98,6 +98,10 @@ check-cgate-interop: compile
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_raw_level_value_literal_and_preservation[mock]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_named_unit_preservation_and_lifecycle[mock]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[mock]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[mock]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -114,6 +118,11 @@ check-cmqtt-interop: compile
 		tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_auth_stops_before_initializer \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_raw_level_value_literal_and_preservation[daemon]' \
 		tests/test_cgate_named_database_interop.py::test_public_associated_raw_level_value_auth_and_restart \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_named_unit_preservation_and_lifecycle[daemon]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[daemon]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[daemon]' \
+		'tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[daemon]' \
+		tests/test_cgate_barcode_database_interop.py::test_public_barcode_owned_login_denial_and_positive_apply \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

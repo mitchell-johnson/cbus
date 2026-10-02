@@ -8,7 +8,18 @@ async fn run(service: &Arc<Service>, client: &mut ClientState, command: &str) ->
 
 async fn command(service: &Arc<Service>, client: &mut ClientState, text: &str) {
     let reply = run(service, client, text).await;
-    assert_eq!(reply.status, 200, "{text}: {reply:?}");
+    assert_eq!(
+        reply.status,
+        if matches!(
+            text,
+            "DBADDSAFE //HARNESS/254 Unit 6 Added" | "DBADDSAFE //AUX/42 Unit 6 Unit"
+        ) {
+            301
+        } else {
+            200
+        },
+        "{text}: {reply:?}"
+    );
 }
 
 async fn record(service: &Arc<Service>, project: &str, name: &str) -> crate::TagNetwork {

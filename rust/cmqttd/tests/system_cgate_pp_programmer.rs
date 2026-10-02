@@ -252,16 +252,24 @@ async fn pp_admin_and_programmer_are_local_native_shaped_and_restart_safe() {
         .await,
         ["316 RawData=010000000000000000ff000000000000"]
     );
+    let added_unit = command(
+        &mut reader,
+        &mut writer,
+        "database-unit",
+        "DBADDSAFE //HARNESS/254 Unit 5 QueueUnit",
+    )
+    .await;
+    assert_eq!(added_unit.len(), 1);
+    let issued_oid = added_unit[0]
+        .strip_prefix("301 OID=")
+        .expect("SAFE Unit creation receipt");
     assert_eq!(
-        command(
-            &mut reader,
-            &mut writer,
-            "database-unit",
-            "DBADDSAFE //HARNESS/254 Unit 5 QueueUnit",
-        )
-        .await,
-        ["200 OK"]
+        issued_oid.split('-').map(str::len).collect::<Vec<_>>(),
+        [8, 4, 4, 4, 12]
     );
+    assert!(issued_oid
+        .chars()
+        .all(|ch| ch == '-' || ch.is_ascii_hexdigit()));
     for (tag, command_text) in [
         (
             "database-unit-type",

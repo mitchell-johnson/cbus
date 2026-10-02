@@ -1,0 +1,2529 @@
+{
+  "acceptance_limits": {
+    "automatic_retry_or_rollback": false,
+    "current_original_vendor_vm_hardware_executions": 0,
+    "full_python_suite_repeated": false,
+    "hardware_programmed": false,
+    "implicit_PP_defaults": false,
+    "implicit_project_save": false,
+    "manual_copy_load_corrections_integrated_or_retried": false,
+    "manual_copy_load_issue": "https://github.com/mitchell-johnson/cbus/issues/74",
+    "named_XML_policy": "Historical opaque named-tree retention; numeric Unit mapper keeps its schema normalization. Plain new eight-field barcode Units match in both.",
+    "remaining": [
+      "KEYGL5/Hydra scanner routines",
+      "Original Tag Name dialog and parent-form/wedge timing",
+      "Physical USB scanner and commissioning acceptance",
+      "Broader native creation/default/save-reload workflow comparisons",
+      "PICED/controller handoff boundary evidence",
+      "Bare/runtime-only numeric scalar journey and renamed/alternate numeric paths"
+    ]
+  },
+  "ci": "No current-publication CI success is claimed by this precommit receipt.",
+  "completed_behavior": [
+    "Preview, project-order serial duplicate selection and serial-only miss do not mutate the database.",
+    "Apply refreshes catalogue/project inputs, issues one SAFE Unit ADD, binds its fresh OID/address and sends one complete eight-field Unit initializer.",
+    "Complete Unit/scalar/whole-project readback verifies the new object and every unrelated opaque project node.",
+    "Explicit lifecycle save/reload and daemon JSON restart preserve the software edit; authentication and exactly-once fault handling are tested.",
+    "Numeric SAFE Unit ADD returns the retained original301 OID receipt; named target-only Unit replacement preserves unrelated incomplete/raw/decorated siblings."
+  ],
+  "completeness": {
+    "categories": 42,
+    "coverage_record": {
+      "bytes": 216803,
+      "retained_privately": true,
+      "sha256": "1074a6b0f8209527192f11f2bf1f7f7ebdbc6da5f34feffea4448453af78a745"
+    },
+    "full_cgate_parity": false,
+    "full_toolkit_parity": false,
+    "fully_accepted_obligations": 0,
+    "functional_denominator_complete": false,
+    "implemented_categories": 18,
+    "require_complete_exit": 1,
+    "verified_functionality_percentage": null
+  },
+  "current_source_resource_pins": {
+    ".agents/skills/cbus-cli/references/cli.md": "da96a7f81049717170e578ef63c3b47b9d0f9dafc00520501cb0873fa2d615f0",
+    ".agents/skills/cbus-cli/references/toolkit.md": "786c588ce7d05bc9925930b4037b08bca1e63a51ed9fa07890be1f3bff35d14c",
+    ".github/workflows/ci.yml": "6102a83eaf5e58f994ba4eedcbf2eb720314467374a3007e83214cc8b80d7276",
+    "README.md": "93f8d88145d49c9cfb0f2faa44cf0c72dbfeedd3ce5cea0bab4b7c776594ee19",
+    "docs/testing.md": "b8bb0f142ee1a4b2bf75e759e33f6b960641d6d112a9d34d3beadc71cda09bc1",
+    "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
+    "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
+    "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
+    "rust/cbus-cgate/src/access.rs": "5adb01f249c725d6ba1794f00211c9e938e38dc79907c771b384bb15a8ad4233",
+    "rust/cbus-cgate/src/auth.rs": "a31698651805d0551c5ff42d3ff1b7de9dcaef3ef7ebba65b6d3f86a1684d21e",
+    "rust/cbus-cgate/src/capability_matrix.rs": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20",
+    "rust/cbus-cgate/src/config.rs": "bb387a6cef547f80c87befed31b2342504d3f33bdea79f6b98234f6c17eb9414",
+    "rust/cbus-cgate/src/config/disposition.rs": "9ea68b9eb5c550beeebf21a0a879501dae5b166f8d4292f13f81c983277f85eb",
+    "rust/cbus-cgate/src/convertunit.rs": "a6bdcc026a9a25cd3eb54e864f6106084c6dde047e09d73b609f184d653fb1e0",
+    "rust/cbus-cgate/src/dlt_profiles.rs": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a",
+    "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
+    "rust/cbus-cgate/src/file.rs": "da0cdfd2caa13e838149af7b9cdbf2e15eb07bd662eb2292a0721d97c7c71ac8",
+    "rust/cbus-cgate/src/lib.rs": "3b71b1432aac9709305573c0e20a1dbb8770cc6fd9c45cee2bfa764f5bafe6a5",
+    "rust/cbus-cgate/src/main.rs": "1fa44332b2a404b812ac8db07e33ffbb6ef5461b261311d50adcd4a6495ecd9f",
+    "rust/cbus-cgate/src/manual.rs": "339faf1fbc06224487c344b3c13f3fb9714efc705c86060ce768ef1c43f9842b",
+    "rust/cbus-cgate/src/native_archive.rs": "5ecf92c11bcec6dcb8e1d7508d5b5735162935c7a627263ef19abbf4b1ddf81c",
+    "rust/cbus-cgate/src/object_access.rs": "88ec1930e3de571ecf2713516e2deae147d8a5c5c97fb4b95f922bf823d51ec0",
+    "rust/cbus-cgate/src/object_access_table.rs": "e436a27f0ce29ef45b6c0185e86c21d9774bad9f7778d7f5f4dd41e7a8ff056b",
+    "rust/cbus-cgate/src/port.rs": "1f76f0ae969f86d5608c106e1f62e78a7783af6439f2fbacda4dc0488bfd3990",
+    "rust/cbus-cgate/src/pp_namespace_tests.rs": "4a96a62faf886204d4cd755dc965daa52a22997f03f82c6e23117db7848eb6be",
+    "rust/cbus-cgate/src/service.rs": "3e51af86fd56df7d71b49f2f102650036154cc040e61c203f0ceb59848f55b81",
+    "rust/cbus-cgate/src/service/calculator.rs": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411",
+    "rust/cbus-cgate/src/service/cgl.rs": "04dfb75a46f386b1b9bba41f503b764b99d84af80877c38a29731eb3244d5f7e",
+    "rust/cbus-cgate/src/service/connection_admission.rs": "dd0b229e767d8d49e29cca3a0e36cac05ed37831f9abcf3f7044685296d58339",
+    "rust/cbus-cgate/src/service/dali.rs": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388",
+    "rust/cbus-cgate/src/service/dali_journal.rs": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6",
+    "rust/cbus-cgate/src/service/dali_proxy.rs": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7",
+    "rust/cbus-cgate/src/service/dali_proxy_lines.rs": "59981214582ee2ce0eb1d346d782132171b4a6f5b939a3188526b156f17ca331",
+    "rust/cbus-cgate/src/service/dali_specialized.rs": "837d8cde5029710d5ca4e38b9835b16aa43073c2a5757d60c914c1133508077d",
+    "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
+    "rust/cbus-cgate/src/service/move_journal.rs": "7f7550c0ec3d1ac497fb01ca7361034742aac26d567ee9f9200ccc24346d4c4f",
+    "rust/cbus-cgate/src/service/net_lifecycle.rs": "bc6ab57049412bab3c846d775debc8b26b06a9e53f8f16cb4df3ba94c2a331fe",
+    "rust/cbus-cgate/src/service/pp_patch.rs": "6a1dc32d0dd359b0c11268cf717275bddf6fac2652ad40b87cc7756c9fb05aa3",
+    "rust/cbus-cgate/src/service/tests.rs": "a3e58ebc0f9777ea5d8f36504eaa39728f77749e6a29e609753e6581e16c22ce",
+    "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "fb138578f749a129eab28e572a1889c7730ef50e2ce0393f13caff684b790ec8",
+    "rust/cbus-cgate/src/service/tests/net_db_load.rs": "fa730221703ca30dd4d625c261fa0797ac3167c6d8c28d4861b8dccd66b3ef96",
+    "rust/cbus-cgate/src/service/tests/net_save_db.rs": "18c28d4198a3bad740f25e71414a7aab628c30307484d1e05f83c5c3ccc3fa15",
+    "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5",
+    "rust/cbus-cgate/src/service/tests/object_authorization.rs": "91bb06bec7ef2c28cd5d749ac62eba3076377322e76c1659433b67a48d93eab5",
+    "rust/cbus-cgate/src/service/tests/secondary_authorization.rs": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd",
+    "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
+    "rust/cbus-cgate/src/service/unravel_plan.rs": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb",
+    "rust/cbus-cgate/src/show.rs": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c",
+    "rust/cbus-cgate/src/tag_network.rs": "d540a67763e395cf5b572074f327e9abadc905771270a72203bc87f2e7e1c586",
+    "rust/cbus-cgate/src/unitspec.rs": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539",
+    "rust/cbus-cgate/tests/capability_matrix.rs": "273dc5d505e325c8c5d64bfacfa92dd1435b2bd38eff664996216c531c9a0e7c",
+    "rust/cbus-cgate/tests/cgl_vectors.rs": "21c2fee6921c2d8b1e134d188be701fb163d38db1f9abd6fc2186be2e083c7fd",
+    "rust/cbus-cgate/tests/cross_kind_oid.rs": "ec47a62da640e24bac7d500fdf1c27b1c90515e5137300b39044bf86e2cf8269",
+    "rust/cbus-cgate/tests/dbsetxml_errors.rs": "ca9d538b333fb09ae2069737fa10e22f33869828e8c0607397e1e396ddf407d3",
+    "rust/cbus-cgate/tests/dbsetxml_lifecycle.rs": "ec11d7f3d96fbf924fcd785f3e08dd55f911a8147174095e01e1dccc097a76a8",
+    "rust/cbus-cgate/tests/dlt_profile_admission.rs": "630ec6ed40eada56859c6d287e48158012c62b4c0078ffbab884f5960597e5c4",
+    "rust/cbus-cgate/tests/five_plus_unit_oid.rs": "0548448cd45a8fd4f9839cd0b5459e37fa7786e1fa652ef1fe31cda0e93a9049",
+    "rust/cbus-cgate/tests/large_unit_oid.rs": "f668de6706e1c64008b1ac5e7e8107c17bcc93531b43afb0913e76bf15fe9d72",
+    "rust/cbus-cgate/tests/nine_ten_unit_oid.rs": "8af2e6f79b506e4b69d1896b386df31b447ce7deda769b037ebf8f6fbda5b5bc",
+    "rust/cbus-cgate/tests/oid_index_probe.rs": "6b77f8f0b2978ba24db0ca4269266a6e457f8037ad193b9f5f58b04817159cef",
+    "rust/cbus-cgate/tests/server.rs": "daf106713852b1aa6ae64915415140024edb64a53418510593d87dcfa984bf40",
+    "rust/cbus-cgate/tests/show_native_matrix.rs": "7c10cecdf946b9616d8f315432dfc290033ef839ae4ea39abba123f62c2371ae",
+    "rust/cbus-cgate/tests/tcp.rs": "4ac01905b998ff0b8a8bc8a77e0974ecaebb9f6023fa5a38e96d8c3bbb71e0db",
+    "rust/cbus-cgate/tests/tls.rs": "e9a7cfc814865d5a03f35ee0401b40dcd88a022f88ffebc2868fbaa99e934f6c",
+    "rust/cbus-cgate/tests/unit_diagnostics.rs": "dc487ea2618042f6e2e4dd1678712ee058881193aacea6006528ba6befe84815",
+    "rust/cbus-golden-tests/Cargo.toml": "388da3b07c9b86dfc90105bcda8694e8dc62e559f8d13d95fc8ac2d3b3ff72d0",
+    "rust/cbus-golden-tests/build.rs": "7aa9ba7f6d12281fe51153caa543d1ee68bef294bbda3e7f3de818841bbaf5e3",
+    "rust/cbus-golden-tests/src/lib.rs": "5c07e9a8d7552443e76506f1838c58f9628f5d46f872fae6d23bcc7da9911e6c",
+    "rust/cbus-golden-tests/tests/domain.rs": "030f05306cdb7f2cb19bb0ff6b556fa1d7cdc152a1771d22dbd6b749bf0819dd",
+    "rust/cbus-golden-tests/tests/golden_vectors.rs": "4eb6f7cea7bf421e0d3e68b36cbc629be4d16fd4d8c0667843af79efddba2c1f",
+    "rust/cbus-mqtt/Cargo.toml": "e2ed518eae7e5e7afe29df72b10d1fed354de185735c3b5c94a2c774bdb83931",
+    "rust/cbus-mqtt/src/cbz.rs": "f29329c243c63e2e0dafd1964173f59febb630623537e895f10d9be0288af332",
+    "rust/cbus-mqtt/src/command.rs": "6f7f371fa6b10e04c6864709d461641f78fb249b3f7b4d1bab7121295b6fa462",
+    "rust/cbus-mqtt/src/discovery.rs": "353341dcc02f54b5c813d88e72ef0ea5447b2bfd35e9ed27d26fe9b8bc5733e1",
+    "rust/cbus-mqtt/src/lib.rs": "a11bb2357a989e7feed38a13604b31d0b2f2ce000f4529ca3021361d26def4ec",
+    "rust/cbus-mqtt/src/topics.rs": "9e5934727873e8558c31b072057026ab8da449ab737a1afb263bcb648b534b55",
+    "rust/cbus-mqtt/src/vector_check.rs": "6330a5076f1d3cbe0519b01f8c00891f4e36a9420483583fb0e8a255389c9826",
+    "rust/cbus-mqtt/tests/cbz_edges.rs": "32207ca36d3df8557745f067e032714820023c9d205aee4706b9feedde421fec",
+    "rust/cbus-mqtt/tests/cbz_input_safety.rs": "a0e58fbca1def54905d7b2f07c40bad2c18b81e4e3cbdcf9872889c4e2af98c3",
+    "rust/cbus-mqtt/tests/discovery_labels.rs": "1e9f11a1901f373ad8002d8097241caac50481bcdf1fed3176ac2c237a230ff3",
+    "rust/cbus-mqtt/tests/set_command_matrix.rs": "5698d621e4984b80d7820b78e33e41326e17e7efccd936f7c8a0d552f6d208c1",
+    "rust/cbus-mqtt/tests/topics_edges.rs": "0817c712e3b0f50636a126a80fb0529bc280224a1975852171045524158b3ff0",
+    "rust/cbus-protocol/Cargo.toml": "3bf12f109f534b9e2f7692cae2a9e768acce65a605a153006cc88102faeeb609",
+    "rust/cbus-protocol/src/cal.rs": "fcb0d9df59c0c0a9df2e47379c985124d4571fa9106b54a9355acbe7181c54c2",
+    "rust/cbus-protocol/src/cni_discovery.rs": "ba69cf4f1cc4f27650a4896067ef16f4732c27aff859ffa05494c3ecf4ada4fd",
+    "rust/cbus-protocol/src/common.rs": "67c90acf93417a76e0b8852212bd03b1cf81787918dfe45ff5166f0ff4bb5e60",
+    "rust/cbus-protocol/src/consts.rs": "df1d021425eb86eb51b5c6c1d6e57d5c21bea82258fb5ac954542a44cf1780b0",
+    "rust/cbus-protocol/src/dali.rs": "4a0c4bda8cb7ad7538208cfd395c88d93b67054769ffdd87e52ef198279ea02a",
+    "rust/cbus-protocol/src/decode.rs": "1c9850a14124a4937d7f0cb033040e69485d3a71a64aedfb38f46d0b6f8d5fee",
+    "rust/cbus-protocol/src/edlt_sync_metadata.rs": "f208973db5ef138a84159ee350fc039319e8f62271c43fd4231aedbbd0481db1",
+    "rust/cbus-protocol/src/edlt_widget_groups.rs": "a8bdaa5717fe2f98f6fe96195af4e72fa725241013d35e74e9eb09f25ef62489",
+    "rust/cbus-protocol/src/json.rs": "b81098cdfbcf76c09295377b6c6bc051ced7a1c4712f32418f0c749bb6093dd3",
+    "rust/cbus-protocol/src/kfi.rs": "d50fe64746488d1e90d444c2af2a1e9a114d02c0b41233ac501d85eb3f739ce3",
+    "rust/cbus-protocol/src/label_clear.rs": "f46a0767ef13479d386f060a1b2bd3f970dfb29822f63613039ad99cafd3ab52",
+    "rust/cbus-protocol/src/lib.rs": "3c06481c934802d190f1a29e860507dda3a7a805aa9940cb744b76e8ebb88a21",
+    "rust/cbus-protocol/src/packet.rs": "e171602e6585a80aa05f7d97e70412a94845bcb837ed19283ac2b298c2b830ce",
+    "rust/cbus-protocol/src/pci_observation.rs": "ad6bb0976fbeb0ffcd32eb7be563b052a67be1d2785f6f43ff78471c1943fa95",
+    "rust/cbus-protocol/src/project_identity.rs": "136015bbe5e8d4ee31e43b6fe1b0a594db2dcab3d8aaeb25f6671e7f790eee6c",
+    "rust/cbus-protocol/src/report.rs": "27bb1da38040d5b06f8e9fd805baf7690183ee4cb88f067dc1935db81e5e14d3",
+    "rust/cbus-protocol/src/sal/accesscontrol.rs": "be9e8b45ad7a3f849fd5535d3c3f339eef5e59a75a2516677e27c000d328118a",
+    "rust/cbus-protocol/src/sal/aircon.rs": "ea370f56bbe1f5efe3d392d6bfe0609664bea1f254aa5911917bd64d9c8faa92",
+    "rust/cbus-protocol/src/sal/audio.rs": "4fec97e4ff043a0d7a81220328773987c2cbf7d3815aac93a909fd5df6a3e230",
+    "rust/cbus-protocol/src/sal/clock.rs": "103dfda2e3fd30541944098826996309b6976554543e9b26f793c2ac66f589a3",
+    "rust/cbus-protocol/src/sal/enable.rs": "fe53fc9c895f876df01daadf16b97835fe42a70818fb12f2af19f09948d8dd4d",
+    "rust/cbus-protocol/src/sal/ereport.rs": "449a003df1bc7a7821198d1d96a58db9945017fb11692ec78446df4dcf834652",
+    "rust/cbus-protocol/src/sal/identify.rs": "fbffd7aba5ecd46b62fc9b9f63539e573d7e67e438d84e7ece0c9ef9c0cca7f5",
+    "rust/cbus-protocol/src/sal/label.rs": "9f341a8591adab6dbc7bbf7a7b995d9a39adf29fdb1dc9acf00a1b8c91ef6b81",
+    "rust/cbus-protocol/src/sal/lighting.rs": "873639441c0f88ea5250391b408e83a06829bc4962eea185a24ff5e9200bfc53",
+    "rust/cbus-protocol/src/sal/measurement.rs": "82542813adc3b3146724ab40b165140f50ecb00011a78918593b61bb5ac240ae",
+    "rust/cbus-protocol/src/sal/mediatransport.rs": "cbeb29100f08897ec5b219b10f62b7a6d537f7baa89a25007d7e7b00b8aa1851",
+    "rust/cbus-protocol/src/sal/mod.rs": "3c86690d90a77c6ade065c15f2dea21ea6c14343905dbac2b95f75766cc419e2",
+    "rust/cbus-protocol/src/sal/network_management.rs": "7f11001b27c9ac5684a054f0fb88c20f252ceb362cb15d9851311c207f9025b5",
+    "rust/cbus-protocol/src/sal/security.rs": "52bdc5339a9a3769761a9f35f98aa22e026c0df3b3e07ec108af584b2c4444fd",
+    "rust/cbus-protocol/src/sal/shortmessage.rs": "7f70abe9658761b1c63c42b413893b19debd2c7592b429c6e793f64e2f557aaa",
+    "rust/cbus-protocol/src/sal/status_request.rs": "6546cac4bbd2f68b67d6589602486553df8b86a1c0a627ccb0116b80eb08c96c",
+    "rust/cbus-protocol/src/sal/telephony.rs": "16989f9756ca9bd0f55dca997f0bbd68b050d8b546f16ff520721d6c6152fda7",
+    "rust/cbus-protocol/src/sal/temperature.rs": "3a14d64a19aca7679b019745f7c2e2623eaa00b9bdbd076e2af53281f630ad71",
+    "rust/cbus-protocol/src/sal/trigger.rs": "f6fbd953f436ff6ebdb9e6fe1027f59ad17cac753d2657fee902230619e8d38d",
+    "rust/cbus-protocol/src/serial_address.rs": "b278a63c21cf7c1fbc5c2a95bbb33127dc6d37b546753fe37d10b4b4193b66bf",
+    "rust/cbus-protocol/tests/common_edges.rs": "a108bcd1e9b2e9bf0dd6c84e94422920d2b4742fe4bb7b016e15dc3c1002cd4f",
+    "rust/cbus-protocol/tests/decode_edges.rs": "a2ad44b9bafeb0a84b63b4e86e6b5fb42883741fb65d51b09b1ee94f7d8d7c00",
+    "rust/cbus-protocol/tests/encode_edges.rs": "e2a0f5bc198c78a0eeac27c3336228589c2578f84e11d9038d16d987e2ab7cc0",
+    "rust/cbus-protocol/tests/json_edges.rs": "629b3d1988e3113f7aa2f5a69cbe2f61eec5f996bc0e85585d410eccb05f3ccd",
+    "rust/cbus-protocol/tests/observed_labels_vectors.rs": "65b835f769e5c9e23abda37f6924f0db9981bd28f6555fdceea61eb1910b8a72",
+    "rust/cbus-protocol/tests/proptest_roundtrip.rs": "e230ba8d5f763bcdee315351f74fd83a2f186e452698118bfd6b9ca33836df9a",
+    "rust/cbus-protocol/tests/serial_address_vectors.rs": "4501c244d212ba94b0c57809059d4a4dc65ed0c853847a124d0b9b6abffa582f",
+    "rust/cbus-simulator/Cargo.toml": "64a228fe397a44c5b56062bfa985a71f9fa60a1612537073e7b0939eafd94789",
+    "rust/cbus-simulator/src/main.rs": "d8f7810fd42ea16f95fa8dd0086a9d612c28871daf0e3cacc4c9b73b3f4f5eac",
+    "rust/cbus-simulator/tests/system_sim.rs": "32fe3581d71ce13e463979ad6df31a0937c0fb20d9f26e4437535dc064966cf4",
+    "rust/cbus-test-support/Cargo.toml": "e5ff75e7e87fd374c3a5d757bc98fe5f22d5623e41e44bd8a1ca7db81a3cd83f",
+    "rust/cbus-test-support/src/broker.rs": "5e72c68aec336147df5ad4a8973ca8d9e4983274ce3cffddb8a56ef342451dd8",
+    "rust/cbus-test-support/src/lib.rs": "ff0391c0f6dc73520a22c9ca5a5a74afbb64d33a8c62e8f78720003e4badc433",
+    "rust/cbus-test-support/src/pci.rs": "8e6e82b94a96077a4b2c589bc2f823613be8dad24ae2fcb2607c043dfefbfe91",
+    "rust/cbus-test-support/src/proc.rs": "e7093dde3b27dd3b551dc546ae3d2db08d5570ba99386460fc7cf076bda8b95f",
+    "rust/cbus-test-support/src/wait.rs": "2e4311260ac17418c1ee2553d77b14ce29866bd5c5cccfa9559d08f3a131feca",
+    "rust/cbus-tools/Cargo.toml": "a5ecbc5ba5355612da4e7c9c3d2111f002f837154047cf46a1efb6029ff2d4b4",
+    "rust/cbus-tools/src/cni_scan.rs": "73b4b525ba9fdcea0d5af33a17ba79e4b58ad4784322a812daad9a9b7ca10573",
+    "rust/cbus-tools/src/commissioning_lease.rs": "cbf7418a74cac56bfb2ca85499fffd1e72ecadbc5b375bc2a34197e1e7a9484d",
+    "rust/cbus-tools/src/lib.rs": "7779def56548d3ae480ad8c9f5429c881bb67e4a1a808a53ceab3b2f236cbac1",
+    "rust/cbus-tools/src/main.rs": "74e54dbe28952f4d698bdf28d6bf1b523a38c2971fd1155583e3508f8677764c",
+    "rust/cbus-tools/tests/cli.rs": "90fc97d8dd8da5d47bf3af84be2223e50ab0f986b94b5fd19551ceffc888585d",
+    "rust/cbus-tools/tests/serial_commissioning.rs": "28568ac9990298044020767db15b73b86044f27f3e1363332bc42dad5040aa3e",
+    "rust/cbus-transport/Cargo.toml": "8baaf563db7f58aeeeb96f6e25335d1c67b342ee472a96bb16c09e2b7de64f5f",
+    "rust/cbus-transport/src/apply.rs": "c59dc52896fda2743af4dfbd5b0dff77478794fae830c283cb962b6c507004c2",
+    "rust/cbus-transport/src/cni_discovery.rs": "3b6a13ba2c0d5da1c4df09a612b0cc47b343c6021a671a670995dd81e459d4a5",
+    "rust/cbus-transport/src/commissioning_route.rs": "af7808a804afafe076d6ee782db469a7f5b92971f00c9f099ffdc66118a605a1",
+    "rust/cbus-transport/src/conn.rs": "1483c7e96526b2c458b750722e1799f04d5eec9e112e2ccf860fb217dda3e3d6",
+    "rust/cbus-transport/src/flow.rs": "7bd2078c84170d3e679034f3ca517bb4ab0fd4bd9f5b3af43564b9daa5e7f327",
+    "rust/cbus-transport/src/framing.rs": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d",
+    "rust/cbus-transport/src/inventory.rs": "4f9468f72fa16680fad676ed243a00dd3e6d6c8786c3c1e719f9285211398a06",
+    "rust/cbus-transport/src/journal.rs": "8043ac0cda5068252553430250d024e5e33541b1729a07e61be69868c8379a11",
+    "rust/cbus-transport/src/lib.rs": "1aa6ba71e3a69d236136cf2e2c8271094aab477f32f6a2a9cc4ea3f29b7b1eca",
+    "rust/cbus-transport/src/pci.rs": "289d92f6bbb910ab5917dd93b9e029aa4e4aa2793b454e9bf9c5dfb9ef028c41",
+    "rust/cbus-transport/src/pci/mmi.rs": "89063d09c06ee1afceb44ba40de63484a308962f0a6cfd173dd52eca11885e24",
+    "rust/cbus-transport/src/pci/programming.rs": "5b6a0e2143accbc51f4f40135fc08e36214c562670092adf40af72ff679b54b0",
+    "rust/cbus-transport/src/pci/selected_serial_observation.rs": "3b64863416bd16c2fd2a018d7964fcfa783fac3f571a08ad02847560640cb591",
+    "rust/cbus-transport/src/plan.rs": "25db5dd036c6690aade528945bbe41c7f41e5893c00e128ef6fb64d0ad878b93",
+    "rust/cbus-transport/src/serial_address.rs": "7d667f4365208d28dfed708eed6efd38ca7fd9f66c63765c1d81f00cfad01cdf",
+    "rust/cbus-transport/src/verify.rs": "6d9d1c53831e78eb899f86c10e832b0ae2151684602d908af3f4645cc306d502",
+    "rust/cbus-transport/tests/endpoint_edges.rs": "1353755cb97c4f2c091d6fe217f3b0fe05653a74796d619cc8c285f67d2d10bc",
+    "rust/cbus-transport/tests/framing_edges.rs": "4f3abd7d9b9880f4d46c7cdba6b2b8ec79f632f6089424f2d50aa26604048aab",
+    "rust/cbus-transport/tests/inventory.rs": "3574f16c3d3b16b58f6b4f91ae5b4e9e61fbb78b43b15b137ea3332108d0f8bb",
+    "rust/cbus-transport/tests/journal.rs": "b41c4136e415af9e4cbadbbe0b72798f405b78ce774d15afef296d588bd2ceac",
+    "rust/cbus-transport/tests/proptest_framing.rs": "187c2823529d323c3681b2ff0a2fdf53ed493c83904c1fb9718001536eaf92fe",
+    "rust/cbus-transport/tests/selected_serial_apply.rs": "9ae52ade32f643916253a8593eb2de1263b2bc270f2347d35cc0e1a637cf1685",
+    "rust/cbus-transport/tests/selected_serial_plan.rs": "db9f4da8471c3863548a61ab8c1fd361eeb553b1ccc4cea1c48cdb81d51e18a5",
+    "rust/cbus-transport/tests/selected_serial_verify.rs": "ab67044ecd1cfecb7b4ffa40897e01b21d654c301d9963dc4b31743365f49bab",
+    "rust/cbus-transport/tests/serial_address.rs": "138ad8d8439a5b0681239d2dc50dc4acab1075085a994c9fccc00b1265952289",
+    "rust/cbus-vector-check/Cargo.toml": "e07ef71cce994e307726ce6f754db751aaa02e1bef68de19ba98d1a24986fcef",
+    "rust/cbus-vector-check/src/main.rs": "0428c0ea02f3bad935638874a6d3d6dcebc99973ddacbc0a811b9137cb36029e",
+    "rust/cmqttd/Cargo.toml": "c37233e50068e5775275d36b1ca24f4e4dd66dfe719b8ebb016cb044f216ce0a",
+    "rust/cmqttd/src/cli.rs": "7f4d32032d96c18ed8dcb578bafbc3b8a7da8014a4a81da17c952f53a574b22b",
+    "rust/cmqttd/src/discover.rs": "d8767f2705557586c7bc9b574f108afd0dc116743f452a5286a0d1df283a1eec",
+    "rust/cmqttd/src/gateway.rs": "0aebed3a040644166dcd7b1ffa30b910d49a0b1db92f23bb0f1e8f15466a1df0",
+    "rust/cmqttd/src/main.rs": "13c25717d930ca2463c93cd87cfa590f7632e24815e3bf0085dd58c0dea499d9",
+    "rust/cmqttd/src/setup.rs": "55671eeb468dde9d26467e6a50e22f8b00c0830aae3826d31d40654ac9f23f64",
+    "rust/cmqttd/tests/entrypoint.rs": "27cfddc6643ee98d7433d6b241965df7a3ad56c74d5a40c152e246b8f415cb0b",
+    "rust/cmqttd/tests/serde_feature_graph.rs": "60fc21629d5705d9c72dae5178f65dc70f621e24409d1dbfd7c44d5d94880c29",
+    "rust/cmqttd/tests/system_cgate.rs": "b0f0a7f3318fc9dd9c9b1aa3d45edc454bcc4a4381b0fc46230f5f1944e3d4cb",
+    "rust/cmqttd/tests/system_cgate_access.rs": "cc8464388d5e8967e2fdcc15925bf5a6854c7618a9fcbb4daee2b989dc5c0557",
+    "rust/cmqttd/tests/system_cgate_access_control.rs": "94183d8e99510cafdbca0884d1f9765387d231cf8cfc75236317d8409d30b759",
+    "rust/cmqttd/tests/system_cgate_admin.rs": "69d318f8eb3f075a96e8adbcad6d15d718c481517db82c61c5537f8a0c1a6c0f",
+    "rust/cmqttd/tests/system_cgate_aircon.rs": "75a49ef16ef6840dcd9ce4e5bc3978448b5a9773e99aad7c2ad73d52e328a8d9",
+    "rust/cmqttd/tests/system_cgate_audio.rs": "28ed62971b8bbbdee0f045c23e8e314c805df0b6d793501ec2b23265499d4dd5",
+    "rust/cmqttd/tests/system_cgate_broadcast_event.rs": "3c30f51e7e0a820541ccc8f043f5f0f3959e7f0eff821e9254ffb8784a599320",
+    "rust/cmqttd/tests/system_cgate_config.rs": "8367e7992b1add53d2f97265f024989e01162aaea3496404858b6e1b32f8a275",
+    "rust/cmqttd/tests/system_cgate_config_admission.rs": "9647d6999622ccee2220e5a8b93dafab42465aa132f6a69dac3048517797700b",
+    "rust/cmqttd/tests/system_cgate_dali.rs": "88e2c38bc3d19d70a567f29372f7206646b88e8d9e076fa23a49ec54d88292f1",
+    "rust/cmqttd/tests/system_cgate_dali_specialized.rs": "0838fe38d5de14361d38b070309fb6f67db0f1551768d5372f7ac5041f7b12ac",
+    "rust/cmqttd/tests/system_cgate_database_lifecycle.rs": "1c703fc8fbbb7ba3964610909a05b8b83a8af534cd76c621184c213f866b3491",
+    "rust/cmqttd/tests/system_cgate_event_transport.rs": "f9f71e90f1683f2cc49aae7f1d2ad21163990b2dfb9d6cf95f0ca27f0b3508aa",
+    "rust/cmqttd/tests/system_cgate_file.rs": "fd6c48a7bcdc5f232df3e2fac8919ba3a2fcbcd2554be85d556175216fac7ac4",
+    "rust/cmqttd/tests/system_cgate_general_tree.rs": "07726a25d54f4f04f5553fbcda80ea3ffaf2bfb5ba08aa86de90ae4b347f71ac",
+    "rust/cmqttd/tests/system_cgate_measurement.rs": "b3fc6379258561e3e3b46e08bbae3ffb5f4b32a3aa19b0389c684fb25e9f9bb5",
+    "rust/cmqttd/tests/system_cgate_mediatransport.rs": "65090e2632f1e60d3ab87c386529a0ec6d6fedf4364945f219de7497b2481bcf",
+    "rust/cmqttd/tests/system_cgate_move_journal.rs": "14b7d28e49a2fc0d5aa21fbe81fb859039328c4e70776bff2de5f137777a0556",
+    "rust/cmqttd/tests/system_cgate_net_lifecycle.rs": "c369dbf1e807d4a9135ef89ff2fa0e96badb58315dd3992971d5cd8f40d39221",
+    "rust/cmqttd/tests/system_cgate_port.rs": "eff728504713015cb42c88eef7755687a5b5c937e93aa5c78a7af9796319d48f",
+    "rust/cmqttd/tests/system_cgate_pp_liveness.rs": "dcdfa5c54daeff5407a4f9374b86937b378003e9978fe64da2ac94a18f861aec",
+    "rust/cmqttd/tests/system_cgate_pp_programmer.rs": "6eca4e692a506310e1a334abfb9b56289f381633b512d6f206f832e08cf267d8",
+    "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae",
+    "rust/cmqttd/tests/system_cgate_project_copy_delete.rs": "15a672c8be3a60d5f110b550393ac7456bc1740a20bbf9c4fc6fc2928de2818c",
+    "rust/cmqttd/tests/system_cgate_remaining_applications.rs": "c53f78b31bf71b0edeb6ad82aabb2bbab61d7ca0d8d3b47787a16ffb2dc3f252",
+    "rust/cmqttd/tests/system_cgate_security.rs": "dfcad80fe824f2cb0b051b673c187365315b55a2c1ade760d232206ec07d8215",
+    "rust/cmqttd/tests/system_cgate_telephony.rs": "bdfc474056888bad5ad408aa917e692dca50e7105b115bdb73cda1b3454bea0b",
+    "rust/cmqttd/tests/system_commands.rs": "850e25a16c9faa78b1ea74335c54b70b5bd684390bb3d8b05c075873e32c1208",
+    "rust/cmqttd/tests/system_discovery.rs": "ad532297a7c9968bc41ba11414ba4b6c65c1435a5cba753299e2366cfac6bc2e",
+    "rust/cmqttd/tests/system_events.rs": "dd05f9f6e18aaae97a139e8618de8a7e20ca7c721ae11f4ab9fc9d7d61fbfded",
+    "rust/cmqttd/tests/system_flow.rs": "965aeed5d13587a44fb2c51f64fc9c223ccbfc96227f569ddbe541a9dd3cb4b0",
+    "rust/cmqttd/tests/system_init.rs": "87ff13c4180e81ffef8998834e5b1cbb6e9a840f86e18c58913829eba4d3925d",
+    "rust/cmqttd/tests/system_mqtt_consistency.rs": "55fad058b8b1c2d4cf1d7e488312ee6f24a7c92a978c59b2ae26c76b65571414",
+    "rust/cmqttd/tests/system_resilience.rs": "7d4f377e78a408b349445dd18a1a74a88f3b0af1f7f3c044649d91e7d18baea7",
+    "rust/cmqttd/tests/system_serial_pty.rs": "df42416e3c1add434dfdffd14d4995ee3ebe20e13914fe2f9dff4d7eef54bd91",
+    "rust/cmqttd/tests/util/mod.rs": "beb4764e6134882be7d80232d430047e027de42f62c570bf41a28e62d1c4211c",
+    "rust/testdata/fixtures/behavioral_expectations.json": "4f9a19a091b70f45e427db5ca8c8a0983639cb4be4cda1072dc3c417481ad82a",
+    "rust/testdata/fixtures/cgate-tls-test-cert.pem": "e9de6b4c5e3d0ef6c62a7a0397455db7b11f0850319cc33c0cb2afb6f9e5b3ec",
+    "rust/testdata/fixtures/cgate-tls-test-key.pem": "703a3498d042cd3316283dc976aff7efbcfa6aa89f9627e90c36c9d3a956a508",
+    "rust/testdata/fixtures/cgate_dbsetxml_typed_tree_seed.xml": "141ec567d0d6c1d3d17b91f408a92cd0e6869628b35b893ce15bded8d0281614",
+    "rust/testdata/fixtures/native_cgate_access.json": "4a1a8d1e09b49fc67a3260415c99af81cecd602e4d1c2c868aff4dff50f66715",
+    "rust/testdata/fixtures/native_cgate_access_control.json": "9b719610959326006308c00e6a22e7216631e999b533c458c50629692e8f124a",
+    "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+    "rust/testdata/fixtures/native_cgate_aircon.json": "6b49eedb5b0ae3cf23085d33c04f6527151c6a41e2424b345e59ac7b3cef8315",
+    "rust/testdata/fixtures/native_cgate_application_authorization_probe.json": "5d11a1edb500a995422be2336fcec4feca4c4e07a931e3d64cc604a671191f7d",
+    "rust/testdata/fixtures/native_cgate_audio.json": "e68380c542c3902553f606a2f1783dd7b0e8371206107076936ac871d718fc87",
+    "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json": "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e",
+    "rust/testdata/fixtures/native_cgate_authorization_probe.json": "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0",
+    "rust/testdata/fixtures/native_cgate_broadcast_event.json": "005bb8bf0600303a1be4f54762c6883e7f932a8747099cc8157d82082f87c1be",
+    "rust/testdata/fixtures/native_cgate_cgl_routes.json": "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490",
+    "rust/testdata/fixtures/native_cgate_cmqtt_capability_vm.json": "8fd7af92e703809094bb709a04f55139badde90b4993f2c28a8708458f16a33b",
+    "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
+    "rust/testdata/fixtures/native_cgate_config_command_show_responses.json": "e142a46133fbf8ee655b5169a57dd34398c0d8e1aa8d6e4ee8880ff4db117bd2",
+    "rust/testdata/fixtures/native_cgate_config_command_show_time.json": "bf64b1bf77f83dbb0de7e5acf6b8cd49f7aaff44285372562b514dadeaaa3fee",
+    "rust/testdata/fixtures/native_cgate_config_connection_admission.json": "2963adab8bfa9f674c5d6b2f6b7f9b561498364fd594dfc61a227de479111161",
+    "rust/testdata/fixtures/native_cgate_config_event_display_oids.json": "00a6758d83bed85fd31e19fdcb6fe7e904910597eab9fcb22866e36b82659d0d",
+    "rust/testdata/fixtures/native_cgate_config_event_listener_admission.json": "d9d31b59d7afd5688a199c0f4e44063ce4ee011902a80cc6ff0afb23eff46271",
+    "rust/testdata/fixtures/native_cgate_config_event_millis.json": "396c09d58052f8feed927a67ad2dd121aa2de70668cad3806bc8a53880854766",
+    "rust/testdata/fixtures/native_cgate_config_event_transport.json": "e6963071453f5bbf1540c043852d962c14505fae4c7fc330beb4cf720e561966",
+    "rust/testdata/fixtures/native_cgate_config_global_event_level.json": "e0a812d0000076a2fbf306018d4e6cf28f81fdb8c7f4fe53fd40447329213106",
+    "rust/testdata/fixtures/native_cgate_config_heartbeat.json": "fc7b0da2d0f292be768d2b5e5d1ec49216d6e001c8ed2afd211fdeb97640de85",
+    "rust/testdata/fixtures/native_cgate_config_hostname_tls_admission.json": "9ac6a39bb332a3c0a2aac2e66f3d9a0f67a266a763034061a9fc1509b81086c1",
+    "rust/testdata/fixtures/native_cgate_config_project_default.json": "84463549467826794600965fc94ff66ae7f956162e802cc71f345ef92577d13d",
+    "rust/testdata/fixtures/native_cgate_config_project_start.json": "5bf804ee63a3fc9984f36606478c7baff18522cae0f25ebcd503c754c775b1e4",
+    "rust/testdata/fixtures/native_cgate_cross_kind_oid_mutations.json": "395311a39661f374b9d36cc9d71e5bd14ea6e49c76178cbd2ded56e759cb6657",
+    "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json": "d2ffb8d86b296ea123b6b667d484e9c5415ec41b0db55c25f14ef6262f67af8f",
+    "rust/testdata/fixtures/native_cgate_dali_commissioning.json": "8ef7c99129833e86b15e75e3f115bc120e0a7f89f098c309ae979ad27d386edf",
+    "rust/testdata/fixtures/native_cgate_dali_help.json": "c60df73cb0d62c84b009c8a88fb436b50f9abd0e5d47f79cbde2668443c600e0",
+    "rust/testdata/fixtures/native_cgate_dali_specialized.json": "9eaf11c32afd073f39503caf8003400edc7058533e46244b550e991017776505",
+    "rust/testdata/fixtures/native_cgate_dbgetxml_framing_vm.json": "c819303fbe8d38d552fa3aa9b80fbe60ca1161ae731f1aeb830323f0e7e6863a",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_application_shapes.json": "3712ae2e4e355f011cc5c6f2478bc3d08fed507bd38811a5ecc9448f87014b3d",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_combined.json": "ff7f34a2732ad8eef723b90ac1b20a2e4cb7ebbb29367290ce50d863f2767cf9",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_combined_vm.json": "7d850980d52a05103796bfcb01ca49a4fda5db23177387c0ad1d72978953abae",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_duplicate_applications.json": "310ce265b6545029769456ebeb552beaf4cf35b793779908a341f648664520fc",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_duplicate_oids.json": "9cddffd48c597fa0eb9752411b67d415942cd005275707e9fa7bf9cf381d2e9c",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_errors.json": "bfb8989058c09da65651372f0682486cf3df4bd36683e85d9589a3e29b7d38af",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt.json": "d078ce2d67b0819abb4a3f86c1e6492bd96fed56e3472b2e44848475effcb357",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt_boundaries.json": "d862b6dbda13954df106021062276c81f647d9d9319142d8eb215e69789a21f9",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_level_dlt.json": "00b7d0b97201462872d7f74608d094e7ebdc6ef16c0995b5f9ea243b057b1061",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_lifecycle.json": "2efb79d46563dfb636bab3cfc60df35895e5b85e0fe25522c39764d53cf1eeca",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_nested_applications.json": "5316e61cd7824858bcee1a0daf3df7bb20e4aa0dd0963e457d926bd9eea6db1d",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_nested_levels.json": "b5259cc61051182ca8275c961db4238f6e552aee59b4e16bc77e715462516fbe",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_nested_levels_roundtrip.json": "33f7ac5fb6dd6937138382de8b7bec0ca56598a18c0c05a9a48f348dcce48c52",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_replacement_edges.json": "c99483fe80bc4be0e2105b943fd7325a5150067ca130eed2fbf9f7394a55dd82",
+    "rust/testdata/fixtures/native_cgate_dbsetxml_unit_vm.json": "6ae63e7a36de13cdd5af034ba132dcda9b452dc5bc3a5e403a3213423e9ce70d",
+    "rust/testdata/fixtures/native_cgate_deploy_queue.json": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674",
+    "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_cardinality.json": "3d989d9b454055033bb34f8645b36184857a45f033877b69ae99182f0c903ce5",
+    "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_five_plus.json": "79d333ba33b0f83242ddfbb5df68c34384df6f14dc4a834e6c6f25980ba4613d",
+    "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_mutations.json": "79010f478e9a12cb91762f2385d2c59e219033f923aad125bf52a1a161656686",
+    "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_nine_ten.json": "a53ec6f01a87fd548a244ebcc3b36e89f007d984678ff68d35472ff44dfc6cd1",
+    "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_reverse_order.json": "6f8907860cda4c7cda51bbd2707b336741e8792e568f3a3557efd0fef13c68cc",
+    "rust/testdata/fixtures/native_cgate_event_catalogue.json": "2362b1aeaad94a8beddb1575d2eaedd1dab9fead44db8fdd2d8e8f9446554bee",
+    "rust/testdata/fixtures/native_cgate_event_fanout.json": "4220a8f25f4a2405b6740718866d365f3369f985b34e9fe6244c7ef3750fc571",
+    "rust/testdata/fixtures/native_cgate_event_socket_recovery.json": "031c14408adeaea358c6900f08d84c869bb8f5a2cddcf36117a6f9bc755d135f",
+    "rust/testdata/fixtures/native_cgate_family_help.json": "6444ffe20d697d3b91c1678899185468865446d8554493b0eb518e4641fcb98c",
+    "rust/testdata/fixtures/native_cgate_file.json": "ffe617d02e687834253f7bd54dfa3863f03528d0f67748652a35c25f9afa84ef",
+    "rust/testdata/fixtures/native_cgate_final_authorization_probe.json": "bf5abdda888afbca356c00a0dcba21ac76fe465c653982904b8fe1a7eb3a5231",
+    "rust/testdata/fixtures/native_cgate_general_tree.json": "80c42e1c515222c52bbf9c533e600fa0357f5c5c7a91a0b69affdcf72e6423e5",
+    "rust/testdata/fixtures/native_cgate_large_cross_network_oid.json": "b60edf7be4fc127f9461a0a12e3f3c9eabe24a7f1d0845adc313c7f45a2e2914",
+    "rust/testdata/fixtures/native_cgate_legacy_database.json": "1c47cce822b828e757c4c6265cd7392a0f959fa605c826590cb9510fa41db3ec",
+    "rust/testdata/fixtures/native_cgate_lighting_events.json": "d56392a860de076ae06deea1b856444edbde51e90ed16cb03960c82e96a2b3f3",
+    "rust/testdata/fixtures/native_cgate_local_admin.json": "ebb8152977d2cc0fb8b2a68267998f393e5b69063887454283eabb8ebe3ec72d",
+    "rust/testdata/fixtures/native_cgate_measurement.json": "6ef5b207f7cad5745aef425f674331667d5e03ed1795a7370b3a8163c576fbd2",
+    "rust/testdata/fixtures/native_cgate_media_authorization_probe.json": "e626683812d7b90f77de77ae502d4d0508c50329d35b73fbead24357270b851a",
+    "rust/testdata/fixtures/native_cgate_mediatransport.json": "12c46dd05d6c7083cdefb28dd7ab4580b131757cf6fb044bf9298a68eed36692",
+    "rust/testdata/fixtures/native_cgate_net_db_reconciliation.json": "32d0ea53000391dee0ee9d8b9e54496e6df916395fe8e065de78766a5397b596",
+    "rust/testdata/fixtures/native_cgate_net_lifecycle.json": "8004c25aaccbaa7fd0993099be37dcab08751e7741097ccae61ed90eabe3d332",
+    "rust/testdata/fixtures/native_cgate_net_save_db_materialization.json": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b",
+    "rust/testdata/fixtures/native_cgate_new_bounds.json": "e525e2198368186a70fd425e528ff2ebbe7c1a7cd65ab164a6693dd43f5def0b",
+    "rust/testdata/fixtures/native_cgate_object_authorization_probe.json": "52dc0c7ae43e705fac0513fa661aae06a90725030a9caa250b608166156ebc72",
+    "rust/testdata/fixtures/native_cgate_oid_index_probe_cross.json": "7a2149b2f23c5b9c3964333b234a9c65005f10390e5308b0dc02125e06482a91",
+    "rust/testdata/fixtures/native_cgate_oid_index_probe_mixed.json": "82c1169fb06d3807b8b65ea7f9b19cfc5077aac855bb5ec32f243061c13b8781",
+    "rust/testdata/fixtures/native_cgate_oid_index_probe_units.json": "a63ba52e3a57067ee2da7f326c2021ec2f78cdac0a5c554fcec0a9e01c722734",
+    "rust/testdata/fixtures/native_cgate_port.json": "9e4231409117c5a2e9ba8c0c203a56b7a1c1748c70e0961cc25d2de139aa9a66",
+    "rust/testdata/fixtures/native_cgate_pp_method_transcripts.json": "36da6ffb5be7435ad26453ef5074bd5225938ef2e5574bb54e953a70ec7a8809",
+    "rust/testdata/fixtures/native_cgate_pp_programmer.json": "a11854d5cfb7087383864a8ffa0ee52fa3e141532675acbf3bc59690aeaf64bf",
+    "rust/testdata/fixtures/native_cgate_programmer_lifecycle.json": "229cefcbf4317d7d7ed96fb14e084bd08b45f9350a205cbd6df1877832d72f6b",
+    "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json": "cdcbb2507762c404c7ee2193893a3128c2250d35aedc15b98a4611a2ab7ade2f",
+    "rust/testdata/fixtures/native_cgate_project_archive.json": "eb769d57ef229704ad4af62a87fa3e719e0026e2a0b59141d8beed3bbdacaccc",
+    "rust/testdata/fixtures/native_cgate_project_copy_delete.json": "8948e7e0fba1218cb19db3c8cfb1d56ac6158bee52e781ab51c6c3acc47c759c",
+    "rust/testdata/fixtures/native_cgate_remaining_applications.json": "16a25548c054d19007a911a6229d726496791249df55a149ebeb853ed1fac318",
+    "rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json": "5cc108b58e15d1caca464d8c73a4b0bd5e77c587f091a2f65db38fc435207bbd",
+    "rust/testdata/fixtures/native_cgate_repository_transform.json": "897bc5d1ce6068e3b4dfb11efb217c50b9f8db96180042d4db1197a65cdf530c",
+    "rust/testdata/fixtures/native_cgate_routed_application_control.json": "c051b5eda0e9f6feb4fecfd479e41009072ccf7b580aa1041123b10c991c4118",
+    "rust/testdata/fixtures/native_cgate_routed_edlt_metadata.json": "3b7c248f9815dafcb6219f6fa5e3c3c893cd32793a47e30bfff08cf52d039c78",
+    "rust/testdata/fixtures/native_cgate_routed_label_management.json": "431335e3fdfd545e81499956b02b4a6015cfdb8e711861b404f80c05d65e173c",
+    "rust/testdata/fixtures/native_cgate_routed_nvm_commit.json": "16e692423114ed84b26e1e2cb18d1f83af91e8ae15f10003c1e6e0a072718650",
+    "rust/testdata/fixtures/native_cgate_routed_pp_methods.json": "2656423e7fec13ff9bd76c575eb9cea4fbac1ae17faf85c668c8c4e190802bc9",
+    "rust/testdata/fixtures/native_cgate_routed_pp_protection.json": "2b59715c647e474334b1d6633b0d6565b7a616aa878b2ab728dd923adac0cde2",
+    "rust/testdata/fixtures/native_cgate_routed_project_identity.json": "abc101b14fc7ae1537038458e63df6824a37d76adcfdaf45cc96dd8f7e87a65b",
+    "rust/testdata/fixtures/native_cgate_routed_unit_readdress.json": "f6f16c0d363a1d41e454fb0eefc528c8ad9d8bcdc6e810e5a979acc3cfc175c1",
+    "rust/testdata/fixtures/native_cgate_routed_unravel.json": "6544f191bf5de6760b4792058b32306c030726918ff382fe3a9ef264b853192b",
+    "rust/testdata/fixtures/native_cgate_secondary_authorization_probe.json": "2c13c2fecfcde221e76925955639fda480e797f54dbccb2a37d44a8a76195b74",
+    "rust/testdata/fixtures/native_cgate_security.json": "ea163445585448b369e30de0a43b7fb7c9d1fe2212dff08813c90271771d5d42",
+    "rust/testdata/fixtures/native_cgate_session_selectors.json": "537a0718d94948010d27e2b3aa3e3abce1478d0af08448a4af7199d11766a562",
+    "rust/testdata/fixtures/native_cgate_shortmessage_flags.json": "5d3fc35942db955a067a00846e269bd705fb0523c7a1757ab9cdfda6b7c47ff0",
+    "rust/testdata/fixtures/native_cgate_show_appclasses.json": "67ef4feea27820617ce8ddfb9400370451fbc82fa61e2b6b3f62ff1ecd25e74c",
+    "rust/testdata/fixtures/native_cgate_show_audit.json": "75b85c5179932d81a0d1bc9c9cbb4895fc7cfcf8a7a596a3ab5d71fdffc4ef88",
+    "rust/testdata/fixtures/native_cgate_show_objects.json": "f20ba3c66439fc595c69a8ffabb144c4592b0d4581ca7604596cb9d05a8f7afa",
+    "rust/testdata/fixtures/native_cgate_show_parser.json": "b11fbce5cf136ef4228ab2650ec0b4252cdea132156c12c854989f59a10a3191",
+    "rust/testdata/fixtures/native_cgate_specialist_events.json": "649aec16776c622ae3c19b73ae395b267b506ac97b126c30d11635532e2f88e6",
+    "rust/testdata/fixtures/native_cgate_telephony.json": "42c34c046d6fc7773540e3be2c57adbbcd1779eb760e96b7714841f0f3e1b6ef",
+    "rust/testdata/fixtures/native_cgate_tls_authorization_probe.json": "f4cd36fffcb7d503942b6500bbb506d03c033303fe9e82b962cb18403f439a5e",
+    "rust/testdata/fixtures/native_cgate_tree_appclasses.json": "d10a3ad643db5e9c3c8837a8772854df424643f088e3f10b75c7a803329f87fa",
+    "rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json": "1630ef43544c0e08a1abc7c9a8b808bedc9dc02f44b8922b529588b663fd4b97",
+    "rust/testdata/fixtures/native_cgate_unravel_cases.json": "e65e759eb4aef5f949ab115d754f30b77ff4595a4ad35249beaa71696c46b508",
+    "rust/testdata/fixtures/project.xml": "15eb06a6ce7c96b88baa77d240e66b90559bb85f5f594e454b7cd18fd8a1c9c1",
+    "rust/testdata/vectors/access_control.jsonl": "03d998af6a4fd6be63cf900b9497ce4890ece01b1090ae639096ae7111a4f810",
+    "rust/testdata/vectors/aircon.jsonl": "1e105ad9123bc8f71b53ac6cc44b531595bf103c41be957abe6ffdd9fa072c83",
+    "rust/testdata/vectors/audio.jsonl": "0a8ca2e8d87312b84855a6f5e808269a9c2ef574b1122ce2543d5cd97dfa2a5e",
+    "rust/testdata/vectors/cgate_associated_empty_tags_cli_wire.json": "835af8b4a4d7d8571a8d6fecf700234209c9d028f04514de0b02ad15f85e09bb",
+    "rust/testdata/vectors/cgate_associated_level_cli_wire.json": "47e060ef4c6b4cfe1ebfb9f4c8910b59b88cc736e3711ace79d9fc1ab83b5247",
+    "rust/testdata/vectors/cgate_associated_raw_level_value.json": "909bf2fbba2997f62f5b0b07d4f4f8ddcc3e4764caa4837e90cbf593946138e5",
+    "rust/testdata/vectors/cgate_associated_raw_level_value_cli_wire.json": "1069ff85c3c52859bc4bf9157f093e748a8e335079defcefaf930881c4882ecc",
+    "rust/testdata/vectors/cgate_barcode_database_cli_wire.json": "0a16f4dce2e35996b17f03c6ca761b166365a3a1db1ec8964807408747d399b8",
+    "rust/testdata/vectors/cgate_barcode_unit_initialization.json": "bbc057dd7cb695daf4c0cd5086e74376e4a4a6ccd0e55ddb315a829c352f5ada",
+    "rust/testdata/vectors/cgate_cgl_routes.jsonl": "0377952275e3022541a1a11cdf1b7a16ed638701a9c027048f2f0b8c5b7da269",
+    "rust/testdata/vectors/cgate_config_project_default.jsonl": "e7223a19ec7ea5573902f605da42f639841b81b8bd0924b586b0254b7baf5525",
+    "rust/testdata/vectors/cgate_config_project_start.jsonl": "f34c86927960d4052f6873b8cca1e2c5896182ffebfd3a3a374b07dc2281efc9",
+    "rust/testdata/vectors/cgate_convertunit_database.json": "0c7f8754fd16075c19581c24848e5dd9d8068e554d9c927756b03e14dfaf5ca2",
+    "rust/testdata/vectors/cgate_cross_kind_oid_mutations.jsonl": "8f7edadcb541d70cbed1ae0a5ea368dbf159450b4a7979140b14696280f636d9",
+    "rust/testdata/vectors/cgate_cross_network_oid.jsonl": "2064492bfa79ed207cd85ae23b9ea2a16ea04b3f03b92de55aa99f20ee4e303e",
+    "rust/testdata/vectors/cgate_dali_authorization.jsonl": "3aba442c84b34208df61d5dd66c367582042f94279002cd149b4fe51013ee2ac",
+    "rust/testdata/vectors/cgate_dbgetxml_wire.json": "42b22fe1933392734d33728e224c7fef597fc1d73bd827952316e83526dd1b9e",
+    "rust/testdata/vectors/cgate_dbsetxml.jsonl": "4d08190486c977d117e393b8b48d5005e1618a23d15928cb5e719455a444d9d3",
+    "rust/testdata/vectors/cgate_dbsetxml_application_shapes.jsonl": "b39813afd398ad956d31d1c8b7d7ebe12b97b402d46b260c05b8fb2f5aae2014",
+    "rust/testdata/vectors/cgate_dbsetxml_duplicate_applications.jsonl": "4ba7e59bf48259eb2a50c027cb4faebe427dbb9acdb7f37ca64c6087923942a9",
+    "rust/testdata/vectors/cgate_dbsetxml_duplicate_oids.jsonl": "e3cf7daeb490b90755e766adde42e03dfd9d36b047e3ff2fa7c8e0382f2ca025",
+    "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl": "605b22d368d8147e8c720ea0ee4ef484d8bc9ff649756146bdc873e5e0347a2b",
+    "rust/testdata/vectors/cgate_dbsetxml_group_dlt.jsonl": "69e737b02c8e6e05c9a9c1e45fc31e75db544997d8d91c18a5a33a5e1754ccd6",
+    "rust/testdata/vectors/cgate_dbsetxml_group_dlt_boundaries.jsonl": "2165fd58e20c1b3310920b780ec99c1393397dd3b59b7b7c0f6189770006e25d",
+    "rust/testdata/vectors/cgate_dbsetxml_level_dlt.jsonl": "77cd82b7c62900c0ef7f51828b50630d63a73f32b69478d53df2f24e2a0ee7b8",
+    "rust/testdata/vectors/cgate_dbsetxml_nested_applications.jsonl": "fe469a75852ae8f6313f3fd9f84eff94bc6955478f94a54ff155abae040fc0d4",
+    "rust/testdata/vectors/cgate_dbsetxml_nested_levels.jsonl": "a90bbcea27edb68a05e7e44756b3b164497fbea6ae521a9c7e239d1b5a7d82dc",
+    "rust/testdata/vectors/cgate_dbsetxml_nested_levels_roundtrip.jsonl": "12f7a72eae7e4c0719f2ec30ebdb5d5b6dd62f06a7797d956ce40c1051c66bcb",
+    "rust/testdata/vectors/cgate_dbsetxml_replacement_edges.jsonl": "3fc05d7423d0cfa96c87dd6bd2d1615e88301a65127419d26896c2acf9290521",
+    "rust/testdata/vectors/cgate_duplicate_unit_oid_cardinality.jsonl": "d7e10244da076c35a053021aed1198d2d38304237f807430fada242b0d9e42e5",
+    "rust/testdata/vectors/cgate_duplicate_unit_oid_five_plus.jsonl": "15780b79ffefdfa0bea38f1d1a60892864756e8af3d08e073647f69ed784cb07",
+    "rust/testdata/vectors/cgate_duplicate_unit_oid_mutations.jsonl": "6e75d3fb338aeed5b6182b6db5c57dc3cd054af0972dfc8f87e6283b56161e8f",
+    "rust/testdata/vectors/cgate_duplicate_unit_oid_nine_ten.jsonl": "cdef09f98fb69906ae6dfddd172e3b89e8238852f4d3f2444c858ac82f179a2c",
+    "rust/testdata/vectors/cgate_duplicate_unit_oid_reverse_order.jsonl": "34cb1cb683322b8348b91ad2fd9f3c626542161fbbdebe800bd21338ed5a4631",
+    "rust/testdata/vectors/cgate_event_fanout.jsonl": "19929d8c11cdd73ab031a7bbcd2dd2f46506940428326b4be029ea617512ca07",
+    "rust/testdata/vectors/cgate_final_authorization.jsonl": "0239063ad7d94f27593eea2dbf999cc7b3ecee188fc718e09b9a25d1640fedac",
+    "rust/testdata/vectors/cgate_large_unit_oid.jsonl": "12d56b45ee54b8b17485e65f4202c32956751a99d358102d9f6c232691b95d82",
+    "rust/testdata/vectors/cgate_named_safe_graph.json": "564bbe87775c2dbb7f4e7c27e244d695a6bd9d2048a17968e07fb73b2582d908",
+    "rust/testdata/vectors/cgate_native_project_archive.jsonl": "331507a022ca6d15c9271687b3f7ce969550fa63e57df4a168bfd4d9e9505671",
+    "rust/testdata/vectors/cgate_net_db_reconciliation.jsonl": "83bf3292c7aaa01204167fc80b0b7b29ea3fbbfbfc944ff9c0103c9608a0ef4a",
+    "rust/testdata/vectors/cgate_net_save_db_materialization.jsonl": "5edc6290ffa76d9e2abc77429a30cb0a3644e14953b539a60056ebf857b3f207",
+    "rust/testdata/vectors/cgate_project_export_order.json": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd",
+    "rust/testdata/vectors/cgate_project_snapshot.json": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa",
+    "rust/testdata/vectors/cgate_remaining_authorization.jsonl": "c4441cd51e3f04dc119fb3bffb62a3302be090cced9d7783fa2c4ae24732a7b6",
+    "rust/testdata/vectors/cgate_unit_diagnostics.jsonl": "bd469ecca45dbeb78079f56add9c9d7decefcbaeb00603f50b17a935db56837b",
+    "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
+    "rust/testdata/vectors/checksum.jsonl": "ba2cc49def05e343dc262e8da4f5088f36b67cea5d490a825e0b8685f3bda8e9",
+    "rust/testdata/vectors/cni_discovery.jsonl": "98733c88edc44c26dc419b09d7000cd9e32b2124e269cb4c46ca9d36a4531071",
+    "rust/testdata/vectors/dali.jsonl": "dd5c5b0d4e67f3cdaa46929a4bb82ee4cc260c3c2ab278b5681c7c6ddab90606",
+    "rust/testdata/vectors/decode_from_pci.jsonl": "367b83d991d446f4096ef60ca394e32c887ef63a8b42cdbcb10cb04ffd194a5f",
+    "rust/testdata/vectors/decode_to_pci.jsonl": "b976263a485326f0e02f23f62aa5bf1704fb1309bf6f316dac4139ebcfc04a97",
+    "rust/testdata/vectors/dlt_profile_admission.jsonl": "fd57cfbf4ea5e8d2b7186b54902d4e3987fc096424dfda90504d4b715aa0da5f",
+    "rust/testdata/vectors/encode.jsonl": "8e535bd9721eb89753dd332c3683ba9c1151d965df79465a332f9b7565c4d622",
+    "rust/testdata/vectors/ereport.jsonl": "fde74d7043951a326ebe83e18175a2d1fef908adb20a0a953b025479bdbbd815",
+    "rust/testdata/vectors/ha_discovery.jsonl": "6ec5e0413c49ccf671aede9c5bbbd9253806787d48121a20ac29e03d1c62430d",
+    "rust/testdata/vectors/identify.jsonl": "f919133f584a018f1c70925e73ae9afdf399898441778f316c2222058495bc06",
+    "rust/testdata/vectors/kfi.jsonl": "3ababf5f5e8adc96fcd839b4f8ab1b4095e39dd5b197fbafd06972a0c89f0084",
+    "rust/testdata/vectors/measurement.jsonl": "536ec06e85f4c5775ea5513f916070be67af2ff4409f6d0ae155b774bc565ad3",
+    "rust/testdata/vectors/mediatransport.jsonl": "2e33b6c100f04871bc06358e49cf234d884d81cf4d72e6e7f521eaeb52b04ba4",
+    "rust/testdata/vectors/mqtt_topics.jsonl": "ef359b5c90ac35b26a66b164d3ca58e35f73fb057412dc6c809f873dd02de615",
+    "rust/testdata/vectors/network_management.jsonl": "752b73fd50961cac0e7996fe6098417cf44950c6387ac85152cf770af5da78b3",
+    "rust/testdata/vectors/observed_dynamic_labels.jsonl": "8ccb30008c33a795dcfe30d25b519eb6e86ce675e7afd768474831ccb5d5e656",
+    "rust/testdata/vectors/programmer_execution.jsonl": "9707e6e14fec9a3addd8c17515191c2ef5e79be6860a96d6d62525e25f64aa07",
+    "rust/testdata/vectors/ramp_rates.jsonl": "33a4d673c1e4e06986a504409af3162f579f5759966449b48607c2bdbb216fd4",
+    "rust/testdata/vectors/security.jsonl": "2b2e1a11771543866b8928eeeb1ea8bf1c45ee240f7e8d26ed410b5c5a971294",
+    "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+    "rust/testdata/vectors/serial_address.jsonl": "636ca51e6be30144618151ebc89db808ad8387ace27bb45b5c5f731b49dfd355",
+    "rust/testdata/vectors/shortmessage.jsonl": "55e521ab8d980a901728ac9eca710691229ef7b060b546e7d9b5dbb41d1007cd",
+    "rust/testdata/vectors/telephony.jsonl": "ec231a7e275367d7aaa154fc4694e352854e15e59bf7346f939c3d2086945ba0",
+    "toolkit-cli/Makefile": "4586e0661c35f15023c8df5a5a714bb43ba8cc37d91041522142264bba4c0581",
+    "toolkit-cli/README.md": "3b4063c02c56b84d2c9a10b848614178a2ca2702c2b42949033e8dc8cfb5e4ac",
+    "toolkit-cli/docs/barcode.md": "3098e4a3daef0fd10dcacac2134527815b494d4e41420732e2c8f127a72581a5",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "d35fe5fa75f664ebaf48887bfab168f40143f3eed159aeb261a2ad7b6e4e2d5b",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "5f2f5ca559332c1e937aa015baf2a12f7ea259a4823dc5edc332cb0561d8b283",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "1c952ffd6e4c72fdf9f44b7b3cbd30794b3c791cfbe4f22bb2d34e920483f79a",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "8d197eab590a4d31402d18fa40d562447b293af86b3cbad1a99c01ee2d26dde3",
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "3b74130d98788f9027991f4d7e4b90af8a771b14032f953793b00f8d27d7e3ab",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "1015acbaea862bd2fb9257fcc612ce6997effa48d5b68f97e11563836025cee8",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "1c39fd0689fb4b51f45ff384efe800c2ddd91f3af387b469246a773a8f7ef9da",
+    "toolkit-cli/research/release-gates/skip-census.json": "b0bae8bb2e7e0b937be40ba96e380be8386f6780237729136e59debfab2f2e7f",
+    "toolkit-cli/src/cbus_toolkit/barcode_database.py": "ca07c6d2d83b1fca50b57b1d15706cadb837b7e8e51d328b0bf4ee083e9ebb6e",
+    "toolkit-cli/src/cbus_toolkit/barcode_scanner.py": "e0ee1cc2b20c073c1dcf83431829800fa461070caeacef0ca511328b34537c89",
+    "toolkit-cli/src/cbus_toolkit/capabilities.json": "0db1f145f2057662d22f5b48d25681650a68be7172d4a17d548a841a090ee1cb",
+    "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": "03b078ec96162f837ac972b8883b22278b331cf4962aa50193a7bfb943c67240",
+    "toolkit-cli/src/cbus_toolkit/cli.py": "ad3118893b2afcea216cbfa20441cbe93f4824a721e1db4b4eea060f95e0afdb",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "08affa8b3d008c10f0a4daa2aacae8d2c7aa99d059233acc41ee03b903f1ad0b",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "3a00c3c39b4e9f6b1453d32ed7d27d3e0800241b1afe5ce4ce4433b1ce571d06",
+    "toolkit-cli/tests/test_barcode_database.py": "f42d57e95f84795d4f7e6d6874ad2c07cb041eda6f7f8533393c28ee87d2a31c",
+    "toolkit-cli/tests/test_barcode_native_policy.py": "375595950d247773e2f50e3d96928ea5f839df3109cf6ddc6478e98108d5e42d",
+    "toolkit-cli/tests/test_barcode_scanner.py": "de80dfc797a5429b90b70183096f394f164453b583edb0b54f2fccb780a5622e",
+    "toolkit-cli/tests/test_cgate_barcode_database_interop.py": "1c7aa3423c9f33b4d694314e827289c6df14cc35ae78c783928d79ef51170b51",
+    "toolkit-cli/tests/test_cli_barcode.py": "d2b241b47d0acdaa19ffe931785ee01d0b854c8bdf494c2491fbab9645671615"
+  },
+  "date": "2026-10-02",
+  "format": "cbus-barcode-database-owned-release-v1",
+  "historical_failed_attempts": [
+    {
+      "name": "initial-old-Unit200-oracles",
+      "phases": [
+        {
+          "argv": [
+            "cargo",
+            "fmt",
+            "--check"
+          ],
+          "exit": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "phase": "fmt",
+          "summaries": []
+        },
+        {
+          "argv": [
+            "cargo",
+            "clippy",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "log_sha256": "8522c4c3cc82ca4fb3eb3e7509fc48e13c65ee55cef838fb07a480f975f5850a",
+          "phase": "clippy",
+          "summaries": []
+        },
+        {
+          "argv": [
+            "cargo",
+            "test",
+            "--workspace"
+          ],
+          "exit": 101,
+          "log_sha256": "07500cc8c61a7823063d00ba9186dcb619c6b2d2970b411a83603021fbbd0d51",
+          "phase": "workspace",
+          "summaries": [
+            {
+              "failed": 21,
+              "filtered": 0,
+              "ignored": 1,
+              "measured": 0,
+              "outcome": "FAILED",
+              "passed": 532
+            }
+          ]
+        }
+      ],
+      "qualification": "Actual failed partial workspace attempt; its passes are not added to the final workspace count.",
+      "record": {
+        "bytes": 48862,
+        "retained_privately": true,
+        "sha256": "145a71c1b889808a35ac5aef2a8cb7d049421684353070d543268cfba784caf9"
+      }
+    },
+    {
+      "name": "remaining-TCP-Unit200-oracle",
+      "phases": [
+        {
+          "argv": [
+            "cargo",
+            "fmt",
+            "--check"
+          ],
+          "exit": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "phase": "fmt",
+          "summaries": []
+        },
+        {
+          "argv": [
+            "cargo",
+            "clippy",
+            "--workspace",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit": 0,
+          "log_sha256": "2da63ef0c03ada3229769e867a7e0329be1533a4e6ca242d287fca830bef3ec6",
+          "phase": "clippy",
+          "summaries": []
+        },
+        {
+          "argv": [
+            "cargo",
+            "test",
+            "--workspace"
+          ],
+          "exit": 101,
+          "log_sha256": "c596be04782bcf98b5a21fccb559fe49a24c19c68081bb06853fa4d2c5195c6d",
+          "phase": "workspace",
+          "summaries": [
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 1,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 553
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 31
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 2
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 3
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 1
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 2
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 67
+            },
+            {
+              "failed": 0,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "ok",
+              "passed": 2
+            },
+            {
+              "failed": 1,
+              "filtered": 0,
+              "ignored": 0,
+              "measured": 0,
+              "outcome": "FAILED",
+              "passed": 17
+            }
+          ]
+        }
+      ],
+      "qualification": "Actual failed partial workspace attempt; its passes are not added to the final workspace count.",
+      "record": {
+        "bytes": 51201,
+        "retained_privately": true,
+        "sha256": "6f456233e3e94a47c8eca82406c3ae4f0ac2661f80eb99922ffadff245a87798"
+      }
+    },
+    {
+      "failed_parents": 9,
+      "name": "focused-attempt1",
+      "passed_parents": 0,
+      "qualification": "Synthetic fixture/schema or exact scalar-envelope oracle failure; original executed inputs retained. Not rewritten as a passing result.",
+      "record": {
+        "bytes": 11335,
+        "retained_privately": true,
+        "sha256": "a8b1963f32b42c1676a52c777647bef349c42455012ac88f3fe29bc97e7d0209"
+      },
+      "skipped_parents": 0
+    },
+    {
+      "failed_parents": 2,
+      "name": "focused-attempt2",
+      "passed_parents": 7,
+      "qualification": "Synthetic fixture/schema or exact scalar-envelope oracle failure; original executed inputs retained. Not rewritten as a passing result.",
+      "record": {
+        "bytes": 24099,
+        "retained_privately": true,
+        "sha256": "b7a8b9b665d9c0e2fcbb7180a9eb7eaa4eda8cfb575315bc5810c776125ffedb"
+      },
+      "skipped_parents": 0
+    },
+    {
+      "exit": 2,
+      "name": "maintained-interop-initial-invalid-Level-fixture",
+      "qualification": "Initial target stopped at four new mock setup failures. Literal results are historical; final successful interop is separate.",
+      "record": {
+        "bytes": 51094,
+        "retained_privately": true,
+        "sha256": "07adb509d114a4b9b99818c849c92536fed38a889623ef924798baa60e0dc68a"
+      }
+    }
+  ],
+  "independent_reviews": {
+    "final-source-wheel-checker-and-late-doc-provenance-sidecar-v1.json": {
+      "bytes": 6672,
+      "retained_privately": true,
+      "sha256": "6f94f6a6437a7bd44420ba03082fc58e231aa2bea8ca1a6d1d5249fcfb02e50b"
+    },
+    "final-source-wheel-independent-actual-audit-v3.json": {
+      "bytes": 987339,
+      "retained_privately": true,
+      "sha256": "394b1efa5560eeb98db673e61b0c5660c9eeba95613e66adff26bdc4e6672bb6"
+    },
+    "maintained-interop2-independent-actual-recount-v1.json": {
+      "bytes": 45877,
+      "retained_privately": true,
+      "sha256": "355ac8d3e3c3c3089464dbb42ba12ac07dd53000757ccb7a7529ced4160b60d4"
+    },
+    "public-barcode-harness-independent-review-v3-final-wording.json": {
+      "bytes": 6367,
+      "retained_privately": true,
+      "sha256": "5d2abda53b86537b03d91994a874c84e0d5b434b762a75607c255f6fc35ad081"
+    },
+    "required-rust-attempt3-independent-recount-v1.json": {
+      "bytes": 20663,
+      "retained_privately": true,
+      "sha256": "0a7eb2ce45e6044afa22c47ca9a818197528c1b04ef1d97c3f21aa9ab6335251"
+    },
+    "root-publication-review.json": {
+      "bytes": 697,
+      "retained_privately": true,
+      "sha256": "05831050aa0b72e11d6285f701fdfd8d643378bec38034c4d672c44564f3e236"
+    }
+  },
+  "issue": "https://github.com/mitchell-johnson/cbus/issues/58",
+  "maintained_interop": {
+    "audited_selections": {
+      "bytes": 166956,
+      "retained_privately": true,
+      "sha256": "55983e01c99fb485cfcec9f6ad5fc93e2e0c1a4a38f62fe3059278e88c69e707"
+    },
+    "framing_qualification": "Two passes counted from the literal maintained selected-module log; no framing JUnit/trace was requested.",
+    "passed_parent_or_framing_tests": 192,
+    "post_execution_wording_delta": {
+      "bytes": 1291,
+      "retained_privately": true,
+      "sha256": "042449677c2e1d9f969a76fa69e95b73f193e9b010eedf30cea0a695aa0eda42"
+    },
+    "qualification": "Actual interop pins remain test0206845f.../vector95b08a65...; independently verified later owner descriptions and equivalent consumed key rename are separate. Final source/wheel runs execute the current pins.",
+    "record": {
+      "bytes": 51158,
+      "retained_privately": true,
+      "sha256": "7fcd442ef377d1f799412eabe019989638b29704355eebbe9ea644b4543ebcc6"
+    },
+    "skip_reasons": [
+      "Vendor unitspec directory absent.",
+      "CBUS_UNITSPEC_DIR required to rederive the programming-method matrix."
+    ],
+    "skipped_parents": 2,
+    "target": "make check-interop with explicitly owned release binaries",
+    "unitemized_passed_subtests": 227
+  },
+  "metadata": {
+    "actual_modeled_comparisons": 6,
+    "continuation_freeze": {
+      "bytes": 54085,
+      "retained_privately": true,
+      "sha256": "f995b55ef7bd05de1d383b3ca4d7e50f4930b4e816112f24fbeb4e4cd86bf102"
+    },
+    "current_declared_source_bindings": 1123,
+    "direct_literal_publications": 6,
+    "distinct_declared_source_paths": 210,
+    "final_current_binding_freeze": {
+      "bytes": 67366,
+      "retained_privately": true,
+      "sha256": "98656a60f9273dc4d59659ba6ca7713eef1f2f3f2fc034c4e854c79a6b4a86cc"
+    },
+    "fresh_post_wording_read_only_checks": 3,
+    "generated_resources": {
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "d35fe5fa75f664ebaf48887bfab168f40143f3eed159aeb261a2ad7b6e4e2d5b",
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "5f2f5ca559332c1e937aa015baf2a12f7ea259a4823dc5edc332cb0561d8b283",
+      "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "1c952ffd6e4c72fdf9f44b7b3cbd30794b3c791cfbe4f22bb2d34e920483f79a",
+      "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "8d197eab590a4d31402d18fa40d562447b293af86b3cbad1a99c01ee2d26dde3",
+      "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "3b74130d98788f9027991f4d7e4b90af8a771b14032f953793b00f8d27d7e3ab",
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "1015acbaea862bd2fb9257fcc612ce6997effa48d5b68f97e11563836025cee8",
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "1c39fd0689fb4b51f45ff384efe800c2ddd91f3af387b469246a773a8f7ef9da",
+      "toolkit-cli/research/release-gates/skip-census.json": "b0bae8bb2e7e0b937be40ba96e380be8386f6780237729136e59debfab2f2e7f",
+      "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": "03b078ec96162f837ac972b8883b22278b331cf4962aa50193a7bfb943c67240",
+      "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "08affa8b3d008c10f0a4daa2aacae8d2c7aa99d059233acc41ee03b903f1ad0b",
+      "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "3a00c3c39b4e9f6b1453d32ed7d27d3e0800241b1afe5ce4ce4433b1ce571d06"
+    },
+    "initial_execution_proof": {
+      "bytes": 8651,
+      "retained_privately": true,
+      "sha256": "ab456c8e2f386cbe511d77b82bdb0c026c833e7504d45371c096b552efa960a6"
+    },
+    "original_command_contexts_retained": true,
+    "passed_consumer_parents": 261,
+    "post_wording_new_comparator_generator_consumer_publications": 0,
+    "privacy_findings": 0,
+    "skip_reason": "Original-input dialog-map regeneration requires configured vendor executable/catalogue/unitspec inputs.",
+    "skipped_consumer_parents": 1,
+    "unitemized_passed_consumer_subtests": 934
+  },
+  "post_validation_documentation_delta": {
+    "changed_documentation": {
+      "toolkit-cli/docs/feature-batch-2026-10-02-barcode-database.md": {
+        "executed_sha256": "fe32fe8be7f06adac163962ff4f75c178629e1c996aa9e08ac4e50137fd34d86",
+        "final_sha256": "cbdc46cc9404abb524cd717ac423f75969c0ec7be9b3dc04c1e417291d471263"
+      },
+      "toolkit-cli/docs/implementation-status.md": {
+        "executed_sha256": "05ca59f383eeacfc8196db8a574c08a05262150a78f34b9bf0283f8eecc2c9e3",
+        "final_sha256": "d0380974ab773f421c62522ed43c0bb75b6f58ab75fb6543b1f98fe6faaadd5c"
+      }
+    },
+    "new_receipt": "toolkit-cli/research/fixtures/barcode-database-owned-release-20261002.json",
+    "qualification": "Final validation prose and this standalone bounded receipt were added after source/wheel quiet snapshots. No tested product, test, vector or packaged resource changes.",
+    "reconstructed_executed_document_archive": {
+      "bytes": 629,
+      "qualification": "Exact prior document bytes reconstructed from the inverse final-prose patch and matched to the executed whole-input roster hashes; no pre-execution capture or new test run claimed.",
+      "retained_privately": true,
+      "sha256": "00011e93e9feb6d9eeedcc6c2fc3751fd4bc0de6558b159db075c28218337d7a"
+    }
+  },
+  "release_artifacts": {
+    "cgate-mock": {
+      "bytes": 3583776,
+      "mode": "700",
+      "sha256": "5c517aa17a9d8e50335f8c52c18a88f10a9c7e764e8ad39944e1fd7225f86a0e"
+    },
+    "cmqttd": {
+      "bytes": 12925792,
+      "mode": "700",
+      "sha256": "801661ad9586305b9158b0321cd534d9730995aa9bec34a925391413720b7ac3"
+    }
+  },
+  "required_rust": {
+    "checks": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "phase": "fmt",
+        "summaries": []
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log_sha256": "7f27888102e255d20791d1ddc70010c860e523561b86754d40a73324e56f4000",
+        "phase": "clippy",
+        "summaries": []
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit": 0,
+        "log_sha256": "c57c44f65c21cd93a60f00443190728f69cfa2f37281c8c47e5db1231de2d39f",
+        "phase": "release",
+        "summaries": []
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace",
+          "--no-fail-fast"
+        ],
+        "exit": 0,
+        "log_sha256": "3921dda4a82c51003ae4d39142f294b78509409bfdb858a02724c2e9ce14ec02",
+        "phase": "workspace",
+        "summaries": [
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 1,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 553
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 31
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 67
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 18
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 9
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3409
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3618
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 17
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 24
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 6
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 11
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 66
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 12
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 86
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 12
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 44
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 22
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 19
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 5
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 5
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 14
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 31
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 32
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 237
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 12
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 12
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 6
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 10
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 23
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 23
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 6
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 6
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 30
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 8
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 6
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 5
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 7
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 3
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 2
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 11
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 9
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 18
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 5
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 15
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 5
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 29
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 1
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          },
+          {
+            "failed": 0,
+            "filtered": 0,
+            "ignored": 0,
+            "measured": 0,
+            "outcome": "ok",
+            "passed": 0
+          }
+        ]
+      }
+    ],
+    "excluded_cli_only_vector": "rust/testdata/vectors/cgate_barcode_database_cli_wire.json",
+    "failed_tests": 0,
+    "ignored_reason": "Requires private existing-project XML and C-Gate state.",
+    "ignored_tests": 1,
+    "passed_tests": 8655,
+    "qualification": "Four required checks ran before a CLI-only Python/vector wording/key-name correction. Every consumed Rust product/test/library-vector input remains identical.",
+    "record": {
+      "bytes": 65241,
+      "retained_privately": true,
+      "sha256": "64bdc7bb402dce1f051635007e6dd0717bbd00966f03ebe7f3b4a01ebe6edb42"
+    },
+    "source_inputs": {
+      "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
+      "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
+      "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
+      "rust/cbus-cgate/src/access.rs": "5adb01f249c725d6ba1794f00211c9e938e38dc79907c771b384bb15a8ad4233",
+      "rust/cbus-cgate/src/auth.rs": "a31698651805d0551c5ff42d3ff1b7de9dcaef3ef7ebba65b6d3f86a1684d21e",
+      "rust/cbus-cgate/src/capability_matrix.rs": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20",
+      "rust/cbus-cgate/src/config.rs": "bb387a6cef547f80c87befed31b2342504d3f33bdea79f6b98234f6c17eb9414",
+      "rust/cbus-cgate/src/config/disposition.rs": "9ea68b9eb5c550beeebf21a0a879501dae5b166f8d4292f13f81c983277f85eb",
+      "rust/cbus-cgate/src/convertunit.rs": "a6bdcc026a9a25cd3eb54e864f6106084c6dde047e09d73b609f184d653fb1e0",
+      "rust/cbus-cgate/src/dlt_profiles.rs": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a",
+      "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
+      "rust/cbus-cgate/src/file.rs": "da0cdfd2caa13e838149af7b9cdbf2e15eb07bd662eb2292a0721d97c7c71ac8",
+      "rust/cbus-cgate/src/lib.rs": "3b71b1432aac9709305573c0e20a1dbb8770cc6fd9c45cee2bfa764f5bafe6a5",
+      "rust/cbus-cgate/src/main.rs": "1fa44332b2a404b812ac8db07e33ffbb6ef5461b261311d50adcd4a6495ecd9f",
+      "rust/cbus-cgate/src/manual.rs": "339faf1fbc06224487c344b3c13f3fb9714efc705c86060ce768ef1c43f9842b",
+      "rust/cbus-cgate/src/native_archive.rs": "5ecf92c11bcec6dcb8e1d7508d5b5735162935c7a627263ef19abbf4b1ddf81c",
+      "rust/cbus-cgate/src/object_access.rs": "88ec1930e3de571ecf2713516e2deae147d8a5c5c97fb4b95f922bf823d51ec0",
+      "rust/cbus-cgate/src/object_access_table.rs": "e436a27f0ce29ef45b6c0185e86c21d9774bad9f7778d7f5f4dd41e7a8ff056b",
+      "rust/cbus-cgate/src/port.rs": "1f76f0ae969f86d5608c106e1f62e78a7783af6439f2fbacda4dc0488bfd3990",
+      "rust/cbus-cgate/src/pp_namespace_tests.rs": "4a96a62faf886204d4cd755dc965daa52a22997f03f82c6e23117db7848eb6be",
+      "rust/cbus-cgate/src/service.rs": "3e51af86fd56df7d71b49f2f102650036154cc040e61c203f0ceb59848f55b81",
+      "rust/cbus-cgate/src/service/calculator.rs": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411",
+      "rust/cbus-cgate/src/service/cgl.rs": "04dfb75a46f386b1b9bba41f503b764b99d84af80877c38a29731eb3244d5f7e",
+      "rust/cbus-cgate/src/service/connection_admission.rs": "dd0b229e767d8d49e29cca3a0e36cac05ed37831f9abcf3f7044685296d58339",
+      "rust/cbus-cgate/src/service/dali.rs": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388",
+      "rust/cbus-cgate/src/service/dali_journal.rs": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6",
+      "rust/cbus-cgate/src/service/dali_proxy.rs": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7",
+      "rust/cbus-cgate/src/service/dali_proxy_lines.rs": "59981214582ee2ce0eb1d346d782132171b4a6f5b939a3188526b156f17ca331",
+      "rust/cbus-cgate/src/service/dali_specialized.rs": "837d8cde5029710d5ca4e38b9835b16aa43073c2a5757d60c914c1133508077d",
+      "rust/cbus-cgate/src/service/family_help.rs": "30d52480601dc2b32668508f8931fc2ea8469f9a6b74406b75ec8351718b5a76",
+      "rust/cbus-cgate/src/service/move_journal.rs": "7f7550c0ec3d1ac497fb01ca7361034742aac26d567ee9f9200ccc24346d4c4f",
+      "rust/cbus-cgate/src/service/net_lifecycle.rs": "bc6ab57049412bab3c846d775debc8b26b06a9e53f8f16cb4df3ba94c2a331fe",
+      "rust/cbus-cgate/src/service/pp_patch.rs": "6a1dc32d0dd359b0c11268cf717275bddf6fac2652ad40b87cc7756c9fb05aa3",
+      "rust/cbus-cgate/src/service/tests.rs": "a3e58ebc0f9777ea5d8f36504eaa39728f77749e6a29e609753e6581e16c22ce",
+      "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "fb138578f749a129eab28e572a1889c7730ef50e2ce0393f13caff684b790ec8",
+      "rust/cbus-cgate/src/service/tests/net_db_load.rs": "fa730221703ca30dd4d625c261fa0797ac3167c6d8c28d4861b8dccd66b3ef96",
+      "rust/cbus-cgate/src/service/tests/net_save_db.rs": "18c28d4198a3bad740f25e71414a7aab628c30307484d1e05f83c5c3ccc3fa15",
+      "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5",
+      "rust/cbus-cgate/src/service/tests/object_authorization.rs": "91bb06bec7ef2c28cd5d749ac62eba3076377322e76c1659433b67a48d93eab5",
+      "rust/cbus-cgate/src/service/tests/secondary_authorization.rs": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd",
+      "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
+      "rust/cbus-cgate/src/service/unravel_plan.rs": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb",
+      "rust/cbus-cgate/src/show.rs": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c",
+      "rust/cbus-cgate/src/tag_network.rs": "d540a67763e395cf5b572074f327e9abadc905771270a72203bc87f2e7e1c586",
+      "rust/cbus-cgate/src/unitspec.rs": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539",
+      "rust/cbus-cgate/tests/capability_matrix.rs": "273dc5d505e325c8c5d64bfacfa92dd1435b2bd38eff664996216c531c9a0e7c",
+      "rust/cbus-cgate/tests/cgl_vectors.rs": "21c2fee6921c2d8b1e134d188be701fb163d38db1f9abd6fc2186be2e083c7fd",
+      "rust/cbus-cgate/tests/cross_kind_oid.rs": "ec47a62da640e24bac7d500fdf1c27b1c90515e5137300b39044bf86e2cf8269",
+      "rust/cbus-cgate/tests/dbsetxml_errors.rs": "ca9d538b333fb09ae2069737fa10e22f33869828e8c0607397e1e396ddf407d3",
+      "rust/cbus-cgate/tests/dbsetxml_lifecycle.rs": "ec11d7f3d96fbf924fcd785f3e08dd55f911a8147174095e01e1dccc097a76a8",
+      "rust/cbus-cgate/tests/dlt_profile_admission.rs": "630ec6ed40eada56859c6d287e48158012c62b4c0078ffbab884f5960597e5c4",
+      "rust/cbus-cgate/tests/five_plus_unit_oid.rs": "0548448cd45a8fd4f9839cd0b5459e37fa7786e1fa652ef1fe31cda0e93a9049",
+      "rust/cbus-cgate/tests/large_unit_oid.rs": "f668de6706e1c64008b1ac5e7e8107c17bcc93531b43afb0913e76bf15fe9d72",
+      "rust/cbus-cgate/tests/nine_ten_unit_oid.rs": "8af2e6f79b506e4b69d1896b386df31b447ce7deda769b037ebf8f6fbda5b5bc",
+      "rust/cbus-cgate/tests/oid_index_probe.rs": "6b77f8f0b2978ba24db0ca4269266a6e457f8037ad193b9f5f58b04817159cef",
+      "rust/cbus-cgate/tests/server.rs": "daf106713852b1aa6ae64915415140024edb64a53418510593d87dcfa984bf40",
+      "rust/cbus-cgate/tests/show_native_matrix.rs": "7c10cecdf946b9616d8f315432dfc290033ef839ae4ea39abba123f62c2371ae",
+      "rust/cbus-cgate/tests/tcp.rs": "4ac01905b998ff0b8a8bc8a77e0974ecaebb9f6023fa5a38e96d8c3bbb71e0db",
+      "rust/cbus-cgate/tests/tls.rs": "e9a7cfc814865d5a03f35ee0401b40dcd88a022f88ffebc2868fbaa99e934f6c",
+      "rust/cbus-cgate/tests/unit_diagnostics.rs": "dc487ea2618042f6e2e4dd1678712ee058881193aacea6006528ba6befe84815",
+      "rust/cbus-golden-tests/Cargo.toml": "388da3b07c9b86dfc90105bcda8694e8dc62e559f8d13d95fc8ac2d3b3ff72d0",
+      "rust/cbus-golden-tests/build.rs": "7aa9ba7f6d12281fe51153caa543d1ee68bef294bbda3e7f3de818841bbaf5e3",
+      "rust/cbus-golden-tests/src/lib.rs": "5c07e9a8d7552443e76506f1838c58f9628f5d46f872fae6d23bcc7da9911e6c",
+      "rust/cbus-golden-tests/tests/domain.rs": "030f05306cdb7f2cb19bb0ff6b556fa1d7cdc152a1771d22dbd6b749bf0819dd",
+      "rust/cbus-golden-tests/tests/golden_vectors.rs": "4eb6f7cea7bf421e0d3e68b36cbc629be4d16fd4d8c0667843af79efddba2c1f",
+      "rust/cbus-mqtt/Cargo.toml": "e2ed518eae7e5e7afe29df72b10d1fed354de185735c3b5c94a2c774bdb83931",
+      "rust/cbus-mqtt/src/cbz.rs": "f29329c243c63e2e0dafd1964173f59febb630623537e895f10d9be0288af332",
+      "rust/cbus-mqtt/src/command.rs": "6f7f371fa6b10e04c6864709d461641f78fb249b3f7b4d1bab7121295b6fa462",
+      "rust/cbus-mqtt/src/discovery.rs": "353341dcc02f54b5c813d88e72ef0ea5447b2bfd35e9ed27d26fe9b8bc5733e1",
+      "rust/cbus-mqtt/src/lib.rs": "a11bb2357a989e7feed38a13604b31d0b2f2ce000f4529ca3021361d26def4ec",
+      "rust/cbus-mqtt/src/topics.rs": "9e5934727873e8558c31b072057026ab8da449ab737a1afb263bcb648b534b55",
+      "rust/cbus-mqtt/src/vector_check.rs": "6330a5076f1d3cbe0519b01f8c00891f4e36a9420483583fb0e8a255389c9826",
+      "rust/cbus-mqtt/tests/cbz_edges.rs": "32207ca36d3df8557745f067e032714820023c9d205aee4706b9feedde421fec",
+      "rust/cbus-mqtt/tests/cbz_input_safety.rs": "a0e58fbca1def54905d7b2f07c40bad2c18b81e4e3cbdcf9872889c4e2af98c3",
+      "rust/cbus-mqtt/tests/discovery_labels.rs": "1e9f11a1901f373ad8002d8097241caac50481bcdf1fed3176ac2c237a230ff3",
+      "rust/cbus-mqtt/tests/set_command_matrix.rs": "5698d621e4984b80d7820b78e33e41326e17e7efccd936f7c8a0d552f6d208c1",
+      "rust/cbus-mqtt/tests/topics_edges.rs": "0817c712e3b0f50636a126a80fb0529bc280224a1975852171045524158b3ff0",
+      "rust/cbus-protocol/Cargo.toml": "3bf12f109f534b9e2f7692cae2a9e768acce65a605a153006cc88102faeeb609",
+      "rust/cbus-protocol/src/cal.rs": "fcb0d9df59c0c0a9df2e47379c985124d4571fa9106b54a9355acbe7181c54c2",
+      "rust/cbus-protocol/src/cni_discovery.rs": "ba69cf4f1cc4f27650a4896067ef16f4732c27aff859ffa05494c3ecf4ada4fd",
+      "rust/cbus-protocol/src/common.rs": "67c90acf93417a76e0b8852212bd03b1cf81787918dfe45ff5166f0ff4bb5e60",
+      "rust/cbus-protocol/src/consts.rs": "df1d021425eb86eb51b5c6c1d6e57d5c21bea82258fb5ac954542a44cf1780b0",
+      "rust/cbus-protocol/src/dali.rs": "4a0c4bda8cb7ad7538208cfd395c88d93b67054769ffdd87e52ef198279ea02a",
+      "rust/cbus-protocol/src/decode.rs": "1c9850a14124a4937d7f0cb033040e69485d3a71a64aedfb38f46d0b6f8d5fee",
+      "rust/cbus-protocol/src/edlt_sync_metadata.rs": "f208973db5ef138a84159ee350fc039319e8f62271c43fd4231aedbbd0481db1",
+      "rust/cbus-protocol/src/edlt_widget_groups.rs": "a8bdaa5717fe2f98f6fe96195af4e72fa725241013d35e74e9eb09f25ef62489",
+      "rust/cbus-protocol/src/json.rs": "b81098cdfbcf76c09295377b6c6bc051ced7a1c4712f32418f0c749bb6093dd3",
+      "rust/cbus-protocol/src/kfi.rs": "d50fe64746488d1e90d444c2af2a1e9a114d02c0b41233ac501d85eb3f739ce3",
+      "rust/cbus-protocol/src/label_clear.rs": "f46a0767ef13479d386f060a1b2bd3f970dfb29822f63613039ad99cafd3ab52",
+      "rust/cbus-protocol/src/lib.rs": "3c06481c934802d190f1a29e860507dda3a7a805aa9940cb744b76e8ebb88a21",
+      "rust/cbus-protocol/src/packet.rs": "e171602e6585a80aa05f7d97e70412a94845bcb837ed19283ac2b298c2b830ce",
+      "rust/cbus-protocol/src/pci_observation.rs": "ad6bb0976fbeb0ffcd32eb7be563b052a67be1d2785f6f43ff78471c1943fa95",
+      "rust/cbus-protocol/src/project_identity.rs": "136015bbe5e8d4ee31e43b6fe1b0a594db2dcab3d8aaeb25f6671e7f790eee6c",
+      "rust/cbus-protocol/src/report.rs": "27bb1da38040d5b06f8e9fd805baf7690183ee4cb88f067dc1935db81e5e14d3",
+      "rust/cbus-protocol/src/sal/accesscontrol.rs": "be9e8b45ad7a3f849fd5535d3c3f339eef5e59a75a2516677e27c000d328118a",
+      "rust/cbus-protocol/src/sal/aircon.rs": "ea370f56bbe1f5efe3d392d6bfe0609664bea1f254aa5911917bd64d9c8faa92",
+      "rust/cbus-protocol/src/sal/audio.rs": "4fec97e4ff043a0d7a81220328773987c2cbf7d3815aac93a909fd5df6a3e230",
+      "rust/cbus-protocol/src/sal/clock.rs": "103dfda2e3fd30541944098826996309b6976554543e9b26f793c2ac66f589a3",
+      "rust/cbus-protocol/src/sal/enable.rs": "fe53fc9c895f876df01daadf16b97835fe42a70818fb12f2af19f09948d8dd4d",
+      "rust/cbus-protocol/src/sal/ereport.rs": "449a003df1bc7a7821198d1d96a58db9945017fb11692ec78446df4dcf834652",
+      "rust/cbus-protocol/src/sal/identify.rs": "fbffd7aba5ecd46b62fc9b9f63539e573d7e67e438d84e7ece0c9ef9c0cca7f5",
+      "rust/cbus-protocol/src/sal/label.rs": "9f341a8591adab6dbc7bbf7a7b995d9a39adf29fdb1dc9acf00a1b8c91ef6b81",
+      "rust/cbus-protocol/src/sal/lighting.rs": "873639441c0f88ea5250391b408e83a06829bc4962eea185a24ff5e9200bfc53",
+      "rust/cbus-protocol/src/sal/measurement.rs": "82542813adc3b3146724ab40b165140f50ecb00011a78918593b61bb5ac240ae",
+      "rust/cbus-protocol/src/sal/mediatransport.rs": "cbeb29100f08897ec5b219b10f62b7a6d537f7baa89a25007d7e7b00b8aa1851",
+      "rust/cbus-protocol/src/sal/mod.rs": "3c86690d90a77c6ade065c15f2dea21ea6c14343905dbac2b95f75766cc419e2",
+      "rust/cbus-protocol/src/sal/network_management.rs": "7f11001b27c9ac5684a054f0fb88c20f252ceb362cb15d9851311c207f9025b5",
+      "rust/cbus-protocol/src/sal/security.rs": "52bdc5339a9a3769761a9f35f98aa22e026c0df3b3e07ec108af584b2c4444fd",
+      "rust/cbus-protocol/src/sal/shortmessage.rs": "7f70abe9658761b1c63c42b413893b19debd2c7592b429c6e793f64e2f557aaa",
+      "rust/cbus-protocol/src/sal/status_request.rs": "6546cac4bbd2f68b67d6589602486553df8b86a1c0a627ccb0116b80eb08c96c",
+      "rust/cbus-protocol/src/sal/telephony.rs": "16989f9756ca9bd0f55dca997f0bbd68b050d8b546f16ff520721d6c6152fda7",
+      "rust/cbus-protocol/src/sal/temperature.rs": "3a14d64a19aca7679b019745f7c2e2623eaa00b9bdbd076e2af53281f630ad71",
+      "rust/cbus-protocol/src/sal/trigger.rs": "f6fbd953f436ff6ebdb9e6fe1027f59ad17cac753d2657fee902230619e8d38d",
+      "rust/cbus-protocol/src/serial_address.rs": "b278a63c21cf7c1fbc5c2a95bbb33127dc6d37b546753fe37d10b4b4193b66bf",
+      "rust/cbus-protocol/tests/common_edges.rs": "a108bcd1e9b2e9bf0dd6c84e94422920d2b4742fe4bb7b016e15dc3c1002cd4f",
+      "rust/cbus-protocol/tests/decode_edges.rs": "a2ad44b9bafeb0a84b63b4e86e6b5fb42883741fb65d51b09b1ee94f7d8d7c00",
+      "rust/cbus-protocol/tests/encode_edges.rs": "e2a0f5bc198c78a0eeac27c3336228589c2578f84e11d9038d16d987e2ab7cc0",
+      "rust/cbus-protocol/tests/json_edges.rs": "629b3d1988e3113f7aa2f5a69cbe2f61eec5f996bc0e85585d410eccb05f3ccd",
+      "rust/cbus-protocol/tests/observed_labels_vectors.rs": "65b835f769e5c9e23abda37f6924f0db9981bd28f6555fdceea61eb1910b8a72",
+      "rust/cbus-protocol/tests/proptest_roundtrip.rs": "e230ba8d5f763bcdee315351f74fd83a2f186e452698118bfd6b9ca33836df9a",
+      "rust/cbus-protocol/tests/serial_address_vectors.rs": "4501c244d212ba94b0c57809059d4a4dc65ed0c853847a124d0b9b6abffa582f",
+      "rust/cbus-simulator/Cargo.toml": "64a228fe397a44c5b56062bfa985a71f9fa60a1612537073e7b0939eafd94789",
+      "rust/cbus-simulator/src/main.rs": "d8f7810fd42ea16f95fa8dd0086a9d612c28871daf0e3cacc4c9b73b3f4f5eac",
+      "rust/cbus-simulator/tests/system_sim.rs": "32fe3581d71ce13e463979ad6df31a0937c0fb20d9f26e4437535dc064966cf4",
+      "rust/cbus-test-support/Cargo.toml": "e5ff75e7e87fd374c3a5d757bc98fe5f22d5623e41e44bd8a1ca7db81a3cd83f",
+      "rust/cbus-test-support/src/broker.rs": "5e72c68aec336147df5ad4a8973ca8d9e4983274ce3cffddb8a56ef342451dd8",
+      "rust/cbus-test-support/src/lib.rs": "ff0391c0f6dc73520a22c9ca5a5a74afbb64d33a8c62e8f78720003e4badc433",
+      "rust/cbus-test-support/src/pci.rs": "8e6e82b94a96077a4b2c589bc2f823613be8dad24ae2fcb2607c043dfefbfe91",
+      "rust/cbus-test-support/src/proc.rs": "e7093dde3b27dd3b551dc546ae3d2db08d5570ba99386460fc7cf076bda8b95f",
+      "rust/cbus-test-support/src/wait.rs": "2e4311260ac17418c1ee2553d77b14ce29866bd5c5cccfa9559d08f3a131feca",
+      "rust/cbus-tools/Cargo.toml": "a5ecbc5ba5355612da4e7c9c3d2111f002f837154047cf46a1efb6029ff2d4b4",
+      "rust/cbus-tools/src/cni_scan.rs": "73b4b525ba9fdcea0d5af33a17ba79e4b58ad4784322a812daad9a9b7ca10573",
+      "rust/cbus-tools/src/commissioning_lease.rs": "cbf7418a74cac56bfb2ca85499fffd1e72ecadbc5b375bc2a34197e1e7a9484d",
+      "rust/cbus-tools/src/lib.rs": "7779def56548d3ae480ad8c9f5429c881bb67e4a1a808a53ceab3b2f236cbac1",
+      "rust/cbus-tools/src/main.rs": "74e54dbe28952f4d698bdf28d6bf1b523a38c2971fd1155583e3508f8677764c",
+      "rust/cbus-tools/tests/cli.rs": "90fc97d8dd8da5d47bf3af84be2223e50ab0f986b94b5fd19551ceffc888585d",
+      "rust/cbus-tools/tests/serial_commissioning.rs": "28568ac9990298044020767db15b73b86044f27f3e1363332bc42dad5040aa3e",
+      "rust/cbus-transport/Cargo.toml": "8baaf563db7f58aeeeb96f6e25335d1c67b342ee472a96bb16c09e2b7de64f5f",
+      "rust/cbus-transport/src/apply.rs": "c59dc52896fda2743af4dfbd5b0dff77478794fae830c283cb962b6c507004c2",
+      "rust/cbus-transport/src/cni_discovery.rs": "3b6a13ba2c0d5da1c4df09a612b0cc47b343c6021a671a670995dd81e459d4a5",
+      "rust/cbus-transport/src/commissioning_route.rs": "af7808a804afafe076d6ee782db469a7f5b92971f00c9f099ffdc66118a605a1",
+      "rust/cbus-transport/src/conn.rs": "1483c7e96526b2c458b750722e1799f04d5eec9e112e2ccf860fb217dda3e3d6",
+      "rust/cbus-transport/src/flow.rs": "7bd2078c84170d3e679034f3ca517bb4ab0fd4bd9f5b3af43564b9daa5e7f327",
+      "rust/cbus-transport/src/framing.rs": "5dac4b3d305ffa82398935b5dcfd5cd497ca741bff38474d82f2350bea8dba0d",
+      "rust/cbus-transport/src/inventory.rs": "4f9468f72fa16680fad676ed243a00dd3e6d6c8786c3c1e719f9285211398a06",
+      "rust/cbus-transport/src/journal.rs": "8043ac0cda5068252553430250d024e5e33541b1729a07e61be69868c8379a11",
+      "rust/cbus-transport/src/lib.rs": "1aa6ba71e3a69d236136cf2e2c8271094aab477f32f6a2a9cc4ea3f29b7b1eca",
+      "rust/cbus-transport/src/pci.rs": "289d92f6bbb910ab5917dd93b9e029aa4e4aa2793b454e9bf9c5dfb9ef028c41",
+      "rust/cbus-transport/src/pci/mmi.rs": "89063d09c06ee1afceb44ba40de63484a308962f0a6cfd173dd52eca11885e24",
+      "rust/cbus-transport/src/pci/programming.rs": "5b6a0e2143accbc51f4f40135fc08e36214c562670092adf40af72ff679b54b0",
+      "rust/cbus-transport/src/pci/selected_serial_observation.rs": "3b64863416bd16c2fd2a018d7964fcfa783fac3f571a08ad02847560640cb591",
+      "rust/cbus-transport/src/plan.rs": "25db5dd036c6690aade528945bbe41c7f41e5893c00e128ef6fb64d0ad878b93",
+      "rust/cbus-transport/src/serial_address.rs": "7d667f4365208d28dfed708eed6efd38ca7fd9f66c63765c1d81f00cfad01cdf",
+      "rust/cbus-transport/src/verify.rs": "6d9d1c53831e78eb899f86c10e832b0ae2151684602d908af3f4645cc306d502",
+      "rust/cbus-transport/tests/endpoint_edges.rs": "1353755cb97c4f2c091d6fe217f3b0fe05653a74796d619cc8c285f67d2d10bc",
+      "rust/cbus-transport/tests/framing_edges.rs": "4f3abd7d9b9880f4d46c7cdba6b2b8ec79f632f6089424f2d50aa26604048aab",
+      "rust/cbus-transport/tests/inventory.rs": "3574f16c3d3b16b58f6b4f91ae5b4e9e61fbb78b43b15b137ea3332108d0f8bb",
+      "rust/cbus-transport/tests/journal.rs": "b41c4136e415af9e4cbadbbe0b72798f405b78ce774d15afef296d588bd2ceac",
+      "rust/cbus-transport/tests/proptest_framing.rs": "187c2823529d323c3681b2ff0a2fdf53ed493c83904c1fb9718001536eaf92fe",
+      "rust/cbus-transport/tests/selected_serial_apply.rs": "9ae52ade32f643916253a8593eb2de1263b2bc270f2347d35cc0e1a637cf1685",
+      "rust/cbus-transport/tests/selected_serial_plan.rs": "db9f4da8471c3863548a61ab8c1fd361eeb553b1ccc4cea1c48cdb81d51e18a5",
+      "rust/cbus-transport/tests/selected_serial_verify.rs": "ab67044ecd1cfecb7b4ffa40897e01b21d654c301d9963dc4b31743365f49bab",
+      "rust/cbus-transport/tests/serial_address.rs": "138ad8d8439a5b0681239d2dc50dc4acab1075085a994c9fccc00b1265952289",
+      "rust/cbus-vector-check/Cargo.toml": "e07ef71cce994e307726ce6f754db751aaa02e1bef68de19ba98d1a24986fcef",
+      "rust/cbus-vector-check/src/main.rs": "0428c0ea02f3bad935638874a6d3d6dcebc99973ddacbc0a811b9137cb36029e",
+      "rust/cmqttd/Cargo.toml": "c37233e50068e5775275d36b1ca24f4e4dd66dfe719b8ebb016cb044f216ce0a",
+      "rust/cmqttd/src/cli.rs": "7f4d32032d96c18ed8dcb578bafbc3b8a7da8014a4a81da17c952f53a574b22b",
+      "rust/cmqttd/src/discover.rs": "d8767f2705557586c7bc9b574f108afd0dc116743f452a5286a0d1df283a1eec",
+      "rust/cmqttd/src/gateway.rs": "0aebed3a040644166dcd7b1ffa30b910d49a0b1db92f23bb0f1e8f15466a1df0",
+      "rust/cmqttd/src/main.rs": "13c25717d930ca2463c93cd87cfa590f7632e24815e3bf0085dd58c0dea499d9",
+      "rust/cmqttd/src/setup.rs": "55671eeb468dde9d26467e6a50e22f8b00c0830aae3826d31d40654ac9f23f64",
+      "rust/cmqttd/tests/entrypoint.rs": "27cfddc6643ee98d7433d6b241965df7a3ad56c74d5a40c152e246b8f415cb0b",
+      "rust/cmqttd/tests/serde_feature_graph.rs": "60fc21629d5705d9c72dae5178f65dc70f621e24409d1dbfd7c44d5d94880c29",
+      "rust/cmqttd/tests/system_cgate.rs": "b0f0a7f3318fc9dd9c9b1aa3d45edc454bcc4a4381b0fc46230f5f1944e3d4cb",
+      "rust/cmqttd/tests/system_cgate_access.rs": "cc8464388d5e8967e2fdcc15925bf5a6854c7618a9fcbb4daee2b989dc5c0557",
+      "rust/cmqttd/tests/system_cgate_access_control.rs": "94183d8e99510cafdbca0884d1f9765387d231cf8cfc75236317d8409d30b759",
+      "rust/cmqttd/tests/system_cgate_admin.rs": "69d318f8eb3f075a96e8adbcad6d15d718c481517db82c61c5537f8a0c1a6c0f",
+      "rust/cmqttd/tests/system_cgate_aircon.rs": "75a49ef16ef6840dcd9ce4e5bc3978448b5a9773e99aad7c2ad73d52e328a8d9",
+      "rust/cmqttd/tests/system_cgate_audio.rs": "28ed62971b8bbbdee0f045c23e8e314c805df0b6d793501ec2b23265499d4dd5",
+      "rust/cmqttd/tests/system_cgate_broadcast_event.rs": "3c30f51e7e0a820541ccc8f043f5f0f3959e7f0eff821e9254ffb8784a599320",
+      "rust/cmqttd/tests/system_cgate_config.rs": "8367e7992b1add53d2f97265f024989e01162aaea3496404858b6e1b32f8a275",
+      "rust/cmqttd/tests/system_cgate_config_admission.rs": "9647d6999622ccee2220e5a8b93dafab42465aa132f6a69dac3048517797700b",
+      "rust/cmqttd/tests/system_cgate_dali.rs": "88e2c38bc3d19d70a567f29372f7206646b88e8d9e076fa23a49ec54d88292f1",
+      "rust/cmqttd/tests/system_cgate_dali_specialized.rs": "0838fe38d5de14361d38b070309fb6f67db0f1551768d5372f7ac5041f7b12ac",
+      "rust/cmqttd/tests/system_cgate_database_lifecycle.rs": "1c703fc8fbbb7ba3964610909a05b8b83a8af534cd76c621184c213f866b3491",
+      "rust/cmqttd/tests/system_cgate_event_transport.rs": "f9f71e90f1683f2cc49aae7f1d2ad21163990b2dfb9d6cf95f0ca27f0b3508aa",
+      "rust/cmqttd/tests/system_cgate_file.rs": "fd6c48a7bcdc5f232df3e2fac8919ba3a2fcbcd2554be85d556175216fac7ac4",
+      "rust/cmqttd/tests/system_cgate_general_tree.rs": "07726a25d54f4f04f5553fbcda80ea3ffaf2bfb5ba08aa86de90ae4b347f71ac",
+      "rust/cmqttd/tests/system_cgate_measurement.rs": "b3fc6379258561e3e3b46e08bbae3ffb5f4b32a3aa19b0389c684fb25e9f9bb5",
+      "rust/cmqttd/tests/system_cgate_mediatransport.rs": "65090e2632f1e60d3ab87c386529a0ec6d6fedf4364945f219de7497b2481bcf",
+      "rust/cmqttd/tests/system_cgate_move_journal.rs": "14b7d28e49a2fc0d5aa21fbe81fb859039328c4e70776bff2de5f137777a0556",
+      "rust/cmqttd/tests/system_cgate_net_lifecycle.rs": "c369dbf1e807d4a9135ef89ff2fa0e96badb58315dd3992971d5cd8f40d39221",
+      "rust/cmqttd/tests/system_cgate_port.rs": "eff728504713015cb42c88eef7755687a5b5c937e93aa5c78a7af9796319d48f",
+      "rust/cmqttd/tests/system_cgate_pp_liveness.rs": "dcdfa5c54daeff5407a4f9374b86937b378003e9978fe64da2ac94a18f861aec",
+      "rust/cmqttd/tests/system_cgate_pp_programmer.rs": "6eca4e692a506310e1a334abfb9b56289f381633b512d6f206f832e08cf267d8",
+      "rust/cmqttd/tests/system_cgate_programmer_lifecycle.rs": "9c4d70e634534459cb24ddebbe4393485568005b7746aa29171296fc8c1665ae",
+      "rust/cmqttd/tests/system_cgate_project_copy_delete.rs": "15a672c8be3a60d5f110b550393ac7456bc1740a20bbf9c4fc6fc2928de2818c",
+      "rust/cmqttd/tests/system_cgate_remaining_applications.rs": "c53f78b31bf71b0edeb6ad82aabb2bbab61d7ca0d8d3b47787a16ffb2dc3f252",
+      "rust/cmqttd/tests/system_cgate_security.rs": "dfcad80fe824f2cb0b051b673c187365315b55a2c1ade760d232206ec07d8215",
+      "rust/cmqttd/tests/system_cgate_telephony.rs": "bdfc474056888bad5ad408aa917e692dca50e7105b115bdb73cda1b3454bea0b",
+      "rust/cmqttd/tests/system_commands.rs": "850e25a16c9faa78b1ea74335c54b70b5bd684390bb3d8b05c075873e32c1208",
+      "rust/cmqttd/tests/system_discovery.rs": "ad532297a7c9968bc41ba11414ba4b6c65c1435a5cba753299e2366cfac6bc2e",
+      "rust/cmqttd/tests/system_events.rs": "dd05f9f6e18aaae97a139e8618de8a7e20ca7c721ae11f4ab9fc9d7d61fbfded",
+      "rust/cmqttd/tests/system_flow.rs": "965aeed5d13587a44fb2c51f64fc9c223ccbfc96227f569ddbe541a9dd3cb4b0",
+      "rust/cmqttd/tests/system_init.rs": "87ff13c4180e81ffef8998834e5b1cbb6e9a840f86e18c58913829eba4d3925d",
+      "rust/cmqttd/tests/system_mqtt_consistency.rs": "55fad058b8b1c2d4cf1d7e488312ee6f24a7c92a978c59b2ae26c76b65571414",
+      "rust/cmqttd/tests/system_resilience.rs": "7d4f377e78a408b349445dd18a1a74a88f3b0af1f7f3c044649d91e7d18baea7",
+      "rust/cmqttd/tests/system_serial_pty.rs": "df42416e3c1add434dfdffd14d4995ee3ebe20e13914fe2f9dff4d7eef54bd91",
+      "rust/cmqttd/tests/util/mod.rs": "beb4764e6134882be7d80232d430047e027de42f62c570bf41a28e62d1c4211c",
+      "rust/testdata/fixtures/behavioral_expectations.json": "4f9a19a091b70f45e427db5ca8c8a0983639cb4be4cda1072dc3c417481ad82a",
+      "rust/testdata/fixtures/cgate-tls-test-cert.pem": "e9de6b4c5e3d0ef6c62a7a0397455db7b11f0850319cc33c0cb2afb6f9e5b3ec",
+      "rust/testdata/fixtures/cgate-tls-test-key.pem": "703a3498d042cd3316283dc976aff7efbcfa6aa89f9627e90c36c9d3a956a508",
+      "rust/testdata/fixtures/cgate_dbsetxml_typed_tree_seed.xml": "141ec567d0d6c1d3d17b91f408a92cd0e6869628b35b893ce15bded8d0281614",
+      "rust/testdata/fixtures/native_cgate_access.json": "4a1a8d1e09b49fc67a3260415c99af81cecd602e4d1c2c868aff4dff50f66715",
+      "rust/testdata/fixtures/native_cgate_access_control.json": "9b719610959326006308c00e6a22e7216631e999b533c458c50629692e8f124a",
+      "rust/testdata/fixtures/native_cgate_admin_authorization_probe.json": "009794bf4b44e327b875fe1b3b5a7ec5e1bab262fb870e1af5e594b3160159ae",
+      "rust/testdata/fixtures/native_cgate_aircon.json": "6b49eedb5b0ae3cf23085d33c04f6527151c6a41e2424b345e59ac7b3cef8315",
+      "rust/testdata/fixtures/native_cgate_application_authorization_probe.json": "5d11a1edb500a995422be2336fcec4feca4c4e07a931e3d64cc604a671191f7d",
+      "rust/testdata/fixtures/native_cgate_audio.json": "e68380c542c3902553f606a2f1783dd7b0e8371206107076936ac871d718fc87",
+      "rust/testdata/fixtures/native_cgate_authorization_expansion_probe.json": "716e9ff704e52a1487c00f11be055461d15efe22977c3a1ed7ccb9c582a6799e",
+      "rust/testdata/fixtures/native_cgate_authorization_probe.json": "c9f0ee5a5f261264cfd96d0f805712cb5b54fa398c1260386a981e0552e0fcd0",
+      "rust/testdata/fixtures/native_cgate_broadcast_event.json": "005bb8bf0600303a1be4f54762c6883e7f932a8747099cc8157d82082f87c1be",
+      "rust/testdata/fixtures/native_cgate_cgl_routes.json": "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490",
+      "rust/testdata/fixtures/native_cgate_cmqtt_capability_vm.json": "8fd7af92e703809094bb709a04f55139badde90b4993f2c28a8708458f16a33b",
+      "rust/testdata/fixtures/native_cgate_config.json": "08c7f09ad82bd56c2d564e0a2d0ea1258acc8b269da3d20d08a9bfbdffd8ad12",
+      "rust/testdata/fixtures/native_cgate_config_command_show_responses.json": "e142a46133fbf8ee655b5169a57dd34398c0d8e1aa8d6e4ee8880ff4db117bd2",
+      "rust/testdata/fixtures/native_cgate_config_command_show_time.json": "bf64b1bf77f83dbb0de7e5acf6b8cd49f7aaff44285372562b514dadeaaa3fee",
+      "rust/testdata/fixtures/native_cgate_config_connection_admission.json": "2963adab8bfa9f674c5d6b2f6b7f9b561498364fd594dfc61a227de479111161",
+      "rust/testdata/fixtures/native_cgate_config_event_display_oids.json": "00a6758d83bed85fd31e19fdcb6fe7e904910597eab9fcb22866e36b82659d0d",
+      "rust/testdata/fixtures/native_cgate_config_event_listener_admission.json": "d9d31b59d7afd5688a199c0f4e44063ce4ee011902a80cc6ff0afb23eff46271",
+      "rust/testdata/fixtures/native_cgate_config_event_millis.json": "396c09d58052f8feed927a67ad2dd121aa2de70668cad3806bc8a53880854766",
+      "rust/testdata/fixtures/native_cgate_config_event_transport.json": "e6963071453f5bbf1540c043852d962c14505fae4c7fc330beb4cf720e561966",
+      "rust/testdata/fixtures/native_cgate_config_global_event_level.json": "e0a812d0000076a2fbf306018d4e6cf28f81fdb8c7f4fe53fd40447329213106",
+      "rust/testdata/fixtures/native_cgate_config_heartbeat.json": "fc7b0da2d0f292be768d2b5e5d1ec49216d6e001c8ed2afd211fdeb97640de85",
+      "rust/testdata/fixtures/native_cgate_config_hostname_tls_admission.json": "9ac6a39bb332a3c0a2aac2e66f3d9a0f67a266a763034061a9fc1509b81086c1",
+      "rust/testdata/fixtures/native_cgate_config_project_default.json": "84463549467826794600965fc94ff66ae7f956162e802cc71f345ef92577d13d",
+      "rust/testdata/fixtures/native_cgate_config_project_start.json": "5bf804ee63a3fc9984f36606478c7baff18522cae0f25ebcd503c754c775b1e4",
+      "rust/testdata/fixtures/native_cgate_cross_kind_oid_mutations.json": "395311a39661f374b9d36cc9d71e5bd14ea6e49c76178cbd2ded56e759cb6657",
+      "rust/testdata/fixtures/native_cgate_dali_authorization_probe.json": "d2ffb8d86b296ea123b6b667d484e9c5415ec41b0db55c25f14ef6262f67af8f",
+      "rust/testdata/fixtures/native_cgate_dali_commissioning.json": "8ef7c99129833e86b15e75e3f115bc120e0a7f89f098c309ae979ad27d386edf",
+      "rust/testdata/fixtures/native_cgate_dali_help.json": "c60df73cb0d62c84b009c8a88fb436b50f9abd0e5d47f79cbde2668443c600e0",
+      "rust/testdata/fixtures/native_cgate_dali_specialized.json": "9eaf11c32afd073f39503caf8003400edc7058533e46244b550e991017776505",
+      "rust/testdata/fixtures/native_cgate_dbgetxml_framing_vm.json": "c819303fbe8d38d552fa3aa9b80fbe60ca1161ae731f1aeb830323f0e7e6863a",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_application_shapes.json": "3712ae2e4e355f011cc5c6f2478bc3d08fed507bd38811a5ecc9448f87014b3d",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_combined.json": "ff7f34a2732ad8eef723b90ac1b20a2e4cb7ebbb29367290ce50d863f2767cf9",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_combined_vm.json": "7d850980d52a05103796bfcb01ca49a4fda5db23177387c0ad1d72978953abae",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_duplicate_applications.json": "310ce265b6545029769456ebeb552beaf4cf35b793779908a341f648664520fc",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_duplicate_oids.json": "9cddffd48c597fa0eb9752411b67d415942cd005275707e9fa7bf9cf381d2e9c",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_errors.json": "bfb8989058c09da65651372f0682486cf3df4bd36683e85d9589a3e29b7d38af",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt.json": "d078ce2d67b0819abb4a3f86c1e6492bd96fed56e3472b2e44848475effcb357",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_group_dlt_boundaries.json": "d862b6dbda13954df106021062276c81f647d9d9319142d8eb215e69789a21f9",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_level_dlt.json": "00b7d0b97201462872d7f74608d094e7ebdc6ef16c0995b5f9ea243b057b1061",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_lifecycle.json": "2efb79d46563dfb636bab3cfc60df35895e5b85e0fe25522c39764d53cf1eeca",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_nested_applications.json": "5316e61cd7824858bcee1a0daf3df7bb20e4aa0dd0963e457d926bd9eea6db1d",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_nested_levels.json": "b5259cc61051182ca8275c961db4238f6e552aee59b4e16bc77e715462516fbe",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_nested_levels_roundtrip.json": "33f7ac5fb6dd6937138382de8b7bec0ca56598a18c0c05a9a48f348dcce48c52",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_replacement_edges.json": "c99483fe80bc4be0e2105b943fd7325a5150067ca130eed2fbf9f7394a55dd82",
+      "rust/testdata/fixtures/native_cgate_dbsetxml_unit_vm.json": "6ae63e7a36de13cdd5af034ba132dcda9b452dc5bc3a5e403a3213423e9ce70d",
+      "rust/testdata/fixtures/native_cgate_deploy_queue.json": "3d9d63fe5ca5fa623741b01047e696e9e93059225db75d62acaac7450b530674",
+      "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_cardinality.json": "3d989d9b454055033bb34f8645b36184857a45f033877b69ae99182f0c903ce5",
+      "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_five_plus.json": "79d333ba33b0f83242ddfbb5df68c34384df6f14dc4a834e6c6f25980ba4613d",
+      "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_mutations.json": "79010f478e9a12cb91762f2385d2c59e219033f923aad125bf52a1a161656686",
+      "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_nine_ten.json": "a53ec6f01a87fd548a244ebcc3b36e89f007d984678ff68d35472ff44dfc6cd1",
+      "rust/testdata/fixtures/native_cgate_duplicate_unit_oid_reverse_order.json": "6f8907860cda4c7cda51bbd2707b336741e8792e568f3a3557efd0fef13c68cc",
+      "rust/testdata/fixtures/native_cgate_event_catalogue.json": "2362b1aeaad94a8beddb1575d2eaedd1dab9fead44db8fdd2d8e8f9446554bee",
+      "rust/testdata/fixtures/native_cgate_event_fanout.json": "4220a8f25f4a2405b6740718866d365f3369f985b34e9fe6244c7ef3750fc571",
+      "rust/testdata/fixtures/native_cgate_event_socket_recovery.json": "031c14408adeaea358c6900f08d84c869bb8f5a2cddcf36117a6f9bc755d135f",
+      "rust/testdata/fixtures/native_cgate_family_help.json": "6444ffe20d697d3b91c1678899185468865446d8554493b0eb518e4641fcb98c",
+      "rust/testdata/fixtures/native_cgate_file.json": "ffe617d02e687834253f7bd54dfa3863f03528d0f67748652a35c25f9afa84ef",
+      "rust/testdata/fixtures/native_cgate_final_authorization_probe.json": "bf5abdda888afbca356c00a0dcba21ac76fe465c653982904b8fe1a7eb3a5231",
+      "rust/testdata/fixtures/native_cgate_general_tree.json": "80c42e1c515222c52bbf9c533e600fa0357f5c5c7a91a0b69affdcf72e6423e5",
+      "rust/testdata/fixtures/native_cgate_large_cross_network_oid.json": "b60edf7be4fc127f9461a0a12e3f3c9eabe24a7f1d0845adc313c7f45a2e2914",
+      "rust/testdata/fixtures/native_cgate_legacy_database.json": "1c47cce822b828e757c4c6265cd7392a0f959fa605c826590cb9510fa41db3ec",
+      "rust/testdata/fixtures/native_cgate_lighting_events.json": "d56392a860de076ae06deea1b856444edbde51e90ed16cb03960c82e96a2b3f3",
+      "rust/testdata/fixtures/native_cgate_local_admin.json": "ebb8152977d2cc0fb8b2a68267998f393e5b69063887454283eabb8ebe3ec72d",
+      "rust/testdata/fixtures/native_cgate_measurement.json": "6ef5b207f7cad5745aef425f674331667d5e03ed1795a7370b3a8163c576fbd2",
+      "rust/testdata/fixtures/native_cgate_media_authorization_probe.json": "e626683812d7b90f77de77ae502d4d0508c50329d35b73fbead24357270b851a",
+      "rust/testdata/fixtures/native_cgate_mediatransport.json": "12c46dd05d6c7083cdefb28dd7ab4580b131757cf6fb044bf9298a68eed36692",
+      "rust/testdata/fixtures/native_cgate_net_db_reconciliation.json": "32d0ea53000391dee0ee9d8b9e54496e6df916395fe8e065de78766a5397b596",
+      "rust/testdata/fixtures/native_cgate_net_lifecycle.json": "8004c25aaccbaa7fd0993099be37dcab08751e7741097ccae61ed90eabe3d332",
+      "rust/testdata/fixtures/native_cgate_net_save_db_materialization.json": "933f54f4532db59f9f6b8cec610d8e4376aceda9429018c515062f83e0359a7b",
+      "rust/testdata/fixtures/native_cgate_new_bounds.json": "e525e2198368186a70fd425e528ff2ebbe7c1a7cd65ab164a6693dd43f5def0b",
+      "rust/testdata/fixtures/native_cgate_object_authorization_probe.json": "52dc0c7ae43e705fac0513fa661aae06a90725030a9caa250b608166156ebc72",
+      "rust/testdata/fixtures/native_cgate_oid_index_probe_cross.json": "7a2149b2f23c5b9c3964333b234a9c65005f10390e5308b0dc02125e06482a91",
+      "rust/testdata/fixtures/native_cgate_oid_index_probe_mixed.json": "82c1169fb06d3807b8b65ea7f9b19cfc5077aac855bb5ec32f243061c13b8781",
+      "rust/testdata/fixtures/native_cgate_oid_index_probe_units.json": "a63ba52e3a57067ee2da7f326c2021ec2f78cdac0a5c554fcec0a9e01c722734",
+      "rust/testdata/fixtures/native_cgate_port.json": "9e4231409117c5a2e9ba8c0c203a56b7a1c1748c70e0961cc25d2de139aa9a66",
+      "rust/testdata/fixtures/native_cgate_pp_method_transcripts.json": "36da6ffb5be7435ad26453ef5074bd5225938ef2e5574bb54e953a70ec7a8809",
+      "rust/testdata/fixtures/native_cgate_pp_programmer.json": "a11854d5cfb7087383864a8ffa0ee52fa3e141532675acbf3bc59690aeaf64bf",
+      "rust/testdata/fixtures/native_cgate_programmer_lifecycle.json": "229cefcbf4317d7d7ed96fb14e084bd08b45f9350a205cbd6df1877832d72f6b",
+      "rust/testdata/fixtures/native_cgate_programming_authorization_probe.json": "cdcbb2507762c404c7ee2193893a3128c2250d35aedc15b98a4611a2ab7ade2f",
+      "rust/testdata/fixtures/native_cgate_project_archive.json": "eb769d57ef229704ad4af62a87fa3e719e0026e2a0b59141d8beed3bbdacaccc",
+      "rust/testdata/fixtures/native_cgate_project_copy_delete.json": "8948e7e0fba1218cb19db3c8cfb1d56ac6158bee52e781ab51c6c3acc47c759c",
+      "rust/testdata/fixtures/native_cgate_remaining_applications.json": "16a25548c054d19007a911a6229d726496791249df55a149ebeb853ed1fac318",
+      "rust/testdata/fixtures/native_cgate_remaining_authorization_probe.json": "5cc108b58e15d1caca464d8c73a4b0bd5e77c587f091a2f65db38fc435207bbd",
+      "rust/testdata/fixtures/native_cgate_repository_transform.json": "897bc5d1ce6068e3b4dfb11efb217c50b9f8db96180042d4db1197a65cdf530c",
+      "rust/testdata/fixtures/native_cgate_routed_application_control.json": "c051b5eda0e9f6feb4fecfd479e41009072ccf7b580aa1041123b10c991c4118",
+      "rust/testdata/fixtures/native_cgate_routed_edlt_metadata.json": "3b7c248f9815dafcb6219f6fa5e3c3c893cd32793a47e30bfff08cf52d039c78",
+      "rust/testdata/fixtures/native_cgate_routed_label_management.json": "431335e3fdfd545e81499956b02b4a6015cfdb8e711861b404f80c05d65e173c",
+      "rust/testdata/fixtures/native_cgate_routed_nvm_commit.json": "16e692423114ed84b26e1e2cb18d1f83af91e8ae15f10003c1e6e0a072718650",
+      "rust/testdata/fixtures/native_cgate_routed_pp_methods.json": "2656423e7fec13ff9bd76c575eb9cea4fbac1ae17faf85c668c8c4e190802bc9",
+      "rust/testdata/fixtures/native_cgate_routed_pp_protection.json": "2b59715c647e474334b1d6633b0d6565b7a616aa878b2ab728dd923adac0cde2",
+      "rust/testdata/fixtures/native_cgate_routed_project_identity.json": "abc101b14fc7ae1537038458e63df6824a37d76adcfdaf45cc96dd8f7e87a65b",
+      "rust/testdata/fixtures/native_cgate_routed_unit_readdress.json": "f6f16c0d363a1d41e454fb0eefc528c8ad9d8bcdc6e810e5a979acc3cfc175c1",
+      "rust/testdata/fixtures/native_cgate_routed_unravel.json": "6544f191bf5de6760b4792058b32306c030726918ff382fe3a9ef264b853192b",
+      "rust/testdata/fixtures/native_cgate_secondary_authorization_probe.json": "2c13c2fecfcde221e76925955639fda480e797f54dbccb2a37d44a8a76195b74",
+      "rust/testdata/fixtures/native_cgate_security.json": "ea163445585448b369e30de0a43b7fb7c9d1fe2212dff08813c90271771d5d42",
+      "rust/testdata/fixtures/native_cgate_session_selectors.json": "537a0718d94948010d27e2b3aa3e3abce1478d0af08448a4af7199d11766a562",
+      "rust/testdata/fixtures/native_cgate_shortmessage_flags.json": "5d3fc35942db955a067a00846e269bd705fb0523c7a1757ab9cdfda6b7c47ff0",
+      "rust/testdata/fixtures/native_cgate_show_appclasses.json": "67ef4feea27820617ce8ddfb9400370451fbc82fa61e2b6b3f62ff1ecd25e74c",
+      "rust/testdata/fixtures/native_cgate_show_audit.json": "75b85c5179932d81a0d1bc9c9cbb4895fc7cfcf8a7a596a3ab5d71fdffc4ef88",
+      "rust/testdata/fixtures/native_cgate_show_objects.json": "f20ba3c66439fc595c69a8ffabb144c4592b0d4581ca7604596cb9d05a8f7afa",
+      "rust/testdata/fixtures/native_cgate_show_parser.json": "b11fbce5cf136ef4228ab2650ec0b4252cdea132156c12c854989f59a10a3191",
+      "rust/testdata/fixtures/native_cgate_specialist_events.json": "649aec16776c622ae3c19b73ae395b267b506ac97b126c30d11635532e2f88e6",
+      "rust/testdata/fixtures/native_cgate_telephony.json": "42c34c046d6fc7773540e3be2c57adbbcd1779eb760e96b7714841f0f3e1b6ef",
+      "rust/testdata/fixtures/native_cgate_tls_authorization_probe.json": "f4cd36fffcb7d503942b6500bbb506d03c033303fe9e82b962cb18403f439a5e",
+      "rust/testdata/fixtures/native_cgate_tree_appclasses.json": "d10a3ad643db5e9c3c8837a8772854df424643f088e3f10b75c7a803329f87fa",
+      "rust/testdata/fixtures/native_cgate_unprobed_authorization_probe.json": "1630ef43544c0e08a1abc7c9a8b808bedc9dc02f44b8922b529588b663fd4b97",
+      "rust/testdata/fixtures/native_cgate_unravel_cases.json": "e65e759eb4aef5f949ab115d754f30b77ff4595a4ad35249beaa71696c46b508",
+      "rust/testdata/fixtures/project.xml": "15eb06a6ce7c96b88baa77d240e66b90559bb85f5f594e454b7cd18fd8a1c9c1",
+      "rust/testdata/vectors/access_control.jsonl": "03d998af6a4fd6be63cf900b9497ce4890ece01b1090ae639096ae7111a4f810",
+      "rust/testdata/vectors/aircon.jsonl": "1e105ad9123bc8f71b53ac6cc44b531595bf103c41be957abe6ffdd9fa072c83",
+      "rust/testdata/vectors/audio.jsonl": "0a8ca2e8d87312b84855a6f5e808269a9c2ef574b1122ce2543d5cd97dfa2a5e",
+      "rust/testdata/vectors/cgate_associated_empty_tags_cli_wire.json": "835af8b4a4d7d8571a8d6fecf700234209c9d028f04514de0b02ad15f85e09bb",
+      "rust/testdata/vectors/cgate_associated_level_cli_wire.json": "47e060ef4c6b4cfe1ebfb9f4c8910b59b88cc736e3711ace79d9fc1ab83b5247",
+      "rust/testdata/vectors/cgate_associated_raw_level_value.json": "909bf2fbba2997f62f5b0b07d4f4f8ddcc3e4764caa4837e90cbf593946138e5",
+      "rust/testdata/vectors/cgate_associated_raw_level_value_cli_wire.json": "1069ff85c3c52859bc4bf9157f093e748a8e335079defcefaf930881c4882ecc",
+      "rust/testdata/vectors/cgate_barcode_unit_initialization.json": "bbc057dd7cb695daf4c0cd5086e74376e4a4a6ccd0e55ddb315a829c352f5ada",
+      "rust/testdata/vectors/cgate_cgl_routes.jsonl": "0377952275e3022541a1a11cdf1b7a16ed638701a9c027048f2f0b8c5b7da269",
+      "rust/testdata/vectors/cgate_config_project_default.jsonl": "e7223a19ec7ea5573902f605da42f639841b81b8bd0924b586b0254b7baf5525",
+      "rust/testdata/vectors/cgate_config_project_start.jsonl": "f34c86927960d4052f6873b8cca1e2c5896182ffebfd3a3a374b07dc2281efc9",
+      "rust/testdata/vectors/cgate_convertunit_database.json": "0c7f8754fd16075c19581c24848e5dd9d8068e554d9c927756b03e14dfaf5ca2",
+      "rust/testdata/vectors/cgate_cross_kind_oid_mutations.jsonl": "8f7edadcb541d70cbed1ae0a5ea368dbf159450b4a7979140b14696280f636d9",
+      "rust/testdata/vectors/cgate_cross_network_oid.jsonl": "2064492bfa79ed207cd85ae23b9ea2a16ea04b3f03b92de55aa99f20ee4e303e",
+      "rust/testdata/vectors/cgate_dali_authorization.jsonl": "3aba442c84b34208df61d5dd66c367582042f94279002cd149b4fe51013ee2ac",
+      "rust/testdata/vectors/cgate_dbgetxml_wire.json": "42b22fe1933392734d33728e224c7fef597fc1d73bd827952316e83526dd1b9e",
+      "rust/testdata/vectors/cgate_dbsetxml.jsonl": "4d08190486c977d117e393b8b48d5005e1618a23d15928cb5e719455a444d9d3",
+      "rust/testdata/vectors/cgate_dbsetxml_application_shapes.jsonl": "b39813afd398ad956d31d1c8b7d7ebe12b97b402d46b260c05b8fb2f5aae2014",
+      "rust/testdata/vectors/cgate_dbsetxml_duplicate_applications.jsonl": "4ba7e59bf48259eb2a50c027cb4faebe427dbb9acdb7f37ca64c6087923942a9",
+      "rust/testdata/vectors/cgate_dbsetxml_duplicate_oids.jsonl": "e3cf7daeb490b90755e766adde42e03dfd9d36b047e3ff2fa7c8e0382f2ca025",
+      "rust/testdata/vectors/cgate_dbsetxml_errors.jsonl": "605b22d368d8147e8c720ea0ee4ef484d8bc9ff649756146bdc873e5e0347a2b",
+      "rust/testdata/vectors/cgate_dbsetxml_group_dlt.jsonl": "69e737b02c8e6e05c9a9c1e45fc31e75db544997d8d91c18a5a33a5e1754ccd6",
+      "rust/testdata/vectors/cgate_dbsetxml_group_dlt_boundaries.jsonl": "2165fd58e20c1b3310920b780ec99c1393397dd3b59b7b7c0f6189770006e25d",
+      "rust/testdata/vectors/cgate_dbsetxml_level_dlt.jsonl": "77cd82b7c62900c0ef7f51828b50630d63a73f32b69478d53df2f24e2a0ee7b8",
+      "rust/testdata/vectors/cgate_dbsetxml_nested_applications.jsonl": "fe469a75852ae8f6313f3fd9f84eff94bc6955478f94a54ff155abae040fc0d4",
+      "rust/testdata/vectors/cgate_dbsetxml_nested_levels.jsonl": "a90bbcea27edb68a05e7e44756b3b164497fbea6ae521a9c7e239d1b5a7d82dc",
+      "rust/testdata/vectors/cgate_dbsetxml_nested_levels_roundtrip.jsonl": "12f7a72eae7e4c0719f2ec30ebdb5d5b6dd62f06a7797d956ce40c1051c66bcb",
+      "rust/testdata/vectors/cgate_dbsetxml_replacement_edges.jsonl": "3fc05d7423d0cfa96c87dd6bd2d1615e88301a65127419d26896c2acf9290521",
+      "rust/testdata/vectors/cgate_duplicate_unit_oid_cardinality.jsonl": "d7e10244da076c35a053021aed1198d2d38304237f807430fada242b0d9e42e5",
+      "rust/testdata/vectors/cgate_duplicate_unit_oid_five_plus.jsonl": "15780b79ffefdfa0bea38f1d1a60892864756e8af3d08e073647f69ed784cb07",
+      "rust/testdata/vectors/cgate_duplicate_unit_oid_mutations.jsonl": "6e75d3fb338aeed5b6182b6db5c57dc3cd054af0972dfc8f87e6283b56161e8f",
+      "rust/testdata/vectors/cgate_duplicate_unit_oid_nine_ten.jsonl": "cdef09f98fb69906ae6dfddd172e3b89e8238852f4d3f2444c858ac82f179a2c",
+      "rust/testdata/vectors/cgate_duplicate_unit_oid_reverse_order.jsonl": "34cb1cb683322b8348b91ad2fd9f3c626542161fbbdebe800bd21338ed5a4631",
+      "rust/testdata/vectors/cgate_event_fanout.jsonl": "19929d8c11cdd73ab031a7bbcd2dd2f46506940428326b4be029ea617512ca07",
+      "rust/testdata/vectors/cgate_final_authorization.jsonl": "0239063ad7d94f27593eea2dbf999cc7b3ecee188fc718e09b9a25d1640fedac",
+      "rust/testdata/vectors/cgate_large_unit_oid.jsonl": "12d56b45ee54b8b17485e65f4202c32956751a99d358102d9f6c232691b95d82",
+      "rust/testdata/vectors/cgate_named_safe_graph.json": "564bbe87775c2dbb7f4e7c27e244d695a6bd9d2048a17968e07fb73b2582d908",
+      "rust/testdata/vectors/cgate_native_project_archive.jsonl": "331507a022ca6d15c9271687b3f7ce969550fa63e57df4a168bfd4d9e9505671",
+      "rust/testdata/vectors/cgate_net_db_reconciliation.jsonl": "83bf3292c7aaa01204167fc80b0b7b29ea3fbbfbfc944ff9c0103c9608a0ef4a",
+      "rust/testdata/vectors/cgate_net_save_db_materialization.jsonl": "5edc6290ffa76d9e2abc77429a30cb0a3644e14953b539a60056ebf857b3f207",
+      "rust/testdata/vectors/cgate_project_export_order.json": "c3339590324a521553eeb2fb4639b05dee7f91a9657ed8d75135502f8a8745cd",
+      "rust/testdata/vectors/cgate_project_snapshot.json": "f6527f60130a5fda087764270c179e80316a4db3ab4078bad3a8fd5b1d4a89fa",
+      "rust/testdata/vectors/cgate_remaining_authorization.jsonl": "c4441cd51e3f04dc119fb3bffb62a3302be090cced9d7783fa2c4ae24732a7b6",
+      "rust/testdata/vectors/cgate_unit_diagnostics.jsonl": "bd469ecca45dbeb78079f56add9c9d7decefcbaeb00603f50b17a935db56837b",
+      "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
+      "rust/testdata/vectors/checksum.jsonl": "ba2cc49def05e343dc262e8da4f5088f36b67cea5d490a825e0b8685f3bda8e9",
+      "rust/testdata/vectors/cni_discovery.jsonl": "98733c88edc44c26dc419b09d7000cd9e32b2124e269cb4c46ca9d36a4531071",
+      "rust/testdata/vectors/dali.jsonl": "dd5c5b0d4e67f3cdaa46929a4bb82ee4cc260c3c2ab278b5681c7c6ddab90606",
+      "rust/testdata/vectors/decode_from_pci.jsonl": "367b83d991d446f4096ef60ca394e32c887ef63a8b42cdbcb10cb04ffd194a5f",
+      "rust/testdata/vectors/decode_to_pci.jsonl": "b976263a485326f0e02f23f62aa5bf1704fb1309bf6f316dac4139ebcfc04a97",
+      "rust/testdata/vectors/dlt_profile_admission.jsonl": "fd57cfbf4ea5e8d2b7186b54902d4e3987fc096424dfda90504d4b715aa0da5f",
+      "rust/testdata/vectors/encode.jsonl": "8e535bd9721eb89753dd332c3683ba9c1151d965df79465a332f9b7565c4d622",
+      "rust/testdata/vectors/ereport.jsonl": "fde74d7043951a326ebe83e18175a2d1fef908adb20a0a953b025479bdbbd815",
+      "rust/testdata/vectors/ha_discovery.jsonl": "6ec5e0413c49ccf671aede9c5bbbd9253806787d48121a20ac29e03d1c62430d",
+      "rust/testdata/vectors/identify.jsonl": "f919133f584a018f1c70925e73ae9afdf399898441778f316c2222058495bc06",
+      "rust/testdata/vectors/kfi.jsonl": "3ababf5f5e8adc96fcd839b4f8ab1b4095e39dd5b197fbafd06972a0c89f0084",
+      "rust/testdata/vectors/measurement.jsonl": "536ec06e85f4c5775ea5513f916070be67af2ff4409f6d0ae155b774bc565ad3",
+      "rust/testdata/vectors/mediatransport.jsonl": "2e33b6c100f04871bc06358e49cf234d884d81cf4d72e6e7f521eaeb52b04ba4",
+      "rust/testdata/vectors/mqtt_topics.jsonl": "ef359b5c90ac35b26a66b164d3ca58e35f73fb057412dc6c809f873dd02de615",
+      "rust/testdata/vectors/network_management.jsonl": "752b73fd50961cac0e7996fe6098417cf44950c6387ac85152cf770af5da78b3",
+      "rust/testdata/vectors/observed_dynamic_labels.jsonl": "8ccb30008c33a795dcfe30d25b519eb6e86ce675e7afd768474831ccb5d5e656",
+      "rust/testdata/vectors/programmer_execution.jsonl": "9707e6e14fec9a3addd8c17515191c2ef5e79be6860a96d6d62525e25f64aa07",
+      "rust/testdata/vectors/ramp_rates.jsonl": "33a4d673c1e4e06986a504409af3162f579f5759966449b48607c2bdbb216fd4",
+      "rust/testdata/vectors/security.jsonl": "2b2e1a11771543866b8928eeeb1ea8bf1c45ee240f7e8d26ed410b5c5a971294",
+      "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
+      "rust/testdata/vectors/serial_address.jsonl": "636ca51e6be30144618151ebc89db808ad8387ace27bb45b5c5f731b49dfd355",
+      "rust/testdata/vectors/shortmessage.jsonl": "55e521ab8d980a901728ac9eca710691229ef7b060b546e7d9b5dbb41d1007cd",
+      "rust/testdata/vectors/telephony.jsonl": "ec231a7e275367d7aaa154fc4694e352854e15e59bf7346f939c3d2086945ba0"
+    },
+    "toolchain": "1.99.0"
+  },
+  "retained_original_components": {
+    "barcode_instruction_vectors": {
+      "cases": 73,
+      "path": "toolkit-cli/research/fixtures/barcode-scanner-original-vectors.json",
+      "sha256": "4a2b503b0df0072307b94c7d17728b461c5128e703fa53f0eada14e3833d469e"
+    },
+    "numeric_SAFE_Unit_receipt_source": {
+      "path": "rust/testdata/fixtures/native_cgate_cgl_routes.json",
+      "retained_Unit_setup_cases": 16,
+      "sha256": "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490"
+    },
+    "qualification": "Historical components, not a current original execution of the complete loaded-project workflow."
+  },
+  "review_execution_credit": 0,
+  "scope": "Loaded-project barcode preview/add/select on canonical assigned numeric and independent named Networks through owned Rust services. Component evidence and modeled software acceptance only.",
+  "source_wheel": {
+    "actual_package_files": 327,
+    "case_ids": [
+      {
+        "id": "tests/test_cli_barcode.py::BarcodeCLITests::test_add_unit_cbz_output_copy",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cli_barcode.py::BarcodeCLITests::test_add_unit_errors_leave_file_unchanged",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cli_barcode.py::BarcodeCLITests::test_add_unit_xml_and_selection",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cli_barcode.py::BarcodeCLITests::test_parse_argument_and_wedge_stdin",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_catalog_add_branch_order",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_keystroke_buffer_and_idle_timer",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_receipt_pins_executable_and_contains_no_code_bytes",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_serial_normalization_and_matching",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_software_config_split",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_unit_dialog_serial_scan",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::OriginalVectorTests::test_units_view_dispatch",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_add_unit_explicit_address_and_tag",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_add_unit_next_free_address_and_metadata",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_address_exhaustion_and_recommended_maximum",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_catalogue_rules",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_duplicate_serial_selects_existing_unit_in_any_network",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_errors",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_parse_reports_both_consumers",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_unidentified_serial_never_selects",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_wedge_lines_and_invalid_input",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_scanner.py::ModelTests::test_zero_prefixed_configuration_also_runs_serial_lookup",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_binds_exact_bytes_and_preserves_load_behavior",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_refuses_malformed_xml_wrong_root_and_mutable_input[]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_refuses_malformed_xml_wrong_root_and_mutable_input[<broken]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_refuses_malformed_xml_wrong_root_and_mutable_input[<Other/>]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_refuses_malformed_xml_wrong_root_and_mutable_input[<CBusUnits/>]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_catalogue_snapshot_refuses_malformed_xml_wrong_root_and_mutable_input[raw4]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_creation_is_pure_and_has_native_fields",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_existing_minimal_safe_unit_is_counted_without_requiring_replacement_fields",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_normalization_preserves_independent_network_names[False]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_normalization_preserves_independent_network_names[True]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_duplicate_selection_uses_project_xml_order_before_catalogue_and_dialog",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_second_serial_branch_sees_conceptual_created_unit",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_second_branch_warning_order_and_selected_path_are_preserved",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_serial_only_miss_and_placeholder_do_not_select",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_free_dialog_addresses[0-0]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_free_dialog_addresses[2-2]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_free_dialog_addresses[254-254]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_occupied_or_unoffered_address_refused[3]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_occupied_or_unoffered_address_refused[255]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_occupied_or_unoffered_address_refused[-1]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_occupied_or_unoffered_address_refused[256]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_automatic_255_is_admitted_but_full_255_units_refused",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_family_unknown_and_ignored_scan_boundaries[5031NL          123456789012-WKEY-wired_unit_on_wireless_network]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_family_unknown_and_ignored_scan_boundaries[5031RDTSL       123456789012-KEYE1-wireless_unit_on_wired_network]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_family_unknown_and_ignored_scan_boundaries[UNKNOWN         123456789012-KEYE1-unknown_unit_type]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_family_unknown_and_ignored_scan_boundaries[NOREV           123456789012-KEYE1-catalog_entry_without_type]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_family_unknown_and_ignored_scan_boundaries[123456789012-KEYE1-wrong_barcode]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_entry_requires_one_scan[]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_entry_requires_one_scan[5031NL          123456789012\\n5031NL          123456789012]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_native_entry_requires_one_scan[\\r\\n]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>0]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>1]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>2]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>3]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>4]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>5]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>6]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_ambiguous_consumed_native_inventory_is_refused[<lambda>7]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_selected_unit_requires_oid_and_new_xml_text_is_representable",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_native_policy.py::test_legacy_project_planning_retains_original_bytes",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_complete_adapter_binds_identity_and_preserves_whole_project",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_unbound_or_reused_creation_receipt_never_initializes[301 OID=00000000-0000-4000-8000-0000000003e8]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_unbound_or_reused_creation_receipt_never_initializes[301 OID=00000000-0000-4000-8000-0000000003E8]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_unbound_or_reused_creation_receipt_never_initializes[301 OID=bad]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_direct_unit_readback_keeps_markup_and_mixed_text[<lambda>0]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_direct_unit_readback_keeps_markup_and_mixed_text[<lambda>1]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_direct_unit_readback_keeps_markup_and_mixed_text[<lambda>2]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_direct_unit_readback_keeps_markup_and_mixed_text[<lambda>3]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_final_whole_project_rechecks_new_unit_fields",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_final_project_rechecks_opaque_unrelated_data",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_login_echo_never_leaks_credential_in_operator_evidence",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_connection_and_output_failures_retain_independent_evidence",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_unit_parser_rejects_dtd_before_entity_expansion",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_regular_file_check_cannot_block_on_a_fifo",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_public_main_output_loss_reports_confirmed_database_edit",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_public_main_cleanup_failure_reports_confirmed_database_edit",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_scalar_readback_rejects_unaccounted_or_extra_reply_rows[unexpected row]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_scalar_readback_rejects_unaccounted_or_extra_reply_rows[200-unexpected continued status]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_numeric_scalar_continuation_and_terminal200_are_admitted",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_catalogue_control_characters_refuse_before_scaffold_creation[KEY\\tBL5]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_catalogue_control_characters_refuse_before_scaffold_creation[KEY\\x85BL5]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_barcode_database.py::test_untransmittable_unit_document_refuses_before_scaffold_creation",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_named_unit_preservation_and_lifecycle[mock]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_named_unit_preservation_and_lifecycle[daemon]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[mock]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_numeric_unit_issued_identity[daemon]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[mock]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_guards_are_read_only[daemon]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_owned_login_denial_and_positive_apply",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[mock]",
+        "outcome": "passed"
+      },
+      {
+        "id": "tests/test_cgate_barcode_database_interop.py::test_public_barcode_failure_is_exact_once_without_rollback[daemon]",
+        "outcome": "passed"
+      }
+    ],
+    "failed_or_skipped_parents": 0,
+    "final_component_record": {
+      "bytes": 3807,
+      "retained_privately": true,
+      "sha256": "72fd50fc618e1d5dd5749d2cc7cfb440a1d9016bb8c8aa09e12a1ab3ab952f53"
+    },
+    "frozen_source_resource_pin_count": 417,
+    "noneditable_wheel": true,
+    "passed_parent_elements_per_selection": 92,
+    "qualification": "64 instrumented public database CLI calls cover the nine public parents; other focused parents include offline CLI and pure policy/adapter tests. Counts are separate, not function percentages.",
+    "runtime_public_nine_parent_subset_per_selection": {
+      "add_attempts": 16,
+      "all_call_json_and_literal_wire_census_consistent": true,
+      "all_owned_cleanup_passed": true,
+      "connections": 48,
+      "document_attempts": 11,
+      "expected_denied_cli_calls": 42,
+      "format": "cbus-barcode-owned-runtime-audit-v1",
+      "literal_document_bodies": 11,
+      "local_zero_connection_calls": 16,
+      "lost_terminal_receipts": 4,
+      "original_execution": false,
+      "owned_process_count": 18,
+      "physical_acceptance": false,
+      "post_initialization_pci_frames": 0,
+      "startup_pci_frames": 80,
+      "tagged_commands": 198,
+      "total_cli_calls": 64,
+      "trap_contacts": 0
+    },
+    "source_record": {
+      "bytes": 165600,
+      "retained_privately": true,
+      "sha256": "f06e5e3658e7155c910c59609fd67cfa580323079f380ab814500526d4197f8c"
+    },
+    "source_wheel_installed_package_bytes_equal": true,
+    "unitemized_passed_subtests_per_selection": 67,
+    "wheel_record": {
+      "bytes": 223922,
+      "retained_privately": true,
+      "sha256": "5fc98692f57ac4e13803fed4a6a7acd18ad466960dd94b719a60519ccd9aa341"
+    },
+    "wheel_tests_staged_without_source_import_fallback": true,
+    "whole_input_roster_count": 3632,
+    "whole_input_rosters_quiet": true
+  },
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "worktree_base_commit": "78f2af452a85773f753f057473c3a942d7c093e5"
+}

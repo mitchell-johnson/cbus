@@ -1278,7 +1278,7 @@ impl Server {
     fn named_child_allowed(parent: &str, child: &str) -> bool {
         matches!(
             (parent, child),
-            ("Network", "Application")
+            ("Network", "Application" | "Unit")
                 | ("Application", "Group" | "NetVar")
                 | ("Group" | "NetVar", "Level")
         )
@@ -1314,32 +1314,66 @@ impl Server {
             "group" => "Group",
             "netvar" => "NetVar",
             "level" => "Level",
+            "unit" => "Unit",
             _ => return err(tag, 401, "401 Bad object or device ID: Field not found"),
         };
         if selected.field.is_some() || !Self::named_child_allowed(&parent.element, element) {
             return err(tag, 401, "401 Bad object or device ID: Field not found");
         }
         if safe {
-            if words[3].parse::<u8>().is_err() {
+            let Ok(address) = words[3].parse::<u8>() else {
                 return err(tag, 401, "401 Bad object or device ID: Invalid address");
-            }
-            if Self::named_address_collision(parent, element, words[3], None) {
+            };
+            let collision = if element == "Unit" {
+                // New Unit addresses identify a byte slot. Existing named
+                // XML can retain alternate decimal spellings, so compare
+                // those numerically before creating the canonical slot.
+                parent.children.iter().any(|child| {
+                    child.element == "Unit"
+                        && child
+                            .field("Address")
+                            .and_then(|value| value.parse::<u8>().ok())
+                            == Some(address)
+                })
+            } else {
+                Self::named_address_collision(parent, element, words[3], None)
+            };
+            if collision {
                 return err(
                     tag,
                     401,
                     "401 Bad object or device ID: Element address in use",
                 );
             }
+            if element == "Unit" && words[4..].join(" ").contains('#') {
+                return err(tag, 400, "400 Invalid tag name");
+            }
         }
-        let oid = fresh_oid();
+        let mut staged = self.clone();
+        let oid = if element == "Unit" {
+            staged.issue_oid()
+        } else {
+            fresh_oid()
+        };
         let mut child = TagNode::new(element, &[("OID", &oid)]);
         if safe {
-            child.set("TagName", words[4..].join(" "));
-            child.set("Address", words[3].to_string());
+            let name = words[4..].join(" ");
+            child.set("TagName", name.clone());
+            let address = if element == "Unit" {
+                words[3]
+                    .parse::<u8>()
+                    .expect("validated Unit address")
+                    .to_string()
+            } else {
+                words[3].to_string()
+            };
+            child.set("Address", address);
+            if element == "Unit" {
+                child.set("UnitName", name);
+            }
         }
         let mut replacement = record.clone();
         replacement.root.at_mut(&selected.indices).push_child(child);
-        let mut staged = self.clone();
         match staged.replace_internal_tag_record(&selected.project, &selected.key, replacement) {
             Ok(()) => {
                 *self = staged;
@@ -3000,10 +3034,136 @@ impl Server {
             Ok(record) => record,
             Err(error) => return Some(err(tag, 408, &format!("408 Operation failed: {error}"))),
         };
-        let parsed = roxmltree::Document::parse(document);
-        let replacement = match parsed.and_then(|doc| {
-            parse_node(doc.root_element()).map_err(|_| roxmltree::Error::NoRootNode)
-        }) {
+        let parsed = match roxmltree::Document::parse(document) {
+            Ok(parsed) => parsed,
+            Err(error) => return Some(err(tag, 446, &format!("446 Unable to set XML: {error}"))),
+        };
+        if record.database_network.is_none()
+            && selected.indices.len() == 1
+            && record.root.at(&selected.indices).element == "Unit"
+        {
+            // A Unit replacement owns only that Unit. Re-admitting the whole
+            // Network would reject or project unrelated raw/incomplete data.
+            // Keep external Network admission strict, and validate the complete
+            // replacement Unit and its identity conflicts before one commit.
+            let unit = match crate::parse_db_xml_unit(parsed.root_element()) {
+                Ok(unit) => unit,
+                Err(error) if error == crate::DB_XML_UNIT_NAME_REQUIRED => {
+                    return Some(crate::db_xml_missing_unit_name(tag, false));
+                }
+                Err(error) => return Some(err(tag, 400, &format!("400 {error}"))),
+            };
+            let replacement = match parse_node(parsed.root_element()) {
+                Ok(node) => node,
+                Err(error) => {
+                    return Some(err(tag, 446, &format!("446 Unable to set XML: {error}")))
+                }
+            };
+            let target_index = selected.indices[0];
+            if record
+                .root
+                .children
+                .iter()
+                .enumerate()
+                .any(|(index, child)| {
+                    index != target_index
+                        && child.element == "Unit"
+                        && child.field("Address") == replacement.field("Address")
+                })
+            {
+                return Some(err(
+                    tag,
+                    409,
+                    "409 DBSETXML destination unit address already exists",
+                ));
+            }
+            let own = record.root.oids().into_iter().collect::<HashSet<_>>();
+            let active = self.active_db_oids(&selected.project);
+            if replacement
+                .oids()
+                .iter()
+                .any(|oid| active.contains(oid) && !own.contains(oid))
+            {
+                return Some(err(
+                    tag,
+                    409,
+                    "409 DBSETXML OID already exists in the selected project",
+                ));
+            }
+            fn identities<'a>(node: &'a TagNode, rows: &mut Vec<(&'a str, &'a str)>) {
+                if let Some(oid) = node.field("OID") {
+                    rows.push((oid, &node.element));
+                }
+                for child in &node.children {
+                    identities(child, rows);
+                }
+            }
+            fn conflicts(node: &TagNode, oid: &str, kind: &str, target: &TagNode) -> bool {
+                if std::ptr::eq(node, target) {
+                    return false;
+                }
+                (node.field("OID") == Some(oid)
+                    && !matches!(
+                        (node.element.as_str(), kind),
+                        ("Unit" | "Application", "Unit" | "Application")
+                    ))
+                    || node
+                        .children
+                        .iter()
+                        .any(|child| conflicts(child, oid, kind, target))
+            }
+            let mut submitted = Vec::new();
+            identities(&replacement, &mut submitted);
+            let mut seen = BTreeMap::new();
+            for (oid, kind) in submitted {
+                if !crate::valid_uuid(oid) {
+                    return Some(err(
+                        tag,
+                        400,
+                        "400 DBSETXML Unit has an invalid subtree OID",
+                    ));
+                }
+                let duplicate = seen.insert(oid, kind).is_some_and(|previous| {
+                    !matches!(
+                        (previous, kind),
+                        ("Unit" | "Application", "Unit" | "Application")
+                    )
+                });
+                if duplicate
+                    || conflicts(&record.root, oid, kind, record.root.at(&selected.indices))
+                {
+                    return Some(err(
+                        tag,
+                        409,
+                        "409 DBSETXML document contains unsupported duplicate OIDs",
+                    ));
+                }
+            }
+            let mut replacement_record = record;
+            *replacement_record.root.at_mut(&selected.indices) = replacement;
+            let mut staged = self.clone();
+            return Some(
+                match staged.replace_internal_tag_record(
+                    &selected.project,
+                    &selected.key,
+                    replacement_record,
+                ) {
+                    Ok(()) => {
+                        *self = staged;
+                        Response {
+                            tag: tag.to_string(),
+                            lines: Vec::new(),
+                            final_text: format!("301 OID={}", unit.oid),
+                            status: 301,
+                        }
+                    }
+                    Err(error) => err(tag, 408, &format!("408 Operation failed: {error}")),
+                },
+            );
+        }
+        let replacement = match parse_node(parsed.root_element())
+            .map_err(|_| roxmltree::Error::NoRootNode)
+        {
             Ok(node) => node,
             Err(error) => return Some(err(tag, 446, &format!("446 Unable to set XML: {error}"))),
         };

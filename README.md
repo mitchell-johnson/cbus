@@ -77,6 +77,15 @@ Known numeric-copy and retained-XML LOAD bugs, plus an unverified missing-descen
 selector edge, are recorded in the [manual correction handoff](https://github.com/mitchell-johnson/cbus/issues/74).
 These remain unfinished.
 
+The [loaded-project barcode workflow](toolkit-cli/docs/barcode.md)
+adds or selects a scanned Unit with `cbus-toolkit cgate database barcode-add`.
+It previews against one exact project and private unit catalogue, selects
+project-wide serial duplicates, and optionally creates and verifies a new
+database Unit. cmqttd preserves unrelated labels, programming parameters and
+incomplete Units while initializing the new object. Project saving and device
+programming are explicit later steps; original GUI, physical scanner and
+PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
+
 The [classic DLT physical workflow](toolkit-cli/docs/classic-dlt-physical-workflow.md)
 connects a saved KEYML5 2.1.00/5055DL Indicators plan to one physical save,
 fresh field verification and read-only recovery through cmqttd. It checks the

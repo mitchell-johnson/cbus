@@ -16477,7 +16477,15 @@ async fn project_archive_restore_and_secondary_rename_are_durable_database_only(
         "[4a] DBSETSAFE //AUX/1/p/20/UnitName Unrelated",
     ] {
         let response = service.handle(&mut client, command).await;
-        assert_eq!(response.status, 200, "{command}: {response:?}");
+        assert_eq!(
+            response.status,
+            if command.contains(" DBADDSAFE ") {
+                301
+            } else {
+                200
+            },
+            "{command}: {response:?}"
+        );
     }
     let archived = service
         .handle(&mut client, "[5] PROJECT ARCHIVE AUX cmqttd:archive-one")
@@ -16555,7 +16563,15 @@ async fn project_copy_and_secondary_delete_are_durable_database_only() {
         "[5] DBSETSAFE //AUX/1/p/20/UnitName Unrelated",
     ] {
         let response = service.handle(&mut client, command).await;
-        assert_eq!(response.status, 200, "{command}: {response:?}");
+        assert_eq!(
+            response.status,
+            if command.contains(" DBADDSAFE ") {
+                301
+            } else {
+                200
+            },
+            "{command}: {response:?}"
+        );
     }
     let level = service
         .handle(&mut client, "[6] DBADDSAFE //AUX/1/56/1 Level 7 Seven")
@@ -16741,7 +16757,15 @@ async fn local_catalog_calculator_and_cgl_exchange_are_exact_and_durable() {
         "[u7-type] DBSETSAFE //HARNESS/254/p/7/UnitType POWER",
     ] {
         let response = service.handle(&mut client, command).await;
-        assert_eq!(response.status, 200, "{command}: {response:?}");
+        assert_eq!(
+            response.status,
+            if command.contains(" DBADDSAFE ") {
+                301
+            } else {
+                200
+            },
+            "{command}: {response:?}"
+        );
     }
     let calculation = service
         .handle(
@@ -20530,7 +20554,11 @@ async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
                 .handle(&mut client, &format!("[{tag}] {command}"))
                 .await
                 .status,
-            200,
+            if command.starts_with("DBADDSAFE ") {
+                301
+            } else {
+                200
+            },
             "{command}"
         );
     }

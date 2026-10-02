@@ -1110,7 +1110,7 @@
       "id": "toolkit-differential-acceptance",
       "status": "pending",
       "evidence": [],
-      "limits": "Barcode family: scanner grammar, Units-view add/select and unit-dialog serial rules are pinned to original Toolkit instructions (docs/barcode.md); offline project add-unit --barcode covers legacy XML/CBZ only. No GUI-run differential, native database add path or physical scanner acceptance."
+      "limits": "Barcode family: scanner grammar, Units-view add/select and unit-dialog serial rules are pinned to original Toolkit instructions (docs/barcode.md); offline project add-unit --barcode covers legacy XML/CBZ. The loaded-project cgate database barcode-add workflow previews or adds/selects through owned Rust services with explicit project ownership, fresh issued identity and complete readback/preservation checks. Project saving and physical programming are separate. KEYGL5/Hydra routines, broad Schneider native-server comparison, GUI timing, physical scanner and controller handoff acceptance remain open."
     },
     {
       "id": "unit-hardware-acceptance",

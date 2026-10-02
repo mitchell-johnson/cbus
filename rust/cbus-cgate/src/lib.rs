@@ -9750,7 +9750,10 @@ impl Server {
 
     /// Native `DBADDSAFE parent element address name`.
     fn dbadd(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 5 {
+        let unit_tail = words
+            .get(2)
+            .is_some_and(|element| element.eq_ignore_ascii_case("Unit"));
+        if words.len() < 5 || (words.len() != 5 && !unit_tail) {
             return err(
                 tag,
                 status::BAD_REQUEST,
@@ -9771,7 +9774,8 @@ impl Server {
         if !(0..=255).contains(&addr) {
             return err(tag, status::BAD_REQUEST, "400 Invalid database address");
         }
-        if words[4].is_empty() || words[4].contains('#') {
+        let name = words[4..].join(" ");
+        if name.is_empty() || name.contains('#') {
             return err(tag, status::BAD_REQUEST, "400 Invalid tag name");
         }
         let Some((proj_name, net)) = self.network_of(words[1]) else {
@@ -9787,15 +9791,23 @@ impl Server {
             if network.units.contains_key(&addr) {
                 return err(tag, status::CONFLICT_EXISTS, "409 Unit already exists");
             }
-            let unit = Unit::blank(addr, words[4]);
+            let mut unit = Unit::blank(addr, &name);
+            while self.known_oids.contains(&unit.oid) {
+                unit.oid = fresh_oid();
+            }
             let oid = unit.oid.clone();
             network.units.insert(addr, unit.clone());
             // A new unit is both databased and physically present.
             network.physical.insert(addr, unit);
-            self.known_oids.insert(oid);
+            self.known_oids.insert(oid.clone());
             self.objects.insert(format!("{}-unit-{addr}", words[1]));
             self.push_event(format!("#e# db unit {addr} added"));
-            return ok(tag, vec![], "200 OK");
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("301 OID={oid}"),
+                status: 301,
+            };
         }
         if element == "LEVEL" || element == "NETVAR" {
             // Native answers Level creation with a single 301 OID line which
@@ -13146,7 +13158,7 @@ mod tests {
         // Unit lifecycle through the native SAFE verbs.
         assert_eq!(
             s.handle("[3] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
@@ -13220,7 +13232,7 @@ mod tests {
         assert!(xml.lines.iter().any(|l| l.starts_with("347-")));
         assert_eq!(
             s.handle("[31] DBADDSAFE //TEST/252 Unit 30 Study").status,
-            200
+            301
         );
         // Boundary-checked delete: removing p/3 must not touch p/30.
         assert_eq!(s.handle("[32] DBDELETE //TEST/252/p/3").status, 404);
@@ -13270,7 +13282,7 @@ mod tests {
         // layers' struct twins (unit 40 is fresh below).
         assert_eq!(
             s.handle("[42] DBADDSAFE //TEST/252 Unit 40 Aux").status,
-            200
+            301
         );
         assert_eq!(s.handle("[43] GET //TEST/252/p/40 NoSuchField").status, 402);
         assert_eq!(
@@ -13343,7 +13355,7 @@ mod tests {
         );
         assert_eq!(
             s.handle("[3] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4] DBSETSAFE //TEST/254/p/20/UnitType KEY1")
@@ -13489,7 +13501,7 @@ mod tests {
         );
         assert_eq!(
             s.handle("[4c] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4d] DBSETSAFE //TEST/254/p/20/UnitName LOUNGE")
@@ -13635,7 +13647,7 @@ mod tests {
         assert_eq!(
             s.handle("[3] DBADDSAFE //SOURCE/254 Unit 20 Original")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4] DBSETSAFE //SOURCE/254/p/20/UnitName Unrelated")
@@ -13823,7 +13835,7 @@ mod tests {
                 .status,
             200
         );
-        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 6 Hall").status, 200);
+        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 6 Hall").status, 301);
         // Dropping bus presence keeps the database object addressable while
         // physical inventory remains empty.
         assert_eq!(s.handle("[4] MOCK BUS-DEL //TEST/254 6").status, 200);
@@ -13851,7 +13863,11 @@ mod tests {
         ] {
             assert_eq!(
                 server.handle(&format!("[1] {command}")).status,
-                200,
+                if command == "DBADDSAFE //SNAP/254 Unit 4 Owned" {
+                    301
+                } else {
+                    200
+                },
                 "{command}"
             );
         }
@@ -13941,7 +13957,7 @@ mod tests {
                 .status,
             200
         );
-        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 200);
+        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 301);
         assert_eq!(
             s.handle("[4] DBSETSAFE //TEST/254/p/4/UnitType KEYE1")
                 .status,
@@ -13989,7 +14005,7 @@ mod tests {
                 .status,
             200
         );
-        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 200);
+        assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 301);
         assert_eq!(
             s.handle("[4] DBSETSAFE //TEST/254/p/4/UnitName A\"B&C<D>")
                 .status,
@@ -14103,7 +14119,7 @@ mod tests {
         );
         assert_eq!(
             s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
-            200
+            301
         );
         // A whole-unit path has no field segment: no bogus `20` field.
         assert_eq!(s.handle("[5] DBSETSAFE //TEST/254/p/20 77").status, 200);
@@ -14131,7 +14147,7 @@ mod tests {
         );
         assert_eq!(
             s.handle("[3] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4] DBSETSAFE //TEST/254/p/20/UnitName X").status,

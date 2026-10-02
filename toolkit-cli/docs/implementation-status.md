@@ -48,6 +48,24 @@ as evidence of functional completion.
 
 ## Test checkpoints
 
+The [loaded-project barcode workflow](feature-batch-2026-10-02-barcode-database.md)
+adds typed preview/add/select through both Rust services, with fresh issued
+identity, complete Unit initialization and full project preservation. Required
+Rust 1.99 checks passed with 8,655 workspace tests and one ignored private-input
+case. Final source and fresh installed wheel each passed 92 focused parents and
+67 separate subtests; all 327 package files and 417 source/resource pins match.
+Maintained interop passed 192 parent/framing tests with two vendor-specification
+skips and 227 subtests. Six actual modeled comparisons retain 1,123 current
+source bindings; resource consumers passed 261 parents with one original-input
+skip and 934 subtests. The
+[bounded receipt](../research/fixtures/barcode-database-owned-release-20261002.json)
+preserves earlier failures and later wording/prose deltas without rebinding
+executions. The full Python suite was not repeated; current original/vendor/VM
+and hardware execution remains zero. KEYGL5/Hydra routines, broader native
+creation/defaults, GUI/scanner acceptance and controller handoff remain in
+[#58](https://github.com/mitchell-johnson/cbus/issues/58). Category and fully
+accepted obligation counts remain unchanged.
+
 The [associated raw Level Value extension](feature-batch-2026-10-02-associated-raw-level-values.md)
 retains nonempty non-byte scalar tails on existing Group/NetVar Levels, through
 explicit project save/reload and cmqttd JSON restart. Five scalar selectors and
@@ -434,7 +452,7 @@ The [development checkpoint](development-checkpoint.md) keeps the earlier failed
 
 ## Pending acceptance and remaining plan
 
-The broad feature ledger does not replace the remaining executable-level census. Additional documented surfaces still need explicit workflow specifications and implementations: physical wireless learn/join, pairing and gateway forwarding (bounded Connection/Scenes database editors, WTXU metadata creation, WGATE5F Remote Switch mapping, WRM learn globals and typed cached/explicit unit actions are in [wireless](wireless.md)); relay/dimmer logic controls beyond the eight [DIN output settings](din-output-settings.md) profiles (RELDN4/8/8B/12, DIMDN4/4F/8/8F at 2.7.00); barcode scanner input and resulting unit selection/creation; project/topology documentation, print and image export; remaining navigation/menu workflows; and controller integration boundaries with external applications such as PICED. These appear in the [census scope and unresolved acceptance](toolkit-surface.md#prioritized-unresolved-acceptance); their presence in help is not a completed Python function.
+The broad feature ledger does not replace the remaining executable-level census. Additional documented surfaces still need explicit workflow specifications and implementations: physical wireless learn/join, pairing and gateway forwarding (bounded Connection/Scenes database editors, WTXU metadata creation, WGATE5F Remote Switch mapping, WRM learn globals and typed cached/explicit unit actions are in [wireless](wireless.md)); relay/dimmer logic controls beyond the eight [DIN output settings](din-output-settings.md) profiles (RELDN4/8/8B/12, DIMDN4/4F/8/8F at 2.7.00); remaining KEYGL5/Hydra scanner routines and native GUI/physical acceptance beyond the [offline and loaded-project barcode add/select workflows](barcode.md); project/topology documentation, print and image export; remaining navigation/menu workflows; and controller integration boundaries with external applications such as PICED. These appear in the [census scope and unresolved acceptance](toolkit-surface.md#prioritized-unresolved-acceptance); their presence in help is not a completed Python function.
 
 | Ledger ID | Required work |
 | --- | --- |

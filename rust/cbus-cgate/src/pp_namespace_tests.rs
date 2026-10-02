@@ -11,7 +11,15 @@ pub(crate) fn fixture() -> Server {
         "[test] DBSETSAFE //PPSTORE/254/p/20/UnitType SYNTH",
         "[test] DBSETSAFE //PPSTORE/254/p/20/FirmwareVersion 1.0.00",
     ] {
-        assert_eq!(server.handle(command).status, 200, "{command}");
+        assert_eq!(
+            server.handle(command).status,
+            if command == "[test] DBADDSAFE //PPSTORE/254 Unit 20 Original" {
+                301
+            } else {
+                200
+            },
+            "{command}"
+        );
     }
     let oid = server.projects["PPSTORE"].networks[&254].units[&20]
         .oid

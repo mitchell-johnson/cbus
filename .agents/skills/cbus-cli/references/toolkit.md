@@ -88,8 +88,25 @@ software configuration code (catalogue in characters 1–16, serial from 17) and
 `barcode parse [TEXT]`, which reads stdin lines when TEXT is omitted, to classify
 scans. Use `project add-unit FILE --network N --catalog cbusunits.xml --barcode TEXT`
 to add a unit to a legacy XML/CBZ project. A duplicate serial selects the existing
-unit and writes nothing. See `toolkit-cli/docs/barcode.md`. Toolkit has no PICED
-launcher or handoff.
+unit and writes nothing. For a loaded database, use
+`cgate database barcode-add //PROJECT/NETWORK --project PROJECT --catalog cbusunits.xml --barcode TEXT`.
+It previews by default; `--apply --exclusive-project` sends one SAFE Unit ADD
+and one native Unit XML initializer, then verifies the fresh OID, planned fields
+and unrelated whole-project XML. The pure plan uses the first project-wide
+duplicate serial in XML order, retains the independent second serial branch,
+and omits the offline `State=New` marker from native fields. An existing match
+selects its path/OID without writing. The exact Network Address may be named;
+do not substitute its physical NetworkNumber. Optional
+`--expect-project-sha256`/`--expect-catalog-sha256` bind the initial snapshot and
+catalogue bytes; a fresh pre-write check refuses drift but is not a server-side
+compare-and-swap. `--auth-token-file` supplies one private cmqttd LOGIN token
+with redacted evidence. The workflow sends no PP initializer, project SAVE or
+physical programming. After an uncertain ADD/initializer error, retain the
+receipt and inspect through a fresh read; it does not retry, roll back or delete
+automatically. Preserve exclusive project ownership. Owned backend tests and
+the recovered component vectors do not establish broad Schneider native-server,
+original GUI or physical-scanner acceptance. See `toolkit-cli/docs/barcode.md`.
+Toolkit has no PICED launcher or handoff.
 
 When a repaired XML `Installation` still has DBVersion 2, 2.1 or 2.2, use
 `project transform-legacy REPAIRED.xml --dry-run` to validate the bounded

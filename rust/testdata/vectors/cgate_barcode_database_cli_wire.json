@@ -1,0 +1,550 @@
+{
+  "format": "cbus-cgate-barcode-database-cli-wire-v1",
+  "provenance": "Maintained public Python CLI expectations on explicitly owned cgate-mock and cmqttd. Synthetic catalogue/project graphs; no original execution or vendor/hardware acceptance. Dynamic UUIDs and the owned token are bound only in test evidence.",
+  "scope": {
+    "original_execution": false,
+    "physical_acceptance": false,
+    "project": "LAB",
+    "primary_network": "independent named CustomA",
+    "secondary_numeric_network": "Restored assigned numeric Network11; existing typed numeric Unit ADD and retained qualified tag scalar route. No associated Level owner correction or bare/runtime-only scalar journey.",
+    "preserved": [
+      "complete project graph and ordered XML",
+      "existing Unit OIDs and colliding PP names/values",
+      "independent named raw Level Value=oops",
+      "existing incomplete SAFE Unit4",
+      "Network comments/namespaced decoration",
+      "Neighbor/Air/OTHER and configured BRIDGE project"
+    ],
+    "adapter": "one DBADDSAFE Unit then one direct DBSETXML of the issued addressed Unit",
+    "implicit_pp_initializer": false,
+    "implicit_project_save": false,
+    "implicit_project_reload": false,
+    "automatic_retry": false,
+    "automatic_rollback": false,
+    "cmqttd_json_restart": true,
+    "mock_persistence": "process-local explicit SAVE/CLOSE/LOAD",
+    "failure_injection": "controlled owned loopback relay, explicit refusal or discarded actual receipt; no fabricated original or hardware outcome"
+  },
+  "new_fields": {
+    "UnitType": "KEYBL5",
+    "SerialNumber": "12345678.9012",
+    "CatalogNumber": "5031NL",
+    "FirmwareVersion": "1.2.00",
+    "UnitName": "NEWUNIT"
+  },
+  "new_unit_xml_fields": [
+    "OID",
+    "TagName",
+    "Address",
+    "UnitType",
+    "UnitName",
+    "SerialNumber",
+    "FirmwareVersion",
+    "CatalogNumber"
+  ],
+  "preview": {
+    "requests": [
+      "PROJECT USE LAB",
+      "DBGETXML //LAB"
+    ],
+    "statuses": [
+      200,
+      344
+    ]
+  },
+  "apply": {
+    "requests": [
+      "PROJECT USE LAB",
+      "DBGETXML //LAB",
+      "DBGETXML //LAB",
+      "DBADDSAFE //LAB/CustomA Unit 2 NEWUNIT",
+      "DBGETXML //LAB/CustomA/p/2",
+      "DBSETXML //LAB/CustomA/p/2",
+      "DBGETXML //LAB/CustomA/p/2",
+      "DBGET !${issued}/OID",
+      "DBGET //LAB/CustomA/p/2/TagName",
+      "DBGET //LAB/CustomA/p/2/Address",
+      "DBGET //LAB/CustomA/p/2/UnitType",
+      "DBGET //LAB/CustomA/p/2/SerialNumber",
+      "DBGET //LAB/CustomA/p/2/CatalogNumber",
+      "DBGET //LAB/CustomA/p/2/FirmwareVersion",
+      "DBGET //LAB/CustomA/p/2/UnitName",
+      "DBGETXML //LAB"
+    ],
+    "statuses": [
+      200,
+      344,
+      344,
+      301,
+      344,
+      301,
+      344,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      344
+    ]
+  },
+  "numeric_apply": {
+    "requests": [
+      "PROJECT USE LAB",
+      "DBGETXML //LAB",
+      "DBGETXML //LAB",
+      "DBADDSAFE //LAB/11 Unit 0 Hall & Café",
+      "DBGETXML //LAB/11/p/0",
+      "DBSETXML //LAB/11/p/0",
+      "DBGETXML //LAB/11/p/0",
+      "DBGET !${issued}/OID",
+      "DBGET //LAB/11/p/0/TagName",
+      "DBGET //LAB/11/p/0/Address",
+      "DBGET //LAB/11/p/0/UnitType",
+      "DBGET //LAB/11/p/0/SerialNumber",
+      "DBGET //LAB/11/p/0/CatalogNumber",
+      "DBGET //LAB/11/p/0/FirmwareVersion",
+      "DBGET //LAB/11/p/0/UnitName",
+      "DBGETXML //LAB"
+    ],
+    "statuses": [
+      200,
+      344,
+      344,
+      301,
+      344,
+      301,
+      344,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      344
+    ],
+    "owner": "Restored assigned numeric Network11; ADD uses the existing typed numeric owner; qualified Unit scalar reads use retained tag terminal342."
+  },
+  "auth_apply": {
+    "requests": [
+      "LOGIN ${owned_token}",
+      "PROJECT USE LAB",
+      "DBGETXML //LAB",
+      "DBGETXML //LAB",
+      "DBADDSAFE //LAB/CustomA Unit 2 NEWUNIT",
+      "DBGETXML //LAB/CustomA/p/2",
+      "DBSETXML //LAB/CustomA/p/2",
+      "DBGETXML //LAB/CustomA/p/2",
+      "DBGET !${issued}/OID",
+      "DBGET //LAB/CustomA/p/2/TagName",
+      "DBGET //LAB/CustomA/p/2/Address",
+      "DBGET //LAB/CustomA/p/2/UnitType",
+      "DBGET //LAB/CustomA/p/2/SerialNumber",
+      "DBGET //LAB/CustomA/p/2/CatalogNumber",
+      "DBGET //LAB/CustomA/p/2/FirmwareVersion",
+      "DBGET //LAB/CustomA/p/2/UnitName",
+      "DBGETXML //LAB"
+    ],
+    "statuses": [
+      200,
+      200,
+      344,
+      344,
+      301,
+      344,
+      301,
+      344,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      342,
+      344
+    ]
+  },
+  "auth_denied": {
+    "requests": [
+      "PROJECT USE LAB",
+      "DBGETXML //LAB",
+      "DBGETXML //LAB",
+      "DBADDSAFE //LAB/CustomA Unit 2 NEWUNIT"
+    ],
+    "statuses": [
+      200,
+      344,
+      344,
+      420
+    ]
+  },
+  "selections": [
+    {
+      "id": "unknown-catalogue-duplicate-other-network",
+      "barcode": "UNKNOWN         009900010002",
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--address",
+        "1"
+      ],
+      "phase": "selected_existing",
+      "action": "selected_existing"
+    },
+    {
+      "id": "serial-only-duplicate-other-network",
+      "barcode": "009900010002",
+      "phase": "selected_existing",
+      "action": "selected_existing"
+    },
+    {
+      "id": "serial-only-not-found",
+      "barcode": "000000000099",
+      "options": [
+        "--apply",
+        "--exclusive-project"
+      ],
+      "phase": "not_found",
+      "action": "not_found"
+    }
+  ],
+  "lifecycle": [
+    {
+      "argv": [
+        "save",
+        "LAB"
+      ],
+      "requests": [
+        "PROJECT SAVE LAB"
+      ],
+      "statuses": [
+        200
+      ]
+    },
+    {
+      "argv": [
+        "close",
+        "LAB"
+      ],
+      "requests": [
+        "PROJECT CLOSE LAB"
+      ],
+      "statuses": [
+        200
+      ]
+    },
+    {
+      "argv": [
+        "load",
+        "LAB"
+      ],
+      "requests": [
+        "PROJECT LOAD LAB"
+      ],
+      "statuses": [
+        200
+      ]
+    }
+  ],
+  "refusals": [
+    {
+      "id": "apply-needs-exclusive",
+      "connections": 0,
+      "error_contains": "--apply requires --exclusive-project",
+      "requests": [],
+      "statuses": [],
+      "options": [
+        "--apply"
+      ]
+    },
+    {
+      "id": "catalogue-hash-before-connection",
+      "connections": 0,
+      "error_contains": "Catalogue SHA-256 differs",
+      "requests": [],
+      "statuses": [],
+      "options": [
+        "--expect-catalog-sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      "id": "one-wedge-scan-before-connection",
+      "connections": 0,
+      "error_contains": "Supply exactly one nonempty scan",
+      "requests": [],
+      "statuses": [],
+      "barcode": "5031NL          123456789012\n5031NL          000000000042"
+    },
+    {
+      "id": "foreign-network-before-connection",
+      "connections": 0,
+      "error_contains": "exact //PROJECT/NETWORK",
+      "requests": [],
+      "statuses": [],
+      "network": "//OTHER/Else"
+    },
+    {
+      "id": "stale-project-hash",
+      "connections": 1,
+      "error_contains": "Project SHA-256 differs",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--expect-project-sha256",
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    },
+    {
+      "id": "occupied-address",
+      "connections": 1,
+      "error_contains": "Address is not offered",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--address",
+        "3"
+      ]
+    },
+    {
+      "id": "missing-network",
+      "connections": 1,
+      "error_contains": "Network not selected",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "network": "//LAB/Missing"
+    },
+    {
+      "id": "unknown-catalogue",
+      "connections": 1,
+      "error_contains": "Scanned Unit Type not known",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "barcode": "UNKNOWN         000000000042"
+    },
+    {
+      "id": "wireless-on-wired",
+      "connections": 1,
+      "error_contains": "Cannot add Wireless Unit",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "barcode": "5031RDTSL       000000000042"
+    },
+    {
+      "id": "wired-on-wireless",
+      "connections": 1,
+      "error_contains": "Cannot add Wired Unit",
+      "requests": [
+        "PROJECT USE LAB",
+        "DBGETXML //LAB"
+      ],
+      "statuses": [
+        200,
+        344
+      ],
+      "network": "//LAB/Air"
+    },
+    {
+      "id": "unrepresentable-tag",
+      "connections": 0,
+      "error_contains": "forbidden",
+      "requests": [],
+      "statuses": [],
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--tag-name",
+        "bad￾"
+      ]
+    },
+    {
+      "id": "control-tail",
+      "connections": 0,
+      "error_contains": "control characters",
+      "requests": [],
+      "statuses": [],
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--tag-name",
+        "bad\nname"
+      ]
+    },
+    {
+      "id": "control-c1-tag",
+      "connections": 0,
+      "error_contains": "control characters",
+      "requests": [],
+      "statuses": [],
+      "options": [
+        "--apply",
+        "--exclusive-project",
+        "--tag-name",
+        "badname"
+      ]
+    },
+    {
+      "id": "ignored-scan-before-connection",
+      "barcode": "123456789012",
+      "connections": 0,
+      "error_contains": "Toolkit ignores this scan",
+      "requests": [],
+      "statuses": []
+    }
+  ],
+  "failures": [
+    {
+      "id": "add-refused",
+      "verb": "DBADDSAFE",
+      "mode": "refuse",
+      "phase": "add",
+      "occurrence": 1,
+      "document_count": 0,
+      "created_in_backend": false,
+      "initialized_in_backend": false,
+      "database_write": {
+        "add_attempted": true,
+        "add_confirmed": false,
+        "document_attempted": false,
+        "document_confirmed": false,
+        "outcome_uncertain": false
+      }
+    },
+    {
+      "id": "add-receipt-lost",
+      "verb": "DBADDSAFE",
+      "mode": "drop",
+      "phase": "add",
+      "occurrence": 1,
+      "document_count": 0,
+      "created_in_backend": true,
+      "initialized_in_backend": false,
+      "database_write": {
+        "add_attempted": true,
+        "add_confirmed": false,
+        "document_attempted": false,
+        "document_confirmed": false,
+        "outcome_uncertain": true
+      }
+    },
+    {
+      "id": "initializer-refused",
+      "verb": "DBSETXML",
+      "mode": "refuse",
+      "phase": "initialize",
+      "occurrence": 1,
+      "document_count": 1,
+      "created_in_backend": true,
+      "initialized_in_backend": false,
+      "database_write": {
+        "add_attempted": true,
+        "add_confirmed": true,
+        "document_attempted": true,
+        "document_confirmed": false,
+        "outcome_uncertain": false
+      }
+    },
+    {
+      "id": "initializer-receipt-lost",
+      "verb": "DBSETXML",
+      "mode": "drop",
+      "phase": "initialize",
+      "occurrence": 1,
+      "document_count": 1,
+      "created_in_backend": true,
+      "initialized_in_backend": true,
+      "database_write": {
+        "add_attempted": true,
+        "add_confirmed": true,
+        "document_attempted": true,
+        "document_confirmed": false,
+        "outcome_uncertain": true
+      }
+    },
+    {
+      "id": "independent-readback-refused",
+      "verb": "DBGETXML",
+      "mode": "refuse",
+      "phase": "readback",
+      "occurrence": 4,
+      "document_count": 1,
+      "created_in_backend": true,
+      "initialized_in_backend": true,
+      "database_write": {
+        "add_attempted": true,
+        "add_confirmed": true,
+        "document_attempted": true,
+        "document_confirmed": true,
+        "outcome_uncertain": false
+      }
+    }
+  ],
+  "stale_between_reads": {
+    "requests": [
+      "PROJECT USE LAB",
+      "DBGETXML //LAB",
+      "DBGETXML //LAB"
+    ],
+    "statuses": [
+      200,
+      344,
+      344
+    ],
+    "phase": "preconditions",
+    "controlled_external_change": "Neighbor/TagName only; no barcode mutation"
+  },
+  "retained_numeric_scalar_reply": {
+    "oid": {
+      "status": 342,
+      "selector": "!${issued}/OID",
+      "rows": [
+        "342 !${issued}/OID=${issued}"
+      ]
+    },
+    "other_fields": {
+      "status": 342,
+      "rows": [
+        "342 ${exact_selector}=${planned_value}"
+      ]
+    }
+  }
+}

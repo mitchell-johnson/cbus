@@ -2,6 +2,524 @@
 //! these tests establish local state, persistence and absence of PCI traffic.
 use super::*;
 
+fn barcode_unit_vector() -> serde_json::Value {
+    serde_json::from_str(include_str!(
+        "../../../../testdata/vectors/cgate_barcode_unit_initialization.json"
+    ))
+    .unwrap()
+}
+
+fn without_unit(document: &str, address: &str) -> String {
+    let parsed = roxmltree::Document::parse(document).unwrap();
+    let unit = parsed
+        .root_element()
+        .children()
+        .find(|node| {
+            node.has_tag_name("Unit")
+                && node
+                    .children()
+                    .any(|child| child.has_tag_name("Address") && child.text() == Some(address))
+        })
+        .unwrap();
+    let mut remaining = document.to_string();
+    remaining.replace_range(unit.range(), "");
+    remaining
+}
+
+async fn barcode_unit_document(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    target: &str,
+    document: &str,
+) -> Response {
+    service
+        .handle_document(
+            client,
+            &format!("[barcode-doc] DBSETXML {target}"),
+            document,
+        )
+        .await
+}
+
+#[tokio::test]
+async fn barcode_unit_add_initialize_preserves_irregular_owner_and_is_durable_without_pci() {
+    let vector = barcode_unit_vector();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let graph = graph(&service, &mut client).await;
+    let existing_unit = "11111111-1111-4111-8111-111111111111";
+    let owner = xml(&service, &mut client, "//NAMED/CustomA").await;
+    let decorated = owner.replace("<Network>", "<Network xmlns:meta=\"urn:owned-barcode-test\">").replace(
+        "</Network>",
+        &format!("<!--keep owner comment--><meta:Payload key=\"untouched\">opaque</meta:Payload><Unit><OID>{existing_unit}</OID><Address>1</Address><TagName>Existing</TagName><UnitName>Existing</UnitName><UnitType>SYNTH</UnitType><FirmwareVersion>1.0.00</FirmwareVersion><PP Name=\"UnitName\" Value=\"PP label\"/><PP Name=\"StaticTextString0\" Value=\"Kitchen label\"/></Unit></Network>"),
+    );
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, "//NAMED/CustomA", &decorated)
+            .await
+            .status,
+        301
+    );
+    // Complete the existing modeled SAVE/LOAD TagsDLT lifecycle before the
+    // preservation baseline; the new Unit workflow must not change it.
+    for command in [
+        "PROJECT SAVE NAMED",
+        "PROJECT CLOSE NAMED",
+        "PROJECT LOAD NAMED",
+        "PROJECT USE NAMED",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSET !{}/Value oops", graph.level),
+    )
+    .await;
+    let incomplete = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //NAMED/CustomA Unit 2 NEWUNIT",
+    )
+    .await;
+    let before = xml(&service, &mut client, "//NAMED/CustomA").await;
+    let before_oids = oid_set(&before);
+    let neighbor = xml(&service, &mut client, "//NAMED/Neighbor").await;
+    let old_unit = xml(&service, &mut client, &format!("!{existing_unit}")).await;
+    let incomplete_xml = xml(&service, &mut client, &format!("!{incomplete}")).await;
+    let application = xml(&service, &mut client, &format!("!{}", graph.app)).await;
+    assert!(before.contains("keep owner comment"));
+    assert!(before.contains("meta:Payload"));
+    let oid = created(
+        &service,
+        &mut client,
+        vector["safe_add"]["command"].as_str().unwrap(),
+    )
+    .await;
+    assert!(!before_oids.contains(&oid));
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{oid}/UnitName")).await,
+        "New Kitchen"
+    );
+    assert_eq!(
+        without_unit(&xml(&service, &mut client, "//NAMED/CustomA").await, "8"),
+        before
+    );
+    let document = vector["unit_xml"].as_str().unwrap().replace("%UNIT%", &oid);
+    let response =
+        barcode_unit_document(&service, &mut client, &format!("!{oid}"), &document).await;
+    assert_eq!(response.final_text, format!("301 OID={oid}"));
+    assert!(response.lines.is_empty());
+    for row in vector["reads"].as_array().unwrap() {
+        assert_eq!(
+            scalar(
+                &service,
+                &mut client,
+                &row["path"].as_str().unwrap().replace("%UNIT%", &oid)
+            )
+            .await,
+            row["value"].as_str().unwrap().replace("%UNIT%", &oid)
+        );
+    }
+    let after = xml(&service, &mut client, "//NAMED/CustomA").await;
+    assert_eq!(without_unit(&after, "8"), before);
+    assert!(!xml(&service, &mut client, &format!("!{oid}"))
+        .await
+        .contains("<PP"));
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{existing_unit}")).await,
+        old_unit
+    );
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{incomplete}")).await,
+        incomplete_xml
+    );
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{}", graph.app)).await,
+        application
+    );
+    assert_eq!(
+        xml(&service, &mut client, "//NAMED/Neighbor").await,
+        neighbor
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{}/Value", graph.level)).await,
+        "oops"
+    );
+    let mut expected_oids = before_oids;
+    expected_oids.insert(oid.clone());
+    assert_eq!(oid_set(&after), expected_oids);
+    for command in [
+        "PROJECT SAVE NAMED",
+        "PROJECT CLOSE NAMED",
+        "PROJECT LOAD NAMED",
+        "PROJECT USE NAMED",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(xml(&service, &mut client, "//NAMED/CustomA").await, after);
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    ok_command(&restarted, &mut client, "PROJECT USE NAMED").await;
+    assert_eq!(xml(&restarted, &mut client, "//NAMED/CustomA").await, after);
+    assert_eq!(
+        xml(&restarted, &mut client, "//NAMED/Neighbor").await,
+        neighbor
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn barcode_unit_collisions_refuse_atomically_and_existing_units_can_readdress() {
+    let vector = barcode_unit_vector();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let graph = graph(&service, &mut client).await;
+    let occupied = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //NAMED/CustomA Unit 1 NEWUNIT",
+    )
+    .await;
+    let foreign = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //NAMED/Neighbor Unit 1 NEWUNIT",
+    )
+    .await;
+    let oid = created(
+        &service,
+        &mut client,
+        vector["safe_add"]["command"].as_str().unwrap(),
+    )
+    .await;
+    let document = vector["unit_xml"].as_str().unwrap().replace("%UNIT%", &oid);
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, &format!("!{oid}"), &document)
+            .await
+            .status,
+        301
+    );
+    let before = xml(&service, &mut client, "//NAMED/CustomA").await;
+    let neighbor = xml(&service, &mut client, "//NAMED/Neighbor").await;
+    let state = std::fs::read(&path).unwrap();
+    for row in vector["refusals"].as_array().unwrap() {
+        let command = row["command"].as_str().unwrap().replace("%UNIT%", &oid);
+        let response = run(&service, &mut client, &command).await;
+        assert_eq!(
+            u64::from(response.status),
+            row["status"].as_u64().unwrap(),
+            "{command}: {response:?}"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), state);
+    }
+    for (rejected, status) in [
+        (
+            document.replace("<Address>8</Address>", "<Address>1</Address>"),
+            409,
+        ),
+        (document.replace(&oid, &foreign), 409),
+        (document.replace(&oid, &graph.group), 409),
+        (document.replace("<UnitName>NEWUNIT</UnitName>", ""), 446),
+        (document.replace("<UnitType>SYNTH</UnitType>", ""), 400),
+    ] {
+        let response =
+            barcode_unit_document(&service, &mut client, &format!("!{oid}"), &rejected).await;
+        assert_eq!(response.status, status, "{rejected}: {response:?}");
+        assert_eq!(xml(&service, &mut client, "//NAMED/CustomA").await, before);
+        assert_eq!(
+            xml(&service, &mut client, "//NAMED/Neighbor").await,
+            neighbor
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), state);
+    }
+    let moved_oid = "22222222-2222-4222-8222-222222222222";
+    let moved = document
+        .replace(&oid, moved_oid)
+        .replace("<Address>8</Address>", "<Address>9</Address>");
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, &format!("!{oid}"), &moved)
+            .await
+            .final_text,
+        format!("301 OID={moved_oid}")
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{moved_oid}/Address")).await,
+        "9"
+    );
+    assert_eq!(
+        run(&service, &mut client, &format!("DBGET !{oid}/OID"))
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        run(&service, &mut client, "DBGET //NAMED/CustomA/p/8/OID")
+            .await
+            .status,
+        401
+    );
+    assert_eq!(
+        scalar(&service, &mut client, "//NAMED/CustomA/p/9/OID").await,
+        moved_oid
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{occupied}/TagName")).await,
+        "NEWUNIT"
+    );
+    // Duplicate default names are allowed; only identity/address collisions
+    // are refused. Removing a named target retires its OID lookup.
+    let duplicate_name = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //NAMED/CustomA Unit 10 NEWUNIT",
+    )
+    .await;
+    assert_ne!(duplicate_name, moved_oid);
+    for row in vector["unit_address_aliases"].as_array().unwrap() {
+        let alias_oid = created(&service, &mut client, row["command"].as_str().unwrap()).await;
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{alias_oid}/Address")).await,
+            row["canonical_address"].as_str().unwrap()
+        );
+        if row["canonical_address"] == "13" {
+            // Generic named Unit XML keeps its existing literal policy.
+            // New Unit allocation still must detect this byte as occupied.
+            let existing_alias = document
+                .replace(&oid, &alias_oid)
+                .replace("<Address>8</Address>", "<Address>013</Address>");
+            assert_eq!(
+                barcode_unit_document(
+                    &service,
+                    &mut client,
+                    &format!("!{alias_oid}"),
+                    &existing_alias
+                )
+                .await
+                .status,
+                301
+            );
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{alias_oid}/Address")).await,
+                "013"
+            );
+            let alias_before = xml(&service, &mut client, "//NAMED/CustomA").await;
+            let alias_bytes = std::fs::read(&path).unwrap();
+            assert_eq!(
+                run(
+                    &service,
+                    &mut client,
+                    "DBADDSAFE //NAMED/CustomA Unit 13 AliasOccupied"
+                )
+                .await
+                .status,
+                401
+            );
+            assert_eq!(
+                xml(&service, &mut client, "//NAMED/CustomA").await,
+                alias_before
+            );
+            assert_eq!(std::fs::read(&path).unwrap(), alias_bytes);
+        }
+    }
+    assert_eq!(
+        xml(&service, &mut client, "//NAMED/Neighbor").await,
+        neighbor
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn barcode_unit_unsafe_minimal_creation_and_auth_admission_preserve_state() {
+    let vector = barcode_unit_vector();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let oid = created(
+        &service,
+        &mut client,
+        vector["unsafe_add"]["command"].as_str().unwrap(),
+    )
+    .await;
+    let document = xml(&service, &mut client, &format!("!{oid}")).await;
+    let parsed = roxmltree::Document::parse(&document).unwrap();
+    for field in vector["unsafe_add"]["absent_fields"].as_array().unwrap() {
+        assert!(!parsed
+            .descendants()
+            .any(|node| node.has_tag_name(field.as_str().unwrap())));
+    }
+    assert_eq!(
+        oid_set(&document),
+        std::collections::BTreeSet::from([oid.clone()])
+    );
+    service
+        .set_auth_token_hash(crate::auth::sha256(b"barcode-test-token"))
+        .unwrap();
+    let bytes = std::fs::read(&path).unwrap();
+    let mut denied = ClientState::default();
+    assert_eq!(
+        run(
+            &service,
+            &mut denied,
+            "DBADDSAFE //NAMED/CustomA Unit 8 NEWUNIT"
+        )
+        .await
+        .status,
+        420
+    );
+    assert_eq!(
+        barcode_unit_document(
+            &service,
+            &mut denied,
+            &format!("!{oid}"),
+            &vector["unit_xml"].as_str().unwrap().replace("%UNIT%", &oid)
+        )
+        .await
+        .status,
+        420
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn barcode_unit_named_document_retains_existing_named_markup_policy() {
+    let vector = barcode_unit_vector();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    let oid = created(
+        &service,
+        &mut client,
+        vector["safe_add"]["command"].as_str().unwrap(),
+    )
+    .await;
+    let before = xml(&service, &mut client, "//NAMED/CustomA").await;
+    // Independent named XML already retains opaque markup. Keep that
+    // established policy separate from the numeric Unit mapper, which
+    // normalizes submitted Unit XML to its scalar/PP schema.
+    let document = vector["unit_xml"].as_str().unwrap().replace("%UNIT%", &oid)
+        .replace("<Unit>", "<Unit xmlns:meta=\"urn:owned-unit-policy\">")
+        .replace("</Unit>", "<!--named markup--><Foo>unknown plain</Foo><meta:Payload key=\"opaque\">retained</meta:Payload><meta:UnitType>opaque type</meta:UnitType></Unit>");
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, &format!("!{oid}"), &document)
+            .await
+            .status,
+        301
+    );
+    let unit = xml(&service, &mut client, &format!("!{oid}")).await;
+    for retained in [
+        "named markup",
+        "<Foo>unknown plain</Foo>",
+        "meta:Payload",
+        "meta:UnitType",
+    ] {
+        assert!(unit.contains(retained), "{retained}: {unit}");
+    }
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{oid}/UnitType")).await,
+        "SYNTH"
+    );
+    assert_eq!(
+        without_unit(&xml(&service, &mut client, "//NAMED/CustomA").await, "8"),
+        without_unit(&before, "8")
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn barcode_unit_numeric_target_initialization_preserves_raw_siblings_and_physical_inventory()
+{
+    let vector = barcode_unit_vector();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let physical = service.model.lock().await.projects["HARNESS"].networks[&254]
+        .physical
+        .clone();
+    for command in ["NET LOAD DB", "NET SAVE DB"] {
+        ok_command(&service, &mut client, command).await;
+    }
+    let level = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //HARNESS/254/56/1 Level 7 Raw",
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{level}/Value oops"),
+    )
+    .await;
+    let incomplete = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //HARNESS/254 Unit 2 NEWUNIT",
+    )
+    .await;
+    let before = xml(&service, &mut client, "//HARNESS/254").await;
+    let old_unit = xml(&service, &mut client, "//HARNESS/254/p/5").await;
+    let oid = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //HARNESS/254 Unit 8 New Kitchen",
+    )
+    .await;
+    let document = vector["unit_xml"].as_str().unwrap().replace("%UNIT%", &oid);
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, &format!("!{oid}"), &document)
+            .await
+            .final_text,
+        format!("301 OID={oid}")
+    );
+    let after = xml(&service, &mut client, "//HARNESS/254").await;
+    assert_eq!(without_unit(&after, "8"), before);
+    assert_eq!(
+        xml(&service, &mut client, "//HARNESS/254/p/5").await,
+        old_unit
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{level}/Value")).await,
+        "oops"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{incomplete}/UnitName")).await,
+        "NEWUNIT"
+    );
+    assert_eq!(
+        service.model.lock().await.projects["HARNESS"].networks[&254].physical,
+        physical
+    );
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    assert_eq!(xml(&restarted, &mut client, "//HARNESS/254").await, after);
+    assert_eq!(
+        restarted.model.lock().await.projects["HARNESS"].networks[&254].physical,
+        physical
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
 async fn run(service: &Arc<Service>, client: &mut ClientState, command: &str) -> Response {
     service
         .handle(client, &format!("[named-db] {command}"))
