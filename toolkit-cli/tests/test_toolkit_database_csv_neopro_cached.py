@@ -222,8 +222,8 @@ def damage(source, case):
                                              for identity in source['unit']['group_identities']]
         remove_group(source, 'primary-255')
         source['group_save'] = {'completed': True}
-    elif case == 'unsupported-firmware': source['unit']['firmware'] = '2.5.01'
-    elif case == 'unsupported-family': source['unit']['unit_type'] = 'KEYH2'
+    elif case == 'unsupported-firmware': source['unit']['firmware'] = '10.0'
+    elif case == 'unsupported-family': source['unit']['unit_type'] = 'DIMDD8'
     else: raise AssertionError(case)
 
 

@@ -86,9 +86,17 @@ incomplete Units while initializing the new object. Project saving and device
 programming are explicit later steps; original GUI, physical scanner and
 PICED/controller acceptance remain open in [issue #58](https://github.com/mitchell-johnson/cbus/issues/58).
 
+The current [DLT conversion](toolkit-cli/docs/toolkit-dlt-conversions.md),
+[CSV family](toolkit-cli/docs/database-csv-source-families.md) and
+[eDLT scene Add](toolkit-cli/docs/edlt-scene-add-dialog.md) work expands the CLI
+to 243 registered conversion pairs and 126 bounded CSV unit types, and adds
+ordered Trigger/Action dialog operations through both Rust services. These are
+software scopes with stated input limits; full Toolkit and physical acceptance
+remain tracked separately.
+
 The [replacement, cached NeoPro CSV and bounded TCP batch](toolkit-cli/docs/feature-batch-2026-10-02-cached-csv-event-bounds.md)
-adds `cgate conversion tweak-replace` and read-only `tweak-recover` for the
-123 admitted tweaker pairs. The database replacement stages a fresh Unit,
+introduced `cgate conversion tweak-replace` and read-only `tweak-recover` for
+the 123 pairs admitted at that checkpoint. The database replacement stages a fresh Unit,
 copies admitted metadata, verifies a backup, deletes/readdresses once and
 saves/reopens with a durable journal. NeoPro cached v2 now binds Application
 ownership explicitly. The mock bounds each peer's queued/active replies and
@@ -96,9 +104,9 @@ events to 512 batches and 32 MiB. Each feature has a separate software evidence
 boundary; original Toolkit and physical acceptance remain open.
 
 The preceding [conversion, NeoPro report and event-delivery batch](toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
-adds `cgate conversion tweak` for all 123 currently admitted Toolkit tweaker
-pairs, with a reviewed plan digest and guarded creation of a database
-replacement. CSV export now includes KEYB2/KEYB4/KEYB6 at firmware 2.5.00,
+introduced `cgate conversion tweak` for all 123 Toolkit tweaker pairs
+admitted at that checkpoint, with a reviewed plan digest and guarded creation of a database
+replacement. That checkpoint added KEYB2/KEYB4/KEYB6 CSV at firmware 2.5.00,
 including per-block secondary applications. cmqttd also delivers subscribed
 events on the command connection while programming is running. These features
 have bounded software acceptance; complete original Toolkit and hardware
@@ -266,9 +274,10 @@ requires its documented initially empty application and explicit
 `--group-sort address-ascending` profile.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
-admits 123 of 292 registered source/target pairs with historical native database
-evidence for the API,
-including seven relay, 93 classic-to-Neo, five coupler-to-Neo and ten non-sensor
+admits 243 of 292 registered source/target pairs. The earlier 123 have historical
+native database evidence; the additional 120 DLT-target pairs have source-backed
+literal and owned-service tests. See [DLT conversion rules](toolkit-cli/docs/toolkit-dlt-conversions.md).
+The earlier set includes seven relay, 93 classic-to-Neo, five coupler-to-Neo and ten non-sensor
 InputUnit directions at the documented exact firmware profiles. Its
 source-preservation and refusal rules also govern `cgate conversion tweak`.
 Preview binds the closed project, private specifications and PP defaults;
@@ -383,9 +392,10 @@ lists and safe Trigger action text directly from the same exact project
 snapshot. See [automatic SceneManager metadata](toolkit-cli/docs/edlt-scene-metadata.md);
 it plans and can create a missing Trigger Control application, exact trigger
 groups, and exact action levels with a retained project backup, then records
-the separate PP and project-save boundaries. Interactive blank Add dialogs,
-image-dependent labels, and complete form binding remain outside that bounded
-workflow. The ordered parent transaction can consume one complete
+the separate PP and project-save boundaries. Typed accepted and cancelled
+[Trigger and Action Add operations](toolkit-cli/docs/edlt-scene-add-dialog.md)
+now model first-free allocation and editable names. Image-dependent labels and
+complete form binding remain outside that bounded workflow. The ordered parent transaction can consume one complete
 caller-supplied SceneManager cache, edit the retained or Reset-fresh scene
 graph, and share its final PP/CRC/save path with widget/settings operations.
 Its automatic project resolver also composes the exact SceneManager metadata

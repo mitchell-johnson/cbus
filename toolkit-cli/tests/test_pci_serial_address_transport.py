@@ -320,8 +320,11 @@ class SerialAddressTransportTests(unittest.TestCase):
                 with self.subTest(fault=fault):
                     path=Path(directory)/str(index)/'state.json';sim=fixture(state_path=path,faults={A:fault},response_delay=.001)
                     def inventory(endpoint):
-                        return PCIInventoryCollector(*endpoint,local_unit=16,overall_timeout=5,observation_timeout=.5,
-                            confirmation_timeout=.1,response_timeout=.1,quiet_period=.025).collect_inventory()
+                        # This case verifies persisted topology, not a 100ms
+                        # thread-scheduling deadline. Keep complete bounded
+                        # windows; fake-clock tests cover the strict deadlines.
+                        return PCIInventoryCollector(*endpoint,local_unit=16,overall_timeout=15,observation_timeout=2,
+                            confirmation_timeout=.5,response_timeout=.25,quiet_period=.1).collect_inventory()
                     with sim.running() as endpoint:
                         before=inventory(endpoint);start=len(sim.wire_log)
                         result=transport(endpoint).send_serial_address(A,6);move_wire=sim.wire_log[start:]
@@ -329,7 +332,9 @@ class SerialAddressTransportTests(unittest.TestCase):
                     loaded=SerialAddressFixture.from_state(path,response_delay=.001)
                     with loaded.running() as endpoint:restarted=inventory(endpoint)
                     self.assertTrue(result.capture_complete);self.assertFalse(result.movement_verified)
-                    self.assertTrue(before.complete);self.assertTrue(after.complete);self.assertTrue(restarted.complete)
+                    self.assertTrue(before.complete,before.as_dict())
+                    self.assertTrue(after.complete,after.as_dict())
+                    self.assertTrue(restarted.complete,restarted.as_dict())
                     serial_map=lambda r:{reply.serial:item.address for item in r.serial_observations for reply in item.replies}
                     self.assertEqual(serial_map(before),{'100966.1187':16,A:255,B:255})
                     expected={'100966.1187':16,A:6 if fault.move else 255,B:255}

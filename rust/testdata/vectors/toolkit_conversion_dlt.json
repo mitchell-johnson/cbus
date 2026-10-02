@@ -1,0 +1,252 @@
+{
+  "format": "cbus-toolkit-conversion-dlt-v1",
+  "original_execution": false,
+  "new_admitted_registrations": 120,
+  "remaining_unmodeled_source": "KEYM6",
+  "cases": [
+    {
+      "id": "classic-prefix-no-inherited-hook",
+      "source": "KEY4",
+      "target": "KEYBL5",
+      "expected": {
+        "GroupAddress": [
+          0,
+          10,
+          254,
+          255,
+          173,
+          81,
+          82,
+          83,
+          0
+        ],
+        "IndicatorFunction": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LearnMode": [
+          1
+        ],
+        "LearnAnyApp": [
+          0
+        ],
+        "LearnedFlag": [
+          1
+        ],
+        "IndicatorBrightness": [
+          0
+        ],
+        "LabelFlavourLSB": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "not_written": [
+        "IndicatorBrightness",
+        "EnablePageFallback",
+        "IndicatorMode"
+      ]
+    },
+    {
+      "id": "neo-standard-pa6",
+      "source": "KEYM2",
+      "target": "KEYDL4",
+      "expected": {
+        "GroupAddress": [
+          0,
+          10,
+          254,
+          255,
+          173,
+          81,
+          82,
+          83,
+          84
+        ],
+        "IndicatorFunction": [
+          0,
+          1,
+          2,
+          3,
+          3,
+          2,
+          1,
+          0
+        ],
+        "EnableNightlightOnToggleKey": [
+          0
+        ],
+        "EnableNightlightOnUserKeys": [
+          0
+        ],
+        "FirstKeyThrowAway": [
+          1
+        ],
+        "IndicatorBrightness": [
+          1
+        ]
+      },
+      "literal_writes": {
+        "LabelFlavourLSB": "0",
+        "LabelFlavourMSB": "0"
+      }
+    },
+    {
+      "id": "saturn-pcx",
+      "source": "KEYB2",
+      "target": "KEYML5",
+      "expected": {
+        "EnableNightlightOnToggleKey": [
+          1
+        ],
+        "EnableNightlightOnUserKeys": [
+          1
+        ],
+        "FirstKeyThrowAway": [
+          1
+        ],
+        "IndicatorBrightness": [
+          1
+        ]
+      },
+      "not_written": [
+        "EnablePageFallback",
+        "IndicatorMode"
+      ]
+    },
+    {
+      "id": "reflection-pcx",
+      "source": "KEYA1",
+      "target": "KEYBL5",
+      "source_values": {
+        "IndicatorBrightness": "3"
+      },
+      "expected": {
+        "EnableNightlightOnToggleKey": [
+          1
+        ],
+        "EnableNightlightOnUserKeys": [
+          1
+        ],
+        "IndicatorBrightness": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "neo-classic-model",
+      "source": "KEYCIR1",
+      "target": "KEYDL4",
+      "expected": {
+        "EnableNightlightOnToggleKey": [
+          0
+        ],
+        "EnableNightlightOnUserKeys": [
+          0
+        ],
+        "FirstKeyThrowAway": [
+          0
+        ],
+        "IndicatorBrightness": [
+          5
+        ]
+      }
+    },
+    {
+      "id": "neo-classic-three-preserved",
+      "source": "KEYC4",
+      "target": "KEYML5",
+      "source_values": {
+        "IndicatorBrightness": "3"
+      },
+      "expected": {
+        "IndicatorBrightness": [
+          3
+        ]
+      }
+    },
+    {
+      "id": "keye-shared-spec",
+      "source": "KEYEIR4",
+      "target": "KEYBL5",
+      "expected": {
+        "EnableNightlightOnToggleKey": [
+          1
+        ],
+        "EnableNightlightOnUserKeys": [
+          1
+        ],
+        "IndicatorBrightness": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "dlt-source-retains-dlt-only-fields",
+      "source": "KEYML5",
+      "target": "KEYDL4",
+      "expected": {
+        "EnablePageFallback": [
+          0
+        ],
+        "IndicatorMode": [
+          2
+        ],
+        "EnableNightlightOnToggleKey": [
+          0
+        ],
+        "EnableNightlightOnUserKeys": [
+          0
+        ],
+        "FirstKeyThrowAway": [
+          1
+        ],
+        "IndicatorBrightness": [
+          1
+        ],
+        "LabelFlavourLSB": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "LabelFlavourMSB": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "literal_writes": {
+        "LabelFlavourLSB": "0",
+        "LabelFlavourMSB": "0"
+      }
+    }
+  ],
+  "remaining_unmodeled_sources": [
+    "KEYM6",
+    "KEYBIR2",
+    "KEYBIR4",
+    "KEYBIR6"
+  ]
+}

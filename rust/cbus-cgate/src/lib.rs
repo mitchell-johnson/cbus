@@ -5267,7 +5267,7 @@ impl Server {
             "<DBVersion>2.3</DBVersion>"
         };
         let mut document = format!(
-            "<Installation>{schema}<Project><Address>{}</Address>",
+            "<Installation>{schema}<Project><TagName>{0}</TagName><Address>{0}</Address>",
             xml_escape(&project.name)
         );
         let networks = match self.project_network_documents(project_name) {
@@ -9750,10 +9750,7 @@ impl Server {
 
     /// Native `DBADDSAFE parent element address name`.
     fn dbadd(&mut self, tag: &str, words: &[&str]) -> Response {
-        let unit_tail = words
-            .get(2)
-            .is_some_and(|element| element.eq_ignore_ascii_case("Unit"));
-        if words.len() < 5 || (words.len() != 5 && !unit_tail) {
+        if words.len() < 5 {
             return err(
                 tag,
                 status::BAD_REQUEST,
@@ -9825,7 +9822,7 @@ impl Server {
                     oid: oid.clone(),
                     parent: words[1].to_string(),
                     address: addr,
-                    tag: words[4].to_string(),
+                    tag: name,
                     value: None,
                     raw_value: None,
                     netvar: element == "NETVAR",
@@ -9862,7 +9859,7 @@ impl Server {
                     DbXmlKind::Group
                 },
                 oid,
-                tag: words[4].to_string(),
+                tag: name,
                 address: addr,
                 value: None,
                 interface: None,
@@ -9875,6 +9872,12 @@ impl Server {
             {
                 return err(tag, code, &format!("{code} {message}"));
             }
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("301 OID={}", object.oid),
+                status: 301,
+            };
         }
         ok(tag, vec![], "200 OK")
     }
@@ -13147,6 +13150,54 @@ mod tests {
     }
 
     #[test]
+    fn database_safe_names_keep_the_complete_tail_and_issued_identity() {
+        let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
+        assert_eq!(
+            server
+                .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+                .status,
+            200
+        );
+        for (command, expected_name) in [
+            (
+                "DBADDSAFE //TEST/254 Application 202 Trigger Control",
+                "Trigger Control",
+            ),
+            (
+                "DBADDSAFE //TEST/254/202 Group 42 Trigger Group 42",
+                "Trigger Group 42",
+            ),
+            (
+                "DBADDSAFE //TEST/254/202/42 Level 8 Action Selector Ω",
+                "Action Selector Ω",
+            ),
+        ] {
+            let added = server.handle(&format!("[3] {command}"));
+            assert_eq!(added.status, 301, "{command}: {}", added.final_text);
+            let oid = added.final_text.strip_prefix("301 OID=").unwrap();
+            let name = server.handle(&format!("[4] DBGET !{oid}/TagName"));
+            assert_eq!(name.status, 342, "{}", name.final_text);
+            assert_eq!(
+                name.final_text.split_once('=').map(|(_, value)| value),
+                Some(expected_name)
+            );
+        }
+        assert_eq!(
+            server
+                .handle("[5] DBADDSAFE //TEST/254/202/42 Level 9 bad#name")
+                .status,
+            400
+        );
+        assert_eq!(
+            server
+                .handle("[6] DBADDSAFE //TEST/254/202/42 Level 9")
+                .status,
+            400
+        );
+    }
+
+    #[test]
     fn database_and_observation_commands() {
         let mut s = Server::new(AccessLevel::Program);
         assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
@@ -13863,7 +13914,7 @@ mod tests {
         ] {
             assert_eq!(
                 server.handle(&format!("[1] {command}")).status,
-                if command == "DBADDSAFE //SNAP/254 Unit 4 Owned" {
+                if command.starts_with("DBADDSAFE ") {
                     301
                 } else {
                     200
@@ -13882,7 +13933,13 @@ mod tests {
         assert_eq!(parsed.root_element().tag_name().name(), "Installation");
         let project = parsed.root_element().first_element_child().unwrap();
         assert_eq!(project.tag_name().name(), "Project");
-        assert_eq!(project.first_element_child().unwrap().text(), Some("SNAP"));
+        for field in ["TagName", "Address"] {
+            let scalar = project
+                .children()
+                .find(|node| node.has_tag_name(field))
+                .unwrap();
+            assert_eq!(scalar.text(), Some("SNAP"));
+        }
         let networks = project
             .children()
             .filter(|n| n.has_tag_name("Network"))

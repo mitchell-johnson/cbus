@@ -1,0 +1,118 @@
+{
+  "format": "cbus-edlt-scene-add-dialog-evidence-v1",
+  "toolkit_release": "1.18.0.2754",
+  "original_instructions_executed": false,
+  "original_gui_dialogs_executed": false,
+  "profile": {
+    "unit_type": "KEYGL5",
+    "catalog_number": "5055EDL",
+    "firmware": "5.5.00"
+  },
+  "original_inputs": {
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "prior_retained_evidence": [
+    "research/fixtures/edlt-add-dialog-evidence.json",
+    "research/fixtures/edlt-scene-metadata-evidence.json"
+  ],
+  "methods": {
+    "CIS_TCBusApplicationGUIAgent.TCBusApplicationGUIAgent.AddLevel": {
+      "start": "0xcd79ac",
+      "end": "0xcd7e40",
+      "sha256": "3a8d2359a3689e5da726062e9bb83649a18271f38ab3ff0391c6cf908d25f635"
+    },
+    "CIS_TCBusEDLTCGateAgent.TCBusEDLTCGateAgent.AddSharpLevel": {
+      "start": "0x12d21d4",
+      "end": "0x12d2348",
+      "sha256": "7e28e1d219615d02d6dd025c377e3364d4ee141736776b3f20eea5dcf5ebf38c"
+    },
+    "CIS_TddLevel.TddLevel.SetValues": {
+      "start": "0xcd44a0",
+      "end": "0xcd4568",
+      "sha256": "3018ca4857fe520fdbfdd72af33620f7f0a904467ad0fe263ee0d199e879c56a"
+    },
+    "CIS_TfrmEDLTOptions.TfrmEDLTOptions.AddSharpLevel": {
+      "start": "0xcd9350",
+      "end": "0xcd94e4",
+      "sha256": "2bef700c4a8434c25141874320b97f7627fdb51249eec414454ee69f86d604d6"
+    },
+    "CIS_TfrmKEYGL5.TfrmKEYGL5.AddSharpLevel": {
+      "start": "0x11c62ec",
+      "end": "0x11c648c",
+      "sha256": "dbeeb7e4b04b77c27c99146daf04692df4bbe269512a95622bfc9719459968b5"
+    },
+    "CIS_TfrmLevelAssign.TfrmLevelAssign.actOKExecute": {
+      "start": "0xbc7084",
+      "end": "0xbc758c",
+      "sha256": "8f9e882373375ec11ff4d618da7838a0ddbbff45ed1a262df8029c5ebbb5b229"
+    },
+    "CIS_TfrmLevelAssign.TfrmLevelAssign.cmbLevelAddressChange": {
+      "start": "0xbc76f0",
+      "end": "0xbc7844",
+      "sha256": "57a71cc628f498ec4b2c13daff7b5cb9f4a01ba21b4ee5936866d099fec86604"
+    },
+    "CIS_TfrmLevelAssign.TfrmLevelAssign.SetValues": {
+      "start": "0xbc6a50",
+      "end": "0xbc7084",
+      "sha256": "5c1cf64576627f2d616527cd9a39338235bd20f164fa6cf350aa6b40d95223e2"
+    },
+    "CIS_TCommonCBus.TCBusGroup.GetLevelByName": {
+      "start": "0xf31674",
+      "end": "0xf3174c",
+      "sha256": "6b34e76fc7bbeb9a78d7bd7b0af762fe6e306d153043c41301d0ef3af825f217"
+    },
+    "CIS_TCommonCBus.TLevelManager.GetSingularDisplayName": {
+      "start": "0xf27344",
+      "end": "0xf27378",
+      "sha256": "7e93b4c4cffbe5f97002a1aa081d4d519bbc30a13fa63f08c3977e5f11b6b6b1"
+    },
+    "CIS_TCommonCBus.TLevelManager.GetNextAvailableAddress": {
+      "start": "0xf2767c",
+      "end": "0xf276c8",
+      "sha256": "e96ea25e3126eb4734d7bf19c531f5c934cca56a5483100c5c1e5cf6e5eeced7"
+    },
+    "CIS_TCommonCBus.TLevelManager.GetMaximumPossibleAddress": {
+      "start": "0xf276c8",
+      "end": "0xf276fc",
+      "sha256": "ace40681da8b1a438b7bc15099f23ec21920943314d31822aa20fce38e7c3191"
+    }
+  },
+  "facts": [
+    {
+      "method": "AddLevel / GetNextAvailableAddress",
+      "establishes": "Allocate first absent address 0..254; seed Level N; create only on accepted dialog. Cancel frees the provisional Level."
+    },
+    {
+      "method": "TddLevel.SetValues",
+      "establishes": "Set Add mode and pass both maximum/zero flags false to TfrmLevelAssign.SetValues; its reserved-address manager bounds application 202 at 254."
+    },
+    {
+      "method": "TfrmLevelAssign.SetValues / cmbLevelAddressChange",
+      "establishes": "List free addresses upward; select the seed address if present, otherwise first. Rewrite blank or ASCII-case-insensitive noun-prefixed text to noun plus selected address. Level N does not start with Action Selector, so operator address changes retain Level N."
+    },
+    {
+      "method": "TfrmLevelAssign.actOKExecute / TCBusGroup.GetLevelByName",
+      "establishes": "Trim-empty reports 2211; Trim equals Project TagName reports 2213; Add duplicate lookup uses untrimmed entered name with ASCII UpperCase and reports 2212. Acceptance stores Trim(name), Address and Value equal SelectedAddress."
+    },
+    {
+      "method": "TfrmKEYGL5.AddSharpLevel",
+      "establishes": "Blank level uses parent-handle Add dialog; accepted object returns its decimal Address. Nonblank remains exact-address create-enabled getter."
+    },
+    {
+      "method": "Composed SceneManager resolver",
+      "establishes": "Replay initial scene getter side effects, dialog operations and terminal getters; retained Add bindings lower accepted replies to set-trigger/set-action. Native managers use existing guarded database transaction instead of reproducing original immediate per-object persistence."
+    }
+  ],
+  "boundaries": {
+    "application_add_supported": false,
+    "reason": "Retained maximum is hosting pointer low byte, not deterministic.",
+    "manual_cache_creation_supported": false,
+    "gui_binding_execution_verified": false,
+    "physical_device_programmed": false,
+    "transport_name_bound": "Accepted SceneManager names: 1..128 trimmed characters; no ASCII controls/DEL, invalid UTF-8 surrogates, U+FFFE/U+FFFF, literal #, repeated internal spaces or non-ASCII whitespace. These are explicit software transport bounds, not original dialog refusal equivalence.",
+    "separate_activation_action_add_supported": false,
+    "reset_interleaving_broader_original_acceptance": false,
+    "dialog_project_name_source": "Exact explicit Project.TagName scalar, separate from command Address; absent scalar refuses before I/O."
+  }
+}

@@ -13,6 +13,8 @@ Learn/CoreKey/NeoPro hooks and CouplerPro's final brightness suppression only
 for the source-pinned fresh-target profiles.
 Ten non-sensor InputUnit pairs apply only the recovered Learn and brightness
 flags; their non-Neo models leave all aligned parameter strings unchanged.
+DLT conversion applies its own source-recovered hook without invoking the
+inherited conversion hooks, at the fixed profiles in toolkit_conversion_dlt.
 Unsupported relay PP shapes are refused. Every other
 registered pair, and every unregistered pair, is refused before any I/O with
 the receipt's reason. Database metadata (tag, description, serial), source
@@ -29,6 +31,7 @@ from .native import NativeDatabase
 from .programming import Programmer, ProgrammingCommandError
 from . import toolkit_conversion_coupler_to_neo as coupler
 from . import toolkit_conversion_input_unit as input_unit
+from . import toolkit_conversion_dlt as dlt
 from .toolkit_conversion_key_to_neo import (
     CLASSIC_ATTRIBUTES, CLASSIC_TYPES, KEY_TWEAKER, NEO_TYPES, NEOPRO_ATTRIBUTES,
     SOURCE_FIRMWARE, TARGET_FIRMWARE, apply_key_hooks, require_target_firmware, validate_key_spec,
@@ -141,13 +144,16 @@ NO_TWEAKER = ('no Toolkit tweaker is registered for this pair; untweaked Toolkit
 # Receipt refusal reason per class; None marks the natively accepted classes.
 REFUSALS = MappingProxyType({
     'TTweakerInputUnit': None, 'TTweakerNeoToKey': _HOOK_KEY, 'TTweakerKeyToNeo': None,
-    'TTweakerDLT': _HOOK_DLT, 'TTweakerKeyToDLT': _HOOK_DLT,
+    'TTweakerDLT': None, 'TTweakerKeyToDLT': None,
     'TTweakerSENPIR': _HOOK_SENSOR, 'TTweakerSENLL': _HOOK_SENSOR,
     'TTweakerPC_DAL2': _NOT_NATIVE, 'TTweakerPC_DAL2B': _NOT_NATIVE,
     'TTweakerRELDN8_TO_X': None, 'TTweakerRELDNX_TO_8': None,
     'TTweakerDIMDN_TO_DIMDU4': None, 'TTweakerDIMDU4_TO_DIMDN': None,
 })
 PAIR_REFUSALS = MappingProxyType({
+    **{('KEYM6', target): dlt.MISSING_FACTORY for target in dlt.DLT_TYPES},
+    **{(source, target): dlt.MISSING_SPECIFICATION
+       for source in ('KEYBIR2', 'KEYBIR4', 'KEYBIR6') for target in dlt.DLT_TYPES},
     ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
                           'reads eight without padding; no defined safe conversion is established'),
     ('SENPILL', 'SENPILL'): _HOOK_SENSOR,
@@ -192,6 +198,7 @@ AGENT_ATTRIBUTES = MappingProxyType({
     **{unit_type: CLASSIC_ATTRIBUTES for unit_type in coupler.COUPLER_SOURCE_TYPES},
     **{unit_type: coupler.COUPLER_ATTRIBUTES for unit_type in coupler.COUPLER_TARGET_TYPES},
     **{unit_type: input_unit.INPUT_ATTRIBUTES for unit_type in ('BCNC4A', 'BCNC4B')},
+    **dlt.ATTRIBUTES,
 })
 # Ordered TweakParameters rules: (target attribute, 'literal' | 'from', value or source attribute).
 ASSIGNMENTS = MappingProxyType({
@@ -257,6 +264,12 @@ def plan_writes(source_type, target_type, source_values, target_parameters, *, t
     tweaker = admitted(source_type, target_type)
     coupler_profile = source_type.upper() in coupler.COUPLER_SOURCE_TYPES
     model_context = None
+    if tweaker in dlt.TWEAKERS:
+        try:
+            dlt.require_target_firmware(target_firmware)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
+        model_context = MappingProxyType(dlt.context(source_type))
     if tweaker == input_unit.INPUT_TWEAKER:
         try:
             input_unit.require_target_firmware(target_firmware)
@@ -319,6 +332,11 @@ def plan_writes(source_type, target_type, source_values, target_parameters, *, t
             raise TweakerConversionError(str(error)) from error
     if tweaker == input_unit.INPUT_TWEAKER:
         input_unit.apply_input_hooks(target_type.upper(), values, mutable, origin, not_written)
+    if tweaker in dlt.TWEAKERS:
+        try:
+            dlt.apply_hooks(source_type, source_values, values, mutable, origin, not_written)
+        except ValueError as error:
+            raise TweakerConversionError(str(error)) from error
     for name, kind, operand in ASSIGNMENTS.get(tweaker, ()):
         if kind == 'from':
             if origin.get(operand) != 'copied' or values[operand] == '':
@@ -393,6 +411,12 @@ class ToolkitTweakerConversion:
     def __init__(self, client, source_type, source_spec: UnitSpec, target_type, target_spec: UnitSpec):
         self.tweaker = admitted(source_type, target_type)
         self.source_type, self.target_type = source_type.upper(), target_type.upper()
+        if self.tweaker in dlt.TWEAKERS:
+            try:
+                dlt.validate_spec(self.source_type, source_spec, source=True)
+                dlt.validate_spec(self.target_type, target_spec, source=False)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         if self.tweaker in RELAY_TWEAKERS:
             self._relay_spec(self.source_type, source_spec, source=True)
             self._relay_spec(self.target_type, target_spec, source=False)
@@ -445,6 +469,11 @@ class ToolkitTweakerConversion:
             raise ValueError('Use a database unit path such as //PROJECT/254/p/20')
         if type(target_address) is not int or not 0 <= target_address <= 255 or target_address == int(match[3]):
             raise ValueError('Target address must be a different unit address 0..255')
+        if self.tweaker in dlt.TWEAKERS:
+            try:
+                dlt.require_target_firmware(target_firmware)
+            except ValueError as error:
+                raise TweakerConversionError(str(error)) from error
         if self.tweaker in RELAY_TWEAKERS and not self.target_spec.supports_version(target_firmware):
             raise TweakerConversionError('Target firmware is outside the supplied relay specification')
         if self.tweaker == input_unit.INPUT_TWEAKER:
@@ -463,6 +492,8 @@ class ToolkitTweakerConversion:
         target = f'{network}/p/{target_address}'
         if self._unit_type(source).upper() != self.source_type:
             raise TweakerConversionError('Source database unit type differs from the requested source type')
+        if self.tweaker in dlt.TWEAKERS and self._unit_firmware(source) != dlt.source_firmware(self.source_type):
+            raise TweakerConversionError('DLT conversion source firmware differs from the recovered profile')
         if self.tweaker == KEY_TWEAKER and self._unit_firmware(source) != SOURCE_FIRMWARE:
             raise TweakerConversionError('KeyToNeo conversion requires source firmware 1.2.67')
         if self.tweaker == input_unit.INPUT_TWEAKER and self._unit_firmware(source) != input_unit.FIRMWARE:

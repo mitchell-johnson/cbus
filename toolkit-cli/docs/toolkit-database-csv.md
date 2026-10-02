@@ -1,5 +1,12 @@
 # Toolkit database report projection and CSV export
 
+The current [source-backed input family contract](database-csv-source-families.md)
+admits 126 of 262 statically registered types, including classic Key, older Neo,
+NeoPro and wireless firmware families. Cached v3 requires complete wireless
+loader state and validates channels beyond the sixteen visible columns. The
+older checkpoints below retain their historical counts; original GUI/cold
+native family reports and physical acceptance remain outstanding.
+
 `toolkit-database-csv` exports an explicit captured report, the bounded original-backed cached-object projection, or one admitted native XML snapshot. Portable UTF-8 without a BOM is the default; an explicit Windows mode reproduces Toolkit's native text conversion. `cgate database-csv` acquires the snapshot directly from a live C-Gate database. Both preserve the original Toolkit 1.18.0.2754 row serializer's column order, serial text, quoting and unavailable-group placement. They do not accept arbitrary project profiles.
 
 The [NeoPro extension](toolkit-database-csv-neopro.md) adds KEYB2/KEYB4/KEYB6

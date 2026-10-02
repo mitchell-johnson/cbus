@@ -5931,8 +5931,8 @@ fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
 
     assert_eq!(server.handle("[23] PROJECT USE SOURCE").status, 200);
     for (command, expected) in [
-        ("[23a] DBADDSAFE //SOURCE/254 Application 56 Lighting", 200),
-        ("[23b] DBADDSAFE //SOURCE/254/56 Group 7 GroupSeven", 200),
+        ("[23a] DBADDSAFE //SOURCE/254 Application 56 Lighting", 301),
+        ("[23b] DBADDSAFE //SOURCE/254/56 Group 7 GroupSeven", 301),
         ("[23c] DBADDSAFE //SOURCE/254/56/7 Level 3 LevelThree", 301),
     ] {
         let response = server.handle(command);
@@ -6035,7 +6035,7 @@ fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
         server
             .handle("[37] DBADDSAFE //DEST/1 Application 58 Reused")
             .status,
-        200
+        301
     );
 }
 
@@ -6083,7 +6083,7 @@ fn legacy_database_oid_copy_stays_in_selected_project_and_netvar_moves_its_tree(
         server
             .handle("[12] DBADDSAFE //ORIGIN/254 Application 56 Lighting")
             .status,
-        200
+        301
     );
     let netvar = server.handle("[13] DBADD //ORIGIN/254/56 NetVar");
     let netvar_oid = netvar.final_text.trim_start_matches("301 OID=").to_string();

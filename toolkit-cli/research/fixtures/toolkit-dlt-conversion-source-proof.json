@@ -1,0 +1,764 @@
+{
+  "format": "cbus-toolkit-dlt-conversion-source-proof-v1",
+  "original_execution": false,
+  "original_instruction_execution_count": 0,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "source_profiles": {
+    "classic": {
+      "types": [
+        "KEY1",
+        "KEY2",
+        "KEY4",
+        "KEYIR1",
+        "KEYIR4"
+      ],
+      "firmware": "1.2.67"
+    },
+    "modern": {
+      "types": [
+        "KEYA1",
+        "KEYA3",
+        "KEYA6",
+        "KEYA8",
+        "KEYAV2",
+        "KEYAV4",
+        "KEYB2",
+        "KEYB4",
+        "KEYB6",
+        "KEYC1",
+        "KEYC2",
+        "KEYC4",
+        "KEYCIR1",
+        "KEYCIR4",
+        "KEYE1",
+        "KEYE2",
+        "KEYE3",
+        "KEYE4",
+        "KEYEIR1",
+        "KEYEIR2",
+        "KEYEIR3",
+        "KEYEIR4",
+        "KEYH1",
+        "KEYH2",
+        "KEYH3",
+        "KEYH4",
+        "KEYM2",
+        "KEYM4",
+        "KEYM8",
+        "KEYP2",
+        "KEYP4",
+        "KEYP6"
+      ],
+      "firmware": "2.5.00"
+    },
+    "dlt": {
+      "types": [
+        "KEYDL4",
+        "KEYML5",
+        "KEYBL5"
+      ],
+      "firmware": "2.1.00"
+    }
+  },
+  "target_firmware": "2.1.00",
+  "new_admitted_registrations": 120,
+  "refused_registered_source": "KEYM6",
+  "missing_factory_reason": "The three KEYM6 tweaker registrations have no static unit factory/model in the pinned executable; specification existence is insufficient.",
+  "target_agent": "TCBusDynamicLabelInputCGateAgent",
+  "constructor_attributes": [
+    [
+      "Application",
+      true
+    ],
+    [
+      "FirmwareVersion",
+      false
+    ],
+    [
+      "Project",
+      true
+    ],
+    [
+      "SerialNo",
+      false
+    ],
+    [
+      "State",
+      false
+    ],
+    [
+      "UnitAddress",
+      true
+    ],
+    [
+      "UnitName",
+      true
+    ],
+    [
+      "UnitType",
+      false
+    ],
+    [
+      "LearnAnyApp",
+      true
+    ],
+    [
+      "LearnMode",
+      true
+    ],
+    [
+      "LearnedFlag",
+      true
+    ],
+    [
+      "AreaGroupAddress",
+      true
+    ],
+    [
+      "StatusReportInterval",
+      true
+    ],
+    [
+      "GroupAddress",
+      true
+    ],
+    [
+      "DebounceTime",
+      true
+    ],
+    [
+      "IndicatorBrightness",
+      false
+    ],
+    [
+      "LongPressTime",
+      true
+    ],
+    [
+      "EEPROMLevelStore",
+      true
+    ],
+    [
+      "LightIndex",
+      true
+    ],
+    [
+      "LightLevel",
+      true
+    ],
+    [
+      "LightLevelStore1",
+      true
+    ],
+    [
+      "LightLevelStore2",
+      true
+    ],
+    [
+      "RampRate",
+      true
+    ],
+    [
+      "IRBank",
+      true
+    ],
+    [
+      "JPCommand",
+      true
+    ],
+    [
+      "SRCommand",
+      true
+    ],
+    [
+      "LPCommand",
+      true
+    ],
+    [
+      "LRCommand",
+      true
+    ],
+    [
+      "BlockAllocation",
+      true
+    ],
+    [
+      "IndicatorBlockAssignment",
+      true
+    ],
+    [
+      "IndicatorFunction",
+      true
+    ],
+    [
+      "TimerHighByte",
+      true
+    ],
+    [
+      "TimerLowByte",
+      true
+    ],
+    [
+      "TimerExpiryCommand",
+      true
+    ],
+    [
+      "ControlAppGroupAddress",
+      true
+    ],
+    [
+      "EnableNightlight",
+      true
+    ],
+    [
+      "EnableNightlightControl",
+      true
+    ],
+    [
+      "DisableTimerFlash",
+      true
+    ],
+    [
+      "FirstKeyThrowAway",
+      true
+    ],
+    [
+      "IndicatorPressedLevel",
+      true
+    ],
+    [
+      "TimerDuration",
+      true
+    ],
+    [
+      "PatchEnable",
+      true
+    ],
+    [
+      "SceneKeySelector",
+      true
+    ],
+    [
+      "SceneTable",
+      true
+    ],
+    [
+      "SceneTablePointer",
+      true
+    ],
+    [
+      "DisableIR",
+      true
+    ],
+    [
+      "IDBacklightIllumination",
+      true
+    ],
+    [
+      "EnableNightlightOnPCx",
+      true
+    ],
+    [
+      "EnableNightlightOnPA6",
+      true
+    ],
+    [
+      "PrimaryColour",
+      true
+    ],
+    [
+      "DisableIRNEC",
+      true
+    ],
+    [
+      "KeyDisableGroup",
+      true
+    ],
+    [
+      "KeyDisableGroupInvert",
+      true
+    ],
+    [
+      "CorridorLinkEnable",
+      true
+    ],
+    [
+      "CorridorMasterGroup",
+      true
+    ],
+    [
+      "CorridorGroupBlock",
+      true
+    ],
+    [
+      "CorridorOfficeGroupBlock",
+      true
+    ],
+    [
+      "JoinPrimaryApplication",
+      true
+    ],
+    [
+      "JoinSecondaryApplication",
+      true
+    ],
+    [
+      "DualJoinPrimaryApplication",
+      true
+    ],
+    [
+      "DualJoinSecondaryApplication",
+      true
+    ],
+    [
+      "SecondApplicationBlocks",
+      true
+    ],
+    [
+      "EnablePageFallback",
+      true
+    ],
+    [
+      "EnableIndicatorPressedLevel",
+      true
+    ],
+    [
+      "EnableNightlightOnToggleKey",
+      true
+    ],
+    [
+      "EnableNightlightOnUserKeys",
+      true
+    ],
+    [
+      "IndicatorMode",
+      true
+    ],
+    [
+      "DisableKeySlider",
+      true
+    ],
+    [
+      "InvertDisplay",
+      true
+    ],
+    [
+      "HideClock",
+      true
+    ],
+    [
+      "EnableScheduling",
+      true
+    ],
+    [
+      "EnableSceneToggle",
+      true
+    ],
+    [
+      "EnableDynamicLabels",
+      true
+    ],
+    [
+      "EEPROMChecksumAlarm",
+      true
+    ],
+    [
+      "KeyDisableGroup",
+      true
+    ],
+    [
+      "KeyDisableGroupInvert",
+      true
+    ],
+    [
+      "LabelFlavourLSB",
+      true
+    ],
+    [
+      "LabelFlavourMSB",
+      true
+    ],
+    [
+      "LCDMFirmwareVersion",
+      true
+    ],
+    [
+      "LCDMVocabularyVersion",
+      true
+    ]
+  ],
+  "inherited_conversion_hooks_called": false,
+  "rules": [
+    "Align same-named constructor attributes, preserving empty-source mutable suppression.",
+    "DLT tweaker disables eight fields and assigns one-element string 0 to each LabelFlavour array; it does not reset mutable flags.",
+    "KeyToDLT adds five immutable fields and remaps every IndicatorFunction 1 to 2 and 3 to 1, each with a trailing space.",
+    "Non-DLT source disables EnablePageFallback and IndicatorMode.",
+    "Neo source model supplies nightlight to ToggleKey and UserKeys, supplies FirstKeyThrowAway and supplies brightness; only brightness is forced mutable.",
+    "Neo Standard nightlight reads PA6; other nonclassic Neo reads PCx. Neo Classic forces nightlight and first-key false.",
+    "Neo source brightness byte2/3 becomes1; Neo Classic byte2 becomes5 and3 remains3.",
+    "DLT model PCx source attribute has no PP parameter at this profile and remains empty/false.",
+    "The constructor appends duplicate KeyDisableGroup and KeyDisableGroupInvert fields; Add is a plain list append.",
+    "ParameterProgrammingSetAll visits the append-ordered AttributeManager; SetSingle requires the retained mutable and present flags. SetToZero only assigns the literal string and does not restore either flag."
+  ],
+  "reviewed_methods": {
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0x121dcbc",
+      "end": "0x121de10",
+      "bytes_sha256": "d932cc15534b340d795f126a43c87c4cf7fb1c47b96675cf2a12ac877c74c806"
+    },
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.InternalCreate": {
+      "start": "0x121b6ec",
+      "end": "0x121bd3c",
+      "bytes_sha256": "6ddd6f4fec1ab6a78939f92fc2673bc1371db8ca71af23278aeb035f1d62da91"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.InternalCreate": {
+      "start": "0xce4670",
+      "end": "0xce4b18",
+      "bytes_sha256": "07f5297b24563205181efe9994b34992da1f9646f193f989d2683a89998e1d67"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.HasApplication2": {
+      "start": "0xce4c50",
+      "end": "0xce4ccc",
+      "bytes_sha256": "1bb402ce0595d1b19a174c6bf494d504f231f8927774288acacbd6a39e750250"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.IsNeoDLT": {
+      "start": "0xce562c",
+      "end": "0xce5640",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.GetIsDLT": {
+      "start": "0xce4c04",
+      "end": "0xce4c18",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.LearnModePropertiesEnabled": {
+      "start": "0xce5618",
+      "end": "0xce562c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.InfraredBankPropertyEnabled": {
+      "start": "0xce50fc",
+      "end": "0xce5110",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcc5f70",
+      "end": "0xcc6004",
+      "bytes_sha256": "82e5dd24b953ea29ae8871107a8909e92700ab63085f12799c5129b6da5a76dc"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcc9180",
+      "end": "0xcc9930",
+      "bytes_sha256": "f95507698b15f7429b538ffc8fc130f25690b48f449fb8869f93d3fed9d48f58"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate": {
+      "start": "0xcc6d18",
+      "end": "0xcc717c",
+      "bytes_sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeUnitConversionSave": {
+      "start": "0xcedc88",
+      "end": "0xcedd7c",
+      "bytes_sha256": "b319b6f25fdc74fbdb34175d1e00acb4f7d5bb1308a483549503bb2d4a64c18b"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.InternalCreate": {
+      "start": "0xcec648",
+      "end": "0xcec964",
+      "bytes_sha256": "ead8ff3a29e6d39d99ae2bde53fc5600824c2505aeefc6a8d3715b7a57f819cc"
+    },
+    "CIS_TTweakerDLT.TTweakerDLT.TweakParameters": {
+      "start": "0x12f0b28",
+      "end": "0x12f0d70",
+      "bytes_sha256": "7aaca4b37c2bb8dc5ab8a8f99470db19a09e38ab5e2c3b9a97f348973bb37523"
+    },
+    "CIS_TTweakerDLT.TTweakerKeyToDLT.TweakParameters": {
+      "start": "0x12f0dd0",
+      "end": "0x12f107c",
+      "bytes_sha256": "00dfc8f19da4342f19a95697cb4967232175c4f6b6b06e6d34aac445d3fdd698"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.InternalCreate": {
+      "start": "0xceba64",
+      "end": "0xcebbe4",
+      "bytes_sha256": "a6d839d57579b2568dfd699e453deadb0aff9faba2af0e78abfcbe146a182e9e"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AgentLoad": {
+      "start": "0xcebbe4",
+      "end": "0xcebc08",
+      "bytes_sha256": "fef6e4759e63a2ec8ae37192293a71e967c8e25df732737058e98196981badbb"
+    },
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AgentLoad": {
+      "start": "0x121d50c",
+      "end": "0x121d664",
+      "bytes_sha256": "acda506dd711845f1912fef885872e2caa55a3c210db5fc1999b1ae3d66521e6"
+    },
+    "CIS_TCBusKEYExCGateAgent.TCBusKEYExCGateAgent.InternalCreate": {
+      "start": "0x12d2534",
+      "end": "0x12d25ac",
+      "bytes_sha256": "0ababea726b892db64f00980dd6115fc5bd001d136bbc35d6444f5c40ccbc068"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate": {
+      "start": "0xd06f30",
+      "end": "0xd075cc",
+      "bytes_sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetNightlightEnabled": {
+      "start": "0xd07d80",
+      "end": "0xd07da4",
+      "bytes_sha256": "58101c02846dce5961bac83bb22a2fb1db189dcbe77900900d6f67d32ce84be0"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetFirstKeyThrowAway": {
+      "start": "0xd07bcc",
+      "end": "0xd07bf0",
+      "bytes_sha256": "f4a310f8fea94f6525419e3569cb5509a1efd7a91e27a5814ed2f39408d74dc5"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetNightlightEnabled": {
+      "start": "0xd08050",
+      "end": "0xd080ac",
+      "bytes_sha256": "9aa45152245b269476027397697d5f995a59424ce285150db9d90b467ad8cdfb"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetFirstKeyThrowAway": {
+      "start": "0xd07ed8",
+      "end": "0xd07f34",
+      "bytes_sha256": "d57be26da30b19119ecae40407478cf72fc8b2270c4c82d9dc2e0ca6be62b72e"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadGetNightlightValues": {
+      "start": "0xcebcf8",
+      "end": "0xcebe04",
+      "bytes_sha256": "c4083357d31a1bba98a1ef59d267bd446633ba2c5961f3edd7cf50c077bdbe20"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadGetIndicatorValues": {
+      "start": "0xcebc08",
+      "end": "0xcebcf8",
+      "bytes_sha256": "93540da2add8d87d4567ddad3b0d85d59f3daea9958aac2ecfa33a7d060dd345"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcebe04",
+      "end": "0xcebf00",
+      "bytes_sha256": "1534462408bb96b90eab0541faf42b7879ea647e9d67928386bafdcf7605a23a"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xccb180",
+      "end": "0xccb450",
+      "bytes_sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate": {
+      "start": "0xcc9d04",
+      "end": "0xcca140",
+      "bytes_sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0x121bf40",
+      "end": "0x121c1dc",
+      "bytes_sha256": "0675ebd5984c0f3097bc63025c7fe0102c1727b0ccbf649e6aa5003408a4d1cd"
+    },
+    "CIS_TCBusDynamicLabelInputCGateAgent.TCBusDynamicLabelInputCGateAgent.AfterLoadGetNightlightValues": {
+      "start": "0x121dc94",
+      "end": "0x121dca8",
+      "bytes_sha256": "653ef2dd1e248a22e24092d6990dbdcb483ae6de7f254641280fb060daeabd96"
+    },
+    "CIS_TCBusNeoProInputCGateAgent.TCBusNeoProInputCGateAgent.InternalCreate": {
+      "start": "0x12168a4",
+      "end": "0x121690c",
+      "bytes_sha256": "3ac4ade91891339d3d94652d820eceed7cc16805629a3b34fde7876d4bd790c5"
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.InternalCreate": {
+      "start": "0xd05d20",
+      "end": "0xd06130",
+      "bytes_sha256": "741eff4762028fb8040c1c78ac798b01daf2cdf1dee6d8a62be162b65eb91421"
+    },
+    "CIS_TCBusDynamicLabelInputUnit.TCBusDynamicLabelInputUnit.IsNeoStandard": {
+      "start": "0xce5640",
+      "end": "0xce5654",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsDecorator": {
+      "start": "0xd08b94",
+      "end": "0xd08ba8",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsKEYC": {
+      "start": "0xd08b18",
+      "end": "0xd08b2c",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoBC": {
+      "start": "0xd08ba8",
+      "end": "0xd08bbc",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoClassic": {
+      "start": "0xd08b04",
+      "end": "0xd08b18",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoDLT": {
+      "start": "0xd08280",
+      "end": "0xd08294",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoMultisensor": {
+      "start": "0xd08294",
+      "end": "0xd082a8",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoReflection": {
+      "start": "0xd082a8",
+      "end": "0xd082bc",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.IsNeoStandard": {
+      "start": "0xca0960",
+      "end": "0xca0974",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoReflectionInputUnit.TCBusNeoProReflectionInputUnit.IsNeoReflection": {
+      "start": "0xccd8f8",
+      "end": "0xccd90c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusNeoReflectionInputUnit.TCBusNeoProReflectionInputUnit.IsNeoStandard": {
+      "start": "0xccd90c",
+      "end": "0xccd920",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoSaturnInputUnit.TCBusNeoProSaturnInputUnit.IsNeoStandard": {
+      "start": "0xcd0a18",
+      "end": "0xcd0a2c",
+      "bytes_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.GetIndicatorBrightnessAsByte": {
+      "start": "0xcea280",
+      "end": "0xcea2c0",
+      "bytes_sha256": "26f6eb8f29de4d5031e72d98454b42c232f760b9ae09961f798954d9842fea5f"
+    },
+    "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.IsNeoClassic": {
+      "start": "0xcea338",
+      "end": "0xcea34c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusNeoStandardInputUnit.TCBusNeoProStandardInputUnit.IsNeoStandard": {
+      "start": "0xcea0c4",
+      "end": "0xcea0d8",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation": {
+      "start": "0xcc85dc",
+      "end": "0xcc87e4",
+      "bytes_sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetIndicatorBrightnessAsByte": {
+      "start": "0xc9e4c8",
+      "end": "0xc9e51c",
+      "bytes_sha256": "80b52e9a2d85b6b247ebd3fed2277e172e52e567fb92d93751725c1a0e535afa"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.IndicatorBrightnessPropertyEnabled": {
+      "start": "0xc9e124",
+      "end": "0xc9e138",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC1.TKEYC1.IsKEYC": {
+      "start": "0xf9d188",
+      "end": "0xf9d19c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC2.TKEYC2.IsKEYC": {
+      "start": "0xf9d5d0",
+      "end": "0xf9d5e4",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYC4.TKEYC4.IsKEYC": {
+      "start": "0xf9da18",
+      "end": "0xf9da2c",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYCIR1.TKEYCIR1.IsKEYC": {
+      "start": "0xf64e84",
+      "end": "0xf64e98",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TKEYCIR4.TKEYCIR4.IsKEYC": {
+      "start": "0xf9de3c",
+      "end": "0xf9de50",
+      "bytes_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCustomFlashObject.TAttributeManager.Add": {
+      "start": "0x7e7bb4",
+      "end": "0x7e7c00",
+      "bytes_sha256": "3a2057d2013c5069e8f4d14db5c3edbcb3626bdd7d52cd99857eba3f008276ef"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "start": "0x7ec504",
+      "end": "0x7ec5d0",
+      "bytes_sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetIndicatorBrightness": {
+      "start": "0xcc7f18",
+      "end": "0xcc8080",
+      "bytes_sha256": "0adbce6f75aae2526fa8b7fa34c090335a5acd6d8594ab0905bfd35f45936ce2"
+    },
+    "CIS_TCoreKeyInputUnit.IndicatorBrightnessLevelToLevel": {
+      "start": "0xc9e330",
+      "end": "0xc9e4c8",
+      "bytes_sha256": "c29a79c24a9b1d500f95ac6995b83bad546d872f4572c3c1d58fe79f87721ce7"
+    },
+    "CIS_TCBusNeoStandardInputUnit.IndicatorBrightnessLevelToLevel": {
+      "start": "0xcea0d8",
+      "end": "0xcea280",
+      "bytes_sha256": "e91dde75ca0143403ab796c1cfb4ebcc72d93b1c4a2662c90b9a502c5148acff"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.SetIndicatorBrightnessAsByte": {
+      "start": "0xc9e850",
+      "end": "0xc9e8bc",
+      "bytes_sha256": "fbbfadd399329f7856c37885e8aeeb17b47a98a58309c656d66a929397818c03"
+    },
+    "CIS_TCBusNeoStandardInputUnit.TCBusNeoProClassicInputUnit.SetIndicatorBrightnessAsByte": {
+      "start": "0xcea544",
+      "end": "0xcea58c",
+      "bytes_sha256": "b304865ac6dd8683d4c47ea4aec328db67038400090cc16cc64e432eef9f30a8"
+    },
+    "CIS_TCoreKeyInputUnit.LevelToIndicatorBrightnessLevel": {
+      "start": "0xc9e6b4",
+      "end": "0xc9e850",
+      "bytes_sha256": "ac3a409dc8ebbc6fd0dd7bbe2d95b187ece38a5e6c557a4e08ac990a258175ef"
+    },
+    "CIS_TCBusNeoStandardInputUnit.LevelToIndicatorBrightnessLevel": {
+      "start": "0xcea398",
+      "end": "0xcea544",
+      "bytes_sha256": "662f10aa3cd71f2a09b4c72f9d011b65ba207b4a4a7f17a80f4b65bafcb15e18"
+    },
+    "CIS_TTweakerDLT.SetToZero": {
+      "start": "0x12f0ab4",
+      "end": "0x12f0b28",
+      "bytes_sha256": "1e51cea48747e4319d37975e7608d5d0dbb45b1381546d5b11197e1158d80708"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetAll": {
+      "start": "0xcbb4b0",
+      "end": "0xcbb5f8",
+      "bytes_sha256": "d9952cb55c5e5b1cf875e64a39114cb953ba88ab57f2bfd8df38646c3012eb76"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetSingle": {
+      "start": "0xcbb5f8",
+      "end": "0xcbb7d0",
+      "bytes_sha256": "f43f1bff2e8120c902a37e03802780742fc6ff11ec80bc4c5ea06dfe78312654"
+    }
+  },
+  "private_specification_inputs": {
+    "KEYL4.xml": "8d045edada38377378d01c76d5c48c7a84126aea7e3e1a1973dac312f26fd995",
+    "KEYL5.xml": "c3f29166c59b03a76c4545ca3dd79de89b277fe5f0a3188b5bd686a3795a8095",
+    "I_DLT.xml": "48fcff154e8172e254323e766f795650bab7d0dd572beebbf68a08c4922e2133",
+    "I_NEOCORE.xml": "5a26c87fe11a87208815436e00e07ad46e1b65981adab9c93e743a3e1c763af7",
+    "KEYE.xml": "8f9aae67a141b6a2919a4551dbd72762d56be1f97fbd8f51d66d4cce54cbeed4"
+  },
+  "limits": [
+    "Only fixed firmware and verified shapes are admitted. All original GUI/catalogue/history/physical acceptance remains separate.",
+    "No original instruction bytes or vendor specification text are published."
+  ],
+  "refused_registered_sources": [
+    "KEYM6",
+    "KEYBIR2",
+    "KEYBIR4",
+    "KEYBIR6"
+  ],
+  "missing_specification_reason": "Nine KEYBIR2/4/6 registrations remain refused because source specification identity or catalogue aliases are not established."
+}

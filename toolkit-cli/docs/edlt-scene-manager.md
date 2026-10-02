@@ -96,6 +96,19 @@ objects, stages PP with connected rollback, then records separate PP SAVE and
 PROJECT SAVE outcomes and verifies after reload. A lost save reply is never
 retried.
 
+The automatic path also accepts `add-trigger-dialog` and `add-action-dialog`
+with `scene` 1..8, optional free `address` 0..254 and optional `name` or
+`cancel:true`. Accepted replies are resolved to `set-trigger`/`set-action`
+within the same metadata transaction; cancellation retains a dialog receipt
+without a binding edit or provisional creation. Group seeds are `Trigger Group N`
+and Action seeds are `Level N`, distinct from exact-getter names. These rows
+require `--project-xml` or `--auto-metadata`; the pure manual-cache editor
+refuses them. [SceneManager Add dialogs](edlt-scene-add-dialog.md) defines the
+allocation order, original validation quirks, explicit transport bounds and
+Project TagName requirement. Application, Corridor and separate Activation
+Action Add remain outside this support. This software addition provides no new
+complete original WinForms binding or physical display acceptance.
+
 ## Declared cache
 
 `SceneManagerCache` wraps the existing `ApplicationCache` and adds per-level `DynamicAll` facts:

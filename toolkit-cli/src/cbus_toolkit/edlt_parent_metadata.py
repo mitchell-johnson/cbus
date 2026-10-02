@@ -641,9 +641,13 @@ class NativeEdltParentPlan:
                                          'manager owns metadata creation'),
             'static_labels': json.loads(self.static_labels),
             'planned_creations': [row.as_dict() for row in self.creations],
-            'creation_order': ['Application address order',
-                               'Group/NetVar application then address order',
-                               'Trigger action Level group then address order'],
+            'creation_order': (
+                ['Application, then Group/NetVar, then Level dependency order',
+                 'dialog-bearing histories preserve first creation order within kind']
+                if self.scene_metadata is not None and self.scene_metadata.add_dialogs
+                else ['Application address order',
+                      'Group/NetVar application then address order',
+                      'Trigger action Level group then address order']),
             'automatic_scene_metadata': (
                 None if self.scene_metadata is None
                 else self.scene_metadata.as_dict()),
@@ -656,6 +660,7 @@ class NativeEdltParentPlan:
                 'blank_address_group_dialog_modeled': bool(self.add_dialogs),
                 'application_add_dialog_supported': False,
                 'level_add_dialog_supported': False,
+                'scene_manager_trigger_action_dialog_supported': True,
                 'original_dialog_executed': False,
                 'created_before_pp_staging': True,
             } if self.add_dialogs else None,
@@ -1205,7 +1210,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
 
     state = scene_engine.load(scene_source, metadata=resolved.cache)
     outcome = scene_engine.edit(
-        state, operations=scene_operation['operations'])
+        state, operations=resolved.operations)
     if not outcome.complete:
         raise ValueError(
             'SceneManager capacity stopped the nested edit; partial scene '
@@ -1298,14 +1303,20 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
                 row.kind, row.application, row.address, row.name,
                 safe_blank_variants=row.kind != 'Application',
                 reasons=row.reasons))
-    creations = tuple(sorted(
-        (*outer_creations, *scene_creations),
-        key=lambda row: (
-            0 if row.kind == 'Application' else
-            1 if row.kind in ('Group', 'NetVar') else 2,
-            row.application,
-            row.group if row.group is not None else -1,
-            row.address)))
+    if resolved.add_dialogs:
+        # Preserve dialog-bearing creation order within each dependency kind.
+        creations = tuple(sorted((*outer_creations, *scene_creations),
+                                 key=lambda row: 0 if row.kind == 'Application'
+                                 else 1 if row.kind in ('Group', 'NetVar') else 2))
+    else:
+        creations = tuple(sorted(
+            (*outer_creations, *scene_creations),
+            key=lambda row: (
+                0 if row.kind == 'Application' else
+                1 if row.kind in ('Group', 'NetVar') else 2,
+                row.application,
+                row.group if row.group is not None else -1,
+                row.address)))
     keys = [
         (row.kind, row.application, row.group, row.address)
         for row in creations
@@ -1314,11 +1325,15 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         raise ValueError('Automatic parent metadata projected duplicate objects')
     if len(creations) > 512:
         raise ValueError('eDLT parent scene metadata plan exceeds 512 creations')
-    parent = editor.plan(parent_input, metadata=cache, operations=operations)
+    resolved_parent_operations = tuple(
+        {**row, 'operations': resolved.operations} if row['op'] == 'scene-manager'
+        else row for row in operations)
+    parent = editor.plan(parent_input, metadata=cache, operations=resolved_parent_operations)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks), operations, cache,
         creations, parent, _json(requirements), _static_labels(supplied),
-        resolved, display_preferences)
+        resolved, display_preferences,
+        resolved_operations=resolved_parent_operations)
 
 
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,

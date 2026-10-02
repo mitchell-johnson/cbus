@@ -1,0 +1,57 @@
+{
+  "format": "cbus-toolkit-tweaker-dlt-cli-wire-v1",
+  "scope": {
+    "original_execution": false,
+    "native_acceptance": false,
+    "physical_acceptance": false,
+    "new_registered_pairs": 120,
+    "source_without_factory": "KEYM6",
+    "graph_whitespace_only_text_compared": false,
+    "sources_without_specification_identity": [
+      "KEYBIR2",
+      "KEYBIR4",
+      "KEYBIR6"
+    ]
+  },
+  "replace_ordered_once": [
+    "PROJECT COPY WFTEST BACKUP",
+    "DBADDSAFE //WFTEST/11 Unit 1 Source & exact",
+    "DBDELETE //WFTEST/11/p/20",
+    "DBSET //WFTEST/11/p/1/Address 20",
+    "PROJECT SAVE WFTEST",
+    "PROJECT CLOSE WFTEST",
+    "PROJECT LOAD WFTEST"
+  ],
+  "replace_statuses": [
+    200,
+    301,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "recovery_prefixes": [
+    "DBGETXML ",
+    "PROJECT USE WFTEST",
+    "PP LOCK ",
+    "PP START ",
+    "PP LOAD ",
+    "DBGET ",
+    "PP GET ",
+    "PP END ",
+    "PP UNLOCK "
+  ],
+  "label_submitted_tail": "0 1 1 1 1 1 1 1",
+  "lost_receipts": [
+    {
+      "verb": "PP SAVE_TO_SOURCE",
+      "backend_status": 200
+    },
+    {
+      "verb": "DBDELETE",
+      "backend_status": 200
+    }
+  ],
+  "label_wire_tail": "\"0\\ 1\\ 1\\ 1\\ 1\\ 1\\ 1\\ 1\""
+}

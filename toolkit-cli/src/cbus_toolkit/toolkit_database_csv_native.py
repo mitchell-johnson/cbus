@@ -14,6 +14,8 @@ from .toolkit_database_csv_projection import (
     _DIN_TYPES,
     _KEYE_TYPES,
     _NEOPRO_TYPES,
+    family_profile,
+    CSVWirelessLoader,
     _REMAP_TYPES,
     _SENSOR_TYPES,
     CSVAreaObservation,
@@ -106,6 +108,8 @@ def _path(value):
 
 
 def _tokens(value, label, *, count=None):
+    if count == 0 and value == '':
+        return ()
     if type(value) is not str or not value:
         raise ValueError('Stored ' + label + ' must be a nonempty byte sequence')
     values = []
@@ -195,6 +199,8 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
     unit = _one_by_address(network, 'Unit', unit_address)
     unit_type = _field(unit, 'UnitType')
     firmware = _field(unit, 'FirmwareVersion')
+    family = family_profile(unit_type, firmware)
+    wireless_loader = None
     applications = _children(network, 'Application')
     if not applications:
         raise ValueError('Native network has no application cache')
@@ -234,20 +240,38 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
             secondary_node if index < 8 and secondary_mask & (1 << index) else primary
             for index in range(len(group_addresses)))
         area_address = 255
-    elif unit_type in _NEOPRO_TYPES and firmware == '2.5.00':
-        # The exact NeoPro agent inherits core LoadGroups, but its own
-        # GetBlockApplications selects Application2 for each mask bit. Its
-        # eight-block collection is independent of the physical key count.
+    elif family is not None:
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
-        group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=8)
-        area_values = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
-        secondary_mask, = _tokens(_parameter(unit, 'SecondApplicationBlocks'),
-                                  'SecondApplicationBlocks', count=1)
+        if family['wireless']:
+            # Init builds sixteen block references; the loader replaces the
+            # report manager with those blocks, then every installed channel.
+            # Channel tail failures remain fatal even beyond CSV column 16.
+            installed_keys, = _tokens(_parameter(unit, 'InstalledKeys'), 'InstalledKeys', count=1)
+            installed_channels, = _tokens(_parameter(unit, 'InstalledChannels'), 'InstalledChannels', count=1)
+            relay_mask = _parameter(unit, 'ChannelRelayMask')
+            if not re.fullmatch(r'[0-9]+|0[xX][0-9a-fA-F]+', relay_mask):
+                raise ValueError('Stored ChannelRelayMask must be a bounded nonnegative integer')
+            relay_mask = int(relay_mask, 16 if relay_mask.lower().startswith('0x') else 10)
+            block_secondary = _tokens(_parameter(unit, 'BlockGroupSecondary'), 'BlockGroupSecondary', count=16)
+            output_secondary = _tokens(_parameter(unit, 'OutputGroupSecondary'),
+                                       'OutputGroupSecondary', count=installed_channels)
+            if any(value not in (0, 1) for value in (*block_secondary, *output_secondary)):
+                raise ValueError('Stored wireless secondary arrays must contain only zero or one')
+            wireless_loader = CSVWirelessLoader(installed_keys, installed_channels, relay_mask,
+                tuple(bool(value) for value in block_secondary), tuple(bool(value) for value in output_secondary))
+            group_values = (_tokens(_parameter(unit, 'BlockGroup'), 'BlockGroup', count=16)
+                            + _tokens(_parameter(unit, 'OutputGroup'), 'OutputGroup', count=installed_channels))
+            secondary_mask = wireless_loader.secondary_mask
+            area_address = None
+        else:
+            group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=family['blocks'])
+            area_address, = _tokens(_parameter(unit, 'AreaGroupAddress'), 'AreaGroupAddress', count=1)
+            secondary_mask = (_tokens(_parameter(unit, 'SecondApplicationBlocks'),
+                                       'SecondApplicationBlocks', count=1)[0]
+                              if family['secondary_blocks'] else 0)
         primary_address, secondary_address = app_values
         if secondary_address == 255 and secondary_mask:
-            raise ValueError('NeoPro secondary group blocks require a configured secondary application')
-        if area_values != (255,):
-            raise ValueError('Bounded native NeoPro profile requires Area group 255')
+            raise ValueError('CSV family secondary groups require a configured secondary application')
         primary = _one_by_address(network, 'Application', primary_address)
         secondary_node = (None if secondary_address == 255 else
                           _one_by_address(network, 'Application', secondary_address))
@@ -255,8 +279,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_addresses = group_values
         group_applications = tuple(
             secondary_node if secondary_mask & (1 << index) else primary
-            for index in range(8))
-        area_address = 255
+            for index in range(len(group_values)))
     elif unit_type in _DIN_TYPES and firmware == '2.7.00':
         app_values = _tokens(_parameter(unit, 'Application'), 'Application', count=2)
         group_values = _tokens(_parameter(unit, 'GroupAddress'), 'GroupAddress', count=16)
@@ -369,7 +392,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
         group_applications = (primary,) * len(group_addresses)
         area_address = None
     else:
-        raise ValueError('Native XML projection supports only captured RELAY4 4.4, KEYE1-4/KEYEIR1-4 and KEYB2/4/6 2.5.00, '
+        raise ValueError('Native XML projection supports source-backed Key, Neo, NeoPro and wireless factory ranges plus captured RELAY4 4.4, KEYE1-4/KEYEIR1-4, '
                          'DIN-output and marshalling-box 2.7.00, SENPIROA/SENPIRIA 2.4.00, SENPIRIB 2.2.00, '
                          'KEYGL5 5.5.00/5055EDL and OWNED_UNKNOWN 4.4 profiles; '
                          + refusal_reason(unit_type, firmware))
@@ -380,7 +403,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
     # membership. NeoPro Area lookup must not depend on cache traversal order.
     cache_applications = ((primary, *((secondary_node,) if secondary_node is not None else ()),
                            *group_applications)
-                          if unit_type in _NEOPRO_TYPES else group_applications)
+                          if family is not None else group_applications)
     for application in dict.fromkeys(cache_applications):
         application_address = _byte(_field(application, 'Address'), 'Application address')
         by_address = {}
@@ -416,7 +439,7 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
     observations = () if area_address is None else (
         CSVAreaObservation(str(area_address)), CSVAreaObservation(str(area_address)))
     context = None
-    if unit_type in _NEOPRO_TYPES:
+    if family is not None:
         def application_identity(node):
             address = _byte(_field(node, 'Address'), 'Application address')
             return _optional_oid(node) or f'//{project_name}/{network_address}/{address}'
@@ -428,7 +451,8 @@ def _project_native_xml_unit(project, unit_path, *, columns, xml_sha256):
                 tuple(group.identity for group in by_address.values()))
                 for node, by_address in application_groups.items()))
     cached = project_cached_csv_unit(cached_unit, group_cache=tuple(groups),
-        area_observations=observations, columns=columns, application_context=context)
+        area_observations=observations, columns=columns, application_context=context,
+        wireless_loader=wireless_loader)
     return NativeXMLCSVProjection(unit_path, xml_sha256, cached)
 
 

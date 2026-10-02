@@ -132,6 +132,35 @@ check-cgate-interop: compile
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_stale_plan_and_occupied_backup_no_write[mock]' \
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_declared_assignment_refusal_preserves_source[mock]' \
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_malformed_recovery_and_apply_guards_never_connect' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_project_network_selection_on_owned_backend[mock]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[bad-profile-mock]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[channel-tail-mock]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[secondary-owner-mock]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_lost_snapshot_is_not_retried[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_exact_action_creation[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_action_dialog_seed_and_save[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_dialog_cancel_preserves_metadata[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_trigger_then_action_dialog_order[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_lost_save_never_replays[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_dialog_name_guards_precede_mutation[mock]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_restored_display_name_is_not_retained[mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[classic-prefix-no-inherited-hook-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[classic-prefix-no-inherited-hook-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-standard-pa6-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-standard-pa6-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[saturn-pcx-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[saturn-pcx-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[reflection-pcx-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[reflection-pcx-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-classic-model-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-classic-model-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keye-shared-spec-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keye-shared-spec-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[dlt-source-retains-dlt-only-fields-create-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[dlt-source-retains-dlt-only-fields-replace-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-create-save-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-replace-delete-mock]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_stale_plan_and_source_firmware_refuse[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -185,6 +214,36 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_stale_plan_and_occupied_backup_no_write[daemon]' \
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_declared_assignment_refusal_preserves_source[daemon]' \
 		'tests/test_cgate_toolkit_tweaker_lifecycle_interop.py::test_public_tweaker_lifecycle_authentication_redacts_and_stops_before_write' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_project_network_selection_on_owned_backend[daemon]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[bad-profile-daemon]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[channel-tail-daemon]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_late_refusal_on_owned_backend_is_atomic[secondary-owner-daemon]' \
+		'tests/test_cgate_csv_families_interop.py::test_public_csv_families_lost_snapshot_is_not_retried[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_exact_action_creation[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_action_dialog_seed_and_save[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_dialog_cancel_preserves_metadata[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_trigger_then_action_dialog_order[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_lost_save_never_replays[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_dialog_name_guards_precede_mutation[daemon]' \
+		'tests/test_cgate_edlt_scene_add_dialog_interop.py::test_public_scene_manager_restored_display_name_is_not_retained[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[classic-prefix-no-inherited-hook-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[classic-prefix-no-inherited-hook-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-standard-pa6-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-standard-pa6-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[saturn-pcx-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[saturn-pcx-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[reflection-pcx-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[reflection-pcx-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-classic-model-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[neo-classic-model-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keye-shared-spec-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[keye-shared-spec-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[dlt-source-retains-dlt-only-fields-create-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_profile_create_and_replace[dlt-source-retains-dlt-only-fields-replace-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-create-save-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_unknown_receipt_never_replays[lost-replace-delete-daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_stale_plan_and_source_firmware_refuse[daemon]' \
+		'tests/test_cgate_toolkit_tweaker_dlt_interop.py::test_public_dlt_tweaker_auth_stops_before_selection_or_write[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

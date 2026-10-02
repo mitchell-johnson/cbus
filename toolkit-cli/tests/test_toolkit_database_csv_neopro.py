@@ -205,11 +205,11 @@ def test_neopro_cached_projection_refuses_partial_or_extra_block_collections(kin
 def damage(root, case):
     unit = first_unit(root)
     if case == 'old-firmware':
-        unit.find('FirmwareVersion').text = '1.5.02'
+        unit.find('FirmwareVersion').text = '1.2.99'
     elif case == 'other-firmware':
-        unit.find('FirmwareVersion').text = '2.5.01'
+        unit.find('FirmwareVersion').text = '10.0'
     elif case == 'other-family':
-        unit.find('UnitType').text = 'KEYH2'
+        unit.find('UnitType').text = 'DIMDD8'
     elif case == 'group-count':
         parameter(unit, 'GroupAddress').set('Value', '1 2 3 4 5 6 7 8 9')
     elif case == 'short-groups':
@@ -321,7 +321,7 @@ def test_public_neopro_csv_late_project_failure_is_atomic_before_output(tmp_path
     root = tree()
     late = root.findall('Project/Network')[-1]
     if case == 'unsupported-late':
-        late.find('Unit/FirmwareVersion').text = '2.5.01'
+        late.find('Unit/FirmwareVersion').text = '10.0'
     elif case == 'ambiguous-late':
         late.append(ET.fromstring(ET.tostring(late.find('Unit'))))
     else:

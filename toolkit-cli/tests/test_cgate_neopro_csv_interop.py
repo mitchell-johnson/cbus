@@ -124,7 +124,7 @@ def test_public_neopro_csv_project_network_selection_on_owned_backend(backend, v
 @pytest.mark.parametrize('backend,variable', BACKENDS, ids=['mock','daemon'])
 def test_public_neopro_csv_late_unsupported_profile_refuses_atomically(backend, variable, tmp_path):
     with journey(backend, variable, tmp_path) as (owner, relay, evidence, _endpoint):
-        assert NativeDatabase(owner).set('//NEOCSV/11/p/8/FirmwareVersion','2.5.01').code==200
+        assert NativeDatabase(owner).set('//NEOCSV/11/p/8/FirmwareVersion','10.0').code==200
         before=snapshot(owner)
         output=tmp_path/'never.csv'
         _result, call=cli(relay, evidence['calls'], 'database-csv', '--project','//NEOCSV',

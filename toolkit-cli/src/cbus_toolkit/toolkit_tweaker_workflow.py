@@ -109,6 +109,8 @@ def prepare(args):
         validate(args.firmware)
     elif converter.tweaker == tweakers.input_unit.INPUT_TWEAKER:
         tweakers.input_unit.require_target_firmware(args.firmware)
+    elif converter.tweaker in tweakers.dlt.TWEAKERS:
+        tweakers.dlt.require_target_firmware(args.firmware)
     elif converter.tweaker not in tweakers.RELAY_TWEAKERS:
         # F catalogue variants may use their base DIMDN specification. The
         # actual database and PP type must still match the requested type.
@@ -287,6 +289,9 @@ def execute(prepared, client, state, *, before_add=None):
     if (tweakers.lookup(p.source_type, p.target_type) in (tweakers.KEY_TWEAKER, tweakers.input_unit.INPUT_TWEAKER)
             and source_firmware != "1.2.67"):
         raise ValueError("This tweaker requires source firmware 1.2.67")
+    if (tweakers.lookup(p.source_type, p.target_type) in tweakers.dlt.TWEAKERS
+            and source_firmware != tweakers.dlt.source_firmware(p.source_type)):
+        raise ValueError("DLT source firmware differs from the recovered profile")
     with programmer.load(p.network, "/db" + p.source) as session:
         source_values = session.values()
         if session.unit_type.upper() != p.source_type or session.firmware != source_firmware:

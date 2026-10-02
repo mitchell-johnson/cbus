@@ -468,6 +468,9 @@ class EdltSceneManager:
     def _operation(operation):
         if not isinstance(operation, Mapping) or not isinstance(operation.get('op'), str): raise EdltError('Scene operation requires an op field')
         op = dict(operation); kind = op['op']
+        if kind in ('add-trigger-dialog', 'add-action-dialog'):
+            from .edlt_scene_add_dialog import normalize
+            return normalize(op)
         fields = {'set-application': ('selector',), 'add-groups': ('groups',), 'remove-items': ('item_ids',),
             'clear-items': (), 'copy': (), 'paste': (), 'clear-scene': (), 'set-level': ('item_id', 'level'),
             'set-percent': ('item_id', 'percent'), 'set-ramp': ('item_id', 'ramp_rate'), 'sync-levels': ('item_id',),
@@ -499,6 +502,8 @@ class EdltSceneManager:
         self._check(state)
         if not state.complete: raise EdltError('Incomplete scene state is review-only; branch from a prior complete state')
         ops = tuple(self._operation(v) for v in _array(operations, MAX_OPERATIONS, 'Scene operations'))
+        if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog') for row in ops):
+            raise EdltError('SceneManager Add dialogs require the automatic --project-xml/--auto-metadata workflow')
         if len(state.history) + len(ops) > MAX_OPERATIONS: raise EdltError('Scene history exceeds 256 operations')
         scenes, clipboard, next_id, results, complete = list(state.scenes), state.clipboard, state.next_item_id, [], True
         overlay, allocations = dict(state.static_text_overlay), list(state.name_allocations)

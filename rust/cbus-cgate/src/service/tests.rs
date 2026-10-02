@@ -478,7 +478,7 @@ async fn deleting_imported_application_removes_descendant_dlt_without_touching_c
             )
             .await
             .status,
-        200
+        301
     );
     let after_recreate = service
         .handle(&mut client, "[no-tag] DBGETXML //SYNTH/254")

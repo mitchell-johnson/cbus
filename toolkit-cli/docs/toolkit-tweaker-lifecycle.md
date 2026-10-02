@@ -1,7 +1,7 @@
 # Toolkit tweaker replacement lifecycle
 
 `cgate conversion tweak-replace` previews or applies the client-side replacement
-sequence for all 123 currently admitted Toolkit tweaker pairs. It uses the same
+sequence for all 243 currently admitted Toolkit tweaker pairs. It uses the same
 specification, firmware, transformation and unsupported-registration checks as
 `conversion tweak`. Existing `conversion replace`, `recover` and native
 `CONVERTUNIT` workflows keep their separate contracts.

@@ -28,7 +28,7 @@ from tests.test_cgate import peer
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / 'research/experiments/2026-09-30/csv-factory-registry-static.json'
-CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-neopro-registry.json'
+CURRENT_RECEIPT = ROOT / 'research/fixtures/toolkit-database-csv-families-registry.json'
 FIXTURE = ROOT / 'research/fixtures/toolkit-database-csv-registry-batch-synthetic.xml'
 HEADER = ('Unit Address,Part Name,Tag Name,Unit Type,Catalog Number,Serial Number,'
           'Firmware Version,Primary Application,Secondary Application,Area,'

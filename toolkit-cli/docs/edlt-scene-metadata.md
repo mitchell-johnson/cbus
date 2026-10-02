@@ -7,7 +7,9 @@ lists, required lifecycle group facts, Trigger Control level inventories, and
 consumed action `DynamicAll` rows from one exact native `DBGETXML` project
 snapshot. When retained trigger/action getters reach missing metadata, the plan
 projects the exact Trigger Control application, group, and `Level` objects that
-the original model requests. A guarded native apply creates them.
+the original model requests. A guarded native apply creates them. The same automatic path also resolves
+accepted and cancelled SceneManager Trigger Group / Action Selector Add dialogs
+through typed operations described in [SceneManager Add dialogs](edlt-scene-add-dialog.md).
 
 Preview a saved PP/project pair without connecting:
 
@@ -92,22 +94,39 @@ resulting object has:
 
 The chain can be reached during initial scene load, `get-trigger`, an explicit
 `set-action` or `get-action`, copy/validation getters, or the terminal save
-getter/fallback. Creations are deduplicated and ordered as application 202,
+getter/fallback. Exact-only creations are deduplicated and ordered as application 202,
 trigger groups by address, then levels by trigger group and action address.
+Dialog-bearing histories retain first creation order within each dependency
+kind, so later allocation sees the objects created by earlier operations.
 Later operations in the same plan see every projected object and the level's
 four blank `DynamicAll` rows. The planner does not infer text, font, icon, or
 image content.
 
-The SceneManager **Add** buttons use different paths. The action button passes
-a blank level, scans from address 0 for the first free address, limits that
-dialog allocation to 0..254 because address 255 is reserved, seeds editable
-`Level N`, and creates only after dialog acceptance. The trigger-group Add
-button likewise enters its separate dialog branch. This command does not
-emulate either dialog. Exact-address action creation can address 255 because
-the original `FindLevelByAddress` path bypasses the blank-dialog allocator.
+The SceneManager **Add** buttons use different paths from exact-address
+getters. The automatic workflow accepts ordered `add-trigger-dialog` and
+`add-action-dialog` rows with a scene number and optional `address`, `name` or
+`cancel:true`. Both allocate the first missing address 0..254 and reserve 255.
+Trigger Group seeds `Trigger Group N`; Action Selector seeds `Level N` and
+requires a non-255 trigger. Accepted rows bind the new address and use this same
+creation/save transaction. Cancelled rows create no provisional object or
+binding edit, while retained initial/terminal getter side effects still apply.
+Action Add resolves TriggerGroup without reading ActionSelector before its
+allocator. Exact-address action creation can still address 255 because it
+bypasses the dialog allocator.
+
+The complete inventory supplies free-address and name checks. Dialog-bearing
+plans require the exact Project TagName scalar independently of the command
+Address. Accepted names must survive the current database line parser and XML
+readback: literal `#`, repeated spaces, non-ASCII whitespace and U+FFFE/U+FFFF
+are refused before backup or mutation. These are declared software input bounds,
+not recovered original refusal rules. Manual caller caches cannot authorize
+these creations. Application Add remains refused because its recovered maximum
+is nondeterministic; the separate Activation Action and Corridor Add paths are
+outside this addition. See [the Add-dialog contract](edlt-scene-add-dialog.md)
+for original seed/address-change and entered-name versus trimmed-name rules.
 
 This automatic creation boundary applies only to Trigger Control objects
-reached by retained scene model accesses. A missing required primary or Enable
+reached by retained scene model accesses and the two admitted Add-dialog outcomes. A missing required primary or Enable
 Control application, a missing scene output group, and broader parent-form
 metadata remain unsupported here. A duplicate address/OID, native conflict or
 capacity refusal, ambiguous add receipt, or readback mismatch stops the
@@ -148,12 +167,13 @@ network inventory. When objects are planned, it performs this order:
 1. `PROJECT SAVE` the unchanged source and `PROJECT COPY` it to the retained
    backup;
 2. repeat the semantic stale check and select the source project;
-3. issue `DBADDSAFE` for application 202, each `Group N`, then each exact
-   `Level ... Action Selector N`; resolve one new OID per object and
+3. issue `DBADDSAFE` for application 202, groups and then levels, using
+   exact-getter or accepted-dialog names from the plan; resolve one new OID
+   per object and
    `DBSETSAFE !OID/Value N` for levels;
 4. read back every created OID, kind, address, and name, each level value and
    blank-label default, and all existing metadata;
-5. when PP edits exist, stage and verify them, then attempt one `PP SAVE`;
+5. when PP edits exist, stage and verify them, then attempt one `PP SAVE_TO_SOURCE`;
 6. attempt one target `PROJECT SAVE`, then close/load the project; and
 7. verify created objects, expected PP, unrelated units/networks, and all
    pre-existing metadata after reload.
@@ -211,7 +231,8 @@ selected group is absent. The gate deliberately leaves the changed disposable
 source and retained backup for inspection.
 
 The optional native gate was not enabled for the recorded offline acceptance.
-No fresh complete WinForms SceneManager or interactive add dialog was run for
-this slice. Full control binding, interactive blank-address creation,
-project-image download, physical display behavior, scene learning, and
-physical trigger execution remain outside this boundary.
+The typed Add-dialog addition has static source and owned software validation;
+no fresh original interactive dialog was executed. The earlier native checkpoint
+remains evidence for its recorded exact-getter scope. Full control binding,
+original complete interactive event history, project-image download, physical
+display behavior, scene learning and physical trigger execution remain open.

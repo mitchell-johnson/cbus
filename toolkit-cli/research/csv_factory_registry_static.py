@@ -68,6 +68,14 @@ RELAY_AGENT = 'TCBus1RelayCGateAgent'
 ADMITTED_AGENTS = ('TCBus1RelayCGateAgent', 'TCBusKEYExCGateAgent', DIN_AGENT, REMAP_AGENT,
                    'TCBusST7PIRSensorCGateAgent', 'TCBusEDLTCGateAgent',
                    'TCBusNeoProInputCGateAgent')
+FAMILY_MODELS = {
+    'TCBusKeyInputCGateAgent': 'Four primary input blocks in stored order; four interactive columns; primary Area.',
+    'TCBusNeoInputCGateAgent': 'Eight primary input blocks in stored order; eight interactive columns; primary Area.',
+    'TCBusNeoProInputCGateAgent': 'Eight input blocks in stored order; per-bit secondary selection; eight interactive columns; primary Area.',
+    **{agent: 'Sixteen BlockGroup associations then InstalledChannels OutputGroup associations; independent Boolean secondary arrays; all interactive; no Area; serialize first sixteen.'
+       for agent in ('TCBusWirelessInputUnitCGateAgent', 'TCBusWirelessInputUnit8RemotesCGateAgent',
+                     'TCBusWirelessDecoratorInputUnitCGateAgent')},
+}
 
 
 def _sha(data):
@@ -235,9 +243,12 @@ def _visible(slots):
 def _decision(row, admitted):
     """Return the admitted association model or an explicit refusal reason."""
     klass, agent, slots = row['class'], row['agent'], row['report_slots']
-    point = admitted.get((row['unit_type'].upper(), klass))
-    if point is not None and firmware_in(point, row['firmware_min'], row['firmware_max']):
-        if klass in ADMITTED_MODELS:
+    points = [point for point in admitted.get((row['unit_type'].upper(), klass), ())
+              if firmware_in(point, row['firmware_min'], row['firmware_max'])]
+    if points:
+        if agent in FAMILY_MODELS:
+            model = FAMILY_MODELS[agent]
+        elif klass in ADMITTED_MODELS:
             model = ADMITTED_MODELS[klass]
         elif klass in REMAP_CLASSES:
             count = slots['channels']
@@ -246,7 +257,7 @@ def _decision(row, admitted):
         else:
             model = (f'DIN per-channel reload of stored GroupAddress[0:{slots["channels"]}]; '
                      f'all {slots["channels"]} visible, remaining columns unavailable.')
-        return {'admitted': True, 'admitted_firmware': point, 'association_model': model}
+        return {'admitted': True, 'admitted_firmware': points[0], 'association_model': model}
     if agent is None:
         reason = ('no exact-class CGate agent registration; the report group manager is '
                   'not populated by an admitted loader')
@@ -303,7 +314,9 @@ def source_registry(exe_path, map_path, admitted_profiles):
                     [image.class_name(row['class_reference']), row['firmware_min'],
                      row['firmware_max']])
 
-    admitted = {(kind.upper(), klass): firmware for kind, firmware, klass in admitted_profiles}
+    admitted = {}
+    for kind, firmware, klass in admitted_profiles:
+        admitted.setdefault((kind.upper(), klass), []).append(firmware)
     registrations = []
     for row in units:
         klass = image.class_name(row['class_reference'])
@@ -334,10 +347,31 @@ def source_registry(exe_path, map_path, admitted_profiles):
     types = sorted({row['unit_type'].upper() for row in registrations})
     admitted_types = sorted({row['unit_type'].upper() for row in registrations if row['admitted']})
     by_agent = Counter(row['agent'] for row in registrations if not row['admitted'])
+    family_rows = [row for row in registrations if row['agent'] in FAMILY_MODELS]
+    for row in family_rows:
+        wireless = row['agent'].startswith('TCBusWireless')
+        expected_predicate = ('TCBUSUnit.IsInteractionGroup' if wireless else
+                              'TCoreKeyInputUnit.IsInteractionGroup' if row['agent'] == 'TCBusKeyInputCGateAgent'
+                              else 'TCBusNeoInputUnit.IsInteractionGroup')
+        expected_area = 'TCBUSUnit.GetAreaIfAvailable' if wireless else 'TCBusInputUnit.GetAreaIfAvailable'
+        if (row['report_slots']['interaction'] != expected_predicate
+                or row['report_slots']['area'] != expected_area
+                or row['agent_methods']['load_groups'] != (
+                    'TCBusWirelessInputUnitCGateAgent.LoadGroups' if wireless
+                    else 'TCoreKeyInputCGateAgent.LoadGroups')):
+            raise ValueError('Recovered family loader/predicate changed for ' + row['class'])
     return {
         'format': 'cbus-toolkit-csv-factory-registry-static-v1',
         'original_execution': False,
         'original_inputs': {'CBusToolkit.exe': EXE_SHA256, 'CBusToolkit.map': MAP_SHA256},
+        'family_loader_admission': {
+            'source': 'fresh read-only pinned PE/MAP inspection; no original instructions executed',
+            'registrations': len(family_rows), 'types': len({row['unit_type'] for row in family_rows}),
+            'models': FAMILY_MODELS,
+            'selection': 'one exact class registration at the explicit numeric firmware range; ambiguous matches refused',
+            'wireless_metadata': ['InstalledKeys', 'InstalledChannels', 'ChannelRelayMask',
+                                  'BlockGroup', 'BlockGroupSecondary', 'OutputGroup', 'OutputGroupSecondary'],
+        },
         'factories': {kind: {'method': FACTORIES[kind], 'address': hex(targets[kind]),
                              'callsites': len(sites[kind])} for kind in FACTORIES},
         'report_path': {

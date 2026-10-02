@@ -10,10 +10,11 @@ is caught and ignored. This is separate from the native engine described in
 
 ## Public preview and guarded apply
 
-`cgate conversion tweak` exposes all **123 currently admitted pairs** through
+`cgate conversion tweak` exposes all **243 currently admitted pairs** through
 one operator workflow: eight DIMDN/DIMDU4, seven RELDN, 93 classic key to fresh
-Neo, five coupler/auxiliary to fresh Neo and ten classic InputUnit pairs. The
-registry and firmware/schema boundaries below remain the admission authority.
+Neo, five coupler/auxiliary to fresh Neo, ten classic InputUnit pairs and 120
+source-bound conversions into fresh DLT targets. The registry and
+firmware/schema boundaries below remain the admission authority.
 Unsupported pairs fail before connecting; the frontend does not widen them.
 
 Preview an existing source and a fresh replacement at an unused address:
@@ -98,7 +99,8 @@ possible ADD or save. Inspect the database before planning another attempt.
 
 For an authenticated service, add `--auth-token-file <private-file>`. The token
 is used for LOGIN before selection and excluded from plan/operator evidence.
-Each CLI connection selects the requested project once.
+Each successful CLI connection selects the requested project once; a refused
+LOGIN stops before selection.
 
 This workflow creates a database replacement at another address. It does not
 copy source tag/description/serial metadata, delete or readdress the source,
@@ -142,14 +144,20 @@ receipt's counts, uniqueness, class coverage and decisions.
 | TTweakerInputUnit | 11 | 13 Neo/IR attributes stay at target defaults; inherited Learn and target brightness flags | ten non-sensor pairs admitted for fresh 1.2.67→1.2.67; SENPILL self-conversion refused |
 | TTweakerNeoToKey | 13 | 13 Neo/IR attributes stay at target defaults | refused: secondary-application model rewrite is outside admitted profiles |
 | TTweakerKeyToNeo | 98 | as above, plus five attributes, IndicatorFunction 1→2/3→1 and the inherited Learn/CoreKey/NeoPro hooks; CouplerPro finally suppresses brightness | 93 classic-source pairs admitted for fresh 1.2.67→2.5.00; five coupler/auxiliary pairs admitted for fresh 1.2.67→2.2.00 |
-| TTweakerDLT, TTweakerKeyToDLT | 117, 15 | eight (or 13) attributes stay at defaults; LabelFlavourLSB/MSB=0; KeyToDLT also remaps IndicatorFunction | refused: DLT agent conversion hook not recovered |
+| TTweakerDLT, TTweakerKeyToDLT | 117, 15 | eight (or 13) attributes stay at defaults; one-element LabelFlavourLSB/MSB=0; KeyToDLT remaps IndicatorFunction; DLT own hook uses the loaded Neo source model without inherited conversion hooks | 120 pairs admitted into fresh DLT 2.1.00: classic sources 1.2.67, modern 2.5.00 and DLT 2.1.00; three KEYM6 factory-model and nine KEYBIR specification-identity gaps remain refused |
 | TTweakerSENPIR, TTweakerSENLL | 16, 2 | renames between EnableGroupAddress/Logic and PIR/PEC enabler groups | refused: sensor agent conversion hook not recovered |
 | TTweakerPC_DAL2, TTweakerPC_DAL2B | 2, 2 | swaps the two Application values | refused: no native acceptance yet |
 | TTweakerRELDN8_TO_X, TTweakerRELDNX_TO_8 | 4, 4 | source-pinned GroupAddress and LogicGA13–16 repacking | seven pairs admitted; RELDN4 → RELDN8 refused because its four-element source logic cannot satisfy the original eight-element reads |
 
 The refused hooks rewrite values from the Toolkit's in-memory unit model, for
-example key blocks, group applications and sensor settings. Pure PP data
-cannot reproduce them.
+example key blocks, group applications and sensor settings. Their missing
+model rules remain outside the admitted profiles.
+
+The DLT profiles and explicit twelve-pair evidence gaps are documented in
+[source-bound DLT conversions](toolkit-dlt-conversions.md). The new 120
+admissions use static source recovery and owned synthetic software checks;
+the earlier native API receipts below do not establish their native acceptance.
+The 49 remaining refused registrations retain their individual receipt reasons.
 
 The classic-to-Neo exception below has an independently recovered fresh-target
 model lifecycle. It does not generalize to retained/editor targets or to

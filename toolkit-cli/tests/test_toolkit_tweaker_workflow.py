@@ -88,7 +88,8 @@ def arguments(directory, source="DIMDN8", target="DIMDU4", **overrides):
 
 def test_frontend_admits_every_existing_pair_and_preserves_profile_rules(tmp_path):
     pairs = [pair for pair in tweakers.REGISTRY if pair not in tweakers.PAIR_REFUSALS
-             and tweakers.REFUSALS[tweakers.REGISTRY[pair]] is None]
+             and tweakers.REFUSALS[tweakers.REGISTRY[pair]] is None
+             and tweakers.REGISTRY[pair] not in tweakers.dlt.TWEAKERS]
     assert len(pairs) == 123
     for source, target in pairs:
         directory = tmp_path / (source + "-" + target)

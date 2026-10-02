@@ -1586,9 +1586,11 @@ an exact non-255 trigger group as `Group N`, and an exact missing action as
 requires a closed, idle, exclusively owned project, saves and copies a backup
 before creation, rechecks the source, then records the separate PP SAVE and
 PROJECT SAVE outcomes and verifies after reload. Use `--backup-project NAME`
-to select the retained backup name. Interactive blank Add dialogs,
-image-dependent labels, complete control binding, and physical display
-behavior remain open.
+to select the retained backup name. Typed `add-trigger-dialog` and
+`add-action-dialog` operations model accepted/cancelled Add results and ordered
+first-free allocation. See [the operation examples and name boundaries](docs/edlt-scene-add-dialog.md).
+Image-dependent labels, complete control binding and physical display behavior
+remain open.
 
 Capture current lighting levels into a database scene, broadcast stored levels,
 or invoke the scene's retained Trigger binding:
@@ -1978,8 +1980,9 @@ Keep the durable attempt journal; `conversion recover --journal FILE` reads
 the current project and backup without replaying an uncertain conversion or
 save. See the [integrated workflow](docs/conversion.md#reviewed-move-with-save-reopen-and-recovery).
 
-`cgate conversion tweak` exposes all 123 admitted client-side Toolkit tweaker
-pairs. Preview with the canonical source path, source/target types, private
+`cgate conversion tweak` exposes all 243 admitted client-side Toolkit tweaker
+pairs, including 120 source-backed DLT-target directions. See the
+[DLT firmware, shape and hook rules](docs/toolkit-dlt-conversions.md). Preview with the canonical source path, source/target types, private
 specification filenames, unused target address, target firmware and catalogue.
 After reviewing the returned plan, repeat with
 `--apply --exclusive-project --expect-plan-sha256 HASH`. Apply verifies a fresh

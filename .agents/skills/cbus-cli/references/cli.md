@@ -398,8 +398,13 @@ rollback ends before the first applicable PP or target-project save. Never
 retry a lost or interrupted save reply.
 Consumed image-dependent existing labels fail closed; use the manual cache
 path only for independently established project-image or DLTP facts.
-The separate interactive blank Add dialogs are not implemented; the action
-dialog's source-backed allocator is first-free 0..254 with editable `Level N`.
+Typed `add-trigger-dialog` and `add-action-dialog` operations now project accepted
+and cancelled Add outcomes in ordered SceneManager edits. They use first-free
+0..254 and editable `Trigger Group N` / `Level N` seeds, distinct from exact
+getter names. Project TagName is required for the duplicate guard; names the
+XML/command transport cannot preserve refuse before mutation. Original
+interactive control binding remains open. See
+`toolkit-cli/docs/edlt-scene-add-dialog.md`.
 
 Allocation is case-sensitive and ordered. It reuses the first exact text slot,
 otherwise chooses the highest whole-unit unreferenced slot. The selected

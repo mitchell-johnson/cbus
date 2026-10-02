@@ -101,6 +101,9 @@ jobs:
           --require-module tests/test_cgate_neopro_csv_interop.py
           --require-module tests/test_cgate_toolkit_tweaker_interop.py
           --require-module tests/test_cgate_toolkit_tweaker_lifecycle_interop.py
+          --require-module tests/test_cgate_csv_families_interop.py
+          --require-module tests/test_cgate_edlt_scene_add_dialog_interop.py
+          --require-module tests/test_cgate_toolkit_tweaker_dlt_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -128,6 +131,9 @@ jobs:
           --require-module tests/test_cgate_neopro_csv_interop.py
           --require-module tests/test_cgate_toolkit_tweaker_interop.py
           --require-module tests/test_cgate_toolkit_tweaker_lifecycle_interop.py
+          --require-module tests/test_cgate_csv_families_interop.py
+          --require-module tests/test_cgate_edlt_scene_add_dialog_interop.py
+          --require-module tests/test_cgate_toolkit_tweaker_dlt_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

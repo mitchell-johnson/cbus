@@ -301,8 +301,8 @@ class KeyToNeoGuardTests(unittest.TestCase):
 
     def test_recovered_key_rules_do_not_broaden_other_hooks_or_unregistered_pairs(self):
         for source_type, target_type in (
-            ('KEYIR1', 'KEY2'), ('KEYC1', 'KEY1'), ('KEY1', 'KEYDL4'),
-            ('KEYM2', 'KEYDL4'), ('SENPIRSS', 'SENPIRIA'), ('PC_DAL2', 'PC_DAL2B'),
+            ('KEYIR1', 'KEY2'), ('KEYC1', 'KEY1'), ('KEYM6', 'KEYDL4'),
+            ('KEYBIR2', 'KEYDL4'), ('SENPIRSS', 'SENPIRIA'), ('PC_DAL2', 'PC_DAL2B'),
             ('KEY1', 'KEYCIR1'), ('KEYIR1', 'KEYC1'), ('KEY1', 'KEYM6'),
         ):
             with self.subTest(source=source_type, target=target_type):

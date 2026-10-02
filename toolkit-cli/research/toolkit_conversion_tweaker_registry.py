@@ -74,14 +74,18 @@ CLASSES = {
     'TTweakerDLT': {
         'recovered': True, 'renames': {}, 'immutable': DLT_IMMUTABLE,
         'assignments': [{'target': 'LabelFlavourLSB', 'literal': '0'}, {'target': 'LabelFlavourMSB', 'literal': '0'}],
-        'summary': 'marks eight attributes immutable and sets LabelFlavourLSB/MSB to 0', 'refusal': HOOK_DLT},
+        'summary': 'marks eight attributes immutable and sets LabelFlavourLSB/MSB to one-element 0',
+        'refusal': None, 'profile': 'source-pinned-to-fresh-dlt-2.1.00',
+        'target_firmware': '2.1.00', 'evidence': 'static source recovery and owned synthetic CLI acceptance'},
     'TTweakerKeyToDLT': {
         'recovered': True, 'inherits': 'TTweakerDLT', 'renames': {},
         'immutable': DLT_IMMUTABLE + KEY_TO_NEO_IMMUTABLE,
         'assignments': [{'target': 'LabelFlavourLSB', 'literal': '0'}, {'target': 'LabelFlavourMSB', 'literal': '0'}],
         'element_remap': INDICATOR_REMAP,
         'summary': 'TTweakerDLT rules, five more immutable attributes, IndicatorFunction 1->2 and 3->1',
-        'refusal': HOOK_DLT},
+        'refusal': None, 'profile': 'classic-1.2.67-to-fresh-dlt-2.1.00',
+        'source_firmware': '1.2.67', 'target_firmware': '2.1.00',
+        'evidence': 'static source recovery and owned synthetic CLI acceptance'},
     'TTweakerSENPIR': {
         'recovered': True,
         'renames': {'PIREnablerGroup': 'EnableGroupAddress', 'PIREnablerGroupLogic': 'EnableGroupLogic',
@@ -126,6 +130,12 @@ CLASSES = {
         'refusal': None},
 }
 PAIR_REFUSALS = {
+    **{('KEYM6', target): ('KEYM6 has no recovered static Toolkit unit factory/model; '
+                          'its DLT registrations remain refused')
+       for target in ('KEYDL4', 'KEYML5', 'KEYBL5')},
+    **{(source, target): ('KEYBIR source specification identity or catalogue alias is not established '
+                          'for the recovered DLT profile')
+       for source in ('KEYBIR2', 'KEYBIR4', 'KEYBIR6') for target in ('KEYDL4', 'KEYML5', 'KEYBL5')},
     ('RELDN4', 'RELDN8'): ('native RELDN4 logic arrays have four elements, but the original reverse tweaker '
                           'reads eight without padding; no defined safe conversion is established'),
     ('SENPILL', 'SENPILL'): HOOK_SENSOR,
@@ -303,6 +313,23 @@ AGENTS['TBCNC4CGateAgent'] = {
 
 NATIVE_ACCEPTED = ('TTweakerDIMDN_TO_DIMDU4', 'TTweakerDIMDU4_TO_DIMDN', 'TTweakerRELDN8_TO_X', 'TTweakerRELDNX_TO_8',
                    'TTweakerKeyToNeo', 'TTweakerInputUnit')
+SOURCE_ADMITTED = ('TTweakerDLT', 'TTweakerKeyToDLT')
+# This receipt contains derived constructor names/flags and digests only.
+DLT_PROOF = json.loads((ROOT / 'research/fixtures/toolkit-dlt-conversion-source-proof.json').read_text())
+DLT_PROFILE = 'source-pinned-to-fresh-dlt-2.1.00'
+AGENTS['TCBusNeoProInputCGateAgent']['unit_types'] = sorted(set(
+    AGENTS['TCBusNeoProInputCGateAgent']['unit_types']) | {
+        t for t in DLT_PROOF['source_profiles']['modern']['types'] if not t.startswith('KEYE')})
+AGENTS['TCBusKEYExCGateAgent'] = {
+    'unit_types': [t for t in DLT_PROOF['source_profiles']['modern']['types'] if t.startswith('KEYE')],
+    'overrides_before_unit_conversion_save': True, 'conversion_role': 'source_only',
+    'attributes': AGENTS['TCBusNeoProInputCGateAgent']['attributes'] + [['KeyMask', True]],
+}
+AGENTS['TCBusDynamicLabelInputCGateAgent'] = {
+    'unit_types': ['KEYDL4', 'KEYML5', 'KEYBL5'], 'overrides_before_unit_conversion_save': True,
+    'conversion_hook_profile': DLT_PROFILE, 'target_firmware': '2.1.00',
+    'attributes': DLT_PROOF['constructor_attributes'],
+}
 TOOLKIT_SEMANTICS = {
     'uses_cgate_convertunit': False,
     'lookup': 'case-insensitive (source type, target type); first registration wins',
@@ -323,6 +350,9 @@ LIMITS = ('Static facts from the pinned Toolkit EXE/MAP; no original code was ex
           'target model profile with the CouplerPro brightness suppression. '
           'InputUnit admits ten non-sensor registrations at source and fresh-target firmware 1.2.67; '
           'its SENPILL self-conversion remains refused pending the separate sensor hook. '
+          'DLT/KeyToDLT admits 120 additional registrations with source recovery and owned synthetic '
+          'CLI proof, separately from native acceptance: classic 1.2.67, modern 2.5.00 and DLT 2.1.00 '
+          'sources into fresh DLT 2.1.00. KEYM6 has three registrations without a recovered factory model. '
           'Every other registered or unregistered pair is refused with the reason recorded here. '
           'Static evidence is separate from native C-Gate execution and does not establish original '
           'Toolkit GUI or physical acceptance.')
@@ -336,7 +366,7 @@ def build(tsv: Path) -> dict:
         call_va, source, target, tweaker = line.split('\t')
         spec = CLASSES[tweaker]
         reason = PAIR_REFUSALS.get((source.upper(), target.upper()), spec['refusal'])
-        admitted = tweaker in NATIVE_ACCEPTED and reason is None
+        admitted = tweaker in NATIVE_ACCEPTED + SOURCE_ADMITTED and reason is None
         rows.append({'source': source, 'target': target, 'tweaker_class': tweaker, 'call_va': call_va,
                      'decision': 'admitted' if admitted else 'refused',
                      'refusal_reason': reason})
@@ -347,6 +377,7 @@ def build(tsv: Path) -> dict:
         'class_counts': dict(sorted(counts.items())), 'toolkit_semantics': TOOLKIT_SEMANTICS,
         'classes': {name: {**CLASSES[name], 'call_sites': counts[name]} for name in sorted(CLASSES)},
         'agents': AGENTS, 'native_accepted_classes': list(NATIVE_ACCEPTED),
+        'source_admitted_classes': list(SOURCE_ADMITTED),
         'pair_refusals': [{'source': s, 'target': t, 'reason': reason} for (s, t), reason in PAIR_REFUSALS.items()],
         'registrations': rows, 'limits': LIMITS,
     }
@@ -371,7 +402,7 @@ def validate(receipt: dict) -> list[str]:
     for name, spec in classes.items():
         check(spec.get('call_sites') == counts.get(name), 'call sites for ' + name)
         check(bool(spec.get('summary')), 'summary for ' + name)
-        admitted = name in receipt.get('native_accepted_classes', [])
+        admitted = name in receipt.get('native_accepted_classes', []) + receipt.get('source_admitted_classes', [])
         check(admitted == (spec.get('refusal') is None), 'refusal/admission for ' + name)
         check(admitted <= bool(spec.get('recovered')), 'admitted class must be recovered: ' + name)
         for rule in spec.get('assignments', []):
@@ -381,7 +412,8 @@ def validate(receipt: dict) -> list[str]:
     for row in rows:
         spec = classes.get(row['tweaker_class'], {})
         reason = pair_refusals.get((row['source'], row['target']), spec.get('refusal'))
-        admitted = row['tweaker_class'] in receipt.get('native_accepted_classes', []) and reason is None
+        admitted = row['tweaker_class'] in (receipt.get('native_accepted_classes', [])
+                                           + receipt.get('source_admitted_classes', [])) and reason is None
         check(row['decision'] == ('admitted' if admitted else 'refused'), 'decision ' + repr(row))
         check(row['refusal_reason'] == reason, 'reason ' + repr(row))
     agents = receipt.get('agents', {})
@@ -391,7 +423,9 @@ def validate(receipt: dict) -> list[str]:
             check({row['source'], row['target']} <= covered, 'agent attributes for ' + repr(row))
     for name, agent in agents.items():
         names = [attribute[0] for attribute in agent['attributes']]
-        check(len(set(names)) == len(names), 'duplicate agent attribute in ' + name)
+        expected_dlt = name == 'TCBusDynamicLabelInputCGateAgent'
+        check((agent['attributes'] == DLT_PROOF['constructor_attributes']) if expected_dlt
+              else len(set(names)) == len(names), 'duplicate agent attribute in ' + name)
         source_only = agent.get('conversion_role') == 'source_only'
         if source_only:
             check(not any(row['target'] in agent['unit_types'] and row['decision'] == 'admitted' for row in rows),
@@ -399,7 +433,7 @@ def validate(receipt: dict) -> list[str]:
         check(not agent['overrides_before_unit_conversion_save'] or source_only
               or agent.get('conversion_hook_profile') in ('classic-1.2.67-to-fresh-neo-2.5.00',
                                                           'coupler-1.2.67-to-fresh-neo-2.2.00',
-                                                          'input-1.2.67-to-fresh-input-1.2.67'),
+                                                          'input-1.2.67-to-fresh-input-1.2.67', DLT_PROFILE),
               'admitted agent hook in ' + name)
     text = json.dumps(receipt)
     for marker in ('<Param', 'DefaultValue', '<Address>'):

@@ -12,7 +12,14 @@ async fn command(service: &Arc<Service>, client: &mut ClientState, text: &str) {
         reply.status,
         if matches!(
             text,
-            "DBADDSAFE //HARNESS/254 Unit 6 Added" | "DBADDSAFE //AUX/42 Unit 6 Unit"
+            "DBADDSAFE //HARNESS/254 Unit 6 Added"
+                | "DBADDSAFE //AUX/42 Unit 6 Unit"
+                | "DBADDSAFE //HARNESS/254 Application 57 LightingTwo"
+                | "DBADDSAFE //HARNESS/254/57 Group 8 Lamp"
+                | "DBADDSAFE //HARNESS/254 Application 57 CreatedApp"
+                | "DBADDSAFE //HARNESS/254/57 Group 8 CreatedGroup"
+                | "DBADDSAFE //AUX/42 Application 57 App"
+                | "DBADDSAFE //AUX/42/57 Group 8 Group"
         ) {
             301
         } else {

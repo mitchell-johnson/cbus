@@ -26,7 +26,7 @@ from .edlt_dltp_index import DltpIndex
 from .edlt_lifecycle import LifecycleCache, LifecycleGroup
 from .edlt_parent_metadata import (
     MAX_OBJECTS, NativeEdltProjectSnapshot, _byte, _children, _digest,
-    _error, _field, _json, _oid, _snapshot, _unit_path,
+    _error, _field, _json, _name, _oid, _snapshot, _unit_path,
 )
 from .edlt_scene_manager import (
     EdltSceneManager, SceneDynamicLabel, SceneLevelLabels, SceneManagerCache,
@@ -98,8 +98,20 @@ def _record(snapshot, application, group):
     return next((row for row in app.groups if row.address == group), None)
 
 
+def _dialog_name(value):
+    """Bind accepted text to the current native line-parser representation."""
+    value = _name(value, 'Accepted dialog name')
+    if any(char in ('\ufffe', '\uffff') for char in value):
+        raise ValueError('Accepted dialog name contains a scalar unsupported by XML 1.0')
+    if '#' in value:
+        raise ValueError('Accepted dialog name containing # is unsupported by the database transport')
+    if value != ' '.join(value.split()):
+        raise ValueError('Accepted dialog name with repeated or non-ASCII whitespace is unsupported by the database transport')
+    return value
+
+
 def _operation_facts(values, engine, snapshot, operations,
-                     projected_containers=()):
+                     projected_containers=(), dialog_project_name=None):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -134,6 +146,18 @@ def _operation_facts(values, engine, snapshot, operations,
     application_reasons = []
     group_creation_reasons = {}
     creation_reasons = {}
+    creation_names = {}
+    group_names = {
+        (app.address, child.address): child.tag
+        for app in snapshot.applications for child in app.groups}
+    group_names.update({(row.application, row.address): row.name
+                        for row in projected_containers
+                        if row.kind in ('Group', 'NetVar')})
+    level_names = {
+        (app.address, child.address): {level.address: level.tag
+                                      for level in child.level_records}
+        for app in snapshot.applications for child in app.groups}
+    resolved_operations, dialogs = [], []
 
     def group(application, address, reason, *, levels=False):
         groups.setdefault((application, address), []).append(reason)
@@ -155,6 +179,7 @@ def _operation_facts(values, engine, snapshot, operations,
             group_creation_reasons.setdefault(trigger, []).append(reason)
             present_groups.add(key)
             levels[key] = set()
+            group_names[key] = f'Group {trigger}'
         group(TRIGGER_APPLICATION, trigger, reason)
         return trigger
 
@@ -169,6 +194,7 @@ def _operation_facts(values, engine, snapshot, operations,
                     f'Trigger group {trigger} has no level capacity')
             creation_reasons.setdefault((trigger, address), []).append(reason)
             present.add(address)
+            level_names.setdefault(key, {})[address] = f'Action Selector {address}'
         pairs.add((trigger, address))
         return True
 
@@ -209,6 +235,42 @@ def _operation_facts(values, engine, snapshot, operations,
         kind = operation['op']
         scene = scenes[slot]
         reason = f'operation {number} {kind}'
+        if kind in ('add-trigger-dialog', 'add-action-dialog'):
+            from .edlt_scene_add_dialog import resolve
+            ensure_trigger_application(reason)
+            if kind == 'add-trigger-dialog':
+                inventory = {address: name for (app, address), name in group_names.items()
+                             if app == TRIGGER_APPLICATION}
+                dialog = resolve(operation, inventory, dialog_project_name)
+                if dialog['outcome'] == 'accepted':
+                    name = _dialog_name(dialog['name'])
+                    address = dialog['address']
+                    retain_trigger(address, reason)
+                    group_names[(TRIGGER_APPLICATION, address)] = name
+                    creation_names[('Group', address)] = name
+                    scene[1] = address
+                    resolved_operations.append({'op': 'set-trigger', 'scene': slot + 1,
+                                                'group': address})
+            else:
+                scene[1] = retain_trigger(scene[1], reason)
+                if scene[1] == 255:
+                    raise EdltError('Action Add dialog requires a non-255 trigger group')
+                key = (TRIGGER_APPLICATION, scene[1])
+                dialog = resolve(operation, level_names.setdefault(key, {}),
+                                 dialog_project_name, group=scene[1])
+                if dialog['outcome'] == 'accepted':
+                    name = _dialog_name(dialog['name'])
+                    address = dialog['address']
+                    ensure_level(scene[1], address, reason)
+                    level_names[key][address] = name
+                    creation_names[('Level', scene[1], address)] = name
+                    scene[2] = address
+                    group(TRIGGER_APPLICATION, scene[1], reason, levels=True)
+                    resolved_operations.append({'op': 'set-action', 'scene': slot + 1,
+                                                'action': address})
+            dialogs.append(_json({'operation_number': number, **dialog}))
+            continue
+        resolved_operations.append(operation)
         if kind == 'set-application':
             scene[0] = operation['selector']
         elif kind == 'add-groups':
@@ -257,22 +319,25 @@ def _operation_facts(values, engine, snapshot, operations,
             'Trigger Control', tuple(dict.fromkeys(application_reasons))))
     containers.extend(
         SceneContainerCreation(
-            'Group', TRIGGER_APPLICATION, trigger, f'Group {trigger}',
+            'Group', TRIGGER_APPLICATION, trigger,
+            creation_names.get(('Group', trigger), f'Group {trigger}'),
             tuple(dict.fromkeys(group_creation_reasons[trigger])))
-        for trigger in sorted(group_creation_reasons)
+        for trigger in (group_creation_reasons if dialogs else sorted(group_creation_reasons))
     )
     level_creations = tuple(
         SceneLevelCreation(
-            trigger, address, f'Action Selector {address}',
+            trigger, address, creation_names.get(
+                ('Level', trigger, address), f'Action Selector {address}'),
             tuple(dict.fromkeys(creation_reasons[(trigger, address)])))
-        for trigger, address in sorted(creation_reasons)
+        for trigger, address in (creation_reasons if dialogs else sorted(creation_reasons))
     )
     projected = {
         key: tuple(sorted(value)) for key, value in levels.items()
     }
     return (groups, level_groups, tuple(sorted(pairs)),
             tuple(containers) + level_creations, projected,
-            frozenset(applications), frozenset(present_groups))
+            frozenset(applications), frozenset(present_groups),
+            tuple(resolved_operations), tuple(dialogs))
 
 
 @dataclass(frozen=True)
@@ -285,6 +350,8 @@ class ResolvedSceneMetadata:
     creations: tuple[SceneContainerCreation | SceneLevelCreation, ...]
     group_reasons: str
     display_preferences: EdltDisplayPreferences | None = None
+    requested_operations: tuple = ()
+    add_dialogs: tuple[str, ...] = ()
 
     def as_dict(self):
         return {
@@ -296,6 +363,9 @@ class ResolvedSceneMetadata:
                 {'group': group, 'action': action}
                 for group, action in self.action_pairs
             ],
+            'requested_operations': list(self.requested_operations),
+            'resolved_operations': list(self.operations),
+            'add_dialogs': [json.loads(row) for row in self.add_dialogs],
             'planned_creations': [row.as_dict() for row in self.creations],
             'planned_level_creations': [
                 row.as_dict() for row in self.creations
@@ -348,6 +418,12 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
     operations = _normal_operations(engine, operations)
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index)
+    dialog_project_name = None
+    if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog') for row in operations):
+        # Native name validation compares Project.TagName, not the command
+        # address. Require the exact scalar; do not invent an address fallback.
+        project = _children(_container(text, 'Installation').documentElement, 'Project')[0]
+        dialog_project_name = _field(project, 'TagName')
     source = engine.snapshot(values)
     if source != snapshot.value_map():
         raise ValueError('PP snapshot differs from the selected native project unit')
@@ -378,8 +454,9 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         if row['facts'].get('complete_levels_if_present'):
             level_groups.add(key)
     (extra_groups, extra_levels, action_pairs, creations, projected_levels,
-     projected_applications, projected_groups) = _operation_facts(
-        supplied, engine, snapshot, operations, _projected_containers)
+     projected_applications, projected_groups, resolved_operations,
+     dialogs) = _operation_facts(
+        supplied, engine, snapshot, operations, _projected_containers, dialog_project_name)
     object_count = 1 + sum(
         1 + sum(1 + len(group.level_records) for group in application.groups)
         for application in snapshot.applications)
@@ -510,8 +587,8 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         for application, group in sorted(group_reasons)
     ])
     return ResolvedSceneMetadata(
-        snapshot, operations, cache, _json(requirements), action_pairs,
-        creations, reasons, display_preferences)
+        snapshot, resolved_operations, cache, _json(requirements), action_pairs,
+        creations, reasons, display_preferences, operations, dialogs)
 
 
 @dataclass(frozen=True)
@@ -526,6 +603,7 @@ class NativeSceneMetadataPlan:
     def semantic_source(self):
         return (
             self.resolved.snapshot, self.resolved.operations,
+            self.resolved.requested_operations, self.resolved.add_dialogs,
             self.resolved.cache, self.resolved.creations, self.validate,
             tuple(sorted(self.scene_plan.expected.items())),
             tuple(sorted(self.scene_plan.changes.items())),
@@ -551,14 +629,18 @@ class NativeSceneMetadataPlan:
             'planned_creations': [
                 row.as_dict() for row in self.resolved.creations
             ],
-            'creation_order': ('Trigger Control application, trigger groups by '
-                               'address, then exact requested action addresses'),
+            'creation_order': ('Trigger Control application; Group and Level dependencies '
+                               'before children, with dialog-bearing histories in '
+                               'first creation order within each kind; exact-only '
+                               'histories retain address order'),
+            'dialog_allocation_order': 'initial model getter accesses, ordered operations, terminal save getters',
             'native_missing_application_name': 'Trigger Control',
             'native_missing_group_name': 'Group {address}',
             'native_missing_level_name': 'Action Selector {address}',
             'original_group_auto_add_admission': (
                 'fresh CBusNetwork defaults: AutoAddGroupsMessageShown=false, '
                 'bAdd=true; no prior interactive decline'),
+            'blank_add_dialog_projection_supported': True,
             'native_blank_add_dialog_allocation': (
                 'separate interactive path: first free address 0..254, seed '
                 'Level {address}, create only after acceptance'),
@@ -821,7 +903,7 @@ class NativeSceneMetadataTransaction:
             raise ValueError('Project network inventory changed since planning')
         current = plan_native_scene_metadata(
             text, plan.unit, snapshot.value_map(), self.editor,
-            plan.resolved.operations, validate=plan.validate,
+            plan.resolved.requested_operations, validate=plan.validate,
             networks=plan.networks,
             display_preferences=plan.resolved.display_preferences,
             dltp_index=snapshot.dltp_index)

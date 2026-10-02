@@ -65,7 +65,10 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(REFUSALS[name], spec['refusal'], name)
         self.assertEqual(set(REFUSALS), set(data['classes']))
         admitted_rows = {(row['source'], row['target']) for row in data['registrations'] if row['decision'] == 'admitted'}
-        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED + INPUT_ADMITTED))
+        dlt_rows = {(s, t) for (s, t), c in REGISTRY.items()
+                    if c in tweakers.dlt.TWEAKERS and (s, t) not in tweakers.PAIR_REFUSALS}
+        self.assertEqual(len(dlt_rows), 120)
+        self.assertEqual(admitted_rows, set(ADMITTED + RELAY_ADMITTED + KEY_ADMITTED + INPUT_ADMITTED) | dlt_rows)
         for name, rules in ASSIGNMENTS.items():
             recorded = [(rule['target'], 'literal' if 'literal' in rule else 'from', rule.get('literal', rule.get('from')))
                         for rule in data['classes'][name]['assignments']]

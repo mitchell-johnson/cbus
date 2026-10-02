@@ -2359,11 +2359,16 @@ async fn associated_level_setup(service: &Arc<Service>, client: &mut ClientState
         "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
         "NET LOAD DB",
         "NET SAVE DB",
-        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
-        "DBADDSAFE //ASSOC/11/56 Group 1 Main",
     ] {
         ok_command(service, client, command).await;
     }
+    created(
+        service,
+        client,
+        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
+    )
+    .await;
+    created(service, client, "DBADDSAFE //ASSOC/11/56 Group 1 Main").await;
     let group = scalar(service, client, "//ASSOC/11/56/1/OID").await;
     ok_command(service, client, "DBRENAMENETSAFE 11 Renamed").await;
     {
@@ -2880,10 +2885,15 @@ async fn renamed_associated_level_under_existing_netvar_uses_typed_parent_for_pa
         "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
         "NET LOAD DB",
         "NET SAVE DB",
-        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
     ] {
         ok_command(&service, &mut client, command).await;
     }
+    created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
+    )
+    .await;
     // Existing constructor: this does not add a new NetVar creation
     // route or generalize it to another parent kind.
     let variable = created(
@@ -3410,10 +3420,15 @@ async fn plain_numeric_netvar(service: &Arc<Service>, client: &mut ClientState) 
         "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
         "NET LOAD DB",
         "NET SAVE DB",
-        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
     ] {
         ok_command(service, client, command).await;
     }
+    created(
+        service,
+        client,
+        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
+    )
+    .await;
     created(service, client, "DBADDSAFE //ASSOC/11/56 NetVar 4 Variable").await
 }
 
@@ -3697,12 +3712,17 @@ async fn associated_empty_tags_copied_deferred_flag_loads_once_without_pending_o
     let source = associated_empty_copy_source(&service, &mut client, &group).await;
     // A same-project numeric neighbor has no associated tag overlay. Its
     // plain typed flag must not be swept into this new LOAD owner subset.
-    for command in [
+    ok_command(
+        &service,
+        &mut client,
         "DBCREATENET 12 Neighbor Cni 127.0.0.1:1",
+    )
+    .await;
+    for command in [
         "DBADDSAFE //ASSOC/12 Application 56 Lighting",
         "DBADDSAFE //ASSOC/12/56 Group 1 Neighbor",
     ] {
-        ok_command(&service, &mut client, command).await;
+        created(&service, &mut client, command).await;
     }
     let unassociated = created(
         &service,

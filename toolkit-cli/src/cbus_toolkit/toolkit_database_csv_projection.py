@@ -24,11 +24,34 @@ from .toolkit_database_csv import (
     document_database_csv,
     validate_columns,
 )
-from .toolkit_database_csv_registry import refusal_reason
+from .toolkit_database_csv_registry import refusal_reason, registrations_for
 
 
 PROFILE = 'cbus-toolkit-database-cached-projection-v1'
 IDENTITY_PROFILE = 'cbus-toolkit-database-cached-projection-v2'
+WIRELESS_PROFILE = 'cbus-toolkit-database-cached-projection-v3'
+FAMILY_AGENTS = ('TCBusKeyInputCGateAgent', 'TCBusNeoInputCGateAgent',
+                 'TCBusNeoProInputCGateAgent', 'TCBusWirelessInputUnitCGateAgent',
+                 'TCBusWirelessInputUnit8RemotesCGateAgent',
+                 'TCBusWirelessDecoratorInputUnitCGateAgent')
+
+
+def family_profile(unit_type, firmware):
+    """Select one literal factory range, never guess across overlapping rows."""
+    rows = registrations_for(unit_type, firmware)
+    candidates = [row for row in rows if row[4] in FAMILY_AGENTS]
+    if not candidates:
+        return None
+    # registrations_for deliberately returns all rows on an invalid version.
+    from .toolkit_database_csv_registry import _firmware
+    if _firmware(firmware) is None or len(rows) != 1:
+        raise ValueError('CSV family firmware must select exactly one static registration')
+    row, = candidates
+    wireless = row[4].startswith('TCBusWireless')
+    return {'class': row[3], 'agent': row[4], 'wireless': wireless,
+            'blocks': 16 if wireless else 4 if row[4] == FAMILY_AGENTS[0] else 8,
+            'has_area': not wireless,
+            'secondary_blocks': wireless or row[4] == 'TCBusNeoProInputCGateAgent'}
 _RELAY_FIRMWARE = frozenset(('0', '4.4', '9', '9.1', '10'))
 _KEYE_TYPES = frozenset((
     'KEYE1', 'KEYE2', 'KEYE3', 'KEYE4',
@@ -77,7 +100,10 @@ def admitted_profiles():
     rows += [(kind, '2.7.00', klass) for kind, (klass, _) in _REMAP_TYPES.items()]
     rows += [(kind, firmware, klass) for kind, (firmware, klass) in _SENSOR_TYPES.items()]
     rows.append(('KEYGL5', '5.5.00', 'TCBusEDLTUnit'))
-    return tuple(rows)
+    from .toolkit_database_csv_registry import REGISTRATIONS
+    rows += [(kind.upper(), point, klass) for kind, low, high, klass, agent, _ in REGISTRATIONS
+             if agent in FAMILY_AGENTS for point in (low, high)]
+    return tuple(dict.fromkeys(rows))
 _AREA_VALUES = frozenset(('12', '13', '255', 'invalid'))
 _ROOT_FIELDS = frozenset(('format', 'unit', 'group_cache', 'area_observations', 'group_save'))
 _UNIT_FIELDS = frozenset(('identity', 'address', 'part_name', 'tag_name', 'unit_type',
@@ -142,13 +168,17 @@ class CachedCSVUnit:
         for name in ('part_name', 'tag_name', 'unit_type', 'catalog', 'serial',
                      'firmware', 'primary', 'secondary'):
             _text(getattr(self, name), name)
-        if (type(self.group_identities) is not tuple or len(self.group_identities) > 16
+        if (type(self.group_identities) is not tuple or len(self.group_identities) > 32
                 or any(type(value) is not str or not value for value in self.group_identities)):
-            raise ValueError('Unit groups must be at most sixteen nonempty identities in an exact tuple')
+            raise ValueError('Unit groups must be at most thirty-two nonempty identities in an exact tuple')
         if type(self.loader_associations) is not tuple or any(
                 type(value) is not str or not value for value in self.loader_associations):
             raise ValueError('Loader associations must be nonempty identities in an exact tuple')
         kind = self.unit_type.upper()
+        if len(self.group_identities) > 16:
+            family = family_profile(kind, self.firmware)
+            if family is None or not family['wireless']:
+                raise ValueError('Non-wireless unit groups must contain at most sixteen identities')
         if kind in _REMAP_TYPES:
             indices = remap_indices(kind)
             if (len(self.group_identities) != len(indices)
@@ -194,6 +224,38 @@ class CSVGroupSaveObservation:
 
 
 @dataclass(frozen=True)
+class CSVWirelessLoader:
+    installed_keys: int
+    installed_channels: int
+    channel_relay_mask: int
+    block_secondary: tuple[bool, ...]
+    output_secondary: tuple[bool, ...]
+
+    def __post_init__(self):
+        for name in ('installed_keys', 'installed_channels'):
+            value = getattr(self, name)
+            if type(value) is not int or not 0 <= value <= 16:
+                raise ValueError('Wireless installed counts must be integers from zero through sixteen')
+        if (type(self.channel_relay_mask) is not int
+                or not 0 <= self.channel_relay_mask <= 65535):
+            raise ValueError('Wireless ChannelRelayMask must be a sixteen-bit integer')
+        for values, count in ((self.block_secondary, 16),
+                              (self.output_secondary, self.installed_channels)):
+            if type(values) is not tuple or len(values) != count or any(type(v) is not bool for v in values):
+                raise ValueError('Wireless secondary arrays must match sixteen blocks and installed channels')
+
+    @property
+    def secondary_mask(self):
+        return sum(int(value) << index for index, value in enumerate(
+            self.block_secondary + self.output_secondary))
+
+    def as_dict(self):
+        return {'installed_keys': self.installed_keys, 'installed_channels': self.installed_channels,
+                'channel_relay_mask': self.channel_relay_mask,
+                'block_secondary': list(self.block_secondary), 'output_secondary': list(self.output_secondary)}
+
+
+@dataclass(frozen=True)
 class CachedCSVApplication:
     identity: str
     address: int
@@ -226,8 +288,8 @@ class CachedCSVApplicationContext:
         _identity(self.primary_identity, 'Primary Application identity')
         if self.secondary_identity is not None:
             _identity(self.secondary_identity, 'Secondary Application identity')
-        if type(self.secondary_mask) is not int or not 0 <= self.secondary_mask <= 255:
-            raise ValueError('Secondary application mask must be a byte integer')
+        if type(self.secondary_mask) is not int or not 0 <= self.secondary_mask <= 0xffffffff:
+            raise ValueError('Secondary application mask must be a bounded integer')
         if (type(self.applications) is not tuple or not 1 <= len(self.applications) <= 2
                 or any(type(value) is not CachedCSVApplication for value in self.applications)):
             raise ValueError('Application context requires one or two exact Application records')
@@ -267,6 +329,7 @@ class CachedCSVProjection:
     stop_reason: str | None
     csv_unit: CSVUnitValues | None = None
     application_context: CachedCSVApplicationContext | None = None
+    wireless_loader: CSVWirelessLoader | None = None
 
     @property
     def rows(self):
@@ -275,7 +338,8 @@ class CachedCSVProjection:
         return (''.join(COLUMN_LABELS[name] + ',' for name in self.columns),)
 
     def as_dict(self):
-        result = {'format': IDENTITY_PROFILE if self.application_context is not None else PROFILE,
+        result = {'format': WIRELESS_PROFILE if self.wireless_loader is not None else
+                  IDENTITY_PROFILE if self.application_context is not None else PROFILE,
                 'complete': self.complete,
                 'selected_class': self.selected_class, 'columns': list(self.columns),
                 'unit': self.unit.as_dict(), 'groups': [group.as_dict() for group in self.groups],
@@ -290,6 +354,8 @@ class CachedCSVProjection:
                 'original_instructions_executed': False, 'physical_device_accessed': False}
         if self.application_context is not None:
             result['application_context'] = self.application_context.as_dict()
+        if self.wireless_loader is not None:
+            result['wireless_loader'] = self.wireless_loader.as_dict()
         return result
 
 
@@ -307,6 +373,13 @@ def _class(unit):
         if len(unit.group_identities) != 8:
             raise ValueError('Cached NeoPro profile requires exactly eight stored groups')
         return _NEOPRO_TYPES[kind]
+    profile = family_profile(kind, unit.firmware)
+    if profile is not None:
+        count = len(unit.group_identities)
+        if (not profile['wireless'] and count != profile['blocks']
+                or profile['wireless'] and not 16 <= count <= 32):
+            raise ValueError('Cached family group count disagrees with the selected static loader')
+        return profile['class']
     if kind in _DIN_TYPES and unit.firmware == '2.7.00':
         if len(unit.group_identities) != 16:
             raise ValueError('Cached DIN profile requires exactly sixteen stored groups')
@@ -319,7 +392,7 @@ def _class(unit):
         return _SENSOR_TYPES[kind][1]
     if kind == 'KEYGL5' and unit.firmware == '5.5.00' and unit.catalog == '5055EDL':
         return 'TCBusEDLTUnit'
-    raise ValueError('Cached projection profile supports only the captured generic, RELAY4, KEYE, NeoPro, DIN, marshalling-box, sensor and KEYGL5 type/firmware pairs; ' + refusal_reason(unit.unit_type, unit.firmware))
+    raise ValueError('Cached projection supports the captured profiles and source-backed Key, Neo, NeoPro and wireless factory ranges; ' + refusal_reason(unit.unit_type, unit.firmware))
 
 
 def _validated_groups(unit, groups):
@@ -342,6 +415,8 @@ def _validated_groups(unit, groups):
 def _validated_application_context(unit, groups, context):
     if type(context) is not CachedCSVApplicationContext:
         raise ValueError('NeoPro cached projection requires explicit primary Application identity context')
+    if context.secondary_mask >> len(unit.group_identities):
+        raise ValueError('Secondary Application mask has bits beyond the stored associations')
     applications = {app.identity: app for app in context.applications}
     if (len(applications) != len(context.applications)
             or len({app.address for app in context.applications}) != len(applications)):
@@ -361,8 +436,9 @@ def _validated_application_context(unit, groups, context):
     if secondary is None and context.secondary_mask:
         raise ValueError('Secondary group blocks require a configured secondary Application identity')
     cache = {group.identity: group for group in groups}
-    if (unit.identity in cache or set(applications) &
-            (set(cache) | {group.oid for group in groups if group.oid} | {unit.identity})):
+    group_tokens = set(cache) | {group.oid for group in groups if group.oid}
+    if (unit.identity in group_tokens or set(applications) &
+            (group_tokens | {unit.identity})):
         raise ValueError('Application identities must not collide with Unit or Group identities')
     membership = {}
     for app in context.applications:
@@ -386,7 +462,7 @@ def _validated_application_context(unit, groups, context):
 
 
 def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
-                            group_save=None, columns, application_context=None):
+                            group_save=None, columns, application_context=None, wireless_loader=None):
     """Replay one captured cached unit projection without external I/O.
 
     Provider failures are completed partial outcomes rather than exceptions.
@@ -396,11 +472,23 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('unit must be an exact CachedCSVUnit')
     selected = validate_columns(columns)
     selected_class = _class(unit)
+    family = family_profile(unit.unit_type, unit.firmware)
     current = list(_validated_groups(unit, group_cache))
-    if selected_class in _NEOPRO_TYPES.values():
+    if family is not None:
         application_context = _validated_application_context(unit, current, application_context)
+        if family['wireless']:
+            if (type(wireless_loader) is not CSVWirelessLoader
+                    or len(unit.group_identities) != 16 + wireless_loader.installed_channels
+                    or application_context.secondary_mask != wireless_loader.secondary_mask):
+                raise ValueError('Wireless projection requires matching consumed loader metadata and Application routing')
+        elif wireless_loader is not None:
+            raise ValueError('Wireless loader metadata is only supported for wireless profiles')
+        elif not family['secondary_blocks'] and application_context.secondary_mask:
+            raise ValueError('The selected primary-only loader cannot consume secondary block routing')
     elif application_context is not None:
         raise ValueError('Application identity context is supported only for the exact NeoPro profile')
+    elif wireless_loader is not None:
+        raise ValueError('Wireless loader metadata is only supported for wireless profiles')
     if type(area_observations) is not tuple or any(type(value) is not CSVAreaObservation
                                                    for value in area_observations):
         raise ValueError('area_observations must be an exact tuple of CSVAreaObservation records')
@@ -409,10 +497,14 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     has_area = (selected_class in _DIN_CHANNELS or selected_class in _NEOPRO_TYPES.values() or selected_class in (
         'TRELAY4', 'TKEYEx', 'TRELDN8', 'TRELDN8SP', 'TRELMB8',
         'TST7SENPIROA', 'TST7SENPIRSS'))
+    if family is not None:
+        has_area = family['has_area']
     if has_area and len(area_observations) != 2:
         raise ValueError('The captured input/output projection requires two ordered Area observations')
     if not has_area and area_observations and len(area_observations) != 2:
         raise ValueError('Captured generic observations are absent or an ignored pair')
+    if wireless_loader is not None and area_observations:
+        raise ValueError('Wireless loader has no Area provider observations')
 
     events = [_event('factory_selected', selected_class=selected_class)]
     raw_area = area_identity = None
@@ -482,13 +574,20 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
         raise ValueError('Group-save observation was supplied but the projection did not require a save')
 
     cache = {group.identity: group for group in current}
+    if wireless_loader is not None:
+        events.append(_event('wireless_groups_replaced', block_count=16,
+                             channel_count=wireless_loader.installed_channels,
+                             installed_keys=wireless_loader.installed_keys,
+                             channel_relay_mask=wireless_loader.channel_relay_mask))
     if unit.loader_associations:
         events.append(_event('marshalling_box_groups_replaced', initial_count=16,
                              replacement_count=len(unit.group_identities)))
     interaction_count = {'TRELAY4': 6, 'TRELDN8': 8, 'TRELDN8SP': 9, 'TRELMB8': 9,
                          'TCBusEDLTUnit': 16, **_DIN_CHANNELS}.get(selected_class, 8)
+    if family is not None:
+        interaction_count = 16 if family['wireless'] else family['blocks']
     values = tuple(CSVGroupValue(cache[identity].tag, index < interaction_count)
-                   for index, identity in enumerate(unit.group_identities))
+                   for index, identity in enumerate(unit.group_identities[:16]))
     area = cache[area_identity].tag if area_identity is not None else None
     csv_unit = CSVUnitValues(unit.address, unit.part_name, unit.tag_name, unit.unit_type,
         unit.catalog, unit.serial, unit.firmware, unit.primary, unit.secondary, area, values)
@@ -496,15 +595,19 @@ def project_cached_csv_unit(unit, *, group_cache, area_observations=(),
     events.append(_event('row_projected', columns=len(selected), bytes=len(report.utf8_bytes)))
     return CachedCSVProjection(selected_class, True, selected, unit, tuple(current),
         tuple(events), raw_area, area_identity, save_required, report, None, csv_unit,
-        application_context)
+        application_context, wireless_loader)
 
 
 def parse_cached_projection(value, *, columns):
     """Validate and project the exact bounded cached-object JSON schema."""
-    if type(value) is not dict or value.get('format') not in (PROFILE, IDENTITY_PROFILE):
+    if type(value) is not dict or value.get('format') not in (PROFILE, IDENTITY_PROFILE, WIRELESS_PROFILE):
         raise ValueError('Expected the cbus-toolkit-database-cached-projection-v1 object')
-    with_identity = value['format'] == IDENTITY_PROFILE
-    if set(value) != (_ROOT_FIELDS | {'application_context'} if with_identity else _ROOT_FIELDS):
+    with_identity = value['format'] in (IDENTITY_PROFILE, WIRELESS_PROFILE)
+    with_wireless = value['format'] == WIRELESS_PROFILE
+    expected_root = _ROOT_FIELDS | ({'application_context'} if with_identity else set())
+    if with_wireless:
+        expected_root |= {'wireless_loader'}
+    if set(value) != expected_root:
         raise ValueError('Cached projection must provide every documented root field, without extras')
     raw_unit = value['unit']
     if type(raw_unit) is not dict or not _UNIT_FIELDS <= set(raw_unit):
@@ -516,12 +619,17 @@ def parse_cached_projection(value, *, columns):
     if set(raw_unit) != expected_unit_fields:
         raise ValueError('Cached unit must provide every documented field, without extras')
     neopro = type(raw_unit['unit_type']) is str and raw_unit['unit_type'].upper() in _NEOPRO_TYPES
+    family = family_profile(raw_unit['unit_type'], raw_unit['firmware'])
     if neopro and not with_identity:
         # This public schema has tags but no primary Application identity.
         # The v2 contract or native adapter must bind primary membership.
         raise ValueError('NeoPro cached v1 JSON cannot establish primary Application identity; '
                          'use cached v2 or an explicit native XML snapshot')
-    if with_identity and not neopro:
+    if family is not None and not with_identity:
+        raise ValueError('CSV family cached JSON requires explicit Application identity context')
+    if with_wireless != bool(family and family['wireless']):
+        raise ValueError('Wireless profiles require cached v3 loader metadata')
+    if with_identity and family is None:
         raise ValueError('Cached v2 Application identity context supports only NeoPro')
     group_identities = raw_unit['group_identities']
     if type(group_identities) is not list:
@@ -582,9 +690,19 @@ def parse_cached_projection(value, *, columns):
         save = CSVGroupSaveObservation(**raw_save)
     else:
         raise ValueError('group_save must be null or an object containing completed')
+    wireless = None
+    if with_wireless:
+        raw = value['wireless_loader']
+        if type(raw) is not dict or set(raw) != {'installed_keys', 'installed_channels',
+                'channel_relay_mask', 'block_secondary', 'output_secondary'}:
+            raise ValueError('Wireless loader must provide every documented field without extras')
+        if type(raw['block_secondary']) is not list or type(raw['output_secondary']) is not list:
+            raise ValueError('Wireless secondary arrays must be JSON arrays')
+        wireless = CSVWirelessLoader(raw['installed_keys'], raw['installed_channels'],
+            raw['channel_relay_mask'], tuple(raw['block_secondary']), tuple(raw['output_secondary']))
     return project_cached_csv_unit(unit, group_cache=tuple(groups),
         area_observations=tuple(observations), group_save=save, columns=columns,
-        application_context=context)
+        application_context=context, wireless_loader=wireless)
 
 
 def loads_cached_projection(raw, *, columns):

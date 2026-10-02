@@ -527,8 +527,11 @@ ownership. Use `--backup-project` when applying: it saves/copies the source,
 rechecks it, creates and reads back the objects, then crosses separate PP SAVE and
 PROJECT SAVE boundaries. Rollback stops once either applicable save is
 attempted; treat a lost save reply as uncertain and never retry it. The
-interactive blank Add dialogs are separate and unsupported; their action path
-uses first-free 0..254 and editable `Level N`. Image-dependent label facts
+typed accepted/cancelled `add-trigger-dialog` and `add-action-dialog` operations
+are available; they model first-free 0..254 and editable `Trigger Group N` /
+`Level N` seeds. Keep their ordered getter effects and transport name limits.
+Original interactive Add control binding remains open. See
+`toolkit-cli/docs/edlt-scene-add-dialog.md`. Image-dependent label facts
 remain unsupported; use manual `--metadata` for independently established
 DYNAMIC/FONT/ICON labels. See
 `toolkit-cli/docs/edlt-scene-metadata.md`.
@@ -544,7 +547,7 @@ uncertain.
 
 ## New conversion and NeoPro report commands
 
-`cgate conversion tweak` previews all 123 currently admitted Toolkit client-side
+`cgate conversion tweak` previews all 243 currently admitted Toolkit client-side
 pairs from a canonical source path, exact private source/target specs, unused
 target address, firmware and catalogue. Review `plan_sha256`; apply requires
 `--apply --exclusive-project --expect-plan-sha256 HASH`. It binds all project
@@ -561,15 +564,15 @@ or restores. Original cleanup/catalogue selection, retained GUI history and
 physical acceptance remain open. Read `toolkit-cli/docs/toolkit-tweaker-lifecycle.md` and
 `toolkit-cli/docs/toolkit-conversion-tweakers.md` before using this command.
 
-Native XML/live CSV admits KEYB2/KEYB4/KEYB6 at exactly 2.5.00. All eight blocks
+The earlier native XML/live NeoPro CSV checkpoint admitted KEYB2/KEYB4/KEYB6 at exactly 2.5.00. All eight blocks
 select their own primary/secondary Application through SecondApplicationBlocks;
 Area 255 stays in primary. Complete consumed groups and ordinary report fields
 are required. Whole selections refuse atomically before output creation, using
 one live DBGETXML. Public NeoPro cached v2 binds primary/secondary Application
 identities, complete Group membership and mask, validating each block before
-projection. This caller-supplied cache is not a fresh live read. Existing
-families retain v1 and NeoPro v1 is refused; read
-`toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. The current static registry admits 35 types;
+projection. This caller-supplied cache is not a fresh live read. The
+then-admitted older families retained v1; NeoPro v1 remains refused; read
+`toolkit-cli/docs/toolkit-database-csv-neopro-cached.md`. That checkpoint registry admitted 35 types; the current family registry admits 126/262 with v2/v3 inputs described in `toolkit-cli/docs/database-csv-source-families.md`;
 historical 32-type and native receipts are unchanged. Static EXE/MAP reading is
 not original-instruction acceptance. See
 `toolkit-cli/docs/toolkit-database-csv-neopro.md` and the October 2
@@ -662,8 +665,8 @@ and explicit `--group-sort address-ascending`; other manager orders remain refus
 
 ## Conversion, classic DLT and firmware boundaries
 
-The separate Toolkit conversion Python API admits 123 of 292 registered
-source/target pairs: eight dimmer, seven RELDN, 93 classic-to-Neo, five
+The separate Toolkit conversion Python API admits 243 of 292 registered
+source/target pairs. The earlier 123 comprise eight dimmer, seven RELDN, 93 classic-to-Neo, five
 coupler-to-Neo (1.2.67→2.2.00) and ten non-sensor InputUnit directions
 (1.2.67→1.2.67). SENPILL self-conversion remains refused. This is separate from typed C-Gate conversion. A RELDN4 short
 four-token baseline is refused before I/O; require the admitted complete source
@@ -740,3 +743,14 @@ dependencies retain unresolved markers. DIMPR12A/L1, later firmware, original
 complete loaders, initialized GUI history and full-page byte/visual parity
 remain open. See [Bytecraft](../../../../toolkit-cli/docs/project-documentation-bytecraft.md)
 and [integration boundaries](../../../../toolkit-cli/docs/feature-batch-2026-10-01-routed-commissioning-documentors.md).
+
+
+The current source-backed extensions admit 120 additional DLT-target conversion
+pairs (243/292 total) and 91 additional CSV unit types (126/262 total). Read
+`toolkit-cli/docs/toolkit-dlt-conversions.md` and
+`toolkit-cli/docs/database-csv-source-families.md` before using these profiles.
+DLT conversion deliberately omits inherited conversion hooks and preserves
+literal constructor order. Wireless CSV v3 requires sixteen input blocks and
+complete installed-output tails, even beyond visible report columns. The
+remaining conversion/CSV profiles, original GUI/cold native family acceptance
+and physical behavior remain open.
