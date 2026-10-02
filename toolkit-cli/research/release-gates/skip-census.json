@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 672,
-    "modules_without_skip_sites": 364,
-    "modules_with_skip_sites": 308,
+    "test_modules": 677,
+    "modules_without_skip_sites": 368,
+    "modules_with_skip_sites": 309,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 32,
+      "unclassified": 33,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 148
+      "none": 149
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -5766,6 +5766,42 @@
           ],
           "tests": [
             "SceneNameStaticEvidenceTests::test_static_pinned_regeneration"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_scene_selector_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration",
+          "kind": "body.call",
+          "condition": "not vendor or not framework",
+          "reason": "Explicit private pinned SceneSelector vendor/primary declaration inputs are not configured",
+          "environment": [
+            "CBUS_SCENE_SELECTOR_STATIC_FRAMEWORK_ROOT",
+            "CBUS_SCENE_SELECTOR_STATIC_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration"
           ]
         }
       ]

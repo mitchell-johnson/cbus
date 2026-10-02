@@ -17,6 +17,41 @@ SECOND = "tests/test_second.py::test_setup_skip"
 class NewInteropSelectionTests(unittest.TestCase):
     """A green backend job must retain every newly accepted public journey."""
 
+    def test_scene_selector_exact_backend_rosters_and_offline_modules(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgate_edlt_scene_selector_interop.py'
+        profiles = ('application-secondary-selector-one','trigger-callback-action-valid-in-both',
+            'action-selected-duplicate-name-exact-identity','null-current-retains-stale-action-binding',
+            'scene-two-rebinding-does-not-leak-first-labels','label-selection-3')
+        refusals = ('cache-injection','post-load-getter-creation','scene-add-timeline','future-parent-action')
+        for backend,target,selection in (('mock','check-cgate-interop','cgate-mock'),
+                                          ('daemon','check-cmqtt-interop','cmqttd')):
+            expected = {module+'::test_public_selectors_preview_apply_fresh_complete_graph['+case+'-'+backend+']' for case in profiles}
+            expected |= {module+'::test_public_selector_refusals_precede_database_writes['+case+'-'+backend+']' for case in refusals}
+            expected |= {module+'::test_public_selector_lost_successful_save_never_replayed['+case+'-'+backend+']' for case in ('pp-save','project-save')}
+            expected.add(module+'::test_public_prior_parent_add_visible_later_add_excluded['+backend+']')
+            body = make.split(target+': compile\n',1)[1].split('\n\n',1)[0]
+            actual = [row for row in re.findall(r"'(tests/test_[^']+)'",body) if row.startswith(module+'::')]
+            self.assertEqual(len(actual),13)
+            self.assertEqual(len(actual),len(set(actual)))
+            self.assertEqual(set(actual),expected)
+            audit = workflow.split('--selection '+selection+'\n',1)[1].split('\n      - name:',1)[0]
+            self.assertEqual(audit.count('--require-module '+module),1)
+        pure = {'tests/test_edlt_scene_selectors.py','tests/test_edlt_scene_selector_control.py',
+                'tests/test_edlt_scene_selector_static.py','tests/test_edlt_scene_selector_metadata.py'}
+        offline = workflow.split('--selection offline\n',1)[1].split('\n      - name:',1)[0]
+        for name in pure: self.assertEqual(offline.count('--require-module '+name),1)
+        manifest = root/'toolkit-cli/docs/edlt-scene-selector-release-test-modules.txt'
+        selected = [line.strip() for line in manifest.read_text().splitlines()
+                    if line.strip() and not line.lstrip().startswith('#')]
+        self.assertEqual(len(selected),len(set(selected)))
+        self.assertEqual(len(selected),10)
+        self.assertEqual(set(selected),pure | {module,'tests/test_ci_test_results.py',
+            'tests/test_cli_edlt_scene_manager.py','tests/test_edlt_scene_metadata.py',
+            'tests/test_edlt_parent_scene_metadata.py','tests/test_cli_edlt_parent_transaction.py'})
+
     def test_make_and_ci_retain_exact_new_backend_rosters(self):
         root = Path(__file__).resolve().parents[2]
         make = (root / "toolkit-cli/Makefile").read_text()

@@ -176,8 +176,9 @@ def metadata(path, *, limit=16 * 1024 * 1024):
             document.get('format') == 'cbus-edlt-application-cache-v1'):
         return ApplicationCache.from_dict(document)
     if (isinstance(document, dict) and
-            document.get('format') ==
-            'cbus-edlt-scene-manager-cache-v1'):
+            document.get('format') in (
+                'cbus-edlt-scene-manager-cache-v1',
+                'cbus-edlt-scene-manager-cache-v2')):
         return SceneManagerCache.from_dict(document)
     return LifecycleCache.from_dict(document)
 

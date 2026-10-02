@@ -32,7 +32,7 @@ def options(parser, *, state_only=False, surface='manual'):
         from .edlt_parent_transaction_cli import presentation_options
         presentation_options(parser)
     parser.add_argument('--operations', type=Path, required=True,
-                        help='JSON array of up to 256 ordered scene operations; set-name-text allocates a static scene name')
+                        help='Up to 256 ordered scene operations, including get-selector-view, explicit selector/name callbacks and retained scene edits')
     parser.add_argument('--validate', action='store_true', help='Run the original scene validation getters before preparing the save')
     if state_only:
         parser.add_argument('--list-groups', type=int, choices=range(1, 9), action='append', default=[], metavar='SCENE',

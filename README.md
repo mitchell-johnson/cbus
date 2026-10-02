@@ -49,6 +49,15 @@ Pending text refuses save. See [SceneName callbacks](toolkit-cli/docs/edlt-scene
 and [the implementation report](toolkit-cli/docs/feature-batch-2026-10-03-scene-name-control.md)
 for exact limits and the separate original GUI/hardware acceptance work.
 
+Explicit `scene-selector-control` histories now cover application, trigger,
+action and dynamic-label selection. `get-selector-view` returns complete ordered
+labels and object identities for choosing a value. The retained form keeps its
+previous action binding when there is no current scene. Automatic metadata
+supports existing objects and earlier parent Add results through cmqttd and
+cgate-mock; post-load object creation and interleaved SceneManager Add require
+a further timeline implementation. Read [selector callbacks](toolkit-cli/docs/edlt-scene-selector-control.md)
+and [native metadata limits](toolkit-cli/docs/edlt-scene-selector-metadata.md).
+
 The [network definition workflow](toolkit-cli/docs/network-definitions.md)
 now carries closed runtime definitions into the project with `NET SAVE DB`.
 The CLI and cmqttd preserve exact native tag addresses such as `0254`, `0xff`

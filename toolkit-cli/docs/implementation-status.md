@@ -2,6 +2,15 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [selector batch](feature-batch-2026-10-03-scene-selector-controls.md) adds
+complete ordered application/trigger/action/dynamic-label views and explicit
+retained control histories. Existing native inventories and earlier parent Add
+results are supported through both owned Rust backends; later parent objects
+cannot enter an earlier selector list. Post-load creation, SceneManager Add
+timelines, automatic host notification and original/physical acceptance remain
+open. This completes a bounded major function within issue45, without closing
+the full lifecycle obligation or changing the functional completion percentage.
+
 The Python implementation and CLI provide the functions listed below within their stated device, input and backend limits. **Complete Toolkit parity remains unfinished.** The feature ledger contains **42 areas: 18 implemented, 22 in progress and 2 pending**, and `census_complete` is `false`. The simple implemented-row ratio is **18/42 = 42.86%**; it is not an estimate of Toolkit functionality. An implemented category can still have outstanding Toolkit or hardware comparisons.
 
 The latest [grid/native report correction batch](feature-batch-2026-10-03-grid-native-report-corrections.md)

@@ -15,7 +15,9 @@ import weakref
 
 from .edlt import EdltError, EdltApplyError, _int, _render
 from .edlt_application_cache import ApplicationCache
-from .edlt_lifecycle import EdltLifecycle, LoadedEdlt, LifecycleGroup, LifecycleMetadataError, _changes, _delta, _error_text
+from .edlt_lifecycle import EdltLifecycle, LoadedEdlt, LifecycleCache, LifecycleGroup, LifecycleMetadataError, _changes, _delta, _error_text
+from .edlt_scene_selector_views import (SceneActionList, action_choices, parse_selector_lists,
+    retained_view, trigger_choices, validate_selector_lists)
 from .edlt_scene_names import (FIXED_SUGGESTION_NAMES, assign_name, checked_names, isolated_additive_cache,
     load_names, save_names, scene_name, scene_names_view)
 
@@ -61,6 +63,8 @@ class SceneLevelLabels:
 class SceneManagerCache:
     application_cache: ApplicationCache
     level_labels: tuple[SceneLevelLabels, ...]
+    trigger_list: object | None = None
+    action_lists: tuple[SceneActionList, ...] | None = None
 
     def __post_init__(self):
         if type(self.application_cache) is not ApplicationCache:
@@ -73,14 +77,23 @@ class SceneManagerCache:
             fact = self.application_cache.lifecycle.find(202, row.group)
             if fact is None or not fact.exists or fact.levels is None or row.action not in fact.levels:
                 raise EdltError('DynamicAll requires an explicitly present trigger group and level')
+        validate_selector_lists(self.application_cache, self.trigger_list, self.action_lists)
 
     def as_dict(self):
-        return dict(format='cbus-edlt-scene-manager-cache-v1', application_cache=self.application_cache.as_dict(),
-                    level_labels=[v.as_dict() for v in self.level_labels])
+        result = dict(format='cbus-edlt-scene-manager-cache-v1', application_cache=self.application_cache.as_dict(),
+                      level_labels=[v.as_dict() for v in self.level_labels])
+        if self.trigger_list is not None:
+            result.update(format='cbus-edlt-scene-manager-cache-v2', trigger_list=self.trigger_list.as_dict(),
+                          action_lists=[v.as_dict() for v in self.action_lists])
+        return result
 
     @classmethod
     def from_dict(cls, value):
-        if not isinstance(value, Mapping) or set(value) != {'format', 'application_cache', 'level_labels'} or value['format'] != 'cbus-edlt-scene-manager-cache-v1':
+        common = {'format', 'application_cache', 'level_labels'}
+        if (not isinstance(value, Mapping)
+                or not (value.get('format') == 'cbus-edlt-scene-manager-cache-v1' and set(value) == common
+                        or value.get('format') == 'cbus-edlt-scene-manager-cache-v2'
+                        and set(value) == common | {'trigger_list', 'action_lists'})):
             raise EdltError('Invalid SceneManager cache format or fields')
         rows = []
         for row in _array(value['level_labels'], 8192, 'Level labels'):
@@ -92,7 +105,9 @@ class SceneManagerCache:
                     raise EdltError('Invalid DynamicAll fields')
                 labels.append(SceneDynamicLabel(**label))
             rows.append(SceneLevelLabels(row['group'], row['action'], tuple(labels)))
-        return cls(ApplicationCache.from_dict(value['application_cache']), tuple(rows))
+        lists = ((None, None) if value['format'].endswith('-v1') else
+                 parse_selector_lists(value['trigger_list'], value['action_lists']))
+        return cls(ApplicationCache.from_dict(value['application_cache']), tuple(rows), *lists)
 
     def labels(self, group, action):
         row = next((v for v in self.level_labels if (v.group, v.action) == (group, action)), None)
@@ -169,6 +184,7 @@ class SceneManagerState:
     name_allocations: tuple[str, ...]
     static_names: tuple[str, ...]
     name_controls: tuple
+    selector_control: object | None
     _retained_parent_names: bool = field(repr=False, compare=False)
     _source_profile_identity_verified: bool = field(repr=False, compare=False)
     _origin: _Origin = field(repr=False, compare=False)
@@ -182,6 +198,9 @@ class SceneManagerState:
                 or any(control is not None and type(control) is not SceneNameControlState
                        for control in self.name_controls)):
             raise EdltError('SceneManager requires eight internal name-control states')
+        from .edlt_scene_selector_control import SceneSelectorControlState
+        if self.selector_control is not None and type(self.selector_control) is not SceneSelectorControlState:
+            raise EdltError('SceneManager requires an internal global selector-control state')
 
     def static_text_evidence(self):
         overlay = {name: list(value) for name, value in self.static_text_overlay.items()}
@@ -202,6 +221,7 @@ class SceneManagerState:
             fixed_suggestion_names=list(FIXED_SUGGESTION_NAMES), suggestion_order_inferred=False,
             scene_name_controls=[None if control is None else control.as_dict() for control in self.name_controls],
             pending_name_controls=any(control is not None and control.pending for control in self.name_controls),
+            scene_selector_control=None if self.selector_control is None else self.selector_control.as_dict(),
             clipboard=None if self.clipboard is None else self.clipboard.as_dict(),
             item_count=total, storage_used_percent=100 * total * 3 // 191,
             operations=[json.loads(v) for v in self.history], validation=None if self.validation is None else json.loads(self.validation),
@@ -218,6 +238,15 @@ class SceneEditOutcome:
 
     def as_dict(self):
         return dict(complete=self.complete, state=self.state.as_dict(), operation_results=[json.loads(v) for v in self.operation_results], saved=False)
+
+
+@dataclass(frozen=True)
+class SceneSelectorViewOutcome:
+    state: SceneManagerState
+    _view_json: str
+
+    def as_dict(self):
+        return {'view': json.loads(self._view_json), 'state': self.state.as_dict(), 'saved': False}
 
 
 @dataclass(frozen=True)
@@ -299,6 +328,8 @@ class SceneManagerComposition:
             ],
             'static_names': list(self.terminal.static_names),
             'scene_names_view': list(self.terminal.names_view()),
+            'scene_selector_control': (None if self.terminal.selector_control is None
+                                       else self.terminal.selector_control.as_dict()),
             'terminal_save_deferred_to_parent': True,
             'terminal_crc_deferred_to_parent': True,
             'complete_scene_cache_required': True,
@@ -351,7 +382,7 @@ class EdltSceneManager:
             next_id += len(items)
             scenes.append(SceneManagerScene(s.slot, s.primary_secondary, s.can_edit, s.trigger.group, s.action_selector, s.name_index, items, 0, labels))
         state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True,
-                                  (), None, {}, (), names, (None,) * 8, parent_grid is not None,
+                                  (), None, {}, (), names, (None,) * 8, None, parent_grid is not None,
                                   False, _Origin(self._owner))
         return self._seal(state)
 
@@ -433,6 +464,67 @@ class EdltSceneManager:
         if scene.raw_action == -1 or scene.raw_action not in group.levels: scene = self._set_action(state, scene, -1)
         return scene, scene.raw_action
 
+    @staticmethod
+    def _selector_context(state, scene):
+        """Limit new selector getters to the actual ordered inventory position.
+
+        The outer parent lifecycle may include later objects. Those positive
+        facts cannot establish the earlier SceneManager choice collection.
+        This temporary getter context is never issued as a loaded model.
+        """
+        choices = trigger_choices(state.cache)
+        trigger = scene.raw_trigger
+        if trigger == 255:
+            return state
+        present = any(row['value'] == trigger for row in choices)
+        old = state.loaded.metadata.find(202, trigger)
+        if present:
+            action_list = next((row for row in state.cache.action_lists if row.group == trigger), None)
+            levels = (tuple(row.address for row in action_list.actions)
+                      if action_list is not None and action_list.complete else None)
+            fact = LifecycleGroup(202, trigger, True,
+                old.dynamic_images if old is not None else None,
+                old.dynamic_images_known if old is not None else False, levels)
+        else:
+            fact = LifecycleGroup(202, trigger, False)
+        groups = tuple(row for row in state.loaded.metadata.groups
+                       if (row.application, row.group) != (202, trigger)) + (fact,)
+        metadata = LifecycleCache(state.loaded.metadata.applications, groups)
+        return replace(state, loaded=replace(state.loaded, metadata=metadata))
+
+    def _selector_observation(self, state, scene, *, getter=False, refresh=False, actions=None):
+        context = self._selector_context(state, scene)
+        scene, _ = self._trigger(context, scene)
+        observed = scene.raw_action
+        if getter:
+            scene, observed = self._action(context, scene)
+        if refresh:
+            # The trigger CurrentChanged handler refreshes even when the
+            # action getter was valid and therefore did not call its setter.
+            labels = (() if scene.raw_trigger == 255 or observed < 0
+                      else state.cache.labels(scene.raw_trigger, observed))
+            scene = replace(scene, dynamic_labels=labels)
+        view = retained_view(state.cache, scene,
+            primary=state.loaded.after_load['PrimaryApplication'][0],
+            secondary=state.loaded.after_load['SecondaryApplication'][0], actions=actions)
+        if getter:
+            view.update(action_selector=observed, action_getter_observed=True,
+                        retained_fields_only=False, trigger_editable=scene.raw_trigger != 255,
+                        action_editable=scene.raw_trigger != 255 and observed >= 0,
+                        property_getters=['TriggerGroup', 'ActionSelector'])
+        return scene, view
+
+    def selector_view(self, state, *, scene):
+        """Issue a complete selector view after the source property getters."""
+        outcome = self.edit(state, operations=[{'op': 'get-selector-view', 'scene': scene}])
+        view = json.loads(outcome.operation_results[0])['view']
+        return SceneSelectorViewOutcome(outcome.state, _json(view))
+
+    @staticmethod
+    def _uses_selector_inventory(state):
+        return any(json.loads(row)['op'] in ('get-selector-view', 'scene-selector-control')
+                   for row in state.history)
+
     def available_groups(self, state, *, scene):
         self._check(state); _int(scene, 'Scene', 1, 8)
         selected = state.scenes[scene - 1]
@@ -510,11 +602,15 @@ class EdltSceneManager:
         if kind == 'scene-name-control':
             from .edlt_scene_name_control import normalize_operation
             return normalize_operation(op)
+        if kind == 'scene-selector-control':
+            from .edlt_scene_selector_control import normalize_operation
+            return normalize_operation(op)
         fields = {'set-application': ('selector',), 'add-groups': ('groups',), 'remove-items': ('item_ids',),
             'clear-items': (), 'copy': (), 'paste': (), 'clear-scene': (), 'set-level': ('item_id', 'level'),
             'set-percent': ('item_id', 'percent'), 'set-ramp': ('item_id', 'ramp_rate'), 'sync-levels': ('item_id',),
             'set-trigger': ('group',), 'set-action': ('action',), 'set-name-index': ('index',),
-            'set-name-text': ('text',), 'get-name': (), 'get-trigger': (), 'get-action': ()}
+            'set-name-text': ('text',), 'get-name': (), 'get-trigger': (), 'get-action': (),
+            'get-selector-view': ()}
         if kind not in fields or set(op) != {'op', 'scene', *fields[kind]}: raise EdltError('Invalid scene operation or fields')
         _int(op['scene'], 'Scene', 1, 8)
         for key, maximum in (('selector', 1), ('level', 255), ('percent', 100), ('ramp_rate', 15), ('group', 255), ('action', 255), ('index', 255)):
@@ -553,6 +649,11 @@ class EdltSceneManager:
         scenes, clipboard, next_id, results, complete = list(state.scenes), state.clipboard, state.next_item_id, [], True
         overlay, allocations = dict(state.static_text_overlay), list(state.name_allocations)
         names, controls = list(state.static_names), list(state.name_controls)
+        selector_control = state.selector_control
+        selector_inventory = (self._uses_selector_inventory(state)
+                              or any(row['op'] in ('get-selector-view', 'scene-selector-control') for row in ops))
+        def getter_state(scene):
+            return self._selector_context(state, scene) if selector_inventory else state
         for op in ops:
             kind, slot = op['op'], op['scene']; s = scenes[slot - 1]; result = {'operation': op, 'complete': True}
             if kind == 'set-application':
@@ -578,7 +679,8 @@ class EdltSceneManager:
             elif kind in ('copy', 'paste', 'clear-scene'):
                 if kind == 'paste' and clipboard is None: raise EdltError('Copy a scene before pasting')
                 source = s if kind == 'copy' else clipboard if kind == 'paste' else SceneManagerScene(256, 0, True, 255, -1, 255, ())
-                source, trigger = self._trigger(state, source); source, action = self._action(state, source)
+                context = getter_state(source)
+                source, trigger = self._trigger(context, source); source, action = self._action(context, source)
                 if kind == 'copy': scenes[slot - 1] = source
                 target = SceneManagerScene(256, 0, True, 255, -1, 255, ()) if kind == 'copy' else s
                 target = replace(target, primary_secondary=source.primary_secondary, can_edit=source.can_edit,
@@ -601,7 +703,7 @@ class EdltSceneManager:
                     items[index] = replace(items[index], **{key: value})
                 s = replace(s, items=tuple(items))
             elif kind == 'set-trigger': s = replace(s, raw_trigger=op['group'])
-            elif kind == 'set-action': s = self._set_action(state, s, op['action'])
+            elif kind == 'set-action': s = self._set_action(getter_state(s), s, op['action'])
             elif kind == 'set-name-index': s = replace(s, name_index=op['index'])
             elif kind == 'set-name-text':
                 # Match ordered model-property edits. Detach this scene's old
@@ -623,8 +725,64 @@ class EdltSceneManager:
                 allocations.append(_json(evidence)); result['static_text_allocation'] = evidence
             elif kind == 'get-name':
                 result['value'] = scene_name(tuple(names), s.name_index)
+            elif kind == 'get-selector-view':
+                s, result['view'] = self._selector_observation(state, s, getter=True)
+            elif kind == 'scene-selector-control':
+                from .edlt_scene_selector_control import run_scene_selector_control
+                # One source form retains one direct scene binding. A later
+                # outer operation can have a different scene while WriteValue
+                # still targets the old bound scene after Current becomes null.
+                bound_actions = ([] if selector_control is None else
+                                 selector_control.as_dict()['view'].get('action_choices', []))
+                def observe(target, *, getter=False, refresh=False, rebind=False):
+                    nonlocal bound_actions
+                    current, view = self._selector_observation(state, scenes[target - 1],
+                        getter=getter, refresh=refresh,
+                        actions=None if rebind else bound_actions)
+                    scenes[target - 1] = current
+                    if rebind:
+                        bound_actions = view['action_choices']
+                    return view
+                def bind_scene(target):
+                    return observe(target, rebind=True)
+                def trigger_current(target):
+                    return observe(target, getter=True, refresh=True)
+                def write_application(target, value):
+                    if value not in (0, 1) or value == 1 and state.loaded.after_load['SecondaryApplication'] == (255,):
+                        raise EdltError('Secondary scene application is disabled')
+                    scenes[target - 1] = replace(scenes[target - 1], primary_secondary=value)
+                    return retained(target)
+                def retained(target):
+                    return retained_view(state.cache, scenes[target - 1],
+                        primary=state.loaded.after_load['PrimaryApplication'][0],
+                        secondary=state.loaded.after_load['SecondaryApplication'][0], actions=bound_actions)
+                def write_trigger(target, value):
+                    scenes[target - 1] = replace(scenes[target - 1], raw_trigger=value)
+                    return retained(target)
+                def write_action(target, value):
+                    current = scenes[target - 1]
+                    context = self._selector_context(state, current)
+                    scenes[target - 1] = self._set_action(context, current, value)
+                    return retained(target)
+                def write_label_index(target, value):
+                    scenes[target - 1] = replace(scenes[target - 1], label_value_index=value)
+                    return retained(target)
+                def observe_choices(field, target, source_trigger):
+                    if field == 'action_choices':
+                        return action_choices(state.cache, source_trigger)
+                    return retained(target)[field]
+                control = run_scene_selector_control(op['events'], scene=slot,
+                    bind_scene=bind_scene, trigger_current=trigger_current,
+                    write_application=write_application, write_trigger=write_trigger,
+                    write_action=write_action, write_label_index=write_label_index,
+                    observe_choices=observe_choices, initial_state=selector_control)
+                selector_control = control.state
+                result['scene_selector_control'] = control.as_dict()
+                s = scenes[slot - 1]
             elif kind == 'scene-name-control':
                 from .edlt_scene_name_control import run_scene_name_control
+                if selector_control is not None and selector_control.bound_scene is not None and selector_control.bound_scene != slot:
+                    raise EdltError('SceneName callbacks must match the retained selector form binding; explicitly rebind the scene first')
                 known_names = [*names, *FIXED_SUGGESTION_NAMES, '']
                 def get_name():
                     return scene_name(tuple(names), s.name_index)
@@ -652,22 +810,25 @@ class EdltSceneManager:
                 result['scene_name_control'] = {**control.as_dict(),
                     'known_name_profile': 'retained64 plus source FixedStrings64 plus empty',
                     'suggestion_order_inferred': False}
-            elif kind == 'get-trigger': s, result['value'] = self._trigger(state, s)
-            elif kind == 'get-action': s, result['value'] = self._action(state, s)
+            elif kind == 'get-trigger': s, result['value'] = self._trigger(getter_state(s), s)
+            elif kind == 'get-action': s, result['value'] = self._action(getter_state(s), s)
             scenes[slot - 1] = s; result['complete'] = complete; results.append(_json(result))
             if not complete: result['reason'] = 'original scene capacity reached'; results[-1] = _json(result); break
         issued = self._next(state, scenes=tuple(scenes), clipboard=clipboard, next_item_id=next_id, complete=complete,
             history=(*state.history, *(_json(op) for op in ops[:len(results)])), validation=None,
             static_text_overlay=overlay, name_allocations=tuple(allocations),
-            static_names=tuple(names), name_controls=tuple(controls))
+            static_names=tuple(names), name_controls=tuple(controls), selector_control=selector_control)
         return SceneEditOutcome(issued, complete, tuple(results))
 
     def validate(self, state):
         self._check(state); scenes = list(state.scenes); duplicate_trigger = duplicate_name = missing_trigger = missing_name = False; skipped = []
+        selector_inventory = self._uses_selector_inventory(state)
+        def context(scene):
+            return self._selector_context(state, scene) if selector_inventory else state
         def trigger(i):
-            scenes[i], value = self._trigger(state, scenes[i]); return value
+            scenes[i], value = self._trigger(context(scenes[i]), scenes[i]); return value
         def action(i):
-            scenes[i], value = self._action(state, scenes[i]); return value
+            scenes[i], value = self._action(context(scenes[i]), scenes[i]); return value
         for i in range(8):
             if missing_name and missing_trigger: skipped.append(i + 1); continue
             if scenes[i].items:
@@ -700,14 +861,16 @@ class EdltSceneManager:
         static_changes, _ = save_names(static_values, state.static_names)
         values.update(static_changes)
         scenes = list(state.scenes)
+        selector_inventory = self._uses_selector_inventory(state)
         bucket = bytearray()
         pointers = []
         for index, scene in enumerate(scenes):
-            scene, trigger = self._trigger(state, scene)
-            scene, action = self._action(state, scene)
+            context = self._selector_context(state, scene) if selector_inventory else state
+            scene, trigger = self._trigger(context, scene)
+            scene, action = self._action(context, scene)
             if action == -1:
-                scene = self._set_action(state, scene, 0)
-            scene, action = self._action(state, scene)
+                scene = self._set_action(context, scene, 0)
+            scene, action = self._action(context, scene)
             scenes[index] = scene
             pointers.append(len(bucket))
             bucket.extend((

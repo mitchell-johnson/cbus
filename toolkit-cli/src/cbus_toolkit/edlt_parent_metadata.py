@@ -1337,7 +1337,8 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
     if ordered_cache is not None:
         application_cache = _merge_application_cache(
             application_cache, ordered_cache)
-    cache = SceneManagerCache(application_cache, resolved.cache.level_labels)
+    cache = SceneManagerCache(application_cache, resolved.cache.level_labels,
+                              resolved.cache.trigger_list, resolved.cache.action_lists)
 
     scene_creations = []
     for row in resolved.creations:
@@ -2117,7 +2118,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                       present_application_cache(projection, display_preferences))
         if scene_results:
             from .edlt_scene_manager import SceneManagerCache
-            return SceneManagerCache(projection, scene_results[0].cache.level_labels)
+            observed = scene_results[0].cache
+            return SceneManagerCache(projection, observed.level_labels,
+                                     observed.trigger_list, observed.action_lists)
         return projection
 
     result = _plan_unordered(text, unit_path, supplied, editor, resolved,

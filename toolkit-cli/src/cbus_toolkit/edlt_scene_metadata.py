@@ -112,7 +112,7 @@ def _dialog_name(value):
 
 def _operation_facts(values, engine, snapshot, operations,
                      projected_containers=(), dialog_project_name=None,
-                     projected_level_receipts=()):
+                     projected_level_receipts=(), display_preferences=None):
     """Replay trigger/action accesses and their original creation side effects.
 
     ``CBusNetwork.GetApplicationByAddress`` and
@@ -123,6 +123,20 @@ def _operation_facts(values, engine, snapshot, operations,
     """
     primary = engine.lifecycle._primary(values)
     secondary = values['SecondaryApplication'][0]
+    selector_profile = any(row['op'] in ('scene-selector-control', 'get-selector-view')
+                           for row in operations)
+    if selector_profile and any(
+            level.value != level.address
+            for application in snapshot.applications if application.address == 202
+            for group in application.groups for level in group.level_records):
+        # The new object-bound selectors need one proven action identity. Native
+        # Value/Address conflicts have no established source reconciliation;
+        # preserve the separate historical v1 admission outside this profile.
+        raise EdltError('Selector controls require matching native action Address and Value')
+    if selector_profile and any(row['op'] in ('add-trigger-dialog', 'add-action-dialog')
+                                for row in operations):
+        raise EdltError('Native selector controls with SceneManager Add require an ordered creation timeline')
+    initial_getters_complete = False
     scenes = []
     pairs = set()
     groups = {}
@@ -183,6 +197,8 @@ def _operation_facts(values, engine, snapshot, operations,
             return 255
         key = (TRIGGER_APPLICATION, trigger)
         if key not in present_groups:
+            if selector_profile and initial_getters_complete:
+                raise EdltError('Native selector controls require existing post-load trigger objects; an ordered creation timeline is not implemented')
             group_creation_reasons.setdefault(trigger, []).append(reason)
             present_groups.add(key)
             levels[key] = set()
@@ -196,6 +212,8 @@ def _operation_facts(values, engine, snapshot, operations,
         key = (TRIGGER_APPLICATION, trigger)
         present = levels[key]
         if address not in present:
+            if selector_profile and initial_getters_complete:
+                raise EdltError('Native selector controls require existing post-load action objects; an ordered creation timeline is not implemented')
             if len(present) >= MAX_LEVELS:
                 raise ValueError(
                     f'Trigger group {trigger} has no level capacity')
@@ -235,6 +253,94 @@ def _operation_facts(values, engine, snapshot, operations,
             # an absent trigger's stored action to -1.
             action = -1
         scenes.append([variant, trigger, action])
+
+    initial_getters_complete = True
+    selector_control = None
+    selector_labels = {}
+
+    def labels_for(trigger, action):
+        if trigger == 255 or action < 0:
+            return []
+        record = _record(snapshot, 202, trigger)
+        level = None if record is None else next(
+            (row for row in record.level_records if row.address == action), None)
+        if level is not None:
+            if not level.dynamic_labels_known:
+                raise ValueError('Consumed selector dynamic labels require explicit project/DLTP image facts')
+            labels = level.dynamic_labels
+        else:
+            labels = tuple((str(index), '', False) for index in range(4))
+        return [{'identity': f'label:202/{trigger}/{action}/{index}',
+                 'value': index, 'name': row[1], 'raw_value': row[0],
+                 'image_present': row[2]} for index, row in enumerate(labels)]
+
+    def ordered(kind, rows):
+        from .edlt_display_model import display_list
+        return tuple(rows) if display_preferences is None else display_list(
+            kind, rows, display_preferences)
+
+    def selector_view(target):
+        selected = scenes[target - 1]
+        if target not in selector_labels:
+            selector_labels[target] = labels_for(selected[1], selected[2])
+        apps = {row.address: row.tag for row in snapshot.applications}
+        apps.update({row.address: row.name for row in projected_containers
+                     if row.kind == 'Application'})
+        app_choices = []
+        from .edlt_display_model import formatted_display
+        for value, address, prefix in ((0, primary, '(P) '), (1, secondary, '(S) ')):
+            if value == 1 and address == 255:
+                continue
+            if address not in apps:
+                raise EdltError('Selector application display is absent from the native inventory')
+            text = prefix + (apps[address] if display_preferences is None else
+                             formatted_display(address, apps[address], display_preferences))
+            app_choices.append({'identity': f'application:{value}/{address}',
+                'value': value, 'application': address, 'name': text, 'formatted_display': text})
+        trigger_rows = ordered('group', [CachedDisplay(address, name, name)
+            for (app, address), name in group_names.items() if app == 202])
+        actions = [] if selected[1] == 255 else ordered('level', [
+            CachedDisplay(address, name, name)
+            for address, name in level_names.get((202, selected[1]), {}).items()])
+        return {'scene': target, 'application_selector': selected[0],
+            'trigger_group': selected[1], 'action_selector': selected[2],
+            'application_choices': app_choices,
+            'trigger_choices': [{'identity': f'trigger:202/{row.address}',
+                'value': row.address, 'name': row.name, 'formatted_display': row.formatted_display}
+                for row in trigger_rows],
+            'action_choices': [{'identity': f'action:202/{selected[1]}/{row.address}',
+                'value': row.address, 'name': row.name, 'formatted_display': row.formatted_display}
+                for row in actions],
+            'dynamic_labels': selector_labels[target]}
+
+    def bind_selector(target):
+        selected = scenes[target - 1]
+        selected[1] = retain_trigger(selected[1], 'explicit selector scene-current callback')
+        return selector_view(target)
+
+    def trigger_selector(target):
+        selected = scenes[target - 1]
+        selected[1], selected[2], returned = get_action(
+            selected[1], selected[2], 'explicit selector trigger-current callback')
+        selector_labels[target] = labels_for(selected[1], returned)
+        return selector_view(target)
+
+    def write_selector(target, value, field):
+        selected = scenes[target - 1]
+        # Capture old DynamicAll ownership before a trigger property changes.
+        selector_view(target)
+        if field in (0, 1):
+            selected[field] = value
+        elif field == 2:
+            selected[1], selected[2] = set_action(
+                selected[1], selected[2], value, 'explicit selector action WriteValue')
+            if selected[1] != 255:
+                selector_labels[target] = labels_for(selected[1], selected[2])
+        return selector_view(target)
+
+    if selector_profile:
+        selector_labels.update({slot: labels_for(scene[1], scene[2])
+                                for slot, scene in enumerate(scenes, 1)})
 
     clipboard = None
     for number, operation in enumerate(operations, 1):
@@ -291,11 +397,25 @@ def _operation_facts(values, engine, snapshot, operations,
         elif kind == 'set-action':
             scene[1], scene[2] = set_action(
                 scene[1], scene[2], operation['action'], reason)
+            if selector_profile and scene[1] != 255:
+                selector_labels[slot + 1] = labels_for(scene[1], scene[2])
         elif kind == 'get-trigger':
             scene[1] = retain_trigger(scene[1], reason)
         elif kind == 'get-action':
             scene[1], scene[2], _returned = get_action(
                 scene[1], scene[2], reason)
+        elif kind == 'get-selector-view':
+            scene[1], scene[2], _returned = get_action(scene[1], scene[2], reason)
+        elif kind == 'scene-selector-control':
+            from .edlt_scene_selector_control import run_scene_selector_control
+            selector_result = run_scene_selector_control(operation['events'],
+                scene=slot + 1, bind_scene=bind_selector, trigger_current=trigger_selector,
+                write_application=lambda target, value: write_selector(target, value, 0),
+                write_trigger=lambda target, value: write_selector(target, value, 1),
+                write_action=lambda target, value: write_selector(target, value, 2),
+                write_label_index=lambda target, value: write_selector(target, value, 3),
+                initial_state=selector_control)
+            selector_control = selector_result.state
         elif kind == 'copy':
             scene[1], scene[2], returned = get_action(
                 scene[1], scene[2], reason)
@@ -469,7 +589,17 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
      projected_applications, projected_groups, resolved_operations,
      dialogs) = _operation_facts(
         supplied, engine, snapshot, operations, _projected_containers, dialog_project_name,
-        _projected_levels)
+        _projected_levels, display_preferences)
+    selectors = any(row['op'] in ('scene-selector-control', 'get-selector-view')
+                    for row in operations)
+    if selectors:
+        # Complete actual selector inventories are separate from the legacy
+        # lifecycle's manufactured unused255 object. Record only observed
+        # source and exact pre-control initializer objects here.
+        for key in projected_groups:
+            if key[0] == TRIGGER_APPLICATION:
+                group_reasons.setdefault(key, []).append('complete actual selector inventory')
+                level_groups.add(key)
     object_count = 1 + sum(
         1 + sum(1 + len(group.level_records) for group in application.groups)
         for application in snapshot.applications)
@@ -593,7 +723,39 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
                 level.dynamic_labels if level is not None
                 else tuple((str(variant), '', False)
                            for variant in range(4))))))
-    cache = SceneManagerCache(application_cache, tuple(level_labels))
+    trigger_list, action_lists = None, None
+    if selectors:
+        from .edlt_scene_selector_views import SceneActionList
+        from .edlt_display_model import display_list
+        trigger_rows = [CachedDisplay(row.address, row.tag, row.tag)
+            for app in snapshot.applications if app.address == 202 for row in app.groups]
+        seen = {row.address for row in trigger_rows}
+        for row in (*_projected_containers, *creations):
+            if (isinstance(row, SceneContainerCreation) and row.kind in ('Group', 'NetVar')
+                    and row.application == 202 and row.address not in seen):
+                trigger_rows.append(CachedDisplay(row.address, row.name, row.name))
+                seen.add(row.address)
+        if display_preferences is not None:
+            trigger_rows = display_list('group', trigger_rows, display_preferences)
+        trigger_list = CachedGroupList(202, True, tuple(trigger_rows))
+        action_lists = []
+        for trigger in trigger_rows:
+            if trigger.address == 255:
+                continue
+            group = _record(snapshot, 202, trigger.address)
+            rows = [] if group is None else [CachedDisplay(row.address, row.tag, row.tag)
+                                             for row in group.level_records]
+            seen = {row.address for row in rows}
+            for row in (*_projected_levels, *creations):
+                if (isinstance(row, SceneLevelCreation) and row.group == trigger.address
+                        and row.address not in seen):
+                    rows.append(CachedDisplay(row.address, row.name, row.name))
+                    seen.add(row.address)
+            if display_preferences is not None:
+                rows = display_list('level', rows, display_preferences)
+            action_lists.append(SceneActionList(trigger.address, True, tuple(rows)))
+        action_lists = tuple(action_lists)
+    cache = SceneManagerCache(application_cache, tuple(level_labels), trigger_list, action_lists)
     reasons = _json([
         {'application': application, 'group': group,
          'reasons': list(dict.fromkeys(group_reasons[(application, group)]))}

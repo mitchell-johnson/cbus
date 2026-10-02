@@ -1,0 +1,12 @@
+# Mandatory modules added or directly exercised by this bounded selector chunk.
+# The owning release selection additionally retains affected historical modules.
+tests/test_edlt_scene_selectors.py
+tests/test_edlt_scene_selector_control.py
+tests/test_edlt_scene_selector_static.py
+tests/test_edlt_scene_selector_metadata.py
+tests/test_cgate_edlt_scene_selector_interop.py
+tests/test_ci_test_results.py
+tests/test_cli_edlt_scene_manager.py
+tests/test_edlt_scene_metadata.py
+tests/test_edlt_parent_scene_metadata.py
+tests/test_cli_edlt_parent_transaction.py

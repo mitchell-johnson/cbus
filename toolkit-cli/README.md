@@ -1,5 +1,12 @@
 # Python C-Bus Toolkit CLI
 
+For retained eDLT application, trigger, action and dynamic-label selection, use
+`get-selector-view` and explicit `scene-selector-control` operations within the
+SceneManager or parent transaction commands. Read [callback schemas](docs/edlt-scene-selector-control.md)
+and [native inventory/save limits](docs/edlt-scene-selector-metadata.md). These
+workflows support existing objects through cmqttd and cgate-mock; full Toolkit
+GUI and hardware parity remains unfinished.
+
 This is an implementation in progress targeting **Toolkit 1.18.0.2754 with
 C-Gate 3.4.0.2001**. It does **not yet provide 100% Toolkit parity**. The
 current ledger has **42 areas: 18 implemented, 22 in progress and 2 pending**.

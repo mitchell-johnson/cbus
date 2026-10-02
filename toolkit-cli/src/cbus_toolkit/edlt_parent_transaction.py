@@ -772,8 +772,9 @@ class EdltParentTransaction:
             application_cache = scene_manager_cache.application_cache
             cache = application_cache.lifecycle
         elif (isinstance(metadata, Mapping) and
-              metadata.get('format') ==
-              'cbus-edlt-scene-manager-cache-v1'):
+              metadata.get('format') in (
+                  'cbus-edlt-scene-manager-cache-v1',
+                  'cbus-edlt-scene-manager-cache-v2')):
             scene_manager_cache = SceneManagerCache.from_dict(metadata)
             application_cache = scene_manager_cache.application_cache
             cache = application_cache.lifecycle

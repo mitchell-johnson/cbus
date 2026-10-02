@@ -4,6 +4,8 @@ The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bri
 
 - [Toolkit CLI guide](../toolkit-cli/README.md): installation, project editing, commissioning, and detailed command examples.
 - [Toolkit feature status](../toolkit-cli/docs/implementation-status.md): completed functions, device profiles, acceptance evidence, and outstanding parity work.
+- [eDLT selector callbacks](../toolkit-cli/docs/edlt-scene-selector-control.md): complete ordered choice views and explicit retained application, trigger, action and dynamic-label bindings.
+- [eDLT selector database limits](../toolkit-cli/docs/edlt-scene-selector-metadata.md): actual inventories, parent Add ordering, creation timeline refusals and separate save boundaries.
 - [Functional parity register](../toolkit-cli/docs/parity-register.md): versioned source accounting, obligation/evidence schema, validation rules and evidence-derived completion semantics.
 - [Toolkit executable surface](../toolkit-cli/docs/toolkit-executable-surface.json): sanitized Toolkit 1.18.0 form, control and event inventory with pinned EXE/MAP provenance.
 - [Implementation review and path to 100%](parity-review-and-roadmap.md): independent review, all 40 ledger areas, 59 tracked work items, the first delivery batch and explicit gates to 100% acceptance.

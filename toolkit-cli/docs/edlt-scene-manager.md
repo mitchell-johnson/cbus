@@ -46,6 +46,8 @@ Supported operation dictionaries all contain `op` and `scene`:
 | `set-ramp` | `item_id`, `ramp_rate` | Sets one raw ramp code. |
 | `sync-levels` | `item_id` | Copies the explicitly selected current item's level to every item in that scene. |
 | `set-trigger` | `group` | Sets the numeric trigger reference without implicitly resolving other fields. |
+| `get-selector-view` | none | Reads TriggerGroup then ActionSelector and returns complete ordered named choice and dynamic-label views, with observed action separate from its retained raw field. Requires actual cache v2 facts or automatic native metadata. |
+| `scene-selector-control` | `events`: explicit ordered callback records | Runs the retained global application/trigger/action/label bindings; disabled no-current state retains direct old-scene bindings. See [callbacks](edlt-scene-selector-control.md) and [native inventory limits](edlt-scene-selector-metadata.md). |
 | `set-action` | `action` | Invokes original-style action lookup and dynamic-label refresh. With a manual cache, an explicitly absent action becomes -1. The automatic outer transaction projects the original exact-address creation side effect before this model runs. A disabled trigger ignores the assignment. |
 | `set-name-index` | `index`: 0–63 or 255 | Selects an existing static slot or unused name. No allocation or reindexing occurs. |
 | `set-name-text` | `text`: nonblank, no NUL; new strings at most 63 UTF-8 bytes | Releases this scene's old name reference, reuses an exact existing string or allocates the highest unreferenced static slot, then binds the scene to it. |

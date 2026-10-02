@@ -1,0 +1,1030 @@
+{
+  "acceptance_limits": {
+    "category_ledger": {
+      "categories": 42,
+      "implemented": 18,
+      "is_functional_percentage": false,
+      "percent": 42.86
+    },
+    "complete": false,
+    "fully_accepted_obligations": 0,
+    "functional_percentage": "unmeasured; complete denominator unavailable",
+    "hardware_or_house_service_operated": false,
+    "original_instructions_executed": false,
+    "remaining": [
+      "native post-load object creation and interleaved SceneManager Add callback timelines",
+      "automatic selection/currency/notifications/async dispatch",
+      "null parsing and shared SceneName text/read timing",
+      "culture ordering, modal close and original full forms",
+      "physical-device and complete release acceptance"
+    ],
+    "remaining_issue_scopes": {
+      "72": "manual original Toolkit/C-Gate acceptance",
+      "73": "numeric Level XML selector compatibility after Network rename",
+      "74": "numeric Level COPY and plain LOAD preservation",
+      "75": "Application Description XML round-trip contract"
+    }
+  },
+  "author_public_history": {
+    "attempt_5": {
+      "artifacts": {
+        "inputs_after": {
+          "bytes": 686413,
+          "sha256": "131205d878ab98b5fded6ad7812ad9b856b8c155fdb892d388c5c31f14bccea7"
+        },
+        "inputs_before": {
+          "bytes": 686413,
+          "sha256": "131205d878ab98b5fded6ad7812ad9b856b8c155fdb892d388c5c31f14bccea7"
+        },
+        "summary": {
+          "bytes": 3930,
+          "sha256": "e3c10e8ee8733a0d33244f184dac656b42577a035a4796b8c35bde5eb74bd687"
+        }
+      },
+      "current_runtime_acceptance": false,
+      "failed": 0,
+      "global_inputs_quiet": true,
+      "passed": 26,
+      "role": "historical author check only; later producer changes are not included",
+      "skipped": 0,
+      "source_input_count": 3844
+    },
+    "attempts_1_to_4": "failed; preserved privately"
+  },
+  "counting_rules": "Parent tests and subtests are separate. Primary and later focused guards overlap and are not added. Author history is not release acceptance.",
+  "coverage_require_complete": {
+    "artifact": {
+      "bytes": 241938,
+      "sha256": "55ee47caa871bb06ed95765aa8ce77c32083d737b0fb508ba5692d2ab7d32577"
+    },
+    "census_complete": false,
+    "complete": false,
+    "exit": 1
+  },
+  "date": "2026-10-03",
+  "executed_base_commit": "40924b7cd2f95e421a29a4711d5852743d9d6f67",
+  "format": "cbus-scene-selector-controls-owned-release-v1",
+  "modeled_evidence_epochs": [
+    {
+      "actual_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "combined_checks": 4,
+      "comparison_count": 6,
+      "derivatives": {
+        "cgate-dbsetxml-unit-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "f92a9ddfc3162ff6ff25342a6192b29f23c08499f0fdba3dc9c93f442e6a8f96",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "04acbebe984f146e655f37b309121b2322a98752da1b6c6feb2d7d23b78dfa19"
+        },
+        "cgate-dbsetxml-unit-differential-mock.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "e3a56d4325c5220bd72244225a65ae18d819815146c9cfe218af95a8a5161ec7",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "6a99b7be36e748ddc3fc528ae59fa1223b935637c38671595a6fb3bf2bd987e4"
+        },
+        "cgate-session-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "6be6a12e3f3d0e1a7d6aec954b73ff709360795457a822bc992ec39ee1e47d09",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "06462edd5ee90d0f78658cfaf84ad56119936e0176fe0a001709ce1f95f31079"
+        },
+        "cgate-session-differential-fixed.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "cd60d54ec135e6436f94ce8983713f06e3092f07c9d2db9f815ae4a07c7ad8b3",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "bb72af87f65716e343be25d4be0ad57b3fb8f8aa632b9c05e82659bb7dcef899"
+        },
+        "cgate-tagged-session-differential-cgate-mock.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "75b7f45a4573de25495135b9efffcbba03e4187576c4f6848361082e09d13bba",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "89976e5f304cc6934085ea34ab8905bf7186cd32dc28abe02a705db679a42465"
+        },
+        "cgate-tagged-session-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "49969e92d45e57ca63b8e2fd894cee2dae6a9f4eabdae0d5e1e18cf31f5d4877",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "e0525392fb90f7c0862e37ef4ef000c6f76f3c6b0a9e572889f9165675f6250a"
+        }
+      },
+      "distinct_source_paths": 213,
+      "epoch": 1,
+      "fingerprint_counts": {
+        "session-daemon": 197,
+        "session-mock": 177,
+        "tagged-daemon": 199,
+        "tagged-mock": 179,
+        "unit-daemon": 204,
+        "unit-mock": 185
+      },
+      "original_or_hardware_execution": false,
+      "primary_checks": 64,
+      "scope": "modeled owned services, frontend explicitly excluded; no new selector or original credit",
+      "source_binding_count": 1141,
+      "summary": {
+        "bytes": 18891,
+        "sha256": "38d5f1df2118562149cdd7fb0853583be9cabcfb517fff9f44bf0755f38500cd"
+      }
+    },
+    {
+      "actual_command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "combined_checks": 4,
+      "comparison_count": 6,
+      "derivatives": {
+        "cgate-dbsetxml-unit-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "644271a5a451d14d89f3517cfac210b438c4de59d5b48c07f9a3fbbb27bda9d2",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "49d76b5b3da0044801bc6ed4efac628749f1a593174c0edf8d094054463c2e6b"
+        },
+        "cgate-dbsetxml-unit-differential-mock.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "ad5853e7ff4b1d720164e99999cbd76e9876ccb2b7ce845387c1c5979f69c6fa",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "e064a1543b42da66c3fb2bb3f1040f15d003116f61e510fbdf35685dc61dbbea"
+        },
+        "cgate-session-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "fa46837d5cd95e53d1e68c8f4b058accedc433dcfb4aaf13460db8cba763c0d1",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "06a2bf71434b050988150582fc3bf50cfa60e7fc10e897428b99b0c7723554e4"
+        },
+        "cgate-session-differential-fixed.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "cc991a0d868c6c59016c079ccd133b419e76b6fa030230602c94b2d39b729d02",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "35fa097a63287af4ba7a703876caa0993aa808ed08d8b7f67b4bd99a4358b183"
+        },
+        "cgate-tagged-session-differential-cgate-mock.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "8b02f92fd26f07fe58729b782beaae09d4f2ec232c9e24d778255902ff12645d",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "0710cef979755df93bcf846a61edefb544c1997c67e45e53f3b504d843c23f52"
+        },
+        "cgate-tagged-session-differential-cmqttd.json": {
+          "decoded_private_coordinate_fields": 0,
+          "derivative_sha256": "885b924e9b3adc394a5e34d6d27b10c2959c34ad74b69164f667c54dcda72b4a",
+          "full_noncoordinate_payload_equal": true,
+          "original_execution": false,
+          "raw_sha256": "87bf6e2372936f27bb0417b089327d09a4b6a8b53fff56c50f8bf62b7db846e3"
+        }
+      },
+      "distinct_source_paths": 213,
+      "epoch": 2,
+      "fingerprint_counts": {
+        "session-daemon": 197,
+        "session-mock": 177,
+        "tagged-daemon": 199,
+        "tagged-mock": 179,
+        "unit-daemon": 204,
+        "unit-mock": 185
+      },
+      "original_or_hardware_execution": false,
+      "primary_checks": 64,
+      "scope": "modeled owned services, frontend explicitly excluded; no new selector or original credit",
+      "source_binding_count": 1141,
+      "summary": {
+        "bytes": 18526,
+        "sha256": "1a37ba91abe84b946fef804aca8b6981e124108c1b8219ea2900e8775a8c0909"
+      }
+    }
+  ],
+  "post_review_8_module_guard_runs": {
+    "source": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 149230,
+          "sha256": "abc739e05e09cbf7cc17c161b2fdca02fa0d6509efc8477dc60610c2999bbaf3"
+        },
+        "inputs-after.json": {
+          "bytes": 687095,
+          "sha256": "52b7e31f80986d3d26314f78035823e11609aac5f6461b228bd5670cbb4640d3"
+        },
+        "inputs-before.json": {
+          "bytes": 687095,
+          "sha256": "52b7e31f80986d3d26314f78035823e11609aac5f6461b228bd5670cbb4640d3"
+        },
+        "junit.xml": {
+          "bytes": 61560,
+          "sha256": "40e7274bb4f0ca72e4a0a97a046c2a28a5b9ce6fa3094a844730002d6d93ac36"
+        },
+        "pytest.log": {
+          "bytes": 806,
+          "sha256": "d5d6461094c4151a557165118190476ec2aa782c2e2e8211277776b4b1932ff4"
+        },
+        "summary.json": {
+          "bytes": 4812,
+          "sha256": "02a31d755bc9392b421027a6a6fb53aaf0772b7dc7cc437bbd0d6c20a730548f"
+        },
+        "trace.json": {
+          "bytes": 111153,
+          "sha256": "a13e9ea10fe71bb833cd1902b876516058fba1e603a4a3ef3ab0950181d8b5e8"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0
+      },
+      "executed_base_commit": "40924b7cd2f95e421a29a4711d5852743d9d6f67",
+      "input_count": 3848,
+      "modules": [
+        "tests/test_edlt_scene_selector_metadata.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_ci_test_results.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 164,
+        "skipped": 3
+      },
+      "phase": "source",
+      "pytest_seconds": 120.136,
+      "scope": "affected modules only; not a full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 204,
+        "reported": 204,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction"
+      ],
+      "source_and_binary_inputs_quiet": true
+    },
+    "wheel": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 149229,
+          "sha256": "69168d3339f2ea07c24c54972109906a7f362131b6d19aac13f51a44649de64a"
+        },
+        "inputs-after.json": {
+          "bytes": 687095,
+          "sha256": "52b7e31f80986d3d26314f78035823e11609aac5f6461b228bd5670cbb4640d3"
+        },
+        "inputs-before.json": {
+          "bytes": 687095,
+          "sha256": "52b7e31f80986d3d26314f78035823e11609aac5f6461b228bd5670cbb4640d3"
+        },
+        "junit.xml": {
+          "bytes": 61890,
+          "sha256": "92575d6c97ba7fe45d485d8e7d8edf3a75defbfa39562af44199894c88241df9"
+        },
+        "pytest.log": {
+          "bytes": 806,
+          "sha256": "a2e8e63d6fbdd424302e465a18346f7fb99562b8e3d358b12fe1fae8aebf4e50"
+        },
+        "summary.json": {
+          "bytes": 9036,
+          "sha256": "a7a25fc6adbcaefedf90f4796ad440b53f92990156a9a9c13bd8345e1a776e9f"
+        },
+        "trace.json": {
+          "bytes": 111153,
+          "sha256": "a13e9ea10fe71bb833cd1902b876516058fba1e603a4a3ef3ab0950181d8b5e8"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0,
+        "wheel-build": 0,
+        "wheel-install": 0,
+        "wheel-venv": 0
+      },
+      "executed_base_commit": "40924b7cd2f95e421a29a4711d5852743d9d6f67",
+      "input_count": 3848,
+      "installed_wheel": {
+        "artifacts": {
+          "runtime-import-proof.json": {
+            "bytes": 237,
+            "sha256": "d6f429bbe434ad3486b87dcb755b861a6b8a0eeb4cb4b271a37774ccf88a785d"
+          },
+          "runtime-imports.jsonl": {
+            "bytes": 2535892,
+            "sha256": "29506ac0126bdd738fa033d3510996f9fa011ac4140040e78849199294a761f0"
+          },
+          "wheel-build.log": {
+            "bytes": 57785,
+            "sha256": "0a14d2767f44aab078612f1709b9745d25a2c9f9066a9708b2914f104ddeb97b"
+          },
+          "wheel-install.log": {
+            "bytes": 1090,
+            "sha256": "140ccf00e53e9916d7a62feec915228da170a6507700fc24ac6766c734eb0e7c"
+          },
+          "wheel-package-proof.json": {
+            "bytes": 40052,
+            "sha256": "083b96e472dabb2002ee4629bd5eeffb95f50c90d37836c5ccce37c87d31906b"
+          }
+        },
+        "package_files": 355,
+        "provenance_violations": 0,
+        "required_pytest_phases": [
+          "startup",
+          "terminal"
+        ],
+        "runtime_processes": 79,
+        "runtime_records": 132,
+        "source_zip_installed_bytes_equal": true,
+        "wheel_sha256": "5e42e00b86f4c66757ee57afa69206a706e4c9e1840092eb50d3bce8ace7a8cb"
+      },
+      "modules": [
+        "tests/test_edlt_scene_selector_metadata.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_ci_test_results.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 164,
+        "skipped": 3
+      },
+      "phase": "wheel",
+      "pytest_seconds": 120.114,
+      "scope": "affected modules only; not a full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 204,
+        "reported": 204,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction"
+      ],
+      "source_and_binary_inputs_quiet": true
+    }
+  },
+  "primary_40_module_runs": {
+    "source": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 693139,
+          "sha256": "774da042cffe2fa24539d64271b2583c985d031ac48e710342229e8d180a4c5e"
+        },
+        "inputs-after.json": {
+          "bytes": 686928,
+          "sha256": "7c4a37e782a2dca43843a53cba8c675d2a79cd0208e170fab6c0905e903652ad"
+        },
+        "inputs-before.json": {
+          "bytes": 686928,
+          "sha256": "7c4a37e782a2dca43843a53cba8c675d2a79cd0208e170fab6c0905e903652ad"
+        },
+        "junit.xml": {
+          "bytes": 247317,
+          "sha256": "bec9be9b59ff73707d22ddf8dccf25d8d13a697947a6398d562bc38bd4dba6a7"
+        },
+        "pytest.log": {
+          "bytes": 2388,
+          "sha256": "9d79900860d5e4d133cf328d5f829cc50741995b172150a376cb0777ddbd9f36"
+        },
+        "summary.json": {
+          "bytes": 8834,
+          "sha256": "7309f1ec34553a8adcea81d105aac6cc1fbd4cb298cb8c9c695a3fe217008e00"
+        },
+        "trace.json": {
+          "bytes": 529278,
+          "sha256": "b1d08b6156fd0a4d689cfa9be92e297b430fbaadc7d4af1f7b65ffedc8fcb4c5"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0
+      },
+      "executed_base_commit": "40924b7cd2f95e421a29a4711d5852743d9d6f67",
+      "input_count": 3847,
+      "modules": [
+        "tests/test_cgate_edlt_parent_add_dialog_interop.py",
+        "tests/test_cgate_edlt_scene_add_dialog_interop.py",
+        "tests/test_cgate_edlt_scene_name_control_interop.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_cgate_edlt_static_grid_editor_interop.py",
+        "tests/test_cgate_edlt_static_language_add_interop.py",
+        "tests/test_ci_test_results.py",
+        "tests/test_cli_edlt_parent_form.py",
+        "tests/test_cli_edlt_parent_metadata.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_cli_edlt_scene_manager.py",
+        "tests/test_cli_edlt_scene_metadata.py",
+        "tests/test_edlt_application_add_dialog.py",
+        "tests/test_edlt_parent_add_dialog.py",
+        "tests/test_edlt_parent_auto_cache.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_edlt_parent_cache_panels.py",
+        "tests/test_edlt_parent_form.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_parent_mra.py",
+        "tests/test_edlt_parent_panels.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_static_language.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_scene_manager.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_scene_name_control.py",
+        "tests/test_edlt_scene_name_static.py",
+        "tests/test_edlt_scene_names.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_static.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_edlt_static_text_dialog.py",
+        "tests/test_parity_register.py",
+        "tests/test_release_gate.py",
+        "tests/test_release_gate_integrity.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 663,
+        "skipped": 12
+      },
+      "phase": "source",
+      "pytest_seconds": 635.032,
+      "scope": "affected modules only; not a full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1372,
+        "reported": 1372,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_cli_edlt_scene_manager.py::SceneManagerCLITests::test_native_cli_preview_complete64_original_crc_save_close_load_and_guard",
+        "tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+        "tests/test_edlt_parent_form.py::NativeParentFormTests::test_native_database_save_close_load_preserves_complete_plan",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_edlt_parent_mra.py::NativeMRAParentTransactionTests::test_native_database_one_save_close_load_preserves_mra_parent_edit",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+        "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+        "tests/test_edlt_scene_manager.py::NativeSceneManagerTests::test_original_full874_raw_crc_save_close_load_and_metadata_preservation",
+        "tests/test_edlt_scene_manager.py::OriginalSceneManagerTests::test_original_validation_and_retained_control_literals",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_scene_name_static.py::SceneNameStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration"
+      ],
+      "source_and_binary_inputs_quiet": true
+    },
+    "wheel": {
+      "artifacts": {
+        "audit-results.json": {
+          "bytes": 693138,
+          "sha256": "e25d3666bdd5b10ff16dcebffa02c52fe3b30021b0441917a9d8861d4aa7c08a"
+        },
+        "inputs-after.json": {
+          "bytes": 686928,
+          "sha256": "7c4a37e782a2dca43843a53cba8c675d2a79cd0208e170fab6c0905e903652ad"
+        },
+        "inputs-before.json": {
+          "bytes": 686928,
+          "sha256": "7c4a37e782a2dca43843a53cba8c675d2a79cd0208e170fab6c0905e903652ad"
+        },
+        "junit.xml": {
+          "bytes": 248625,
+          "sha256": "7fe86b1b270230ee3b3b2b4b0e30811eaacd11e59c9b9a536cb01813de859782"
+        },
+        "pytest.log": {
+          "bytes": 2388,
+          "sha256": "8adf9352ad68b347698219fac7ef6fc51f031f7aff8c4414d4630da1cf29a3d2"
+        },
+        "summary.json": {
+          "bytes": 13047,
+          "sha256": "54e326644463913900c708dde9fcbb6a57cd007c2fe3a9b7115ada350a22d27f"
+        },
+        "trace.json": {
+          "bytes": 529278,
+          "sha256": "b1d08b6156fd0a4d689cfa9be92e297b430fbaadc7d4af1f7b65ffedc8fcb4c5"
+        }
+      },
+      "binaries": {
+        "cgate-mock": {
+          "bytes": 3633488,
+          "sha256": "3289766e1ab5430c90ddbd7c445986bd88465ca2f7f29e48998f64583a752eb0"
+        },
+        "cmqttd": {
+          "bytes": 12958864,
+          "sha256": "86f0370ccde56d957b34f1f840dcd17e9da9ea8ad0a81f6f260beef4ac1329bd"
+        }
+      },
+      "command_exits": {
+        "audit": 0,
+        "pytest": 0,
+        "wheel-build": 0,
+        "wheel-install": 0,
+        "wheel-venv": 0
+      },
+      "executed_base_commit": "40924b7cd2f95e421a29a4711d5852743d9d6f67",
+      "input_count": 3847,
+      "installed_wheel": {
+        "artifacts": {
+          "runtime-import-proof.json": {
+            "bytes": 239,
+            "sha256": "77fb19a488e7f5fc1e68fc6380c04cff2a4942632697ac33060fbdadd8b678a6"
+          },
+          "runtime-imports.jsonl": {
+            "bytes": 11697852,
+            "sha256": "0c22d6440159664c8000987800d85b80c9a708ddc58aa3baf62e740355c83f19"
+          },
+          "wheel-build.log": {
+            "bytes": 58608,
+            "sha256": "555195d06ea2d4604670357a21f8bf1135b6bd16eb40e14bfab3eae4048b0662"
+          },
+          "wheel-install.log": {
+            "bytes": 1088,
+            "sha256": "c6a10bedcbc1462a16b722be83cb6ca6b7dd7e9ec93c6bf65869b98c6dd60888"
+          },
+          "wheel-package-proof.json": {
+            "bytes": 40051,
+            "sha256": "0b497af8d10441a5b8d4303fcf2fd89a7c64fda64f18cf2b6fe320b9cb084004"
+          }
+        },
+        "package_files": 355,
+        "provenance_violations": 0,
+        "required_pytest_phases": [
+          "startup",
+          "terminal"
+        ],
+        "runtime_processes": 366,
+        "runtime_records": 614,
+        "source_zip_installed_bytes_equal": true,
+        "wheel_sha256": "0c91cf86fe35bf1404db19ba7f7579ef4a42c8e61aad1e976b9ee8c7dff3f31d"
+      },
+      "modules": [
+        "tests/test_cgate_edlt_parent_add_dialog_interop.py",
+        "tests/test_cgate_edlt_scene_add_dialog_interop.py",
+        "tests/test_cgate_edlt_scene_name_control_interop.py",
+        "tests/test_cgate_edlt_scene_selector_interop.py",
+        "tests/test_cgate_edlt_static_grid_editor_interop.py",
+        "tests/test_cgate_edlt_static_language_add_interop.py",
+        "tests/test_ci_test_results.py",
+        "tests/test_cli_edlt_parent_form.py",
+        "tests/test_cli_edlt_parent_metadata.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_cli_edlt_scene_manager.py",
+        "tests/test_cli_edlt_scene_metadata.py",
+        "tests/test_edlt_application_add_dialog.py",
+        "tests/test_edlt_parent_add_dialog.py",
+        "tests/test_edlt_parent_auto_cache.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_edlt_parent_cache_panels.py",
+        "tests/test_edlt_parent_form.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_parent_mra.py",
+        "tests/test_edlt_parent_panels.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_static_language.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_scene_manager.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_edlt_scene_name_control.py",
+        "tests/test_edlt_scene_name_static.py",
+        "tests/test_edlt_scene_names.py",
+        "tests/test_edlt_scene_selector_control.py",
+        "tests/test_edlt_scene_selector_static.py",
+        "tests/test_edlt_scene_selectors.py",
+        "tests/test_edlt_static.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_edlt_static_text_dialog.py",
+        "tests/test_parity_register.py",
+        "tests/test_release_gate.py",
+        "tests/test_release_gate_integrity.py"
+      ],
+      "parent_tests": {
+        "failed": 0,
+        "passed": 663,
+        "skipped": 12
+      },
+      "phase": "wheel",
+      "pytest_seconds": 634.157,
+      "scope": "affected modules only; not a full suite",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1372,
+        "reported": 1372,
+        "skipped": 0
+      },
+      "skip_cases": [
+        "tests/test_cli_edlt_scene_manager.py::SceneManagerCLITests::test_native_cli_preview_complete64_original_crc_save_close_load_and_guard",
+        "tests/test_edlt_parent_auto_cache.py::ParentAutomaticCacheNativeAcceptance::test_optional_native_ordered_cache_parent_transaction",
+        "tests/test_edlt_parent_form.py::NativeParentFormTests::test_native_database_save_close_load_preserves_complete_plan",
+        "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+        "tests/test_edlt_parent_mra.py::NativeMRAParentTransactionTests::test_native_database_one_save_close_load_preserves_mra_parent_edit",
+        "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+        "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+        "tests/test_edlt_scene_manager.py::NativeSceneManagerTests::test_original_full874_raw_crc_save_close_load_and_metadata_preservation",
+        "tests/test_edlt_scene_manager.py::OriginalSceneManagerTests::test_original_validation_and_retained_control_literals",
+        "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+        "tests/test_edlt_scene_name_static.py::SceneNameStaticEvidenceTests::test_static_pinned_regeneration",
+        "tests/test_edlt_scene_selector_static.py::SceneSelectorStaticEvidenceTests::test_static_pinned_regeneration"
+      ],
+      "source_and_binary_inputs_quiet": true
+    }
+  },
+  "public_owned_journeys": {
+    "backends": [
+      "cgate-mock",
+      "cmqttd"
+    ],
+    "cases": 26,
+    "complete_unit_and_project_graph_checked": true,
+    "fresh_cli_process_reads": 12,
+    "lost_successful_save_terminals": 4,
+    "scene_bucket_bytes": 232,
+    "scene_pointers": 8,
+    "scope": "existing native objects, ordered prior/later parent Add, admission refusals and lost saves; original874-field fixture remains separate",
+    "static_rows": 64,
+    "synthetic_pp_fields": 844
+  },
+  "publication_derivation": "Final successor appends current independent review pins, clarifies numeric Level/native XML remaining issue labels and corrects historical author5 input quietness to its actual true result, retaining the later-producer-change limitation. Primary/current technical counts, runtime/source claims and publication inputs equal the reviewed draft; no additional execution.",
+  "publication_input_pins": {
+    ".agents/skills/cbus-cli/references/toolkit.md": {
+      "bytes": 68775,
+      "sha256": "22d2961cc250cf39a41d567da5084a2747bee88a6201bbc3d5b68b97e2788dca"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 16906,
+      "sha256": "3f2f09c377b2ff57ba18212ad0a570a4f94006dd09782f181b9f42830d9e7e4d"
+    },
+    "README.md": {
+      "bytes": 76068,
+      "sha256": "9b6922468c1db38721cd918b81db65ef44433e450194e616d77127febec58c88"
+    },
+    "docs/README.md": {
+      "bytes": 3434,
+      "sha256": "ba452099dcda82d7c88d5a10aa31697276a1666200d6b2bfb4d31c876d9b922c"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 61425,
+      "sha256": "02d5127a9066540a8f5fd50f53167b4fc2b89a898ffca0222fe2e3a69564f835"
+    },
+    "toolkit-cli/README.md": {
+      "bytes": 144767,
+      "sha256": "22e3453d0411bc679a8d9e95424b764b0ef248f275277285557298efbbcfa155"
+    },
+    "toolkit-cli/docs/edlt-scene-manager.md": {
+      "bytes": 21755,
+      "sha256": "c9190e77d06703c7c8bf32d45a9d94869353b6e5c6e9eea5e4f4aceecc369e96"
+    },
+    "toolkit-cli/docs/edlt-scene-selector-control.md": {
+      "bytes": 6056,
+      "sha256": "8b87fc452302fc73d8d5a3ef159b012793fa8db8ed37b941308f0b5a8c89b3a0"
+    },
+    "toolkit-cli/docs/edlt-scene-selector-metadata.md": {
+      "bytes": 4005,
+      "sha256": "89c6253e9f23e6d6c5286e5de5fed794ef68a555540ffe3e308e9bd7b21ff164"
+    },
+    "toolkit-cli/docs/edlt-scene-selector-release-test-modules.txt": {
+      "bytes": 554,
+      "sha256": "aa242355f17c987660c8ed1d00b25b285941d8eec8de317dbda4bd0ff42324e0"
+    },
+    "toolkit-cli/docs/feature-batch-2026-10-03-scene-selector-controls.md": {
+      "bytes": 3382,
+      "sha256": "537ecc0f4862d296741dd133d48dc15e39f821d8ad6d32ca79488832bb36774a"
+    },
+    "toolkit-cli/docs/implementation-status.md": {
+      "bytes": 123014,
+      "sha256": "e05dce35653b63f3147e92ab27def6a7672ac3bd1de7a2d4409d181ae54edde3"
+    },
+    "toolkit-cli/research/edlt_scene_selector_static.py": {
+      "bytes": 22657,
+      "sha256": "cc88faa1c43fb801ebcfaf7e891c08d79be80c0fd378734496f0020fe794ce4a"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "bytes": 62684,
+      "sha256": "644271a5a451d14d89f3517cfac210b438c4de59d5b48c07f9a3fbbb27bda9d2"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "bytes": 60779,
+      "sha256": "ad5853e7ff4b1d720164e99999cbd76e9876ccb2b7ce845387c1c5979f69c6fa"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+      "bytes": 34899,
+      "sha256": "fa46837d5cd95e53d1e68c8f4b058accedc433dcfb4aaf13460db8cba763c0d1"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+      "bytes": 32504,
+      "sha256": "cc991a0d868c6c59016c079ccd133b419e76b6fa030230602c94b2d39b729d02"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+      "bytes": 2877,
+      "sha256": "a2ed726172ded63c84344e0d0a46f5ec2e91e1a959a12033b711d400ac935808"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "bytes": 31960,
+      "sha256": "8b02f92fd26f07fe58729b782beaae09d4f2ec232c9e24d778255902ff12645d"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "bytes": 34085,
+      "sha256": "885b924e9b3adc394a5e34d6d27b10c2959c34ad74b69164f667c54dcda72b4a"
+    },
+    "toolkit-cli/research/fixtures/edlt-scene-selector-source-annex.json": {
+      "bytes": 366277,
+      "sha256": "688e514c8addc1f24ff166c8ca5558a7fba40219c5d7a4429a649276155fc1d0"
+    },
+    "toolkit-cli/research/fixtures/edlt-scene-selector-vectors.json": {
+      "bytes": 512859,
+      "sha256": "f7ba0ca72bb9125e09c8eaa0ca18a01fbaf15f8272ac78f113f00fe063575ddb"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 373301,
+      "sha256": "b3a2ad27ace8f1571bdf7d5ac634295f88afef7cb53aa8a7d88d7b65c6c3b8b5"
+    },
+    "toolkit-cli/src/cbus_toolkit/capabilities.json": {
+      "bytes": 208677,
+      "sha256": "91a06a7e3d9df8e9c59a7f5d2a2657d026ac4c2d2f6c26264bcc497688b0152c"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_metadata.py": {
+      "bytes": 143113,
+      "sha256": "a4abeec2f4d2ffd97545436dbe8a4287edcb5fe1781a406cf9d014507f60b044"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py": {
+      "bytes": 95918,
+      "sha256": "d1f83834897ba4eeed73d3bfd8ba2c68a1b3936443c7d4debcb6a80cd4a26b86"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_transaction_cli.py": {
+      "bytes": 9605,
+      "sha256": "7f1a725c9e228a9f9f16062649e58d21e28c778b011ff9cef0402ffe5ec0143f"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_manager.py": {
+      "bytes": 56792,
+      "sha256": "b8fd1f41313767e5df1b48d14bc1abb7229911f4b79c87f9745ed50712f62738"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_manager_cli.py": {
+      "bytes": 8041,
+      "sha256": "8366c490d73f1c26a0764a75c10fd1690a9260588d116ac6b996c6dbfdc9d0d0"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_metadata.py": {
+      "bytes": 70730,
+      "sha256": "50b04fbbb9e69e1afb52021be995c13e8ca2de89f1e437756b57e137d6f7fdfd"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_selector_control.py": {
+      "bytes": 16871,
+      "sha256": "1f35894c1f8ff6487163b11f2f0ce8a30023e4d0626748c06d9d7a26497479de"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_selector_views.py": {
+      "bytes": 7909,
+      "sha256": "7b90c976bc286f02e8b6e81f7a4248bf1ba04ef80bf0fdc3fa71dc44119c4c5e"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 32143,
+      "sha256": "abf37909e6c899fdb5496bb48a83c2b6edc8aa743f966bcc528767ae9c663093"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "4bc2adb2c82c651f928089611522cb1e5d37ebf12560b14625851cc3b0f08ef2"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": {
+      "bytes": 23764,
+      "sha256": "59e073ef9c10d7de846e3037e7f780bdf37b988e26a9e94165799bc005f28b91"
+    },
+    "toolkit-cli/tests/test_ci_test_results.py": {
+      "bytes": 28387,
+      "sha256": "555b6b4cc343e7fc4a65f23039f9e644346eda06ef88dcb723c7ed1d338ccaa6"
+    },
+    "toolkit-cli/tests/test_edlt_scene_selector_control.py": {
+      "bytes": 20249,
+      "sha256": "3f8118a6635048eaf3e1f0858ea76c0081663ede25a90fe7d453dd8eaed1875c"
+    },
+    "toolkit-cli/tests/test_edlt_scene_selector_metadata.py": {
+      "bytes": 2144,
+      "sha256": "d4b3adc2df9669a72c8a193385a45f0b1e1d60d481578f60d9f1248425a4111f"
+    },
+    "toolkit-cli/tests/test_edlt_scene_selector_static.py": {
+      "bytes": 15678,
+      "sha256": "b744ce200927872bfd73261106799317db91c0ecae88e8c52850ac5f3b12b927"
+    },
+    "toolkit-cli/tests/test_edlt_scene_selectors.py": {
+      "bytes": 18505,
+      "sha256": "e87d1e6c766bf3f7a0414ffe8d099618beec19cc2d5c52fb45a49816db52e73f"
+    }
+  },
+  "retained_rust_bindings": {
+    "all_current_inputs_equal_previous_publication": true,
+    "full_suite_repeated": false,
+    "input_count": 461,
+    "prior_private_ignored": 1,
+    "prior_workspace_passed": 8702,
+    "proof": {
+      "bytes": 79377,
+      "sha256": "fd7bc93ddd5ac3dd6c8f89a4f20e5b2a7af699106e7885dc4cb54fac9f0d8b85"
+    },
+    "published_prior_receipt": "scene-name-control-owned-release-20261003.json",
+    "scope": "unchanged Rust source/binaries; prior gates retained rather than rerun"
+  },
+  "reviewed_draft_sha256": "9efab3b7cb0f31da7b35bb33520599b31a61e5dcb900da90f95dfef8aa538126",
+  "reviews": [
+    {
+      "artifact": {
+        "bytes": 164700,
+        "sha256": "c674e26e931bc855273d2506f53052919df944f30a21d986b48224e0dab01839"
+      },
+      "role": "independent-current-guards-terminal",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 143396,
+        "sha256": "47bfc092113eaabd010689bd6dffa448dfd0e4e9e067f0d400a264bb384adefa"
+      },
+      "role": "independent-metadata-epoch2-current-ci",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 74578,
+        "sha256": "eb1e40a9989163824dcf87a6cfeecf9988d77c7a44d3d3b475c0615cb8c0a2bf"
+      },
+      "role": "independent-native-equality-terminal",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 171917,
+        "sha256": "5cd49a7ab98052ab15abd80121c2a22c95616a39fc78a7c8205b8363138c52f5"
+      },
+      "role": "independent-primary-terminal-provenance",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 3973,
+        "sha256": "54954b881844f176dc0813ea9c4a3d6aaa93c4a5c19f14e5d093c1d0f6aa6819"
+      },
+      "role": "independent-selector-engine",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 12113,
+        "sha256": "568155a67f85e87c50f6e97a561d3e42ea6f31cc6d520b20908f6092478abc44"
+      },
+      "role": "independent-manager-and-views",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 42344,
+        "sha256": "a64e1e406bd6f403a65cb4e59f1135bfff9763e061203978435eb52f11b3eacb"
+      },
+      "role": "independent-native-public-author-history",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 143500,
+        "sha256": "6f32037566f4d798eaff5cb66bf7f13f34387d2ac8ce663368f6d2454b6ad36f"
+      },
+      "role": "independent-metadata-ci-docs-primary",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 38469,
+        "sha256": "79a3bd643d86d2970833e5eb8d41c40b3cbed2c90a00faca878efe3bbd0fa316"
+      },
+      "role": "independent-public-source-primary",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 38410,
+        "sha256": "51d9164d7e9b068cf273558d66f9ce0d0fb49518e38eeb0ffbf634e438a9f850"
+      },
+      "role": "independent-public-installed-wheel-primary",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 3950,
+        "sha256": "dfa3007f6249cec2f2859feec50874850abe1900698bb5d55259c608cde5f975"
+      },
+      "role": "native-level-identity-applied",
+      "scope": "static/actual artifact review, not additional original execution"
+    },
+    {
+      "artifact": {
+        "bytes": 5689,
+        "sha256": "7e3741c90330cf2933388c92fd91c297b4a4faa429217ccf02ef0d65b2bdf683"
+      },
+      "role": "native-level-identity-source-boundary",
+      "scope": "static/actual artifact review, not additional original execution"
+    }
+  ],
+  "runtime_package_derivation": {
+    "changed_files": {
+      "cbus_toolkit/capabilities.json": {
+        "final_sha256": "91a06a7e3d9df8e9c59a7f5d2a2657d026ac4c2d2f6c26264bcc497688b0152c",
+        "primary_sha256": "14cd2a39cd55e094dc9285e4fb1d571850e8cd7a2a5265d67a8861ef746cac50"
+      },
+      "cbus_toolkit/edlt_scene_metadata.py": {
+        "final_sha256": "50b04fbbb9e69e1afb52021be995c13e8ca2de89f1e437756b57e137d6f7fdfd",
+        "primary_sha256": "7939726eb92f906e20f87c238d82f409eb0f003dbbc3126eda7591847d282d7a"
+      },
+      "cbus_toolkit/parity-evidence.json": {
+        "final_sha256": "abf37909e6c899fdb5496bb48a83c2b6edc8aa743f966bcc528767ae9c663093",
+        "primary_sha256": "ed2b386f5faccf5ab0e1253cfd7f6f5ca2be38e0e167e42014ee1c735bcf1922"
+      },
+      "cbus_toolkit/parity-obligations.json": {
+        "final_sha256": "4bc2adb2c82c651f928089611522cb1e5d37ebf12560b14625851cc3b0f08ef2",
+        "primary_sha256": "460b1148ce4529449bb269a2a7655a4efd09ebe404684ee4407c51ec6da82098"
+      }
+    },
+    "package_files": 355,
+    "scope": "Primary wheel tests bind the prior runtime; later current guards test the native admission change and all selector paths. Three resource successors are metadata/claims only.",
+    "unchanged_files": 351
+  },
+  "scope": "Retained explicit eDLT SceneManager application/trigger/action/dynamic-label selectors; a bounded major workflow within issue45.",
+  "source_annex": {
+    "configured_static_run": {
+      "handoff": {
+        "bytes": 5144,
+        "sha256": "01a0975f79d0ac384146e7226e9daa839c373310d50dc9d7c182bdb907312258"
+      },
+      "parent_passed": 10,
+      "separate_subtests_passed": 133,
+      "skipped": 0
+    },
+    "declared_source_symbols": 36,
+    "literal_cases": 20,
+    "literal_refusals": 8,
+    "primary_framework_api_declarations": 7,
+    "scope": "Static source/declaration and independent literal facts; no runtime scheduler, original full form or hardware execution",
+    "source_spans": 34
+  }
+}

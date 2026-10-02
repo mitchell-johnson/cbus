@@ -245,6 +245,19 @@ check-cgate-interop: compile
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[application-secondary-selector-one-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[trigger-callback-action-valid-in-both-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[action-selected-duplicate-name-exact-identity-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[null-current-retains-stale-action-binding-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[scene-two-rebinding-does-not-leak-first-labels-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[label-selection-3-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[cache-injection-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[post-load-getter-creation-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[scene-add-timeline-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[future-parent-action-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_prior_parent_add_visible_later_add_excluded[mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[pp-save-mock]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[project-save-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-mock]' \
@@ -429,6 +442,19 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[application-secondary-selector-one-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[trigger-callback-action-valid-in-both-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[action-selected-duplicate-name-exact-identity-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[null-current-retains-stale-action-binding-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[scene-two-rebinding-does-not-leak-first-labels-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selectors_preview_apply_fresh_complete_graph[label-selection-3-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[cache-injection-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[post-load-getter-creation-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[scene-add-timeline-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_refusals_precede_database_writes[future-parent-action-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_prior_parent_add_visible_later_add_excluded[daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[pp-save-daemon]' \
+		'tests/test_cgate_edlt_scene_selector_interop.py::test_public_selector_lost_successful_save_never_replayed[project-save-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-daemon]' \
