@@ -16,6 +16,8 @@ import weakref
 from .edlt import EdltError, EdltApplyError, _int, _render
 from .edlt_application_cache import ApplicationCache
 from .edlt_lifecycle import EdltLifecycle, LoadedEdlt, LifecycleGroup, LifecycleMetadataError, _changes, _delta, _error_text
+from .edlt_scene_names import (FIXED_SUGGESTION_NAMES, assign_name, checked_names, isolated_additive_cache,
+    load_names, save_names, scene_name, scene_names_view)
 
 MAX_OPERATIONS = 256
 
@@ -165,12 +167,21 @@ class SceneManagerState:
     validation: str | None
     static_text_overlay: Mapping
     name_allocations: tuple[str, ...]
+    static_names: tuple[str, ...]
+    name_controls: tuple
+    _retained_parent_names: bool = field(repr=False, compare=False)
     _source_profile_identity_verified: bool = field(repr=False, compare=False)
     _origin: _Origin = field(repr=False, compare=False)
 
     def __post_init__(self):
         object.__setattr__(self, 'static_text_overlay', MappingProxyType(dict(self.static_text_overlay)))
         object.__setattr__(self, 'name_allocations', tuple(self.name_allocations))
+        checked_names(self.static_names)
+        from .edlt_scene_name_control import SceneNameControlState
+        if (type(self.name_controls) is not tuple or len(self.name_controls) != 8
+                or any(control is not None and type(control) is not SceneNameControlState
+                       for control in self.name_controls)):
+            raise EdltError('SceneManager requires eight internal name-control states')
 
     def static_text_evidence(self):
         overlay = {name: list(value) for name, value in self.static_text_overlay.items()}
@@ -178,12 +189,20 @@ class SceneManagerState:
         document = {'overlay_changes': overlay, 'allocations': allocations}
         return {**document, 'fingerprint': hashlib.sha256(_json(document).encode()).hexdigest(),
                 'allocation_order': 'scene operation order',
-                'allocator': 'EdltLighting.allocate_static_text'}
+                'allocator': 'historical additive or source SceneName property, as recorded per allocation'}
+
+    def names_view(self):
+        return scene_names_view(self.static_names, tuple(scene.name_index for scene in self.scenes))
 
     def as_dict(self):
         total = sum(len(s.items) for s in self.scenes)
         return dict(format='cbus-edlt-scene-manager-state-v1', scope='model', complete=self.complete,
-            scenes=[s.as_dict() for s in self.scenes], clipboard=None if self.clipboard is None else self.clipboard.as_dict(),
+            scenes=[{**s.as_dict(), 'scene_name': scene_name(self.static_names, s.name_index)} for s in self.scenes],
+            static_names=list(self.static_names), scene_names_view=list(self.names_view()),
+            fixed_suggestion_names=list(FIXED_SUGGESTION_NAMES), suggestion_order_inferred=False,
+            scene_name_controls=[None if control is None else control.as_dict() for control in self.name_controls],
+            pending_name_controls=any(control is not None and control.pending for control in self.name_controls),
+            clipboard=None if self.clipboard is None else self.clipboard.as_dict(),
             item_count=total, storage_used_percent=100 * total * 3 // 191,
             operations=[json.loads(v) for v in self.history], validation=None if self.validation is None else json.loads(self.validation),
             static_text=self.static_text_evidence(), static_text_allocated=bool(self.name_allocations),
@@ -275,8 +294,11 @@ class SceneManagerComposition:
             'validation': json.loads(self.validation),
             'static_text': self.terminal.static_text_evidence(),
             'terminal_scene_models': [
-                scene.as_dict() for scene in self.terminal.scenes
+                {**scene.as_dict(), 'scene_name': scene_name(self.terminal.static_names, scene.name_index)}
+                for scene in self.terminal.scenes
             ],
+            'static_names': list(self.terminal.static_names),
+            'scene_names_view': list(self.terminal.names_view()),
             'terminal_save_deferred_to_parent': True,
             'terminal_crc_deferred_to_parent': True,
             'complete_scene_cache_required': True,
@@ -298,6 +320,7 @@ class EdltSceneManager:
     def _fingerprint(self, value):
         extra = {'expected': dict(value.loaded.expected), 'cache': value.cache.as_dict(),
                  'next_item_id': value.next_item_id,
+                 'retained_parent_names': value._retained_parent_names,
                  'source_profile_identity_verified': value._source_profile_identity_verified} if type(value) is SceneManagerState else {}
         return hashlib.sha256(_json({'value': value.as_dict(), **extra}).encode()).hexdigest()
 
@@ -318,6 +341,9 @@ class EdltSceneManager:
         if scope != 'model': raise EdltError('Only retained model scope is implemented; full SceneManager control binding is separate')
         cache = SceneManagerCache.from_dict(metadata.as_dict() if type(metadata) is SceneManagerCache else metadata)
         loaded = self.lifecycle.load(values, metadata=cache.application_cache.lifecycle)
+        from .edlt_static_grid import current as current_static_grid
+        parent_grid = current_static_grid(loaded.after_load)
+        names = load_names(loaded.after_load) if parent_grid is None else tuple(parent_grid.names)
         scenes, next_id = [], 1
         for s in loaded.scenes:
             labels = cache.labels(s.trigger.group, s.action_selector) if s.trigger.group != 255 and s.action_selector >= 0 else ()
@@ -325,8 +351,18 @@ class EdltSceneManager:
             next_id += len(items)
             scenes.append(SceneManagerScene(s.slot, s.primary_secondary, s.can_edit, s.trigger.group, s.action_selector, s.name_index, items, 0, labels))
         state = SceneManagerState(loaded, cache, tuple(scenes), None, next_id, True,
-                                  (), None, {}, (), False, _Origin(self._owner))
+                                  (), None, {}, (), names, (None,) * 8, parent_grid is not None,
+                                  False, _Origin(self._owner))
         return self._seal(state)
+
+    def retained_names(self, state):
+        """Return the complete name table only from this owner's intact model."""
+        self._check(state)
+        return state.static_names
+
+    def scene_name(self, state, *, scene):
+        self._check(state); _int(scene, 'Scene', 1, 8)
+        return scene_name(state.static_names, state.scenes[scene - 1].name_index)
 
     def load_export(self, document, *, metadata, scope='model'):
         """Load an exact identity-bearing KEYGL5 parameter export.
@@ -471,11 +507,14 @@ class EdltSceneManager:
         if kind in ('add-trigger-dialog', 'add-action-dialog'):
             from .edlt_scene_add_dialog import normalize
             return normalize(op)
+        if kind == 'scene-name-control':
+            from .edlt_scene_name_control import normalize_operation
+            return normalize_operation(op)
         fields = {'set-application': ('selector',), 'add-groups': ('groups',), 'remove-items': ('item_ids',),
             'clear-items': (), 'copy': (), 'paste': (), 'clear-scene': (), 'set-level': ('item_id', 'level'),
             'set-percent': ('item_id', 'percent'), 'set-ramp': ('item_id', 'ramp_rate'), 'sync-levels': ('item_id',),
             'set-trigger': ('group',), 'set-action': ('action',), 'set-name-index': ('index',),
-            'set-name-text': ('text',), 'get-trigger': (), 'get-action': ()}
+            'set-name-text': ('text',), 'get-name': (), 'get-trigger': (), 'get-action': ()}
         if kind not in fields or set(op) != {'op', 'scene', *fields[kind]}: raise EdltError('Invalid scene operation or fields')
         _int(op['scene'], 'Scene', 1, 8)
         for key, maximum in (('selector', 1), ('level', 255), ('percent', 100), ('ramp_rate', 15), ('group', 255), ('action', 255), ('index', 255)):
@@ -513,6 +552,7 @@ class EdltSceneManager:
         if len(state.history) + len(ops) > MAX_OPERATIONS: raise EdltError('Scene history exceeds 256 operations')
         scenes, clipboard, next_id, results, complete = list(state.scenes), state.clipboard, state.next_item_id, [], True
         overlay, allocations = dict(state.static_text_overlay), list(state.name_allocations)
+        names, controls = list(state.static_names), list(state.name_controls)
         for op in ops:
             kind, slot = op['op'], op['scene']; s = scenes[slot - 1]; result = {'operation': op, 'complete': True}
             if kind == 'set-application':
@@ -568,21 +608,58 @@ class EdltSceneManager:
                 # reference before allocation; unrelated and earlier operation
                 # references remain reserved in the staged current view.
                 scenes[slot - 1] = replace(s, name_index=255)
-                allocation = self.common.allocate_static_text(
-                    self._scene_static_view(state, scenes, overlay), op['text'])
+                view = self._scene_static_view(state, scenes, overlay)
+                with isolated_additive_cache(view, tuple(names), retained=state._retained_parent_names) as local:
+                    allocation = self.common.allocate_static_text(view, op['text'])
+                    if local is not None:
+                        names[:] = local.names
+                    elif not allocation.reused:
+                        names[allocation.index] = op['text']
                 overlay.update(allocation.changes)
                 s = replace(scenes[slot - 1], name_index=allocation.index)
                 evidence = {'sequence': len(allocations) + 1,
                             'operation_number': len(state.history) + len(results) + 1,
                             'scene': slot, **allocation.as_dict()}
                 allocations.append(_json(evidence)); result['static_text_allocation'] = evidence
+            elif kind == 'get-name':
+                result['value'] = scene_name(tuple(names), s.name_index)
+            elif kind == 'scene-name-control':
+                from .edlt_scene_name_control import run_scene_name_control
+                known_names = [*names, *FIXED_SUGGESTION_NAMES, '']
+                def get_name():
+                    return scene_name(tuple(names), s.name_index)
+                def set_name(text):
+                    nonlocal s
+                    # Source GetUsedStaticText observes the old reference until
+                    # the property setter receives its allocation result.
+                    scenes[slot - 1] = s
+                    view = self._scene_static_view(state, scenes, overlay)
+                    assignment = assign_name(tuple(names), s.name_index, text,
+                        values=view, used_indices=lambda: self.common.static_references(view))
+                    names[:] = assignment.names
+                    known_names[:] = [*names, *FIXED_SUGGESTION_NAMES, '']
+                    overlay.update(assignment.changes)
+                    s = replace(s, name_index=assignment.index)
+                    scenes[slot - 1] = s
+                    evidence = {'sequence': len(allocations) + 1,
+                        'operation_number': len(state.history) + len(results) + 1,
+                        'scene': slot, **assignment.as_dict()}
+                    allocations.append(_json(evidence))
+                    return evidence
+                control = run_scene_name_control(op['events'], get_name=get_name,
+                    set_name=set_name, known_names=known_names, initial_state=controls[slot - 1])
+                controls[slot - 1] = control.state
+                result['scene_name_control'] = {**control.as_dict(),
+                    'known_name_profile': 'retained64 plus source FixedStrings64 plus empty',
+                    'suggestion_order_inferred': False}
             elif kind == 'get-trigger': s, result['value'] = self._trigger(state, s)
             elif kind == 'get-action': s, result['value'] = self._action(state, s)
             scenes[slot - 1] = s; result['complete'] = complete; results.append(_json(result))
             if not complete: result['reason'] = 'original scene capacity reached'; results[-1] = _json(result); break
         issued = self._next(state, scenes=tuple(scenes), clipboard=clipboard, next_item_id=next_id, complete=complete,
             history=(*state.history, *(_json(op) for op in ops[:len(results)])), validation=None,
-            static_text_overlay=overlay, name_allocations=tuple(allocations))
+            static_text_overlay=overlay, name_allocations=tuple(allocations),
+            static_names=tuple(names), name_controls=tuple(controls))
         return SceneEditOutcome(issued, complete, tuple(results))
 
     def validate(self, state):
@@ -616,7 +693,12 @@ class EdltSceneManager:
         self._check(state)
         if not state.complete:
             raise EdltError('An incomplete scene edit or capture cannot be persisted')
+        if any(control is not None and control.pending for control in state.name_controls):
+            raise EdltError('Pending SceneName input requires an established commit or read callback before saving')
         values = dict(state.static_text_overlay)
+        static_values = {**state.loaded.after_load, **values}
+        static_changes, _ = save_names(static_values, state.static_names)
+        values.update(static_changes)
         scenes = list(state.scenes)
         bucket = bytearray()
         pointers = []

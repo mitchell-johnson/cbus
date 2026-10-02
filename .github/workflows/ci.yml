@@ -77,6 +77,10 @@ jobs:
           --junit "${RUNNER_TEMP}/toolkit-offline.xml"
           --trace "${RUNNER_TEMP}/toolkit-offline-trace.json"
           --output "${RUNNER_TEMP}/toolkit-offline-results.json"
+          --require-module tests/test_edlt_scene_name_control.py
+          --require-module tests/test_edlt_scene_names.py
+          --require-module tests/test_edlt_scene_name_static.py
+          --require-module tests/test_edlt_parent_scene_names.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -118,6 +122,7 @@ jobs:
           --require-module tests/test_cgate_edlt_static_grid_editor_interop.py
           --require-module tests/test_cgate_project_documentation_native_addresses_interop.py
           --require-module tests/test_cgate_project_documentation_st7_light_level_interop.py
+          --require-module tests/test_cgate_edlt_scene_name_control_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -162,6 +167,7 @@ jobs:
           --require-module tests/test_cgate_edlt_static_grid_editor_interop.py
           --require-module tests/test_cgate_project_documentation_native_addresses_interop.py
           --require-module tests/test_cgate_project_documentation_st7_light_level_interop.py
+          --require-module tests/test_cgate_edlt_scene_name_control_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

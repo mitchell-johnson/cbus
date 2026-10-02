@@ -1003,6 +1003,9 @@ class EdltParentTransaction:
                 for parameter in claimed:
                     control_values[parameter] = composition.fields[parameter]
                     planning_values[parameter] = composition.fields[parameter]
+                from .edlt_static_grid import adopt_retained_names
+                adopt_retained_names(planning_values,
+                                    manager.retained_names(outcome.state))
                 scene_manager_composition = composition
                 metadata_dependencies.extend(json.loads(
                     composition.source.loaded.consumed_facts))
@@ -1760,6 +1763,22 @@ class EdltParentTransaction:
                 'research/fixtures/edlt-scene-manager-vectors.json',
                 'research/fixtures/edlt-scene-manager-acceptance.json',
             ]
+            from .edlt_static_grid import current as current_static_grid
+            grid = current_static_grid(after_controls)
+            if grid is not None:
+                from .edlt_scene_names import scene_names_view
+                names = tuple(grid.names)
+                evidence['retained_name_views'] = {
+                    'format': 'cbus-edlt-retained-name-views-v1',
+                    'phase': 'after all ordered parent controls',
+                    'static_names': list(names),
+                    'scene_names': list(scene_names_view(names, tuple(
+                        scene.name_index
+                        for scene in scene_manager_composition.terminal.scenes))),
+                    'read_only': True,
+                    'fresh_reload_recovers_only_stored_pp_names': True,
+                    'original_form_executed': False,
+                }
         return ParentTransactionPlan(
             loaded.expected,
             (None if reset_preparation is None else reset_preparation['raw']),

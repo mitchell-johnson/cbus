@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 667,
-    "modules_without_skip_sites": 360,
-    "modules_with_skip_sites": 307,
+    "test_modules": 672,
+    "modules_without_skip_sites": 364,
+    "modules_with_skip_sites": 308,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 31,
+      "unclassified": 32,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 147
+      "none": 148
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -2208,7 +2208,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 7,
+      "native_selected_tests": 12,
       "sites": [
         {
           "scope": "tests/test_cli_edlt_scene_manager.py::SceneManagerCLITests::test_native_cli_preview_complete64_original_crc_save_close_load_and_guard",
@@ -5733,6 +5733,42 @@
         }
       ],
       "note": "Operates on an explicitly named, pre-provisioned eDLT unit in an existing project on the C-Gate host plus a named backup project; the owned LocalCGate starts with no projects."
+    },
+    "tests/test_edlt_scene_name_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_scene_name_static.py::SceneNameStaticEvidenceTests::test_static_pinned_regeneration",
+          "kind": "body.call",
+          "condition": "not vendor or not framework",
+          "reason": "Explicit private pinned SceneName vendor/framework sources are not configured",
+          "environment": [
+            "CBUS_SCENE_NAME_STATIC_FRAMEWORK_ROOT",
+            "CBUS_SCENE_NAME_STATIC_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "SceneNameStaticEvidenceTests::test_static_pinned_regeneration"
+          ]
+        }
+      ]
     },
     "tests/test_edlt_scenes.py": {
       "categories": [

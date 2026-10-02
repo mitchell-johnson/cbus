@@ -143,6 +143,10 @@ def preflight(args):
             isinstance(row, dict) and row.get('op') == 'parent-language-binding'
             for row in document):
         raise EdltError('Language binding is internal; use add-language-dialog')
+    from .edlt_parent_transaction import normalize_operations
+    normalize_operations(document, allow_add_dialog=(
+        bool(getattr(args, 'auto_metadata', False))
+        or getattr(args, 'project_xml', None) is not None))
 
 
 def metadata(path, *, limit=16 * 1024 * 1024):

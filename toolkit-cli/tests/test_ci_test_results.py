@@ -202,6 +202,70 @@ class NewInteropSelectionTests(unittest.TestCase):
                 for module in (grid, native, st7):
                     self.assertEqual(audit.count('--require-module ' + module), 1)
 
+    def test_scene_name_control_exact_thirty_public_parents_are_required(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgate_edlt_scene_name_control_interop.py'
+        # Independent roster of the frozen literal profiles; do not derive
+        # expectations from Make, pytest collection, or a replacement producer.
+        profiles = ('ascii64', 'multibyte64', 'split63', 'astral64',
+                    'old63-reserved-new62', 'unicode-blank-clear',
+                    'u001c-is-not-dotnet-blank', 'bom-is-not-dotnet-blank',
+                    'u180e-with-known-nonblank', 'malformed-exact-reuse',
+                    'ordered-grid-control-widget')
+        refusals = ('pending-name', 'cache-injection')
+        faults = ('pp-save', 'project-save')
+        fixture = json.loads((root / 'toolkit-cli/research/fixtures/'
+                              'cgate-edlt-scene-name-control-owned.json').read_text())
+        self.assertEqual(tuple(row['id'] for row in fixture['cases']), profiles)
+        self.assertEqual(tuple(row['id'] for row in fixture['refusals']), refusals)
+        self.assertEqual(fixture['fault_phases'], ['PP SAVE_TO_SOURCE', 'PROJECT SAVE'])
+        public_source = (root / 'toolkit-cli' / module).read_text()
+        self.assertEqual(public_source.count("@pytest.mark.parametrize('backend,variable', BACKENDS, ids=('mock','daemon'))"), 3)
+        self.assertEqual(public_source.count("@pytest.mark.parametrize('case', FACTS['cases'], ids=lambda row:row['id'])"), 1)
+        self.assertEqual(public_source.count("@pytest.mark.parametrize('case', FACTS['refusals'], ids=lambda row:row['id'])"), 1)
+        self.assertEqual(public_source.count("@pytest.mark.parametrize('phase', FACTS['fault_phases'], ids=('pp-save','project-save'))"), 1)
+        all_selected = []
+        for backend, target, selection in [('mock', 'check-cgate-interop', 'cgate-mock'),
+                                           ('daemon', 'check-cmqtt-interop', 'cmqttd')]:
+            with self.subTest(backend=backend):
+                expected = {module + '::test_public_scene_name_control_preview_apply_and_fresh_names['
+                            + profile + '-' + backend + ']' for profile in profiles}
+                expected.update(module + '::test_public_pending_scene_name_and_cache_injection_refuse_without_write['
+                                + refusal + '-' + backend + ']' for refusal in refusals)
+                expected.update(module + '::test_public_scene_name_control_lost_successful_save_not_replayed['
+                                + fault + '-' + backend + ']' for fault in faults)
+                body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+                actual = [node for node in re.findall(r"'(tests/test_[^']+)'", body)
+                          if node.startswith(module + '::')]
+                self.assertEqual(len(expected), 15)
+                self.assertEqual(len(actual), 15)
+                self.assertEqual(len(actual), len(set(actual)))
+                self.assertEqual(set(actual), expected)
+                all_selected.extend(actual)
+                audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+                self.assertEqual(audit_body.count('--require-module ' + module), 1)
+        self.assertEqual(len(all_selected), 30)
+        self.assertEqual(len(set(all_selected)), 30)
+
+    def test_scene_name_pure_modules_and_chunk_manifest_are_required(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        pure = ('tests/test_edlt_scene_name_control.py', 'tests/test_edlt_scene_names.py',
+                'tests/test_edlt_scene_name_static.py', 'tests/test_edlt_parent_scene_names.py')
+        offline = workflow.split('--selection offline\n', 1)[1].split('\n      - name:', 1)[0]
+        for module in pure:
+            self.assertEqual(offline.count('--require-module ' + module), 1)
+        manifest = root / 'toolkit-cli/docs/edlt-scene-name-control-release-test-modules.txt'
+        selected = [line.strip() for line in manifest.read_text().splitlines()
+                    if line.strip() and not line.lstrip().startswith('#')]
+        self.assertEqual(len(selected), len(set(selected)))
+        self.assertEqual(set(selected), set(pure) | {
+            'tests/test_cli_edlt_scene_manager.py',
+            'tests/test_cgate_edlt_scene_name_control_interop.py', 'tests/test_ci_test_results.py'})
+        self.assertTrue(all((root / 'toolkit-cli' / module).is_file() for module in selected))
+
 
 class CITestResultsTests(unittest.TestCase):
     def setUp(self):

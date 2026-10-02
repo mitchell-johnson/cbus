@@ -245,6 +245,21 @@ check-cgate-interop: compile
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[astral64-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[old63-reserved-new62-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[unicode-blank-clear-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[u001c-is-not-dotnet-blank-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[bom-is-not-dotnet-blank-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[u180e-with-known-nonblank-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[malformed-exact-reuse-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ordered-grid-control-widget-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[pending-name-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-mock]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -414,6 +429,21 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ascii64-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[multibyte64-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[split63-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[astral64-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[old63-reserved-new62-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[unicode-blank-clear-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[u001c-is-not-dotnet-blank-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[bom-is-not-dotnet-blank-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[u180e-with-known-nonblank-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[malformed-exact-reuse-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_preview_apply_and_fresh_names[ordered-grid-control-widget-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[pending-name-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-daemon]' \
+		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

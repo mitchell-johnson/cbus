@@ -2887,6 +2887,9 @@ def _cgate(args):
     if args.action == "unit" and args.remote_action == "edlt-parent-transaction":
         from .edlt_parent_transaction_cli import preflight
         preflight(args)
+    if args.action == "unit" and args.remote_action == "edlt-scene-manager":
+        from .edlt_scene_manager_cli import operations
+        operations(args)
     if args.action == "conversion" and args.remote_action == "tweak":
         from .toolkit_tweaker_workflow import prepare
         tweaker_plan = prepare(args)

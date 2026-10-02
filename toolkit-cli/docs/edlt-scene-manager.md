@@ -49,6 +49,8 @@ Supported operation dictionaries all contain `op` and `scene`:
 | `set-action` | `action` | Invokes original-style action lookup and dynamic-label refresh. With a manual cache, an explicitly absent action becomes -1. The automatic outer transaction projects the original exact-address creation side effect before this model runs. A disabled trigger ignores the assignment. |
 | `set-name-index` | `index`: 0–63 or 255 | Selects an existing static slot or unused name. No allocation or reindexing occurs. |
 | `set-name-text` | `text`: nonblank, no NUL; new strings at most 63 UTF-8 bytes | Releases this scene's old name reference, reuses an exact existing string or allocates the highest unreferenced static slot, then binds the scene to it. |
+| `get-name` | none | Reads the retained SceneName, including a cached name longer than its saved PP image. |
+| `scene-name-control` | `events`: explicit callback history | Applies the bounded original SceneName property/binding profile described below. |
 | `get-trigger`, `get-action` | none | Explicitly observes the original potentially mutating getter. |
 
 `available_groups(state, scene=...)` returns the ordered choices from the declared cache. Changing a scene from primary to secondary leaves its old group objects attached. A new secondary object with the same numeric group is therefore available. Serialization emits only the numeric group under the selected scene application, exactly as observed in the original model; the result reports the retained references so callers can review that distinction.
@@ -68,10 +70,29 @@ PP image. A new unmatched string still must fit 63 UTF-8 bytes, and standalone
 SceneManager admission remains strict. Prior widget reservations are visible
 when the SceneManager operation runs.
 
-The additive `set-name-text` release-before-allocation rule is distinct from
-the original SceneName property setter, which retains its old index while
-allocating. Source-faithful property replacement ordering, complete getter
-views and ComboBoxStaticText callbacks remain outstanding under issue #45.
+The separate `scene-name-control` operation invokes the source-faithful
+SceneName property setter. It keeps the old index reserved until replacement
+allocation succeeds, checks ordinal cached-name reuse before capacity, and
+selects the highest available slot. Its input limit is 64 UTF-16 units rather
+than 63 UTF-8 bytes. The cached name survives PP truncation within this issued
+model; a fresh load recovers only the stored bytes. Stable .NET Framework
+whitespace clears the reference to 255 without clearing the old row. Python-only
+whitespace such as U+001C does not clear it. A whitespace-only string containing
+U+180E refuses because its classification depends on the original Framework
+Unicode table. This does not change the additive `set-name-text` policy.
+
+The state exposes all 64 `static_names`, eight `scene_names_view` rows and each
+scene's `scene_name`. The original zero-based values 0–7 and `N - name` displays
+are retained. A later indexed grid edit updates all scene getters sharing that
+slot without reallocating it. These detached views cannot be supplied as state
+inputs. Sealed control histories likewise cannot be injected through JSON.
+
+Read [explicit SceneName callbacks](edlt-scene-name-control.md) for Enter/Leave
+write-then-read, one-shot arrow suppression, exact known-name selection and
+read-only list refresh. Input-only state is inspectable, but composition and
+save refuse unresolved text. The CLI validates malformed operation fields
+before opening a native connection. Complete automatic host binding, modal
+close and asynchronous dispatch remain outstanding under issue #45.
 
 Each retained state and final plan contains `static_text.overlay_changes`, the ordered allocation records and a SHA-256 `fingerprint` of that evidence. Every record includes its scene, operation number, chosen index, exact-reuse flag, used indexes and proposed string write. The overlay is part of the issued-state integrity receipt, so an exported or modified state cannot be resumed. Capacity and text validation finish while planning; failure causes no PP SET or SAVE. The plan exposes the eight final `scene_pointers`, includes the bound name byte in `SceneBucket`, and recalculates `StaticTextCRC`, `ScenesCheckSum` and `OverallCRC` together with the other configuration CRCs.
 

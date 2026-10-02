@@ -1483,9 +1483,10 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         raise ValueError('PP snapshot differs from the selected native project unit')
     requirements = editor.lifecycle.requirements(supplied).as_dict()
     from .edlt_parent_add_dialog import KINDS as parent_add_kinds
+    from .edlt_static_grid import requires_retained_names
     if (any(row['op'] in parent_add_kinds for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
-            or (any(row['op'] == 'static-text-dialog' for row in operations)
+            or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
             or (any(row['op'] == 'add-dialog' for row in operations)
                 and any(row['op'] == 'reset' for row in operations))):
@@ -1989,6 +1990,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 raise ValueError('SceneManager capacity stopped the nested edit')
             composition = engine.prepare_composition(scene_state.state)
             state = {**state, **composition.fields}
+            from .edlt_static_grid import adopt_retained_names
+            adopt_retained_names(state, engine.retained_names(scene_state.state))
             for creation in outcome.creations:
                 if isinstance(creation, SceneLevelCreation):
                     level_names.setdefault((202, creation.group), {})[creation.address] = creation.name

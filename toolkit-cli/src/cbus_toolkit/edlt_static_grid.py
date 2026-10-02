@@ -133,6 +133,39 @@ def current(values):
     return holder.grid
 
 
+def adopt_retained_names(values, names):
+    """Advance the owning parent cache after a checked SceneManager edit.
+
+    The caller obtains ``names`` from an intact issued model. Speculative
+    validation and metadata lookup never install their branch's name table.
+    """
+    if (type(names) is not tuple or len(names) != 64
+            or any(type(name) is not str for name in names)):
+        raise _error('Retained scene names require an issued complete name table')
+    grid = current(values)
+    if grid is not None:
+        grid.names[:] = names
+
+
+def requires_retained_names(operations):
+    """Identify histories which own cached text, without accepting cache JSON."""
+    if not isinstance(operations, (list, tuple)):
+        return False
+    for row in operations:
+        if not isinstance(row, Mapping):
+            continue
+        if row.get('op') == 'static-text-dialog':
+            return True
+        nested = row.get('operations')
+        if (row.get('op') == 'scene-manager'
+                and isinstance(nested, (list, tuple))
+                and any(isinstance(child, Mapping)
+                        and child.get('op') in ('scene-name-control', 'get-name')
+                        for child in nested)):
+            return True
+    return False
+
+
 def _parent_history_active():
     """Private shape deferral only; the allocator still proves Name reuse."""
     return _current.get() is not None
@@ -144,9 +177,7 @@ def retained_history(function):
     @wraps(function)
     def wrapped(*args, **kwargs):
         operations = parameters.bind_partial(*args, **kwargs).arguments.get('operations', ())
-        enabled = isinstance(operations, (list, tuple)) and any(
-                isinstance(row, Mapping) and row.get('op') == 'static-text-dialog'
-                for row in operations)
+        enabled = requires_retained_names(operations)
         if enabled:
             with scope():
                 return function(*args, **kwargs)

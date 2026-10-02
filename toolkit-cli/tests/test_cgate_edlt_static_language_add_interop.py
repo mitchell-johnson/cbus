@@ -50,7 +50,7 @@ def journey(backend,variable,tmp_path,case):
         yield owner,relay,evidence,specs,endpoint,before
     (tmp_path/'parent-add-evidence.json').rename(tmp_path/'static-language-add-evidence.json')
 
-def invoke(relay,evidence,specs,tmp_path,case,*,dry_run=False,expected=0,complete=True):
+def invoke(relay,evidence,specs,tmp_path,case,*,dry_run=False,expected=0,complete=True,connections=1):
     operations=tmp_path/'operations.json';operations.write_text(json.dumps([*case['ops'],parent.widget()]))
     preferences=tmp_path/'preferences.json';preferences.write_text(json.dumps({
         'format':'cbus-edlt-display-preferences-v1','registry_key_present':True,'values':{}}))
@@ -65,7 +65,10 @@ def invoke(relay,evidence,specs,tmp_path,case,*,dry_run=False,expected=0,complet
     call={'argv':argv,'exit':process.returncode,'stdout':process.stdout,'stderr':process.stderr}
     evidence['calls'].append(call);value=json.loads(process.stdout or process.stderr);call['result']=value
     assert process.returncode==expected,call
-    assert len(relay.rows)==start+1,call
+    assert len(relay.rows)==start+connections,call
+    if connections==0:
+        call.update(commands=[],tags=[],documents=[],statuses=[],terminals=[],reply_lines=[])
+        return value,call
     wire=relay.rows[start];assert wire['done'].wait(5)
     if wire['request_hex']:call.update(parse_wire(wire,complete=complete))
     else:call.update(commands=[],tags=[],documents=[],statuses=[],terminals=[],reply_lines=[])
@@ -164,8 +167,11 @@ def test_public_static_language_invalid_history_never_writes(backend,variable,tm
                  {'op':'add-language-dialog','selected_ids':[1,8]},
                  {'op':'static-text-dialog','edits':[{'index':64,'text':'bad'}]},
                  {'op':'static-text-dialog','edits':[{'index':0,'text':'bad'}],'cancel':True}]
-        for operation in invalid:
-            _result,call=invoke(relay,evidence,specs,tmp_path,{'ops':[operation]},dry_run=True,expected=1)
+        for number,operation in enumerate(invalid):
+            # English locking consumes the loaded cache; malformed schemas
+            # now refuse in the public CLI preflight without opening TCP.
+            _result,call=invoke(relay,evidence,specs,tmp_path,{'ops':[operation]},
+                dry_run=True,expected=1,connections=1 if number==0 else 0)
             assert not any(c.startswith(('DBADD','DBSET','DBDELETE','PROJECT COPY','PROJECT SAVE','PP SAVE')) for c in call['commands'])
             assert snapshot(owner)==before
 

@@ -40,6 +40,15 @@ address projection, so distinct saved identities can share anchors. The
 [current implementation report](toolkit-cli/docs/feature-batch-2026-10-03-grid-native-report-corrections.md)
 records the fixes, focused tests and remaining acceptance boundaries.
 
+eDLT SceneManager also supports explicit `scene-name-control` histories and
+`get-name`: all 64 retained names and eight scene views remain available during
+an ordered edit. Enter/Leave use the original property allocation order, so the
+old reference stays reserved until replacement succeeds. Long cached names can
+be reused by later widgets while saved PP keeps only its 63-byte text image.
+Pending text refuses save. See [SceneName callbacks](toolkit-cli/docs/edlt-scene-name-control.md)
+and [the implementation report](toolkit-cli/docs/feature-batch-2026-10-03-scene-name-control.md)
+for exact limits and the separate original GUI/hardware acceptance work.
+
 The [network definition workflow](toolkit-cli/docs/network-definitions.md)
 now carries closed runtime definitions into the project with `NET SAVE DB`.
 The CLI and cmqttd preserve exact native tag addresses such as `0254`, `0xff`

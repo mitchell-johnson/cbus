@@ -94,6 +94,99 @@ class SceneManagerCLITests(unittest.TestCase):
                                   operations=({'op':'set-name-text','scene':1,'text':'No free slot'},),validate=False)
         self.assertEqual(session.calls,[])
 
+    def test_pending_control_state_is_inspectable_but_offline_plan_refuses(self):
+        self.ops.write_text(json.dumps([{'op':'scene-name-control','scene':1,
+            'events':[{'event':'input','text':'Uncommitted'}]}, {'op':'get-name','scene':1}]))
+        with patch('cbus_toolkit.edlt_scene_manager_cli.editor',return_value=self.editor), \
+                patch('cbus_toolkit.cgate.CGateClient',side_effect=AssertionError('Offline cannot connect')):
+            result=self.invoke(self.offline(True))
+            failure=self.invoke(self.offline(),1)
+        self.assertTrue(result['state']['pending_name_controls'])
+        self.assertEqual(result['state']['scene_name_controls'][0]['text'],'Uncommitted')
+        self.assertTrue(result['state']['scene_name_controls'][0]['pending'])
+        self.assertEqual(result['operation_results'][1]['value'],result['state']['scenes'][0]['scene_name'])
+        self.assertEqual(result['state']['static_text']['overlay_changes'],{})
+        self.assertFalse(result['saved']);self.assertTrue(result['export_is_review_only'])
+        self.assertIn('Pending SceneName',failure['error'])
+
+    def test_complete_cached_name_table_and_eight_literal_getter_views(self):
+        from tests.test_edlt_scene_names import source_values
+        source=source_values(self.spec,indices=(0,1,2,3,4,5,63,255),rows={
+            0:b'Lamp\0'.ljust(64,b'\0'),1:b'\xe0\x80A\0'.ljust(64,b'\0'),
+            2:b'\xed\xa0\x80\0'.ljust(64,b'\0'),3:b'A'*64,
+            4:b'Before\0After'.ljust(64,b'\0'),5:b'\xf0\x9f\x98\x80\0'.ljust(64,b'\0'),
+            63:b'Lamp\0'.ljust(64,b'\0')})
+        self.source.write_text(json.dumps(source))
+        self.ops.write_text(json.dumps([{'op':'get-name','scene':slot} for slot in range(1,9)]))
+        expected=['Lamp','\ufffdA','\ufffd\ufffd','A'*64,'Before','\U0001f600','Lamp','']
+        with patch('cbus_toolkit.edlt_scene_manager_cli.editor',return_value=self.editor), \
+                patch('cbus_toolkit.cgate.CGateClient',side_effect=AssertionError('Offline cannot connect')):
+            state=self.invoke(self.offline(True));plan=self.invoke(self.offline())
+        self.assertEqual([row['value'] for row in state['operation_results']],expected)
+        self.assertEqual(len(state['state']['static_names']),64)
+        self.assertEqual([row['scene_name'] for row in state['state']['scenes']],expected)
+        self.assertEqual([{'value':row['value'],'name':row['name']} for row in state['state']['scene_names_view']],
+            [{'value':slot-1,'name':str(slot)+' - '+name} for slot,name in enumerate(expected,1)])
+        self.assertEqual(plan['terminal']['static_names'],state['state']['static_names'])
+        self.assertEqual(plan['terminal']['scene_names_view'],state['state']['scene_names_view'])
+        self.assertEqual(state['state']['static_text']['overlay_changes'],{})
+
+    def test_pending_native_save_does_not_stage_or_save(self):
+        self.ops.write_text(json.dumps([{'op':'scene-name-control','scene':1,
+            'events':[{'event':'input','text':'Uncommitted'}]}]))
+        self.session.set=Mock(side_effect=AssertionError('Pending input cannot stage PP'))
+        self.session.save_to_source=Mock(side_effect=AssertionError('Pending input cannot save'))
+        with patch.object(cli,'_edlt_scene_manager',return_value=self.editor), \
+                patch('cbus_toolkit.cgate.CGateClient',return_value=nullcontext(SimpleNamespace())), \
+                patch('cbus_toolkit.programming.Programmer',return_value=SimpleNamespace(load=Mock(return_value=nullcontext(self.session)))):
+            result=self.invoke(self.native(),1)
+        self.assertIn('Pending SceneName',result['error'])
+        self.session.set.assert_not_called();self.session.save_to_source.assert_not_called()
+
+    def test_injected_continuation_and_invalid_event_refuse_before_native_connection(self):
+        invalid=[
+            {'op':'scene-name-control','scene':1,'events':[],'state':{'text':'Forged','pending':False}},
+            {'op':'scene-name-control','scene':1,'events':[],'static_names':['Forged']*64},
+            {'op':'scene-name-control','scene':1,'events':[{'event':'input','text':'Forged','resume':{}}]},
+            {'op':'scene-name-control','scene':1,'events':[{'event':'arrow-preview','key':'home'}]},
+            {'op':'scene-name-control','scene':1,'events':[{'event':'list-refresh','change_type':'reset',
+                'new_index':0,'old_index':-1,'selected_index':1,'visible':1}]},
+            {'op':'scene-name-control','scene':1,'events':[{'event':'input','text':'A\0B'}]},
+        ]
+        for operation in invalid:
+            self.ops.write_text(json.dumps([operation]))
+            for surface in ('manual','automatic'):
+                with self.subTest(operation=operation,surface=surface):
+                    args=self.native() if surface=='manual' else (
+                        'cgate','unit','--lock-address','//EDLTTEST/254','--source',self.session.source,
+                        'edlt-scene-manager','--auto-metadata','--exclusive-project','--operations',self.ops)
+                    with patch('cbus_toolkit.cgate.CGateClient',side_effect=AssertionError('Invalid shape cannot connect')) as connect, \
+                            patch.object(cli,'_edlt_scene_manager',side_effect=AssertionError('Invalid shape cannot construct editor')) as editor, \
+                            patch('cbus_toolkit.edlt_scene_manager_cli.settings',side_effect=AssertionError('Invalid shape cannot read metadata')) as metadata:
+                        result=self.invoke(args,1)
+                    self.assertIn('error',result)
+                    connect.assert_not_called();editor.assert_not_called();metadata.assert_not_called()
+
+    def test_nested_parent_injected_name_state_refuses_before_native_connection(self):
+        from tests.test_edlt_parent_transaction import measurement
+        operations=[
+            ({'op':'scene-name-control','scene':1,'events':[],'name_controls':[{}]*8},'Invalid scene-name-control'),
+            ({'op':'scene-name-control','scene':1,'events':[{'event':'input','text':'A'*65}]},'64 UTF-16'),
+            ({'op':'scene-name-control','scene':1,'events':[{'event':'selected-name','selected_index':True,'name':'Light'}]},'callback indices'),
+        ]
+        for operation,message in operations:
+            self.ops.write_text(json.dumps([{'op':'scene-manager','operations':[operation]},measurement()]))
+            for automatic in (False,True):
+                with self.subTest(operation=operation,automatic=automatic):
+                    source_flags=('--auto-metadata','--exclusive-project') if automatic else ('--metadata',self.metadata)
+                    args=('cgate','unit','--lock-address','//EDLTTEST/254','--source',self.session.source,
+                          'edlt-parent-transaction',*source_flags,'--operations',self.ops)
+                    with patch('cbus_toolkit.cgate.CGateClient',side_effect=AssertionError('Invalid nested shape cannot connect')) as connect, \
+                            patch('cbus_toolkit.edlt_parent_transaction_cli.metadata',side_effect=AssertionError('Invalid nested shape cannot read metadata')) as metadata:
+                        result=self.invoke(args,1)
+                    self.assertIn(message,result['error'])
+                    connect.assert_not_called();metadata.assert_not_called()
+
     def test_capacity_partial_state_is_reviewable_and_never_staged_or_saved(self):
         self.ops.write_text(json.dumps(operations('capacity-add')))
         with patch('cbus_toolkit.edlt_scene_manager_cli.editor',return_value=self.editor):
