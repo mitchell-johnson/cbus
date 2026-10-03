@@ -12,6 +12,8 @@ import copy
 from dataclasses import dataclass, replace
 from types import MappingProxyType
 
+from .native_sensor_scenes import loaded_scenes, scene_save_parameters
+
 from .macros import _numbers
 from .memory import MemoryCodec
 from .sensors import (SensorApplyError, SensorError, _integer, _version, saved_margin, verify_native_schema)
@@ -78,6 +80,15 @@ LAYOUTS = MappingProxyType({
     'PECLevelStore': (99, 1, 1, 3, 0),
     'StatusReportInterval': (66, 1, 8, 0, 0),
 })
+# These inherited getters establish inventory; they are not dialog controls.
+# Keep them separate so the earlier 43-field PP profile stays compatible when
+# every inventory field is absent from a caller's retained snapshot.
+INVENTORY_LAYOUTS = MappingProxyType({
+    'AreaGroupAddress': (67, 1, 8, 0, 0),
+    'SceneTablePointer': (152, 8, 8, 0, 0),
+    'PatchEnable': (160, 2, 8, 0, 0),
+    'SceneTable': (162, 80, 8, 0, 0),
+})
 BITS = frozenset(('DisableIR', 'CorridorLinkActive', 'PECFunctionActive', 'PECFunctionIRActive',
                   'PIRFunctionIRActive', 'PIRLevelStore', 'PECLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic'))
 POWER_UP = ('disabled', 'enabled', 'resume')
@@ -109,8 +120,9 @@ class _OnOffGraph:
 
     A (application, address) pair denotes an already established group object.
     The admitted raw block and selected hidden getters establish non-unused
-    objects. Other source inventories and creation decisions are outside this
-    profile, so explicit histories cannot invent missing destination objects.
+    objects. Complete source snapshots additionally establish Area before the
+    raw-block refresh and Scene objects afterward. Missing destination creation
+    decisions remain outside this profile.
     """
 
     def __init__(self, original, updates):
@@ -124,6 +136,7 @@ class _OnOffGraph:
                        for index, address in enumerate(original['GroupAddress'])]
         self.known = set(self.groups)
         self.hidden = {}
+        inventory = set(INVENTORY_LAYOUTS) <= set(original)
         self.journal = {'format': 'cbus-senll-control-history-v1', 'explicit': True,
                         'initialization_profile': 'fresh_zero_key_callbacks',
                         'metadata_profile': 'raw_blocks_and_selected_hidden_getters',
@@ -135,12 +148,43 @@ class _OnOffGraph:
                         'original_execution': False, 'physical_acceptance': False,
                         'load': [], 'controls': [], 'unverified_group_lookups': [],
                         'forced_save_last': True}
+        if inventory:
+            primary = self.applications[0]
+            area = (primary, original['AreaGroupAddress'][0])
+            # The Area getter is causally available to an absent-application2
+            # rebind. Scene and hidden getters are not yet available here.
+            self.known.add(area)
+            self.journal.update(
+                metadata_profile='complete_area_scene_and_hidden_getters',
+                unmodelled_group_inventories=[],
+                phase_order=['applications_load', 'area_group_load', 'raw_bits_groups_load',
+                             'secondary_application_refresh', 'scene_group_load', 'hidden_group_load',
+                             'on_off_controls', 'flat_dialog_edits', 'scene_before_save', 'forced_save'],
+                source_inventory={'fields': {name: list(original[name]) for name in INVENTORY_LAYOUTS},
+                                  'area_group_before_block_refresh': list(area)})
         # GetBlockApplications loads all eight bits before GetBlockGroup; after
         # EndUpdate, Application2ObjectRefresh clears TRUE bits in index order.
         if self.applications[1] == 255:
             for index in range(8):
                 if mask & (1 << index):
                     self.journal['load'].append(self._switch(index, False, hidden=False))
+        if inventory:
+            table = original['SceneTable']
+            suppressed = table[0] == 255
+            offsets = [] if suppressed else list(range(0, len(table), 2))
+            scene_groups = [{'offset': offset, 'group': [self.applications[0], table[offset]]}
+                            for offset in offsets if table[offset] != 255]
+            created = [{'scene': index, 'group': [self.applications[0], group], 'level': level}
+                       for index, commands in enumerate(loaded_scenes(table, original['SceneTablePointer']))
+                       for group, level in commands]
+            self.known.update(tuple(row['group']) for row in created)
+            # Pointer and padding bytes do not constrain this getter walk.
+            # Preserve all raw inventory bytes for the owning save projection.
+            self.journal['source_inventory']['scene_groups_after_block_refresh'] = {
+                'first_group_suppresses_getters': suppressed,
+                'scanned_even_offsets': offsets, 'groups': scene_groups,
+                'groups_are_raw_pairs': True, 'created_group_objects': created,
+                'pointer_and_padding_bytes_preserved': True}
         primary = self.applications[0]
         if original['SingleJoinEnablerControlGroup'][0] != 255 or original['DualJoinEnablerControlGroup'][0] != 255:
             join = (203, original['SingleJoinEnablerControlGroup'][0])
@@ -322,21 +366,44 @@ class LightLevelSensor:
         if spec.filename != PROFILE['spec_filename']:
             raise SensorError('Use SENLL_ST7.xml for SENLL 2.0.01..2.4.99')
         self.spec, self.codec = spec, MemoryCodec(spec)
-        for name, expected in LAYOUTS.items():
-            layout = self.codec.layout(name)
-            actual = (layout.address, layout.array_size, layout.bit_size, layout.bit_address, layout.array_skip)
-            if actual != expected or layout.parameter.type != ('bit' if name in BITS else 'int'):
+        self._verify_layouts(LAYOUTS)
+
+    def _verify_layouts(self, layouts):
+        for name, expected in layouts.items():
+            try:
+                layout = self.codec.layout(name)
+                actual = (layout.address, layout.array_size, layout.bit_size, layout.bit_address, layout.array_skip)
+                supported = actual == expected and layout.parameter.type == ('bit' if name in BITS else 'int')
+            except (ValueError, KeyError):
+                supported = False
+            if not supported:
                 raise SensorError('Unsupported light-level sensor parameter layout: ' + name)
 
     def snapshot(self, current):
+        inventory = set(INVENTORY_LAYOUTS).intersection(current)
+        if inventory and inventory != set(INVENTORY_LAYOUTS):
+            raise SensorError('Complete SENLL source inventory requires AreaGroupAddress, SceneTablePointer, '
+                              'PatchEnable and SceneTable together')
+        layouts = dict(LAYOUTS)
+        if inventory:
+            self._verify_layouts(INVENTORY_LAYOUTS)
+            layouts.update(INVENTORY_LAYOUTS)
         result = {}
-        for name in LAYOUTS:
+        for name in layouts:
             if name not in current:
                 raise SensorError('Missing current light-level sensor parameter: ' + name)
-            values = _numbers(current[name])
+            try:
+                values = _numbers(current[name])
+            except ValueError:
+                raise SensorError('Invalid current light-level sensor parameter: ' + name) from None
             if not self.spec.get(name).validate_value(list(values))['valid']:
                 raise SensorError('Invalid current light-level sensor parameter: ' + name)
             result[name] = values
+        if inventory:
+            primary, secondary = result['Application']
+            if not 48 <= primary <= 95 or secondary != 255 and not 48 <= secondary <= 95:
+                raise SensorError('Complete SENLL source inventory requires primary Lighting 48..95 '
+                                  'and secondary Lighting 48..95 or 255')
         return result
 
     def plan(self, current, *, level_group=None, on_off_group=None, on_off_application=None,
@@ -431,6 +498,17 @@ class LightLevelSensor:
         if margin_percent is not None:
             percent = _integer(margin_percent, 'Margin percent', 0, 100)
         self._check_groups(original, updates, edits, enable_group)
+        if 'PatchEnable' in original:
+            updates.update(scene_save_parameters(original))
+            if history is not None:
+                history['scene_before_save'] = {
+                    'enabled': original['PatchEnable'] != (157, 64),
+                    'loaded_command_counts': [len(commands) for commands in
+                                              loaded_scenes(original['SceneTable'], original['SceneTablePointer'])],
+                    'area_and_patch_preserved': True,
+                    'scene_table_after_save': list(updates['SceneTable']),
+                    'scene_pointers_after_save': list(updates['SceneTablePointer']),
+                }
         self._toolkit_save(original, updates, target, percent, state)
         if updates['PECMarginLux'][0] > 255:
             raise SensorError(f'The loaded {percent}% margin at target byte {target} exceeds the native margin byte; '
@@ -506,14 +584,33 @@ class LightLevelSensor:
         return check_profile(session.unit_type, session.firmware, session.catalog_number, subject='Native session')
 
     def apply(self, session, plan):
-        if not isinstance(plan, LightLevelPlan) or set(plan.expected) != set(LAYOUTS) or any(
-                n not in LAYOUTS for n in plan.changes):
+        complete = set(LAYOUTS) | set(INVENTORY_LAYOUTS)
+        if not isinstance(plan, LightLevelPlan) or set(plan.expected) not in (set(LAYOUTS), complete):
             raise SensorError('Plan contains fields outside the light-level sensor workflow')
+        allowed = set(LAYOUTS)
+        if set(plan.expected) == complete:
+            allowed.update(('SceneTable', 'SceneTablePointer'))
+        if set(plan.changes) - allowed:
+            raise SensorError('Plan contains fields outside the light-level sensor workflow')
+        if set(plan.expected) == complete:
+            # Inventory is bound input, never an arbitrary scene-edit surface.
+            # Recompute mandatory native save changes from the immutable input,
+            # rejecting both forged bytes and omitted normalization.
+            source = self.snapshot(plan.expected)
+            derived = {name: tuple(values) for name, values in scene_save_parameters(source).items()
+                       if tuple(values) != source[name]}
+            supplied = {name: values for name, values in plan.changes.items() if name in INVENTORY_LAYOUTS}
+            if supplied != derived:
+                raise SensorError('Scene save changes differ from source-derived normalization')
+            self.snapshot({**plan.expected, **plan.changes})
         self.codec.encode_many(plan.changes)
         identity = self._verify_profile(session)
         if plan.identity is not None and plan.identity != identity:
             raise SensorError('Plan was created for another unit firmware or catalogue number')
-        verify_native_schema(session, self.spec, LAYOUTS, BITS)
+        layouts = LAYOUTS if set(plan.expected) == set(LAYOUTS) else {**LAYOUTS, **INVENTORY_LAYOUTS}
+        if set(plan.expected) == complete:
+            self._verify_layouts(INVENTORY_LAYOUTS)
+        verify_native_schema(session, self.spec, layouts, BITS)
         if self.snapshot(session.values()) != dict(plan.expected):
             raise SensorError('PP parameters changed since the light-level sensor plan was created')
         attempted = []
@@ -535,5 +632,5 @@ class LightLevelSensor:
         return self.apply(session, self.plan(session.values(), identity=identity, **options))
 
 
-__all__ = ['FORCED', 'INDICATORS', 'LAYOUTS', 'LightLevelPlan', 'LightLevelSensor', 'NOT_SENT', 'PROFILE',
+__all__ = ['FORCED', 'INDICATORS', 'INVENTORY_LAYOUTS', 'LAYOUTS', 'LightLevelPlan', 'LightLevelSensor', 'NOT_SENT', 'PROFILE',
            'check_profile', 'indicator_state', 'profile_refusal', 'target_byte']
