@@ -47,11 +47,22 @@ class ST7SaveState:
                    power_up_state(initial.light_levels[8], pir_enable_off, pir_level_store),
                    1 <= broadcast_mode <= 6)
 
-    def parameters(self, *, pec_enable_off, pir_enable_off):
-        """Serialize captured power states against the caller's current logic."""
+    def parameters(self, *, pec_enable_off, pir_enable_off, current_light_levels=None):
+        """Overlay captured power states on the current serializer array.
+
+        The owning save supplies CoreKey's rebuilt LightLevel array. Resume
+        state2 performs no indexed write, so it retains that current value.
+        Omitting the array selects the isolated component's original baseline.
+        """
         _integer(pec_enable_off, 1, 'Current PECEnablerGroupLogic')
         _integer(pir_enable_off, 1, 'Current PIREnablerGroupLogic')
-        levels = list(self.light_levels)
+        if current_light_levels is None:
+            levels = list(self.light_levels)
+        else:
+            if (not isinstance(current_light_levels, (list, tuple))
+                    or not 10 <= len(current_light_levels) <= 263):
+                raise SensorError('Current LightLevel requires 10..263 unsigned bytes from CoreKey save')
+            levels = [_integer(value, 255, 'Current LightLevel') for value in current_light_levels]
         for index, state, off in ((9, self.light_power_state, pec_enable_off),
                                   (8, self.occupancy_power_state, pir_enable_off)):
             if state != 2:

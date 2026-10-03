@@ -65,6 +65,42 @@ class SENLLAST7SaveTests(unittest.TestCase):
         self.assertEqual(result['PECLevelStore'], [1])
         self.assertEqual(result['PIRLevelStore'], [1])
 
+    def test_resume_preserves_current_corekey_slots_instead_of_raw_load_bytes(self):
+        loaded = load([11, 22, 33, 44, 55, 66, 77, 88, 42, 123],
+                      pec_level_store=1, pir_level_store=1)
+        # CoreKey with LightIndex0 rebuilds the two tail slots as255 before ST7.
+        current = [8, 7, 6, 5, 4, 3, 2, 1, 255, 255]
+        result = loaded.parameters(pec_enable_off=1, pir_enable_off=1,
+                                   current_light_levels=current)
+        self.assertEqual(result['LightLevel'], current)
+        self.assertEqual((result['PECLevelStore'], result['PIRLevelStore']), ([1], [1]))
+        self.assertEqual(loaded.light_levels[8:], (42, 123))
+        current[9] = 0
+        result['LightLevel'][8] = 0
+        self.assertEqual(loaded.light_levels[8:], (42, 123))
+
+    def test_power_writes_apply_fixed_indices_to_grown_current_array(self):
+        loaded = load([0] * 10, pec_enable_off=1, pir_enable_off=0)
+        for size in (11, 263):
+            with self.subTest(size=size):
+                current = [71] * size
+                result = loaded.parameters(pec_enable_off=0, pir_enable_off=1,
+                                           current_light_levels=current)
+                expected = [71] * size
+                expected[9] = 255
+                expected[8] = 255
+                self.assertEqual(result['LightLevel'], expected)
+                self.assertEqual(current, [71] * size)
+                self.assertEqual((result['PECLevelStore'], result['PIRLevelStore']), ([0], [0]))
+
+    def test_current_serializer_array_requires_reachable_length_and_unsigned_bytes(self):
+        loaded = load()
+        for current in ([0] * 9, [0] * 264, [True] * 10, [-1] * 10, [256] * 10,
+                        '0 ' * 10, {index: 0 for index in range(10)}):
+            with self.subTest(current=current), self.assertRaises(SensorError):
+                loaded.parameters(pec_enable_off=0, pir_enable_off=0,
+                                  current_light_levels=current)
+
     def test_eight_broadcast_modes_normalize_and_normal_save_clears_b_bank_flag(self):
         for vector in json.loads(SOURCE.read_text())['broadcast_literals']:
             with self.subTest(raw=vector['raw']):

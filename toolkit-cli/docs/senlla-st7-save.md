@@ -4,13 +4,23 @@
 and occupancy power-up states from the original ten LightLevel bytes, store
 flags and enable-group logic. The immutable state preserves the raw bytes.
 `parameters` then serializes those captured states using explicit current
-enable-group logic supplied by the owning lifecycle.
+enable-group logic supplied by the owning lifecycle. The owning save passes
+`current_light_levels` from the preceding CoreKey serializer. Omitting it keeps
+the isolated component's original baseline for the earlier source literals.
 
 This distinction matters when a fresh frame clears enable-off for an unused
 group after power state was loaded. Recomputing power state from the changed
-logic would give a different result. Resume preserves the corresponding raw
-byte and sets its store flag. Disabled/enabled clears that flag and writes
-zero or 255 according to the current logic. Other LightLevel slots are retained.
+logic would give a different result. Resume skips an indexed write, preserving
+the corresponding **current serializer byte**, and sets its store flag.
+Disabled/enabled clears that flag and writes zero or255 at fixed index9 for
+light level and8 for occupancy. Every other current LightLevel slot is retained.
+
+CoreKey rebuilds the array using LightIndex: a255 prefix, eight current block
+levels and a255 suffix to the loaded length. For index0 its two tail slots
+are255 before ST7, even when the original power bytes differ. Index1/2 overlaps
+those power slots; index3..255 grows the rebuilt array to11..263 bytes. ST7
+accepts that current array without truncation and applies its two fixed indices.
+Whole-unit PP schema/programming admission for a grown array remains owned.
 
 The component also captures raw BroadcastActive 1..6 as active, with 0 and 7
 inactive. Normal ST7 save serializes active as 4 and inactive as 0, and clears
