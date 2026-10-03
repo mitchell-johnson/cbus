@@ -2,6 +2,32 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA managed-occupancy/scalar source check](../research/fixtures/senlla-occupancy-scalar-source-check-20261004.json)
+binds the same actual occupancy objects, managers, InputKey references and
+Boolean attributes before PP and live-bank construction. The complete
+owner defers the historical Smart listener at the factory; managed
+callbacks now preserve nested setter order, current flag getter rearming
+and the separate aggregate/event short circuits. Manual broadcast
+predicates use actual flag getters and current Scene-template rereads.
+Persistent scalar components add actual caches and track/checkbox/radio/
+status binding positions, with missing collection/address/window contexts
+refused explicitly. A separate identification name component retains the
+actual UnitName/TagName/cache sequence and stops at the source GetHandle/
+EM_GETSEL window boundary. Inherited string equality now uses UTF-16 units.
+Eighteen affected modules pass 357 parent cases and
+411 separate subtests, zero failures/errors/skips.
+All 4,144 tracked inputs remain unchanged at frozen authored commit
+`2cf53ba8`. Six final independent reviews cover the 29 changed component
+paths; scope qualifiers and earlier receipts remain intact. Inventory,
+register and census checks pass at 763 test modules and all 259 native
+required tests selected; those native requirements were not executed.
+Complete identification/director/focus/Show/Apply/save, loaded application/
+hidden-reference callbacks, mutable metadata/cache owners, remaining
+scalar/object bindings and public preview/apply remain open. No original
+Windows/backend/control, installed-wheel or hardware acceptance is claimed.
+Full suites remain deferred for speed; global coverage is false with
+487 obligations. The prior checkpoint below records its historical scope.
+
 The [SENLLA current-load/owner source check](../research/fixtures/senlla-live-owner-source-check-20261004.json)
 adds concrete inherited Unit attributes and an owned-project/native-database
 metadata bridge, live bank attributes, persistent no-HWND control primitives,

@@ -1,0 +1,179 @@
+{
+  "boundaries": {
+    "actual_occupancy_managed_getters_and_nested_callbacks": true,
+    "actual_occupancy_pre_pp_constructor": true,
+    "complete_director_focus_show_apply_save": false,
+    "complete_identification_native_window": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "historical_component_default_preserved": true,
+    "identification_name_cache_and_window_boundary_component": true,
+    "installed_wheel_release": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "persistent_scalar_cache_components": true,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "toolkit-cli/research/fixtures/senlla-occupancy-scalar-source-check-20261004.json",
+      "toolkit-cli/docs/implementation-status.md"
+    ],
+    "public_cli_save_added": false,
+    "source_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files in the frozen checkout",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 581799,
+        "identity": "inputs-before.json",
+        "sha256": "2f230a2fab3f59060891795d161a7e91dafd70fa07ba837e78d7d95dfc926431"
+      },
+      {
+        "bytes": 581799,
+        "identity": "inputs-terminal.json",
+        "sha256": "2f230a2fab3f59060891795d161a7e91dafd70fa07ba837e78d7d95dfc926431"
+      }
+    ],
+    "source_input_count": 4144,
+    "tested_head": "2cf53ba8ff556abf5bea04c21c92dcd0643c87e8"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 128616,
+      "identity": "source.xml",
+      "sha256": "54c7d76d94f713a4887fbb2cb1f555f931cf42474264b029ce65ed15b4c363fd"
+    },
+    {
+      "bytes": 225179,
+      "identity": "source-trace.json",
+      "sha256": "1666e4a54744ddaaec1a83d5ad9d0938a6418bc4efdf953635aa83d3c860d3a4"
+    },
+    {
+      "bytes": 304907,
+      "identity": "source-results.json",
+      "sha256": "c02fd24d438af920a448c90fe20ef3705cbc5c58e3e42d9d5823d7e4601b4e0c"
+    },
+    {
+      "bytes": 270973,
+      "identity": "metadata-results.json",
+      "sha256": "36fa00ccc240eb782d6e091dba1dc056f4cc1cc9bc5c9ff9578305d05871b8b3"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-occupancy-scalar-source-check-v1",
+  "independent_source_review": {
+    "review_receipts": [
+      {
+        "bytes": 1634,
+        "identity": "senlla-live-occupancy-current-getters-final-independent-review-derived.json",
+        "sha256": "b8dfb23a3f21a41dfbd4e8265bbe55aa530e26a809070c5559d97d38976b0f1f"
+      },
+      {
+        "bytes": 1586,
+        "identity": "senlla-live-banks-current-getters-final-independent-review-derived.json",
+        "sha256": "d3f0d9d348f4017bdc1232ba898d91082d370de5fd0909c6c8483f53479f499a"
+      },
+      {
+        "bytes": 6227,
+        "identity": "senlla-scalar-controls-final-independent-review-derived.json",
+        "sha256": "66a8d02b4c90a202a32fed78151fe309909412a6b12274b3e9bb86d0b0233973"
+      },
+      {
+        "bytes": 6285,
+        "identity": "senlla-owner-live-occupancy-final-independent-review-derived.json",
+        "sha256": "6ad7fcacbc0e024f7516fac793c8ab47ef2cdd4ac25790281d0ed34b2dc71031"
+      },
+      {
+        "bytes": 6333,
+        "identity": "senlla-identification-name-final-independent-review-derived.json",
+        "sha256": "592c4e44b60dfd01b85d7caab14a36bfe370235db7031b29be78dedf599f7a1c"
+      },
+      {
+        "bytes": 3725,
+        "identity": "senlla-late-forms-live-occupancy-corrected-final-independent-review-derived.json",
+        "sha256": "1b59c9e70d228a4ba14bd4613b6ff24cf4de5390fa58d9b62b280adfa893fc2d"
+      }
+    ],
+    "reviewed_input_hashes": {
+      "toolkit-cli/docs/senlla-identification-name.md": "393f9a8384f22c93ceba19f4305a533b6bccf98708e5e06d031f7b1388054c16",
+      "toolkit-cli/docs/senlla-late-forms.md": "492014fdfef45d86e07f406db7b87679e0ff9ed7dfa5b3e4be363c810b0eee3f",
+      "toolkit-cli/docs/senlla-live-banks.md": "c97395429fb082fe4580d0452c8133c345f170ec0d9edc0410af1abe861fb54a",
+      "toolkit-cli/docs/senlla-live-occupancy.md": "de3b180911a117cb73ab79087353f0f2589cd0330d91a899ef5a0630726ce577",
+      "toolkit-cli/docs/senlla-owner-load.md": "a963e70730b731cef261b3cf278a8044c8aff1b201993706e84dbf5d02abd552",
+      "toolkit-cli/docs/senlla-scalar-controls.md": "beed1fcee3463af80f343026a67271b60f6ea37a46fef7187d0fde2f73c3a301",
+      "toolkit-cli/research/fixtures/senlla-identification-name-source.json": "7dcfa35b1065ef20b028ce344b54602cc4db669ddeded05bee6382bfef6a43c9",
+      "toolkit-cli/research/fixtures/senlla-late-forms-source.json": "9a7a01ba3804618f5ab9804be24d04e58e1d01a896775e7c5f26aaeaa6814ec8",
+      "toolkit-cli/research/fixtures/senlla-live-banks-source.json": "cc4890ea5d029b0b2f32914aced066a96c1ffd7a7e54cbf2152d5c5b3cf6578b",
+      "toolkit-cli/research/fixtures/senlla-live-occupancy-source.json": "cc25d92d52cb88eb31e5ac73d78a469dc548c9c024ba93a4f1ad5d9792b049ae",
+      "toolkit-cli/research/fixtures/senlla-owner-live-occupancy-source.json": "0de6fe6ffe5ab53badf86cec03d8188cd61b3625b1df76327793b8958b819184",
+      "toolkit-cli/research/fixtures/senlla-scalar-controls-source.json": "6615575b4afccb05de353b4b28fc8d88a71f391361a4c709b9cbc2169f94fb49",
+      "toolkit-cli/src/cbus_toolkit/senlla_identification.py": "d266349a9a5705a42278da80ed19c8fca77bf8aef139a504012786f243adbc75",
+      "toolkit-cli/src/cbus_toolkit/senlla_inherited_owner.py": "e67a3a3c23c1931a70b48ac8caecd30701126b1dfaa7c2170168537872ca3587",
+      "toolkit-cli/src/cbus_toolkit/senlla_key_events.py": "3bfa223513e6210a39398184e41444f6dc5dba936354c1c06b4937c498fdd5cf",
+      "toolkit-cli/src/cbus_toolkit/senlla_late_forms.py": "2429c99dbadc266e9d4c0cef609c3d6be29e562abb6b879dffd3f88d3e14b64b",
+      "toolkit-cli/src/cbus_toolkit/senlla_live_banks.py": "6efd36cb550de1d8fef6a270ed67fdc618c5e1af65b8a722e6014a7644379210",
+      "toolkit-cli/src/cbus_toolkit/senlla_live_occupancy.py": "d72b585da40b99469ba3a01fbb02c9a9240296417e3c629aec1993b44cfcd512",
+      "toolkit-cli/src/cbus_toolkit/senlla_owner.py": "0ea116b923de6f2bd80dfc1113d54840f42a63981a0b7a0acfb584aa982fd875",
+      "toolkit-cli/src/cbus_toolkit/senlla_prekey.py": "a7c0d1d77b2ae0f3e393ff850b888bfb567c2ff99468600ede53e7df35ef65c7",
+      "toolkit-cli/src/cbus_toolkit/senlla_scalar_controls.py": "074b3bd2fd07aa9fb4eecab34640e653562493f6b8e4df989b91b52f90d80401",
+      "toolkit-cli/tests/test_senlla_identification.py": "87d149ecbaa592126f61ccaa12cfd3a18baaf95282d1ad3b56693bf5548d561f",
+      "toolkit-cli/tests/test_senlla_inherited_owner.py": "c64b8bd3bf0a481773f818fe704a70d3d8f0f71a9af289f0d08a7223380bb46d",
+      "toolkit-cli/tests/test_senlla_late_forms.py": "a63cb754a1a9ddcb911f8f0e7df8340dd7458b81ecae798521abf13ae4576db7",
+      "toolkit-cli/tests/test_senlla_live_banks.py": "3d680df0db3daef3bef3c6892f57cc12cc7a344d690ea1d2178e6d1e20ae350e",
+      "toolkit-cli/tests/test_senlla_live_occupancy.py": "fbd690b003356e19e263d52997da55a2d4b8faaadfe07171c9d8270a7a7b30f4",
+      "toolkit-cli/tests/test_senlla_owner.py": "58ae04464abfbaf30c6474093a56ea9e5934f797b11772bb784e77021ad2deb0",
+      "toolkit-cli/tests/test_senlla_owner_live_occupancy.py": "126e85eab27200ba6406c59338086dec705e3d3453026fc2832766cc940eecc8",
+      "toolkit-cli/tests/test_senlla_scalar_controls.py": "8aca6188fba11222e0b55c52d82380ef741d3c4c613ed5d1e758bcfe1eb0d013"
+    }
+  },
+  "metadata_checks": {
+    "census": {
+      "modules_with_skip_sites": 317,
+      "native_modules": {
+        "all": 140,
+        "none": 157,
+        "partial": 20
+      },
+      "native_runnable_tests": 259,
+      "native_selected_required_tests": 259,
+      "test_modules": 763
+    },
+    "coverage_require_complete_exit": 1,
+    "global_complete": false,
+    "inventory_current": true,
+    "register": {
+      "census_complete": false,
+      "evidence_records": 3,
+      "obligations": 487,
+      "scope_items": 22103,
+      "status": "current"
+    }
+  },
+  "parent_passed": 357,
+  "selection": [
+    "tests/test_senlla_lifecycle.py",
+    "tests/test_senlla_fresh_forms.py",
+    "tests/test_senlla_block_values.py",
+    "tests/test_senlla_prekey.py",
+    "tests/test_senlla_key_events.py",
+    "tests/test_senlla_key_event_sources.py",
+    "tests/test_senlla_key_controls.py",
+    "tests/test_senlla_inherited_owner.py",
+    "tests/test_senlla_project_bridge.py",
+    "tests/test_senlla_owner.py",
+    "tests/test_senlla_late_unit.py",
+    "tests/test_senlla_live_banks.py",
+    "tests/test_senlla_control_primitives.py",
+    "tests/test_senlla_late_forms.py",
+    "tests/test_senlla_live_occupancy.py",
+    "tests/test_senlla_owner_live_occupancy.py",
+    "tests/test_senlla_scalar_controls.py",
+    "tests/test_senlla_identification.py"
+  ],
+  "separate_subtests_passed": 411,
+  "skipped": 0
+}
