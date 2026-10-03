@@ -279,6 +279,15 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[mock]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-mock]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[dynamic-text-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[project-font-image-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[text-image-collision-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[decoded-dltp-icon-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[label-and-status-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[static-commit-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[language-current-rows-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[pending-refusal-mock]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_lost_successful_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
@@ -521,6 +530,15 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_known_failure_rolls_back_created_graph[daemon]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[pp-save-daemon]' \
 		'tests/test_cgate_edlt_scene_inventory_interop.py::test_public_inventory_lost_successful_save_never_replayed[project-save-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[dynamic-text-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[project-font-image-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[text-image-collision-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[decoded-dltp-icon-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[label-and-status-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[static-commit-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[language-current-rows-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[pending-refusal-daemon]' \
+		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_lost_successful_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \

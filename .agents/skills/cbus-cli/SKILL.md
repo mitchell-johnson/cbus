@@ -71,3 +71,16 @@ device.
 ## Changing the repository
 
 Keep behavior in the owning Python module or Rust crate and add tests at the narrowest useful layer. Use a golden vector when exact bytes or JSON define compatibility, and a system test when correctness depends on multiple components. Run the applicable Python or Rust validation from `AGENTS.md`. Preserve Toolkit source, tests, feature documentation, and acceptance evidence during cleanup.
+
+
+For source-owned Lighting label/status histories and byte-backed eDLT images,
+read `toolkit-cli/docs/edlt-label-controls-images.md`. Export through
+`cgate edlt-project-images PROJECT --output FILE`, bind the exact export SHA-256
+with automatic metadata, and keep histories inside the owning Lighting
+operation's `label_controls`. A detached receipt or caller Boolean cannot issue
+choices. Pending text refuses save; explicit Enter-key/Leave callbacks commit/read. The enter event is a key shorthand, not focus Enter.
+Optional `--toolkit-dltp-decode` selects the bounded decoded BMP successor without
+changing legacy DLTP admission. Do not claim GDI rendering, culture-sorted static
+selection, implicit framework dispatch or physical acceptance. cmqttd's named
+`%PROJ%/PROJECT/…` FILE mapping is a virtual flat-repository profile, conditional
+on no existing project named PROJ; other native repository templates stay open.

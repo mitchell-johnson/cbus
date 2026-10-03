@@ -32,6 +32,10 @@ commands receive priority over continuous event arrivals, then drain a finite
 queued prefix before their terminal response. Later commands remain under TCP
 backpressure; no detached command task or application backlog is introduced.
 An incomplete programming exchange is retired if its connection delivery fails.
+The active-command event deadline now covers both `write_all` and `flush`.
+This drains encrypted rustls output while programming remains pending, and a
+stalled or failed flush cancels that same command without replay. The ten-second
+deadline is shared by the write and flush; it is not renewed between them.
 The [software liveness batch](../toolkit-cli/docs/feature-batch-2026-10-02-conversion-csv-liveness.md)
 covers routed and specialized methods, subscriber cancellation and PCI/broker
 faults. Original/hardware timing and global fanout guarantees remain separate.

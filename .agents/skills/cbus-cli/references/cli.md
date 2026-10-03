@@ -267,8 +267,11 @@ PP once, performs one PP SAVE and one target PROJECT SAVE, then
 reloads and verifies. These native operations have no shared atomic commit.
 Only a failure before PP SAVE is rolled back automatically. After either save
 starts, inspect `edlt_parent_metadata_evidence`; never retry an uncertain
-operation. Consumed DYNAMIC/FONT/ICON image facts fail closed because
-DBGETXML does not include project images or Toolkit's DLTP image index. See
+operation. Without explicit image providers, consumed DYNAMIC/FONT/ICON image facts
+fail closed because DBGETXML does not include project image bytes or Toolkit's
+DLTP image index. Supply the paired project export/SHA options and, for ICON,
+the paired DLTP directory/index SHA options. The bounded decoded-BMP successor
+is selected explicitly with --toolkit-dltp-decode. See
 `toolkit-cli/docs/edlt-parent-metadata.md`.
 For Applications/Corridor/Reset, also inspect
 `automatic_ordered_application_cache`: XML child order and TagName are a
@@ -374,8 +377,12 @@ The automatic parent and SceneManager paths also accept
 `--display-preferences prefs.json` (`cbus-edlt-display-preferences-v1` registry
 DWORDs for the source-pinned FormattedDisplay/SortMode list model) and the
 pair `--toolkit-dltp-dir APP_DIR --toolkit-dltp-sha256 HEX`, which resolves
-`ICON` dynamic labels from a SHA-256-bound Toolkit DLTP index. `DYNAMIC` and
-`FONT` still fail closed. `cbus-toolkit edlt display-lists --project-xml
+`ICON` dynamic labels from a SHA-256-bound Toolkit DLTP index. Project-image
+labels, including `DYNAMIC`, `FONT` and matching `TEXT` keys, require
+`--project-images-export FILE --project-images-sha256 HEX`. Add
+`--toolkit-dltp-decode` for the bounded decoded-DLTP profile. Unsupported image
+encodings and missing providers still refuse; consult
+`toolkit-cli/docs/edlt-label-controls-images.md` for exact limits. `cbus-toolkit edlt display-lists --project-xml
 project.xml --network 254` shows the lists read-only. See
 `toolkit-cli/docs/edlt-display-preferences.md`.
 
@@ -630,3 +637,20 @@ The nested declared-surface diagnostic never promotes the global parity gate.
 Without artifact-root bytes, evidence remains unverified. Relative artifact
 identities must remain inside the explicit root; outside links/traversal refuse.
 Read `toolkit-cli/docs/toolkit-obligation-reconciliation.md`.
+
+
+## Byte-backed eDLT images and Lighting controls
+
+`cbus-toolkit cgate edlt-project-images PROJECT --output FILE` reads the source
+FILE DIR/DOWNLOAD sequence in directory order and creates a new export. The JSON
+receipt reports exact file SHA-256 and command/response hashes; no project save
+or physical I/O is requested. Pass `--project-images-export FILE
+--project-images-sha256 HEX` with `--project-xml` or `--auto-metadata` on the
+parent/SceneManager surfaces. `--toolkit-dltp-decode` additionally requires the
+existing Toolkit directory/index SHA pair and selects decoded BI_RGB evidence.
+
+One Lighting operation may contain ordered `label_controls` records with
+`target`, optional source integer `type`, and `events`. Source-owned choices are
+issued at that causal operation from the exact native metadata/image bytes.
+Use the complete schema in `toolkit-cli/docs/edlt-label-controls-images.md`.
+Keep pending text out of SAVE and never import a JSON receipt as continuation.

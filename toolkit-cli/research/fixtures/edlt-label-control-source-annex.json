@@ -1,0 +1,4974 @@
+{
+  "format": "cbus-edlt-label-control-source-annex-v1",
+  "original_inputs": [
+    {
+      "logical_name": "static-managed-parser",
+      "sha256": "7bb4f3137bf6da42524cc512d94fe6c711f28b5a80532d018411777f9f573223",
+      "bytes": 31245,
+      "role": "repository-static-parser"
+    },
+    {
+      "logical_name": "eDLT.dll",
+      "sha256": "75bc741234b52a168a4838fee305c309d3909571d2711f7580216b46b028e8d3",
+      "bytes": 663552,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "CBusLogicModel.dll",
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "bytes": 258048,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "sha256": "b23f564aa2052981646b7eec3c34a61f06f55cca701f3a3dc215046035c65c5b",
+      "bytes": 10115,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "StatusLabelTypeData.cs",
+      "sha256": "58f98c4469b4af7c90df4afe48c72e54b9b94c6683a655b80085b851784d891e",
+      "bytes": 2948,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "StatusLabelAppGroupData.cs",
+      "sha256": "d0116aad0fe28fef6101ba36a719cbe08aa562036cb47ce86e71cd20470c8b6a",
+      "bytes": 9460,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "WidgetBaseData.cs",
+      "sha256": "9848f4b6eac5360fc9396887be2ea8aace7fa0e5fdc43cab2ece66597a086189",
+      "bytes": 3399,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "sha256": "aa272e496f89d83e66bc4defe79476cc00c1bb42065835fd0e42b1c8644da873",
+      "bytes": 4197,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "CBusGroup.cs",
+      "sha256": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2",
+      "bytes": 8372,
+      "role": "original-static-input"
+    },
+    {
+      "logical_name": "CommonConstants.cs",
+      "sha256": "98e20887cf973205eaa42e621f0ee21ee5b9367aac1553f88c75b86e16d39020",
+      "bytes": 16369,
+      "role": "original-static-input"
+    }
+  ],
+  "managed_method_spans": [
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::.ctor",
+      "token": "0x060000d6",
+      "rva": "0x6248",
+      "file_offset": 17480,
+      "header_bytes": 12,
+      "code_bytes": 76,
+      "body_bytes": 88,
+      "extra_sections": 0,
+      "body_sha256": "b9de8e0023ce750bfa78830c8127a49d0068f8d29839f0185c86f983583b127e",
+      "il_sha256": "0b357076154865e3b581b7dc90e33be0538d15c7ff4afe1856fc6ed44fb922bd",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a000038",
+          "symbol": "System.Windows.Forms.ComboBox::.ctor"
+        },
+        {
+          "il_offset": 9,
+          "opcode": "0x28",
+          "token": "0x0a000039",
+          "symbol": "System.Windows.Forms.ComboBox::set_MaxLength"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x28",
+          "token": "0x0a00003a",
+          "symbol": "System.Windows.Forms.ComboBox::set_DrawMode"
+        },
+        {
+          "il_offset": 27,
+          "opcode": "0x28",
+          "token": "0x0a00003b",
+          "symbol": "System.Windows.Forms.ListControl::set_ValueMember"
+        },
+        {
+          "il_offset": 38,
+          "opcode": "0x28",
+          "token": "0x0a00003c",
+          "symbol": "System.Windows.Forms.ListControl::set_DisplayMember"
+        },
+        {
+          "il_offset": 45,
+          "opcode": "0x28",
+          "token": "0x0a00003d",
+          "symbol": "System.Windows.Forms.ComboBox::set_DropDownStyle"
+        },
+        {
+          "il_offset": 56,
+          "opcode": "0x28",
+          "token": "0x0a00003e",
+          "symbol": "System.Windows.Forms.ComboBox::set_AutoCompleteSource"
+        },
+        {
+          "il_offset": 63,
+          "opcode": "0x28",
+          "token": "0x0a00003f",
+          "symbol": "System.Windows.Forms.ComboBox::set_AutoCompleteMode"
+        },
+        {
+          "il_offset": 70,
+          "opcode": "0x6f",
+          "token": "0x0a000045",
+          "symbol": "System.Windows.Forms.Control::set_DoubleBuffered"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 7,
+          "value": 64
+        },
+        {
+          "il_offset": 15,
+          "value": 0
+        },
+        {
+          "il_offset": 44,
+          "value": 2
+        },
+        {
+          "il_offset": 51,
+          "value": 256
+        },
+        {
+          "il_offset": 62,
+          "value": 3
+        },
+        {
+          "il_offset": 69,
+          "value": 1
+        }
+      ],
+      "branches": [],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::set_BindingDataSource",
+      "token": "0x060000d8",
+      "rva": "0x62a8",
+      "file_offset": 17576,
+      "header_bytes": 1,
+      "code_bytes": 37,
+      "body_bytes": 38,
+      "extra_sections": 0,
+      "body_sha256": "ce0535de5b535f4953d3e1d2391ce591c024c8bce57a2a177046ff945668d401",
+      "il_sha256": "383e537148cd06e886cb5226e7d34f84c04a7685b7d0546489d69e486eef46f7",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 17,
+          "opcode": "0x28",
+          "token": "0x060000df",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::RemoveDataSettingBindings"
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 31,
+          "opcode": "0x28",
+          "token": "0x060000e5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataBindingMode"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 7,
+          "opcode": "0x2e",
+          "target": 36
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x2c",
+          "target": 36
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::set_TextEditable",
+      "token": "0x060000dc",
+      "rva": "0x62e8",
+      "file_offset": 17640,
+      "header_bytes": 12,
+      "code_bytes": 106,
+      "body_bytes": 118,
+      "extra_sections": 0,
+      "body_sha256": "4487917bab0b00a6f5f2f869abfac16d10420fce4edcf047bc0a03b92aaa4239",
+      "il_sha256": "7c5c2792f661889670f7a8504493673b591d4efafd1333e4e21bd39a9e9f66f9",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x0a0000d7",
+          "symbol": "System.Windows.Forms.Control::set_Visible"
+        },
+        {
+          "il_offset": 24,
+          "opcode": "0x28",
+          "token": "0x060000df",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::RemoveDataSettingBindings"
+        },
+        {
+          "il_offset": 30,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 38,
+          "opcode": "0x28",
+          "token": "0x060000e5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataBindingMode"
+        },
+        {
+          "il_offset": 44,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 52,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 58,
+          "opcode": "0xfe06",
+          "token": "0x060000e4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x73",
+          "token": "0x0a00004e",
+          "symbol": "System.ComponentModel.ListChangedEventHandler::.ctor"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x6f",
+          "token": "0x0a00004f",
+          "symbol": "System.Windows.Forms.CurrencyManager::remove_ListChanged"
+        },
+        {
+          "il_offset": 83,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 89,
+          "opcode": "0xfe06",
+          "token": "0x060000e4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged"
+        },
+        {
+          "il_offset": 95,
+          "opcode": "0x73",
+          "token": "0x0a00004e",
+          "symbol": "System.ComponentModel.ListChangedEventHandler::.ctor"
+        },
+        {
+          "il_offset": 100,
+          "opcode": "0x6f",
+          "token": "0x0a000050",
+          "symbol": "System.Windows.Forms.CurrencyManager::add_ListChanged"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 17,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 7,
+          "opcode": "0x2e",
+          "target": 105
+        },
+        {
+          "il_offset": 35,
+          "opcode": "0x2c",
+          "target": 105
+        },
+        {
+          "il_offset": 49,
+          "opcode": "0x2c",
+          "target": 105
+        },
+        {
+          "il_offset": 80,
+          "opcode": "0x2c",
+          "target": 105
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::RemoveDataSettingBindings",
+      "token": "0x060000df",
+      "rva": "0x6370",
+      "file_offset": 17776,
+      "header_bytes": 12,
+      "code_bytes": 185,
+      "body_bytes": 216,
+      "extra_sections": 1,
+      "body_sha256": "0f0a511a2e447f56361b65029a3a3c25308d384d1eabb9380ca3bd98e7fb9641",
+      "il_sha256": "814bcb83d5c9bdc2ff094af04236c8c200acab11b946956ac52624708c5eb914",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 6,
+          "opcode": "0xfe06",
+          "token": "0x060000e3",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 12,
+          "opcode": "0x73",
+          "token": "0x0a000042",
+          "symbol": "System.EventHandler::.ctor"
+        },
+        {
+          "il_offset": 17,
+          "opcode": "0x28",
+          "token": "0x0a00016f",
+          "symbol": "System.Windows.Forms.ComboBox::remove_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 24,
+          "opcode": "0xfe06",
+          "token": "0x060000e2",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_PreviewKeyDown"
+        },
+        {
+          "il_offset": 30,
+          "opcode": "0x73",
+          "token": "0x0a000040",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventHandler::.ctor"
+        },
+        {
+          "il_offset": 35,
+          "opcode": "0x28",
+          "token": "0x0a000170",
+          "symbol": "System.Windows.Forms.Control::remove_PreviewKeyDown"
+        },
+        {
+          "il_offset": 42,
+          "opcode": "0xfe06",
+          "token": "0x060000e1",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboBoxStaticText_Leave"
+        },
+        {
+          "il_offset": 48,
+          "opcode": "0x73",
+          "token": "0x0a000042",
+          "symbol": "System.EventHandler::.ctor"
+        },
+        {
+          "il_offset": 53,
+          "opcode": "0x28",
+          "token": "0x0a000113",
+          "symbol": "System.Windows.Forms.Control::remove_Leave"
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x6f",
+          "token": "0x0a000114",
+          "symbol": "System.Windows.Forms.BaseCollection::GetEnumerator"
+        },
+        {
+          "il_offset": 73,
+          "opcode": "0x6f",
+          "token": "0x0a000115",
+          "symbol": "System.Collections.IEnumerator::get_Current"
+        },
+        {
+          "il_offset": 85,
+          "opcode": "0x6f",
+          "token": "0x0a000116",
+          "symbol": "System.Windows.Forms.Binding::get_PropertyName"
+        },
+        {
+          "il_offset": 95,
+          "opcode": "0x28",
+          "token": "0x0a0000a1",
+          "symbol": "System.String::op_Equality"
+        },
+        {
+          "il_offset": 105,
+          "opcode": "0x6f",
+          "token": "0x0a000116",
+          "symbol": "System.Windows.Forms.Binding::get_PropertyName"
+        },
+        {
+          "il_offset": 115,
+          "opcode": "0x28",
+          "token": "0x0a0000a1",
+          "symbol": "System.String::op_Equality"
+        },
+        {
+          "il_offset": 125,
+          "opcode": "0x6f",
+          "token": "0x0a000117",
+          "symbol": "System.Collections.IEnumerator::MoveNext"
+        },
+        {
+          "il_offset": 148,
+          "opcode": "0x6f",
+          "token": "0x0a00001d",
+          "symbol": "System.IDisposable::Dispose"
+        },
+        {
+          "il_offset": 158,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 164,
+          "opcode": "0x6f",
+          "token": "0x0a000118",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::Remove"
+        },
+        {
+          "il_offset": 173,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 179,
+          "opcode": "0x6f",
+          "token": "0x0a000118",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::Remove"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 70,
+          "opcode": "0x2b",
+          "target": 124
+        },
+        {
+          "il_offset": 100,
+          "opcode": "0x2c",
+          "target": 104
+        },
+        {
+          "il_offset": 120,
+          "opcode": "0x2c",
+          "target": 124
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0x2d",
+          "target": 72
+        },
+        {
+          "il_offset": 132,
+          "opcode": "0xde",
+          "target": 154
+        },
+        {
+          "il_offset": 144,
+          "opcode": "0x2c",
+          "target": 153
+        },
+        {
+          "il_offset": 155,
+          "opcode": "0x2c",
+          "target": 169
+        },
+        {
+          "il_offset": 170,
+          "opcode": "0x2c",
+          "target": 184
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboBoxStaticText_Leave",
+      "token": "0x060000e1",
+      "rva": "0x6694",
+      "file_offset": 18580,
+      "header_bytes": 12,
+      "code_bytes": 33,
+      "body_bytes": 45,
+      "extra_sections": 0,
+      "body_sha256": "afbfccd1c47a01c5eac7035ea86c4075c7729fde07220b919897b58d3e5e24b0",
+      "il_sha256": "26dfadca16edb143049fb88b78d913bf48aed75f0b1f71efcb9bf269c03f1efb",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 27,
+          "opcode": "0x6f",
+          "token": "0x0a000049",
+          "symbol": "System.Windows.Forms.Binding::ReadValue"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 18,
+          "opcode": "0x2c",
+          "target": 32
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_PreviewKeyDown",
+      "token": "0x060000e2",
+      "rva": "0x66c4",
+      "file_offset": 18628,
+      "header_bytes": 12,
+      "code_bytes": 131,
+      "body_bytes": 143,
+      "extra_sections": 0,
+      "body_sha256": "21232dd6591fd47d348832574b8c01b1a0cdd133b9d62af2745033a4f6b3c5cb",
+      "il_sha256": "49058773ccfe6ef3b4f15351dce782725abee1e6ae6bf5cbee90e9e6aa86a72f",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x6f",
+          "token": "0x0a00004a",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventArgs::get_KeyCode"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 31,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x6f",
+          "token": "0x0a000049",
+          "symbol": "System.Windows.Forms.Binding::ReadValue"
+        },
+        {
+          "il_offset": 44,
+          "opcode": "0x6f",
+          "token": "0x0a00004a",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventArgs::get_KeyCode"
+        },
+        {
+          "il_offset": 62,
+          "opcode": "0x6f",
+          "token": "0x0a00004a",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventArgs::get_KeyCode"
+        },
+        {
+          "il_offset": 80,
+          "opcode": "0x6f",
+          "token": "0x0a00004a",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventArgs::get_KeyCode"
+        },
+        {
+          "il_offset": 98,
+          "opcode": "0x6f",
+          "token": "0x0a00004a",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventArgs::get_KeyCode"
+        },
+        {
+          "il_offset": 116,
+          "opcode": "0x28",
+          "token": "0x0a00004b",
+          "symbol": "System.Windows.Forms.ComboBox::get_DroppedDown"
+        },
+        {
+          "il_offset": 125,
+          "opcode": "0x28",
+          "token": "0x0a00004c",
+          "symbol": "System.Windows.Forms.ComboBox::set_DroppedDown"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 6,
+          "value": 13
+        },
+        {
+          "il_offset": 49,
+          "value": 37
+        },
+        {
+          "il_offset": 54,
+          "value": 1
+        },
+        {
+          "il_offset": 67,
+          "value": 39
+        },
+        {
+          "il_offset": 72,
+          "value": 1
+        },
+        {
+          "il_offset": 85,
+          "value": 38
+        },
+        {
+          "il_offset": 90,
+          "value": 1
+        },
+        {
+          "il_offset": 103,
+          "value": 40
+        },
+        {
+          "il_offset": 108,
+          "value": 1
+        },
+        {
+          "il_offset": 124,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x33",
+          "target": 43
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x2c",
+          "target": 130
+        },
+        {
+          "il_offset": 51,
+          "opcode": "0x33",
+          "target": 61
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x33",
+          "target": 79
+        },
+        {
+          "il_offset": 87,
+          "opcode": "0x33",
+          "target": 97
+        },
+        {
+          "il_offset": 105,
+          "opcode": "0x33",
+          "target": 115
+        },
+        {
+          "il_offset": 121,
+          "opcode": "0x2c",
+          "target": 130
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged",
+      "token": "0x060000e3",
+      "rva": "0x6754",
+      "file_offset": 18772,
+      "header_bytes": 12,
+      "code_bytes": 172,
+      "body_bytes": 200,
+      "extra_sections": 1,
+      "body_sha256": "5c0c94157bfcee9cb0a6da8dddce2acb1ba5f1e6441d4322b00ed4f8a2f1ed8e",
+      "il_sha256": "20cb3077a8550902ce6f1eadc49e1796edcb2ac3f5ba030ad02025ff59e59e8c",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 9,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 15,
+          "opcode": "0xfe06",
+          "token": "0x060000e4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged"
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x73",
+          "token": "0x0a00004e",
+          "symbol": "System.ComponentModel.ListChangedEventHandler::.ctor"
+        },
+        {
+          "il_offset": 26,
+          "opcode": "0x6f",
+          "token": "0x0a00004f",
+          "symbol": "System.Windows.Forms.CurrencyManager::remove_ListChanged"
+        },
+        {
+          "il_offset": 40,
+          "opcode": "0x28",
+          "token": "0x0a00004d",
+          "symbol": "System.Windows.Forms.ListControl::get_DataManager"
+        },
+        {
+          "il_offset": 46,
+          "opcode": "0xfe06",
+          "token": "0x060000e4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged"
+        },
+        {
+          "il_offset": 52,
+          "opcode": "0x73",
+          "token": "0x0a00004e",
+          "symbol": "System.ComponentModel.ListChangedEventHandler::.ctor"
+        },
+        {
+          "il_offset": 57,
+          "opcode": "0x6f",
+          "token": "0x0a000050",
+          "symbol": "System.Windows.Forms.CurrencyManager::add_ListChanged"
+        },
+        {
+          "il_offset": 80,
+          "opcode": "0x28",
+          "token": "0x0a000051",
+          "symbol": "System.Windows.Forms.ComboBox::get_DataSource"
+        },
+        {
+          "il_offset": 88,
+          "opcode": "0x6f",
+          "token": "0x0a000052",
+          "symbol": "System.Windows.Forms.ListControl::get_SelectedIndex"
+        },
+        {
+          "il_offset": 97,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 107,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 117,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 123,
+          "opcode": "0x6f",
+          "token": "0x0a000049",
+          "symbol": "System.Windows.Forms.Binding::ReadValue"
+        },
+        {
+          "il_offset": 129,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 139,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 149,
+          "opcode": "0x6f",
+          "token": "0x0a000048",
+          "symbol": "System.Windows.Forms.Binding::WriteValue"
+        },
+        {
+          "il_offset": 155,
+          "opcode": "0x6f",
+          "token": "0x0a000049",
+          "symbol": "System.Windows.Forms.Binding::ReadValue"
+        },
+        {
+          "il_offset": 164,
+          "opcode": "0x28",
+          "token": "0x0a0000ba",
+          "symbol": "SharpLogger.Log::LogException"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 71,
+          "value": 0
+        },
+        {
+          "il_offset": 93,
+          "value": -1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x2c",
+          "target": 62
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x2c",
+          "target": 62
+        },
+        {
+          "il_offset": 68,
+          "opcode": "0x2c",
+          "target": 79
+        },
+        {
+          "il_offset": 77,
+          "opcode": "0xde",
+          "target": 171
+        },
+        {
+          "il_offset": 85,
+          "opcode": "0x2c",
+          "target": 160
+        },
+        {
+          "il_offset": 94,
+          "opcode": "0x31",
+          "target": 160
+        },
+        {
+          "il_offset": 114,
+          "opcode": "0x2c",
+          "target": 128
+        },
+        {
+          "il_offset": 146,
+          "opcode": "0x2c",
+          "target": 160
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0xde",
+          "target": 171
+        },
+        {
+          "il_offset": 169,
+          "opcode": "0xde",
+          "target": 171
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged",
+      "token": "0x060000e4",
+      "rva": "0x6840",
+      "file_offset": 19008,
+      "header_bytes": 12,
+      "code_bytes": 207,
+      "body_bytes": 219,
+      "extra_sections": 0,
+      "body_sha256": "604563afa51594de48eb4dfcb8f174c4c646eb879372515a655d7f7e1856f9e9",
+      "il_sha256": "f871bcb554a6002eb353191f31502a5e1b972521c12f225cd29e3a6c59a8a763",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x73",
+          "token": "0x0600042a",
+          "symbol": "eDLT.Controls.ComboImageTagDLT+<>c__DisplayClass2::.ctor"
+        },
+        {
+          "il_offset": 30,
+          "opcode": "0x28",
+          "token": "0x060000db",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_TextEditable"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x28",
+          "token": "0x0a000053",
+          "symbol": "System.Windows.Forms.Control::get_InvokeRequired"
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0xfe06",
+          "token": "0x0600042b",
+          "symbol": "eDLT.Controls.ComboImageTagDLT+<>c__DisplayClass2::<DataManager_ListChanged>b__0"
+        },
+        {
+          "il_offset": 65,
+          "opcode": "0x73",
+          "token": "0x0a000054",
+          "symbol": "System.Windows.Forms.MethodInvoker::.ctor"
+        },
+        {
+          "il_offset": 72,
+          "opcode": "0x28",
+          "token": "0x0a000055",
+          "symbol": "System.Windows.Forms.Control::BeginInvoke"
+        },
+        {
+          "il_offset": 80,
+          "opcode": "0x28",
+          "token": "0x0a000056",
+          "symbol": "System.Windows.Forms.Control::get_Visible"
+        },
+        {
+          "il_offset": 93,
+          "opcode": "0x6f",
+          "token": "0x0a000057",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_ListChangedType"
+        },
+        {
+          "il_offset": 107,
+          "opcode": "0x6f",
+          "token": "0x0a000057",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_ListChangedType"
+        },
+        {
+          "il_offset": 121,
+          "opcode": "0x6f",
+          "token": "0x0a000057",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_ListChangedType"
+        },
+        {
+          "il_offset": 134,
+          "opcode": "0x6f",
+          "token": "0x0a000058",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_NewIndex"
+        },
+        {
+          "il_offset": 140,
+          "opcode": "0x6f",
+          "token": "0x0a000052",
+          "symbol": "System.Windows.Forms.ListControl::get_SelectedIndex"
+        },
+        {
+          "il_offset": 153,
+          "opcode": "0x6f",
+          "token": "0x0a000059",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_OldIndex"
+        },
+        {
+          "il_offset": 159,
+          "opcode": "0x6f",
+          "token": "0x0a000052",
+          "symbol": "System.Windows.Forms.ListControl::get_SelectedIndex"
+        },
+        {
+          "il_offset": 172,
+          "opcode": "0x6f",
+          "token": "0x0a000059",
+          "symbol": "System.ComponentModel.ListChangedEventArgs::get_OldIndex"
+        },
+        {
+          "il_offset": 181,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 191,
+          "opcode": "0x6f",
+          "token": "0x0a000047",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::get_Item"
+        },
+        {
+          "il_offset": 201,
+          "opcode": "0x6f",
+          "token": "0x0a000049",
+          "symbol": "System.Windows.Forms.Binding::ReadValue"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 98,
+          "value": 1
+        },
+        {
+          "il_offset": 112,
+          "value": 4
+        },
+        {
+          "il_offset": 177,
+          "value": -1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 35,
+          "opcode": "0x2d",
+          "target": 38
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x2c",
+          "target": 46
+        },
+        {
+          "il_offset": 52,
+          "opcode": "0x2c",
+          "target": 79
+        },
+        {
+          "il_offset": 56,
+          "opcode": "0x2d",
+          "target": 71
+        },
+        {
+          "il_offset": 85,
+          "opcode": "0x2c",
+          "target": 206
+        },
+        {
+          "il_offset": 99,
+          "opcode": "0x2e",
+          "target": 128
+        },
+        {
+          "il_offset": 113,
+          "opcode": "0x2e",
+          "target": 128
+        },
+        {
+          "il_offset": 126,
+          "opcode": "0x2d",
+          "target": 206
+        },
+        {
+          "il_offset": 145,
+          "opcode": "0x32",
+          "target": 180
+        },
+        {
+          "il_offset": 164,
+          "opcode": "0x2f",
+          "target": 206
+        },
+        {
+          "il_offset": 178,
+          "opcode": "0x2e",
+          "target": 206
+        },
+        {
+          "il_offset": 198,
+          "opcode": "0x2c",
+          "target": 206
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataBindingMode",
+      "token": "0x060000e5",
+      "rva": "0x691c",
+      "file_offset": 19228,
+      "header_bytes": 12,
+      "code_bytes": 271,
+      "body_bytes": 283,
+      "extra_sections": 0,
+      "body_sha256": "820916182244c97a4584ef0d9d59d09c9a14e17961cd948b095c1216285071fd",
+      "il_sha256": "ded17261d5fa8dddff65d16815563f5b06a1d0206ae3c59d4db18645e91adfe6",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x060000db",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_TextEditable"
+        },
+        {
+          "il_offset": 12,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 24,
+          "opcode": "0x28",
+          "token": "0x0a00003a",
+          "symbol": "System.Windows.Forms.ComboBox::set_DrawMode"
+        },
+        {
+          "il_offset": 35,
+          "opcode": "0x28",
+          "token": "0x0a00003b",
+          "symbol": "System.Windows.Forms.ListControl::set_ValueMember"
+        },
+        {
+          "il_offset": 46,
+          "opcode": "0x28",
+          "token": "0x0a00003c",
+          "symbol": "System.Windows.Forms.ListControl::set_DisplayMember"
+        },
+        {
+          "il_offset": 53,
+          "opcode": "0x28",
+          "token": "0x0a00003d",
+          "symbol": "System.Windows.Forms.ComboBox::set_DropDownStyle"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x28",
+          "token": "0x0a00003e",
+          "symbol": "System.Windows.Forms.ComboBox::set_AutoCompleteSource"
+        },
+        {
+          "il_offset": 70,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 81,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 87,
+          "opcode": "0x28",
+          "token": "0x060000dd",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_TextMember"
+        },
+        {
+          "il_offset": 94,
+          "opcode": "0x73",
+          "token": "0x0a000173",
+          "symbol": "System.Windows.Forms.Binding::.ctor"
+        },
+        {
+          "il_offset": 99,
+          "opcode": "0x6f",
+          "token": "0x0a000174",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::Add"
+        },
+        {
+          "il_offset": 106,
+          "opcode": "0xfe06",
+          "token": "0x060000e2",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_PreviewKeyDown"
+        },
+        {
+          "il_offset": 112,
+          "opcode": "0x73",
+          "token": "0x0a000040",
+          "symbol": "System.Windows.Forms.PreviewKeyDownEventHandler::.ctor"
+        },
+        {
+          "il_offset": 117,
+          "opcode": "0x28",
+          "token": "0x0a000041",
+          "symbol": "System.Windows.Forms.Control::add_PreviewKeyDown"
+        },
+        {
+          "il_offset": 124,
+          "opcode": "0xfe06",
+          "token": "0x060000e1",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboBoxStaticText_Leave"
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0x73",
+          "token": "0x0a000042",
+          "symbol": "System.EventHandler::.ctor"
+        },
+        {
+          "il_offset": 135,
+          "opcode": "0x28",
+          "token": "0x0a000044",
+          "symbol": "System.Windows.Forms.Control::add_Leave"
+        },
+        {
+          "il_offset": 142,
+          "opcode": "0xfe06",
+          "token": "0x060000e3",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 148,
+          "opcode": "0x73",
+          "token": "0x0a000042",
+          "symbol": "System.EventHandler::.ctor"
+        },
+        {
+          "il_offset": 153,
+          "opcode": "0x28",
+          "token": "0x0a000043",
+          "symbol": "System.Windows.Forms.ComboBox::add_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0x6f",
+          "token": "0x0a000045",
+          "symbol": "System.Windows.Forms.Control::set_DoubleBuffered"
+        },
+        {
+          "il_offset": 167,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 176,
+          "opcode": "0x28",
+          "token": "0x0a00003a",
+          "symbol": "System.Windows.Forms.ComboBox::set_DrawMode"
+        },
+        {
+          "il_offset": 187,
+          "opcode": "0x28",
+          "token": "0x0a00003b",
+          "symbol": "System.Windows.Forms.ListControl::set_ValueMember"
+        },
+        {
+          "il_offset": 198,
+          "opcode": "0x28",
+          "token": "0x0a00003c",
+          "symbol": "System.Windows.Forms.ListControl::set_DisplayMember"
+        },
+        {
+          "il_offset": 205,
+          "opcode": "0x28",
+          "token": "0x0a00003d",
+          "symbol": "System.Windows.Forms.ComboBox::set_DropDownStyle"
+        },
+        {
+          "il_offset": 211,
+          "opcode": "0x28",
+          "token": "0x0a000046",
+          "symbol": "System.Windows.Forms.Control::get_DataBindings"
+        },
+        {
+          "il_offset": 222,
+          "opcode": "0x28",
+          "token": "0x060000d7",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_BindingDataSource"
+        },
+        {
+          "il_offset": 228,
+          "opcode": "0x28",
+          "token": "0x060000d9",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_IndexMember"
+        },
+        {
+          "il_offset": 235,
+          "opcode": "0x73",
+          "token": "0x0a000173",
+          "symbol": "System.Windows.Forms.Binding::.ctor"
+        },
+        {
+          "il_offset": 240,
+          "opcode": "0x6f",
+          "token": "0x0a000174",
+          "symbol": "System.Windows.Forms.ControlBindingsCollection::Add"
+        },
+        {
+          "il_offset": 247,
+          "opcode": "0xfe06",
+          "token": "0x060000e3",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 253,
+          "opcode": "0x73",
+          "token": "0x0a000042",
+          "symbol": "System.EventHandler::.ctor"
+        },
+        {
+          "il_offset": 258,
+          "opcode": "0x28",
+          "token": "0x0a000043",
+          "symbol": "System.Windows.Forms.ComboBox::add_SelectedIndexChanged"
+        },
+        {
+          "il_offset": 265,
+          "opcode": "0x6f",
+          "token": "0x0a000045",
+          "symbol": "System.Windows.Forms.Control::set_DoubleBuffered"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 23,
+          "value": 0
+        },
+        {
+          "il_offset": 52,
+          "value": 1
+        },
+        {
+          "il_offset": 59,
+          "value": 256
+        },
+        {
+          "il_offset": 92,
+          "value": 1
+        },
+        {
+          "il_offset": 93,
+          "value": 2
+        },
+        {
+          "il_offset": 159,
+          "value": 1
+        },
+        {
+          "il_offset": 175,
+          "value": 1
+        },
+        {
+          "il_offset": 204,
+          "value": 2
+        },
+        {
+          "il_offset": 233,
+          "value": 1
+        },
+        {
+          "il_offset": 234,
+          "value": 2
+        },
+        {
+          "il_offset": 264,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x39",
+          "target": 166
+        },
+        {
+          "il_offset": 17,
+          "opcode": "0x39",
+          "target": 166
+        },
+        {
+          "il_offset": 172,
+          "opcode": "0x2c",
+          "target": 270
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "eDLT.Controls.ComboImageTagDLT::OnDrawItem",
+      "token": "0x060000e0",
+      "rva": "0x6448",
+      "file_offset": 17992,
+      "header_bytes": 12,
+      "code_bytes": 575,
+      "body_bytes": 587,
+      "extra_sections": 0,
+      "body_sha256": "7e2947aee32cc7abe34aab62bb35efee0050d5c8ef5e4b7954ce844a128fdfa6",
+      "il_sha256": "1c6d9b3602abc16d803aa2e4a5c54d1829490bf6da675da4c7e671156bdbe117",
+      "assembly": "eDLT.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 6,
+          "opcode": "0x6f",
+          "token": "0x0a00015a",
+          "symbol": ".ObjectCollection::get_Count"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x6f",
+          "token": "0x0a00011c",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::DrawBackground"
+        },
+        {
+          "il_offset": 22,
+          "opcode": "0x6f",
+          "token": "0x0a00011d",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::DrawFocusRectangle"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x6f",
+          "token": "0x0a000119",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Index"
+        },
+        {
+          "il_offset": 38,
+          "opcode": "0x6f",
+          "token": "0x0a0000b7",
+          "symbol": "System.Windows.Forms.Control::get_Text"
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x28",
+          "token": "0x060000d5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::set_DrawingString"
+        },
+        {
+          "il_offset": 49,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 55,
+          "opcode": "0x28",
+          "token": "0x060000d4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_DrawingString"
+        },
+        {
+          "il_offset": 61,
+          "opcode": "0x6f",
+          "token": "0x0a000127",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Font"
+        },
+        {
+          "il_offset": 67,
+          "opcode": "0x6f",
+          "token": "0x0a000128",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_ForeColor"
+        },
+        {
+          "il_offset": 72,
+          "opcode": "0x73",
+          "token": "0x0a000129",
+          "symbol": "System.Drawing.SolidBrush::.ctor"
+        },
+        {
+          "il_offset": 78,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 86,
+          "opcode": "0x28",
+          "token": "0x0a000123",
+          "symbol": "System.Drawing.Rectangle::get_Left"
+        },
+        {
+          "il_offset": 93,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 101,
+          "opcode": "0x28",
+          "token": "0x0a000124",
+          "symbol": "System.Drawing.Rectangle::get_Top"
+        },
+        {
+          "il_offset": 107,
+          "opcode": "0x6f",
+          "token": "0x0a00012a",
+          "symbol": "System.Drawing.Graphics::DrawString"
+        },
+        {
+          "il_offset": 118,
+          "opcode": "0x28",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 124,
+          "opcode": "0x6f",
+          "token": "0x0a000119",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Index"
+        },
+        {
+          "il_offset": 129,
+          "opcode": "0x6f",
+          "token": "0x0a000171",
+          "symbol": ".ObjectCollection::get_Item"
+        },
+        {
+          "il_offset": 134,
+          "opcode": "0x6f",
+          "token": "0x0a0000cf",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 144,
+          "opcode": "0x28",
+          "token": "0x0a0000d0",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 149,
+          "opcode": "0x28",
+          "token": "0x0a00011f",
+          "symbol": "System.Type::op_Equality"
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0x28",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 166,
+          "opcode": "0x6f",
+          "token": "0x0a000119",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Index"
+        },
+        {
+          "il_offset": 171,
+          "opcode": "0x6f",
+          "token": "0x0a000171",
+          "symbol": ".ObjectCollection::get_Item"
+        },
+        {
+          "il_offset": 183,
+          "opcode": "0x6f",
+          "token": "0x0a000120",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Image"
+        },
+        {
+          "il_offset": 194,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 200,
+          "opcode": "0x6f",
+          "token": "0x0a000120",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Image"
+        },
+        {
+          "il_offset": 206,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 215,
+          "opcode": "0x28",
+          "token": "0x0a000123",
+          "symbol": "System.Drawing.Rectangle::get_Left"
+        },
+        {
+          "il_offset": 224,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 233,
+          "opcode": "0x28",
+          "token": "0x0a000124",
+          "symbol": "System.Drawing.Rectangle::get_Top"
+        },
+        {
+          "il_offset": 238,
+          "opcode": "0x6f",
+          "token": "0x0a000125",
+          "symbol": "System.Drawing.Graphics::DrawImage"
+        },
+        {
+          "il_offset": 245,
+          "opcode": "0x6f",
+          "token": "0x0a000126",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_ValueAsInt"
+        },
+        {
+          "il_offset": 262,
+          "opcode": "0x28",
+          "token": "0x0a00009f",
+          "symbol": "System.String::Concat"
+        },
+        {
+          "il_offset": 267,
+          "opcode": "0x28",
+          "token": "0x060000d5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::set_DrawingString"
+        },
+        {
+          "il_offset": 273,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 279,
+          "opcode": "0x28",
+          "token": "0x060000d4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_DrawingString"
+        },
+        {
+          "il_offset": 285,
+          "opcode": "0x6f",
+          "token": "0x0a000127",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Font"
+        },
+        {
+          "il_offset": 291,
+          "opcode": "0x6f",
+          "token": "0x0a000128",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_ForeColor"
+        },
+        {
+          "il_offset": 296,
+          "opcode": "0x73",
+          "token": "0x0a000129",
+          "symbol": "System.Drawing.SolidBrush::.ctor"
+        },
+        {
+          "il_offset": 302,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 311,
+          "opcode": "0x28",
+          "token": "0x0a000123",
+          "symbol": "System.Drawing.Rectangle::get_Left"
+        },
+        {
+          "il_offset": 318,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 327,
+          "opcode": "0x28",
+          "token": "0x0a000124",
+          "symbol": "System.Drawing.Rectangle::get_Top"
+        },
+        {
+          "il_offset": 333,
+          "opcode": "0x6f",
+          "token": "0x0a00012a",
+          "symbol": "System.Drawing.Graphics::DrawString"
+        },
+        {
+          "il_offset": 350,
+          "opcode": "0x6f",
+          "token": "0x0a00012b",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Name"
+        },
+        {
+          "il_offset": 358,
+          "opcode": "0x6f",
+          "token": "0x0a00012b",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Name"
+        },
+        {
+          "il_offset": 366,
+          "opcode": "0x6f",
+          "token": "0x0a000126",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_ValueAsInt"
+        },
+        {
+          "il_offset": 384,
+          "opcode": "0x28",
+          "token": "0x0a0000ad",
+          "symbol": "System.String::Concat"
+        },
+        {
+          "il_offset": 389,
+          "opcode": "0x28",
+          "token": "0x060000d5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::set_DrawingString"
+        },
+        {
+          "il_offset": 395,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 401,
+          "opcode": "0x28",
+          "token": "0x060000d4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_DrawingString"
+        },
+        {
+          "il_offset": 407,
+          "opcode": "0x6f",
+          "token": "0x0a000127",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Font"
+        },
+        {
+          "il_offset": 413,
+          "opcode": "0x6f",
+          "token": "0x0a000128",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_ForeColor"
+        },
+        {
+          "il_offset": 418,
+          "opcode": "0x73",
+          "token": "0x0a000129",
+          "symbol": "System.Drawing.SolidBrush::.ctor"
+        },
+        {
+          "il_offset": 424,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 433,
+          "opcode": "0x28",
+          "token": "0x0a000123",
+          "symbol": "System.Drawing.Rectangle::get_Left"
+        },
+        {
+          "il_offset": 440,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 449,
+          "opcode": "0x28",
+          "token": "0x0a000124",
+          "symbol": "System.Drawing.Rectangle::get_Top"
+        },
+        {
+          "il_offset": 455,
+          "opcode": "0x6f",
+          "token": "0x0a00012a",
+          "symbol": "System.Drawing.Graphics::DrawString"
+        },
+        {
+          "il_offset": 464,
+          "opcode": "0x28",
+          "token": "0x0a000145",
+          "symbol": "System.Windows.Forms.ComboBox::get_Items"
+        },
+        {
+          "il_offset": 470,
+          "opcode": "0x6f",
+          "token": "0x0a000119",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Index"
+        },
+        {
+          "il_offset": 475,
+          "opcode": "0x6f",
+          "token": "0x0a000171",
+          "symbol": ".ObjectCollection::get_Item"
+        },
+        {
+          "il_offset": 480,
+          "opcode": "0x6f",
+          "token": "0x0a00012c",
+          "symbol": "System.Object::ToString"
+        },
+        {
+          "il_offset": 485,
+          "opcode": "0x28",
+          "token": "0x060000d5",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::set_DrawingString"
+        },
+        {
+          "il_offset": 491,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 497,
+          "opcode": "0x28",
+          "token": "0x060000d4",
+          "symbol": "eDLT.Controls.ComboImageTagDLT::get_DrawingString"
+        },
+        {
+          "il_offset": 503,
+          "opcode": "0x6f",
+          "token": "0x0a000127",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Font"
+        },
+        {
+          "il_offset": 509,
+          "opcode": "0x6f",
+          "token": "0x0a000128",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_ForeColor"
+        },
+        {
+          "il_offset": 514,
+          "opcode": "0x73",
+          "token": "0x0a000129",
+          "symbol": "System.Drawing.SolidBrush::.ctor"
+        },
+        {
+          "il_offset": 520,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 529,
+          "opcode": "0x28",
+          "token": "0x0a000123",
+          "symbol": "System.Drawing.Rectangle::get_Left"
+        },
+        {
+          "il_offset": 536,
+          "opcode": "0x6f",
+          "token": "0x0a000122",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Bounds"
+        },
+        {
+          "il_offset": 545,
+          "opcode": "0x28",
+          "token": "0x0a000124",
+          "symbol": "System.Drawing.Rectangle::get_Top"
+        },
+        {
+          "il_offset": 551,
+          "opcode": "0x6f",
+          "token": "0x0a00012a",
+          "symbol": "System.Drawing.Graphics::DrawString"
+        },
+        {
+          "il_offset": 558,
+          "opcode": "0x28",
+          "token": "0x0a000172",
+          "symbol": "System.Windows.Forms.ComboBox::OnDrawItem"
+        },
+        {
+          "il_offset": 564,
+          "opcode": "0x6f",
+          "token": "0x0a000121",
+          "symbol": "System.Windows.Forms.DrawItemEventArgs::get_Graphics"
+        },
+        {
+          "il_offset": 569,
+          "opcode": "0x6f",
+          "token": "0x0a00012e",
+          "symbol": "System.Drawing.Graphics::Dispose"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 11,
+          "value": 4
+        },
+        {
+          "il_offset": 33,
+          "value": 0
+        },
+        {
+          "il_offset": 220,
+          "value": 20
+        },
+        {
+          "il_offset": 250,
+          "value": 1
+        },
+        {
+          "il_offset": 371,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 12,
+          "opcode": "0x31",
+          "target": 15
+        },
+        {
+          "il_offset": 34,
+          "opcode": "0x2f",
+          "target": 117
+        },
+        {
+          "il_offset": 112,
+          "opcode": "0x38",
+          "target": 556
+        },
+        {
+          "il_offset": 154,
+          "opcode": "0x39",
+          "target": 462
+        },
+        {
+          "il_offset": 188,
+          "opcode": "0x39",
+          "target": 343
+        },
+        {
+          "il_offset": 338,
+          "opcode": "0x38",
+          "target": 556
+        },
+        {
+          "il_offset": 355,
+          "opcode": "0x2c",
+          "target": 364
+        },
+        {
+          "il_offset": 460,
+          "opcode": "0x2b",
+          "target": 556
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType",
+      "token": "0x0600048f",
+      "rva": "0x13370",
+      "file_offset": 71024,
+      "header_bytes": 12,
+      "code_bytes": 52,
+      "body_bytes": 64,
+      "extra_sections": 0,
+      "body_sha256": "977c27b8224273fa51d3045b2e2a69e457fe10a4bdb17085747a04937a6b5c86",
+      "il_sha256": "e64c070a9c3075575ca51fc63640b79b4aeda0ea39d6a8b4936646b0fb655554",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 7,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 17,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 27,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 32,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 1
+        },
+        {
+          "il_offset": 12,
+          "value": 15
+        },
+        {
+          "il_offset": 40,
+          "value": 6
+        },
+        {
+          "il_offset": 44,
+          "value": 7
+        },
+        {
+          "il_offset": 47,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 37,
+          "opcode": "0x2c",
+          "target": 50
+        },
+        {
+          "il_offset": 41,
+          "opcode": "0x2e",
+          "target": 47
+        },
+        {
+          "il_offset": 45,
+          "opcode": "0x33",
+          "target": 50
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusDisplayType",
+      "token": "0x06000490",
+      "rva": "0x133b0",
+      "file_offset": 71088,
+      "header_bytes": 12,
+      "code_bytes": 192,
+      "body_bytes": 204,
+      "extra_sections": 0,
+      "body_sha256": "1aa8eb89dc23ec769232c312c0d01963f28bcca0405018f6271b03cb88857ad6",
+      "il_sha256": "23afe9a609918564a9c52047e0f10996a5634ecfe988133f9de0de7232e9de14",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        },
+        {
+          "il_offset": 29,
+          "opcode": "0x6f",
+          "token": "0x06000498",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::GetDynamicFunctionVariantType"
+        },
+        {
+          "il_offset": 44,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 49,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 67,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 72,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 81,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 89,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 103,
+          "opcode": "0x6f",
+          "token": "0x06000661",
+          "symbol": "CBusLogicModel.PPAttribute::set_ValueAsInt"
+        },
+        {
+          "il_offset": 114,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        },
+        {
+          "il_offset": 121,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0x6f",
+          "token": "0x06000496",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusValueIndex"
+        },
+        {
+          "il_offset": 136,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 146,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 151,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        },
+        {
+          "il_offset": 159,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 174,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        },
+        {
+          "il_offset": 186,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 24,
+          "value": 10
+        },
+        {
+          "il_offset": 36,
+          "value": -1
+        },
+        {
+          "il_offset": 43,
+          "value": 1
+        },
+        {
+          "il_offset": 57,
+          "value": 240
+        },
+        {
+          "il_offset": 66,
+          "value": 1
+        },
+        {
+          "il_offset": 88,
+          "value": 1
+        },
+        {
+          "il_offset": 96,
+          "value": 240
+        },
+        {
+          "il_offset": 129,
+          "value": 0
+        },
+        {
+          "il_offset": 164,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 21,
+          "opcode": "0x2c",
+          "target": 42
+        },
+        {
+          "il_offset": 26,
+          "opcode": "0x33",
+          "target": 42
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x31",
+          "target": 42
+        },
+        {
+          "il_offset": 78,
+          "opcode": "0x2e",
+          "target": 191
+        },
+        {
+          "il_offset": 126,
+          "opcode": "0x2e",
+          "target": 191
+        },
+        {
+          "il_offset": 156,
+          "opcode": "0x2c",
+          "target": 180
+        },
+        {
+          "il_offset": 166,
+          "opcode": "0x33",
+          "target": 180
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType",
+      "token": "0x06000491",
+      "rva": "0x1347c",
+      "file_offset": 71292,
+      "header_bytes": 12,
+      "code_bytes": 53,
+      "body_bytes": 65,
+      "extra_sections": 0,
+      "body_sha256": "7be7a84cb183af71f74eeae68e774303524a5d82f18c7d9c280da27869f7bd2e",
+      "il_sha256": "ff69b2c7b1a752880c0ee961faf0e3670bd207a0c93b5fb676025e38d2864cdf",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 7,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 33,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 1
+        },
+        {
+          "il_offset": 12,
+          "value": 4
+        },
+        {
+          "il_offset": 14,
+          "value": 7
+        },
+        {
+          "il_offset": 41,
+          "value": 1
+        },
+        {
+          "il_offset": 45,
+          "value": 2
+        },
+        {
+          "il_offset": 48,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 38,
+          "opcode": "0x2c",
+          "target": 51
+        },
+        {
+          "il_offset": 42,
+          "opcode": "0x2e",
+          "target": 48
+        },
+        {
+          "il_offset": 46,
+          "opcode": "0x33",
+          "target": 51
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelDisplayType",
+      "token": "0x06000492",
+      "rva": "0x134c0",
+      "file_offset": 71360,
+      "header_bytes": 12,
+      "code_bytes": 196,
+      "body_bytes": 208,
+      "extra_sections": 0,
+      "body_sha256": "b0f35cdea5277e780ddb46daa497c50c81712723d1c68fdd1d1aab6add06f953",
+      "il_sha256": "e7e8309d544a7bdf3410a476650ba2bb23aa9c5c3b221b2f331451ff456285e0",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        },
+        {
+          "il_offset": 29,
+          "opcode": "0x6f",
+          "token": "0x06000497",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::GetDynamicLabelVariantType"
+        },
+        {
+          "il_offset": 44,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 49,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 74,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 83,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 91,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 107,
+          "opcode": "0x6f",
+          "token": "0x06000661",
+          "symbol": "CBusLogicModel.PPAttribute::set_ValueAsInt"
+        },
+        {
+          "il_offset": 118,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        },
+        {
+          "il_offset": 125,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 134,
+          "opcode": "0x6f",
+          "token": "0x06000494",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelValueIndex"
+        },
+        {
+          "il_offset": 140,
+          "opcode": "0x28",
+          "token": "0x0a000035",
+          "symbol": "System.Object::GetType"
+        },
+        {
+          "il_offset": 150,
+          "opcode": "0x28",
+          "token": "0x0a000037",
+          "symbol": "System.Type::GetTypeFromHandle"
+        },
+        {
+          "il_offset": 155,
+          "opcode": "0x28",
+          "token": "0x0a0001f9",
+          "symbol": "System.Type::op_Inequality"
+        },
+        {
+          "il_offset": 163,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 178,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        },
+        {
+          "il_offset": 190,
+          "opcode": "0x28",
+          "token": "0x060002fe",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 24,
+          "value": 10
+        },
+        {
+          "il_offset": 36,
+          "value": -1
+        },
+        {
+          "il_offset": 43,
+          "value": 1
+        },
+        {
+          "il_offset": 56,
+          "value": 4
+        },
+        {
+          "il_offset": 59,
+          "value": 143
+        },
+        {
+          "il_offset": 68,
+          "value": 1
+        },
+        {
+          "il_offset": 90,
+          "value": 1
+        },
+        {
+          "il_offset": 97,
+          "value": 4
+        },
+        {
+          "il_offset": 100,
+          "value": 143
+        },
+        {
+          "il_offset": 133,
+          "value": 0
+        },
+        {
+          "il_offset": 168,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 21,
+          "opcode": "0x2c",
+          "target": 42
+        },
+        {
+          "il_offset": 26,
+          "opcode": "0x33",
+          "target": 42
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x31",
+          "target": 42
+        },
+        {
+          "il_offset": 80,
+          "opcode": "0x2e",
+          "target": 195
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0x2e",
+          "target": 195
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0x2c",
+          "target": 184
+        },
+        {
+          "il_offset": 170,
+          "opcode": "0x33",
+          "target": 184
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::UpdateLabelTypes",
+      "token": "0x06000499",
+      "rva": "0x135b8",
+      "file_offset": 71608,
+      "header_bytes": 1,
+      "code_bytes": 25,
+      "body_bytes": 26,
+      "extra_sections": 0,
+      "body_sha256": "4fbda62bccf0a47311a133629e12a5739edc98ab6d4987ecff5ce313c783cbde",
+      "il_sha256": "1faa40d7e34ef05fa5d62866c46cbf8e5dbcce5e5cae91bf0958ab2417bc32dd",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 7,
+          "opcode": "0x28",
+          "token": "0x06000490",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusDisplayType"
+        },
+        {
+          "il_offset": 14,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 19,
+          "opcode": "0x28",
+          "token": "0x06000492",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelDisplayType"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels",
+      "token": "0x060004b7",
+      "rva": "0x13bac",
+      "file_offset": 73132,
+      "header_bytes": 12,
+      "code_bytes": 41,
+      "body_bytes": 53,
+      "extra_sections": 0,
+      "body_sha256": "a1bbc8b87a035d80a931518477c4a054ad6165f1b4353738776168a30357e4cc",
+      "il_sha256": "1ee1afe4e51ca54c0f531bfa44c4f1efc8f42b491c329473a9cbdd0ce3050567",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x060004b4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectedGroup"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x6f",
+          "token": "0x06000023",
+          "symbol": "CBusLogicModel.CBusObjects.BaseObjects.CBusBaseObject::get_AddressAsInt"
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x73",
+          "token": "0x0a0000d0",
+          "symbol": "parent(4,38)::.ctor"
+        },
+        {
+          "il_offset": 30,
+          "opcode": "0x28",
+          "token": "0x060004b4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectedGroup"
+        },
+        {
+          "il_offset": 35,
+          "opcode": "0x6f",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 16,
+          "value": 255
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x2c",
+          "target": 23
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x33",
+          "target": 29
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicLabelVariantType",
+      "token": "0x060004c1",
+      "rva": "0x13ce0",
+      "file_offset": 73440,
+      "header_bytes": 12,
+      "code_bytes": 80,
+      "body_bytes": 92,
+      "extra_sections": 0,
+      "body_sha256": "154f8e70fec4065496a2a33fe56f0f2c0c7fdfb3935052ef4879944fad9cb940",
+      "il_sha256": "e5fde397d2425e4c935f613d4bf900a3a8a5abe4a8edb30e0933128286b35b9f",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 9,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 14,
+          "opcode": "0x6f",
+          "token": "0x0a0000ce",
+          "symbol": "parent(4,40)::get_Count"
+        },
+        {
+          "il_offset": 20,
+          "opcode": "0x6f",
+          "token": "0x06000493",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelValueIndex"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x6f",
+          "token": "0x06000493",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelValueIndex"
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x6f",
+          "token": "0x06000493",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelValueIndex"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x6f",
+          "token": "0x06000494",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelValueIndex"
+        },
+        {
+          "il_offset": 53,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0x6f",
+          "token": "0x06000493",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelValueIndex"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x6f",
+          "token": "0x0a0000cf",
+          "symbol": "parent(4,40)::get_Item"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x6f",
+          "token": "0x0600000d",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Image"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 33,
+          "value": 0
+        },
+        {
+          "il_offset": 42,
+          "value": 3
+        },
+        {
+          "il_offset": 46,
+          "value": 0
+        },
+        {
+          "il_offset": 76,
+          "value": 2
+        },
+        {
+          "il_offset": 78,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x2c",
+          "target": 78
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x31",
+          "target": 78
+        },
+        {
+          "il_offset": 34,
+          "opcode": "0x32",
+          "target": 45
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x31",
+          "target": 52
+        },
+        {
+          "il_offset": 74,
+          "opcode": "0x2c",
+          "target": 78
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicFunctionVariantType",
+      "token": "0x060004c2",
+      "rva": "0x13d3c",
+      "file_offset": 73532,
+      "header_bytes": 12,
+      "code_bytes": 80,
+      "body_bytes": 92,
+      "extra_sections": 0,
+      "body_sha256": "119cec291a4c3740def292426af9f0c25d789a3ef36dc64151f5fa7a52f8b070",
+      "il_sha256": "9b74ce61bcadea13940cf6f274583e669f37441afd23619ea984e7eda8935121",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 9,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 14,
+          "opcode": "0x6f",
+          "token": "0x0a0000ce",
+          "symbol": "parent(4,40)::get_Count"
+        },
+        {
+          "il_offset": 20,
+          "opcode": "0x6f",
+          "token": "0x06000495",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusValueIndex"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x6f",
+          "token": "0x06000495",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusValueIndex"
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x6f",
+          "token": "0x06000495",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusValueIndex"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x6f",
+          "token": "0x06000496",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusValueIndex"
+        },
+        {
+          "il_offset": 53,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0x6f",
+          "token": "0x06000495",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusValueIndex"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x6f",
+          "token": "0x0a0000cf",
+          "symbol": "parent(4,40)::get_Item"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x6f",
+          "token": "0x0600000d",
+          "symbol": "CBusLogicModel.Utilities.DataStore::get_Image"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 33,
+          "value": 0
+        },
+        {
+          "il_offset": 42,
+          "value": 3
+        },
+        {
+          "il_offset": 46,
+          "value": 0
+        },
+        {
+          "il_offset": 76,
+          "value": 7
+        },
+        {
+          "il_offset": 78,
+          "value": 6
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x2c",
+          "target": 78
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x31",
+          "target": 78
+        },
+        {
+          "il_offset": 34,
+          "opcode": "0x32",
+          "target": 45
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x31",
+          "target": 52
+        },
+        {
+          "il_offset": 74,
+          "opcode": "0x2c",
+          "target": 78
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectableLabelVariants",
+      "token": "0x060004bb",
+      "rva": "0x13c20",
+      "file_offset": 73248,
+      "header_bytes": 1,
+      "code_bytes": 34,
+      "body_bytes": 35,
+      "extra_sections": 0,
+      "body_sha256": "999120282a70f223fedf8df29211622291446ee6a5b593c8cf0b74c583fb174a",
+      "il_sha256": "24794b80bc7183a88f7ffe46fc2c75b4e82e51e3f52808fefd0f020148b66972",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x060002f4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::get_ParentWidget"
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x6f",
+          "token": "0x060002d6",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTWidget::get_Unit"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x6f",
+          "token": "0x0600043e",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::get_StaticTextSuggest"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 6,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x33",
+          "target": 17
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectableStatusVariants",
+      "token": "0x060004ba",
+      "rva": "0x13bfd",
+      "file_offset": 73213,
+      "header_bytes": 1,
+      "code_bytes": 34,
+      "body_bytes": 35,
+      "extra_sections": 0,
+      "body_sha256": "7c15cef1d32cbcefd9e0ba3c269df4375ad583a1f4e1296848fb807d39c2b08b",
+      "il_sha256": "3a1b5f4d2afc5ccb97a5f7877fa1aa7d0bceab7355017c165670022b848ebc7a",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 11,
+          "opcode": "0x28",
+          "token": "0x060004b7",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x28",
+          "token": "0x060002f4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::get_ParentWidget"
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x6f",
+          "token": "0x060002d6",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTWidget::get_Unit"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x6f",
+          "token": "0x0600043e",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::get_StaticTextSuggest"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 6,
+          "value": 10
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 8,
+          "opcode": "0x33",
+          "target": 17
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::set_LabelValueText",
+      "token": "0x0600049f",
+      "rva": "0x136ed",
+      "file_offset": 71917,
+      "header_bytes": 1,
+      "code_bytes": 27,
+      "body_bytes": 28,
+      "extra_sections": 0,
+      "body_sha256": "25233e95aacf3e53a82a573082654c9a60843db6ab7c0e3a52e4ccce85bf17d7",
+      "il_sha256": "0addb834d27fa8d83d59590a705c0498b0be6f37983d06cb74d4c39ccd052755",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 5,
+          "opcode": "0x28",
+          "token": "0x060002f4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::get_ParentWidget"
+        },
+        {
+          "il_offset": 10,
+          "opcode": "0x6f",
+          "token": "0x060002d6",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTWidget::get_Unit"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x6f",
+          "token": "0x0600045b",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::GetStaticTextIndex"
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x6f",
+          "token": "0x06000494",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelValueIndex"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 1,
+          "opcode": "0x2c",
+          "target": 26
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::set_StatusValueText",
+      "token": "0x060004a1",
+      "rva": "0x13744",
+      "file_offset": 72004,
+      "header_bytes": 1,
+      "code_bytes": 27,
+      "body_bytes": 28,
+      "extra_sections": 0,
+      "body_sha256": "31aca549795b341a0b25aee83e2aabcb25006cfa06f637baf527fa965b7f32c1",
+      "il_sha256": "748a81b388fcc1aa78d7bcf793a716b67a9dc944b7d6244c42ae90dab5439581",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 5,
+          "opcode": "0x28",
+          "token": "0x060002f4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::get_ParentWidget"
+        },
+        {
+          "il_offset": 10,
+          "opcode": "0x6f",
+          "token": "0x060002d6",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTWidget::get_Unit"
+        },
+        {
+          "il_offset": 16,
+          "opcode": "0x6f",
+          "token": "0x0600045b",
+          "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::GetStaticTextIndex"
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x6f",
+          "token": "0x06000496",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusValueIndex"
+        }
+      ],
+      "integer_constants": [],
+      "branches": [
+        {
+          "il_offset": 1,
+          "opcode": "0x2c",
+          "target": 26
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_LabelValueIndex",
+      "token": "0x06000530",
+      "rva": "0x14df0",
+      "file_offset": 77808,
+      "header_bytes": 12,
+      "code_bytes": 108,
+      "body_bytes": 120,
+      "extra_sections": 0,
+      "body_sha256": "ed341f54daeda9d3368bbe7d82250aa842b4af8b0433eb9db8d71ebe2e7d81e6",
+      "il_sha256": "94befab185af8b8cad93e22cf71c473c303a51ef30ad88e1ecb63a3e5a726651",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 7,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 28,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 33,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 44,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 49,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 81,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 86,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 97,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 102,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 1
+        },
+        {
+          "il_offset": 12,
+          "value": 4
+        },
+        {
+          "il_offset": 14,
+          "value": 7
+        },
+        {
+          "il_offset": 18,
+          "value": 1
+        },
+        {
+          "il_offset": 22,
+          "value": 2
+        },
+        {
+          "il_offset": 26,
+          "value": 13
+        },
+        {
+          "il_offset": 38,
+          "value": 4
+        },
+        {
+          "il_offset": 42,
+          "value": 13
+        },
+        {
+          "il_offset": 55,
+          "value": 0
+        },
+        {
+          "il_offset": 58,
+          "value": 3
+        },
+        {
+          "il_offset": 62,
+          "value": 13
+        },
+        {
+          "il_offset": 74,
+          "value": 64
+        },
+        {
+          "il_offset": 79,
+          "value": 13
+        },
+        {
+          "il_offset": 92,
+          "value": 0
+        },
+        {
+          "il_offset": 95,
+          "value": 13
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 19,
+          "opcode": "0x2e",
+          "target": 25
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x33",
+          "target": 57
+        },
+        {
+          "il_offset": 39,
+          "opcode": "0x2f",
+          "target": 55
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0x33",
+          "target": 94
+        },
+        {
+          "il_offset": 76,
+          "opcode": "0x2f",
+          "target": 92
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::set_LabelValueIndex",
+      "token": "0x06000531",
+      "rva": "0x14e68",
+      "file_offset": 77928,
+      "header_bytes": 1,
+      "code_bytes": 59,
+      "body_bytes": 60,
+      "extra_sections": 0,
+      "body_sha256": "4a9e2bb3686b5b2fcfff5082c86e052f2359ba0a5e0653a78742066cf08bb5eb",
+      "il_sha256": "7269f14993d3ce5e4591948b4cb2de4f6c4379bbd1837a9ab0ae7d469d7678a5",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 3,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 8,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 19,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x6f",
+          "token": "0x06000661",
+          "symbol": "CBusLogicModel.PPAttribute::set_ValueAsInt"
+        },
+        {
+          "il_offset": 31,
+          "opcode": "0x28",
+          "token": "0x060004a4",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabelSelected"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x28",
+          "token": "0x06000492",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelDisplayType"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 13
+        },
+        {
+          "il_offset": 17,
+          "value": 13
+        },
+        {
+          "il_offset": 38,
+          "value": 1
+        },
+        {
+          "il_offset": 45,
+          "value": 10
+        },
+        {
+          "il_offset": 52,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 14,
+          "opcode": "0x2e",
+          "target": 58
+        },
+        {
+          "il_offset": 36,
+          "opcode": "0x2c",
+          "target": 58
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_StatusValueIndex",
+      "token": "0x06000536",
+      "rva": "0x14ee4",
+      "file_offset": 78052,
+      "header_bytes": 12,
+      "code_bytes": 106,
+      "body_bytes": 118,
+      "extra_sections": 0,
+      "body_sha256": "f5e2df91e3753ab6482f14ba5936379e07bbaeab40b7bd277b8bc007ce1bdd0e",
+      "il_sha256": "09df854a0970ebc8a2da711f66cb135dc3000db37a766a67eaf35de61f2a44ce",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 2,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 7,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 26,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 31,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 42,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 62,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 67,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 79,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 84,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 95,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 100,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 1
+        },
+        {
+          "il_offset": 12,
+          "value": 7
+        },
+        {
+          "il_offset": 16,
+          "value": 6
+        },
+        {
+          "il_offset": 20,
+          "value": 7
+        },
+        {
+          "il_offset": 24,
+          "value": 14
+        },
+        {
+          "il_offset": 36,
+          "value": 4
+        },
+        {
+          "il_offset": 40,
+          "value": 14
+        },
+        {
+          "il_offset": 53,
+          "value": 0
+        },
+        {
+          "il_offset": 56,
+          "value": 5
+        },
+        {
+          "il_offset": 60,
+          "value": 14
+        },
+        {
+          "il_offset": 72,
+          "value": 64
+        },
+        {
+          "il_offset": 77,
+          "value": 14
+        },
+        {
+          "il_offset": 90,
+          "value": 0
+        },
+        {
+          "il_offset": 93,
+          "value": 14
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 17,
+          "opcode": "0x2e",
+          "target": 23
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x33",
+          "target": 55
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x2f",
+          "target": 53
+        },
+        {
+          "il_offset": 57,
+          "opcode": "0x33",
+          "target": 92
+        },
+        {
+          "il_offset": 74,
+          "opcode": "0x2f",
+          "target": 90
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::set_StatusValueIndex",
+      "token": "0x06000537",
+      "rva": "0x14f5a",
+      "file_offset": 78170,
+      "header_bytes": 1,
+      "code_bytes": 59,
+      "body_bytes": 60,
+      "extra_sections": 0,
+      "body_sha256": "bfd3e9538ef9079a5e936badc0091167ebd8cc4b425ce99e11a72f83f06bbea5",
+      "il_sha256": "7e5299c22023911c7c4d6d2968038787d5db6a042f38213bf20efc6851e00e3f",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 3,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 8,
+          "opcode": "0x6f",
+          "token": "0x06000660",
+          "symbol": "CBusLogicModel.PPAttribute::get_ValueAsInt"
+        },
+        {
+          "il_offset": 19,
+          "opcode": "0x28",
+          "token": "0x06000302",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::WidgetByte"
+        },
+        {
+          "il_offset": 25,
+          "opcode": "0x6f",
+          "token": "0x06000661",
+          "symbol": "CBusLogicModel.PPAttribute::set_ValueAsInt"
+        },
+        {
+          "il_offset": 31,
+          "opcode": "0x28",
+          "token": "0x060004a5",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicFunctionSelected"
+        },
+        {
+          "il_offset": 47,
+          "opcode": "0x28",
+          "token": "0x06000490",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusDisplayType"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 1,
+          "value": 14
+        },
+        {
+          "il_offset": 17,
+          "value": 14
+        },
+        {
+          "il_offset": 38,
+          "value": 1
+        },
+        {
+          "il_offset": 45,
+          "value": 10
+        },
+        {
+          "il_offset": 52,
+          "value": 0
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 14,
+          "opcode": "0x2e",
+          "target": 30
+        },
+        {
+          "il_offset": 36,
+          "opcode": "0x2c",
+          "target": 58
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::GetUsedStaticText",
+      "token": "0x0600053d",
+      "rva": "0x15000",
+      "file_offset": 78336,
+      "header_bytes": 12,
+      "code_bytes": 53,
+      "body_bytes": 65,
+      "extra_sections": 0,
+      "body_sha256": "f21f7f442434a3665b9539992a74599c1f1f49b81df36561208b42e054f8ff0b",
+      "il_sha256": "d8ac7dd0f33ad25222f62050224e5ae7bd950a994a21b681f1603bdef9a21efb",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x060002fd",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::GetUsedStaticText"
+        },
+        {
+          "il_offset": 8,
+          "opcode": "0x28",
+          "token": "0x0600048f",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusDisplayType"
+        },
+        {
+          "il_offset": 18,
+          "opcode": "0x6f",
+          "token": "0x06000495",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_StatusValueIndex"
+        },
+        {
+          "il_offset": 23,
+          "opcode": "0x6f",
+          "token": "0x0a000156",
+          "symbol": "parent(4,80)::Add"
+        },
+        {
+          "il_offset": 30,
+          "opcode": "0x28",
+          "token": "0x06000491",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelDisplayType"
+        },
+        {
+          "il_offset": 40,
+          "opcode": "0x6f",
+          "token": "0x06000493",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::get_LabelValueIndex"
+        },
+        {
+          "il_offset": 45,
+          "opcode": "0x6f",
+          "token": "0x0a000156",
+          "symbol": "parent(4,80)::Add"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 13,
+          "value": 5
+        },
+        {
+          "il_offset": 35,
+          "value": 3
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 14,
+          "opcode": "0x33",
+          "target": 29
+        },
+        {
+          "il_offset": 36,
+          "opcode": "0x33",
+          "target": 51
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged",
+      "token": "0x060002fe",
+      "rva": "0xae6c",
+      "file_offset": 36972,
+      "header_bytes": 12,
+      "code_bytes": 74,
+      "body_bytes": 86,
+      "extra_sections": 0,
+      "body_sha256": "a53a3f77a3982c3dc89ec56a183f6959e688c53870f149a930de326ab1d7c288",
+      "il_sha256": "11e83df28dff34f611d1ae307e9286f5223121b64e43f9e5964d6ae6adef56cf",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 30,
+          "opcode": "0x6f",
+          "token": "0x06000309",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData+CustomPropertyChanging::Invoke"
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x73",
+          "token": "0x0a000022",
+          "symbol": "System.ComponentModel.PropertyChangedEventArgs::.ctor"
+        },
+        {
+          "il_offset": 48,
+          "opcode": "0x6f",
+          "token": "0x0a000023",
+          "symbol": "System.ComponentModel.PropertyChangedEventHandler::Invoke"
+        },
+        {
+          "il_offset": 68,
+          "opcode": "0x6f",
+          "token": "0x06000309",
+          "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData+CustomPropertyChanging::Invoke"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 29,
+          "value": 0
+        },
+        {
+          "il_offset": 67,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x2c",
+          "target": 73
+        },
+        {
+          "il_offset": 13,
+          "opcode": "0x2d",
+          "target": 73
+        },
+        {
+          "il_offset": 21,
+          "opcode": "0x2c",
+          "target": 35
+        },
+        {
+          "il_offset": 59,
+          "opcode": "0x2c",
+          "target": 73
+        }
+      ],
+      "static_decode_only": true
+    },
+    {
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::PopulateDynamicAll",
+      "token": "0x06000240",
+      "rva": "0x87d8",
+      "file_offset": 27096,
+      "header_bytes": 12,
+      "code_bytes": 172,
+      "body_bytes": 200,
+      "extra_sections": 1,
+      "body_sha256": "750b63a5f548349091cf7fcac6d1d751b5b1125114b5a62dcce1bad9d77b9aa7",
+      "il_sha256": "61e5943cd9e5fe904caa54ff13238dc6da09e55d9bd65a2dd0491d4b355b34a2",
+      "assembly": "CBusLogicModel.dll",
+      "metadata_runtime": "v4.0.30319",
+      "calls": [
+        {
+          "il_offset": 1,
+          "opcode": "0x28",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        },
+        {
+          "il_offset": 9,
+          "opcode": "0x73",
+          "token": "0x0a0000d0",
+          "symbol": "parent(4,38)::.ctor"
+        },
+        {
+          "il_offset": 14,
+          "opcode": "0x28",
+          "token": "0x0600023c",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::set_DynamicAll"
+        },
+        {
+          "il_offset": 20,
+          "opcode": "0x28",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        },
+        {
+          "il_offset": 26,
+          "opcode": "0x6f",
+          "token": "0x0a0000d4",
+          "symbol": "parent(4,38)::set_RaiseListChangedEvents"
+        },
+        {
+          "il_offset": 32,
+          "opcode": "0x28",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        },
+        {
+          "il_offset": 37,
+          "opcode": "0x6f",
+          "token": "0x0a0000d5",
+          "symbol": "parent(4,40)::Clear"
+        },
+        {
+          "il_offset": 43,
+          "opcode": "0x28",
+          "token": "0x06000231",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_TagsDLT"
+        },
+        {
+          "il_offset": 48,
+          "opcode": "0x6f",
+          "token": "0x0a0000e2",
+          "symbol": "parent(4,45)::GetEnumerator"
+        },
+        {
+          "il_offset": 57,
+          "opcode": "0x6f",
+          "token": "0x0a0000e3",
+          "symbol": "parent(4,47)::get_Current"
+        },
+        {
+          "il_offset": 64,
+          "opcode": "0x28",
+          "token": "0x0600022f",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_Application"
+        },
+        {
+          "il_offset": 69,
+          "opcode": "0x6f",
+          "token": "0x06000040",
+          "symbol": "CBusLogicModel.CBusApplication::get_Network"
+        },
+        {
+          "il_offset": 74,
+          "opcode": "0x6f",
+          "token": "0x06000279",
+          "symbol": "CBusLogicModel.CBusNetwork::get_ProjectImages"
+        },
+        {
+          "il_offset": 83,
+          "opcode": "0x28",
+          "token": "0x0600022f",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_Application"
+        },
+        {
+          "il_offset": 88,
+          "opcode": "0x6f",
+          "token": "0x06000040",
+          "symbol": "CBusLogicModel.CBusApplication::get_Network"
+        },
+        {
+          "il_offset": 93,
+          "opcode": "0x6f",
+          "token": "0x06000279",
+          "symbol": "CBusLogicModel.CBusNetwork::get_ProjectImages"
+        },
+        {
+          "il_offset": 98,
+          "opcode": "0x6f",
+          "token": "0x0600069d",
+          "symbol": "CBusLogicModel.TagDLT::PopulateImage"
+        },
+        {
+          "il_offset": 104,
+          "opcode": "0x73",
+          "token": "0x06000005",
+          "symbol": "CBusLogicModel.Utilities.DataStore::.ctor"
+        },
+        {
+          "il_offset": 111,
+          "opcode": "0x28",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        },
+        {
+          "il_offset": 117,
+          "opcode": "0x6f",
+          "token": "0x0a0000d6",
+          "symbol": "parent(4,40)::Add"
+        },
+        {
+          "il_offset": 123,
+          "opcode": "0x6f",
+          "token": "0x0a000055",
+          "symbol": "System.Collections.IEnumerator::MoveNext"
+        },
+        {
+          "il_offset": 136,
+          "opcode": "0x6f",
+          "token": "0x0a00004d",
+          "symbol": "System.IDisposable::Dispose"
+        },
+        {
+          "il_offset": 143,
+          "opcode": "0x28",
+          "token": "0x0600023b",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::get_DynamicAll"
+        },
+        {
+          "il_offset": 149,
+          "opcode": "0x6f",
+          "token": "0x0a0000d4",
+          "symbol": "parent(4,38)::set_RaiseListChangedEvents"
+        },
+        {
+          "il_offset": 160,
+          "opcode": "0x28",
+          "token": "0x06000031",
+          "symbol": "CBusLogicModel.CBusObjects.BaseObjects.CBusBaseObject::NotifyPropertyChanged"
+        },
+        {
+          "il_offset": 166,
+          "opcode": "0x28",
+          "token": "0x0600023f",
+          "symbol": "CBusLogicModel.CBusObjects.CBusGroup::PopulateDynamicAllLanguages"
+        }
+      ],
+      "integer_constants": [
+        {
+          "il_offset": 25,
+          "value": 0
+        },
+        {
+          "il_offset": 148,
+          "value": 1
+        }
+      ],
+      "branches": [
+        {
+          "il_offset": 6,
+          "opcode": "0x2d",
+          "target": 19
+        },
+        {
+          "il_offset": 54,
+          "opcode": "0x2b",
+          "target": 122
+        },
+        {
+          "il_offset": 79,
+          "opcode": "0x2c",
+          "target": 103
+        },
+        {
+          "il_offset": 128,
+          "opcode": "0x2d",
+          "target": 56
+        },
+        {
+          "il_offset": 130,
+          "opcode": "0xde",
+          "target": 142
+        },
+        {
+          "il_offset": 133,
+          "opcode": "0x2c",
+          "target": 141
+        }
+      ],
+      "static_decode_only": true
+    }
+  ],
+  "decompiled_source_symbols": [
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "BindingDataSource",
+      "start_line": 36,
+      "end_line": 54,
+      "utf8_bytes": 278,
+      "sha256": "1d6c0671880edaeec6bbf2606b0432e2bfced5c4ba5d4c7ff483f607df7ac789",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "TextEditable",
+      "start_line": 61,
+      "end_line": 90,
+      "utf8_bytes": 554,
+      "sha256": "7e247554e84fdb6473817866bb48c9c04377dbb637377c7f354ac2d9736a6e97",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "RemoveDataSettingBindings",
+      "start_line": 107,
+      "end_line": 138,
+      "utf8_bytes": 962,
+      "sha256": "f6b33cdb358e621dc9a8c8d2007ecc559f02880b972fed906f080e788c8a9ca1",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "OnDrawItem",
+      "start_line": 140,
+      "end_line": 188,
+      "utf8_bytes": 1894,
+      "sha256": "b32ad2489d3566aec64513652e9bc2686ee5dfc190d26e55b144d6bf5a5bad03",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "Leave",
+      "start_line": 190,
+      "end_line": 198,
+      "utf8_bytes": 194,
+      "sha256": "2b67575a7fb9b176dae7888aeee39511d1a405842d11445edaa36c5421180e0b",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "PreviewKeyDown",
+      "start_line": 200,
+      "end_line": 241,
+      "utf8_bytes": 1334,
+      "sha256": "17e3ca029ce13135f09c69a2762e25ae04135e14bd6a41aa0c0e7fd8ce1c2050",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "SelectedIndexChanged",
+      "start_line": 243,
+      "end_line": 279,
+      "utf8_bytes": 844,
+      "sha256": "27135e7574996672f63d94ce5506489787e1aa57e8d1d1e798e0e9bf53c42032",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "DataManager_ListChanged",
+      "start_line": 281,
+      "end_line": 309,
+      "utf8_bytes": 944,
+      "sha256": "e687babb99502fa51fbe45210cd825399da12378af261488653692d929e12e8a",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "ComboImageTagDLT.cs",
+      "symbol": "DataBindingMode",
+      "start_line": 311,
+      "end_line": 342,
+      "utf8_bytes": 1651,
+      "sha256": "eeef6d1b367559e8e5dfadd9494ae05a64f7602818814cf36ae84f65cef36e65",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelTypeData.cs",
+      "symbol": "StatusDisplayType",
+      "start_line": 8,
+      "end_line": 51,
+      "utf8_bytes": 1021,
+      "sha256": "4b9a05ec9fe491cf08a13253d3232a1f919d9bed9dc570ce4c429ee38b273af9",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelTypeData.cs",
+      "symbol": "LabelDisplayType",
+      "start_line": 53,
+      "end_line": 96,
+      "utf8_bytes": 1018,
+      "sha256": "403164bf77482f1490f9f6af2f20ccfbb89cdcd1d6c71583ed7b5bf67064a5c7",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelTypeData.cs",
+      "symbol": "UpdateLabelTypes",
+      "start_line": 117,
+      "end_line": 121,
+      "utf8_bytes": 126,
+      "sha256": "be2bbb38296f33507522a7637a709854db71c6f0c8e498b86eb0dcc8cff10a80",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelAppGroupData.cs",
+      "symbol": "DynamicLabels",
+      "start_line": 221,
+      "end_line": 232,
+      "utf8_bytes": 262,
+      "sha256": "f23d151f7a76ff59e9ac500dda6cd9634de6d8452a50b9a7f38a46e5dedbc31a",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelAppGroupData.cs",
+      "symbol": "DynamicLabelVariantType",
+      "start_line": 350,
+      "end_line": 364,
+      "utf8_bytes": 308,
+      "sha256": "34a914cf9f3728f799101aca101689ea0570940d5623faf1eedd4eb843a6808d",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "StatusLabelAppGroupData.cs",
+      "symbol": "DynamicFunctionVariantType",
+      "start_line": 366,
+      "end_line": 380,
+      "utf8_bytes": 316,
+      "sha256": "2c5952188574684e4d348fa4ab0ec693a7490be9e608c72486b62840c8b67dc1",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "symbol": "LabelValueIndex",
+      "start_line": 13,
+      "end_line": 49,
+      "utf8_bytes": 711,
+      "sha256": "550e8e2d463552d0a7df8889c90a2c601e0574e1f5d4b86281587a3f276a0861",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "symbol": "StatusValueIndex",
+      "start_line": 75,
+      "end_line": 111,
+      "utf8_bytes": 703,
+      "sha256": "b050216c126ba64cc4fd50af39269c68c9f0f69e8c6e941134430442f24906df",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "WidgetBaseData.cs",
+      "symbol": "NotifyPropertyChanged",
+      "start_line": 90,
+      "end_line": 104,
+      "utf8_bytes": 412,
+      "sha256": "a63ed2c57b99b297e737700849a373585b4b15076d5b7461ef22374801aca536",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusGroup.cs",
+      "symbol": "PopulateDynamicAll",
+      "start_line": 203,
+      "end_line": 223,
+      "utf8_bytes": 533,
+      "sha256": "2d96757aa5f2ea6f7eb0fb5744a30c54778851eb513976ac25a6a27e1402ac55",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CommonConstants.cs",
+      "symbol": "lLabelTypes",
+      "start_line": 241,
+      "end_line": 246,
+      "utf8_bytes": 169,
+      "sha256": "9d94654c70c54b02cb4bbb07b1b0aee6040ebb1d082bc2d8fd7419618b353a58",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CommonConstants.cs",
+      "symbol": "lLabelTypesScene",
+      "start_line": 248,
+      "end_line": 254,
+      "utf8_bytes": 204,
+      "sha256": "8dd6990893350722b2e39dcbe63c48f9f85ac24165207f18d2a0fed7e129530b",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CommonConstants.cs",
+      "symbol": "lFunctionStatusTypes",
+      "start_line": 282,
+      "end_line": 290,
+      "utf8_bytes": 265,
+      "sha256": "93d6ff68bed8b55967e3e1009ab9e9663f26b7b4dc42d22506fa7b2689de0211",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CommonConstants.cs",
+      "symbol": "lFunctionStatusTypesScenes",
+      "start_line": 323,
+      "end_line": 329,
+      "utf8_bytes": 214,
+      "sha256": "1ee42396e3d0b78fd0d89a44e86acd4dcea69369b8f89c42fc0d7774ea3456c6",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    }
+  ],
+  "static_checks": [
+    {
+      "id": "initial-control-settings-order",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::.ctor",
+      "ordered_call_suffixes": [
+        "set_MaxLength",
+        "set_DrawMode",
+        "set_ValueMember",
+        "set_DisplayMember",
+        "set_DropDownStyle",
+        "set_AutoCompleteSource",
+        "set_AutoCompleteMode",
+        "set_DoubleBuffered"
+      ],
+      "passed": true
+    },
+    {
+      "id": "initial-control-settings-values",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::.ctor",
+      "required_integer_constants": [
+        64,
+        0,
+        2,
+        256,
+        3
+      ],
+      "passed": true
+    },
+    {
+      "id": "changed-source-detaches-before-mode-rebuild",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::set_BindingDataSource",
+      "ordered_call_suffixes": [
+        "RemoveDataSettingBindings",
+        "get_BindingDataSource",
+        "DataBindingMode"
+      ],
+      "passed": true
+    },
+    {
+      "id": "editable-visibility-binding-list-subscription-order",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::set_TextEditable",
+      "ordered_call_suffixes": [
+        "set_Visible",
+        "RemoveDataSettingBindings",
+        "get_BindingDataSource",
+        "DataBindingMode",
+        "get_DataManager",
+        "remove_ListChanged",
+        "add_ListChanged"
+      ],
+      "passed": true
+    },
+    {
+      "id": "remove-callbacks-before-two-last-property-bindings",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::RemoveDataSettingBindings",
+      "ordered_call_suffixes": [
+        "remove_SelectedIndexChanged",
+        "remove_PreviewKeyDown",
+        "remove_Leave",
+        "get_DataBindings",
+        "get_PropertyName",
+        "get_PropertyName",
+        "Remove",
+        "Remove"
+      ],
+      "passed": true
+    },
+    {
+      "id": "leave-text-write-before-read",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboBoxStaticText_Leave",
+      "ordered_call_suffixes": [
+        "get_DataBindings",
+        "get_Item",
+        "WriteValue",
+        "ReadValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "enter-write-read-before-nonenter-dropdown-rule",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_PreviewKeyDown",
+      "ordered_call_suffixes": [
+        "get_KeyCode",
+        "WriteValue",
+        "ReadValue",
+        "get_DroppedDown",
+        "set_DroppedDown"
+      ],
+      "passed": true
+    },
+    {
+      "id": "enter-and-four-arrow-keys",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_PreviewKeyDown",
+      "required_integer_constants": [
+        13,
+        37,
+        39,
+        38,
+        40
+      ],
+      "passed": true
+    },
+    {
+      "id": "selection-subscriptions-text-then-index-write-read-and-catch",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged",
+      "ordered_call_suffixes": [
+        "remove_ListChanged",
+        "add_ListChanged",
+        "get_DataSource",
+        "get_SelectedIndex",
+        "WriteValue",
+        "ReadValue",
+        "WriteValue",
+        "ReadValue",
+        "LogException"
+      ],
+      "passed": true
+    },
+    {
+      "id": "selection-suppression-and-unselected-boundaries",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::ComboImageTagDLT_SelectedIndexChanged",
+      "required_integer_constants": [
+        0,
+        -1
+      ],
+      "passed": true
+    },
+    {
+      "id": "list-change-early-mode-then-async-then-visible-index-predicate",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged",
+      "ordered_call_suffixes": [
+        "get_TextEditable",
+        "get_InvokeRequired",
+        "BeginInvoke",
+        "get_Visible",
+        "get_ListChangedType",
+        "get_NewIndex",
+        "get_OldIndex",
+        "get_OldIndex",
+        "ReadValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "list-change-is-read-only",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataManager_ListChanged",
+      "absent_call_suffixes": [
+        "WriteValue"
+      ],
+      "passed": true
+    },
+    {
+      "id": "editable-text-and-indexed-selectedvalue-binding-modes",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataBindingMode",
+      "ordered_call_suffixes": [
+        "set_DrawMode",
+        "set_ValueMember",
+        "set_DisplayMember",
+        "set_DropDownStyle",
+        "set_AutoCompleteSource",
+        "get_TextMember",
+        "Add",
+        "add_PreviewKeyDown",
+        "add_Leave",
+        "add_SelectedIndexChanged",
+        "set_DoubleBuffered",
+        "set_DrawMode",
+        "set_ValueMember",
+        "set_DisplayMember",
+        "set_DropDownStyle",
+        "get_IndexMember",
+        "Add",
+        "add_SelectedIndexChanged",
+        "set_DoubleBuffered"
+      ],
+      "passed": true
+    },
+    {
+      "id": "binding-modes-and-manual-update-constants",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::DataBindingMode",
+      "required_integer_constants": [
+        0,
+        1,
+        2,
+        256
+      ],
+      "passed": true
+    },
+    {
+      "id": "drawing-four-row-and-one-based-numbering-profile",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::OnDrawItem",
+      "required_integer_constants": [
+        4,
+        0,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "id": "drawing-image-before-name-fallback-descriptor",
+      "symbol": "eDLT.Controls.ComboImageTagDLT::OnDrawItem",
+      "ordered_call_suffixes": [
+        "get_Count",
+        "get_Index",
+        "get_Image",
+        "DrawImage",
+        "get_ValueAsInt",
+        "get_Name",
+        "get_ValueAsInt"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-dynamic-resolution-byte-notify-virtual-index-notify-order",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusDisplayType",
+      "ordered_call_suffixes": [
+        "GetDynamicFunctionVariantType",
+        "get_StatusDisplayType",
+        "set_ValueAsInt",
+        "NotifyPropertyChanged",
+        "get_StatusDisplayType",
+        "set_StatusValueIndex",
+        "NotifyPropertyChanged",
+        "NotifyPropertyChanged"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-type-mask-generic-and-zero-index",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_StatusDisplayType",
+      "required_integer_constants": [
+        10,
+        1,
+        240,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-dynamic-resolution-byte-notify-virtual-index-notify-order",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelDisplayType",
+      "ordered_call_suffixes": [
+        "GetDynamicLabelVariantType",
+        "get_LabelDisplayType",
+        "set_ValueAsInt",
+        "NotifyPropertyChanged",
+        "get_LabelDisplayType",
+        "set_LabelValueIndex",
+        "NotifyPropertyChanged",
+        "NotifyPropertyChanged"
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-type-mask-generic-and-zero-index",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::set_LabelDisplayType",
+      "required_integer_constants": [
+        10,
+        1,
+        143,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "id": "update-status-before-label",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelTypeData::UpdateLabelTypes",
+      "ordered_call_suffixes": [
+        "get_StatusDisplayType",
+        "set_StatusDisplayType",
+        "get_LabelDisplayType",
+        "set_LabelDisplayType"
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-dynamic-getter-reads-current-selected-group-list",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels",
+      "ordered_call_suffixes": [
+        "get_SelectedGroup",
+        "get_AddressAsInt",
+        "get_SelectedGroup",
+        "get_DynamicAll"
+      ],
+      "passed": true
+    },
+    {
+      "id": "unassigned-group-has-no-dynamic-labels",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_DynamicLabels",
+      "required_integer_constants": [
+        255
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-count-before-invalid-index-repair-and-image-read",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicLabelVariantType",
+      "ordered_call_suffixes": [
+        "get_DynamicLabels",
+        "get_Count",
+        "get_LabelValueIndex",
+        "set_LabelValueIndex",
+        "get_DynamicLabels",
+        "get_Item",
+        "get_Image"
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-dynamic-image-text-subtypes",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicLabelVariantType",
+      "required_integer_constants": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-dynamic-or-static-choice-source",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectableLabelVariants",
+      "ordered_call_suffixes": [
+        "get_LabelDisplayType",
+        "get_DynamicLabels",
+        "get_StaticTextSuggest"
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-text-source-allocator-before-index-setter",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::set_LabelValueText",
+      "ordered_call_suffixes": [
+        "GetStaticTextIndex",
+        "set_LabelValueIndex"
+      ],
+      "passed": true
+    },
+    {
+      "id": "label-lighting-index-write-then-dynamic-subtype-resolution",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::set_LabelValueIndex",
+      "ordered_call_suffixes": [
+        "get_ValueAsInt",
+        "set_ValueAsInt",
+        "get_DynamicLabelSelected",
+        "set_LabelDisplayType"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-count-before-invalid-index-repair-and-image-read",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicFunctionVariantType",
+      "ordered_call_suffixes": [
+        "get_DynamicLabels",
+        "get_Count",
+        "get_StatusValueIndex",
+        "set_StatusValueIndex",
+        "get_DynamicLabels",
+        "get_Item",
+        "get_Image"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-dynamic-image-text-subtypes",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::GetDynamicFunctionVariantType",
+      "required_integer_constants": [
+        0,
+        3,
+        7,
+        6
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-dynamic-or-static-choice-source",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::get_SelectableStatusVariants",
+      "ordered_call_suffixes": [
+        "get_StatusDisplayType",
+        "get_DynamicLabels",
+        "get_StaticTextSuggest"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-text-source-allocator-before-index-setter",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.StatusLabelAppGroupData::set_StatusValueText",
+      "ordered_call_suffixes": [
+        "GetStaticTextIndex",
+        "set_StatusValueIndex"
+      ],
+      "passed": true
+    },
+    {
+      "id": "status-lighting-index-write-then-dynamic-subtype-resolution",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::set_StatusValueIndex",
+      "ordered_call_suffixes": [
+        "get_ValueAsInt",
+        "set_ValueAsInt",
+        "get_DynamicFunctionSelected",
+        "set_StatusDisplayType"
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-label-field-and-getter-clamps",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_LabelValueIndex",
+      "required_integer_constants": [
+        1,
+        4,
+        7,
+        13,
+        64,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-status-field-and-low-three-bit-getter-clamps",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_StatusValueIndex",
+      "required_integer_constants": [
+        1,
+        7,
+        14,
+        4,
+        64,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "id": "custom-before-property-custom-after-notification",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.BaseObjects.WidgetBaseData::NotifyPropertyChanged",
+      "ordered_call_suffixes": [
+        "Invoke",
+        "Invoke",
+        "Invoke"
+      ],
+      "passed": true
+    },
+    {
+      "id": "current-dynamic-list-cleared-repopulated-notified-with-project-images",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::PopulateDynamicAll",
+      "ordered_call_suffixes": [
+        "get_DynamicAll",
+        "set_DynamicAll",
+        "set_RaiseListChangedEvents",
+        "Clear",
+        "get_TagsDLT",
+        "PopulateImage",
+        "Add",
+        "set_RaiseListChangedEvents",
+        "NotifyPropertyChanged",
+        "PopulateDynamicAllLanguages"
+      ],
+      "passed": true
+    },
+    {
+      "id": "declaration-BindingDataSource",
+      "symbol": "BindingDataSource",
+      "required_anchor_count": 2,
+      "passed": true
+    },
+    {
+      "id": "declaration-TextEditable",
+      "symbol": "TextEditable",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-RemoveDataSettingBindings",
+      "symbol": "RemoveDataSettingBindings",
+      "required_anchor_count": 2,
+      "passed": true
+    },
+    {
+      "id": "declaration-OnDrawItem",
+      "symbol": "OnDrawItem",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-Leave",
+      "symbol": "Leave",
+      "required_anchor_count": 2,
+      "passed": true
+    },
+    {
+      "id": "declaration-PreviewKeyDown",
+      "symbol": "PreviewKeyDown",
+      "required_anchor_count": 5,
+      "passed": true
+    },
+    {
+      "id": "declaration-SelectedIndexChanged",
+      "symbol": "SelectedIndexChanged",
+      "required_anchor_count": 5,
+      "passed": true
+    },
+    {
+      "id": "declaration-DataManager_ListChanged",
+      "symbol": "DataManager_ListChanged",
+      "required_anchor_count": 7,
+      "passed": true
+    },
+    {
+      "id": "declaration-DataBindingMode",
+      "symbol": "DataBindingMode",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-StatusDisplayType",
+      "symbol": "StatusDisplayType",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-LabelDisplayType",
+      "symbol": "LabelDisplayType",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-UpdateLabelTypes",
+      "symbol": "UpdateLabelTypes",
+      "required_anchor_count": 2,
+      "passed": true
+    },
+    {
+      "id": "declaration-DynamicLabels",
+      "symbol": "DynamicLabels",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-DynamicLabelVariantType",
+      "symbol": "DynamicLabelVariantType",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-DynamicFunctionVariantType",
+      "symbol": "DynamicFunctionVariantType",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-LabelValueIndex",
+      "symbol": "LabelValueIndex",
+      "required_anchor_count": 4,
+      "passed": true
+    },
+    {
+      "id": "declaration-StatusValueIndex",
+      "symbol": "StatusValueIndex",
+      "required_anchor_count": 4,
+      "passed": true
+    },
+    {
+      "id": "declaration-NotifyPropertyChanged",
+      "symbol": "NotifyPropertyChanged",
+      "required_anchor_count": 3,
+      "passed": true
+    },
+    {
+      "id": "declaration-PopulateDynamicAll",
+      "symbol": "PopulateDynamicAll",
+      "required_anchor_count": 5,
+      "passed": true
+    },
+    {
+      "id": "source-type-choices-lLabelTypes",
+      "symbol": "lLabelTypes",
+      "ordered_integer_values": [
+        0,
+        10,
+        3
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-type-choices-lLabelTypesScene",
+      "symbol": "lLabelTypesScene",
+      "ordered_integer_values": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-type-choices-lFunctionStatusTypes",
+      "symbol": "lFunctionStatusTypes",
+      "ordered_integer_values": [
+        0,
+        3,
+        10,
+        1,
+        2,
+        5
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-type-choices-lFunctionStatusTypesScenes",
+      "symbol": "lFunctionStatusTypesScenes",
+      "ordered_integer_values": [
+        0,
+        6,
+        7,
+        5
+      ],
+      "passed": true
+    }
+  ],
+  "source_type_choice_values": {
+    "lLabelTypes": [
+      0,
+      10,
+      3
+    ],
+    "lLabelTypesScene": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lFunctionStatusTypes": [
+      0,
+      3,
+      10,
+      1,
+      2,
+      5
+    ],
+    "lFunctionStatusTypesScenes": [
+      0,
+      6,
+      7,
+      5
+    ]
+  },
+  "source_contract": {
+    "type_properties": "Byte1 masked nibble preservation, generic dynamic image subtype resolution, same-byte early return, notification before virtual index reset, status-before-label update.",
+    "lighting_indices": "Byte13 label and Byte14 status getters clamp source static/dynamic ranges; label unchanged index does not re-resolve, status unchanged index does.",
+    "dynamic_rows": "Non255 Lighting SelectedGroup.DynamicAll is read at each getter; null/255 yields empty rows. Current group list is cleared/repopulated with current TagsDLT/project image facts.",
+    "static_names": "Label/Status text setters call the source shared StaticText allocator before the virtual index setter; complete retained names and old references are required.",
+    "combo_modes": "Editable Text versus indexed SelectedValue manual bindings, exact detach/rebuild and DataManager subscription order; changed editable mode first makes the control visible.",
+    "callbacks": "Leave/Enter-key preview write then read; enter is only an explicit Enter-key shorthand, never focus Enter. Arrows suppress one selection; selected event rewires ListChanged before suppression and writes Text before SelectedValue where each binding exists.",
+    "list_changed": "Mode/global-disable guard precedes async dispatch; admitted synchronous eligible visible index predicate reads Text only.",
+    "drawing": "Logical four-row DataStore descriptor only: one-based integer display, image branch, null-name Default fallback. No pixels/Graphics or culture formatting claim.",
+    "property_notifications": "PropertyChanged intent ordering only, conditional on real subscriber and the source global suppression flag; no inferred automatic Framework dispatch."
+  },
+  "omissions": {
+    "raw_instruction_bytes_published": false,
+    "decompiled_source_text_published": false,
+    "original_literal_heaps_published": false,
+    "local_coordinate_fields_published": 0,
+    "private_coordinate_occurrences_omitted": 0
+  },
+  "limits": {
+    "original_instructions_executed": 0,
+    "framework_instructions_executed": 0,
+    "original_host_executed": false,
+    "automatic_currency_selection_verified": false,
+    "automatic_event_schedule_verified": false,
+    "async_begininvoke_verified": false,
+    "drawing_pixels_verified": false,
+    "original_exception_logging_verified": false,
+    "static_suggestion_culture_order_verified": false,
+    "physical_device_verified": false,
+    "other_widget_adapters_admitted": false,
+    "historical_fixtures_rewritten": false
+  }
+}

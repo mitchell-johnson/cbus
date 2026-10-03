@@ -1,0 +1,142 @@
+{
+  "format": "cbus-edlt-scene-language-images-vectors-v1",
+  "original_instructions_executed": false,
+  "fixture_origin": "Independently supplied synthetic bytes and source lookup facts; no vendor pixels or native runtime capture.",
+  "bmp_rgb_samples": {
+    "width": 1,
+    "height": 2,
+    "top_to_bottom_rgb_hex": "ff000000ff00",
+    "rgb_sha256": "0757241fa846855871c4ec6994954cbe0e0e7a8fd7bb3f7487462f6ce4215780",
+    "bits_per_pixel": [
+      1,
+      4,
+      8,
+      16,
+      24,
+      32
+    ]
+  },
+  "project_rows": [
+    {
+      "file_name": "TEST-DLTD-Pic0001.bmp",
+      "key": "0001",
+      "ordinal": 0
+    },
+    {
+      "file_name": "TEST-DLTD-Pic0001.extra.bmp",
+      "key": "0001",
+      "ordinal": 1
+    }
+  ],
+  "lookup_cases": [
+    {
+      "kind": "FONT",
+      "tag_value": "0001,Arial,12",
+      "image_present": true
+    },
+    {
+      "kind": "FONT",
+      "tag_value": "0001",
+      "image_present": true
+    },
+    {
+      "kind": "FONT",
+      "tag_value": ",0001",
+      "image_present": false
+    },
+    {
+      "kind": "FONT",
+      "tag_value": " 0001,Arial",
+      "image_present": false
+    },
+    {
+      "kind": "DYNAMIC",
+      "tag_value": "0001",
+      "image_present": true
+    },
+    {
+      "kind": "TEXT",
+      "tag_value": "0001",
+      "image_present": true
+    },
+    {
+      "kind": "",
+      "tag_value": "0001",
+      "image_present": true
+    },
+    {
+      "kind": "DYNAMIC",
+      "tag_value": "0001,Arial",
+      "image_present": false
+    },
+    {
+      "kind": "FONT",
+      "tag_value": "0009,Arial",
+      "image_present": false
+    }
+  ],
+  "language_cases": [
+    {
+      "kind": "FONT",
+      "old_name": "0009,Arial,12",
+      "new_name": "0001,Arial,12",
+      "old_image_present": false,
+      "new_image_present": true,
+      "old_owner_retained_by": "valid existing Action getter",
+      "new_owner_adopted_by": "explicit Action setter/RefreshDynamicLables"
+    },
+    {
+      "kind": "DYNAMIC",
+      "old_name": "0009",
+      "new_name": "0001",
+      "old_image_present": false,
+      "new_image_present": true,
+      "old_owner_retained_by": "valid existing Action getter",
+      "new_owner_adopted_by": "explicit Action setter/RefreshDynamicLables"
+    },
+    {
+      "kind": "TEXT",
+      "old_name": "0009",
+      "new_name": "0001",
+      "old_image_present": false,
+      "new_image_present": true,
+      "old_owner_retained_by": "valid existing Action getter",
+      "new_owner_adopted_by": "explicit Action setter/RefreshDynamicLables"
+    },
+    {
+      "kind": "ICON",
+      "old_name": "2",
+      "new_name": "1",
+      "old_image_present": false,
+      "new_image_present": true,
+      "old_owner_retained_by": "valid existing Action getter",
+      "new_owner_adopted_by": "explicit Action setter/RefreshDynamicLables"
+    }
+  ],
+  "dltp": {
+    "key": 1,
+    "exact_match": "1",
+    "nonmatches": [
+      "01",
+      " 1",
+      "1,extra"
+    ],
+    "decoded_profile_optional": true
+  },
+  "refusals": [
+    "missing bytes",
+    "foreign project",
+    "raw provider facts",
+    "different byte SHA despite same flags",
+    "malformed/unsupported BMP",
+    "reordered/incomplete directory files",
+    "Image/DLTP XML containers"
+  ],
+  "limits": [
+    "No GDI/rendering/opacity equivalence",
+    "ASCII filename-filter profile only",
+    "SHA-bound declared roster is not native directory authenticity",
+    "Changed final Language XML boundary is explicit; no implicit COM schedule or original per-row-save count",
+    "Toolkit flat repository PROJ alias is an explicit backend profile, not a universal native macro equivalence"
+  ]
+}

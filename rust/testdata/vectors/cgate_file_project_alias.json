@@ -1,0 +1,17 @@
+{
+  "format": "cbus-toolkit-flat-repository-file-profile-v1",
+  "scope": "exact Toolkit %PROJ% spelling in isolated owned flat virtual project storage",
+  "projects": ["OWNED", "OTHER"],
+  "alias": "%PROJ%/OWNED/images/photo.bmp",
+  "canonical": "%OWNED%/OWNED/images/photo.bmp",
+  "virtual_key": "%OWNED%/OWNED/images/photo.bmp",
+  "upload": "YWJj",
+  "download_alias": ["345-Start file download for file: %PROJ%/OWNED/images/photo.bmp", "347-YWJj", "346 End file download"],
+  "download_canonical": ["345-Start file download for file: %OWNED%/OWNED/images/photo.bmp", "347-YWJj", "346 End file download"],
+  "digest_alias": "302 File=%PROJ%/OWNED/images/photo.bmp SHA256Hash=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+  "empty_directory": "304 directory=\"cmqttd-project://OWNED/OWNED/images\" files=0",
+  "directory_header": "304-directory=\"cmqttd-project://OWNED/OWNED/images\" files=1",
+  "listing_file_prefix": "305 name=\"photo.bmp\" size=3 modified=",
+  "refused": ["%PROJ%", "%PROJ%/", "%PROJ%/MISSING/images", "%PROJ%/owned/images", "%PROJ%OWNED/images", "%PROJ%/OWNED/../escape", "%PROJ%/OWNED/C:escape", "%PROJ%/../OTHER/escape", "%PROJ%/OWNED/../../OTHER/escape"],
+  "limits": ["existing exact project required", "flat repository profile only; configured native templates may differ", "no host filesystem access", "no bare %PROJ% root listing", "a project literally named PROJ retains its existing canonical namespace"]
+}

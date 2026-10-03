@@ -16,6 +16,11 @@ with retained Items and explicit property writes. Earlier text-only Language
 changes now compose with SceneManager while preserving old initial labels
 until an ActionSelector setter or trigger-current callback refreshes them. Read
 [buttons and Language ownership](docs/edlt-scene-buttons-language.md).
+Use `cgate edlt-project-images PROJECT --output FILE` for byte-backed project
+images. Bind the export by SHA-256 with automatic metadata; explicit
+Lighting `label_controls` then use the actual source-owned label/status choices
+and one parent save. FONT/DYNAMIC/ICON profiles and image-dependent Language
+composition are described in [label controls and images](docs/edlt-label-controls-images.md).
 For a declared source/obligation bundle, use
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR` to
 report mapping and evidence gaps. Its scoped result cannot make the global
@@ -1283,8 +1288,11 @@ application 203 dependencies introduced by operations. Applying requires a close
 project and creates a separate backup first. C-Gate exposes database object
 creation, PP SAVE and PROJECT SAVE as separate operations, so this path reports
 `batch_atomic=false`. It rolls back only before PP SAVE starts and never
-retries an uncertain save. DYNAMIC/FONT/ICON image facts that depend on project
-files or Toolkit's DLTP index fail closed. See
+retries an uncertain save. Without explicit byte-backed providers,
+DYNAMIC/FONT/ICON image-dependent facts fail closed. A SHA-bound project BMP
+export and optional decoded DLTP input admit the documented image lookup and
+ordered Language profiles; they do not establish GDI+ or physical rendering
+equivalence. See [label controls and images](docs/edlt-label-controls-images.md) and
 [edlt-parent-metadata.md](docs/edlt-parent-metadata.md).
 This automatic path accepts existing Applications/Corridor lists and
 operation-1 Reset raw state. It refuses missing/projected list objects. In one
@@ -1512,8 +1520,10 @@ transaction accepts both dialog operations with the same complete application
 cache and gives them field ownership inside one terminal save. Its automatic
 project resolver can derive and create bounded metadata for the other admitted
 operations, but it cannot replace the ordered list contract for these two.
-The complete form, project/DLTP image-dependent metadata and physical operation
-remain separate work.
+The complete original form and physical operation remain separate work.
+Image-dependent automatic metadata has an explicit byte-backed input profile;
+default/no-provider and unsupported image formats still refuse. Read
+[the image input contract](docs/edlt-label-controls-images.md).
 
 Select Blank for one visible widget while retaining the loaded scenes, static
 text and original MRA globals:
@@ -1632,8 +1642,10 @@ PROJECT SAVE outcomes and verifies after reload. Use `--backup-project NAME`
 to select the retained backup name. Typed `add-trigger-dialog` and
 `add-action-dialog` operations model accepted/cancelled Add results and ordered
 first-free allocation. See [the operation examples and name boundaries](docs/edlt-scene-add-dialog.md).
-Image-dependent labels, complete control binding and physical display behavior
-remain open.
+Image-dependent labels are admitted only with the explicit project BMP/decoded
+DLTP profiles described in [label controls and images](docs/edlt-label-controls-images.md).
+Without the required provider, unresolved image facts refuse. Complete
+original control binding and physical display behavior remain open.
 
 Capture current lighting levels into a database scene, broadcast stored levels,
 or invoke the scene's retained Trigger binding:
@@ -2548,7 +2560,7 @@ The retained focused checkpoints below were recorded outside that frozen
 wheel; each linked record identifies its runtime, source scope and date:
 
 - [Configuration CRC](docs/edlt-crc.md): 21 tests, including 65,588 fresh original CRC results per run.
-- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, project/DLTP images, and combined Schneider C-Gate/physical acceptance remain outstanding. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
+- [Percentage conversion](docs/edlt-percentage.md), [bounded parent composition](docs/edlt-parent-form.md), [ordered parent transaction](docs/edlt-parent-transaction.md), [automatic parent metadata](docs/edlt-parent-metadata.md) and [automatic SceneManager metadata](docs/edlt-scene-metadata.md): pure conversion and CLI acceptance, standalone original Windows 12- and 528-case captures, and portable focused coverage for all declared operations. Automatic parent metadata resolves existing Applications/Corridor lists and exact Reset raw strings, accepts contiguous fresh-graph Blank operations, and composes those results with the exact Trigger application/group/action creator before one parent PP save. Toolkit registry display/sort preferences, the original interactive Reset-plus-Blank and complete parent/SceneManager dialogs, broader image formats and combined Schneider C-Gate/physical acceptance remain outstanding. Explicit byte-backed project BMP/decoded-DLTP and image-dependent Language profiles extend the default TEXT-only path; unresolved facts without a provider still refuse. Current exact test totals are reported by the repository test run rather than treated as a static capability claim.
 - [About information](docs/toolkit-about.md): 16 tests, including 51 original instruction cases per run.
 - [Signed update metadata](docs/toolkit-update-metadata.md), [revocation stages](docs/toolkit-update-revocation.md), [supplied-context registry conditions](docs/toolkit-update-registry-conditions.md), [applicability preflight](docs/toolkit-update-applicability-preflight.md), [supplied-cohort rollout gate](docs/toolkit-update-rollout-cohort.md), [owned-registry rollout branch](docs/toolkit-update-rollout-owned-registry.md), [combined supplied-cohort applicability preflight](docs/toolkit-update-applicability-cohort-preflight.md), [linked diagnostic provenance](docs/toolkit-update-diagnostic-bundle.md) and [local package join](docs/toolkit-update-package-bundle.md): bounded diagnostics plus exact source-file and selected package-byte receipts, with explicit trust and availability limits.
 - [PCI routing](docs/pci-routing.md), [incoming routing](docs/pci-incoming-routing.md), [routed RECALL](docs/pci-routed-recall.md), [routed IDENTIFY](docs/pci-routed-identify.md) and [routed WRITE](docs/pci-routed-write.md): separate codec and transport checkpoints; all three commands accept project-resolved routes, while WRITE adds exact ACK path/tag matching and one-send mutation uncertainty evidence.

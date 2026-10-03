@@ -2341,3 +2341,20 @@ language copying is refused. Read `docs/cgate-network-languages.md` and query
 `database_network_languages`, `database_network_language_operations` and
 `database_network_language_physical_io` in CMQTT CAPABILITIES. Never replay a
 mutation after an uncertain receipt.
+
+
+## Toolkit image FILE spelling and TLS event flush
+
+The maintained virtual FILE service recognizes exact uppercase
+`%PROJ%/PROJECT/…` when PROJECT exists and there is no existing project named
+PROJ. In that named flat-repository profile it shares canonical
+`%PROJECT%/PROJECT/…` storage. Existing PROJ project namespace behavior is
+preserved. It never grants host filesystem access, and is not universal native
+repository-template equivalence or a `%PROJ%` root directory implementation.
+
+While a command awaits programming, subscribed event delivery now bounds
+write_all and flush together by the same ten-second deadline. Actual rustls
+tests show encrypted output reaches the same socket before the command finishes;
+stalled/failed flush cancels the command without replay. Owned daemon tests
+exercise pending programming alongside MQTT. Native/physical timing acceptance
+and broader aggregate resource guarantees remain separate.

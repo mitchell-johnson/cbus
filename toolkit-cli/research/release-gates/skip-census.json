@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 692,
-    "modules_without_skip_sites": 382,
-    "modules_with_skip_sites": 310,
+    "test_modules": 701,
+    "modules_without_skip_sites": 390,
+    "modules_with_skip_sites": 311,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 34,
+      "unclassified": 35,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 150
+      "none": 151
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -4463,6 +4463,41 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_edlt_label_control_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_label_control_static.py::LabelControlStaticTests::test_static_regeneration_uses_only_explicit_pinned_private_data",
+          "kind": "body.call",
+          "condition": "not vendor",
+          "reason": "Explicit pinned private label-control static inputs are not configured",
+          "environment": [
+            "CBUS_LABEL_CONTROL_STATIC_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "LabelControlStaticTests::test_static_regeneration_uses_only_explicit_pinned_private_data"
+          ]
         }
       ]
     },

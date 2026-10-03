@@ -39,6 +39,7 @@ from .edlt_display_model import (
     present_application_cache,
 )
 from .edlt_dltp_index import DltpIndex
+from .edlt_scene_label_images import ProjectImages, check_project_images, check_dltp_images
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS, _ACTIVATION_PARAMETERS,
@@ -242,6 +243,7 @@ class NativeEdltProjectSnapshot:
     other_units: tuple[str, ...]
     applications: tuple[NativeApplicationRecord, ...]
     dltp_index: DltpIndex | None = None
+    project_images: ProjectImages | None = None
 
     def value_map(self):
         return dict(self.values)
@@ -250,7 +252,7 @@ class NativeEdltProjectSnapshot:
         return dict(self.raw_values)
 
 
-def _dynamic_labels(node, default_language, dltp_index=None):
+def _dynamic_labels(node, default_language, dltp_index=None, project_images=None):
     """Derive the four original DataStore rows when image lookup is resolvable."""
     collections = _children(node, 'TagsDLT')
     if len(collections) > 1:
@@ -275,34 +277,39 @@ def _dynamic_labels(node, default_language, dltp_index=None):
         if tag_type not in ('', 'TEXT', 'DYNAMIC', 'FONT', 'ICON'):
             raise ValueError('Native TagDLT type is outside the admitted profile')
         variants[variant] = (tag_type, tag_value)
-    # InitialiseGroup always supplies four empty variants. TEXT and an empty
-    # variant cannot have an Image. DYNAMIC/FONT depend on project image files
-    # that DBGETXML does not carry, so those states remain explicitly unknown.
-    # ICON depends on Toolkit's local DLTP index: TagDLT.PopulateImage matches
-    # the exact key text when a SHA-256-bound index is supplied.
-    unresolved = ('DYNAMIC', 'FONT') + (('ICON',) if dltp_index is None else ())
+    # Without a project image export retain the historical TEXT-only profile.
+    # With an export, PopulateImage applies to every non-ICON type, even TEXT.
+    unresolved = (('DYNAMIC', 'FONT') if project_images is None else ()) + (('ICON',) if dltp_index is None else ())
     if any(value[0] in unresolved for value in variants.values()):
         return None, False
     rows = []
     for variant in range(4):
         tag_type, tag_value = variants.get(variant, ('', ''))
-        rows.append((str(variant), tag_value,
-                     tag_type == 'ICON' and dltp_index.image_present(tag_value)))
+        if tag_type == 'ICON':
+            image = dltp_index.image_present(tag_value)
+        elif project_images is not None:
+            key = tag_value.split(',', 1)[0] if tag_type == 'FONT' else tag_value
+            image = project_images.image_present(key)
+        else:
+            image = False
+        rows.append((str(variant), tag_value, image))
     return tuple(rows), True
 
 
-def _tag_images(group, default_language, dltp_index=None):
+def _tag_images(group, default_language, dltp_index=None, project_images=None):
     """Derive image presence only when image lookup is resolvable."""
-    labels, known = _dynamic_labels(group, default_language, dltp_index)
+    labels, known = _dynamic_labels(group, default_language, dltp_index, project_images)
     if not known:
         return None, False
     return tuple(row[2] for row in labels), True
 
 
-def _snapshot(text, unit_path, editor, *, dltp_index=None, _language_default=None):
-    if dltp_index is not None and type(dltp_index) is not DltpIndex:
-        raise ValueError('A DLTP index must come from load_dltp_index')
+def _snapshot(text, unit_path, editor, *, dltp_index=None, project_images=None, _language_default=None):
+    if dltp_index is not None:
+        check_dltp_images(dltp_index)
     unit_path, project_name, network_address, unit_address = _unit_path(unit_path)
+    if project_images is not None:
+        check_project_images(project_images, project=project_name)
     root = _container(text, 'Installation').documentElement
     projects = _children(root, 'Project')
     if len(projects) != 1 or _field(projects[0], 'Address') != project_name:
@@ -368,14 +375,14 @@ def _snapshot(text, unit_path, editor, *, dltp_index=None, _language_default=Non
                     raise ValueError('Native group contains duplicate level address or identity')
                 identities.add(level_identity); level_ids.add(level_identity)
                 labels, labels_known = _dynamic_labels(
-                    level, default_language, dltp_index)
+                    level, default_language, dltp_index, project_images)
                 level_records.append(NativeLevelRecord(
                     address, group_address, level_address, level_value,
                     level_identity,
                     _field(level, 'TagName'), labels, labels_known,
                     _json(_shape(level))))
             level_records = tuple(level_records)
-            images, known = _tag_images(group, default_language, dltp_index)
+            images, known = _tag_images(group, default_language, dltp_index, project_images)
             groups.append(NativeGroupRecord(
                 address, group_address, group.tagName, group_identity,
                 _field(group, 'TagName'),
@@ -401,7 +408,7 @@ def _snapshot(text, unit_path, editor, *, dltp_index=None, _language_default=Non
         tuple(sorted(values.items())), tuple(sorted(raw_values.items())),
         project_metadata, unit_metadata,
         network_metadata, other_networks, other_units,
-        tuple(applications), dltp_index)
+        tuple(applications), dltp_index, project_images)
 
 
 def _operation_groups(values, operations):
@@ -429,6 +436,8 @@ def _operation_groups(values, operations):
         return default if value is None else value
 
     def needs_images(operation):
+        if operation.get('label_controls'):
+            return True
         explicit = any(operation.get(name) in ('dynamic-text', 'dynamic-icon')
                        for name in ('label_type', 'status_type'))
         widget = _candidate_widget(
@@ -721,7 +730,9 @@ class NativeEdltParentPlan:
                                 'PROJECT SAVE operations; no cross-operation commit exists'),
             'rollback_before_pp_save': True,
             'rollback_after_pp_save_attempt': False,
-            'project_images_loaded': False,
+            'project_images_loaded': self.snapshot.project_images is not None,
+            'project_image_export': (None if self.snapshot.project_images is None
+                                     else self.snapshot.project_images.evidence()),
             'toolkit_dltp_index': (
                 None if self.snapshot.dltp_index is None
                 else self.snapshot.dltp_index.evidence()),
@@ -1155,7 +1166,7 @@ def _plan_parent_scene_metadata(text, unit_path, supplied, editor, operations,
         outcome = resolve_native_scene_metadata(
             text, unit_path, supplied, scene_engine,
             scene_operation['operations'], _projected_containers=projected,
-            _projected_values=source, dltp_index=snapshot.dltp_index,
+            _projected_values=source, dltp_index=snapshot.dltp_index, project_images=snapshot.project_images,
             display_preferences=display_preferences)
         if outcome.snapshot != snapshot:
             raise ValueError(
@@ -1399,7 +1410,7 @@ def _language_default_for_operations(text, unit_path, operations):
 
 
 def _plan_language_histories(text, unit_path, values, editor, operations, *,
-                             networks, display_preferences, dltp_index):
+                             networks, display_preferences, dltp_index, project_images):
     from dataclasses import replace
     from .edlt_language_add_dialog import (
         LanguageRow, LanguageState, native_inventory, initialise, project,
@@ -1430,7 +1441,7 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
         projected = (text if state.rows == rows else
             replace_native_rows(text, unit_path, state.rows,
                 collection_oid=collection_oid or '@languages'))
-        snapshot = _snapshot(projected, unit_path, editor, dltp_index=dltp_index,
+        snapshot = _snapshot(projected, unit_path, editor, dltp_index=dltp_index, project_images=project_images,
                              _language_default=state.default)
         images = [{'application': app.address, 'group': group.address,
                    'known': group.dynamic_images_known,
@@ -1447,7 +1458,7 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
             group_images=images, level_labels=labels))
         steps.append(receipt)
     base = plan_native_parent_metadata(text, unit_path, values, editor, tuple(lowered),
-        networks=networks, display_preferences=display_preferences, dltp_index=dltp_index,
+        networks=networks, display_preferences=display_preferences, dltp_index=dltp_index, project_images=project_images,
         _language_default=initial_default, _language_operations=operations)
     history = {'format': 'cbus-edlt-native-language-history-v1',
         'network_oid': network_oid, 'collection_oid': collection_oid,
@@ -1466,7 +1477,7 @@ def _plan_language_histories(text, unit_path, values, editor, operations, *,
 
 def plan_native_parent_metadata(text, unit_path, values, editor, operations,
                                 *, networks=(), display_preferences=None,
-                                dltp_index=None, _language_default=None,
+                                dltp_index=None, project_images=None, _language_default=None,
                                 _language_operations=None):
     """Build the projected cache and parent plan without native I/O.
 
@@ -1482,8 +1493,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     if any(row['op'] == 'add-language-dialog' for row in operations):
         return _plan_language_histories(text, unit_path, values, editor, operations,
-            networks=networks, display_preferences=display_preferences, dltp_index=dltp_index)
-    snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index,
+            networks=networks, display_preferences=display_preferences, dltp_index=dltp_index, project_images=project_images)
+    snapshot = _snapshot(text, unit_path, editor, dltp_index=dltp_index, project_images=project_images,
                          _language_default=_language_default)
     supplied = editor.snapshot(values)
     if supplied != snapshot.value_map():
@@ -1496,6 +1507,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
+            or any(row['op'] == 'lighting' and row.get('label_controls') for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1627,7 +1639,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     requirements, *, networks, display_preferences,
                     source_operations=None, dialogs=(), extra_creations=(),
                     cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
-                    dependency_values=None):
+                    dependency_values=None, lighting_label_bindings=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1727,7 +1739,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
         cache = cache_projector(cache, creations)
     parent = editor.plan(supplied if parent_input is None else parent_input, metadata=cache, operations=operations,
                          _dialog_initial_missing=initial_missing,
-                         _dialog_missing_by_operation=dialog_contexts)
+                         _dialog_missing_by_operation=dialog_contexts,
+                         _lighting_label_bindings=lighting_label_bindings)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1762,7 +1775,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         initialized = resolve_native_scene_metadata(text, unit_path, supplied,
             editor._editor('scene-manager'),
             ({'op':'get-selector-view','scene':1},),
-            dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+            dltp_index=snapshot.dltp_index, project_images=snapshot.project_images, display_preferences=display_preferences)
         scene_initialization = initialized.cache._inventory_timeline
     if any(row['op'] == KINDS[0] for row in operations) and display_preferences is None:
         raise ValueError('Corridor Add requires explicit display preferences for its refreshed ordered list')
@@ -1808,6 +1821,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     language_text = text
     dialog_contexts = []
     lowered_so_far = []
+    lighting_label_bindings = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
     seed_levels = {key: dict(rows) for key, rows in levels.items()}
     if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
@@ -1952,7 +1966,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 initialized = resolve_native_scene_metadata(language_text, unit_path,
                     supplied, editor._editor('scene-manager'),
                     ({'op':'get-selector-view','scene':1},), _projected_values=state,
-                    dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+                    dltp_index=snapshot.dltp_index, project_images=snapshot.project_images, display_preferences=display_preferences)
                 scene_initialization = initialized.cache._inventory_timeline
                 scene_initialization_values = dict(state)
                 scene_initialization_xml = language_text
@@ -1970,10 +1984,46 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 widget_editor = ({'measurement': editor.measurement_editor,
                                   'lighting': editor.lighting_editor}.get(kind)
                                  or editor._editor(kind))
+                label_controls = options.pop('label_controls', None) if kind == 'lighting' else None
                 widget_plan = (widget_editor.plan(state, kind=kind,
                     _parent_composition=True, **options) if kind in MRA_WIDGET_TYPES
                     else widget_editor.plan(state, **options))
                 projected = {**widget_plan.expected, **widget_plan.changes}
+                if label_controls is not None:
+                    from .edlt_lighting_label_controls import (
+                        issue_lighting_label_binding, project_lighting_label_controls)
+                    application = projected['SecondaryApplication' if widget_plan.record[1] & 128
+                                            else 'PrimaryApplication'][0]
+                    group = widget_plan.record[6]
+                    current_project = _children(_container(language_text, 'Installation').documentElement, 'Project')[0]
+                    current_network = _one_by_address(current_project, 'Network', snapshot.network)
+                    default = (language_mutations[-1]['receipt']['default_after'] if language_mutations
+                               else _language_default_for_operations(text, unit_path, language_operations or operations))
+                    if default is None:
+                        default = _default_language(current_network)
+                    record = records.get((application, group))
+                    if group == 255:
+                        dynamic_rows, known = (), True
+                    elif record is None:
+                        dynamic_rows, known = tuple((str(i), '', False) for i in range(4)), True
+                    else:
+                        current_application = _one_by_address(current_network, 'Application', application)
+                        current_group = _one_by_address(current_application, record.kind, group)
+                        dynamic_rows, known = _dynamic_labels(current_group, default,
+                            snapshot.dltp_index, snapshot.project_images)
+                    if not known:
+                        raise EdltError('Lighting label_controls require resolvable source-owned dynamic image rows')
+                    issued = issue_lighting_label_binding(editor,
+                        operation_number=index + 1, application=application, group=group,
+                        source_values=projected, operation=row, dynamic_rows=dynamic_rows)
+                    lighting_label_bindings.append(issued)
+                    new_record, changes, _receipt = project_lighting_label_controls(editor, issued,
+                        operation_number=index + 1, operation=row, values=projected,
+                        record=widget_plan.record, common=editor.common)
+                    projected.update(changes)
+                    widget_plan = replace(widget_plan, record=new_record,
+                        changes={name: value for name, value in projected.items()
+                                 if value != widget_plan.expected[name]})
                 slots = {widget_plan.widget: widget_plan.record}
                 adjacent = getattr(widget_plan, 'adjacent_widget', None)
                 if adjacent is not None and getattr(widget_plan, 'adjacent_after', None) is not None:
@@ -2033,12 +2083,13 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                     original_xml=scene_initialization_xml, projected_xml=language_text,
                     unit=unit_path, editor=engine,
                     original_values=scene_initialization_values,
-                    operations=language_operations[:last], mutations=tuple(language_mutations))
+                    operations=language_operations[:last], mutations=tuple(language_mutations),
+                    dltp_index=snapshot.dltp_index, project_images=snapshot.project_images)
             outcome = resolve_native_scene_metadata(language_text, unit_path, supplied, engine,
                 row['operations'], _projected_containers=tuple(projected),
                 _projected_levels=projected_levels, _projected_values=state,
                 _initialization_timeline=initialization,
-                dltp_index=snapshot.dltp_index, display_preferences=display_preferences)
+                dltp_index=snapshot.dltp_index, project_images=snapshot.project_images, display_preferences=display_preferences)
             scene_state = engine.edit(engine.load(state, metadata=outcome.cache),
                                       operations=outcome.operations)
             if not scene_state.complete:
@@ -2190,7 +2241,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         initial_missing=initial_missing,
         dialog_contexts=tuple(dialog_contexts),
         parent_input=snapshot.raw_map() if reset_requirements is not None else None,
-        dependency_values=reset_dependency_values)
+        dependency_values=reset_dependency_values,
+        lighting_label_bindings=tuple(lighting_label_bindings))
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 
@@ -2214,15 +2266,16 @@ class NativeEdltParentError(RuntimeError):
 class NativeEdltParentTransaction:
     """Single-use database-only metadata plus PP transaction manager."""
     def __init__(self, client, editor, *, programmer=None,
-                 display_preferences=None, dltp_index=None):
+                 display_preferences=None, dltp_index=None, project_images=None):
         if type(editor) is not EdltParentTransaction:
             raise ValueError('Expected an EdltParentTransaction editor')
         if (display_preferences is not None
                 and type(display_preferences) is not EdltDisplayPreferences):
             raise ValueError('Display preferences must be EdltDisplayPreferences')
-        if dltp_index is not None and type(dltp_index) is not DltpIndex:
-            raise ValueError('A DLTP index must come from load_dltp_index')
+        if dltp_index is not None:
+            check_dltp_images(dltp_index)
         self.display_preferences, self.dltp_index = display_preferences, dltp_index
+        self.project_images = None if project_images is None else check_project_images(project_images)
         self.client, self.editor = client, editor
         self.database, self.projects = NativeDatabase(client), NativeProjects(client)
         self.programmer = Programmer(client) if programmer is None else programmer
@@ -2384,7 +2437,7 @@ class NativeEdltParentTransaction:
                 text, unit, _snapshot(text, unit, self.editor, _language_default=default).value_map(),
                 self.editor, normalized, networks=networks,
                 display_preferences=self.display_preferences,
-                dltp_index=self.dltp_index)
+                dltp_index=self.dltp_index, project_images=self.project_images)
             self._plans.append(plan); self._fingerprints[id(plan)] = repr(plan)
             self._evidence.update(state='planned', complete=True,
                                   plan=plan.as_dict())
@@ -2407,7 +2460,7 @@ class NativeEdltParentTransaction:
             text, plan.unit, plan.snapshot.value_map(), self.editor,
             plan.operations, networks=plan.networks,
             display_preferences=plan.display_preferences,
-            dltp_index=plan.snapshot.dltp_index)
+            dltp_index=plan.snapshot.dltp_index, project_images=plan.snapshot.project_images)
         if exact and text != plan.before_xml:
             raise ValueError('Native project XML changed since planning')
         if current.semantic_source() != plan.semantic_source():
@@ -2544,13 +2597,13 @@ class NativeEdltParentTransaction:
         text = replace_native_rows(plan.before_xml, plan.unit,
             tuple(LanguageRow(r['id'], r['tag_value'], r['oid']) for r in history['final_rows']),
             collection_oid=history['collection_oid'] or identities.get('@languages'), identities=identities)
-        return _snapshot(text, plan.unit, self.editor, dltp_index=plan.snapshot.dltp_index,
+        return _snapshot(text, plan.unit, self.editor, dltp_index=plan.snapshot.dltp_index, project_images=plan.snapshot.project_images,
                          _language_default=history['final_default'])
 
     def _verify_created(self, plan, text, *, description_phase):
         baseline = self._language_baseline(plan)
         snapshot = _snapshot(text, plan.unit, self.editor,
-                             dltp_index=plan.snapshot.dltp_index,
+                             dltp_index=plan.snapshot.dltp_index, project_images=plan.snapshot.project_images,
                              _language_default=(None if plan.language_history is None
                                 else json.loads(plan.language_history)['final_default']))
         before_apps = {row.address: row for row in baseline.applications}
@@ -2709,7 +2762,7 @@ class NativeEdltParentTransaction:
                 self._operation(action, plan.snapshot.project)
             text = self._xml(plan.snapshot.project)
             current = _snapshot(text, plan.unit, self.editor,
-                                dltp_index=plan.snapshot.dltp_index,
+                                dltp_index=plan.snapshot.dltp_index, project_images=plan.snapshot.project_images,
                                 _language_default=(None if plan.language_history is None
                                     else json.loads(plan.language_history)['initial_default']))
             if current != plan.snapshot:

@@ -66,6 +66,13 @@ list. Text-only Language changes can precede the parent SceneManager sequence
 while initial scenes retain their original labels until an ActionSelector setter
 or explicit trigger-current refresh.
 Read [buttons and Language ownership](toolkit-cli/docs/edlt-scene-buttons-language.md).
+The [label controls and image workflow](toolkit-cli/docs/edlt-label-controls-images.md)
+adds byte-backed project BMP exports, FONT/DYNAMIC/ICON lookup profiles and
+explicit Lighting label/status callbacks inside the owning parent transaction.
+Use `cgate edlt-project-images PROJECT --output FILE` to obtain the input,
+then bind it by SHA-256 with automatic metadata. Earlier Language changes
+also compose with image-dependent scene initialization in this bounded profile.
+Original GUI scheduling, full image codecs and device rendering remain open.
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
 also diagnoses declared source/obligation mappings and evidence gaps. Its
 bounded result leaves the global parity gate unchanged; see
@@ -452,8 +459,11 @@ it plans and can create a missing Trigger Control application, exact trigger
 groups, and exact action levels with a retained project backup, then records
 the separate PP and project-save boundaries. Typed accepted and cancelled
 [Trigger and Action Add operations](toolkit-cli/docs/edlt-scene-add-dialog.md)
-now model first-free allocation and editable names. Image-dependent labels and
-complete form binding remain outside that bounded workflow. The ordered parent transaction can consume one complete
+now model first-free allocation and editable names. Without an explicit image
+provider, image-dependent metadata still refuses. A SHA-bound project BMP
+export and optional decoded DLTP input extend the admitted FONT/DYNAMIC/ICON
+and Language profiles; see [label controls and images](toolkit-cli/docs/edlt-label-controls-images.md).
+Complete original form binding remains outstanding. The ordered parent transaction can consume one complete
 caller-supplied SceneManager cache, edit the retained or Reset-fresh scene
 graph, and share its final PP/CRC/save path with widget/settings operations.
 Its automatic project resolver also composes the exact SceneManager metadata

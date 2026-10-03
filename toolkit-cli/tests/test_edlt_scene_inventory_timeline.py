@@ -1,7 +1,10 @@
 """Capability and causal-phase guards independent of the native producer."""
 from dataclasses import replace
+from copy import copy
+import gc
 import json
 import pytest
+from weakref import ref
 
 from cbus_toolkit.edlt import EdltError
 from cbus_toolkit.edlt_application_cache import ApplicationCache, CachedDisplay, CachedGroupList
@@ -35,7 +38,8 @@ def issued():
                  for scene in range(1, 9))
     timeline = issue_timeline(template, initial=initial, frames=frames,
         save_frames=save, validation_targets=((42, 8),) * 8,
-        binding={'unit': '//TEST/1/p/20', 'requested_operations': [operation]},
+        binding={'source_xml_sha256': 'a' * 64, 'unit': '//TEST/1/p/20',
+                 'requested_operations': [operation]},
         source_values={'PrimaryApplication': (56,)}, owner=owner)
     return owner, template, timeline, operation
 
@@ -97,6 +101,205 @@ def test_replaced_cursor_or_frame_fails_issuer_seal():
         check_timeline(replace(timeline, _frames=()))
     with pytest.raises(EdltError):
         check_timeline(timeline.as_dict())
+
+
+@pytest.mark.parametrize('copied_seal', [True, False], ids=['copied-seal', 'original-seal'])
+def test_timeline_rewritten_seal_does_not_authorize_changed_xml_digest(copied_seal):
+    owner, _, timeline, _ = issued()
+    binding = json.loads(timeline._binding)
+    assert binding['source_xml_sha256'] == 'a' * 64
+    binding['source_xml_sha256'] = 'f' * 64
+    seal = copy(timeline._seal) if copied_seal else timeline._seal
+    forged = replace(timeline, _binding=json.dumps(binding), _seal=seal)
+    seal.fingerprint = forged.fingerprint
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check_timeline(forged, owner)
+
+
+@pytest.mark.parametrize('copied_seal', [True, False], ids=['copied-seal', 'original-seal'])
+def test_cursor_rewritten_seal_does_not_authorize_position999(copied_seal):
+    owner, _, cursor, _ = start()
+    assert cursor.position == 0
+    seal = copy(cursor._seal) if copied_seal else cursor._seal
+    forged = replace(cursor, position=999, _seal=seal)
+    seal.fingerprint = forged.fingerprint
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check_cursor(forged, owner)
+
+
+@pytest.mark.parametrize('target', ['timeline', 'cursor'])
+def test_unissued_copied_seal_is_not_accepted_even_with_identical_payload(target):
+    owner, timeline, cursor, _ = start()
+    value, check = (timeline, check_timeline) if target == 'timeline' else (cursor, check_cursor)
+    assert check(value, owner) is value
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check(replace(value, _seal=copy(value._seal)), owner)
+
+
+@pytest.mark.parametrize('target', ['timeline', 'cursor'])
+def test_original_issued_owner_cannot_be_reassigned(target):
+    _, timeline, cursor, _ = start()
+    value, check = (timeline, check_timeline) if target == 'timeline' else (cursor, check_cursor)
+    foreign = object()
+    value._seal.owner = foreign
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check(value, foreign)
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check(value)
+
+
+@pytest.mark.parametrize('field', ['source-values', 'frames', 'save-frames'])
+def test_original_timeline_fingerprint_cannot_be_rewritten_for_other_payload_fields(field):
+    owner, _, timeline, _ = issued()
+    changes = {
+        'source-values': {'_source_values': '{"PrimaryApplication":[57]}'},
+        'frames': {'_frames': ()},
+        'save-frames': {'_save_frames': tuple(replace(row, scene=8) for row in timeline._save_frames)},
+    }[field]
+    forged = replace(timeline, **changes)
+    forged._seal.fingerprint = forged.fingerprint
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check_timeline(forged, owner)
+
+
+@pytest.mark.parametrize('changes', [
+    {'branch': 'save'}, {'branch_position': 999}, {'journal': ('{"phase":"invented"}',)},
+])
+def test_original_cursor_fingerprint_cannot_be_rewritten_for_branch_or_journal(changes):
+    owner, _, cursor, _ = start()
+    forged = replace(cursor, **changes)
+    forged._seal.fingerprint = forged.fingerprint
+    with pytest.raises(EdltError, match='foreign or modified'):
+        check_cursor(forged, owner)
+
+
+def test_unchanged_issued_seal_can_replay_canonical_clones_and_label_memo():
+    owner, timeline, cursor, operation = start()
+    before = timeline.fingerprint
+    assert check_timeline(replace(timeline), owner).fingerprint == before
+    assert check_cursor(replace(cursor), owner).position == 0
+    labels = cursor.cache.labels(42, 1)
+    assert timeline.labels_at(0)[1].labels is labels
+    assert timeline.label_owner(labels).action == 1
+    edited = complete(cursor, operation)
+    assert edited.cache.labels(42, 1) is not labels
+    assert timeline.fingerprint == before
+    assert check_timeline(timeline, owner) is timeline
+    assert check_cursor(edited, owner) is edited
+    validation = edited.validation().advance(phase='validate-action', scene=1)
+    assert actions(validation) == (1, 8)
+    terminal = edited.before_save()
+    for scene in range(1, 9):
+        terminal = terminal.advance(phase='before-save-scene', scene=scene)
+    assert actions(terminal) == (0, 1, 8)
+    assert terminal.branch_position == 8
+    assert actions(edited) == (1, 8)
+
+
+def test_issuance_registry_does_not_keep_discarded_capabilities_alive():
+    owner, timeline, cursor, operation = start()
+    timeline_seal, cursor_seal = ref(timeline._seal), ref(cursor._seal)
+    del owner, timeline, cursor, operation
+    gc.collect()
+    assert timeline_seal() is None
+    assert cursor_seal() is None
+
+
+@pytest.mark.parametrize('consumer', ['timeline', 'labels', 'start', 'cursor'])
+def test_changed_label_names_in_memo_refuse_before_use(consumer):
+    owner, template, timeline, _ = issued()
+    rows = timeline.labels_at(0)
+    cursor = timeline.start(template, source_values={'PrimaryApplication': (56,)}, owner=owner)
+    timeline._seal.labels[0] = tuple(replace(row, labels=tuple(
+        replace(label, name='FORGED') for label in row.labels)) for row in rows)
+    check = {
+        'timeline': lambda: check_timeline(timeline, owner),
+        'labels': lambda: timeline.labels_at(0),
+        'start': lambda: timeline.start(template, source_values={'PrimaryApplication': (56,)}, owner=owner),
+        'cursor': lambda: check_cursor(cursor, owner),
+    }[consumer]
+    with pytest.raises(EdltError, match='memo'):
+        check()
+
+
+@pytest.mark.parametrize('change', ['row-list', 'row-dict', 'row-order', 'group', 'action',
+                                     'variant', 'image', 'missing-label', 'extra-row'])
+def test_memo_shape_order_and_every_observed_label_field_remain_sealed(change):
+    _, _, timeline, _ = issued()
+    rows = timeline.labels_at(0)
+    first = rows[0]
+    changed = {
+        'row-list': list(rows),
+        'row-dict': (first.as_dict(), *rows[1:]),
+        'row-order': tuple(reversed(rows)),
+        'group': (replace(first, group=43), *rows[1:]),
+        'action': (replace(first, action=7), *rows[1:]),
+        'variant': (replace(first, labels=(replace(first.labels[0], value='9'), *first.labels[1:])), *rows[1:]),
+        'image': (replace(first, labels=(replace(first.labels[0], image_present=True), *first.labels[1:])), *rows[1:]),
+        'missing-label': (replace(first, labels=first.labels[:-1]), *rows[1:]),
+        'extra-row': (*rows, first),
+    }[change]
+    timeline._seal.labels[0] = changed
+    with pytest.raises(EdltError, match='memo'):
+        timeline.labels_at(0)
+
+
+@pytest.mark.parametrize('generation', [-1, True, '0', 999])
+def test_memo_generation_keys_must_belong_to_the_issued_refresh_history(generation):
+    _, _, timeline, _ = issued()
+    timeline._seal.labels[generation] = timeline.labels_at(0)
+    with pytest.raises(EdltError, match='memo'):
+        check_timeline(timeline)
+
+
+def test_memo_storage_cannot_be_replaced_with_an_untyped_container():
+    _, _, timeline, _ = issued()
+    timeline._seal.labels = []
+    with pytest.raises(EdltError, match='memo'):
+        check_timeline(timeline)
+
+
+def test_equal_memo_rows_keep_their_original_identities_through_rebase():
+    owner, template, timeline, _ = issued()
+    rows = timeline.labels_at(0)
+    assert timeline.labels_at(0) is rows
+    assert timeline.label_owner(rows[1].labels) is rows[1]
+    rebased = timeline.rebase_outer(template)
+    assert rebased.labels_at(0) is rows
+    assert rebased.label_owner(rows[1].labels) is rows[1]
+    cursor = rebased.start(template, source_values={'PrimaryApplication': (56,)}, owner=owner)
+    assert cursor.cache.labels(42, 1) is rows[1].labels
+
+
+def test_changed_memo_cannot_issue_a_rebased_timeline_or_label_owner():
+    _, template, timeline, _ = issued()
+    rows = timeline.labels_at(0)
+    forged = tuple(replace(row, labels=tuple(replace(label, name='FORGED')
+                  for label in row.labels)) for row in rows)
+    timeline._seal.labels[0] = forged
+    with pytest.raises(EdltError, match='memo'):
+        timeline.rebase_outer(template)
+    with pytest.raises(EdltError, match='memo'):
+        timeline.label_owner(forged[1].labels)
+
+
+@pytest.mark.parametrize('seed', ['changed-name', 'row-dict', 'row-list'])
+def test_timeline_reissuance_rejects_modified_or_untyped_label_seed(seed):
+    owner, template, timeline, _ = issued()
+    rows = timeline.labels_at(0)
+    supplied = {
+        'changed-name': tuple(replace(row, labels=tuple(replace(label, name='FORGED')
+                              for label in row.labels)) for row in rows),
+        'row-dict': tuple(row.as_dict() for row in rows),
+        'row-list': list(rows),
+    }[seed]
+    with pytest.raises(EdltError, match='retained label seed'):
+        issue_timeline(template, initial=timeline._initial, frames=timeline._frames,
+            save_frames=timeline._save_frames, validation_targets=timeline._validation_targets,
+            initial_scene_bindings=timeline._initial_scene_bindings,
+            label_epochs=timeline._label_epochs, label_seeds=((0, supplied),),
+            binding=json.loads(timeline._binding), source_values=json.loads(timeline._source_values),
+            owner=owner)
 
 
 def test_complete_history_required_before_validation_or_save():

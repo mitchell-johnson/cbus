@@ -1,0 +1,58 @@
+{
+  "format": "cbus-edlt-label-control-vectors-v1",
+  "source_profile": "Pinned StatusLabelTypeData + LightingData + ComboImageTagDLT synchronous properties/callbacks; independently supplied synthetic bytes/observed rows",
+  "original_instructions_executed": 0,
+  "framework_instructions_executed": 0,
+  "lighting_types": [
+    {"name":"static-label-old-index-falls-back-then-zero-icon","before":[181,5,9],"target":"label","type":10,"images":[true,false,false,false],"after":[165,0,9],"notifications":["LabelDisplayType","LabelValueIndex"]},
+    {"name":"static-status-old-index-falls-back-then-zero-icon","before":[181,5,9],"target":"status","type":10,"images":[true,false,false,false],"after":[183,5,0],"notifications":["StatusDisplayType","StatusValueIndex"]},
+    {"name":"dynamic-label-subtype-change-retains-index","before":[151,2,1],"target":"label","type":10,"images":[true,false,true,false],"after":[167,2,1],"notifications":["LabelDisplayType"]},
+    {"name":"dynamic-status-subtype-change-retains-index","before":[151,2,1],"target":"status","type":10,"images":[true,false,true,false],"after":[150,2,1],"notifications":["StatusDisplayType"]},
+    {"name":"same-label-byte-no-index-write","before":[166,0,1],"target":"label","type":10,"images":[true,false],"after":[166,0,1],"notifications":[]},
+    {"name":"same-status-byte-no-index-write","before":[166,0,1],"target":"status","type":10,"images":[true,false],"after":[166,0,1],"notifications":[]},
+    {"name":"dynamic-to-static-label-resets-index-text-notification","before":[166,2,1],"target":"label","type":3,"images":[true,false,true],"after":[182,0,1],"notifications":["LabelDisplayType","LabelValueText"]},
+    {"name":"dynamic-to-static-status-resets-index-text-notification","before":[166,2,1],"target":"status","type":5,"images":[true,false,true],"after":[165,2,0],"notifications":["StatusDisplayType","StatusValueText"]},
+    {"name":"reserved-application-bit-preserved","before":[245,4,8],"target":"label","type":0,"images":[],"after":[133,0,8],"notifications":["LabelDisplayType","LabelValueText"]},
+    {"name":"status-level-source-choice","before":[181,5,9],"target":"status","type":1,"images":[],"after":[177,5,0],"notifications":["StatusDisplayType","StatusValueText"]},
+    {"name":"same-static-label-does-not-reset-retained-index","before":[53,63,12],"target":"label","type":3,"images":[],"after":[53,63,12],"notifications":[]},
+    {"name":"dynamic-invalid-stored-index-getter-zero-no-storage-repair","before":[166,255,255],"target":"label","type":10,"images":[true],"after":[166,255,255],"notifications":[]}
+  ],
+  "lighting_indices": [
+    {"name":"label-changed-index-updates-image-subtype-silently","before":[22,0,0],"target":"label","index":1,"images":[false,true],"after":[38,1,0]},
+    {"name":"label-unchanged-index-does-not-refresh-subtype","before":[22,0,0],"target":"label","index":0,"images":[true],"after":[22,0,0]},
+    {"name":"status-unchanged-index-refreshes-subtype","before":[22,0,0],"target":"status","index":0,"images":[true],"after":[23,0,0]},
+    {"name":"static-index-stored-255-getter-clamps-zero","before":[53,63,63],"target":"label","index":255,"images":[],"after":[53,255,63]},
+    {"name":"dynamic-index-stored-255-getter-clamps-zero","before":[22,0,0],"target":"status","index":255,"images":[true],"after":[23,0,255]}
+  ],
+  "rows": [
+    {"identity":"label:56/42/0","value":0,"name":"Plain","image_present":false},
+    {"identity":"label:56/42/1","value":1,"name":"Icon Name","image_present":true},
+    {"identity":"label:56/42/2","value":2,"name":null,"image_present":false},
+    {"identity":"label:56/42/3","value":3,"name":"","image_present":false}
+  ],
+  "drawing": [
+    {"index":0,"text":"1 - Plain","image_present":false},
+    {"index":1,"text":"2 - ","image_present":true},
+    {"index":2,"text":"3 - <Default>","image_present":false},
+    {"index":3,"text":"4 - ","image_present":false}
+  ],
+  "binding_modes": {
+    "editable":{"draw_mode":0,"value_member":"Name","display_member":"FormattedDisplay","drop_down_style":1,"data_source_update_mode":2},
+    "indexed":{"draw_mode":1,"value_member":"ValueAsInt","display_member":"DisplayValuePad3Name","drop_down_style":2,"data_source_update_mode":2}
+  },
+  "list_refresh_cases": [
+    {"change_type":"item-changed","new_index":0,"old_index":-1,"selected_index":2,"read":true},
+    {"change_type":"reset","new_index":-1,"old_index":-1,"selected_index":0,"read":true},
+    {"change_type":"item-added","new_index":3,"old_index":0,"selected_index":2,"read":true},
+    {"change_type":"item-changed","new_index":2,"old_index":2,"selected_index":2,"read":false},
+    {"change_type":"item-changed","new_index":3,"old_index":-1,"selected_index":2,"read":false},
+    {"change_type":"item-deleted","new_index":0,"old_index":-1,"selected_index":2,"read":false},
+    {"change_type":"reset","new_index":-1,"old_index":-1,"selected_index":-1,"read":false}
+  ],
+  "limits": {
+    "framework_async_dispatch":false,"automatic_currency_selection":false,
+    "automatic_mode_switch_read":false,"pixel_rendering":false,
+    "static_suggestion_culture_order":false,"host_exception_swallowing":false,
+    "input_nul_host_semantics":false,"whole_original_workflow":false
+  }
+}

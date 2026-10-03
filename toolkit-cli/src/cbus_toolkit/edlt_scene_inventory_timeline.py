@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import hashlib
 import json
+from weakref import WeakKeyDictionary
 
 from .edlt import EdltError
 
@@ -77,6 +78,50 @@ class _Seal:
         # Identity memo only. Values are copied exclusively from the sealed
         # template, and the same generation always returns the same objects.
         self.labels = {}
+
+
+# The mutable marker and label identity memo are not issuance authority. An
+# exact issued seal must still carry the original owner and payload recorded
+# here. Weak keys let discarded timelines/cursors release their capabilities.
+_ISSUED = WeakKeyDictionary()
+
+
+def _issue(value):
+    fingerprint = value.fingerprint
+    value._seal.fingerprint = fingerprint
+    _ISSUED[value._seal] = (value._seal.owner, fingerprint)
+    return value
+
+
+def _intact(value, owner):
+    issuance = _ISSUED.get(value._seal)
+    return (issuance is not None
+            and issuance[0] is value._seal.owner
+            and (owner is None or issuance[0] is owner)
+            and issuance[1] == value._seal.fingerprint == value.fingerprint)
+
+
+def _label_rows_match(rows, expected):
+    """A memo preserves identities, but never supplies new label facts."""
+    from .edlt_scene_manager import SceneDynamicLabel, SceneLevelLabels
+    return (type(rows) is tuple and len(rows) == len(expected)
+            and all(type(row) is SceneLevelLabels
+                    and type(row.group) is int and type(row.action) is int
+                    and type(row.labels) is tuple
+                    and all(type(label) is SceneDynamicLabel
+                            and type(label.value) is str and type(label.name) is str
+                            and type(label.image_present) is bool for label in row.labels)
+                    for row in rows)
+            and rows == expected)
+
+
+def _check_label_memo(value):
+    maximum = max(row.inventory.refresh_generation for row in value._save_frames)
+    if (type(value._seal.labels) is not dict
+            or any(type(generation) is not int or not 0 <= generation <= maximum
+                   or not _label_rows_match(rows, value.label_template_at(generation))
+                   for generation, rows in value._seal.labels.items())):
+        raise EdltError('Native scene inventory label memo differs from its sealed epoch')
 
 
 def _narrow(template, inventory, label_rows):
@@ -211,6 +256,8 @@ class SceneInventoryTimeline:
             self._seal.labels[generation] = tuple(
                 replace(row, labels=tuple(replace(label) for label in row.labels))
                 for row in source)
+        if not _label_rows_match(self._seal.labels[generation], self.label_template_at(generation)):
+            raise EdltError('Native scene inventory label memo differs from its sealed epoch')
         return self._seal.labels[generation]
 
     def label_template_at(self, generation):
@@ -265,23 +312,21 @@ def issue_timeline(template, *, initial, frames, save_frames,
         tuple(validation_targets), tuple(initial_scene_bindings),
         label_epochs,
         _json(binding), _json(source_values), _Seal(owner))
-    value._seal.fingerprint = value.fingerprint
     maximum = max(row.inventory.refresh_generation for row in save_frames)
     for generation, rows in label_seeds:
         if (type(generation) is not int or not 0 <= generation <= maximum
-                or type(rows) is not tuple
-                or [row.as_dict() for row in rows] != [row.as_dict() for row in value.label_template_at(generation)]
+                or not _label_rows_match(rows, value.label_template_at(generation))
                 or generation in value._seal.labels):
             raise EdltError('Native timeline retained label seed differs from its epoch')
         value._seal.labels[generation] = rows
-    return value
+    return _issue(value)
 
 
 def check_timeline(value, owner=None):
     if (type(value) is not SceneInventoryTimeline or type(value._seal) is not _Seal
-            or owner is not None and value._seal.owner is not owner
-            or value._seal.fingerprint != value.fingerprint):
+            or not _intact(value, owner)):
         raise EdltError('Native scene inventory timeline is foreign or modified')
+    _check_label_memo(value)
     return value
 
 
@@ -400,14 +445,12 @@ def _cursor(timeline, inventory, *, position=0, branch='edit', branch_position=0
                     _inventory_timeline=timeline)
     value = SceneInventoryCursor(timeline, inventory, cache,
                                  position, branch, branch_position, tuple(journal), _Seal(timeline._seal.owner))
-    value._seal.fingerprint = value.fingerprint
-    return value
+    return _issue(value)
 
 
 def check_cursor(value, owner=None):
     if (type(value) is not SceneInventoryCursor or type(value._seal) is not _Seal
-            or owner is not None and value._seal.owner is not owner
-            or value._seal.fingerprint != value.fingerprint):
+            or not _intact(value, owner)):
         raise EdltError('Native scene inventory cursor is foreign or modified')
     check_timeline(value.timeline, owner)
     return value

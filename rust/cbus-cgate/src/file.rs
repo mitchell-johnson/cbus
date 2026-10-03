@@ -342,6 +342,25 @@ fn controlled_path(model: &Server, requested: &str) -> Result<ControlledPath, St
             return normalize_base(requested);
         };
         validate_component_source(project, requested)?;
+        // Toolkit's captured image commands use `%PROJ%/PROJECT/...`.
+        // In its flat repository profile the generic native macro resolves
+        // to that repository parent. Model this spelling in the isolated
+        // virtual namespace, requiring an existing exact suffix project.
+        // A real project named PROJ keeps its prior canonical namespace.
+        let project = if project == "PROJ" && !model.projects.contains_key(project) {
+            if !suffix.starts_with(['/', '\\']) {
+                return Err(format!("Illegal path element in filename {requested}"));
+            }
+            suffix
+                .trim_start_matches(['/', '\\'])
+                .split(['/', '\\'])
+                .next()
+                .filter(|name| !name.is_empty())
+                .ok_or_else(|| format!("Illegal path element in filename {requested}"))?
+        } else {
+            project
+        };
+        validate_component_source(project, requested)?;
         if !model.projects.contains_key(project) {
             return Err(format!("Illegal path element in filename {requested}"));
         }
@@ -748,5 +767,166 @@ mod tests {
             command(&mut server, "4", "FILE MKDIR %TEST%/../escape", None).status,
             408
         );
+    }
+
+    fn alias_fixture() -> (Server, serde_json::Value) {
+        let vector: serde_json::Value = serde_json::from_str(include_str!(
+            "../../testdata/vectors/cgate_file_project_alias.json"
+        ))
+        .unwrap();
+        let mut server = Server::new(AccessLevel::Program);
+        for name in vector["projects"].as_array().unwrap() {
+            let name = name.as_str().unwrap().to_string();
+            server.projects.insert(
+                name.clone(),
+                crate::Project {
+                    tag_networks: Default::default(),
+                    name,
+                    networks: Default::default(),
+                },
+            );
+        }
+        (server, vector)
+    }
+
+    #[test]
+    fn toolkit_flat_repository_alias_and_canonical_paths_share_virtual_bytes() {
+        let (mut server, vector) = alias_fixture();
+        let alias = vector["alias"].as_str().unwrap();
+        let canonical = vector["canonical"].as_str().unwrap();
+        assert_eq!(
+            command(&mut server, "mkdir", "FILE MKDIR %PROJ%/OWNED/images", None).final_text,
+            "200 OK."
+        );
+        assert_eq!(
+            command(&mut server, "empty", "FILE DIR %PROJ%/OWNED/images", None).final_text,
+            vector["empty_directory"]
+        );
+        assert_eq!(
+            command(
+                &mut server,
+                "upload",
+                &format!("FILE UPLOAD {alias}"),
+                Some(vector["upload"].as_str().unwrap())
+            )
+            .final_text,
+            "200 OK."
+        );
+        assert_eq!(
+            server.file_store[vector["virtual_key"].as_str().unwrap()],
+            b"abc"
+        );
+        assert!(!server
+            .file_store
+            .keys()
+            .any(|key| key.starts_with("%PROJ%/")));
+        for (path, rows) in [(alias, "download_alias"), (canonical, "download_canonical")] {
+            let download = command(
+                &mut server,
+                "download",
+                &format!("FILE DOWNLOAD {path}"),
+                None,
+            );
+            let mut actual = download.lines;
+            actual.push(download.final_text);
+            assert_eq!(
+                actual,
+                vector[rows]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|v| v.as_str().unwrap())
+                    .collect::<Vec<_>>()
+            );
+        }
+        assert_eq!(
+            command(&mut server, "sha", &format!("FILE SHA256 {alias}"), None).final_text,
+            vector["digest_alias"]
+        );
+        let listing = command(&mut server, "dir", "FILE DIR %PROJ%/OWNED/images", None);
+        assert_eq!(
+            listing.lines,
+            [vector["directory_header"].as_str().unwrap()]
+        );
+        assert!(listing
+            .final_text
+            .starts_with(vector["listing_file_prefix"].as_str().unwrap()));
+
+        write_bytes(&mut server, canonical, b"d".to_vec()).unwrap();
+        assert_eq!(read_bytes(&server, alias).unwrap(), b"d");
+        assert_eq!(read_bytes(&server, &format!("{alias}.0")).unwrap(), b"abc");
+        assert!(regular_file_exists(&server, alias).unwrap());
+        create_parent_directories(&mut server, "%PROJ%/OTHER/images/isolated.bmp").unwrap();
+        write_bytes(
+            &mut server,
+            "%PROJ%/OTHER/images/isolated.bmp",
+            b"other".to_vec(),
+        )
+        .unwrap();
+        assert_eq!(
+            read_bytes(&server, "%OTHER%/OTHER/images/isolated.bmp").unwrap(),
+            b"other"
+        );
+        assert!(read_bytes(&server, "%PROJ%/OWNED/images/isolated.bmp").is_err());
+        assert_eq!(
+            command(&mut server, "delete", &format!("FILE DELETE {alias}"), None).status,
+            200
+        );
+        assert!(!regular_file_exists(&server, canonical).unwrap());
+    }
+
+    #[test]
+    fn toolkit_flat_alias_refusals_preserve_both_virtual_namespaces() {
+        let (mut server, vector) = alias_fixture();
+        for path in vector["refused"].as_array().unwrap() {
+            let path = path.as_str().unwrap();
+            let files = server.file_store.clone();
+            let modified = server.file_modified.clone();
+            assert_eq!(
+                command(&mut server, "mkdir", &format!("FILE MKDIR {path}"), None).status,
+                408,
+                "{path}"
+            );
+            assert_eq!(
+                command(
+                    &mut server,
+                    "upload",
+                    &format!("FILE UPLOAD {path}"),
+                    Some("YQ==")
+                )
+                .status,
+                408,
+                "{path}"
+            );
+            assert!(
+                create_parent_directories(&mut server, path).is_err(),
+                "{path}"
+            );
+            assert!(
+                write_bytes(&mut server, path, b"x".to_vec()).is_err(),
+                "{path}"
+            );
+            assert_eq!(server.file_store, files, "{path}");
+            assert_eq!(server.file_modified, modified, "{path}");
+        }
+        // The old exact project namespace remains available, including when
+        // a project really is named PROJ. It must not be silently reassigned.
+        server.projects.insert(
+            "PROJ".into(),
+            crate::Project {
+                tag_networks: Default::default(),
+                name: "PROJ".into(),
+                networks: Default::default(),
+            },
+        );
+        create_parent_directories(&mut server, "%PROJ%/OWNED/images/old.bin").unwrap();
+        write_bytes(
+            &mut server,
+            "%PROJ%/OWNED/images/old.bin",
+            b"legacy".to_vec(),
+        )
+        .unwrap();
+        assert_eq!(server.file_store["%PROJ%/OWNED/images/old.bin"], b"legacy");
+        assert!(read_bytes(&server, "%OWNED%/OWNED/images/old.bin").is_err());
     }
 }

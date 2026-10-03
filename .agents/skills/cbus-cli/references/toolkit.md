@@ -898,3 +898,23 @@ profiles from control names, forwarded commands or test filenames. Treat
 OnColor as a scalar only for `TLEDStatusIndicator` and
 `TFlashLEDStatusIndicator`; other OnColor bindings remain events requiring
 handler evidence.
+
+
+## Image-backed label and Language successor
+
+The native image profile now admits SHA-bound ordered project FILE exports and
+optional decoded DLTP files. FONT matches the prefix before its first comma;
+every non-ICON type can match the exact whole key, with first directory-order
+match. ICON uses exact DLTP integer-key text. All consumed project images are
+decoded within the documented bounded BMP profile; full GDI/codecs, opacity,
+filename culture and rendering remain open. The exporter retains bytes in its
+private output and emits hashes/counts rather than duplicate pixels in stdout.
+
+Lighting `label_controls` executes the exact source type/index recursion and
+explicit ComboImageTagDLT callbacks after its ordinary widget projection, with
+the shared whole-unit static cache. Current Lighting getters consume current
+causal group rows after earlier Language changes; Scene initial labels retain
+their separate old-object references until an explicit setter/refresh. Owner,
+source snapshot, operation position/history and rows seal the in-process binding.
+Static suggestion ordinals require an observed culture/order profile and refuse
+on the current automatic path. Read `toolkit-cli/docs/edlt-label-controls-images.md`.

@@ -23,6 +23,7 @@ from .edlt_display_model import (
     present_application_cache,
 )
 from .edlt_dltp_index import DltpIndex
+from .edlt_scene_label_images import check_project_images, check_dltp_images
 from .edlt_lifecycle import LifecycleCache, LifecycleGroup
 from .edlt_parent_metadata import (
     MAX_OBJECTS, NativeEdltProjectSnapshot, _byte, _children, _digest,
@@ -725,7 +726,9 @@ class ResolvedSceneMetadata:
             'missing_objects_auto_created': False,
             'missing_objects_projected_for_creation': bool(self.creations),
             'projected_cache_includes_planned_creations': True,
-            'project_images_loaded': False,
+            'project_images_loaded': self.snapshot.project_images is not None,
+            'project_image_export': (None if self.snapshot.project_images is None
+                                     else self.snapshot.project_images.evidence()),
             'toolkit_dltp_index': (
                 None if self.snapshot.dltp_index is None
                 else self.snapshot.dltp_index.evidence()),
@@ -744,7 +747,7 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
                                   _projected_levels=(),
                                   _projected_values=None,
                                   _initialization_timeline=None,
-                                  display_preferences=None, dltp_index=None):
+                                  display_preferences=None, dltp_index=None, project_images=None):
     """Resolve one immutable SceneManager cache without native mutation.
 
     ``display_preferences`` optionally applies the eDLT registry display/sort
@@ -777,16 +780,20 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
         from .edlt_scene_inventory_timeline import check_timeline
         if type(_initialization_timeline) is SceneLanguageInitializer:
             language_initializer = check_language_initializer(_initialization_timeline,
-                projected_xml=text, unit=unit_path, editor=engine)
+                projected_xml=text, unit=unit_path, editor=engine,
+                dltp_index=dltp_index, project_images=project_images)
             initializer = language_initializer.original_timeline
         else:
             initializer = check_timeline(_initialization_timeline, owner=engine._owner)
             binding = json.loads(initializer._binding)
             if binding['unit'] != unit_path or binding['source_xml_sha256'] != _digest(text):
                 raise EdltError('Parent scene initialization provenance belongs to another XML/unit source')
+            if (binding.get('project_image_export') != (None if project_images is None else project_images.evidence())
+                    or binding.get('toolkit_dltp_index') != (None if dltp_index is None else dltp_index.evidence())):
+                raise EdltError('Parent scene initialization image-byte provenance differs')
     else:
         initializer = None
-    snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index)
+    snapshot = _snapshot(text, unit_path, engine, dltp_index=dltp_index, project_images=project_images)
     dialog_project_name = None
     if any(row['op'] in ('add-trigger-dialog', 'add-action-dialog', 'scene-button-control') for row in operations):
         # Native name validation compares Project.TagName, not the command
@@ -1036,6 +1043,8 @@ def resolve_native_scene_metadata(text, unit_path, values, engine, operations,
             save_frames=save_frames, validation_targets=validation_targets,
             initial_scene_bindings=initial_scene_bindings,
             binding={'source_xml_sha256': _digest(text), 'unit': unit_path,
+                     'project_image_export': (None if snapshot.project_images is None else snapshot.project_images.evidence()),
+                     'toolkit_dltp_index': (None if snapshot.dltp_index is None else snapshot.dltp_index.evidence()),
                      'requested_operations': operations,
                      'resolved_operations': resolved_operations,
                      'add_dialogs': [json.loads(row) for row in dialogs],
@@ -1129,7 +1138,7 @@ class NativeSceneMetadataPlan:
 
 def plan_native_scene_metadata(text, unit_path, values, editor, operations,
                                *, validate=False, networks=(),
-                               display_preferences=None, dltp_index=None):
+                               display_preferences=None, dltp_index=None, project_images=None):
     """Resolve project metadata and prepare one retained scene plan offline."""
     from .edlt_scene_manager_cli import SceneCLIEditor
     if type(editor) is not SceneCLIEditor:
@@ -1137,7 +1146,7 @@ def plan_native_scene_metadata(text, unit_path, values, editor, operations,
     unit_path, _project_name, _network, _unit = _unit_path(unit_path)
     resolved = resolve_native_scene_metadata(
         text, unit_path, values, editor.engine, operations,
-        display_preferences=display_preferences, dltp_index=dltp_index)
+        display_preferences=display_preferences, dltp_index=dltp_index, project_images=project_images)
     scene_plan = editor.plan(
         resolved.snapshot.value_map(), metadata=resolved.cache,
         operations=resolved.operations, validate=validate)
@@ -1164,16 +1173,17 @@ class NativeSceneMetadataError(RuntimeError):
 class NativeSceneMetadataTransaction:
     """Single-use exact metadata plus retained SceneManager transaction."""
     def __init__(self, client, editor, *, programmer=None,
-                 display_preferences=None, dltp_index=None):
+                 display_preferences=None, dltp_index=None, project_images=None):
         from .edlt_scene_manager_cli import SceneCLIEditor
         if type(editor) is not SceneCLIEditor:
             raise ValueError('Expected a SceneCLIEditor')
         if (display_preferences is not None
                 and type(display_preferences) is not EdltDisplayPreferences):
             raise ValueError('Display preferences must be EdltDisplayPreferences')
-        if dltp_index is not None and type(dltp_index) is not DltpIndex:
-            raise ValueError('A DLTP index must come from load_dltp_index')
+        if dltp_index is not None:
+            check_dltp_images(dltp_index)
         self.display_preferences, self.dltp_index = display_preferences, dltp_index
+        self.project_images = None if project_images is None else check_project_images(project_images)
         self.client, self.editor = client, editor
         self.database = NativeDatabase(client)
         self.projects = NativeProjects(client)
@@ -1343,7 +1353,7 @@ class NativeSceneMetadataTransaction:
                 text, unit, values, self.editor, operations,
                 validate=validate, networks=networks,
                 display_preferences=self.display_preferences,
-                dltp_index=self.dltp_index)
+                dltp_index=self.dltp_index, project_images=self.project_images)
             self._plans.append(plan)
             self._fingerprints[id(plan)] = repr(plan)
             self._evidence.update(
@@ -1370,7 +1380,7 @@ class NativeSceneMetadataTransaction:
             plan.resolved.requested_operations, validate=plan.validate,
             networks=plan.networks,
             display_preferences=plan.resolved.display_preferences,
-            dltp_index=snapshot.dltp_index)
+            dltp_index=snapshot.dltp_index, project_images=snapshot.project_images)
         if exact and text != plan.before_xml:
             raise ValueError('Native project XML changed since planning')
         if current.semantic_source() != plan.semantic_source():
@@ -1434,7 +1444,7 @@ class NativeSceneMetadataTransaction:
 
     def _verify_created(self, plan, text):
         snapshot = _snapshot(text, plan.unit, self.editor.engine,
-                             dltp_index=plan.resolved.snapshot.dltp_index)
+                             dltp_index=plan.resolved.snapshot.dltp_index, project_images=plan.resolved.snapshot.project_images)
         before_apps = {row.address: row
                        for row in plan.resolved.snapshot.applications}
         after_apps = {row.address: row for row in snapshot.applications}
@@ -1581,7 +1591,7 @@ class NativeSceneMetadataTransaction:
             text = self._xml(plan.resolved.snapshot.project)
             current = _snapshot(
                 text, plan.unit, self.editor.engine,
-                dltp_index=plan.resolved.snapshot.dltp_index)
+                dltp_index=plan.resolved.snapshot.dltp_index, project_images=plan.resolved.snapshot.project_images)
             if current != plan.resolved.snapshot:
                 raise RuntimeError(
                     'Reload did not restore the admitted scene metadata source')
@@ -1690,7 +1700,7 @@ class NativeSceneMetadataTransaction:
             final = (self._verify_created(plan, final_text)
                      if plan.resolved.creations else
                      _snapshot(final_text, plan.unit, self.editor.engine,
-                               dltp_index=snapshot.dltp_index))
+                               dltp_index=snapshot.dltp_index, project_images=snapshot.project_images))
             expected = {**plan.scene_plan.expected, **plan.scene_plan.changes}
             if final.value_map() != expected:
                 raise RuntimeError(

@@ -156,6 +156,8 @@ def requires_retained_names(operations):
             continue
         if row.get('op') == 'static-text-dialog':
             return True
+        if row.get('op') == 'lighting' and row.get('label_controls'):
+            return True
         nested = row.get('operations')
         if (row.get('op') == 'scene-manager'
                 and isinstance(nested, (list, tuple))

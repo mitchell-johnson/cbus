@@ -1578,6 +1578,11 @@ def build_parser():
     file_upload.add_argument("server_path")
     file_upload.add_argument("source", type=Path)
     file_upload.add_argument("--project", help="Select this project before upload; no project save")
+    image_export = cgops.add_parser(
+        "edlt-project-images", help="Export ordered project BMP bytes from the server FILE namespace")
+    image_export.add_argument("project", help="Project name used in the exact FILE namespace")
+    image_export.add_argument("--output", type=Path, required=True,
+                              help="New image export JSON file; never overwrites")
     from .thermostat_schedule_cli import compose_options, options as schedule_options
     schedule_parser = cgops.add_parser("thermostat-schedule-levels", help="Preview or create thermostat scheduling levels in a closed project")
     schedule_options(schedule_parser)
@@ -2872,7 +2877,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups", "file-upload"):
+    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups", "file-upload", "edlt-project-images"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -2913,6 +2918,9 @@ def _cgate(args):
     if args.action == "file-upload":
         from .file_transfer import prepare_upload
         file_upload_plan = prepare_upload(args.server_path, args.source, project=args.project)
+    if args.action == "edlt-project-images":
+        from .edlt_project_images_cli import prepare
+        project_image_export_plan = prepare(args.project, args.output)
     if args.action == "conversion" and args.remote_action in ("plan-move", "apply-move", "recover"):
         from .conversion_workflow_cli import prepare
         prepare(args)
@@ -2944,13 +2952,16 @@ def _cgate(args):
     large_xml = ((args.action == "database" and args.remote_action in ("get-xml", "set-xml", "barcode-add"))
                  or args.action == "conversion"
                  or (args.action == "network" and args.remote_action == "diagnose"))
-    connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action == "edlt-labels" or large_xml else {}
+    connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action in ("edlt-labels", "edlt-project-images") or large_xml else {}
     connection_limits.update(wireless_limits)
     with tweaker_lifecycle_guard, tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "file-upload":
             from .file_transfer import upload
             return upload(file_upload_plan, client), 0
+        if args.action == "edlt-project-images":
+            from .edlt_project_images_cli import export
+            return export(client, project_image_export_plan), 0
         if args.action == "edlt-labels":
             from .cmqtt import edlt_label_inventory, edlt_labels
             if args.network is not None:

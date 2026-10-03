@@ -143,6 +143,7 @@ jobs:
           --require-module tests/test_cgate_edlt_scene_selector_interop.py
           --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --require-module tests/test_cgate_edlt_scene_controls_language_interop.py
+          --require-module tests/test_cgate_edlt_lighting_images_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -191,6 +192,7 @@ jobs:
           --require-module tests/test_cgate_edlt_scene_selector_interop.py
           --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --require-module tests/test_cgate_edlt_scene_controls_language_interop.py
+          --require-module tests/test_cgate_edlt_lighting_images_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"

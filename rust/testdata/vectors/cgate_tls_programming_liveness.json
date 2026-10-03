@@ -1,0 +1,11 @@
+{
+  "format": "cbus-owned-tls-programming-liveness-v1",
+  "scope": "owned cmqttd, ephemeral TLS, MiniBroker and scripted PCI only",
+  "mqtt_command": {"topic": "homeassistant/light/cbus_1/set", "payload": {"state": "ON"}, "pci_payload": "053800790149", "delivery": "confirmed"},
+  "observation": {"pci_wire": "05073800790A39\r\n", "mqtt_topic": "homeassistant/light/cbus_10/state", "state": "ON", "source_unit": 7, "cgate_status": "#s# lighting on //HARNESS/254/56/10  #sourceunit=7 OID=00000000-0000-0000-0000-000000000003\r\n"},
+  "programming": {"store_prefix": "460500AE2000", "bytes": [1,2,3,4,5,6,7,8,9,10,11,12], "store_count": 1},
+  "terminal": {"success_prefix": "[save] 200 OK", "uncertain_prefix": "[save] 502 Physical PP save failed after 0 confirmed write(s):", "next_command": "[after] 200 OK.\r\n"},
+  "import_identity": {"scope": "legacy project fixture import into a fresh daemon", "allocation_order": ["Application 56 -> 1", "Group 1 -> 2", "Group 10 -> 3"], "source_contract": "seed_project_xml_metadata calls seed_imported_object, which allocates fresh OIDs in child order"},
+  "ordering": ["observation before programming terminal", "programming terminal before pipelined NOOP terminal"],
+  "limits": ["not original C-Gate acceptance", "not physical hardware acceptance", "buffered TLS regression and flush deadline cancellation are separately covered"]
+}

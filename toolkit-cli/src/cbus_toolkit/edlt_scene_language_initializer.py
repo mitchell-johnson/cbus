@@ -1,4 +1,4 @@
-"""Owner-issued text-only Language XML refresh for retained scene labels.
+"""Owner-issued Language XML refresh for retained scene label/image facts.
 
 The bridge proves a Language-only projection.  It is not a serialized cache,
 an automatic event scheduler or a reproduction of the original per-row saves.
@@ -9,8 +9,22 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import hashlib
 import json
+from weakref import WeakKeyDictionary
 
 from .edlt import EdltError
+
+_UNSPECIFIED = object()
+
+
+def _image_inputs(dltp_index, project_images):
+    from .edlt_dltp_index import DltpIndex
+    from .edlt_scene_label_images import check_project_images, check_dltp_images
+    if dltp_index is not None:
+        check_dltp_images(dltp_index)
+    if project_images is not None:
+        check_project_images(project_images)
+    return {'project_image_export': None if project_images is None else project_images.evidence(),
+            'toolkit_dltp_index': None if dltp_index is None else dltp_index.evidence()}
 
 
 def _json(value):
@@ -31,9 +45,13 @@ def _sha(text):
 
 
 class _Seal:
+    __slots__ = ('owner', '__weakref__')
+
     def __init__(self, owner):
         self.owner = owner
-        self.fingerprint = None
+
+
+_ISSUED = WeakKeyDictionary()
 
 
 @dataclass(frozen=True)
@@ -140,22 +158,31 @@ class SceneLanguageInitializer:
                 'original_label_template': [row.as_dict() for row in self.original_label_template],
                 'projected_label_template': [row.as_dict() for row in self.projected_label_template],
                 'refresh_count': self.refresh_count,
-                'refresh_profile': 'explicit-final-text-only-Language-XML-refresh',
+                'refresh_profile': ('explicit-final-text-only-Language-XML-refresh'
+                    if json.loads(self._binding)['text_only'] else
+                    'explicit-final-byte-backed-image-Language-XML-refresh'),
                 'serialized_input_capability': False, 'original_execution': False,
                 'implicit_notifications_inferred': False, 'database_execution': False}
 
 
 def check_language_initializer(value, *, original_xml=None, projected_xml=None,
-                               unit=None, editor=None, original_values=None):
+                               unit=None, editor=None, original_values=None,
+                               dltp_index=_UNSPECIFIED, project_images=_UNSPECIFIED):
     from .edlt_scene_inventory_timeline import check_timeline
     if type(value) is not SceneLanguageInitializer or type(value._seal) is not _Seal:
         raise EdltError('Scene Language initializer is foreign or serialized')
     owner = None if editor is None else editor._owner
     check_timeline(value.original_timeline, owner=value._seal.owner)
-    if (owner is not None and owner is not value._seal.owner
-            or value._seal.fingerprint != value.fingerprint):
+    issuance = _ISSUED.get(value._seal)
+    if (issuance is None or issuance[0] is not value._seal.owner
+            or owner is not None and owner is not value._seal.owner
+            or issuance[1] != value.fingerprint):
         raise EdltError('Scene Language initializer is foreign or modified')
     binding = json.loads(value._binding)
+    if dltp_index is not _UNSPECIFIED or project_images is not _UNSPECIFIED:
+        if (dltp_index is _UNSPECIFIED or project_images is _UNSPECIFIED
+                or binding['image_inputs'] != _image_inputs(dltp_index, project_images)):
+            raise EdltError('Scene Language initializer image-byte provenance differs')
     from .edlt_parent_metadata import _unit_path
     if (original_xml is not None and _sha(original_xml) != binding['original_xml_sha256']
             or projected_xml is not None and _sha(projected_xml) != binding['projected_xml_sha256']
@@ -169,8 +196,8 @@ def check_language_initializer(value, *, original_xml=None, projected_xml=None,
     return value
 
 
-def _text_only(text, unit):
-    """Refuse unresolved image profiles across the selected Network refresh."""
+def _known_profiles(text, unit, *, dltp_index=None, project_images=None):
+    """Refuse unresolved image inputs across the selected Network refresh."""
     from .edlt_parent_metadata import _container, _children, _one_by_address, _unit_path, _field
     document = _container(text, 'Installation')
     project = _children(document.documentElement, 'Project')[0]
@@ -178,8 +205,12 @@ def _text_only(text, unit):
     for node in network.getElementsByTagName('*'):
         if node.tagName in ('Image', 'Images', 'ProjectImages', 'DLTP'):
             raise EdltError('Scene Language initializer excludes Image/DLTP metadata')
-        if node.tagName == 'TagDLT' and _field(node, 'TagType') not in ('', 'TEXT'):
-            raise EdltError('Scene Language initializer requires text-only TagDLT metadata')
+        if node.tagName == 'TagDLT':
+            kind = _field(node, 'TagType')
+            if (kind not in ('', 'TEXT', 'FONT', 'DYNAMIC', 'ICON')
+                    or kind in ('FONT', 'DYNAMIC') and project_images is None
+                    or kind == 'ICON' and dltp_index is None):
+                raise EdltError('Scene Language initializer requires text-only or byte-backed image inputs')
 
 
 def _facts(snapshot):
@@ -197,7 +228,8 @@ def _facts(snapshot):
 
 
 def issue_language_initializer(initializer, *, original_xml, projected_xml,
-                               unit, editor, original_values, operations, mutations):
+                               unit, editor, original_values, operations, mutations,
+                               dltp_index=None, project_images=None):
     """Independently reproject an exact parent-history prefix through Language.
 
     ``operations`` is the public history prefix, ending at the current Language
@@ -218,6 +250,9 @@ def issue_language_initializer(initializer, *, original_xml, projected_xml,
     if (source_binding.get('unit') != unit
             or source_binding.get('source_xml_sha256') != _sha(original_xml)):
         raise EdltError('Scene Language initializer original XML/unit differs')
+    inputs = _image_inputs(dltp_index, project_images)
+    if any(source_binding.get(key) != value for key, value in inputs.items()):
+        raise EdltError('Scene Language original initializer image-byte provenance differs')
     if _json(editor.snapshot(original_values)) != initializer._source_values:
         raise EdltError('Scene Language initializer original PP differs')
     if (type(operations) not in (tuple, list) or not 1 <= len(operations) <= 256
@@ -230,11 +265,11 @@ def issue_language_initializer(initializer, *, original_xml, projected_xml,
                     if row.get('op') == 'add-language-dialog')
     if len(history) != len(mutations) or not history:
         raise EdltError('Scene Language initializer receipt/history counts differ')
-    _text_only(original_xml, unit)
-    _text_only(projected_xml, unit)
+    _known_profiles(original_xml, unit, dltp_index=dltp_index, project_images=project_images)
+    _known_profiles(projected_xml, unit, dltp_index=dltp_index, project_images=project_images)
     # Do not broaden duplicate/default/lexical-ID native metadata admission.
-    baseline = _snapshot(original_xml, unit, editor)
-    current = _snapshot(projected_xml, unit, editor)
+    baseline = _snapshot(original_xml, unit, editor, dltp_index=dltp_index, project_images=project_images)
+    current = _snapshot(projected_xml, unit, editor, dltp_index=dltp_index, project_images=project_images)
     if (baseline.value_map() != current.value_map()
             or baseline.raw_map() != current.raw_map()):
         raise EdltError('Language-only XML projection changed original PP')
@@ -268,7 +303,7 @@ def issue_language_initializer(initializer, *, original_xml, projected_xml,
         projected = (original_xml if all(row['cancelled'] for row in (*receipts, receipt)) else
                      replace_native_rows(original_xml, unit, state.rows,
                          collection_oid=collection or '@languages'))
-        step = _snapshot(projected, unit, editor)
+        step = _snapshot(projected, unit, editor, dltp_index=dltp_index, project_images=project_images)
         images, labels = _facts(step)
         if dict(supplied) != {'op': 'parent-language-binding', 'receipt': receipt,
                             'group_images': images, 'level_labels': labels}:
@@ -280,8 +315,9 @@ def issue_language_initializer(initializer, *, original_xml, projected_xml,
     if projected_xml != projected and not equivalent_original:
         raise EdltError('Scene Language projection changed unrelated XML or row provenance')
     images, labels = _facts(current)
-    if any(not row['known'] or any(row['images']) for row in images):
-        raise EdltError('Scene Language initializer contains unknown/image facts')
+    if (any(not row['known'] for row in images)
+            or any(row['labels'] is None for row in labels)):
+        raise EdltError('Scene Language initializer contains unresolved image/label facts')
     template = [SceneLevelLabels(row['group'], row['action'], tuple(
         SceneDynamicLabel(**label) for label in row['labels'])) for row in labels]
     _old_images, original_labels = _facts(baseline)
@@ -303,10 +339,12 @@ def issue_language_initializer(initializer, *, original_xml, projected_xml,
                'history_prefix_sha256': hashlib.sha256(_json(operations).encode('ascii')).hexdigest(),
                'history_prefix_operations': len(operations),
                'original_pp_sha256': hashlib.sha256(initializer._source_values.encode('ascii')).hexdigest(),
-               'language_receipts': receipts, 'text_only': True,
+               'language_receipts': receipts,
+               'text_only': dltp_index is None and project_images is None,
+               'image_inputs': inputs,
                'default_before': initialise(rows, first['preferences']).default,
                'default_after': state.default}
     value = SceneLanguageInitializer(initializer, original_template, tuple(template), int(changed),
                                      _json(binding), _Seal(editor._owner))
-    value._seal.fingerprint = value.fingerprint
+    _ISSUED[value._seal] = (editor._owner, value.fingerprint)
     return value

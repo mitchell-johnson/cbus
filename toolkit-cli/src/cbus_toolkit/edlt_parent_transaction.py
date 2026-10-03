@@ -58,7 +58,7 @@ MIN_OPERATIONS = 2
 LIGHTING_OPTION_NAMES = (
     'page', 'position', 'group', 'mode', 'application', 'page_mode',
     'label_type', 'label_index', 'label_text', 'status_type', 'status_index',
-    'status_text', 'ramp_seconds', 'restore_level',
+    'status_text', 'ramp_seconds', 'restore_level', 'label_controls',
 )
 ENABLE_OPTION_NAMES = (
     'page', 'position', 'variable', 'level', 'page_mode', 'label_type',
@@ -339,6 +339,9 @@ def _operation(value, *, allow_add_dialog=False):
                 'operations')
         value = {**value, 'operations': tuple(
             EdltSceneManager._operation(row) for row in nested)}
+    if operation == 'lighting' and 'label_controls' in value:
+        from .edlt_lighting_label_controls import normalize_controls
+        value = {**value, 'label_controls': normalize_controls(value['label_controls'])}
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -504,6 +507,7 @@ class ParentTransactionPlan:
     evidence: str
     dialog_initial_missing: tuple[str, ...] = ()
     dialog_missing_by_operation: tuple = ()
+    lighting_label_bindings: tuple = ()
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'after_controls', 'before_save',
@@ -527,6 +531,7 @@ class ParentTransactionPlan:
             'unit_type': 'KEYGL5', 'catalog_number': '5055EDL',
             'firmware': '5.5.00',
             'operations': [dict(value) for value in self.operations],
+            'lighting_label_bindings': [value.as_dict() for value in self.lighting_label_bindings],
             'initial_dialog_show_normalizations': [
                 {'parameter': name, 'before': list(self.expected[name]), 'after': [255],
                  'fact': 'absent in the complete inventory before dialog operations'}
@@ -730,8 +735,16 @@ class EdltParentTransaction:
 
     @retained_history
     def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
-             _dialog_missing_by_operation=()):
+             _dialog_missing_by_operation=(), _lighting_label_bindings=()):
         operations = normalize_operations(operations)
+        from .edlt_lighting_label_controls import LightingLabelBinding
+        expected_label_operations = tuple(number for number, row in enumerate(operations, 1)
+            if row['op'] == 'lighting' and 'label_controls' in row)
+        if (type(_lighting_label_bindings) is not tuple
+                or any(type(value) is not LightingLabelBinding for value in _lighting_label_bindings)
+                or tuple(value.operation_number for value in _lighting_label_bindings) != expected_label_operations):
+            raise EdltError('Lighting label_controls require one owner-issued automatic binding per ordered operation')
+        label_bindings = {value.operation_number: value for value in _lighting_label_bindings}
         if (type(_dialog_initial_missing) is not tuple
                 or any(type(name) is not str or name not in _SETTING_FIELDS['corridor'][:3]
                        for name in _dialog_initial_missing)
@@ -1131,12 +1144,22 @@ class EdltParentTransaction:
                         f'Duplicate widget byte ownership for widget{candidate}: '
                         f'{slots[candidate]} and {owner}')
                 editor = widget_editors.get(kind) or self._editor(kind)
+                label_controls = options.pop('label_controls', None) if kind == 'lighting' else None
                 if is_mra:
                     widget_plan = editor.plan(
                         planning_values, kind=kind,
                         _parent_composition=True, **options)
                 else:
                     widget_plan = editor.plan(planning_values, **options)
+                label_control_receipt = None
+                if label_controls is not None:
+                    from .edlt_lighting_label_controls import project_lighting_label_controls
+                    control_record, control_changes, label_control_receipt = project_lighting_label_controls(
+                        self, label_bindings[number], operation_number=number,
+                        operation=operation, values={**widget_plan.expected, **widget_plan.changes},
+                        record=widget_plan.record, common=editor)
+                    widget_plan = replace(widget_plan, record=control_record,
+                        changes={**widget_plan.changes, **control_changes})
                 widget = widget_plan.widget
                 if widget in slots:
                     raise EdltError(
@@ -1243,6 +1266,8 @@ class EdltParentTransaction:
                 validation_placement_projections += 1
                 selected.append((widget, kind))
                 document = widget_plan.as_dict()
+                if label_control_receipt is not None:
+                    document['label_controls'] = label_control_receipt
                 panel_binding = {
                     'selection_order': [
                         'ShowWidget', 'BaseWidget.SetWidgetData',
@@ -1797,7 +1822,7 @@ class EdltParentTransaction:
             lifecycle_plan.changes, initial_cache, initial_application_cache,
             initial_scene_manager_cache, operations, tuple(results),
             _json(evidence), _dialog_initial_missing,
-            _dialog_missing_by_operation)
+            _dialog_missing_by_operation, _lighting_label_bindings)
 
     @staticmethod
     def _interrupted(error, plan, attempted, original_error=None):
@@ -1828,7 +1853,8 @@ class EdltParentTransaction:
                           plan.application_cache or plan.metadata),
                 operations=plan.operations,
                 _dialog_initial_missing=plan.dialog_initial_missing,
-                _dialog_missing_by_operation=plan.dialog_missing_by_operation)
+                _dialog_missing_by_operation=plan.dialog_missing_by_operation,
+                _lighting_label_bindings=plan.lighting_label_bindings)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):

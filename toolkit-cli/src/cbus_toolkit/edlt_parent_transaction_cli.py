@@ -199,7 +199,7 @@ def read_project_xml(path, *, limit=16 * 1024 * 1024):
 
 
 def presentation_options(parser):
-    """Automatic-metadata display preferences and the Toolkit DLTP index."""
+    """Automatic-metadata preferences and byte-backed image inputs."""
     parser.add_argument(
         '--display-preferences', type=Path,
         help=('cbus-edlt-display-preferences-v1 JSON with the eDLT registry '
@@ -212,6 +212,17 @@ def presentation_options(parser):
     parser.add_argument(
         '--toolkit-dltp-sha256',
         help='Required SHA-256 of the Toolkit DLTP Index.txt bytes')
+    parser.add_argument(
+        '--toolkit-dltp-decode', action='store_true',
+        help=('Decode all SHA-bound DLTP BMPs in the bounded BI_RGB profile; '
+              'requires --toolkit-dltp-dir and --toolkit-dltp-sha256'))
+    parser.add_argument(
+        '--project-images-export', type=Path,
+        help=('Ordered cbus-edlt-project-images-v1 FILE export; resolves '
+              'project image keys, including FONT and DYNAMIC labels'))
+    parser.add_argument(
+        '--project-images-sha256',
+        help='Required SHA-256 of the exact project image export bytes')
 
 
 def presentation(args):
@@ -219,12 +230,19 @@ def presentation(args):
     preferences = getattr(args, 'display_preferences', None)
     directory = getattr(args, 'toolkit_dltp_dir', None)
     digest = getattr(args, 'toolkit_dltp_sha256', None)
+    images = getattr(args, 'project_images_export', None)
+    image_digest = getattr(args, 'project_images_sha256', None)
+    decode_dltp = getattr(args, 'toolkit_dltp_decode', False)
     if (directory is None) != (digest is None):
         raise ValueError('--toolkit-dltp-dir and --toolkit-dltp-sha256 must be supplied together')
+    if (images is None) != (image_digest is None):
+        raise ValueError('--project-images-export and --project-images-sha256 must be supplied together')
+    if decode_dltp and directory is None:
+        raise ValueError('--toolkit-dltp-decode requires --toolkit-dltp-dir and --toolkit-dltp-sha256')
     automatic = (getattr(args, 'project_xml', None) is not None
                  or getattr(args, 'auto_metadata', False))
-    if not automatic and (preferences is not None or directory is not None):
-        raise ValueError('--display-preferences and --toolkit-dltp-dir require '
+    if not automatic and any(value is not None for value in (preferences, directory, images)):
+        raise ValueError('--display-preferences, --toolkit-dltp-dir and --project-images-export require '
                          '--project-xml or --auto-metadata')
     result = {'display_preferences': None, 'dltp_index': None}
     if preferences is not None:
@@ -233,6 +251,13 @@ def presentation(args):
         result['display_preferences'] = EdltDisplayPreferences.from_dict(
             read_json(preferences, limit=64 * 1024))
     if directory is not None:
-        from .edlt_dltp_index import load_dltp_index
-        result['dltp_index'] = load_dltp_index(directory, expected_sha256=digest)
+        if decode_dltp:
+            from .edlt_scene_label_images import load_decoded_dltp_index
+            result['dltp_index'] = load_decoded_dltp_index(directory, expected_sha256=digest)
+        else:
+            from .edlt_dltp_index import load_dltp_index
+            result['dltp_index'] = load_dltp_index(directory, expected_sha256=digest)
+    if images is not None:
+        from .edlt_scene_label_images import load_project_images
+        result['project_images'] = load_project_images(images, expected_sha256=image_digest)
     return result
