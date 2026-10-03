@@ -2,6 +2,28 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA key-event source check](../research/fixtures/senlla-key-events-source-check-20261004.json)
+adds a synchronous internal owner from CoreKey GetKeyBlocks onward. Ordered
+allocations, primary/secondary collisions, Scene claims and swaps, macro
+and template callbacks, indicator/Neo ownership and bank feedback use the
+retained lifecycle counters. Actual application255 remains bound after
+secondary bits normalize; current mixed keys are excluded from per-side
+macro admission. Missing native controls or source-phase group/level
+creation refuse explicitly. Private save marshalling captures CoreKey
+block/allocation data and CoreNeo Scene data before an Invoke nil-trigger
+getter can run nested callbacks, then captures the later secondary mask.
+Secondary refresh visits all eight nonupdating keys, retaining every source-block publication. Current LightLevels retain their owning indexed rebuild.
+Fifteen modules pass 287 parents and 3,846 separate subtests
+with zero skips; all 4,091 tracked inputs remain unchanged at authored
+commit `6f57ff00`. Inventory/register/census checks pass at
+749 modules and all 259 native requirements selected.
+The earlier 387-span engine review is preserved; its save-order claim is
+superseded by the final correction review. Actual constructor/pre-key
+shared-object callbacks, metadata backend creation, native form execution,
+later decision handlers and complete 93-field public save remain open.
+Full suites are deferred for speed. No new installed-wheel/original/
+native/hardware acceptance is claimed; complete coverage remains false.
+
 The [SENLLA indexed-block source check](../research/fixtures/senlla-indexed-block-source-check-20261004.json)
 adds 66 source-ordered load requests from the guarded 93-field snapshot.
 Indexed level, expiry membership and application/group lookups retain

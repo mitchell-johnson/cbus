@@ -151,3 +151,13 @@ group/application/project creation observers, the complete native control
 executor, later ST7 decision handlers and final 93-field serialization. Extra
 reference receivers, replacement/destruction, nonlive state2 and nonzero
 timer-minimum histories are outside this stable internal profile.
+
+The [frozen key-event source check](../research/fixtures/senlla-key-events-source-check-20261004.json)
+covers fifteen SENLLA modules at authored commit `6f57ff00`: 287 parents,
+3,846 separate subtests and zero failures, errors or skips. All 4,091
+tracked inputs remain unchanged in the frozen checkout. Independent review
+clears the final event kernel and native save-order/all-eight secondary-loop corrections. The earlier
+387-span review is preserved and its save-order/secondary-loop claims are superseded by
+the final correction receipt. Full pre-key object continuity, native form
+execution, complete 93-field public save and installed-wheel/original/
+native/hardware acceptance remain open. Full suites are deferred for speed.
