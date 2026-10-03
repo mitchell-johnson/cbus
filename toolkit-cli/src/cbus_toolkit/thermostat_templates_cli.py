@@ -56,6 +56,10 @@ def options(commands):
         action.add_argument('--temperature-preference', choices=('celsius', 'fahrenheit'),
                             help='Original Toolkit process preference for temperature load/save '
                                  'normalization; separate from the thermostat TemperatureUnits setting')
+        action.add_argument('--setback-levels', choices=('accept', 'decline'), default='decline',
+                            help='Accept or decline adding missing remote setback levels (default decline)')
+        action.add_argument('--schedule-levels', choices=('accept', 'decline'), default='decline',
+                            help='Accept or decline adding missing remote schedule levels (default decline)')
         action.add_argument('--host', required=True)
         action.add_argument('--port', type=_port, default=20023)
         action.add_argument('--timeout', type=float, default=30.0)
@@ -91,7 +95,8 @@ def _settings(args, client_factory):
     with client_factory(args.host, args.port, timeout=args.timeout) as client:
         manager = NativeThermostatSettings(client, UnitSpecStore(args.spec_dir))
         plan = manager.plan(args.unit, edits, exclusive_project=True,
-                            temperature_preference=args.temperature_preference)
+                            temperature_preference=args.temperature_preference,
+                            level_prompts={'setback': args.setback_levels, 'schedule': args.schedule_levels})
         if args.action == 'preview':
             return {**plan.as_dict(), 'scope': scope}, 0
         result = manager.apply(plan, backup_project=args.backup_project)

@@ -2383,6 +2383,168 @@ async fn associated_level_setup(service: &Arc<Service>, client: &mut ClientState
 }
 
 #[tokio::test]
+async fn numeric_level_oid_tag_name_updates_group_and_netvar_and_survives_reload() {
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../testdata/vectors/cgate_level_oid_tag_name.json"
+    ))
+    .unwrap();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "PROJECT NEW LVTAGS",
+        "PROJECT USE LVTAGS",
+        "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    let mut levels = Vec::new();
+    for parent_case in vector["parents"].as_array().unwrap() {
+        let application = parent_case["application"].as_u64().unwrap();
+        let application_name = parent_case["application_name"].as_str().unwrap();
+        let element = parent_case["element"].as_str().unwrap();
+        created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE //LVTAGS/11 Application {application} {application_name}"),
+        )
+        .await;
+        created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE //LVTAGS/11/{application} {element} 12 Remote"),
+        )
+        .await;
+        let parent = format!("//LVTAGS/11/{application}/12");
+        let oid = created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE {parent} Level 7 Level 7"),
+        )
+        .await;
+        ok_command(&service, &mut client, &format!("DBSETSAFE !{oid}/Value 31")).await;
+        levels.push((oid, element));
+    }
+    for rename in vector["renames"].as_array().unwrap() {
+        let name = rename["TagName"].as_str().unwrap();
+        for (oid, element) in &levels {
+            let response = run(
+                &service,
+                &mut client,
+                &rename["command"].as_str().unwrap().replace("%OID%", oid),
+            )
+            .await;
+            assert_eq!(response.status, 200);
+            assert!(response.lines.is_empty());
+            assert_eq!(response.final_text, rename["final"].as_str().unwrap());
+            let response = run(&service, &mut client, &format!("DBGET !{oid}/TagName")).await;
+            assert_eq!(response.status, 342);
+            assert!(response.lines.is_empty());
+            assert_eq!(
+                response.final_text,
+                rename["read_final"].as_str().unwrap().replace("%OID%", oid)
+            );
+            // The owning Network projection retains the actual Group/NetVar
+            // kind; legacy direct group-slice wrappers are a separate surface.
+            let document = xml(&service, &mut client, "//LVTAGS/11").await;
+            let parsed = roxmltree::Document::parse(&document).unwrap();
+            let level = parsed
+                .descendants()
+                .find(|node| {
+                    node.has_tag_name("Level")
+                        && node.children().any(|child| {
+                            child.has_tag_name("OID") && child.text() == Some(oid.as_str())
+                        })
+                })
+                .unwrap();
+            assert!(
+                level.parent_element().unwrap().has_tag_name(*element),
+                "{document}"
+            );
+            assert_eq!(level.attribute("Value"), vector["level"]["Value"].as_str());
+            for (field, expected) in [
+                ("OID", oid.as_str()),
+                ("Address", vector["level"]["Address"].as_str().unwrap()),
+                ("TagName", name),
+            ] {
+                assert_eq!(
+                    level
+                        .children()
+                        .find(|node| node.has_tag_name(field))
+                        .unwrap()
+                        .text(),
+                    Some(expected)
+                );
+            }
+        }
+        for command in [
+            "PROJECT SAVE LVTAGS",
+            "PROJECT CLOSE LVTAGS",
+            "PROJECT LOAD LVTAGS",
+            "PROJECT USE LVTAGS",
+        ] {
+            ok_command(&service, &mut client, command).await;
+        }
+        for (oid, element) in &levels {
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{oid}/TagName")).await,
+                name
+            );
+            let document = xml(&service, &mut client, "//LVTAGS/11").await;
+            let parsed = roxmltree::Document::parse(&document).unwrap();
+            let level = parsed
+                .descendants()
+                .find(|node| {
+                    node.has_tag_name("Level")
+                        && node.children().any(|child| {
+                            child.has_tag_name("OID") && child.text() == Some(oid.as_str())
+                        })
+                })
+                .unwrap();
+            assert!(
+                level.parent_element().unwrap().has_tag_name(*element),
+                "{document}"
+            );
+            assert_eq!(
+                level
+                    .children()
+                    .find(|node| node.has_tag_name("TagName"))
+                    .unwrap()
+                    .text(),
+                Some(name)
+            );
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{oid}/Value")).await,
+                "31"
+            );
+        }
+    }
+    let final_document = xml(&service, &mut client, "//LVTAGS/11").await;
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    ok_command(&restarted, &mut client, "PROJECT USE LVTAGS").await;
+    assert_eq!(
+        xml(&restarted, &mut client, "//LVTAGS/11").await,
+        final_document
+    );
+    for (oid, _) in &levels {
+        assert_eq!(
+            scalar(&restarted, &mut client, &format!("!{oid}/TagName")).await,
+            "Sched Enable Zone 4 & 5"
+        );
+        assert_eq!(
+            scalar(&restarted, &mut client, &format!("!{oid}/Value")).await,
+            "31"
+        );
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
 async fn renamed_associated_level_add_uses_one_owner_for_path_bare_and_group_oid() {
     let path = state_path();
     let (pci_client, mut remote) = pci();
