@@ -8,7 +8,9 @@ recovered BeforeSaveProgrammingInformation projection would rewrite is refused,
 and the dependent fields the form save would rewrite are included.  Apply
 makes a backup, at most one PP save and a project save/reload readback. No physical thermostat
 is programmed.  Individual dialog-rule diagnostics are source-backed; complete
-dialog enable/visibility and event ordering remain unreproduced.
+dialog enable/visibility and event ordering remain unreproduced. Optional output
+controls run after ordinary graph loading; their selected and saved values are
+reported separately, including the original slave damper normalization.
 """
 from __future__ import annotations
 
@@ -21,7 +23,7 @@ from .addressing import NetworkAddressing
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer
 from .native_thermostat_schedule import _oid
-from .thermostat_remote_references import (REMOTE_EDIT_FIELDS, RemoteReferencePlan,
+from .thermostat_remote_references import (REMOTE_EDIT_FIELDS, RemoteCreation, RemoteGroupRename, RemoteReferencePlan,
     plan_remote_references, project_fingerprint, validate_remote_plan, verify_project_preservation)
 from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RULES, ThermostatPostLoadError,
                                     damper_modulation_save, form_save_disabled_remotes, form_save_fans,
@@ -214,7 +216,10 @@ class NativeSettingsPlan:
         return {'format': 'cbus-native-thermostat-settings-plan-v1', 'path': self.path,
                 'identity': dict(self.identity), **settings,
                 'remote_references': self.remote.as_dict(),
+                'output_projection': json.loads(self.remote.output_projection_json),
+                'graph_operations': [row.as_dict() | {'action': row.action} for row in self.remote.graph_operations],
                 'planned_creations': [row.as_dict() for row in self.remote.creations],
+                'planned_renames': [row.as_dict() for row in self.remote.renames],
                 'planned_level_creations': [row.as_dict() for row in self.remote.level_creations],
                 'closed_networks': list(self.networks),
                 'apply_would_mutate': mutation,
@@ -241,14 +246,14 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         super()._start(operation)
         self.last_evidence['format'] = 'cbus-native-thermostat-settings-result-v1'
         del self.last_evidence['original_post_load_adjustments_replayed']
-        self.last_evidence.update(objects=[], levels=[], graph_mutation_attempted=False,
+        self.last_evidence.update(objects=[], renames=[], graph_operations=[], levels=[], graph_mutation_attempted=False,
             graph_mutation_outcome_uncertain=False, backup_source_save_attempted=False,
             backup_source_save_confirmed=False, backup_copy_attempted=False,
             backup_copy_confirmed=False, project_graph_preserved=False,
             pp_save_count=0, target_project_save_count=0, batch_atomic=False)
 
     def plan(self, path, edits, *, exclusive_project=False, temperature_preference=None,
-             level_prompts=None):
+             level_prompts=None, output_selections=None):
         self._start('settings-plan')
         try:
             _temperature_preference(temperature_preference)
@@ -270,15 +275,16 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             project_xml = self._xml('//' + project)
             remote = plan_remote_references(self.store, identity['UnitType'], values,
                 dict(settings.edits), project_xml=project_xml, unit_path=path,
-                level_prompts=level_prompts)
+                level_prompts=level_prompts, output_selections=output_selections)
             if any(identity.get(name) != value for name, value in remote.graph.unit_identity):
                 raise ThermostatTemplateError('Unit and complete-project XML identities disagree')
             dependent = {name: (loaded, saved) for name, loaded, saved in settings.dependent}
             candidate = {name: _safe(value) for name, value in values.items()} | dict(settings.edits)
+            selected_outputs = {name for name, _address in remote.output_selections or ()}
             for name, value in remote.expected.items():
                 if name in settings.expected and settings.expected[name] != value:
                     raise ThermostatTemplateError('Conflicting form-save ownership: ' + name)
-                if candidate[name] != value:
+                if candidate[name] != value and name not in selected_outputs:
                     dependent[name] = (candidate[name], value)
             settings = replace(settings,
                 dependent=tuple((name, *pair) for name, pair in sorted(dependent.items())),
@@ -387,10 +393,37 @@ class NativeThermostatSettings(NativeThermostatTemplates):
     def _create_references(self, plan):
         known = set(plan.remote.graph.all_oids)
         created = {}
-        for row in plan.remote.creations:
+        groups = {('Group', app.address, group.address): group.identity
+                  for app in plan.remote.graph.applications for group in app.groups}
+        for row in plan.remote.graph_operations:
+            if type(row) is RemoteGroupRename:
+                oid = groups.get(row.key)
+                expected_oid = created.get(row.key, row.identity)
+                if oid is None or oid != expected_oid:
+                    raise ThermostatTemplateError('Group rename has no resolved owning identity')
+                identity = self.database.get('!' + oid + '/OID')
+                if identity.code != 342 or list(identity.lines) != ['342 !' + oid + '/OID=' + oid]:
+                    raise ThermostatTemplateError('Group identity changed before rename')
+                tag = self.database.get('!' + oid + '/TagName')
+                if tag.code != 342 or list(tag.lines) != ['342 !' + oid + '/TagName=' + row.previous_name]:
+                    raise ThermostatTemplateError('Group name changed before rename')
+                evidence = row.as_dict() | {'oid': oid, 'attempted': True, 'confirmed': False}
+                self.last_evidence['renames'].append(evidence)
+                self.last_evidence['graph_operations'].append(evidence)
+                self.last_evidence.update(state='renaming_references', graph_mutation_attempted=True,
+                                          graph_mutation_outcome_uncertain=True)
+                response = self.database.set('!' + oid + '/TagName', row.name)
+                if response.code != 200 or len(response.lines) != 1:
+                    raise ThermostatTemplateError('Group rename did not complete')
+                evidence['confirmed'] = True
+                self.last_evidence['graph_mutation_outcome_uncertain'] = False
+                continue
+            if type(row) is not RemoteCreation:
+                raise ThermostatTemplateError('Unknown thermostat graph operation')
             parent = plan.network if row.kind == 'Application' else plan.network + '/' + str(row.application)
             evidence = row.as_dict() | {'attempted': True, 'confirmed': False}
             self.last_evidence['objects'].append(evidence)
+            self.last_evidence['graph_operations'].append(evidence | {'action': 'create'})
             self.last_evidence.update(state='creating_references', graph_mutation_attempted=True,
                                       graph_mutation_outcome_uncertain=True)
             response = self.database.add(parent, row.kind, row.address, row.name)
@@ -403,8 +436,11 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             identity = self.database.get('!' + oid + '/OID')
             if identity.code != 342 or list(identity.lines) != ['342 !' + oid + '/OID=' + oid]:
                 raise ThermostatTemplateError('Created reference identity could not be resolved')
-            created[(row.kind, row.application, row.address)] = oid
+            created[row.key] = oid
+            if row.kind == 'Group':
+                groups[row.key] = oid
             evidence.update(confirmed=True, oid=oid)
+            self.last_evidence['graph_operations'][-1].update(confirmed=True, oid=oid)
             self.last_evidence['graph_mutation_outcome_uncertain'] = False
         return created
 
@@ -461,7 +497,8 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         changed = {row['name'] for row in plan.settings.as_dict()['changed_parameters']}
         report = verify_project_preservation(plan.project_xml, actual_xml,
             plan.path, changed_parameters=changed, created_oids=created_oids,
-            created_level_oids=created_level_oids, level_creations=plan.remote.level_creations)
+            created_level_oids=created_level_oids, level_creations=plan.remote.level_creations,
+            graph_operations=plan.remote.graph_operations)
         if created_xml is not None:
             verify_project_preservation(created_xml, actual_xml, plan.path,
                 changed_parameters=changed, created_oids={})

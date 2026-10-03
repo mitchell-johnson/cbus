@@ -26,7 +26,7 @@ cbus-toolkit thermostat settings apply //HOME/254/p/4 \
 | THERMOSTATA only | `TimeUnits`, `EvapProgramEnabled`, `NonEvapProgramEnabled`, `SendInterval`, `ScheduleControlledZones` |
 | THERMOSTATB only | `TimerEnable` |
 
-Output group and relay addresses are not admitted, because they refer to project groups. The Load Template workflow reassigns them ([thermostat-templates.md](thermostat-templates.md)). Raw values are bytes in the unit's own encoding; use [thermostat-temperature.md](thermostat-temperature.md) for temperature conversions.
+Output group and relay addresses use the ordered `--output-group` control below; they are not raw `--set` edits. The separate Load Template workflow also reassigns them ([thermostat-templates.md](thermostat-templates.md)). Raw values are bytes in the unit's own encoding; use [thermostat-temperature.md](thermostat-temperature.md) for temperature conversions.
 
 ## Rules
 
@@ -98,6 +98,71 @@ The [initialization receipt](../research/experiments/2026-09-30/thermostat-quick
 
 The smallest remaining runtime prerequisite is an original ready-form state around that candidate: controller activation, native control text/selection/focus and the provenance/order of applicable notifications or already-posted messages. Relevant source boundaries are `TCBusThermostatCGateAgent.AfterLoadProgrammingInformation` (`0x128e06c`), programmable AfterLoad (`0x12994d0`), the inherited unit preamble and the seven programmable panels. The plant combo's `cmbInternalPlantTypeChange` (`0x11221fc`) posts message `0x423`; `HandlePlantTypeChange` (`0x11221c8`) dispatches its `+0x460` callback to `TcdThermostatPlant.HandleInternalPlantTypeAfterChange` (`0x112947c`). This callback reads plant state at dispatch time and can change parameters and groups. A complete candidate must establish that no applicable message is pending, or execute it and admit its effects, before joining original BeforeSave and save/reload. The available pinned EXE/MAP can support static investigation without household hardware; the prepared emulator graph does not supply a running initialized Delphi form by itself.
 
+## Output-group controls
+
+`--output-group PARAMETER=ADDRESS` selects an existing group after ordinary
+thermostat model loading. Repeat it in the intended control order, including
+repeated parameters. `--resolve-output-groups` runs that load without an explicit
+selection. Omitting both options retains the earlier bounded remote-only graph
+projection. All selected and saved values must fit the decoded specification.
+
+```sh
+cbus-toolkit thermostat settings preview //HOME/254/p/4 \
+  --output-group CoolFanLowOutput=255 \
+  --output-group CoolFanMediumOutput=20 \
+  --output-group CoolFanLowOutput=21 \
+  --host 127.0.0.1 --port 20023 --exclusive-project
+```
+
+That history swaps current low/medium groups 20/21 through unused group 255.
+A direct first selection of 21 is refused while the medium selector uses it.
+Each selection must refer to a group present after loading; typed Add controls
+are not implemented. The exact field names are:
+
+| Controls | Parameters |
+| --- | --- |
+| Cooling and heating | `Cool`/`Heat` + `ActivationOutput`, `Stage1Output`–`Stage3Output`, `FanLowOutput`, `FanMediumOutput`, `FanHighOutput` |
+| Dampers | `DamperZone1Output`–`DamperZone4Output` |
+| Internal relays | `InternalRelay1GroupNumber`–`InternalRelay5GroupNumber` |
+
+Loading first resolves application 172 (`Air Conditioning`) and `ZoneGroup`
+(`Communication Group N`, or `<Unused>` for 255), preserving existing names.
+It binds the scalar `ApplicationNumber`, independently of generic `Application`,
+then resolves setback references, fourteen outputs, four dampers, five relays,
+and programmable schedule references in that order. The bounded output profile
+admits applications 48–95 or 203. Missing application 56 is `Lighting`, 95 is
+`DALI`, 203 is `Enable Control`, and other admitted application names are their
+decimal address. This range is a CLI boundary, not a recovered GUI filter.
+
+A manually named output group is retained. An automatically named group with
+this unit's `[CGnn]` prefix can be renamed using the loaded plant/installation.
+A missing source address can reuse a uniquely matching generated name elsewhere
+or create a group at the source address. Ambiguous generated names and consumed
+non-ASCII name searches are refused because original manager/locale ordering is
+not established. This path does not use template allocation or infer manager
+order from XML. Loading effects remain in the transaction even when a later
+selection chooses another group.
+
+The selected control must be enabled in the loaded model. Cooling and heating
+use their recovered plant gates; heat fans are disabled for virtual plant 8.
+Dampers are programmable-only and require a nonzero plant plus an internal
+plant zone among zones 1–4. Internal relays are visible only on PC_TSA5/PC_TSB5
+and enabled only for a loaded master. Cooling, heating and dampers each reject
+repeated non-unused identities within their own collection. Sharing across
+collections is allowed; relays have no uniqueness rule. A programmable slave
+can admit a damper selection but saves its address as 255. The plan reports the
+selection and the saved value separately.
+
+Inspect `output_projection`, `planned_renames` and ordered `graph_operations`.
+All load effects and selections share one existing save owner with remote
+references and optional levels. A rename checks the current OID and previous
+TagName immediately before one OID-addressed write. A lost reply stops without
+retry, rollback, deletion or a later save. Whole-project verification permits
+only planned renames and creations, while preserving all retained metadata.
+The [source annex](thermostat-output-groups-source.md) describes this component
+projection; zone history, application changes, template callbacks, Add dialogs
+and complete initialized GUI behavior remain separate work.
+
 ## Temperature preference
 
 Pass `--temperature-preference celsius` or `--temperature-preference fahrenheit` to reproduce the 15 recovered temperature fields' untouched load/save normalization. This is the original **Toolkit process preference**, independent of the thermostat's `TemperatureUnits` PP setting. Without this option, all temperature fields retain raw PP semantics and the plan reports `temperature_normalization.reproduced=false`.
@@ -114,11 +179,11 @@ For example, untouched `TemperatureOffset=3` saves as 4 with Celsius or 5 with F
 
 ## Apply
 
-`preview` reads the complete project XML and a read-only PP snapshot. `apply` rechecks the unit, all PP values and the complete graph, and returns `already_applied` only if both PP and graph changes are empty. Otherwise it saves and copies the project to a backup, creates references in the planned order, stages changed parameters in one PP session and verifies them. Parameter changes use one `PP SAVE_TO_SOURCE`; graph-only changes use none. Both paths issue one final target `PROJECT SAVE`, then close/reload and verify fresh PP plus complete graph preservation. The backup source save is counted separately.
+`preview` reads the complete project XML and a read-only PP snapshot. `apply` rechecks the unit, all PP values and the complete graph, and returns `already_applied` only if both PP and graph changes are empty. Otherwise it saves and copies the project to a backup, creates and renames references in the planned order, stages changed parameters in one PP session and verifies them. Parameter changes use one `PP SAVE_TO_SOURCE`; graph-only changes use none. Both paths issue one final target `PROJECT SAVE`, then close/reload and verify fresh PP plus complete graph preservation. The backup source save is counted separately.
 
-Every existing object identity, unrelated parameter and opaque project/network/unit/application/group/level field is preserved. New objects' metadata is bound immediately after creation and checked after reload. The comparison permits only the documented regenerated project Config OIDs, selected-unit PP record ordering by unique Name, and absent/empty Level TagsDLT equivalence. Every project network must be closed with synchronization idle, and `--exclusive-project` is required. The selected unit's firmware must fit the caller's decoded base specification.
+Every existing object identity, unrelated parameter and opaque project/network/unit/application/group/level field is preserved; only explicitly planned group names may change. New objects' metadata is bound immediately after creation and checked after reload. The comparison permits only the documented regenerated project Config OIDs, selected-unit PP record ordering by unique Name, and absent/empty Level TagsDLT equivalence. Every project network must be closed with synchronization idle, and `--exclusive-project` is required. The selected unit's firmware must fit the caller's decoded base specification.
 
-Plans are immutable, manager-issued and single-use. The command performs no automatic retry or rollback; database creation, PP save and project save are separate operations. Inspect `objects`, `pp_save_*`, `target_save_*`, backup attempt fields and `outcome_uncertain` after a failure. A failed transaction can leave confirmed new graph objects or an uncertain saved result; review the actual state before making a fresh plan.
+Plans are immutable, manager-issued and single-use. The command performs no automatic retry or rollback; database creation, PP save and project save are separate operations. Inspect `objects`, `renames`, `graph_operations`, `pp_save_*`, `target_save_*`, backup attempt fields and `outcome_uncertain` after a failure. A failed transaction can leave confirmed new graph objects or an uncertain saved result; review the actual state before making a fresh plan.
 
 The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).plan(path, edits, exclusive_project=True, temperature_preference='fahrenheit')` followed by `apply(plan, backup_project=...)`; the offline planner is `plan_settings`. The preference is optional and bound to the immutable plan.
 
@@ -138,4 +203,4 @@ The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).pla
 - **Temperature and mask persistence.** The [new native receipt](../research/experiments/2026-09-30/thermostat-settings-temperature-native.json) records public CLI preview/apply for all four unit aliases with both preferences, deliberately opposite device `TemperatureUnits`, untouched dependent changes, save/reload and preservation. All eight temperature cases saved correctly and preview did not write. The owned C-Gate sentinel received no hardware connection.
 - **Earlier temperature packaged check.** The [temperature acceptance receipt](../research/experiments/2026-09-30/thermostat-temperature-focused-acceptance.json) records 45 passing offline tests (598 subtests) and five passing native tests. A fresh installed wheel passed the same 45 offline and five native tests; all 258 package files matched source and installation. No selected test skipped and no full suite ran.
 - **Disabled remote saves.** The [source receipt](../research/experiments/2026-09-30/thermostat-remote-save-static.json) pins 129 checks over 20 methods and nine independent branch examples. The [focused acceptance receipt](../research/experiments/2026-09-30/thermostat-disabled-remotes-focused-acceptance.json) records 50 offline tests with 618 subtests and seven owned native tests. Public CLI parsing/dispatch covers all four aliases, unrelated PP and group preservation, one save/reload followed by a no-op, and invalid-source refusal without writes. No CNI connection occurred. Packaging was unchanged and no new wheel or full suite was run for this slice.
-- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output-group editing, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.
+- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Add/application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.

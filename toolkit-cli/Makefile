@@ -260,6 +260,14 @@ check-cgate-interop: compile
 		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]' \
@@ -582,6 +590,14 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]' \

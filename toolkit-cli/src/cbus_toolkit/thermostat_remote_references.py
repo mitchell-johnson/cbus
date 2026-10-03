@@ -7,7 +7,7 @@ not replay unrelated inherited HVAC allocation or GUI source-change callbacks.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from types import MappingProxyType
@@ -17,6 +17,8 @@ from xml.dom import Node
 from .addressing import _container
 from .native_thermostat_schedule import _byte, _children, _field, _oid
 from .native_thermostat_scheduling import _unit_path
+from .thermostat_output_groups import (OUTPUT_FIELDS, OUTPUT_READ_FIELDS, OutputGroupModel,
+    normalize_output_selections)
 from .thermostat_remote_levels import (RemoteLevelCreation, normalize_level_prompts, project_remote_levels)
 from .thermostat_templates import FAMILIES, ThermostatTemplateError, family_for_unit_type
 from .unitspec import UnitSpecError, UnitSpecStore, _integer
@@ -293,12 +295,102 @@ class RemoteCreation:
     reason: str
 
     @property
+    def action(self):
+        return 'create'
+
+    @property
     def key(self):
         return self.kind, self.application, self.address
 
     def as_dict(self):
         return {'kind': self.kind, 'application': self.application, 'address': self.address,
                 'name': self.name, 'reason': self.reason}
+
+
+@dataclass(frozen=True)
+class RemoteGroupRename:
+    application: int
+    address: int
+    identity: str
+    previous_name: str
+    name: str
+    reason: str
+
+    @property
+    def kind(self):
+        return 'Group'
+
+    @property
+    def action(self):
+        return 'rename'
+
+    @property
+    def key(self):
+        return 'Group', self.application, self.address
+
+    def as_dict(self):
+        return {'action': self.action, 'kind': self.kind, 'application': self.application,
+                'address': self.address, 'identity': self.identity, 'previous_name': self.previous_name,
+                'name': self.name, 'reason': self.reason}
+
+
+class _GraphResolver:
+    """One causal inventory for inherited setback, output and schedule getters."""
+
+    def __init__(self, graph):
+        self.apps = {app.address: app for app in graph.applications}
+        self.live = {(app.address, group.address): group for app in graph.applications for group in app.groups}
+        self.operations = []
+        self.getters = []
+
+    def application(self, address, reason, enable_application=True, *, creation_name=None):
+        created = address not in self.apps
+        if created:
+            if address != 203 and creation_name is None:
+                _fail('The selected ApplicationNumber application must already exist')
+            name = 'Enable Control' if creation_name is None else creation_name
+            self.apps[address] = RemoteApplication(address, f'planned-application:{address}', name, (), '')
+            self.operations.append(RemoteCreation('Application', address, address, name, reason))
+        self.getters.append({'getter': 'GetEnableControlApplication' if enable_application else 'ApplicationObject',
+            'application': address, 'identity': self.apps[address].identity, 'created': created})
+        return self.apps[address]
+
+    def group(self, address, value, create, role, *, enable_application=True):
+        app = self.application(address, role, enable_application)
+        found = self.live.get((address, value))
+        created = found is None and create
+        if created:
+            prefix = {172: 'Communication Group ', 203: 'Enable Network Variable '}.get(address, 'Group ')
+            name = '<Unused>' if value == 255 else prefix + str(value)
+            found = self.create(address, value, name, role)
+        self.getters.append({'getter': 'GroupByAddress', 'role': role, 'application': address,
+            'application_identity': app.identity, 'address': value, 'create': create,
+            'identity': found.identity if found else None, 'created': created})
+        return found
+
+    def create(self, application, address, name, reason):
+        if (application, address) in self.live:
+            _fail('Planned group address is already occupied')
+        if sum(key[0] == application for key in self.live) >= 256:
+            _fail('Group capacity prevents resolving ' + reason)
+        group = RemoteGroup(application, address, f'planned-group:{application}:{address}', name, 'Group', '')
+        self.live[application, address] = group
+        self.operations.append(RemoteCreation('Group', application, address, name, reason))
+        return group
+
+    def rename(self, group, name, reason):
+        current = self.live[group.application, group.address]
+        if current.identity != group.identity:
+            _fail('Group identity changed inside the shared resolver')
+        if current.name != name:
+            self.operations.append(RemoteGroupRename(group.application, group.address, group.identity,
+                                                     current.name, name, reason))
+            current = replace(current, name=name)
+            self.live[group.application, group.address] = current
+        return current
+
+    def current(self, group):
+        return None if group is None else self.live[group.application, group.address]
 
 
 @dataclass(frozen=True)
@@ -318,6 +410,18 @@ class RemoteReferencePlan:
     level_prompts: tuple[tuple[str, str], ...]
     level_creations: tuple[RemoteLevelCreation, ...]
     level_prompts_json: str
+    output_selections: tuple[tuple[str, int], ...] | None = None
+    output_values: tuple[tuple[str, int], ...] = ()
+    output_projection_json: str = 'null'
+    graph_operations: tuple[RemoteCreation | RemoteGroupRename, ...] = ()
+
+    @property
+    def output_expected(self):
+        return dict(self.output_values)
+
+    @property
+    def renames(self):
+        return tuple(row for row in self.graph_operations if type(row) is RemoteGroupRename)
 
     @property
     def expected(self):
@@ -335,7 +439,7 @@ class RemoteReferencePlan:
 
     @property
     def graph_mutation_required(self):
-        return bool(self.creations or self.level_creations)
+        return bool(self.creations or self.level_creations or self.renames)
 
     @property
     def apply_would_mutate(self):
@@ -344,7 +448,7 @@ class RemoteReferencePlan:
     def semantic_source(self):
         return _json({'before': self.before, 'identity': self.graph.unit_identity,
                       'graph': self.graph.fingerprint, 'edits': self.edits, 'schema': self.schema_json,
-                      'level_prompts': self.level_prompts})
+                      'level_prompts': self.level_prompts, 'output_selections': self.output_selections})
 
     def as_dict(self):
         return {'format': FORMAT, 'family': self.family, 'unit_type': self.unit_type,
@@ -352,6 +456,11 @@ class RemoteReferencePlan:
                 'changed_parameters': self.changed_parameters,
                 'project_graph': self.graph.as_dict(),
                 'planned_creations': [row.as_dict() for row in self.creations],
+                'graph_operations': [row.as_dict() | {'action': row.action} for row in self.graph_operations],
+                'planned_renames': [row.as_dict() for row in self.renames],
+                'output_selections': None if self.output_selections is None else [
+                    {'parameter': name, 'address': address} for name, address in self.output_selections],
+                'output_projection': json.loads(self.output_projection_json),
                 'planned_level_creations': [row.as_dict() for row in self.level_creations],
                 'level_prompts': json.loads(self.level_prompts_json),
                 'getters': json.loads(self.getters_json), 'resolved_roles': json.loads(self.roles_json),
@@ -382,7 +491,8 @@ def _byte_parameter(spec, name, value):
     return parsed
 
 
-def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None):
+def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
+                           output_selections=None):
     """Project all remote fields from one candidate and its authoritative graph.
 
     Ordinary edits are consumed for the same candidate as the owning settings
@@ -390,18 +500,20 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
     """
     try:
         return _plan(store, unit_type, snapshot, edits, project_xml=project_xml, unit_path=unit_path,
-                     level_prompts=level_prompts)
+                     level_prompts=level_prompts, output_selections=output_selections)
     except ThermostatTemplateError:
         raise
     except (ValueError, KeyError, TypeError, UnitSpecError) as error:
         raise ThermostatTemplateError('Invalid thermostat remote reference plan: ' + str(error)) from error
 
 
-def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None):
+def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
+          output_selections=None):
     if not isinstance(store, UnitSpecStore):
         _fail('Remote reference planning requires a decoded UnitSpecStore')
     family = family_for_unit_type(unit_type)
     prompts = normalize_level_prompts(level_prompts, family)
+    selections = normalize_output_selections(output_selections)
     spec = store.load(FAMILIES[family]['unit_spec'])
     if spec.unit_type != {'basic': 'THERMOSTATB', 'programmable': 'THERMOSTATA'}[family]:
         _fail('Decoded thermostat specification identity differs from the selected family')
@@ -414,7 +526,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         # Ordinary edits are already admitted by the owning settings planner.
         # Validate their scalar/schema domain here without importing that owner
         # (which composes this projection). This component never writes them.
-        if (type(name) is not str or name == 'ApplicationNumber'
+        if (type(name) is not str or name == 'ApplicationNumber' or name in OUTPUT_FIELDS
                 or (name.startswith('Remote') and name not in REMOTE_EDIT_FIELDS[family])
                 or (family == 'basic' and name in PROGRAM_FIELDS)):
             _fail('Setting is not admitted for ' + unit_type + ': ' + str(name))
@@ -423,7 +535,9 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         parsed_edits[name] = _byte_parameter(spec, name, value)
     values = {}
     schema = {}
-    for name in REMOTE_READ_FIELDS[family]:
+    read_fields = tuple(dict.fromkeys(REMOTE_READ_FIELDS[family]
+        + (OUTPUT_READ_FIELDS if selections is not None else ())))
+    for name in read_fields:
         if name not in snapshot:
             _fail('Full thermostat snapshot lacks remote dependency: ' + name)
         values[name] = _byte_parameter(spec, name, snapshot[name])
@@ -443,46 +557,21 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     _, stored_unit = _selected_unit(_document(project_xml).documentElement, unit_path)
     for row in _children(stored_unit, 'PP'):
         name = row.getAttribute('Name')
-        if name in REMOTE_READ_FIELDS[family]:
+        if name in read_fields:
             if (not row.hasAttribute('Value')
                     or _byte_parameter(spec, name, row.getAttribute('Value'))
                     != _byte_parameter(spec, name, snapshot[name])):
                 _fail('Stored project PP differs from the supplied remote snapshot: ' + name)
     schema = {'parameters': schema, 'spec_filename': spec.filename,
               'metadata': {key: spec.metadata.get(key, '') for key in ('Type', 'MinVersion', 'MaxVersion')}}
-    apps = {app.address: app for app in graph.applications}
-    live = {(app.address, group.address): group for app in graph.applications for group in app.groups}
-    creations, getters = [], []
-
-    def application(address, reason, enable_application):
-        if address not in apps:
-            if address != 203:
-                _fail('Source 1 requires its selected ApplicationNumber application to exist')
-            apps[address] = RemoteApplication(address, 'planned-application:203', 'Enable Control', (), '')
-            creations.append(RemoteCreation('Application', 203, 203, 'Enable Control', reason))
-            created = True
-        else:
-            created = False
-        getters.append({'getter': 'GetEnableControlApplication' if enable_application else 'ApplicationObject',
-                        'application': address, 'identity': apps[address].identity, 'created': created})
-        return apps[address]
-
-    def group(address, value, create, role, *, enable_application=True):
-        app = application(address, role, enable_application)
-        found = live.get((address, value))
-        created = False
-        if found is None and create:
-            if sum(key[0] == address for key in live) >= 256:
-                _fail('Remote group capacity prevents resolving ' + role)
-            name = '<Unused>' if value == 255 else ('Enable Network Variable ' if address == 203 else 'Group ') + str(value)
-            found = RemoteGroup(address, value, f'planned-group:{address}:{value}', name, 'Group', '')
-            live[address, value] = found
-            creations.append(RemoteCreation('Group', address, value, name, role))
-            created = True
-        getters.append({'getter': 'GroupByAddress', 'role': role, 'application': address,
-                        'application_identity': app.identity, 'address': value, 'create': create,
-                        'identity': found.identity if found else None, 'created': created})
-        return found
+    resolver = _GraphResolver(graph)
+    apps, live = resolver.apps, resolver.live
+    group = resolver.group
+    getters = resolver.getters
+    output = OutputGroupModel(values, family, unit_type, resolver) if selections is not None else None
+    if selections is not None:
+        for name, address in selections:
+            _byte_parameter(spec, name, address)
 
     references = {}
     if source:
@@ -498,6 +587,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     expected = {name: values[name] for name in SETBACK_FIELDS}
     if source == 0:
         expected.update(RemoteSetbackOnGroup=30, RemoteSetbackOffGroup=31)
+    if output is not None:
+        output.load()
     enabled = False
     if family == 'programmable':
         evap = values['EvapProgramEnabled'] if values['EvapProgramEnabled'] <= 1 else 0
@@ -507,6 +598,16 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         for name, role, default in zip(SCHEDULE_GROUP_FIELDS, ('schedule_on', 'schedule_off', 'schedule_override'), (32, 33, 34)):
             references[role] = group(203, values[name] if enabled else 255, enabled, role)
             expected[name] = values[name] if enabled else default
+
+    # Explicit group choices happen after the inherited and derived agents
+    # have finished loading. Names may have changed on an earlier reference;
+    # refresh immutable references from the one causal inventory before any
+    # role or optional-Level receipts are emitted.
+    references = {role: resolver.current(value) for role, value in references.items()}
+    if output is not None:
+        output.select(selections)
+        output.validate()
+        expected.update(output.expected)
 
     def unique(roles, label):
         selected = [references[role] for role in roles if references[role] is not None and references[role].address != 255]
@@ -531,6 +632,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         _byte_parameter(spec, name, value)
     level_creations, prompt_receipts = project_remote_levels(references, family=family,
         setback_source=source, schedule_enabled=enabled, prompts=prompts)
+    creations = tuple(row for row in resolver.operations if type(row) is RemoteCreation)
     if len(graph.all_oids) + len(creations) + len(level_creations) > MAX_OBJECTS:
         _fail('Planned remote graph exceeds the supported object bound')
     validation = {'passed': True, 'setback_source': source, 'schedule_enabled': enabled,
@@ -542,7 +644,9 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         'original_validation_failure_prefix_reproduced': False}
     return RemoteReferencePlan(family, unit_type, tuple(sorted(snapshot.items())), tuple(sorted(parsed_edits.items())),
         project_xml, graph, tuple(sorted(expected.items())), tuple(creations), _json(getters), _json(roles),
-        _json(validation), _json(schema), prompts, level_creations, _json(prompt_receipts))
+        _json(validation), _json(schema), prompts, level_creations, _json(prompt_receipts), selections,
+        tuple(sorted(output.expected.items())) if output is not None else (),
+        _json(output.as_dict()) if output is not None else 'null', tuple(resolver.operations))
 
 
 def validate_remote_plan(store, plan):
@@ -550,7 +654,9 @@ def validate_remote_plan(store, plan):
     if type(plan) is not RemoteReferencePlan:
         _fail('Expected an issued thermostat remote reference plan')
     rebuilt = plan_remote_references(store, plan.unit_type, dict(plan.before), dict(plan.edits),
-        project_xml=plan.project_xml, unit_path=plan.graph.unit_path, level_prompts=dict(plan.level_prompts))
+        project_xml=plan.project_xml, unit_path=plan.graph.unit_path, level_prompts=dict(plan.level_prompts),
+        output_selections=None if plan.output_selections is None else [
+            {'parameter': name, 'address': address} for name, address in plan.output_selections])
     if rebuilt != plan or _json(rebuilt.as_dict()) != _json(plan.as_dict()):
         _fail('Thermostat remote plan differs from its complete deterministic replay')
     return plan
@@ -587,8 +693,62 @@ def _normalize_owned_pp(old_root, new_root, path, names):
     return network
 
 
+def _graph_operation_names(before, operations, created_oids):
+    """Replay names and identities without allowing a rename to mask other data."""
+    if type(operations) is not tuple:
+        _fail('Graph operations must be the issued immutable create/rename history')
+    current = {('Application', app.address, app.address): (app.identity, app.name)
+               for app in before.applications}
+    current.update({('Group', app.address, group.address): (group.identity, group.name)
+                    for app in before.applications for group in app.groups})
+    added, renamed = set(), {}
+    for row in operations:
+        if type(row) not in (RemoteCreation, RemoteGroupRename):
+            _fail('Unknown graph operation record')
+        if (type(row.application) is not int or type(row.address) is not int
+                or not 0 <= row.application <= 254 or not 0 <= row.address <= 255
+                or type(row.name) is not str or type(row.reason) is not str):
+            _fail('Malformed graph operation')
+        key = row.key
+        if type(row) is RemoteCreation:
+            if row.kind not in ('Application', 'Group') or key in current or key in added:
+                _fail('Graph creation collides with an existing or already created object')
+            if row.kind == 'Application' and row.application != row.address:
+                _fail('Application creation address differs from its application')
+            if row.kind == 'Group' and ('Application', row.application, row.application) not in current:
+                _fail('Graph group creation precedes its owning application')
+            identity = (f'planned-application:{row.address}' if row.kind == 'Application'
+                        else f'planned-group:{row.application}:{row.address}')
+            current[key] = identity, row.name
+            added.add(key)
+        else:
+            if (type(row.identity) is not str or type(row.previous_name) is not str
+                    or current.get(key) != (row.identity, row.previous_name)):
+                _fail('Group rename differs from its preceding identity or name')
+            current[key] = row.identity, row.name
+            if key not in added:
+                if key not in renamed:
+                    renamed[key] = (row.identity, row.previous_name, row.name)
+                else:
+                    renamed[key] = (*renamed[key][:2], row.name)
+    if added != set(created_oids):
+        _fail('Created object receipts differ from the graph operation history')
+    return {key: name for key, (_identity, name) in current.items() if key in added}, renamed
+
+
+def _mask_group_name(node):
+    rows = _children(node, 'TagName')
+    if len(rows) != 1 or any(child.nodeType not in (Node.TEXT_NODE, Node.CDATA_SECTION_NODE)
+                             for child in rows[0].childNodes):
+        _fail('A renamed group TagName contains unplanned structured metadata')
+    tag = rows[0]
+    for child in tuple(tag.childNodes):
+        tag.removeChild(child)
+    tag.appendChild(tag.ownerDocument.createTextNode('<owned-group-name>'))
+
+
 def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_parameters, created_oids,
-                                created_level_oids=None, level_creations=()):
+                                created_level_oids=None, level_creations=(), graph_operations=()):
     """Compare the whole graph after removing exactly the admitted mutation set.
 
     ``created_oids`` maps (command kind, application, address) to returned OID.
@@ -597,6 +757,8 @@ def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_par
     owning PP session; this helper preserves every other stored parameter.
     ``created_level_oids`` maps (application, group, address) to returned OID,
     with exact final records supplied by the replayed ``level_creations``.
+    ``graph_operations`` is the issued ordered creation/rename history; its
+    presence admits only exact final names after replaying each old name.
     """
     try:
         before, after = snapshot_project(before_xml, unit_path), snapshot_project(after_xml, unit_path)
@@ -631,10 +793,32 @@ def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_par
             _oid(oid)
             if oid in before.all_oids:
                 _fail('Created Level receipt reused an original OID')
+        final_names, renamed = (_graph_operation_names(before, graph_operations, created_oids)
+                                if graph_operations else ({}, {}))
         old_root, new_root = _document(before_xml).documentElement, _document(after_xml).documentElement
         network = _normalize_owned_pp(old_root, new_root, unit_path, names)
         applications = dict(_address_rows(network, 'Application'))
-        rows, remove, level_rows = [], [], []
+        rows, remove, level_rows, rename_rows = [], [], [], []
+        old_network, _ = _selected_unit(old_root, unit_path)
+        old_apps = dict(_address_rows(old_network, 'Application'))
+        for key, (identity, previous_name, final_name) in renamed.items():
+            _, application, address = key
+            pair = []
+            for inventory in (old_apps, applications):
+                if application not in inventory:
+                    _fail('Renamed group application disappeared')
+                matches = [node for node in _children(inventory[application])
+                    if node.tagName in ('Group', 'NetVar') and not node.namespaceURI
+                    and _byte(_field(node, 'Address')) == address]
+                if len(matches) != 1 or _field(matches[0], 'OID') != identity:
+                    _fail('Renamed group identity differs from the plan')
+                pair.append(matches[0])
+            if _field(pair[0], 'TagName') != previous_name or _field(pair[1], 'TagName') != final_name:
+                _fail('Renamed group name differs from the ordered graph projection')
+            for node in pair:
+                _mask_group_name(node)
+            rename_rows.append({'application': application, 'address': address, 'oid': identity,
+                                'previous_name': previous_name, 'name': final_name})
         # Verify/remove exact Levels first so a newly created parent cannot
         # hide an unplanned Level. All old Level metadata stays in the graph.
         for key, oid in created_level_oids.items():
@@ -663,7 +847,7 @@ def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_par
                 _fail('Created application is missing from readback')
             parent = applications[application]
             if kind == 'Application':
-                if application != 203 or address != 203:
+                if not graph_operations and (application != 203 or address != 203):
                     _fail('Unexpected application creation')
                 node, name = parent, 'Enable Control'
             else:
@@ -677,6 +861,7 @@ def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_par
                 name = '<Unused>' if address == 255 else ('Enable Network Variable ' if application == 203 else 'Group ') + str(address)
                 if _children(node, 'Level'):
                     _fail('Created remote group contains unplanned Levels')
+            name = final_names.get((kind, application, address), name)
             if _field(node, 'OID') != oid or _field(node, 'TagName') != name:
                 _fail('Created remote object identity or name differs from its receipt')
             rows.append({'kind': kind, 'application': application, 'address': address, 'oid': oid,
@@ -700,7 +885,7 @@ def verify_project_preservation(before_xml, after_xml, unit_path, *, changed_par
             _fail('Unrelated project, unit, application, group or level metadata changed')
         return {'preserved': True, 'existing_metadata_preserved': True, 'unit_record_preserved': True,
                 'unknown_project_data_preserved': True, 'created_objects': rows,
-                'created_levels': level_rows,
+                'created_levels': level_rows, 'renamed_groups': rename_rows,
                 'config_oid_normalization_ignored': True, 'empty_level_tags_dlt_normalization_ignored': True,
                 'selected_unit_pp_collection_order_ignored': True}
     except ThermostatTemplateError:
