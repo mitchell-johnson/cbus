@@ -54,10 +54,16 @@ and `--status-report-interval 3..255` seconds. They apply the complete recovered
 forced save, including a loaded broadcast minimum of 10 and power-up encoding
 before the maintenance polarity reset. Report the selected and reloaded power-up
 states separately. A stored Global interval below 3 requires an explicit valid
-selection; an application toggle colliding with another block is refused because
-native shared-key reassignment is not modelled. Native PP database save/reload
-evidence does not establish physical timing or power-failure behavior. Read
-`toolkit-cli/docs/sensors.md` for identities, source evidence and exclusions.
+selection. Repeat `--on-off-control application=primary|secondary` or
+`group=N|none` for an explicit ordered application/group history, including
+the source-owned eight-block load and collision callbacks. The admitted SENLL
+class has zero runtime InputKeys; its history never changes BlockAllocation.
+Missing destination objects and mixed flat group/application edits refuse
+before staging. Legacy flat plans retain their previous collision refusal.
+Read `toolkit-cli/docs/senll-application-controls.md` for the exact graph and
+metadata boundaries. Native PP database save/reload evidence does not establish
+physical timing or power-failure behavior. Read `toolkit-cli/docs/sensors.md`
+for identities, source evidence and exclusions.
 
 For the eight admitted DIN relay/dimmer firmware-2.7.00 profiles, add
 `--toolkit-save` to `din-settings plan` or `cgate unit ... din-settings` to
