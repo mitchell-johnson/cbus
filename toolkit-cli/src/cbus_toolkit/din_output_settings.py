@@ -614,6 +614,11 @@ class DinOutputEditor:
             raise DinSettingsError('Raw minimum level exceeds the maximum level')
 
     # ---- apply ------------------------------------------------------
+    def control_plan(self, current, operations, *, identity=None, toolkit_save=False):
+        """Plan a bounded ordered slider history; see din_output_controls."""
+        from .din_output_controls import control_plan
+        return control_plan(self, current, operations, identity=identity, toolkit_save=toolkit_save)
+
     def _verify_profile(self, session):
         identity = check_profile(session.unit_type, session.firmware, session.catalog_number,
                                  subject='Native session')
@@ -647,7 +652,10 @@ class DinOutputEditor:
                 if _numbers(native.get('BitSize', '8')) != _numbers(local.get('BitSize', '8')):
                     raise DinSettingsError(f'Native parameter layout mismatch: {name}/BitSize')
 
-    def apply(self, session, plan):
+    def apply(self, session, plan, *, _strict_width=False):
+        from .din_output_controls import DinControlPlan, apply_controls
+        if isinstance(plan, DinControlPlan):
+            return apply_controls(self, session, plan)
         if (not isinstance(plan, DinPlan) or plan.unit_type != self.profile.unit_type
                 or set(plan.expected) != set(FIELDS) or any(name not in FIELDS for name in plan.changes)):
             raise DinSettingsError('Plan contains fields or a unit type outside this DIN workflow')
@@ -657,7 +665,7 @@ class DinOutputEditor:
         identity = self._verify_profile(session)
         if plan.identity is not None and plan.identity[:2] != identity[:2]:
             raise DinSettingsError('Plan was created for another unit type or firmware')
-        self._verify_session(session, strict_width=plan.toolkit_save)
+        self._verify_session(session, strict_width=plan.toolkit_save or _strict_width)
         if self.snapshot(session.values()) != dict(plan.expected):
             raise DinSettingsError('PP parameters changed since the DIN settings plan was created')
         attempted = []

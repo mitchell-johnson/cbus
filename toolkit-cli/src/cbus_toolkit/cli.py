@@ -235,6 +235,8 @@ def _din_options(parser):
     parser.add_argument("--logic-level-store", choices=onoff)
     parser.add_argument("--toolkit-save", action="store_true", default=None,
                         help="Include the admitted Toolkit agent-save normalization for every channel")
+    parser.add_argument("--controls", dest="din_controls", type=Path,
+                        help="JSON array of ordered DIN slider, Synchronise and Stagger controls")
 
 
 def _din_settings(args):
@@ -263,6 +265,16 @@ def _din_editor(args, unit_type):
     if unit_type not in PROFILES:
         check_profile(unit_type, None)
     return DinOutputEditor(UnitSpecStore(args.spec_dir).load(PROFILES[unit_type].spec_filename), unit_type)
+
+
+def _din_control_plan(editor, args, current, *, identity=None):
+    from .edlt_global_cli import read_json
+    edits = {k: v for k, v in _din_settings(args).items() if v is not None}
+    if set(edits) - {"toolkit_save"}:
+        raise ValueError("--controls cannot be combined with direct edit options; put ordered edits in the control history")
+    operations = read_json(args.din_controls, limit=1024 * 1024)
+    return editor.control_plan(current, operations, identity=identity,
+                               toolkit_save=bool(args.toolkit_save))
 
 
 def _edlt_database_profile(unit_type, firmware, catalog_number):
@@ -3917,18 +3929,24 @@ def _programming(args, client):
             din_editor._verify_profile(session)
             edits = {k: v for k, v in _din_settings(args).items() if v is not None}
             if args.show:
-                if edits or args.din_plan is not None:
-                    raise ValueError("--show cannot be combined with edits or --plan")
+                if edits or args.din_plan is not None or args.din_controls is not None:
+                    raise ValueError("--show cannot be combined with edits, --controls or --plan")
                 return din_editor.show(session.values())
             if args.din_plan is not None:
                 from .din_output_settings import DinPlan
+                from .din_output_controls import DinControlPlan, CONTROL_PLAN_FORMAT
                 from .edlt_global_cli import read_json
-                if edits:
-                    raise ValueError("--plan cannot be combined with edit options")
-                result = din_editor.apply(session, DinPlan.from_dict(read_json(args.din_plan, limit=1024 * 1024)))
+                if edits or args.din_controls is not None:
+                    raise ValueError("--plan cannot be combined with edit options or --controls")
+                data = read_json(args.din_plan, limit=1024 * 1024)
+                plan_type = (DinControlPlan if isinstance(data, dict)
+                             and data.get("format") == CONTROL_PLAN_FORMAT else DinPlan)
+                result = din_editor.apply(session, plan_type.from_dict(data))
+            elif args.din_controls is not None:
+                result = din_editor.apply(session, _din_control_plan(din_editor, args, session.values()))
             else:
                 if not edits:
-                    raise ValueError("Supply DIN edit options, --plan or --show")
+                    raise ValueError("Supply DIN edit options, --controls, --plan or --show")
                 result = din_editor.configure(session, **edits)
             values = session.values()
         elif args.remote_action == "sensor-occupancy":
@@ -4331,6 +4349,8 @@ def run(args):
         editor = _din_editor(args, unit_type)
         if args.action == "show":
             return editor.show(values), 0
+        if args.din_controls is not None:
+            return _din_control_plan(editor, args, values, identity=tuple(identity) or None).as_dict(), 0
         edits = {k: v for k, v in _din_settings(args).items() if v is not None}
         return editor.plan(values, identity=tuple(identity) or None, **edits).as_dict(), 0
     if args.area == "sensors":
