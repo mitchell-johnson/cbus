@@ -687,6 +687,18 @@ Template 9 group allocation requires the documented initially empty application
 and explicit `--group-sort address-ascending`; other manager orders remain refused. Read `toolkit-cli/docs/thermostat-settings.md` and
 `toolkit-cli/docs/thermostat-templates.md`.
 
+Ordered `--output-operation` records also admit `edit-output-group` accepted
+or cancelled outcomes. Edit targets the currently selected non-unused group,
+changes only its name and needs no spare group address. Explicit entered text
+is limited to 32 UTF-16 units before source trimming; an omitted name retains
+the full programmatically loaded text, including longer existing names.
+Inspect `edit_dialogs`, the ordered rename ledger and fresh identity/name
+guards. Edit assigns no PP reference; a graph-only change uses no PP save and
+one final target project save, with the backup source save reported separately.
+Quoted TagName writes preserve repeated spaces and Unicode; an uncertain write
+is never replayed. Read `toolkit-cli/docs/thermostat-output-edit.md` for source
+rules and the remaining application-change, GUI and native/hardware boundaries.
+
 
 ## Conversion, classic DLT and firmware boundaries
 

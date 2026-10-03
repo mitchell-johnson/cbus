@@ -2,6 +2,18 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+[Typed thermostat output Edit](feature-batch-2026-10-04-thermostat-output-edit.md)
+adds accepted/cancelled name-only edits to the same ordered Select/Add history.
+It preserves selected identities and addresses, source name rules and every
+intermediate rename; Edit itself assigns no PP reference. Source and a fresh
+installed wheel each pass 259 parent tests and 1,510 separate subtests, with
+12 disclosed skips and all 84 selected backend cases. All 380 package files
+match; 4,036 repository inputs and both reused PR #97 binaries remain unchanged
+during execution. The static review reproduces 337 shared Add/Edit checks.
+No Rust change or full-suite run was needed. Application migration, complete
+GUI behavior and native/hardware acceptance remain open under issues 42 and 72;
+the thermostat category remains `in_progress`.
+
 [Typed thermostat output Add](feature-batch-2026-10-04-thermostat-output-add.md) extends the existing
 settings owner with ordered accepted/cancelled Add outcomes interleaved with
 existing group selections. It preserves numeric allocation, exact Unicode
