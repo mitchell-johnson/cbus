@@ -419,21 +419,32 @@ mod tls_tests {
         let scratch = Scratch(dir.clone());
         let cert = dir.join("cert.pem");
         let key = dir.join("key.pem");
+        let certificate_config = dir.join("openssl.cnf");
+        // Host OpenSSL defaults may mark a self-signed certificate as a CA,
+        // which the normal rustls server-certificate verifier rejects.
+        std::fs::write(
+            &certificate_config,
+            concat!(
+                "[req]\n",
+                "prompt = no\n",
+                "distinguished_name = dn\n",
+                "x509_extensions = server\n",
+                "[dn]\n",
+                "CN = localhost\n",
+                "[server]\n",
+                "basicConstraints = critical,CA:FALSE\n",
+                "keyUsage = critical,digitalSignature,keyEncipherment\n",
+                "extendedKeyUsage = serverAuth\n",
+                "subjectAltName = IP:127.0.0.1\n",
+            ),
+        )
+        .unwrap();
         let result = Command::new("openssl")
             .args([
-                "req",
-                "-x509",
-                "-newkey",
-                "rsa:2048",
-                "-nodes",
-                "-days",
-                "1",
-                "-subj",
-                "/CN=localhost",
-                "-addext",
-                "subjectAltName=IP:127.0.0.1",
-                "-out",
+                "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-config",
             ])
+            .arg(&certificate_config)
+            .arg("-out")
             .arg(&cert)
             .arg("-keyout")
             .arg(&key)

@@ -191,3 +191,68 @@ denominator remain incomplete. Deferred issues 72–75 retain their existing
 acceptance/protected scopes; no VM, vendor instruction or real house execution
 occurred in this batch. [Implementation status](implementation-status.md) and
 `coverage --require-complete` remain the authoritative completeness gates.
+
+## TLS test-certificate portability successor
+
+Publication [CI run 37085008370](https://github.com/mitchell-johnson/cbus/actions/runs/37085008370)
+for `c519ce5d8ddfa070817df202c15af9d211539dac` exposed two handshake
+failures in the cbus-cgate library: **567 passed, two failed and one
+private-input ignored case**. The command stopped before later workspace
+crates. The retained server failure is `AlertReceived(CertificateUnknown)`;
+the original CI certificate bytes and precise client verifier error were not
+retained.
+
+A clean controlled OpenSSL CA:TRUE profile reproduced both failures on the
+unchanged two helper sources. Changing only basicConstraints to CA:FALSE
+passed both tests. The first controlled profile instead failed with
+`ExtensionValueInvalid` because its SAN setup was malformed; that setup
+failure is retained separately. Attribution to a CA certificate used as a
+server leaf is controlled reproduction plus verifier-source inference, not a
+directly observed original-CI `CaUsedAsEndEntity` exception.
+
+The correction changes only two Rust test certificate helpers to use an
+explicit CA:FALSE, serverAuth and IP subjectAltName leaf configuration.
+Production TLS verification and event flushing are unchanged. The two unit
+and two daemon checks also pass while the external default profile still
+declares CA:TRUE. Certificates and private keys remain ephemeral and are not
+published. An initial successor format check failed before any tests;
+formatting changed no lexical tokens, configuration strings or production
+prefix. That predecessor and the original CI/configuration failures remain
+separate evidence.
+
+The corrected mandatory Rust gates all exit zero: `cargo fmt --check`,
+workspace Clippy with warnings denied, workspace tests and release build.
+Workspace tests pass **8,711 cases with zero failures and one private-input
+ignored case**; all **464 inputs** stayed unchanged. Both selected release
+binaries are byte-identical to the previous release. These outcomes are
+separate from the controlled certificate and focused helper checks; overlapping
+counts are not added.
+
+Six fresh owned modeled comparisons pass **64 primary cases plus four combined
+checks**, with seven driver commands exiting zero. Their source maps retain
+**1,147 occurrences across 214 unique paths**. The contract inventory is
+byte-identical. Metadata generation first changes only `parity-evidence.json`
+and `parity-obligations.json`; the second generation changes nothing and keeps
+all **3,914 inputs** quiet. `make check-parity-register` exits zero. These
+comparisons add no original-instruction, CLI or hardware acceptance.
+
+The focused eight-module source and fresh installed-wheel selections each
+pass **174 parent tests and 587 separate subtests**, with **zero failures or
+skips**. Both epochs keep all **3,914 inputs** and selected binaries unchanged.
+All **364 current source/ZIP/installed package files** match: **362 retain
+their previous bytes and two parity JSON resources change**. Python
+implementation code is unchanged. The prior 44-module selections and their
+364-file closure remain historical evidence for `c519ce5d`; they were not
+rerun or newly credited. A receipt-builder preparation error also remains
+retained and executed no products or tests.
+
+The [separate successor receipt](../research/fixtures/label-images-tls-ci-leaf-successor-20261003.json)
+has SHA-256
+`ae447c6e6eef888f68ac28d7d505c3905515898054243289a39e5b875ebc6663`.
+The earlier receipt `b5bc3bb9…` remains unchanged. This appendix and the top
+status annotation were added after the frozen successor epochs; they alter
+only two Markdown files. The new receipt separately records their validation
+context. The correction commit and its CI await publication, so no new-head
+green result is claimed. Full Toolkit parity, the complete functional
+denominator and original/Framework/native/physical acceptance remain
+unfinished; protected issues 72–75 are unchanged.

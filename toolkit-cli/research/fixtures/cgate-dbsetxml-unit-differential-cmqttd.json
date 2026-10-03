@@ -15,7 +15,7 @@
     "sha256": "3779b204a35e99360dff619a5b2de8eacb3307e732a076597a0987e45dcc1c25",
     "name": "cmqttd"
   },
-  "source_revision": "2cc1454cbdc049f51a86a3f4ed5aae3a8f696b02",
+  "source_revision": "c519ce5d8ddfa070817df202c15af9d211539dac",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "84622d41da4b900ca6f3fd55425f0d1f1ccff702f747f6637d6fc65b34f30272",
     "docs/cmqttd-cgate.md": "62cf3f69fa0021af5a1030ed1e4e7f65aa04cb4b3959c2b59d76308b625cf88f",
@@ -53,7 +53,7 @@
     "rust/cbus-cgate/src/service/calculator.rs": "9e5d945af25ed926e40716ad17aa326b1f6a4e44045776cfdc10dfacdf3f8411",
     "rust/cbus-cgate/src/service/cgl.rs": "04dfb75a46f386b1b9bba41f503b764b99d84af80877c38a29731eb3244d5f7e",
     "rust/cbus-cgate/src/service/connection_admission.rs": "dd0b229e767d8d49e29cca3a0e36cac05ed37831f9abcf3f7044685296d58339",
-    "rust/cbus-cgate/src/service/connection_events.rs": "270bedb11dceb491571b9642936f0d9d0a8612ce8ee4de8000b195f8b0feb350",
+    "rust/cbus-cgate/src/service/connection_events.rs": "b94c2c19cd8fd0ac409a423328c99e8b66a70a116e9cbfa69e9dad8ac1086282",
     "rust/cbus-cgate/src/service/dali.rs": "71593b259f6d78fc89451c47861551d2a107db1c7ceeb519f622edc2d6e5d388",
     "rust/cbus-cgate/src/service/dali_journal.rs": "72fdba6f06239ab116abc164310e835f815327fdc78c10c421f5f1715836f6e6",
     "rust/cbus-cgate/src/service/dali_proxy.rs": "0f11d011a5b1979fa3d7ebf05960bada614224e281728bb210dea931ce8930f7",
@@ -625,7 +625,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "da72e750de940ba3545925645a1fa5234cbc1978d1d5f9536f6a5f188f232e3a",
+    "raw_file_sha256": "9c6da82f06301913cb831388d40b3914d9f84fec672e69b588c221300e5fd2d2",
     "raw_retained_privately": true,
     "field_mapping": [
       {

@@ -15,6 +15,21 @@ Toolkit's named flat-repository image FILE spelling. Original GUI scheduling,
 broader image/repository formats and hardware acceptance remain outstanding;
 the category ledger and functional completion percentage do not change.
 
+The [TLS test-certificate portability successor](label-images-tls-progress-20261003.md#tls-test-certificate-portability-successor)
+corrects two Rust test helpers after the original publication CI's two handshake
+failures. All four required Rust gates now pass: 8,711 tests, zero failures and
+one private-input ignored case, with 464 inputs quiet and byte-identical release
+binaries. Source-fingerprint metadata receives separate focused source and fresh
+installed-wheel validation: each eight-module selection passes 174 parents and
+587 separate subtests, with zero skips or failures and 3,914 inputs quiet. All
+364 current source/ZIP/installed package files match; 362 retain their previous
+bytes and only two parity JSON resources change. Python implementation code is
+unchanged. The earlier 44-module results remain historical evidence for
+`c519ce5d`, without rerunning or recrediting them. This paragraph and the report
+appendix are documentation-only annotations after the successor epochs.
+Correction-head CI awaits publication; no CI success, full Toolkit parity or
+original/native/hardware acceptance is inferred.
+
 The [buttons, Language and reconciliation batch](feature-batch-2026-10-03-scene-controls-language-reconciliation.md)
 adds explicit SceneManager Add-button callbacks, sealed text-only Language
 initialization across ordered parent histories, and a public declared

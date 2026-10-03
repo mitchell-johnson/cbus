@@ -32,21 +32,32 @@ fn certificate() -> (Scratch, Arc<rustls::ClientConfig>) {
     std::fs::create_dir(&scratch.0).unwrap();
     let cert = scratch.0.join("cert.pem");
     let key = scratch.0.join("key.pem");
+    let certificate_config = scratch.0.join("openssl.cnf");
+    // Isolate the server-leaf extensions from host OpenSSL CA defaults while
+    // retaining normal rustls certificate and IP-address verification.
+    std::fs::write(
+        &certificate_config,
+        concat!(
+            "[req]\n",
+            "prompt = no\n",
+            "distinguished_name = dn\n",
+            "x509_extensions = server\n",
+            "[dn]\n",
+            "CN = localhost\n",
+            "[server]\n",
+            "basicConstraints = critical,CA:FALSE\n",
+            "keyUsage = critical,digitalSignature,keyEncipherment\n",
+            "extendedKeyUsage = serverAuth\n",
+            "subjectAltName = IP:127.0.0.1\n",
+        ),
+    )
+    .unwrap();
     let result = std::process::Command::new("openssl")
         .args([
-            "req",
-            "-x509",
-            "-newkey",
-            "rsa:2048",
-            "-nodes",
-            "-days",
-            "1",
-            "-subj",
-            "/CN=localhost",
-            "-addext",
-            "subjectAltName=IP:127.0.0.1",
-            "-out",
+            "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-config",
         ])
+        .arg(&certificate_config)
+        .arg("-out")
         .arg(&cert)
         .arg("-keyout")
         .arg(&key)
