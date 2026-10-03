@@ -119,6 +119,26 @@ jobs:
           --require-module tests/test_edlt_parent_scene_language.py
           --require-module tests/test_toolkit_obligation_reconcile.py
           --require-module tests/test_cli_coverage_reconcile.py
+          --require-module tests/test_application_events.py
+          --require-module tests/test_cli_din_controls.py
+          --require-module tests/test_cli_firmware_ncc.py
+          --require-module tests/test_cli_neo_indicator_editor.py
+          --require-module tests/test_cli_senll_controls.py
+          --require-module tests/test_cli_senlla_surface.py
+          --require-module tests/test_cli_sensors.py
+          --require-module tests/test_din_output_controls.py
+          --require-module tests/test_firmware_diagnostics.py
+          --require-module tests/test_firmware_ncc.py
+          --require-module tests/test_input_options.py
+          --require-module tests/test_light_level_sensors.py
+          --require-module tests/test_native_sensor_scenes.py
+          --require-module tests/test_neo_indicator_editor.py
+          --require-module tests/test_senll_control_history.py
+          --require-module tests/test_senll_global_status.py
+          --require-module tests/test_senll_source_inventory.py
+          --require-module tests/test_senlla_surface.py
+          --require-module tests/test_thermostat_remote_references.py
+          --require-module tests/test_thermostat_settings.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -170,6 +190,13 @@ jobs:
           --require-module tests/test_cgate_edlt_mra_controls_interop.py
           --require-module tests/test_cgate_edlt_dual_key_controls_interop.py
           --require-module tests/test_cgate_edlt_time_date_controls_interop.py
+          --require-module tests/test_cgate_din_controls_interop.py
+          --require-module tests/test_cgate_senll_controls_interop.py
+          --require-module tests/test_cgate_senll_global_interop.py
+          --require-module tests/test_cgate_senll_inventory_interop.py
+          --require-module tests/test_neo_indicator_editor_backends.py
+          --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -226,6 +253,13 @@ jobs:
           --require-module tests/test_cgate_edlt_time_date_controls_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
+          --require-module tests/test_cgate_din_controls_interop.py
+          --require-module tests/test_cgate_senll_controls_interop.py
+          --require-module tests/test_cgate_senll_global_interop.py
+          --require-module tests/test_cgate_senll_inventory_interop.py
+          --require-module tests/test_neo_indicator_editor_backends.py
+          --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain executed Toolkit tests and skips
@@ -298,6 +332,26 @@ jobs:
           --require-module tests/test_edlt_parent_repository_uncertainty.py
           --require-module tests/test_cgate_repository_uncertainty.py
           --require-module tests/test_project_documentation_neo_profiles.py
+          --require-module tests/test_application_events.py
+          --require-module tests/test_cli_din_controls.py
+          --require-module tests/test_cli_firmware_ncc.py
+          --require-module tests/test_cli_neo_indicator_editor.py
+          --require-module tests/test_cli_senll_controls.py
+          --require-module tests/test_cli_senlla_surface.py
+          --require-module tests/test_cli_sensors.py
+          --require-module tests/test_din_output_controls.py
+          --require-module tests/test_firmware_diagnostics.py
+          --require-module tests/test_firmware_ncc.py
+          --require-module tests/test_input_options.py
+          --require-module tests/test_light_level_sensors.py
+          --require-module tests/test_native_sensor_scenes.py
+          --require-module tests/test_neo_indicator_editor.py
+          --require-module tests/test_senll_control_history.py
+          --require-module tests/test_senll_global_status.py
+          --require-module tests/test_senll_source_inventory.py
+          --require-module tests/test_senlla_surface.py
+          --require-module tests/test_thermostat_remote_references.py
+          --require-module tests/test_thermostat_settings.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips

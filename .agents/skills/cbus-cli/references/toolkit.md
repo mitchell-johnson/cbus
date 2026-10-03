@@ -53,8 +53,8 @@ For ST7 SENLL 2.0.01..2.4.99, `sensors light-level-plan` and
 and `--status-report-interval 3..255` seconds. They apply the complete recovered
 forced save, including a loaded broadcast minimum of 10 and power-up encoding
 before the maintenance polarity reset. Report the selected and reloaded power-up
-states separately. A stored Global interval below 3 requires an explicit valid
-selection. Repeat `--on-off-control application=primary|secondary` or
+states separately. Fresh Global initialization changes stored0..2 to3 before
+an explicit valid selection; the raw value remains part of stale-state guards. Repeat `--on-off-control application=primary|secondary` or
 `group=N|none` for an explicit ordered application/group history, including
 the source-owned eight-block load and collision callbacks. The admitted SENLL
 class has zero runtime InputKeys; its history never changes BlockAllocation.
