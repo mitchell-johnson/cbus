@@ -18,7 +18,7 @@ from .addressing import _container
 from .native_thermostat_schedule import _byte, _children, _field, _oid
 from .native_thermostat_scheduling import _unit_path
 from .thermostat_output_groups import (OUTPUT_FIELDS, OUTPUT_READ_FIELDS, OutputGroupModel,
-    normalize_output_selections)
+    normalize_output_selections, normalize_output_operations)
 from .thermostat_remote_levels import (RemoteLevelCreation, normalize_level_prompts, project_remote_levels)
 from .thermostat_templates import FAMILIES, ThermostatTemplateError, family_for_unit_type
 from .unitspec import UnitSpecError, UnitSpecStore, _integer
@@ -293,6 +293,7 @@ class RemoteCreation:
     address: int
     name: str
     reason: str
+    output_add: bool = False
 
     @property
     def action(self):
@@ -303,8 +304,11 @@ class RemoteCreation:
         return self.kind, self.application, self.address
 
     def as_dict(self):
-        return {'kind': self.kind, 'application': self.application, 'address': self.address,
-                'name': self.name, 'reason': self.reason}
+        value = {'kind': self.kind, 'application': self.application, 'address': self.address,
+                 'name': self.name, 'reason': self.reason}
+        if self.output_add:
+            value['output_add'] = self.output_add
+        return value
 
 
 @dataclass(frozen=True)
@@ -368,14 +372,14 @@ class _GraphResolver:
             'identity': found.identity if found else None, 'created': created})
         return found
 
-    def create(self, application, address, name, reason):
+    def create(self, application, address, name, reason, *, output_add=False):
         if (application, address) in self.live:
             _fail('Planned group address is already occupied')
         if sum(key[0] == application for key in self.live) >= 256:
             _fail('Group capacity prevents resolving ' + reason)
         group = RemoteGroup(application, address, f'planned-group:{application}:{address}', name, 'Group', '')
         self.live[application, address] = group
-        self.operations.append(RemoteCreation('Group', application, address, name, reason))
+        self.operations.append(RemoteCreation('Group', application, address, name, reason, output_add))
         return group
 
     def rename(self, group, name, reason):
@@ -414,6 +418,16 @@ class RemoteReferencePlan:
     output_values: tuple[tuple[str, int], ...] = ()
     output_projection_json: str = 'null'
     graph_operations: tuple[RemoteCreation | RemoteGroupRename, ...] = ()
+    output_operations: tuple[str, ...] | None = None
+
+    @property
+    def output_requested_parameters(self):
+        """Explicit writes in request order, excluding direct cancellation."""
+        if self.output_operations is None:
+            return tuple(dict.fromkeys(name for name, _address in self.output_selections or ()))
+        rows = [json.loads(row) for row in self.output_operations]
+        return tuple(dict.fromkeys(row['parameter'] for row in rows
+            if row['op'] == 'select-output-group' or row['outcome'] == 'accept'))
 
     @property
     def output_expected(self):
@@ -446,12 +460,15 @@ class RemoteReferencePlan:
         return self.pp_mutation_required or self.graph_mutation_required
 
     def semantic_source(self):
-        return _json({'before': self.before, 'identity': self.graph.unit_identity,
+        value = {'before': self.before, 'identity': self.graph.unit_identity,
                       'graph': self.graph.fingerprint, 'edits': self.edits, 'schema': self.schema_json,
-                      'level_prompts': self.level_prompts, 'output_selections': self.output_selections})
+                      'level_prompts': self.level_prompts, 'output_selections': self.output_selections}
+        if self.output_operations is not None:
+            value['output_operations'] = self.output_operations
+        return _json(value)
 
     def as_dict(self):
-        return {'format': FORMAT, 'family': self.family, 'unit_type': self.unit_type,
+        result = {'format': FORMAT, 'family': self.family, 'unit_type': self.unit_type,
                 'requested': dict(self.edits), 'expected': self.expected,
                 'changed_parameters': self.changed_parameters,
                 'project_graph': self.graph.as_dict(),
@@ -474,6 +491,9 @@ class RemoteReferencePlan:
                 'existing_levels_preserved': True, 'complete_form_lifecycle_reproduced': False,
                 'gui_source_change_callbacks_reproduced': False, 'physical_device_programmed': False,
                 'saved': False}
+        if self.output_operations is not None:
+            result['output_operations'] = [json.loads(row) for row in self.output_operations]
+        return result
 
 
 def _byte_parameter(spec, name, value):
@@ -492,7 +512,7 @@ def _byte_parameter(spec, name, value):
 
 
 def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-                           output_selections=None):
+                           output_selections=None, output_operations=None):
     """Project all remote fields from one candidate and its authoritative graph.
 
     Ordinary edits are consumed for the same candidate as the owning settings
@@ -500,7 +520,8 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
     """
     try:
         return _plan(store, unit_type, snapshot, edits, project_xml=project_xml, unit_path=unit_path,
-                     level_prompts=level_prompts, output_selections=output_selections)
+                     level_prompts=level_prompts, output_selections=output_selections,
+                     output_operations=output_operations)
     except ThermostatTemplateError:
         raise
     except (ValueError, KeyError, TypeError, UnitSpecError) as error:
@@ -508,12 +529,16 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
 
 
 def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-          output_selections=None):
+          output_selections=None, output_operations=None):
     if not isinstance(store, UnitSpecStore):
         _fail('Remote reference planning requires a decoded UnitSpecStore')
     family = family_for_unit_type(unit_type)
     prompts = normalize_level_prompts(level_prompts, family)
+    if output_selections is not None and output_operations is not None:
+        _fail('Output selections and output operations are mutually exclusive')
     selections = normalize_output_selections(output_selections)
+    operations = normalize_output_operations(output_operations)
+    output_active = selections is not None or operations is not None
     spec = store.load(FAMILIES[family]['unit_spec'])
     if spec.unit_type != {'basic': 'THERMOSTATB', 'programmable': 'THERMOSTATA'}[family]:
         _fail('Decoded thermostat specification identity differs from the selected family')
@@ -536,7 +561,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     values = {}
     schema = {}
     read_fields = tuple(dict.fromkeys(REMOTE_READ_FIELDS[family]
-        + (OUTPUT_READ_FIELDS if selections is not None else ())))
+        + (OUTPUT_READ_FIELDS if output_active else ())))
     for name in read_fields:
         if name not in snapshot:
             _fail('Full thermostat snapshot lacks remote dependency: ' + name)
@@ -550,6 +575,13 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     if source > 2:
         _fail('RemoteSetbackControlSource must be 0..2; larger values leave unresolved save references')
     graph = snapshot_project(project_xml, unit_path)
+    project_tag_name = None
+    if operations is not None and any(json.loads(row).get('outcome') == 'accept' for row in operations):
+        project = _children(_document(project_xml).documentElement, 'Project')[0]
+        tags = _children(project, 'TagName')
+        if len(tags) != 1 or tags[0].namespaceURI:
+            _fail('Accepted output Add requires an explicit scalar Project.TagName')
+        project_tag_name = _field(project, 'TagName')
     if dict(graph.unit_identity)['UnitType'] != unit_type:
         _fail('Project thermostat identity differs from the selected unit type')
     if not spec.supports_version(dict(graph.unit_identity)['FirmwareVersion']):
@@ -568,7 +600,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     apps, live = resolver.apps, resolver.live
     group = resolver.group
     getters = resolver.getters
-    output = OutputGroupModel(values, family, unit_type, resolver) if selections is not None else None
+    output = OutputGroupModel(values, family, unit_type, resolver) if output_active else None
     if selections is not None:
         for name, address in selections:
             _byte_parameter(spec, name, address)
@@ -605,7 +637,11 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     # role or optional-Level receipts are emitted.
     references = {role: resolver.current(value) for role, value in references.items()}
     if output is not None:
-        output.select(selections)
+        if operations is not None:
+            output.operate(operations, project_tag_name=project_tag_name,
+                           validate_address=lambda parameter, address: _byte_parameter(spec, parameter, address))
+        else:
+            output.select(selections)
         output.validate()
         expected.update(output.expected)
 
@@ -646,17 +682,28 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         project_xml, graph, tuple(sorted(expected.items())), tuple(creations), _json(getters), _json(roles),
         _json(validation), _json(schema), prompts, level_creations, _json(prompt_receipts), selections,
         tuple(sorted(output.expected.items())) if output is not None else (),
-        _json(output.as_dict()) if output is not None else 'null', tuple(resolver.operations))
+        _json(output.as_dict()) if output is not None else 'null', tuple(resolver.operations), operations)
 
 
 def validate_remote_plan(store, plan):
     """Replay every bound input before the native owner starts mutations."""
     if type(plan) is not RemoteReferencePlan:
         _fail('Expected an issued thermostat remote reference plan')
+    if any(type(row) is RemoteCreation and (type(row.output_add) is not bool
+            or row.output_add and row.kind != 'Group') for row in (*plan.creations, *plan.graph_operations)):
+        _fail('Malformed output Add creation provenance')
+    try:
+        if plan.output_operations is not None and (type(plan.output_operations) is not tuple
+                or any(type(row) is not str for row in plan.output_operations)):
+            _fail('Output operations must retain the issued immutable history')
+        operations = None if plan.output_operations is None else [json.loads(row) for row in plan.output_operations]
+    except (ValueError, TypeError) as error:
+        raise ThermostatTemplateError('Invalid thermostat output operation history') from error
     rebuilt = plan_remote_references(store, plan.unit_type, dict(plan.before), dict(plan.edits),
         project_xml=plan.project_xml, unit_path=plan.graph.unit_path, level_prompts=dict(plan.level_prompts),
         output_selections=None if plan.output_selections is None else [
-            {'parameter': name, 'address': address} for name, address in plan.output_selections])
+            {'parameter': name, 'address': address} for name, address in plan.output_selections],
+        output_operations=operations)
     if rebuilt != plan or _json(rebuilt.as_dict()) != _json(plan.as_dict()):
         _fail('Thermostat remote plan differs from its complete deterministic replay')
     return plan
@@ -711,6 +758,8 @@ def _graph_operation_names(before, operations, created_oids):
             _fail('Malformed graph operation')
         key = row.key
         if type(row) is RemoteCreation:
+            if type(row.output_add) is not bool or row.output_add and row.kind != 'Group':
+                _fail('Malformed output Add creation provenance')
             if row.kind not in ('Application', 'Group') or key in current or key in added:
                 _fail('Graph creation collides with an existing or already created object')
             if row.kind == 'Application' and row.application != row.address:

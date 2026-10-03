@@ -5106,3 +5106,286 @@ async fn associated_raw_level_copy_guard_preserves_independent_numeric_lexical_o
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }
+
+struct QuotedDbsetGroup {
+    oid: String,
+    path: String,
+    network: String,
+    element: String,
+    address: String,
+    value_index: usize,
+}
+
+async fn assert_quoted_dbset_group(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    vector: &serde_json::Value,
+    group: &QuotedDbsetGroup,
+    expected: &str,
+) {
+    // Numeric path DBGET has an established diagnostic fallback; exact scalar
+    // readback is via OID, while full Network XML verifies numeric mutations.
+    let mut targets = vec![format!("!{}", group.oid)];
+    if group.network.ends_with("/CustomA") {
+        targets.push(group.path.clone());
+    }
+    for target in targets {
+        for (field, template, value) in [
+            ("TagName", "read_tag_wire", expected),
+            ("Address", "read_address_wire", group.address.as_str()),
+        ] {
+            let response = run(service, client, &format!("DBGET {target}/{field}")).await;
+            let wire = vector[template]
+                .as_str()
+                .unwrap()
+                .replace("%TARGET%", &target)
+                .replace("%VALUE%", value)
+                .replace("%ADDRESS%", value);
+            assert_eq!(crate::format_response(&response), wire);
+        }
+    }
+    let document = xml(service, client, &group.network).await;
+    let parsed = roxmltree::Document::parse(&document).unwrap();
+    let node = parsed
+        .descendants()
+        .find(|node| {
+            node.is_element()
+                && node.children().any(|child| {
+                    child.has_tag_name("OID") && child.text() == Some(group.oid.as_str())
+                })
+        })
+        .unwrap();
+    assert!(node.has_tag_name(group.element.as_str()), "{document}");
+    for (field, expected) in [("TagName", expected), ("Address", group.address.as_str())] {
+        assert_eq!(
+            node.children()
+                .find(|child| child.has_tag_name(field))
+                .unwrap()
+                .text(),
+            Some(expected),
+            "{document}"
+        );
+    }
+}
+
+#[tokio::test]
+async fn quoted_dbset_values_preserve_pending_existing_oid_path_and_project_reload() {
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../testdata/vectors/cgate_dbset_quoted_tail.json"
+    ))
+    .unwrap();
+    let cases = vector["cases"].as_array().unwrap();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    setup(&service, &mut client).await;
+    ok_command(
+        &service,
+        &mut client,
+        "DBCREATENET 11 Numeric Cni 127.0.0.1:1",
+    )
+    .await;
+    // Exercise the public project's XML-imported numeric Network shape.
+    let numeric = xml(&service, &mut client, "//NAMED/11").await;
+    assert_eq!(
+        barcode_unit_document(&service, &mut client, "//NAMED/11", &numeric)
+            .await
+            .status,
+        301
+    );
+    let neighbor_before = xml(&service, &mut client, "//NAMED/Neighbor").await;
+    let mut groups = Vec::new();
+    for (network, application, element) in [
+        ("11", 56, "Group"),
+        ("11", 203, "NetVar"),
+        ("CustomA", 56, "Group"),
+    ] {
+        let parent = format!("//NAMED/{network}/{application}");
+        let application_oid = created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE //NAMED/{network} Application {application} KeptApp"),
+        )
+        .await;
+        for (index, case) in cases.iter().enumerate() {
+            let response = run(
+                &service,
+                &mut client,
+                &format!("DBADD !{application_oid} {element}"),
+            )
+            .await;
+            let oid = response
+                .final_text
+                .strip_prefix("301 OID=")
+                .unwrap_or_else(|| panic!("{response:?}"))
+                .to_string();
+            assert_eq!(
+                crate::format_response(&response),
+                vector["created_wire"]
+                    .as_str()
+                    .unwrap()
+                    .replace("%OID%", &oid)
+            );
+            assert_eq!(
+                scalar(&service, &mut client, &format!("!{oid}/OID")).await,
+                oid
+            );
+            let address = (10 + index).to_string();
+            let command = vector["set_address_command"]
+                .as_str()
+                .unwrap()
+                .replace("%OID%", &oid)
+                .replace("%ADDRESS%", &address);
+            let response = run(&service, &mut client, &command).await;
+            assert_eq!(
+                crate::format_response(&response),
+                vector["set_wire"].as_str().unwrap()
+            );
+            let command = vector["set_tag_command"]
+                .as_str()
+                .unwrap()
+                .replace("%TARGET%", &format!("!{oid}"))
+                .replace("%QUOTED%", case["quoted"].as_str().unwrap());
+            let response = run(&service, &mut client, &command).await;
+            assert_eq!(
+                crate::format_response(&response),
+                vector["set_wire"].as_str().unwrap()
+            );
+            let group = QuotedDbsetGroup {
+                path: format!("{parent}/{address}"),
+                oid,
+                network: format!("//NAMED/{network}"),
+                element: element.to_string(),
+                address,
+                value_index: index,
+            };
+            assert_quoted_dbset_group(
+                &service,
+                &mut client,
+                &vector,
+                &group,
+                case["value"].as_str().unwrap(),
+            )
+            .await;
+            groups.push(group);
+        }
+    }
+    // Existing OID and path routes consume an already-decoded single value.
+    // A decoded value which itself begins/ends in quotes must not be decoded twice.
+    for group in &groups {
+        for (target, index) in [
+            (
+                format!("!{}", group.oid),
+                (group.value_index + 1) % cases.len(),
+            ),
+            (group.path.clone(), group.value_index),
+        ] {
+            let case = &cases[index];
+            let command = vector["set_tag_command"]
+                .as_str()
+                .unwrap()
+                .replace("%TARGET%", &target)
+                .replace("%QUOTED%", case["quoted"].as_str().unwrap());
+            let response = run(&service, &mut client, &command).await;
+            assert_eq!(
+                crate::format_response(&response),
+                vector["set_wire"].as_str().unwrap()
+            );
+            assert_quoted_dbset_group(
+                &service,
+                &mut client,
+                &vector,
+                group,
+                case["value"].as_str().unwrap(),
+            )
+            .await;
+        }
+    }
+    let first = &groups[0];
+    let bad_address = run(
+        &service,
+        &mut client,
+        &format!("DBSET !{}/Address \"not numeric\"", first.oid),
+    )
+    .await;
+    assert_eq!(bad_address.status, 408);
+    assert_quoted_dbset_group(
+        &service,
+        &mut client,
+        &vector,
+        first,
+        cases[0]["value"].as_str().unwrap(),
+    )
+    .await;
+    // These two controls retain the previous dispatcher contracts.
+    let control = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //NAMED/11/56 Group 200 Control",
+    )
+    .await;
+    for (verb, key) in [("DBSET", "unquoted"), ("DBSETSAFE", "safe")] {
+        ok_command(
+            &service,
+            &mut client,
+            &format!(
+                "{verb} !{control}/TagName {}",
+                vector[key]["tail"].as_str().unwrap()
+            ),
+        )
+        .await;
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{control}/TagName")).await,
+            vector[key]["value"].as_str().unwrap()
+        );
+    }
+    for command in [
+        "PROJECT SAVE NAMED",
+        "PROJECT CLOSE NAMED",
+        "PROJECT LOAD NAMED",
+        "PROJECT USE NAMED",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    for group in &groups {
+        assert_quoted_dbset_group(
+            &service,
+            &mut client,
+            &vector,
+            group,
+            cases[group.value_index]["value"].as_str().unwrap(),
+        )
+        .await;
+    }
+    assert_eq!(
+        xml(&service, &mut client, "//NAMED/Neighbor").await,
+        neighbor_before
+    );
+    let before_restart = xml(&service, &mut client, "//NAMED/11").await;
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    ok_command(&restarted, &mut client, "PROJECT USE NAMED").await;
+    assert_eq!(
+        xml(&restarted, &mut client, "//NAMED/11").await,
+        before_restart
+    );
+    for group in &groups {
+        assert_quoted_dbset_group(
+            &restarted,
+            &mut client,
+            &vector,
+            group,
+            cases[group.value_index]["value"].as_str().unwrap(),
+        )
+        .await;
+    }
+    assert_eq!(
+        xml(&restarted, &mut client, "//NAMED/Neighbor").await,
+        neighbor_before
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}

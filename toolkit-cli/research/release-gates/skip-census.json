@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 730,
-    "modules_without_skip_sites": 410,
-    "modules_with_skip_sites": 320,
+    "test_modules": 733,
+    "modules_without_skip_sites": 412,
+    "modules_with_skip_sites": 321,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,7 +62,7 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 112,
+      "original_toolkit": 113,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 160
+      "none": 161
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -10700,6 +10700,42 @@
         }
       ],
       "note": "Its separate CBUS_TEMPLATE_TRANSACTION_TEST_HOST gate targets a C-Gate-compatible service, not the original server. A 2026-09-30 trial against the owned native C-Gate 3.4.0.2001 failed with '425 Lock failed' and '408 Unable to delete file', so tests/conftest.py does not publish it."
+    },
+    "tests/test_thermostat_output_add.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "OutputAddTests::test_optional_static_source"
+          ]
+        }
+      ]
     },
     "tests/test_thermostat_output_groups.py": {
       "categories": [
