@@ -178,6 +178,26 @@ class SensorCLITests(unittest.TestCase):
                                               '--status-report-interval', bad])
                     with self.assertRaisesRegex(SensorError, '3..255'):
                         offline(args)
+            for loaded in (0, 1, 2):
+                with self.subTest(loaded=loaded):
+                    current = session()
+                    current.current['StatusReportInterval'] = str(loaded)
+                    file.write_text(json.dumps({'format': 'cbus-cli-parameters-v1', 'unit_type': 'SENLL',
+                                                'firmware': '2.3.00', 'catalog_number': '5031PE',
+                                                'parameters': current.values()}))
+                    before = file.read_bytes()
+                    result, status = offline(parser.parse_args(['sensors', 'light-level-plan', str(file)]))
+                    self.assertEqual(status, 0)
+                    self.assertEqual(result['expected']['StatusReportInterval'], [loaded])
+                    self.assertEqual(result['changes']['StatusReportInterval'], [3])
+                    applied = native(parser.parse_args(['cgate', 'unit', '--lock-address', '//TEST/254',
+                                                       '--source', '/db//TEST/254/p/210',
+                                                       'sensor-light-level']), current)
+                    self.assertEqual(applied['changes'], result['changes'])
+                    self.assertEqual(current.current['StatusReportInterval'], '3')
+                    self.assertTrue(applied['verified'])
+                    self.assertFalse(applied['saved'])
+                    self.assertEqual(file.read_bytes(), before)
 
     @unittest.skipUnless(native_backend() and os.environ.get("CBUS_UNITSPEC_DIR"),
                          "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance")

@@ -44,12 +44,18 @@ position in this history. The Python keyword counterparts are refused too.
 Scalar indicator, target/margin, broadcast timer, power-up and status-interval
 options retain their existing final save behavior.
 
-The old flat options and unchanged-dialog save retain their previous numeric
-profile and collision refusal. They normalize only the on/off block's
+The flat application/group options retain their numeric profile and collision
+refusal. They normalize only the on/off block's
 unavailable secondary selection; they do not claim the complete inherited
 application-load callbacks. `control_history` is null for this legacy path.
 Complete snapshots additionally perform the inherited native scene save on
 both this path and the explicit history path.
+Both paths now include fresh Global interval initialization: a stored
+`StatusReportInterval` of 0..2 becomes 3 before an explicit valid selection.
+An ordered history records its raw and initialized values in
+`global_status_initialization` before `on_off_controls`. Explicit interval
+selection retains its later `flat_dialog_edits` position. Read
+[Global interval notes](senll-global-status.md) for source and stale-state guards.
 
 ## Load and callback order
 

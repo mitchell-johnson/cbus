@@ -1,0 +1,285 @@
+{
+  "format": "cbus-senll-global-status-initialization-static-audit-v1",
+  "inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "original_execution": false,
+  "original_gui_execution": false,
+  "physical_acceptance": false,
+  "model_or_tests_or_docs_modified": false,
+  "model_or_tests_or_docs_modified_scope": "The earlier read-only static recovery audit, before this implementation; this field does not describe the later model, test and documentation changes",
+  "derived_rule": {
+    "stored_byte_minimum_on_fresh_global_initialization": 3,
+    "stored_0_1_2_saved_as": 3,
+    "stored_3_through_255_preserved": true,
+    "explicit_selector_domain": [
+      3,
+      255
+    ],
+    "parameter": "StatusReportInterval",
+    "address": 66
+  },
+  "fresh_frame": {
+    "resource": "TFRMLEARNUNITGLOBAL",
+    "sha256": "16cfdb9d1b70a021a9174407da8ae9fd851ad6a4ae2b769bf6f58ede791d498f",
+    "bytes": 672,
+    "component": "cmbStatusReportInterval",
+    "class": "TcxComboBox",
+    "dropdown_style": "lsEditFixedList",
+    "no_explicit_text_edit_value_item_index_or_change_handler": true,
+    "loading_completed_before_coordinator_initialise": true
+  },
+  "combo_vmt_bindings": {
+    "0x49c": {
+      "address": "0x976c24",
+      "method": "cxTextEdit.TcxCustomTextEdit.SetItemIndex"
+    },
+    "0x2b4": {
+      "address": "0x99634c",
+      "method": "cxDropDownEdit.TcxCustomComboBox.ChangeHandler"
+    },
+    "0x2d4": {
+      "address": "0x9627c4",
+      "method": "cxEdit.TcxCustomEdit.DoChange"
+    },
+    "0x2f0": {
+      "address": "0x96312c",
+      "method": "cxEdit.TcxCustomEdit.DoOnChange"
+    }
+  },
+  "causal_timeline": [
+    "PP AfterLoad loads the stored integer unchanged",
+    "The fresh Global frame completes DFM loading before coordinator Initialise",
+    "Items.Clear then Items.Add builds values 3 through 255; empty text and lookup -1 do not preselect index 0",
+    "Setup assigns property OnChange to HandleStatusReportComboChange before Populate",
+    "Populate formats MAX(stored,3) and invokes actual SetItemIndex for its matching label",
+    "SetItemIndex changes the inner displayed text; WM_SETTEXT then CM_TEXTCHANGED raises Change even without a HWND",
+    "Combo/Mask/Text/Base handlers queue DoChange under nested change locks; outer unlock invokes property OnChange",
+    "Global handler reads the displayed numeric label and writes its integer back to the unit",
+    "Inherited Input BeforeSave serializes that current integer before later SENLL forced save; no forced override of this field"
+  ],
+  "implementation_recommendation": "Normalize the initialized unit interval to max(raw,3) before explicit valid 3..255 selection; preserve original raw expected/staleness bytes and existing save/readback guards, and retain original GUI acceptance false",
+  "methods": {
+    "CIS_TddST7Sensors.TddST7LightLevelSensor.InitialiseSubFormGlobals": {
+      "address": "0xfbb314",
+      "sha256": "5e582b56194e92959665575a7b02a8ebdc053962f3f32a97f666bfc599d5b925",
+      "span_instruction_count": 36
+    },
+    "CIS_TddKeyM8.TddKeyM8.Initialise": {
+      "address": "0xf94544",
+      "sha256": "df3e63ada09689bd67a795f574771ac127a7e1f6df5298cd839e96e9d672a770",
+      "span_instruction_count": 347
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.Initialise": {
+      "address": "0xfb61a4",
+      "sha256": "5f06de2006e1c7796bd332d4fdc883886f05fcc9e1edc6645dbda73d018cd574",
+      "span_instruction_count": 28
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.SetupNonFlashComponents": {
+      "address": "0xfb6220",
+      "sha256": "0ef822077edcc17da2e1e9dce11118101ddcb19c96043a0c6986c865368c3aa7",
+      "span_instruction_count": 71
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.PopulateNonFlashComponents": {
+      "address": "0xfb62fc",
+      "sha256": "7503ca0bf6d5ffc5663cfc4586c032ce7571c2ca2275870ac04d8e239a866c5b",
+      "span_instruction_count": 72
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.HandleStatusReportComboChange": {
+      "address": "0xfb63d4",
+      "sha256": "514b1122f2ad34f949e47586ada6dc4db4228e06a1c677246b517756c95e57ab",
+      "span_instruction_count": 35
+    },
+    "CIS_ICBusInputUnit.StatusReportIntegerToString": {
+      "address": "0xc9b43c",
+      "sha256": "f4e5d7ec0d6884fdfd2aec9cc26f02101340a56d3ddfcc54a87a971b23b539ba",
+      "span_instruction_count": 47
+    },
+    "CIS_ICBusInputUnit.StatusReportStringToInteger": {
+      "address": "0xc9b4c4",
+      "sha256": "2051f1708024a6f12bdc7e6bceeaffce194225e26d1f22826df6674c90dffa53",
+      "span_instruction_count": 54
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval": {
+      "address": "0xc9d4bc",
+      "sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval": {
+      "address": "0xc9d5a0",
+      "sha256": "60bd2443b95a1ad5197272ee18e17d72cd4b7e8909108ae1be5fee04c6a04fa3",
+      "span_instruction_count": 40
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcc66cc",
+      "sha256": "5f8ec869a6b79608d1e2db5913e7f27201c14df1292fa3f964c02b4f0381de65",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadStatusReportInterval": {
+      "address": "0xcc6738",
+      "sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43",
+      "span_instruction_count": 17
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0xcc6764",
+      "sha256": "0eba1bc768f21b3c94a74fa80aa1bfdf9695c0067129c740a4260fddd73ff775",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.SaveStatusReportInterval": {
+      "address": "0xcc6860",
+      "sha256": "57c41e61920e30a4633a1b8cb3936b7e561ac9cc579fb04a03dcef07e287d662",
+      "span_instruction_count": 119
+    },
+    "Forms.TCustomFrame.Create": {
+      "address": "0x71b3bc",
+      "sha256": "0208183cf2c19913ccd08e09f16dbaf800b99bae7401913abcf1e5b82e51ad31",
+      "span_instruction_count": 89
+    },
+    "Classes.InitInheritedComponent": {
+      "address": "0x64350c",
+      "sha256": "fa15225d082c2dc32d32510ee03605a79658e3616e4e4ee618a1a794e49c0c62",
+      "span_instruction_count": 69
+    },
+    "Classes.NotifyGlobalLoading": {
+      "address": "0x6433f4",
+      "sha256": "253b724f0aafa8a0e118060d35fa1162bd7a1067b54b5c67e458d7ea6d4614bd",
+      "span_instruction_count": 24
+    },
+    "cxEdit.TcxCustomEdit.Loaded": {
+      "address": "0x9619ec",
+      "sha256": "d5c00951fa6041f254344f2e706e64111053221ae545d033f8e8049c740df924",
+      "span_instruction_count": 73
+    },
+    "Classes.TComponent.Loaded": {
+      "address": "0x64fa58",
+      "sha256": "2f788be93d5566fe373ba6d13f5659ccab80b61021d4df6055bc89e46907eb06",
+      "span_instruction_count": 6
+    },
+    "cxEdit.TcxCustomEdit.InitializeInnerEdit": {
+      "address": "0x9638c8",
+      "sha256": "67a994906e8cb74530fd84277e1e7f2465c580bb019a75580b177e6b8958bb0f",
+      "span_instruction_count": 33
+    },
+    "cxTextEdit.TcxCustomInnerTextEditHelper.SetOnChange": {
+      "address": "0x96d5b4",
+      "sha256": "a9dcdecec739c2c3dfe72b7940bee105ed1503852668e34b1652ec5c49d1787d",
+      "span_instruction_count": 13
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.Create": {
+      "address": "0x96fc88",
+      "sha256": "7d0f9cfb39ed0e67260641982f4d58ff73ccb777c93cd08e0486893cf7e407bb",
+      "span_instruction_count": 32
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.ListChanged": {
+      "address": "0x970590",
+      "sha256": "06d979ccc3836323b02e82685f358f50277d7703c36f3f8a75f416388034a972",
+      "span_instruction_count": 17
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.TextChanged": {
+      "address": "0x970b08",
+      "sha256": "b1acb0665faa23c92f74680ffa2fcec80d6163508728ff6c4d0599a16974372d",
+      "span_instruction_count": 72
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.GetDisplayText": {
+      "address": "0x96fe18",
+      "sha256": "f3f3ec69ae29e6c1966fd644af9e4edf85965512b8b340352ba9fc6382391cca",
+      "span_instruction_count": 66
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.InternalLocate": {
+      "address": "0x96ff70",
+      "sha256": "33c858fddc33e75d4b788a537145b6c189eae067947972071f90de918f512aee",
+      "span_instruction_count": 157
+    },
+    "cxTextEdit.TcxCustomTextEdit.SetItemIndex": {
+      "address": "0x976c24",
+      "sha256": "1af8bb7021060715b71506413293b8fb65038e06b258aa0c32ebcab2b30920fa",
+      "span_instruction_count": 117
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.SetCurrentKey": {
+      "address": "0x97095c",
+      "sha256": "709c6894847897de30c95bb577d81dfaf01659f99dc55f86b2135b2e193d149b",
+      "span_instruction_count": 125
+    },
+    "cxTextEdit.TcxCustomTextEdit.HandleSelectItem": {
+      "address": "0x9768dc",
+      "sha256": "c92241b5b6fc21cbe0d4bbc59efae7c2d95f4eecd7e45de20fc86a31a85a1dab",
+      "span_instruction_count": 102
+    },
+    "cxEdit.TcxCustomEdit.SetInternalEditValue": {
+      "address": "0x964940",
+      "sha256": "1be96b7401f55d8756e948f583ba16cc432e78c6cec7520261f612393da2ded3",
+      "span_instruction_count": 27
+    },
+    "cxEdit.TcxCustomEdit.InternalSetEditValue": {
+      "address": "0x963d70",
+      "sha256": "e9faf2e59a8a70cee10cce7f34471e87b3bc88ed45ba7f99306b90b64617205a",
+      "span_instruction_count": 60
+    },
+    "cxTextEdit.TcxCustomTextEdit.SynchronizeDisplayValue": {
+      "address": "0x976d80",
+      "sha256": "82f787de6b833dd96ef573fbacdd35e74f05cf77f39d6c51d115c5db455bf2c6",
+      "span_instruction_count": 192
+    },
+    "cxTextEdit.TcxCustomInnerTextEditHelper.SetEditValue": {
+      "address": "0x96d4c8",
+      "sha256": "35ee5b3bc9b43f51ae46a79227f0ddb5a38a5fd1dd3557e9b7c4f0962df3d75d",
+      "span_instruction_count": 70
+    },
+    "Controls.TControl.SetTextBuf": {
+      "address": "0x6f56d0",
+      "sha256": "fc78f3554ce7d94f881f17c94f6ab33cc7a70bcb621e3ac769efd4a7f923d9ae",
+      "span_instruction_count": 14
+    },
+    "StdCtrls.TCustomEdit.CMTextChanged": {
+      "address": "0x685e8c",
+      "sha256": "72d12362d08dc23214fa6ff0b4696d7b374557276f70087a35e26aef8984e351",
+      "span_instruction_count": 21
+    },
+    "StdCtrls.TCustomEdit.CNCommand": {
+      "address": "0x685e2c",
+      "sha256": "957f8faf58bf46f8607bdc9a579117f0087c1a96c283670c9cf1bc1be68ce431",
+      "span_instruction_count": 12
+    },
+    "StdCtrls.TCustomEdit.Change": {
+      "address": "0x685c80",
+      "sha256": "775ac5a540032dd2cc2fc173b934b3fd6a6355e111db3880df3ae49f051101ed",
+      "span_instruction_count": 11
+    },
+    "cxDropDownEdit.TcxCustomComboBox.ChangeHandler": {
+      "address": "0x99634c",
+      "sha256": "06d89f90854de32c0985e21652c5aff9abb0cf6ff68d3dda4a3dcd3e560906fd",
+      "span_instruction_count": 104
+    },
+    "cxMaskEdit.TcxCustomMaskEdit.ChangeHandler": {
+      "address": "0x987df0",
+      "sha256": "59f643c35293adad96463c9e64a6359c22a804a72de62108a9437fd553a11b43",
+      "span_instruction_count": 61
+    },
+    "cxTextEdit.TcxCustomTextEdit.ChangeHandler": {
+      "address": "0x973e0c",
+      "sha256": "c39064fd3974c1cdee1862a38228a07e0b6b16ff19d275fca8aaefe34c05fff3",
+      "span_instruction_count": 65
+    },
+    "cxEdit.TcxCustomEdit.ChangeHandler": {
+      "address": "0x962430",
+      "sha256": "cdb2d54fdf05a5ad474aaf43c2930f332216ed8991154cf54508852153c76a8a",
+      "span_instruction_count": 32
+    },
+    "cxEdit.TcxCustomEdit.DoChange": {
+      "address": "0x9627c4",
+      "sha256": "93cdb4ad55a4a882254267b03a7a494dea4746c7032b62b18a12dfd811cf487f",
+      "span_instruction_count": 79
+    },
+    "cxEdit.TcxEditChangeEventsCatcher.Lock": {
+      "address": "0x95f8f0",
+      "sha256": "2951fe24dbb02aef4557c98dba5018052970985dc9a80443856b18d8361034a1",
+      "span_instruction_count": 67
+    },
+    "cxEdit.TcxCustomEdit.DoOnChange": {
+      "address": "0x96312c",
+      "sha256": "7a505079de1ca0dbc2a37caa3cd695ad39182531883aba4ee0afb6c3bf47df1c",
+      "span_instruction_count": 33
+    }
+  }
+}

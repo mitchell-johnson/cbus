@@ -382,8 +382,12 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
 * `status_report_interval` is the Global selector's native integer, 3..255
   seconds, written to `StatusReportInterval` at byte 66. The learn-mode
   controls are hidden for SENLL, while this selector remains available.
-  Stored values 0..2 have an unverified initialization callback writeback;
-  supply an explicit valid interval to edit such a snapshot.
+  Fresh Global initialization changes stored values 0..2 to 3 before any
+  explicit valid selection; values 3..255 remain unchanged. The original
+  raw byte remains in the plan's expected map, so two different raw values
+  that both initialize to 3 still produce a stale-plan refusal. The source
+  [callback review](senll-global-status-source-review.json) and
+  [Global interval notes](senll-global-status.md) explain this behavior.
 
 ### SENLL Toolkit save model
 
