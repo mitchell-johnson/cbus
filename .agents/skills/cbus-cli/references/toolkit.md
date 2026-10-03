@@ -681,7 +681,7 @@ verification is not unnamed-bit persistence. Display edits and label edits
 require separate invocations. Read `toolkit-cli/docs/classic-dlt-display.md` for
 source/native evidence and the remaining physical delivery/rendering limits.
 
-Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings project disabled remote defaults but do not resolve enabled references or create their application graph. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
+Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings compose scalar/fan/temperature form-save rules with enabled remote references and their ordered application/group creation. The whole-project snapshot binds one owning transaction; graph-only changes use no PP save and one final project save. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
 
 Thermostat settings apply one recovered form save, including dependent scalar,
 fan, slave-plant and relay-drive normalization. The result can differ on a later
@@ -691,6 +691,14 @@ Quick-zone and dialog helpers remain bounded pure-model functions, separate
 from complete GUI lifecycle and physical acceptance. The explicit process
 `--temperature-preference celsius|fahrenheit` adds 15 recovered field-specific
 load/save pairs; it is independent of the device TemperatureUnits setting.
+The remote path admits source 1 through the existing scalar ApplicationNumber
+(Lighting 48–95 or 203) and source 2 through Enable Control 203. Schedule enable
+is derived from program flags. Inspect planned creations and resolved identities:
+one unused setback role is allowed, every enabled schedule role must be non-unused,
+and all selected non-unused objects must be distinct. Optional level additions
+are declined. Omit --set for a bounded load/save of the current snapshot. Keep
+all project networks closed, own project editing exclusively and review uncertain
+creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
 and explicit `--group-sort address-ascending`; other manager orders remain refused. Read `toolkit-cli/docs/thermostat-settings.md` and
 `toolkit-cli/docs/thermostat-templates.md`.

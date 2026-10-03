@@ -1,6 +1,6 @@
 # Thermostat settings
 
-`cbus-toolkit thermostat settings` edits the zone, plant, fan and user-interface settings of one closed database thermostat at PP level. It supports PC_TSA/PC_TSA5, which use `THERMOSTATA.xml`, and PC_TSB/PC_TSB5, which use `THERMOSTATB.xml`.
+`cbus-toolkit thermostat settings` edits the zone, plant, fan, user-interface and remote-control settings of one closed database thermostat. Remote references are resolved against the complete project graph in the same transaction. It supports PC_TSA/PC_TSA5, which use `THERMOSTATA.xml`, and PC_TSB/PC_TSB5, which use `THERMOSTATB.xml`.
 
 ```sh
 export CBUS_UNITSPEC_DIR=/private/decoded/unitspec
@@ -43,10 +43,32 @@ The editor checks each edit against the recovered fields of the original form lo
 - `BeepEnable`, `VariableFanCoilEnable` and the basic thermostat's `TimerEnable` become 0 or 1. `TemperatureUnits` and programmable `TimeUnits` above 1 become 0. Programmable `SendInterval` above 6 becomes 2.
 - A master saves `ControlledZones` from `InstalledZones`; a slave saves it as 0. This comes from the original `GetControlledZones` helper, rather than an inferred mask constraint. An edit to `ControlledZones` on a master must equal the resulting installed mask to survive save.
 - A slave saves `InternalPlantType` and `InternalPlantZones` as 0. A master's virtual plant type 11 saves as 8. `EnableHVACRelayDrive` always saves as 0.
-- With `RemoteSetbackControlSource=0`, untouched setback group bytes save as `RemoteSetbackOnGroup=30` and `RemoteSetbackOffGroup=31`. Sources 1 and 2 require application/group resolution and remain outside this projection. Sources 3–255 are refused: original AfterLoad clears their group references, then BeforeSave enters a positive-source branch that dereferences them.
+- With `RemoteSetbackControlSource=0`, untouched setback group bytes save as `RemoteSetbackOnGroup=30` and `RemoteSetbackOffGroup=31`. Sources 1 and 2 are resolved by the native settings manager as described below; the standalone PP projection has no project graph. Sources 3–255 are refused: original AfterLoad clears their group references, then BeforeSave enters a positive-source branch that dereferences them.
 - On programmable units, when normalized Evap and NonEvap program flags are both off, save writes `RemoteScheduleEnable=0` and On/Off/Override groups `32/33/34`. Raw `RemoteScheduleEnable` is ignored during the original load. This includes raw Evap values above 1, which load as off, provided raw NonEvap is zero. Disabling the two admitted program flags therefore includes these untouched dependent writes.
 
-`disabled_remote_defaults.parameters` identifies the admitted branch outputs. The enabled remote references, application/group creation and GUI callbacks remain unreproduced; no remote-reference editing commands are added. In particular, a disabled schedule's original load can still create the Enable application, which this PP projection does not do. These are recovered save fields, not a complete remote-control workflow.
+`disabled_remote_defaults.parameters` identifies the disabled branch outputs. The native settings command also resolves enabled references and plans the original getter-created applications/groups. The pure `plan_settings` function remains a PP-only component; the native owner composes it with `plan_remote_references` before any write.
+
+## Remote references
+
+All four unit aliases admit `RemoteSetbackControlSource`, `RemoteSetbackOnGroup` and `RemoteSetbackOffGroup`. Source 0 disables setback and saves groups 30/31. Source 1 resolves groups in the existing scalar `ApplicationNumber` application; the admitted application families are Lighting 48–95 and Enable Control 203. Source 2 resolves groups in Enable Control 203. This numeric mapping follows the original code; the descriptions in the decoded base specifications reverse the two labels. ApplicationNumber itself remains read-only here, and the generic `Application` array does not select these groups.
+
+Programmable aliases additionally admit `RemoteScheduleOnGroup`, `RemoteScheduleOffGroup` and `RemoteScheduleOverrideGroup`. `RemoteScheduleEnable` is derived from the normalized Evap/NonEvap program flags and cannot be edited directly. Disabled scheduling saves 0/32/33/34, but its lookup can still create missing application 203.
+
+```sh
+cbus-toolkit thermostat settings preview //HOME/254/p/4 \
+  --set RemoteSetbackControlSource=2 \
+  --set RemoteSetbackOnGroup=21 --set RemoteSetbackOffGroup=22 \
+  --set EvapProgramEnabled=1 \
+  --set RemoteScheduleOnGroup=12 --set RemoteScheduleOffGroup=13 \
+  --set RemoteScheduleOverrideGroup=14 \
+  --host 127.0.0.1 --port 20023 --exclusive-project
+```
+
+The plan resolves setback On/Off before schedule On/Off/Override. Existing objects are reused by application and group identity. Missing application 203 is named `Enable Control`; missing Lighting groups are `Group N` and missing Enable groups are `Enable Network Variable N`. An enabled getter can create a real group 255 named `<Unused>`. Disabled schedule lookups never create group 255. The command declines optional level additions and preserves existing levels.
+
+Setback permits one unused role, but requires at least one non-unused role. Every enabled schedule role must be non-unused. Reusing a non-unused object within or across the selected setback/schedule roles is refused. Equal numeric addresses in different applications are distinct objects and are permitted. Validation happens before database writes, even when lookups would have created objects.
+
+Inspect `remote_references.getters`, `resolved_roles`, `remote_validation`, `planned_creations` and the complete project fingerprint. Omit `--set` to preview or apply the current snapshot's bounded load/save normalization and reference creation. Requested raw edits precede this projection; this does not replay GUI source-change callbacks, optional Add dialogs or the complete parent lifecycle. See the [remote-reference source review](thermostat-remote-references-source.md).
 
 This is exactly one projected load/save, not repeated normalization. With a master, Cool+Vent modes, VentPlantType 0 and both fan speeds 0, the first save writes heating 0/cooling 1. A later explicit save writes heating 1/cooling 1. Similarly, a slave's plant is cleared while its damper factor still uses the loaded plant model. The command never adds hidden saves to reach a fixed point.
 
@@ -88,7 +110,11 @@ For example, untouched `TemperatureOffset=3` saves as 4 with Celsius or 5 with F
 
 ## Apply
 
-`preview` reads the unit XML and one read-only PP snapshot. `apply` rechecks both and returns `already_applied` only if neither requested nor dependent values change. Otherwise it saves and copies the project to a backup, sets the changed parameters in one PP session, compares the staged values and issues one `PP SAVE_TO_SOURCE` and one target `PROJECT SAVE`. It then closes and reloads the project and verifies the result in a fresh session. All expected values must match, every other parameter and stored PP record must be unchanged, and the network inventory, unit identity and non-PP XML must be preserved. The command makes no retry and no rollback. The `pp_save_*`, `target_save_*` and `outcome_uncertain` fields identify an interrupted save. Every project network must be closed with synchronization idle, and `--exclusive-project` is required.
+`preview` reads the complete project XML and a read-only PP snapshot. `apply` rechecks the unit, all PP values and the complete graph, and returns `already_applied` only if both PP and graph changes are empty. Otherwise it saves and copies the project to a backup, creates references in the planned order, stages changed parameters in one PP session and verifies them. Parameter changes use one `PP SAVE_TO_SOURCE`; graph-only changes use none. Both paths issue one final target `PROJECT SAVE`, then close/reload and verify fresh PP plus complete graph preservation. The backup source save is counted separately.
+
+Every existing object identity, unrelated parameter and opaque project/network/unit/application/group/level field is preserved. New objects' metadata is bound immediately after creation and checked after reload. The comparison permits only the documented regenerated project Config OIDs, selected-unit PP record ordering by unique Name, and absent/empty Level TagsDLT equivalence. Every project network must be closed with synchronization idle, and `--exclusive-project` is required. The selected unit's firmware must fit the caller's decoded base specification.
+
+Plans are immutable, manager-issued and single-use. The command performs no automatic retry or rollback; database creation, PP save and project save are separate operations. Inspect `objects`, `pp_save_*`, `target_save_*`, backup attempt fields and `outcome_uncertain` after a failure. A failed transaction can leave confirmed new graph objects or an uncertain saved result; review the actual state before making a fresh plan.
 
 The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).plan(path, edits, exclusive_project=True, temperature_preference='fahrenheit')` followed by `apply(plan, backup_project=...)`; the offline planner is `plan_settings`. The preference is optional and bound to the immutable plan.
 
@@ -108,4 +134,4 @@ The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).pla
 - **Temperature and mask persistence.** The [new native receipt](../research/experiments/2026-09-30/thermostat-settings-temperature-native.json) records public CLI preview/apply for all four unit aliases with both preferences, deliberately opposite device `TemperatureUnits`, untouched dependent changes, save/reload and preservation. All eight temperature cases saved correctly and preview did not write. The owned C-Gate sentinel received no hardware connection.
 - **Earlier temperature packaged check.** The [temperature acceptance receipt](../research/experiments/2026-09-30/thermostat-temperature-focused-acceptance.json) records 45 passing offline tests (598 subtests) and five passing native tests. A fresh installed wheel passed the same 45 offline and five native tests; all 258 package files matched source and installation. No selected test skipped and no full suite ran.
 - **Disabled remote saves.** The [source receipt](../research/experiments/2026-09-30/thermostat-remote-save-static.json) pins 129 checks over 20 methods and nine independent branch examples. The [focused acceptance receipt](../research/experiments/2026-09-30/thermostat-disabled-remotes-focused-acceptance.json) records 50 offline tests with 618 subtests and seven owned native tests. Public CLI parsing/dispatch covers all four aliases, unrelated PP and group preservation, one save/reload followed by a no-op, and invalid-source refusal without writes. No CNI connection occurred. Packaging was unchanged and no new wheel or full suite was run for this slice.
-- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects, an exposed quick-zone save workflow, output-group editing, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.
+- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output-group editing, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.

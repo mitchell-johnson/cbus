@@ -119,13 +119,14 @@ class ThermostatSettingsTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ThermostatTemplateError, 'dependency'):
                 plan_settings(self.store, 'PC_TSA', before, {'PlantCycleTime': 0})
         with self.assertRaisesRegex(ThermostatTemplateError, 'not admitted'):
-            plan_settings(self.store, 'PC_TSA', snapshot(), {'RemoteScheduleOnGroup': 32})
+            plan_settings(self.store, 'PC_TSA', snapshot(), {'RemoteScheduleEnable': 1})
 
     def test_range_family_and_admission_refusals(self):
         for edits in ({'InstalledZones': 32}, {'Nope': 1}, {'TimerEnable': 1}, {'ControlledZones': True},
-                      {'EvapProgramEnabled': 2}, {}):
+                      {'EvapProgramEnabled': 2}):
             with self.subTest(edits=edits), self.assertRaises(ThermostatTemplateError):
                 plan_settings(self.store, 'PC_TSA', snapshot(), edits)
+        self.assertEqual(plan_settings(self.store, 'PC_TSA', snapshot(), {}).expected, {})
         plan_settings(self.store, 'PC_TSB', snapshot(), {'TimerEnable': 1})
         with self.assertRaises(ThermostatTemplateError):
             plan_settings(self.store, 'PC_TSB', snapshot(), {'SendInterval': 1})
