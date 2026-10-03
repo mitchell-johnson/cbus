@@ -2,10 +2,20 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [complete SENLL inventory batch](feature-batch-2026-10-03-senll-inventory.md)
+adds source-ordered Area/Scene getter authority and exact inherited enabled
+scene save rules, with all 47 consumed fields guarded by schema, stale state
+and readback. Source and a fresh installed wheel each pass 202 parents and 507
+separate subtests, with four provisioning skips and all 32 new owned backend
+cases. All 379 package files match; all 4,008 tracked files and both binaries
+stay unchanged. Full suites remain deferred for speed. Broader sensor profiles,
+original GUI/native and physical acceptance remain open; the completion gate
+is still nonzero. The linked receipt records exact scope and skips.
+
 The [SENLL controls and Lighting event batch](feature-batch-2026-10-03-senll-events.md)
 adds explicit eight-block sensor histories and opt-in live event selectors.
 DualJoin/PIR getter facts stay separate from clearing callbacks; missing
-metadata and omitted Area/Scene inventories conservatively refuse. Source and
+metadata and the earlier bounded Area/Scene inventory conservatively refuse. Source and
 fresh installed wheel each pass 144 parents and 1,014 separate subtests, with
 five disclosed provisioning skips and all 22 new owned backend cases.
 All 378 package files match; 3,595 frozen inputs and both binaries stay unchanged.
