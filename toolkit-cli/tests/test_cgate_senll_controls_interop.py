@@ -55,6 +55,13 @@ CASES = [
      {'GroupAddress': '255 21 255 255 255 25 255 255', 'SecondApplicationBlocks': '0'}),
     ('ordered-return-to-retained-group', {},
      ['application=primary', 'application=secondary', 'group=20'], {}),
+    ('dual-join-lookup', {'GroupAddress': '255 255 20 255 255 255 255 255',
+                        'SingleJoinEnablerGroup': '22', 'DualJoinEnablerGroup': '20'},
+     ['application=primary'],
+     {'SecondApplicationBlocks': '0', 'SingleJoinEnablerGroup': '255', 'DualJoinEnablerGroup': '255'}),
+    ('pir-enable-lookup', {'GroupAddress': '255 255 20 255 255 255 255 255', 'PIREnablerGroup': '20'},
+     ['application=primary'],
+     {'SecondApplicationBlocks': '0', 'PIREnablerGroup': '255'}),
 ]
 
 

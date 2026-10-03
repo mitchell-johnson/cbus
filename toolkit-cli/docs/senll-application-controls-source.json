@@ -152,6 +152,7 @@
       "Application2ObjectRefresh",
       "Corridor and Join references",
       "PEC reference",
+      "PIR enable reference",
       "dialog initialization"
     ],
     "absent_application2": "After loading raw groups, clear each TRUE secondary Boolean in ascending block order. Only actual Boolean changes invoke callbacks.",
@@ -160,8 +161,10 @@
     "hidden_group_callback": "Changed nonunused group equal to loaded PEC, Join or Corridor group clears to ApplicationForBlock unused255. No enabled/support predicate is tested.",
     "pec": "Primary application with PECEnablerGroup.",
     "corridor": "Primary application with CorridorLinkEnablerGroup even when CorridorLinkActive is false.",
-    "join": "Either control group assigned selects application203 and SINGLE control group; else either ordinary join group assigned selects primary and SINGLE group; else application255/group255. The dual field selects the branch, not the first group.",
+    "join": "Selected branch performs both SINGLE and DUAL create-enabled getters. Only SINGLE Join participates in the callback. Control precedence uses application203; otherwise assigned ordinary joins use primary.",
     "combo": "At each control step exclude other block and PEC group objects except unused/current own object.",
-    "scope": "Fresh SENLL admitted profile only; PP numeric source getters establish object facts. Missing creation decisions, retained nonzero key graphs, host message scheduling and original GUI execution are excluded."
+    "scope": "Bounded fresh SENLL profile: raw block plus selected Corridor/Single-and-DualJoin/PEC/PIR getters establish object facts. Other source group inventories, missing creation decisions, retained nonzero key graphs, host scheduling and original GUI execution remain outside this profile.",
+    "load_order_profile": "Admitted callback projection; additional native Area/SceneTable getters are omitted and cannot issue group authority.",
+    "additional_source_group_inventories": "AreaGroupAddress getter precedes raw-block application refresh; SceneTable/SceneTablePointer group getters follow that refresh and precede Corridor/Join/PEC/PIR. These inputs are unmodelled and cannot establish admitted objects."
   }
 }

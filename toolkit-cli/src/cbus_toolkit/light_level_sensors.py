@@ -108,9 +108,9 @@ class _OnOffGraph:
     """Fresh SENLL's eight blocks and zero keys, with source-ordered callbacks.
 
     A (application, address) pair denotes an already established group object.
-    Only raw block getters and the subsequently loaded hidden getters establish
-    non-unused objects. Missing destination objects need an original creation
-    decision, so explicit histories cannot invent them.
+    The admitted raw block and selected hidden getters establish non-unused
+    objects. Other source inventories and creation decisions are outside this
+    profile, so explicit histories cannot invent missing destination objects.
     """
 
     def __init__(self, original, updates):
@@ -126,6 +126,8 @@ class _OnOffGraph:
         self.hidden = {}
         self.journal = {'format': 'cbus-senll-control-history-v1', 'explicit': True,
                         'initialization_profile': 'fresh_zero_key_callbacks',
+                        'metadata_profile': 'raw_blocks_and_selected_hidden_getters',
+                        'unmodelled_group_inventories': ['AreaGroupAddress', 'SceneTable/SceneTablePointer'],
                         'source_group_callbacks_modelled': True,
                         'phase_order': ['raw_applications_bits_groups', 'secondary_application_refresh',
                                         'hidden_group_load', 'on_off_controls', 'flat_dialog_edits', 'forced_save'],
@@ -142,15 +144,27 @@ class _OnOffGraph:
         primary = self.applications[0]
         if original['SingleJoinEnablerControlGroup'][0] != 255 or original['DualJoinEnablerControlGroup'][0] != 255:
             join = (203, original['SingleJoinEnablerControlGroup'][0])
+            dual_join = (203, original['DualJoinEnablerControlGroup'][0])
         elif original['SingleJoinEnablerGroup'][0] != 255 or original['DualJoinEnablerGroup'][0] != 255:
             join = (primary, original['SingleJoinEnablerGroup'][0])
+            dual_join = (primary, original['DualJoinEnablerGroup'][0])
         else:
             join = (255, 255)
+            dual_join = (255, 255)
         # Corridor is loaded from primary even when inactive/unsupported.
         self.hidden = {'pec': (primary, original['PECEnablerGroup'][0]),
                        'corridor': (primary, original['CorridorLinkEnablerGroup'][0]), 'join': join}
         self.known.update(self.hidden.values())
+        # AfterLoad performs both create-enabled Join getters in the selected
+        # branch. Only the single Join object participates in the callback.
+        self.known.add(dual_join)
+        # The unconditional occupancy enable getter runs even though this
+        # class has zero occupancy keys. It does not reserve a callback group.
+        pir_enable = (primary, original['PIREnablerGroup'][0])
+        self.known.add(pir_enable)
         self.journal['hidden_groups_after_load'] = {name: list(key) for name, key in self.hidden.items()}
+        self.journal['dual_join_group_after_load'] = list(dual_join)
+        self.journal['pir_enable_group_after_load'] = list(pir_enable)
         self.journal['initialized'] = self.view()
 
     def view(self):
@@ -194,8 +208,8 @@ class _OnOffGraph:
             address = self.groups[index][1]
             destination = (target, address)
             if address != 255 and destination not in self.known:
-                raise SensorError('SENLL destination group is not established by the initial source getters; '
-                                  'its creation/decline decision is unsupported')
+                raise SensorError('SENLL destination group is not established by the admitted source getters; '
+                                  'additional metadata or creation/decline decision is unsupported')
             row['hidden_group_callbacks'] = self._set_group(index, destination, hidden=hidden)
         row['after'] = self.view()
         return row
@@ -225,8 +239,8 @@ class _OnOffGraph:
                 if address in excluded:
                     raise SensorError(f'On/off group {address} is excluded by another block or the maintenance enable group')
                 if address not in offered:
-                    raise SensorError('SENLL destination group is not established by the initial source getters; '
-                                      'its creation/decline decision is unsupported')
+                    raise SensorError('SENLL destination group is not established by the admitted source getters; '
+                                      'additional metadata or creation/decline decision is unsupported')
                 before = self.view()
                 key = (self.groups[ON_OFF_BLOCK][0], address)
                 callbacks = self._set_group(ON_OFF_BLOCK, key, hidden=True)

@@ -4,8 +4,8 @@
 explicit ordered on/off control history for the existing **SENLL ST7
 2.0.01..2.4.99** profile. Each repeated `--on-off-control` selects either
 `application=primary|secondary` or `group=0..254|none` (`255` also means none).
-The history initializes a fresh sensor model, performs its source-owned
-callbacks in order and then uses the existing forced save. It never edits
+The history initializes the bounded fresh sensor projection, performs its
+source-owned callbacks in order and then uses the existing forced save. It never edits
 `BlockAllocation`: this original SENLL class constructs **zero InputKeys**.
 
 ```sh
@@ -82,7 +82,16 @@ even when `CorridorLinkActive` is false. Join retains the original precedence:
   with the **single** ordinary group, including its255 value.
 - Otherwise application255 with group255.
 
-The dual field determines the branch and does not replace the single reference.
+Both single and dual create-enabled getters establish their group objects in
+the selected branch. The dual field determines the branch and supplies its own
+established object, but does not replace the single callback reference. Thus a
+primary20 object loaded only through DualJoin can survive an application switch
+when SingleJoin is22 or255. Control-group precedence loads both objects in
+application203 and does not establish ignored ordinary Join groups.
+The unconditional primary PIR enable getter also establishes its object even
+with zero occupancy keys. It does not reserve an on/off callback group; its
+field is still cleared later by the forced save. Neither of these later getters
+can satisfy an earlier missing-application2 load lookup.
 Only an actual group object change invokes the callback. Selecting the current
 object leaves it unchanged, including a current duplicate or hidden reference.
 
@@ -99,15 +108,25 @@ those facts across later switches and clears. Thus an original secondary20
 object can be selected again after clearing, returning to secondary and choosing
 group20. A later hidden getter cannot enter an earlier load decision.
 
-A destination numeric group absent from those established objects requires an
-original metadata creation or declined-creation decision. An explicit history
-refuses that case before staging PP. It neither creates metadata nor interprets
+A destination numeric group absent from those established objects requires
+additional source metadata or an original creation/declined-creation decision.
+An explicit history refuses that case before staging PP. It neither creates metadata nor interprets
 arbitrary numeric input as proof that an object exists. This also applies to
 noncollision rebinds during the missing-application2 load refresh.
 
+This profile does not consume `AreaGroupAddress` or `SceneTable`/
+`SceneTablePointer`. The original Area getter precedes the raw-block load
+refresh; original SceneTable group getters follow that refresh and precede the
+selected hidden getters. Either inventory can establish additional primary
+objects in the original model. Destinations established only there conservatively
+refuse here. `metadata_profile` and `unmodelled_group_inventories` record this
+boundary; offered groups represent the admitted inventory rather than the
+complete native network catalogue.
+
 Inspect `control_history` before applying. It records `phase_order`, initial
 graph, ascending load callbacks, requested controls, before/after graph,
-first collision index, scanned indices, hidden callback names and each step's
+first collision index, scanned indices, hidden callback names, the independently
+loaded `dual_join_group_after_load` and `pir_enable_group_after_load`, and each step's
 offered/excluded group values. `input_key_count=0`,
 `block_allocation_mutated=false` and `forced_save_last=true` express the bounded
 model. Indices are zero-based. The existing plan retains the untouched original

@@ -110,6 +110,8 @@ check-cgate-interop: compile
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-mock]' \
@@ -398,6 +400,8 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]' \

@@ -133,17 +133,55 @@ class SENLLControlHistoryTests(unittest.TestCase):
     def test_join_uses_single_group_even_when_only_dual_group_is_assigned(self):
         for single, dual, expected in ((20, 21, 255), (255, 20, 20)):
             with self.subTest(single=single):
-                # Primary20 is established by the inactive Corridor getter.
                 current = values(groups=(255, 255, 20, 255, 255, 255, 255, 255),
                                  CorridorLinkEnablerGroup=[255], PECEnablerGroup=[255],
                                  SingleJoinEnablerGroup=[single], DualJoinEnablerGroup=[dual])
-                if single == 255:
-                    # Keep target metadata established without a collision by
-                    # using the same app objects but changing the Boolean.
-                    current['Application'] = [56, 56]
                 plan = self.plan(current, {'application': 'primary'})
                 self.assertEqual(self.final(plan, 'GroupAddress')[2], expected)
                 self.assertEqual(plan.control_history['hidden_groups_after_load']['join'], [56, single])
+
+    def test_dual_join_getter_establishes_a_group_without_reserving_it(self):
+        for single in (22, 255):
+            with self.subTest(single=single):
+                current = values(groups=(255, 255, 20, 255, 255, 255, 255, 255),
+                                 SingleJoinEnablerGroup=[single], DualJoinEnablerGroup=[20])
+                plan = self.plan(current, {'application': 'primary'})
+                self.assertEqual(self.final(plan, 'GroupAddress')[2], 20)
+                self.assertEqual(self.final(plan, 'SecondApplicationBlocks'), [0])
+                self.assertEqual(plan.control_history['dual_join_group_after_load'], [56, 20])
+                self.assertEqual(plan.control_history['controls'][0]['hidden_group_callbacks'], [])
+        current = values(groups=[255] * 8, mask=0,
+                         SingleJoinEnablerGroup=[22], DualJoinEnablerGroup=[20])
+        selected = self.plan(current, {'group': 20}, {'group': 22})
+        first, second = selected.control_history['controls']
+        self.assertEqual(first['after']['groups'][2], [56, 20])
+        self.assertEqual(first['hidden_group_callbacks'], [])
+        self.assertEqual(second['after']['groups'][2], [56, 255])
+        self.assertEqual(second['hidden_group_callbacks'], ['join'])
+
+    def test_control_join_getters_do_not_establish_ignored_ordinary_groups(self):
+        current = values(groups=(255, 255, 20, 255, 255, 255, 255, 255),
+                         DualJoinEnablerGroup=[20], SingleJoinEnablerControlGroup=[22],
+                         DualJoinEnablerControlGroup=[20])
+        unchanged = self.plan(current, {'application': 'secondary'})
+        self.assertEqual(unchanged.control_history['hidden_groups_after_load']['join'], [203, 22])
+        self.assertEqual(unchanged.control_history['dual_join_group_after_load'], [203, 20])
+        with self.assertRaisesRegex(SensorError, 'creation/decline'):
+            self.plan(current, {'application': 'primary'})
+
+    def test_hidden_pir_enable_getter_establishes_a_group_without_reserving_it(self):
+        current = values(groups=(255, 255, 20, 255, 255, 255, 255, 255), PIREnablerGroup=[20])
+        plan = self.plan(current, {'application': 'primary'})
+        self.assertEqual(self.final(plan, 'GroupAddress')[2], 20)
+        self.assertEqual(self.final(plan, 'SecondApplicationBlocks'), [0])
+        self.assertEqual(plan.control_history['pir_enable_group_after_load'], [56, 20])
+        self.assertEqual(plan.control_history['controls'][0]['hidden_group_callbacks'], [])
+        self.assertEqual(plan.expected['PIREnablerGroup'], (20,))
+        self.assertEqual(self.final(plan, 'PIREnablerGroup'), [255])
+        # Its later hidden getter cannot satisfy an earlier load lookup.
+        current['Application'] = [56, 255]
+        with self.assertRaisesRegex(SensorError, 'creation/decline'):
+            self.plan(current, {'application': 'primary'})
 
     def test_join_control_group_precedence_binds_application203_and_first_single(self):
         for single_control, dual_control in ((20, 21), (255, 20)):
