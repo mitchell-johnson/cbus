@@ -1616,9 +1616,14 @@ def build_parser():
     events = cgops.add_parser("events", help="Stream JSON event records and report any lost events")
     events.add_argument("--mode", default="e8s1c1", help="Native event mode, such as e8s1c1")
     event_limit = events.add_mutually_exclusive_group()
-    event_limit.add_argument("--count", type=_number, default=1, help="Stop after this many events")
+    event_limit.add_argument("--count", type=_number, default=1, help="Stop after this many emitted events")
     event_limit.add_argument("--follow", action="store_true", help="Continue until interrupted; --timeout is the maximum idle wait")
     events.add_argument("--state", help="Request the current state of this already loaded network or C-Group")
+    events.add_argument("--application", type=_byte, choices=range(48, 96), metavar="48..95",
+                        help="Filter admitted native Lighting records by application")
+    events.add_argument("--group", type=_byte, help="Filter admitted native Lighting records by group (0..255)")
+    events.add_argument("--source-unit", type=_byte,
+                        help="Filter admitted native Lighting records by their literal source byte (0..255)")
     trigger = cgops.add_parser("trigger", help="Trigger events, indicator kill and cached application state")
     trigops = trigger.add_subparsers(dest="remote_action", required=True)
     for action in ("event", "kill", "get", "state", "groups"):
@@ -3188,9 +3193,12 @@ def _cgate(args):
                 raise RuntimeError("Trigger command did not complete: " + response.final)
             return {"queued": True, "device_verified": False, "response": response}, 0
         if args.action == "events":
+            from .application_events import LightingEventFilter, project_lighting_event
             from .events import NativeEvents
             if args.count < 1:
                 raise ValueError("Event count must be positive")
+            event_filter = LightingEventFilter(getattr(args, "application", None), getattr(args, "group", None),
+                                              getattr(args, "source_unit", None))
             monitor = NativeEvents(client)
             monitor.subscribe(args.mode)
             if args.state:
@@ -3198,13 +3206,28 @@ def _cgate(args):
                 if not response.successful:
                     raise RuntimeError("State request did not complete: " + response.final)
             received = 0
+            observed = 0
+            overflow_seen = False
             while args.follow or received < args.count:
                 event = monitor.read()
-                print(json.dumps({"type": "event", **dataclasses.asdict(event)}, ensure_ascii=True), flush=True)
+                observed += 1
+                projection = project_lighting_event(event) if event_filter.active else None
+                if not event_filter.matches(event, projection):
+                    continue
+                payload = {"type": "event", **dataclasses.asdict(event)}
+                if event_filter.active:
+                    payload["lighting"] = dataclasses.asdict(projection) if projection is not None else None
+                print(json.dumps(payload, ensure_ascii=True), flush=True)
                 received += 1
                 if event.category == "overflow":
-                    return {"type": "event-summary", "received": received, "events_lost": True}, 1
-            return {"type": "event-summary", "received": received, "events_lost": client.events_lost}, int(client.events_lost)
+                    overflow_seen = True
+                    break
+            events_lost = overflow_seen or client.events_lost
+            summary = {"type": "event-summary", "received": received, "events_lost": events_lost}
+            if event_filter.active:
+                summary.update(observed=observed, filtered=observed - received,
+                               filters=dataclasses.asdict(event_filter))
+            return summary, int(events_lost)
         if args.action == "conversion":
             if args.remote_action == "tweak-replace":
                 from .toolkit_tweaker_lifecycle import execute

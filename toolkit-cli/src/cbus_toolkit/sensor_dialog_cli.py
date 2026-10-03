@@ -50,6 +50,23 @@ def _group(text):
     return 255 if text.lower() == "none" else _number(text)
 
 
+def _on_off_control(text):
+    field, equals, value = text.partition('=')
+    if not equals or field not in ('application', 'group'):
+        raise argparse.ArgumentTypeError('Use application=primary|secondary or group=0..254|none')
+    if field == 'application':
+        if value not in ('primary', 'secondary'):
+            raise argparse.ArgumentTypeError('On/off control application must be primary or secondary')
+        return {'application': value}
+    try:
+        value = _group(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError('On/off control group must be 0..254 or none/255') from error
+    if not 0 <= value <= 255:
+        raise argparse.ArgumentTypeError('On/off control group must be 0..254 or none/255')
+    return {'group': value}
+
+
 def _pir_options(parser):
     parser.add_argument("--key", dest="pir_keys", type=_key, action="append", default=[],
                         help="Fixed key 1..4 edit KEY:FIELD=VALUE[,...]; fields block (1..4), group "
@@ -75,6 +92,8 @@ def _light_level_options(parser):
         parser.add_argument("--" + name, dest="ll_" + name.replace("-", "_"), type=_group,
                             help=help_text + "; 0..254, or 255/none")
     parser.add_argument("--on-off-application", dest="ll_on_off_application", choices=("primary", "secondary"))
+    parser.add_argument('--on-off-control', dest='ll_on_off_controls', type=_on_off_control, action='append',
+                        help='Ordered fresh SENLL callback: application=primary|secondary or group=N|none; repeat for history')
     parser.add_argument("--indicator", dest="ll_indicator", choices=("light-level", "on-off", "enable"))
     parser.add_argument("--target-lux", dest="ll_target_lux", type=_number, help="0..2000 lux; stored as Ceil(lux/10)")
     parser.add_argument("--margin-percent", dest="ll_margin_percent", type=_number, help="0..100")
@@ -127,13 +146,18 @@ def pir_settings(args):
 
 
 def light_level_settings(args):
+    controls = getattr(args, 'll_on_off_controls', None)
+    if controls is not None and any(value is not None for value in
+            (args.ll_on_off_group, args.ll_on_off_application, args.ll_level_group,
+             args.ll_broadcast_group, args.ll_enable_group)):
+        raise ValueError('Explicit --on-off-control cannot be mixed with flat application/group edits')
     settings = {"level_group": args.ll_level_group, "on_off_group": args.ll_on_off_group,
                 "broadcast_group": args.ll_broadcast_group, "enable_group": args.ll_enable_group,
                 "on_off_application": args.ll_on_off_application,
                 "indicator": args.ll_indicator.replace("-", "_") if args.ll_indicator else None,
                 "target_lux": args.ll_target_lux, "margin_percent": args.ll_margin_percent,
                 "broadcast_interval_seconds": args.ll_broadcast_interval_seconds, "power_up": args.ll_power_up,
-                "status_report_interval": args.ll_status_report_interval}
+                "status_report_interval": args.ll_status_report_interval, 'on_off_controls': controls}
     return {k: v for k, v in settings.items() if v is not None}
 
 

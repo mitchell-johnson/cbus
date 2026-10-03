@@ -1,0 +1,408 @@
+{
+  "boundaries": {
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "native_vendor_server_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "report_status_and_this_receipt_are_post_validation_annotations": true,
+    "unmodelled_group_inventories": [
+      "AreaGroupAddress",
+      "SceneTable/SceneTablePointer"
+    ]
+  },
+  "candidate": {
+    "binary_sha256": {
+      "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+      "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+    },
+    "inputs_unchanged": true,
+    "snapshots": {
+      "inputs-before.json": {
+        "bytes": 513939,
+        "identity": "inputs-before.json",
+        "sha256": "c2d29251c901c79a6d89a37852d42c5306543fd0028c51953965cdaf70ddbd72"
+      },
+      "inputs-terminal.json": {
+        "bytes": 513939,
+        "identity": "inputs-terminal.json",
+        "sha256": "c2d29251c901c79a6d89a37852d42c5306543fd0028c51953965cdaf70ddbd72"
+      }
+    },
+    "source_input_count": 3595,
+    "tested_head": "0bade16d91c4e7fb9a4ee7eb7879d371bafac7eb"
+  },
+  "date": "2026-10-03",
+  "format": "cbus-senll-events-owned-release-v1",
+  "independent_review": {
+    "result": "Clear:26static methodpins; dualJoin/PIR object facts separate from callback reservations; Area/Scene omission only causes conservative additional refusals; all22Make selectors exactly match collected IDs; lost upstream200 never replayed.",
+    "reviewed_authored_head": "2602ed98e52e54ea5ae08685e85e26c09cf317a3",
+    "vendor_or_hardware_execution": false
+  },
+  "metadata": {
+    "applicability_decisions": 3,
+    "binaries_quiet": true,
+    "census_complete": false,
+    "combined_checks": 4,
+    "evidence_records": 3,
+    "failures": 0,
+    "final_authored_head": "2602ed98e52e54ea5ae08685e85e26c09cf317a3",
+    "integration_head": "21810261ed5d1a66e930860cb4bd832114badd58",
+    "local_coordinate_fields": 0,
+    "obligations": 487,
+    "post_review_refresh": {
+      "checks": "register/inventory/census passed",
+      "failures": 0,
+      "fresh_combined_checks": 4,
+      "fresh_primary_comparisons": 46,
+      "fresh_receipts": 4,
+      "reused_receipts": 2,
+      "skips": 0
+    },
+    "pre_fix_metadata_summary_sha256": "4d6a15a32b6805a25d30121d183ad7b530cd5f7a7e757fa2f7d57c9e56c33ea9",
+    "pre_fix_quiet": true,
+    "primary_cases": 64,
+    "receipts": [
+      {
+        "executed": 9,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-session-differential-fixed.json",
+        "kind": "session",
+        "passed": 9,
+        "raw_sha256": "8d5f7129f402dbf02161f1cbbe644d83173fdeeee9b6ebe9c2c84cce3a107b52",
+        "sanitized_sha256": "58901f849a8e8e3223f059b2e38dffb0bba328515e0935e188884553344c4dfb",
+        "skipped": 0,
+        "source_bindings": 180
+      },
+      {
+        "executed": 9,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "kind": "session",
+        "passed": 9,
+        "raw_sha256": "d8ce10cb18600825efa5e9c15c19f97167e29ec9107d8d002b10af5758c00d92",
+        "sanitized_sha256": "e9d7b23d93b26a268555f3eceb5acdf34fdc6cc93bd3bc60bb8588536a839f88",
+        "skipped": 0,
+        "source_bindings": 200
+      },
+      {
+        "executed": 11,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "kind": "tagged",
+        "passed": 11,
+        "raw_sha256": "e2b567d979433584be6db9c85e092a6629453c25793ef34198fa8f42a04d6da8",
+        "sanitized_sha256": "70378959df31fb1357f0e5fd38386ec97b757d2df0be13896aebc69cfde53680",
+        "skipped": 0,
+        "source_bindings": 182,
+        "source_revision": "2602ed98e52e54ea5ae08685e85e26c09cf317a3"
+      },
+      {
+        "executed": 11,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "kind": "tagged",
+        "passed": 11,
+        "raw_sha256": "79158078f7dab506f386deb95b7a088e90c6f4f82eb5a3e3e2459d9f7b2dc6ab",
+        "sanitized_sha256": "71c5b5924aaaabb3b46dbbc13a96eb8b9b2bfde1af1d8cbaad95d599fe81f7a6",
+        "skipped": 0,
+        "source_bindings": 202,
+        "source_revision": "2602ed98e52e54ea5ae08685e85e26c09cf317a3"
+      },
+      {
+        "combined": 2,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "kind": "unit",
+        "passed": 12,
+        "raw_sha256": "221c9ab09dd978e60ab37f48bd95d67c19fc5ae4455eb77357a9fdc619c8016c",
+        "sanitized_sha256": "19e2826778cddc2dd2eaa752b251907be39fea186584fcaa4c48387ea5c02e82",
+        "source_bindings": 188,
+        "source_revision": "2602ed98e52e54ea5ae08685e85e26c09cf317a3",
+        "wire_equal": 12
+      },
+      {
+        "combined": 2,
+        "failed": 0,
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "kind": "unit",
+        "passed": 12,
+        "raw_sha256": "e2b024fe195468a22a1e03a7501711d6d858ee7a804779503f804ee6afe04546",
+        "sanitized_sha256": "a0aa4968e190145da2bed1dfc089fa3a8ec7d9f92efccc819f9d06aaba94dc01",
+        "source_bindings": 207,
+        "source_revision": "2602ed98e52e54ea5ae08685e85e26c09cf317a3",
+        "wire_equal": 12
+      }
+    ],
+    "regression": {
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 733,
+        "skipped": 0,
+        "tests": 733
+      },
+      "parents": 188,
+      "results_sha256": "9e8b2ea2f96bfd00c3cf02312d40bbb086d5154775cf31962837d0376a550842",
+      "selectors": [
+        "tests/test_cgate_contract_inventory.py",
+        "tests/test_cgate_dbsetxml_unit_differential.py",
+        "tests/test_cgate_session_differential.py",
+        "tests/test_cgate_tagged_session_differential.py",
+        "tests/test_parity_register.py",
+        "tests/test_sanitize_evidence_receipts.py"
+      ],
+      "trace_call_events": 733,
+      "unitemized_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 545,
+        "reported": 545,
+        "skipped": 0
+      }
+    },
+    "regression_context": "The188parent/545subtest metadata regression precedes the final dualJoin/PIR fix. Final source/wheel runs validate refreshed packaged register and census; two unchanged untagged SESSION receipts remain bound to their unchanged exact source fingerprints.",
+    "reused_unchanged_receipts": [
+      "research/fixtures/cgate-session-differential-fixed.json",
+      "research/fixtures/cgate-session-differential-cmqttd.json"
+    ],
+    "scope_items": 22103,
+    "skips": 0,
+    "source_bindings": 1159,
+    "source_quiet": true,
+    "unique_source_bindings": 216
+  },
+  "package": {
+    "installed_package_import_verified": true,
+    "package_files": 378,
+    "source_wheel_installed_equal": true,
+    "wheel_sha256": "6233996bbfa2135f915bff85f7a9c3dce4be1b11ef427467d77a755d5f4bc15f"
+  },
+  "pre_review_completion": {
+    "accepted_as_final_release": false,
+    "artifacts": {
+      "source": {
+        "bytes": 14815,
+        "identity": "source.xml",
+        "sha256": "2633bfd8095282060a8941736525727e8a9b9e98b7413c0907f67943c4b439b5"
+      },
+      "wheel": {
+        "bytes": 14815,
+        "identity": "wheel.xml",
+        "sha256": "95c4fabc670f97cce34e3e570f956639d42f40aa8aa7c28baf5d84d2cd8ff166"
+      }
+    },
+    "reason": "Successful checks preceded newly found omitted dualJoin/PIR source getter facts; final22case runs supersede this scope."
+  },
+  "retained_preflight_failures": [
+    {
+      "accepted_as_release_pass": false,
+      "artifact": {
+        "bytes": 180957,
+        "identity": "cbus-senll-controls-debug.xml",
+        "sha256": "13c3ad5e421404092e2f1b4402483ca6ce5452786d3d976e7c09d2dd637591ee"
+      },
+      "cause": "Initial new receipt serialization failed on MappingProxyType; fixed with detached serialization regression."
+    },
+    {
+      "accepted_as_release_pass": false,
+      "artifact": {
+        "bytes": 4137,
+        "identity": "cbus-senll-controls-debug2.xml",
+        "sha256": "aaa49a87a8ad4430356a548d02b14b064b1cca750cfa11a5a6e2aea190ac5ec5"
+      },
+      "cause": "Fault fixture did not drop SAVE response; corrected exact verb and drop mode with upstream200 assertion."
+    }
+  ],
+  "scope": "Ordered SENLL controls and opt-in Lighting event filters integrated with DIN save PR81 and main83b49d10",
+  "validation": {
+    "coverage_require_complete": {
+      "artifact": {
+        "bytes": 228938,
+        "identity": "coverage.log",
+        "sha256": "441ad86bdf4985e1217d9132ab770c704a71209845d597dad63eb32eaaa60869"
+      },
+      "complete": false,
+      "exit": 1
+    },
+    "python": "3.13.14",
+    "required_extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "selection": [
+      "tests/test_cgate_senll_controls_interop.py",
+      "tests/test_senll_control_history.py",
+      "tests/test_cli_senll_controls.py",
+      "tests/test_application_events.py",
+      "tests/test_light_level_sensors.py",
+      "tests/test_cli_sensors.py",
+      "tests/test_events.py",
+      "tests/test_cli_din_save.py",
+      "tests/test_parity_register.py",
+      "tests/test_skip_census.py"
+    ],
+    "source": {
+      "all_22_public_senll_cases_passed": true,
+      "artifacts": {
+        "source-results.json": {
+          "bytes": 278671,
+          "identity": "source-results.json",
+          "sha256": "898a4b58392338976427822425278d3cde45501584aa4083ba245c51abe0eea8"
+        },
+        "source-trace.json": {
+          "bytes": 228174,
+          "identity": "source-trace.json",
+          "sha256": "41763130fcd03e1fdddc4e1fc53ec6d501963e29a5505aca963ec596b282c09c"
+        },
+        "source.log": {
+          "bytes": 298,
+          "identity": "source.log",
+          "sha256": "81c355787570161f602f49e9ca7ea9fff85b26edcb60832d6bae08c83b9bc7e4"
+        },
+        "source.xml": {
+          "bytes": 52747,
+          "identity": "source.xml",
+          "sha256": "50f1f4a8ee311d2dd79fdb60ae62530233f0486ed7e06d67024f0e224ea6afc3"
+        }
+      },
+      "errors": 0,
+      "failures": 0,
+      "passed_parents": 144,
+      "passed_separate_subtests": 1014,
+      "provision_skips": [
+        {
+          "class": "tests.test_light_level_sensors.LightLevelReviewTest",
+          "name": "test_receipt_regenerates_from_private_inputs",
+          "reason": "Set the Toolkit EXE to regenerate the SENLL receipt"
+        },
+        {
+          "class": "tests.test_light_level_sensors.LightLevelSensorNativeTest",
+          "name": "test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for SENLL acceptance"
+        },
+        {
+          "class": "tests.test_cli_sensors.SensorCLITests",
+          "name": "test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+          "reason": "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance"
+        },
+        {
+          "class": "tests.test_cli_sensors.SensorCLITests",
+          "name": "test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+          "reason": "Select native C-Gate and unit specifications for sensor CLI acceptance"
+        },
+        {
+          "class": "tests.test_events.NativeEventTests",
+          "name": "test_native_configuration_stream_observes_owned_project_creation",
+          "reason": "set CBUS_CGATE_TEST_HOST for native event acceptance"
+        }
+      ],
+      "public_case_ids": [
+        "test_public_senll_ordered_controls_save_and_reopen[primary-collision-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[primary-collision-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[secondary-collision-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[secondary-collision-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[hidden-enable-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[hidden-enable-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-daemon]",
+        "test_public_senll_lost_save_is_not_replayed[mock]",
+        "test_public_senll_lost_save_is_not_replayed[daemon]",
+        "test_public_senll_refusal_is_read_only[missing-destination-mock]",
+        "test_public_senll_refusal_is_read_only[missing-destination-daemon]",
+        "test_public_senll_refusal_is_read_only[excluded-after-collision-mock]",
+        "test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]"
+      ]
+    },
+    "wheel": {
+      "all_22_public_senll_cases_passed": true,
+      "artifacts": {
+        "wheel-results.json": {
+          "bytes": 278671,
+          "identity": "wheel-results.json",
+          "sha256": "20f5f8427725da7bc164cf995a9df6594d281d4907485924167462b67c56c02e"
+        },
+        "wheel-trace.json": {
+          "bytes": 228174,
+          "identity": "wheel-trace.json",
+          "sha256": "41763130fcd03e1fdddc4e1fc53ec6d501963e29a5505aca963ec596b282c09c"
+        },
+        "wheel.log": {
+          "bytes": 298,
+          "identity": "wheel.log",
+          "sha256": "9e15ea4e66b94db7ac0424e1d18cc667a5b24fa1c2b983264d830a81ff6413a0"
+        },
+        "wheel.xml": {
+          "bytes": 52747,
+          "identity": "wheel.xml",
+          "sha256": "4744a11380fd0c0d8b6591a4b7bd891fd4c7b8cfd9a937566c005a7b1c754542"
+        }
+      },
+      "errors": 0,
+      "failures": 0,
+      "passed_parents": 144,
+      "passed_separate_subtests": 1014,
+      "provision_skips": [
+        {
+          "class": "tests.test_light_level_sensors.LightLevelReviewTest",
+          "name": "test_receipt_regenerates_from_private_inputs",
+          "reason": "Set the Toolkit EXE to regenerate the SENLL receipt"
+        },
+        {
+          "class": "tests.test_light_level_sensors.LightLevelSensorNativeTest",
+          "name": "test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for SENLL acceptance"
+        },
+        {
+          "class": "tests.test_cli_sensors.SensorCLITests",
+          "name": "test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+          "reason": "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance"
+        },
+        {
+          "class": "tests.test_cli_sensors.SensorCLITests",
+          "name": "test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+          "reason": "Select native C-Gate and unit specifications for sensor CLI acceptance"
+        },
+        {
+          "class": "tests.test_events.NativeEventTests",
+          "name": "test_native_configuration_stream_observes_owned_project_creation",
+          "reason": "set CBUS_CGATE_TEST_HOST for native event acceptance"
+        }
+      ],
+      "public_case_ids": [
+        "test_public_senll_ordered_controls_save_and_reopen[primary-collision-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[primary-collision-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[secondary-collision-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[secondary-collision-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[hidden-enable-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[hidden-enable-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-daemon]",
+        "test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-mock]",
+        "test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-daemon]",
+        "test_public_senll_lost_save_is_not_replayed[mock]",
+        "test_public_senll_lost_save_is_not_replayed[daemon]",
+        "test_public_senll_refusal_is_read_only[missing-destination-mock]",
+        "test_public_senll_refusal_is_read_only[missing-destination-daemon]",
+        "test_public_senll_refusal_is_read_only[excluded-after-collision-mock]",
+        "test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]"
+      ]
+    }
+  }
+}
