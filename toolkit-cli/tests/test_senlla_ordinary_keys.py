@@ -5,7 +5,8 @@ import json
 from pathlib import Path
 import unittest
 
-from cbus_toolkit.senlla_ordinary_keys import load_ordinary_keys, loaded_template, primary_block_index
+from cbus_toolkit.senlla_ordinary_keys import (load_ordinary_keys, loaded_expiry_command,
+                                            loaded_template, primary_block_index)
 from cbus_toolkit.sensors import SensorError
 
 
@@ -90,8 +91,8 @@ class SENLLAOrdinaryKeysTests(unittest.TestCase):
         self.assertEqual(result.templates, (6, 6, 6, 6, 6, 34, 26, 26))
         self.assertEqual(result.stages, tuple(rows))
         self.assertEqual(result.timer_seconds, (300,) * 6 + (0, 0))
-        self.assertEqual(result.expiry_commands, (15,) * 6 + (0, 0))
-        self.assertEqual(len(result.timer_defaults), 12)
+        self.assertEqual(result.expiry_commands, (0,) * 8)
+        self.assertEqual(len(result.timer_defaults), 6)
 
     def test_shared_multi_mask_defaults_primary_once_and_nil_timer_does_nothing(self):
         rows = [(11, 7, 0, 7)] * 8
@@ -99,15 +100,29 @@ class SENLLAOrdinaryKeysTests(unittest.TestCase):
         groups = [None, None, object(), None, None, None, None, None]
         result = project(rows=rows, masks=masks, groups=groups)
         self.assertEqual(result.timer_seconds, (0, 0, 300, 0, 300, 0, 0, 0))
-        self.assertEqual(result.timer_defaults, ((1, 2, 'timer', 300), (1, 2, 'expiry', 15),
-                                               (2, 4, 'timer', 300), (2, 4, 'expiry', 15)))
+        self.assertEqual(result.timer_defaults, ((1, 2, 'timer', 300), (2, 4, 'timer', 300)))
+        self.assertEqual(result.expiry_commands, (0,) * 8)
 
     def test_nonzero_timer_and_expiry_are_independently_preserved(self):
         rows = [(13, 15, 7, 15)] * 8
         result = project(rows=rows, masks=[1 << index for index in range(8)],
                          timer_seconds=[1, 0, 300, 65535, 0, 0, 0, 0], expiry_commands=[0, 9, 15, 4, 0, 0, 0, 0])
         self.assertEqual(result.timer_seconds, (1, 300, 300, 65535, 300, 300, 300, 300))
-        self.assertEqual(result.expiry_commands, (15, 9, 15, 4, 15, 15, 15, 15))
+        self.assertEqual(result.expiry_commands, (0, 9, 15, 4, 0, 0, 0, 0))
+
+    def test_all_raw_expiry_nibbles_normalize_before_any_key_template(self):
+        source = json.loads((Path(__file__).parents[1] / 'research/fixtures/senlla-ordinary-key-source.json').read_text())
+        correction = source['expiry_identity_correction']
+        for raw, expected in enumerate(correction['raw_nibble_to_loaded_function_type']):
+            for stages in ((0, 0, 0, 0), (11, 7, 0, 7), (13, 15, 7, 15)):
+                with self.subTest(raw_expiry=raw, stages=stages):
+                    self.assertEqual(loaded_expiry_command(raw), expected)
+                    result = project(rows=[stages] * 8,
+                                     masks=[1 << index for index in range(8)],
+                                     expiry_commands=[raw] * 8)
+                    self.assertEqual(result.expiry_commands, (expected,) * 8)
+                    self.assertEqual(result.stages, (stages,) * 8)
+                    self.assertFalse(any(row[2] == 'expiry' for row in result.timer_defaults))
 
     def test_declared_reference_order_controls_primary_timer_and_recall_store(self):
         references = [(2, 0)] + [()] * 7
@@ -115,7 +130,7 @@ class SENLLAOrdinaryKeysTests(unittest.TestCase):
         rows = [(11, 7, 0, 7)] + [(0, 0, 0, 0)] * 7
         result = project(rows=rows, masks=masks, groups=groups, block_references=references)
         self.assertEqual(result.timer_seconds, (0, 0, 300, 0, 0, 0, 0, 0))
-        self.assertEqual(result.expiry_commands, (0, 0, 15, 0, 0, 0, 0, 0))
+        self.assertEqual(result.expiry_commands, (0,) * 8)
         self.assertEqual(result.parameters()['BlockAllocation'], masks)
         rows[0] = (12, 0, 0, 0)
         result = project(rows=rows, masks=masks, groups=groups, block_references=references,
@@ -178,6 +193,8 @@ class SENLLAOrdinaryKeysTests(unittest.TestCase):
         for value in (-1, 16, True, 1.5):
             with self.subTest(value=value), self.assertRaises(SensorError):
                 loaded_template((value, 0, 0, 0))
+            with self.subTest(expiry=value), self.assertRaises(SensorError):
+                loaded_expiry_command(value)
         for changes in ({'stages': []}, {'block_masks': [256] * 8}, {'store1': [-1] * 8},
                         {'store2': [True] * 8}, {'timer_seconds': [65536] * 8},
                         {'expiry_commands': [16] * 8}, {'primary_groups': []},

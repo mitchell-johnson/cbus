@@ -204,7 +204,7 @@
     },
     {
       "phase": "template_timer_callbacks",
-      "rule": "A changed keytemplate6 or29..35 calls primary-block Timer/Expiry defaults before testing MacroFunctionPin. Among final ordinary admitted templates only6/34 qualify. Timer0->300seconds and expiryNone0->micro15 independently; nonzero values remain."
+      "rule": "A changed keytemplate6 or29..35 calls primary-block Timer/Expiry defaults before testing MacroFunctionPin. Among final ordinary admitted templates only6/34 qualify. Timer0 becomes300seconds. Expiry defaults to micro15 only for an actual nil object reference; raw-loaded0 is nonnil micro0 and survives."
     },
     {
       "phase": "indicator_load",
@@ -787,14 +787,14 @@
           44
         ],
         "TimerExpiryCommand": [
-          15,
-          15,
           0,
           0,
           0,
           0,
           0,
-          15
+          0,
+          0,
+          0
         ]
       },
       "expected_key_template_types": [
@@ -1080,8 +1080,8 @@
           0
         ],
         "TimerExpiryCommand": [
+          0,
           15,
-          1,
           0,
           0,
           0,
@@ -3250,5 +3250,269 @@
     "sha256": "16d314ec2a8f3a9edfc0bf69ef8ac978fc0db3b3ad473ab1fd7123f879d19a49",
     "source_method_count": 219,
     "independent_static_review": true
+  },
+  "expiry_identity_correction": {
+    "superseded_fixture_sha256": "520d78e5fd21db161d81b1f4d9db2b337b7db0a0798b78753297f540ee2cca8d",
+    "superseded_expiry_predictions": {
+      "timer_patterns_multi_and_zero_masks": [
+        15,
+        15,
+        0,
+        0,
+        0,
+        0,
+        0,
+        15
+      ],
+      "timer_and_expiry_defaults_independent": [
+        15,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "source_only": true,
+    "original_instruction_execution": false,
+    "actual_nil_supported_by_raw_load_api": false,
+    "allowed_function_types_ordered": [
+      0,
+      15,
+      4,
+      9,
+      12,
+      6,
+      10
+    ],
+    "raw_nibble_to_loaded_function_type": [
+      0,
+      15,
+      15,
+      15,
+      4,
+      15,
+      6,
+      15,
+      15,
+      9,
+      10,
+      15,
+      12,
+      15,
+      15,
+      15
+    ],
+    "all_nibble_registrations_in_source_order": [
+      {
+        "family": 0,
+        "function_type": 0,
+        "new_cbus_value": 0,
+        "old_cbus_value": 0,
+        "register_call": "0xc8db7e"
+      },
+      {
+        "family": 1,
+        "function_type": 1,
+        "new_cbus_value": 2,
+        "old_cbus_value": 1,
+        "register_call": "0xc8dba3"
+      },
+      {
+        "family": 1,
+        "function_type": 2,
+        "new_cbus_value": 25,
+        "old_cbus_value": 2,
+        "register_call": "0xc8dbbd"
+      },
+      {
+        "family": 1,
+        "function_type": 4,
+        "new_cbus_value": 17,
+        "old_cbus_value": 4,
+        "register_call": "0xc8dbd7"
+      },
+      {
+        "family": 1,
+        "function_type": 5,
+        "new_cbus_value": 23,
+        "old_cbus_value": 5,
+        "register_call": "0xc8dbf1"
+      },
+      {
+        "family": 2,
+        "function_type": 6,
+        "new_cbus_value": 70,
+        "old_cbus_value": 6,
+        "register_call": "0xc8dc16"
+      },
+      {
+        "family": 2,
+        "function_type": 12,
+        "new_cbus_value": 66,
+        "old_cbus_value": 12,
+        "register_call": "0xc8dc3b"
+      },
+      {
+        "family": 2,
+        "function_type": 9,
+        "new_cbus_value": 80,
+        "old_cbus_value": 9,
+        "register_call": "0xc8dcaa"
+      },
+      {
+        "family": 2,
+        "function_type": 10,
+        "new_cbus_value": 86,
+        "old_cbus_value": 10,
+        "register_call": "0xc8dccf"
+      },
+      {
+        "family": 2,
+        "function_type": 11,
+        "new_cbus_value": 79,
+        "old_cbus_value": 11,
+        "register_call": "0xc8dce9"
+      },
+      {
+        "family": 2,
+        "function_type": 3,
+        "new_cbus_value": 78,
+        "old_cbus_value": 3,
+        "register_call": "0xc8dd0e"
+      },
+      {
+        "family": 2,
+        "function_type": 13,
+        "new_cbus_value": 71,
+        "old_cbus_value": 13,
+        "register_call": "0xc8dd28"
+      },
+      {
+        "family": 2,
+        "function_type": 15,
+        "new_cbus_value": 64,
+        "old_cbus_value": 15,
+        "register_call": "0xc8dd42"
+      },
+      {
+        "family": 1,
+        "function_type": 14,
+        "new_cbus_value": 14,
+        "old_cbus_value": 14,
+        "register_call": "0xc8dd5c"
+      },
+      {
+        "family": 3,
+        "function_type": 7,
+        "new_cbus_value": 151,
+        "old_cbus_value": 7,
+        "register_call": "0xc8dd84"
+      },
+      {
+        "family": 3,
+        "function_type": 8,
+        "new_cbus_value": 135,
+        "old_cbus_value": 8,
+        "register_call": "0xc8ddac"
+      }
+    ],
+    "source_pins": [
+      {
+        "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadTimerExpiryCommand",
+        "address": "0xcc7e74",
+        "instruction_count": 50,
+        "sha256": "bac15dae88459b24ff7970a640724bb399fe2c22904f271ea3ea0fc2c3cef730"
+      },
+      {
+        "method": "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent",
+        "address": "0xd12adc",
+        "instruction_count": 97,
+        "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.InitialiseKeyMicroFunctionFactory",
+        "address": "0xc8db30",
+        "instruction_count": 272,
+        "sha256": "a9c464e92809cc9721e89eb3bdb4f44a3261eceadc02994f8b86cb218bcfbdbe"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.GetKeyMicroFunction",
+        "address": "0xc8fcdc",
+        "instruction_count": 14,
+        "sha256": "3114f0b2ae882c8710d139b5710f25c391d91d84edaa715f295c811f132ab332"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.GetKeyMicroFunction",
+        "address": "0xc8fd00",
+        "instruction_count": 14,
+        "sha256": "36f4723236b928ff8937ad78a158e22c94dcfb6fd724d9fbde8bf3db1d74cf48"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.GetKeyMicroFunctionsForTimerExpiry",
+        "address": "0xc8fd94",
+        "instruction_count": 92,
+        "sha256": "766f620783e7db4697c15b7fd39d8ffe51c1fab38c25deccee0f7e2f1bbd17ac"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.RegisterKeyMicroFunction",
+        "address": "0xc8feac",
+        "instruction_count": 34,
+        "sha256": "b532c554989024a7e27b5b0473c330772bf5bc76a3f34603d546b59376faedbd"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionManager.ItemByCBusValue",
+        "address": "0xc8f7ec",
+        "instruction_count": 32,
+        "sha256": "1c9a7e661d722267b9611a950e546ec0395f941c52311419c4ab344c3227f086"
+      },
+      {
+        "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionManager.ItemByFunctionType",
+        "address": "0xc8fbf4",
+        "instruction_count": 32,
+        "sha256": "7a8d43dcc4814eccfb4ddcc22ef8a82400e0ee87c722c5dbe2bed9d6df06dcdf"
+      },
+      {
+        "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockValues",
+        "address": "0xcc80c8",
+        "instruction_count": 258,
+        "sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9"
+      }
+    ],
+    "source_receipts": [
+      {
+        "identity": "senlla-fresh-loaded-timer-expiry-identity-derived.json",
+        "sha256": "e2bbd31910e23e7343d81d01c02a3edfd24b6e7c35cc084ea3080793d918c6b4"
+      },
+      {
+        "identity": "senlla-fresh-loaded-expiry-full-nibble-correction-derived.json",
+        "sha256": "fb5bbedf914ae600f1f474060fa9a6d9d98f3ffb551288706ac1be3857ecbcc6"
+      }
+    ],
+    "constructor_nil_distinction": {
+      "constructor_before_load": "expiry object reference actualnil",
+      "loaded_raw0": "expiry object reference actual registered microfunction0, nonnil",
+      "override0": "actual microfunction0 if explicitly assigned, not actualnil; normal broadcast clear explicitly assigns nil"
+    },
+    "template6_literal_vectors": [
+      {
+        "expiry_identity_after": "same micro0 nonnil",
+        "expiry_identity_before": "micro0 nonnil",
+        "reason": "0xd12b41 nil-pointer test false",
+        "timer_after": 300,
+        "timer_before": 0
+      },
+      {
+        "expiry_identity_after": "micro15 nonnil",
+        "expiry_identity_before": null,
+        "reason": "actual nil-pointer test true",
+        "timer_after": 300,
+        "timer_before": 0
+      }
+    ],
+    "load_phase": "raw block expiry factory/list normalization before GetKeyBlocks and all key templates",
+    "history": "Two earlier literal expiry predictions corrected; historical frozen check receipts preserved"
   }
 }

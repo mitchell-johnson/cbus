@@ -2,6 +2,13 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA ordinary-key expiry correction](senlla-ordinary-keys.md)
+distinguishes raw-loaded microfunction0 from an actual nil reference.
+The raw block loader normalizes unsupported expiry nibbles to15 before
+key templates; loaded0 survives timer initialization. Ten exact method
+pins and independent replacement literals correct two earlier examples.
+Earlier frozen receipts retain their historical inputs and counts.
+
 The [SENLLA callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
 adds synchronous attribute/parent counters, managed publication, setter
 callbacks and stable active tracked-reference subscriptions. Fresh PEC/PIR

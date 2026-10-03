@@ -18,6 +18,7 @@ _ROWS = json.loads(Path(__file__).with_name('senlla_ordinary_key_matches.json').
 _MATCHES = {tuple(row['stages']): row['function_type'] for row in _ROWS}
 _SURVIVING = frozenset((*range(14), 16, 21, 34))
 _CATEGORIES = (frozenset((17,)), frozenset((18, 19)), frozenset((20, 21, 22)))
+_EXPIRY_TYPES = frozenset((0, 15, 4, 9, 12, 6, 10))
 
 
 def _array(value, count, maximum, label):
@@ -31,6 +32,17 @@ def primary_block_index(mask):
     """The native reference list loads block bits in ascending order."""
     mask, = _array((mask,), 1, 255, 'Block allocation')
     return (mask & -mask).bit_length() - 1 if mask else None
+
+
+def loaded_expiry_command(value):
+    """Resolve one raw expiry nibble through the native factory and load list.
+
+    All sixteen wire values resolve to nonnil objects. In particular, the
+    registered microfunction0 is different from a constructor's nil reference.
+    GetBlockValues replaces functions absent from the expiry list with15.
+    """
+    value, = _array((value,), 1, 15, 'Raw timer expiry command')
+    return value if value in _EXPIRY_TYPES else 15
 
 
 def loaded_template(stages, *, store1=None, store2=None):
@@ -72,6 +84,9 @@ def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expir
                        primary_groups, block_references=None):
     """Project eight ordinary keys; no group lookup, form, session or I/O runs.
 
+    ``expiry_commands`` contains eight raw wire nibbles; their factory/list
+    normalization precedes the key template callbacks. This raw-load component
+    does not represent a constructor-only nil expiry reference.
     ``primary_groups`` contains the exact eight source-loaded references.
     Multi-block and zero-block keys have None; singleton references must be
     supplied by the owning group loader, including its unused-group object.
@@ -95,7 +110,8 @@ def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expir
     first = _array(store1, 8, 255, 'LightLevelStore1')
     second = _array(store2, 8, 255, 'LightLevelStore2')
     timers = list(_array(timer_seconds, 8, 65535, 'Block timers'))
-    expiry = list(_array(expiry_commands, 8, 15, 'Timer expiry commands'))
+    expiry = [loaded_expiry_command(value) for value in
+              _array(expiry_commands, 8, 15, 'Timer expiry commands')]
     if not isinstance(primary_groups, (list, tuple)) or len(primary_groups) != 8:
         raise SensorError('Primary groups require exactly eight loaded references')
     groups = tuple(primary_groups)
@@ -115,9 +131,6 @@ def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expir
             if timers[block] == 0:
                 timers[block] = 300
                 defaults.append((key, block, 'timer', 300))
-            if expiry[block] == 0:
-                expiry[block] = 15
-                defaults.append((key, block, 'expiry', 15))
     final, resets = list(raw), []
     # SetupFlashHooks activates a general and a function-template hook for
     # each key in ascending order. A reset to16 does not belong to a recall
