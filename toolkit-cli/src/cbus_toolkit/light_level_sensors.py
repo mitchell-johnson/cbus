@@ -427,17 +427,24 @@ class LightLevelSensor:
         controls = [] if on_off_controls is None else validate_on_off_controls(on_off_controls)
         original = self.snapshot(current)
         updates = {name: list(values) for name, values in original.items()}
-        history = None if on_off_controls is None else _OnOffGraph(original, updates).run(controls)
-        # The SENLL Global frame's native integer selector lists 3..255.
-        # Its formatter labels these values in seconds; there is no time-byte
-        # conversion. Values below 3 display as 3, but the initialization
-        # callback's writeback has not been executed in the original GUI.
-        status_interval = original['StatusReportInterval'][0]
+        graph = None if on_off_controls is None else _OnOffGraph(original, updates)
+        # Fresh Global setup binds OnChange before Populate sets ItemIndex.
+        # The native formatter clamps the label to 3; the resulting text
+        # callback writes that integer back before any explicit controls.
+        # Keep the raw loaded byte in original for stale/readback binding.
+        status_interval = max(3, original['StatusReportInterval'][0])
+        updates['StatusReportInterval'][0] = status_interval
+        if graph is not None:
+            phases = graph.journal['phase_order']
+            phases.insert(phases.index('on_off_controls'), 'global_status_initialization')
+            graph.journal['global_status_initialization'] = {
+                'raw_value': original['StatusReportInterval'][0],
+                'initialized_value': status_interval,
+                'unit': 'seconds',
+            }
+        history = None if graph is None else graph.run(controls)
         if status_report_interval is not None:
             status_interval = _integer(status_report_interval, 'Status report interval', 3, 255)
-        elif status_interval < 3:
-            raise SensorError('Stored StatusReportInterval below 3 has an unverified Global initialization writeback; '
-                              'supply status_report_interval in 3..255 explicitly')
         updates['StatusReportInterval'][0] = status_interval
         # Dialog state loaded by the Toolkit before any edit.
         applications = original['Application']
@@ -592,6 +599,10 @@ class LightLevelSensor:
             allowed.update(('SceneTable', 'SceneTablePointer'))
         if set(plan.changes) - allowed:
             raise SensorError('Plan contains fields outside the light-level sensor workflow')
+        status_interval = plan.changes.get('StatusReportInterval', plan.expected['StatusReportInterval'])
+        if len(status_interval) != 1:
+            raise SensorError('Initialized Global status report interval must have one value in 3..255')
+        _integer(status_interval[0], 'Initialized Global status report interval', 3, 255)
         if set(plan.expected) == complete:
             # Inventory is bound input, never an arbitrary scene-edit surface.
             # Recompute mandatory native save changes from the immutable input,

@@ -131,6 +131,21 @@ check-cgate-interop: compile
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-mock]' \
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-mock]' \
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]' \
@@ -437,6 +452,21 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-daemon]' \
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-daemon]' \
 		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_lost_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]' \
