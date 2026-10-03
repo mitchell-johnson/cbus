@@ -163,7 +163,7 @@ class CatalogueIndex:
             _refuse("Only the explicit unnamespaced CBusUnits profile is supported", "unsupported_catalogue_shape")
         # Refuse unsupported wrappers rather than silently omit their typed
         # descendants from an apparently complete source index.
-        owners = {"Units": {"CBusUnits"}, "Unit": {"Units", "SubUnits"},
+        owners = {"CBusUnits": {None}, "Units": {"CBusUnits"}, "Unit": {"Units", "SubUnits"},
                   "SubUnits": {"Unit"}, "FirmwareRevisions": {"Unit"},
                   "Revision": {"FirmwareRevisions"}}
         children = {"Units": "Unit", "SubUnits": "Unit", "FirmwareRevisions": "Revision"}
