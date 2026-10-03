@@ -18,7 +18,7 @@
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
     "cgate_session_differential_cmqttd": "e9d7b23d93b26a268555f3eceb5acdf34fdc6cc93bd3bc60bb8588536a839f88",
-    "cgate_tagged_session_differential_cmqttd": "71c5b5924aaaabb3b46dbbc13a96eb8b9b2bfde1af1d8cbaad95d599fe81f7a6",
+    "cgate_tagged_session_differential_cmqttd": "0e403d78ab297415866faa45052f49fa8941a5b10db8fc38dde2fb4b9404cc04",
     "cgate_session_physical_applicability": "cd91d41389fb416702d669418882414235032b89719e6e30c6f40c7fbe7c912d",
     "roadmap": "a3362a55854ffc6523c4954cf12e8393c74cc7070ad4270e5f458f2530516c7f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
@@ -26,7 +26,7 @@
     "parity_denominator_history": "6743465a137da2241cc1c1adb69cf809ace3238d9c0fbaaa20e19df069b130ca",
     "closure_receipts": "6f055800e712d7e36607b65a9d83321b9bf6e16b34d7e95b8dd733a0d1245398"
   },
-  "evidence_bundle_sha256": "90d378612869269951e8c43f7a5adfc6d1651fda259717c6306d1b3f38a1577d",
+  "evidence_bundle_sha256": "9ede6a3ab63591ec2d94df20a434546b15a6aed1c96a03a308ca9c2fbea3a22e",
   "work_item_ids": [
     "P0.01",
     "P0.02",
