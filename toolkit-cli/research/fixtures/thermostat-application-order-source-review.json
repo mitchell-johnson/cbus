@@ -1,0 +1,636 @@
+{
+  "boundary": {
+    "historical_windows_ctype_table": "Not embedded in EXE; no retained exact NLS table or captured API bitset established.",
+    "implementation_complete": false,
+    "initial_manager_order": "Depends on actual load, sort preference, full-sort count and prior timer history; arbitrary XML/address sorting is not authorized.",
+    "original_execution": false,
+    "partial_dependency_resolution": "A nonmatching prefix or definitive false suffix unit settles the classifier without assigning unrelated Unicode table bits.",
+    "python_unicode_category_equivalence": false,
+    "runtime_profile_fabricated": false,
+    "tag_collation_profile": "Windows locale/NLS input, not ASCII UpperCase equality."
+  },
+  "checks": {
+    "0x1369fa1": true,
+    "0x6186fe": true,
+    "0x618702": true,
+    "0x618736": true,
+    "0x61873b": true,
+    "0x61873e": true,
+    "0x618742": true,
+    "0x618744": true,
+    "0x618748": true,
+    "0x618767": true,
+    "0x618789": true,
+    "0x61878c": true,
+    "0x61878f": true,
+    "0x618793": true,
+    "0x618798": true,
+    "0x6187c6": true,
+    "0x6187ca": true,
+    "0x6187d4": true,
+    "0x6187fe": true,
+    "0x618803": true,
+    "0x618806": true,
+    "0x61880a": true,
+    "0x61880c": true,
+    "0x618d40": true,
+    "0x618d42": true,
+    "0x618d47": true,
+    "0x618d4c": true,
+    "0x621116": true,
+    "0x62111f": true,
+    "0x621128": true,
+    "0x62112e": true,
+    "0x623742": true,
+    "0x6237c6": true,
+    "0x6237ca": true,
+    "0x6237d1": true,
+    "0x6237d6": true,
+    "0x6525e6": true,
+    "0x65263d": true,
+    "0x652641": true,
+    "0x652683": true,
+    "0x65268e": true,
+    "0x6526e4": true,
+    "0x6526ec": true,
+    "0x781168": true,
+    "0x78116e": true,
+    "0x781178": true,
+    "0x78117e": true,
+    "0x781180": true,
+    "0x781185": true,
+    "0x781192": true,
+    "0x78119a": true,
+    "0x78119e": true,
+    "0x7811a3": true,
+    "0x781359": true,
+    "0x78135d": true,
+    "0x78138f": true,
+    "0x781394": true,
+    "0x78139d": true,
+    "0x782188": true,
+    "0x782192": true,
+    "0x782199": true,
+    "0x7821a0": true,
+    "0x7821a5": true,
+    "0x7821a8": true,
+    "0x7e859e": true,
+    "0x7e85aa": true,
+    "0x7e85be": true,
+    "0x7e85ce": true,
+    "0x7e98a1": true,
+    "0x7e98b2": true,
+    "0x7e9ac3": true,
+    "0x7e9ac9": true,
+    "0x7e9ad7": true,
+    "0x7e9ae2": true,
+    "0x7e9b88": true,
+    "0x7e9fc2": true,
+    "0x7e9ff2": true,
+    "0x7ed7ff": true,
+    "0x7ed808": true,
+    "0x7ed824": true,
+    "0x7f37cb": true,
+    "0x8440b8": true,
+    "0x8440ba": true,
+    "0x8440bc": true,
+    "0x8440be": true,
+    "0x8440c9": true,
+    "0x844732": true,
+    "0x8447ac": true,
+    "0x8447b0": true,
+    "0x8447b9": true,
+    "0x85b695": true,
+    "0x85b761": true,
+    "0x85b766": true,
+    "0xf257ad": true,
+    "0xf257b4": true,
+    "0xf257bf": true,
+    "0xf257d0": true,
+    "0xf27d64": true,
+    "0xf27d69": true,
+    "0xf27db6": true,
+    "0xf27db9": true,
+    "0xf27dc1": true,
+    "0xf27dc9": true,
+    "0xf28911": true,
+    "0xf28921": true,
+    "0xf2892a": true,
+    "0xf28e66": true,
+    "0xf28ece": true,
+    "0xf28ed9": true,
+    "0xf28eee": true,
+    "0xf47abc": true,
+    "0xf47ae3": true,
+    "0xf47b63": true,
+    "0xf47b8a": true,
+    "0xf47f37": true,
+    "0xf481c6": true,
+    "0xf482b6": true,
+    "0xf48311": true,
+    "0xf4835f": true,
+    "0xf48510": true,
+    "0xf4856e": true,
+    "0xf485bc": true,
+    "0xf4875b": true,
+    "0xf487d4": true,
+    "0xf4881d": true,
+    "0xf48844": true,
+    "0xfe2b4b": true,
+    "0xfe2b6c": true,
+    "0xfe2b8b": true,
+    "0xfe2b9a": true,
+    "0xfe2ba3": true,
+    "0xfe2ba8": true,
+    "0xfe2bb0": true,
+    "0xfe6ced": true,
+    "0xfe6dfb": true,
+    "0xfe6e01": true,
+    "0xfe6e04": true,
+    "0xfe6e2a": true,
+    "0xfe6e30": true,
+    "0xfe6e9b": true,
+    "0xfe6e9f": true,
+    "compare_unicode_import": true,
+    "cool_stage3_plant1_empty_label": true,
+    "cool_stage3_plant1_preserve_existing": true,
+    "ctype_unicode_import": true,
+    "decimal_separator_pointer": true,
+    "group_manager_append_slot": true,
+    "group_manager_xml_add_slot": true,
+    "group_resource": true,
+    "method:CIS_GlobalSoftwareParameters.LoadParametersFromRegistry": true,
+    "method:CIS_GlobalSoftwareParameters.SortModeGroupsUseAddress": true,
+    "method:CIS_TBaseObject.TBASEObject.Create": true,
+    "method:CIS_TCBusObject.TCGateAddressAttribute.InternalCreate": true,
+    "method:CIS_TCBusObject.TCGateAddressAttribute.PopulateCacheValues": true,
+    "method:CIS_TCBusObject.TCGateObject.HandleAddressAfterChange": true,
+    "method:CIS_TCBusObject.TCGateObject.HandleTagNameAfterChange": true,
+    "method:CIS_TCBusObject.TCGateObject.InternalCreate": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.CustomSortAddressAsc": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.CustomSortTagNameAsc": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.HandleAfterChangeTimerTrigger": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.LoadAndSort": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.SetAfterChangeTimerEnabled": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomAddressAsc": true,
+    "method:CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomTagNameAsc": true,
+    "method:CIS_TCGateAgent.TCGateAgent.CommandDBAdd": true,
+    "method:CIS_TCGateAgent.TCGateAgent.CommandDBSet": true,
+    "method:CIS_TCGateCommand.InternalSendCommand": true,
+    "method:CIS_TCGateCommand.TCGateCommand.CommandExecute": true,
+    "method:CIS_TCGateCommand.TCGateCommand.CommandExecuteBegin": true,
+    "method:CIS_TCGateCommand.TCGateCommand.CommandExecuteEnd": true,
+    "method:CIS_TCGateCommand.TCGateCommand.Create": true,
+    "method:CIS_TCGateCommand.TCGateCommand.InternalCreate": true,
+    "method:CIS_TCGateCommand.TThreadCommandSynchroniser.Create": true,
+    "method:CIS_TCGateCommand.TThreadCommandSynchroniser.ProcessResponsesSync": true,
+    "method:CIS_TCGateCommunicatorSocketHelper.TCGateCommunicationProcessor.SendCommand": true,
+    "method:CIS_TCommonCBus.TCBUSApplication.InternalCreate": true,
+    "method:CIS_TCommonCBus.TCBusGroup.HasDefaultTagName": true,
+    "method:CIS_TCommonCBus.TCBusGroupManager.Add": true,
+    "method:CIS_TCommonCBus.TCBusGroupManager.GroupByTagNameExclude": true,
+    "method:CIS_TCommonCBus.TCBusInstallation.SortAll": true,
+    "method:CIS_TCustomFlashObject.QuickInsert": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectCollection.AddSessionID": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectCollection.Append": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReference.ObjectChanged": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReference.ResolveReference": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Compare": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.DoFullSort": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetSortedInsertLocation": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.QuickSort": true,
+    "method:CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetSortStyle": true,
+    "method:CIS_TProjectCGateAgent.TProjectCGateAgent.CommandProjectSave": true,
+    "method:CIS_TStringAttribute.TStringAttribute.InternalCreate": true,
+    "method:CIS_TThermostat.TPlantControlService.FindExistingGroup": true,
+    "method:CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType": true,
+    "method:CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupName": true,
+    "method:CIS_TThreadWrappedIndySocket.TThreadCommandSocket.ProcessCommand": true,
+    "method:CIS_TcgcProjectSave.TcgcProjectSave.Create": true,
+    "method:JclStrings.CharIsNumberChar": true,
+    "method:JclStrings.JclStrings": true,
+    "method:JclStrings.LoadCharTypes": true,
+    "method:JclStrings.StrConsistsOfNumberChars": true,
+    "method:SyncObjs.TEvent.Create@0x6526cc": true,
+    "method:SyncObjs.THandleObject.Create": true,
+    "method:SyncObjs.THandleObject.WaitFor": true,
+    "method:SysUtils.AnsiCompareText": true,
+    "method:SysUtils.GetFormatSettings": true,
+    "method:SysUtils.GetLocaleChar": true,
+    "method:SysUtils.LowerCase": true,
+    "method:SysUtils.LowerCaseFromAnsiString": true,
+    "method:SysUtils.UpperCase": true,
+    "method:System.TObject.InitInstance": true,
+    "method:Windows.CompareString": true,
+    "method:Windows.GetStringTypeEx": true,
+    "sort_registry_key": true,
+    "vmt:CIS_TcgcDBAdd..TcgcDBAdd": true,
+    "vmt:CIS_TcgcDBSet..TcgcDBSet": true,
+    "vmt:CIS_TcgcProjectSave..TcgcProjectSave": true,
+    "vmt:CIS_TcgcProjectUse..TcgcProjectUse": true
+  },
+  "command_vmt_slots": {
+    "CIS_TcgcDBAdd..TcgcDBAdd": {
+      "slots": {
+        "0x10": "0x843d84",
+        "0x1c": "0x843bdc",
+        "0x20": "0x843c1c"
+      },
+      "vmt": "0xcab8d0"
+    },
+    "CIS_TcgcDBSet..TcgcDBSet": {
+      "slots": {
+        "0x10": "0x843d84",
+        "0x1c": "0x843bdc",
+        "0x20": "0x843c1c"
+      },
+      "vmt": "0xcab158"
+    },
+    "CIS_TcgcProjectSave..TcgcProjectSave": {
+      "slots": {
+        "0x10": "0x843d84",
+        "0x1c": "0x843bdc",
+        "0x20": "0x843c1c"
+      },
+      "vmt": "0x1137ea4"
+    },
+    "CIS_TcgcProjectUse..TcgcProjectUse": {
+      "slots": {
+        "0x10": "0x843d84",
+        "0x1c": "0x843bdc",
+        "0x20": "0x843c1c"
+      },
+      "vmt": "0x842890"
+    }
+  },
+  "format": "cbus-thermostat-application-order-static-v1",
+  "method_spans": {
+    "CIS_GlobalSoftwareParameters.LoadParametersFromRegistry": {
+      "end": "0x85b924",
+      "sha256": "b795c0830c979300b3b19b0ee41c2e4d62bdd9564bfb1105398c2da0dbe347b9",
+      "start": "0x85b67c"
+    },
+    "CIS_GlobalSoftwareParameters.SortModeGroupsUseAddress": {
+      "end": "0x85b43c",
+      "sha256": "29c9ec42994f8ce7dcf3c3f863c01fc292d7f4514b05ef912f42da2e178fd236",
+      "start": "0x85b428"
+    },
+    "CIS_TBaseObject.TBASEObject.Create": {
+      "end": "0x768234",
+      "sha256": "1d99602b403c4cee4c169a3f19e26de7d700cf3a7484bc7747d4b12dc5a305c1",
+      "start": "0x7681f0"
+    },
+    "CIS_TCBusObject.TCGateAddressAttribute.InternalCreate": {
+      "end": "0xf481d0",
+      "sha256": "6c4601cc471444d394da51b62dc370be3096b6e8b58d0997e8865811c8172754",
+      "start": "0xf481b4"
+    },
+    "CIS_TCBusObject.TCGateAddressAttribute.PopulateCacheValues": {
+      "end": "0xf48128",
+      "sha256": "7d8463e3db2a186503eb7f66f81d6f5be7936f8c0ca24b84b16b8f940b6124f6",
+      "start": "0xf47eb8"
+    },
+    "CIS_TCBusObject.TCGateObject.HandleAddressAfterChange": {
+      "end": "0xf47b04",
+      "sha256": "c7767271ac318b1a0e3a0f1b86a38100c043f4b6e6bdafa60fb5685d96f82cf1",
+      "start": "0xf47a74"
+    },
+    "CIS_TCBusObject.TCGateObject.HandleTagNameAfterChange": {
+      "end": "0xf47bc8",
+      "sha256": "a46b76fa204592199ff06435847c7f67f4f44b69a4c313a13ef1790d57661a23",
+      "start": "0xf47b04"
+    },
+    "CIS_TCBusObject.TCGateObject.InternalCreate": {
+      "end": "0xf47880",
+      "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260",
+      "start": "0xf47718"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.CustomSortAddressAsc": {
+      "end": "0xf48488",
+      "sha256": "b5bd0358ec5d6c19a91107df4a3969458b4a7ad4f03bf43c61e1bf1508aec565",
+      "start": "0xf4825c"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.CustomSortTagNameAsc": {
+      "end": "0xf48708",
+      "sha256": "d6005d0f610c5d92df7c4846c76a355e0823fee802d849e43020e395458e1bda",
+      "start": "0xf48488"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.HandleAfterChangeTimerTrigger": {
+      "end": "0xf48764",
+      "sha256": "00e42c5ff7d77f4a8cff15b6cb93a027a3bfc24d31d76f169980de62729632b4",
+      "start": "0xf48708"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.LoadAndSort": {
+      "end": "0xf487e0",
+      "sha256": "07225b4cb7f3f8f3f8905956c308890e60e23db28645329d5498521dba60d536",
+      "start": "0xf48798"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetAfterChangeTimerEnabled": {
+      "end": "0xf48850",
+      "sha256": "49801b500170370f219c0d2c41c82a7f6b32f49842b545587916a4f80909bc02",
+      "start": "0xf487e0"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomAddressAsc": {
+      "end": "0xf48874",
+      "sha256": "3330851a47529c9fc524358e61092edb4ad19601c69bfc38f4c7dc810b7d406b",
+      "start": "0xf48850"
+    },
+    "CIS_TCBusObject.TCGateObjectManager.SetSortStyleCustomTagNameAsc": {
+      "end": "0xf48898",
+      "sha256": "01ee4000697615582739b0f2728059b078837628a14a59defd18822492bd2896",
+      "start": "0xf48874"
+    },
+    "CIS_TCGateAgent.TCGateAgent.CommandDBAdd": {
+      "end": "0xcad3a8",
+      "sha256": "26a750e37de1384c27f5145a1fdbeb999cb81bd5a23b28545f7abd5ec9cb8caf",
+      "start": "0xcad208"
+    },
+    "CIS_TCGateAgent.TCGateAgent.CommandDBSet": {
+      "end": "0xcacaf0",
+      "sha256": "6b426870691e983d78a22c72c06974511c65c0cfbf8a42cb46841f02a394bbaf",
+      "start": "0xcac928"
+    },
+    "CIS_TCGateCommand.InternalSendCommand": {
+      "end": "0x843860",
+      "sha256": "3583bbfbac3a4dbfe7080e63a1b3d2a732c06cba47285e67b12cd5c25603b3e6",
+      "start": "0x8437bc"
+    },
+    "CIS_TCGateCommand.TCGateCommand.CommandExecute": {
+      "end": "0x843bdc",
+      "sha256": "2a178ac3350bcf00d4275958f76aaea58a97c051cda5c52c987a39715485da60",
+      "start": "0x843860"
+    },
+    "CIS_TCGateCommand.TCGateCommand.CommandExecuteBegin": {
+      "end": "0x843c1c",
+      "sha256": "45f21f7eeee6e7eb72b13cce62804b19535910088c48736fbeac099adaafa247",
+      "start": "0x843bdc"
+    },
+    "CIS_TCGateCommand.TCGateCommand.CommandExecuteEnd": {
+      "end": "0x843c5c",
+      "sha256": "3c4d94f097a4d8fcd40eec3aa306fb0dc606e972ad95b13a8396ac23a8269057",
+      "start": "0x843c1c"
+    },
+    "CIS_TCGateCommand.TCGateCommand.Create": {
+      "end": "0x8436a4",
+      "sha256": "ef73b8e483d707e5737996723c5951b74daea5bd2f4defd0c3e00b452e6b0e21",
+      "start": "0x8435dc"
+    },
+    "CIS_TCGateCommand.TCGateCommand.InternalCreate": {
+      "end": "0x843d90",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "start": "0x843d84"
+    },
+    "CIS_TCGateCommand.TThreadCommandSynchroniser.Create": {
+      "end": "0x84422c",
+      "sha256": "384f8b53b72a3896f58f584b6529e619e693f279978aec1dd58c2f2d1801e97c",
+      "start": "0x844068"
+    },
+    "CIS_TCGateCommand.TThreadCommandSynchroniser.ProcessResponsesSync": {
+      "end": "0x844904",
+      "sha256": "1ae539a0ac6900d55fb06026d96e6c44f1a27801be782570fce80b1782a3dcd6",
+      "start": "0x8446f0"
+    },
+    "CIS_TCGateCommunicatorSocketHelper.TCGateCommunicationProcessor.SendCommand": {
+      "end": "0xf4e25c",
+      "sha256": "0c1ce250ffb18a33671e5e3392fa6d2e4703b872919899fb6519cecc8cc28aca",
+      "start": "0xf4e0e8"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.InternalCreate": {
+      "end": "0xf25858",
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a",
+      "start": "0xf25704"
+    },
+    "CIS_TCommonCBus.TCBusGroup.HasDefaultTagName": {
+      "end": "0xf27e14",
+      "sha256": "4bf4ca9399c260b80a6cd9b4d2c1b021c763ba9ae73145b71cccdf66d8608ba3",
+      "start": "0xf27d10"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.Add": {
+      "end": "0xf28938",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9",
+      "start": "0xf288f0"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByTagNameExclude": {
+      "end": "0xf28f34",
+      "sha256": "e139064e84418d513365ba3316eeeb301dce1498bff6182b82505012bb68933c",
+      "start": "0xf28e28"
+    },
+    "CIS_TCommonCBus.TCBusInstallation.SortAll": {
+      "end": "0xf33430",
+      "sha256": "efa408665292c36e15f7f35d378c5b2f78827e905b6563cf58de1053a37d7195",
+      "start": "0xf33190"
+    },
+    "CIS_TCustomFlashObject.QuickInsert": {
+      "end": "0x7e9b30",
+      "sha256": "e4143c93209136ddd59564fa205e46041e67770b0e99a8aa7a3de2c4248c6651",
+      "start": "0x7e9a84"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.AddSessionID": {
+      "end": "0x7e9fd0",
+      "sha256": "8ad22431263e67e95a7d91941161f2593bd73c4b23bfcddd444e1ec8712dd757",
+      "start": "0x7e9f3c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.Append": {
+      "end": "0x7ea004",
+      "sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45",
+      "start": "0x7e9fd0"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ObjectChanged": {
+      "end": "0x7ed3e8",
+      "sha256": "7afab599ae69adb9977c6f08f5ef6891571a67dfb79150c353a955e49ad4d334",
+      "start": "0x7ed3c4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ResolveReference": {
+      "end": "0x7ed68c",
+      "sha256": "fb0c76794fcaaf8c758111beb938ca33aba43d4f07bf4b74de29132c5abc56e7",
+      "start": "0x7ed41c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": {
+      "end": "0x7ed85c",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740",
+      "start": "0x7ed6d4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": {
+      "end": "0x7e8730",
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3",
+      "start": "0x7e84ac"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Compare": {
+      "end": "0x7e9978",
+      "sha256": "4010c8b23fb9138f5051c5f4ae0948b9369c812f32f92e1226988b7015e539ef",
+      "start": "0x7e98f8"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.DoFullSort": {
+      "end": "0x7e9a0c",
+      "sha256": "6c2cc44d19cfe400712a90e2803485da54462d225ea13e23f73393acd50164f6",
+      "start": "0x7e99b0"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetSortedInsertLocation": {
+      "end": "0x7e9b70",
+      "sha256": "7603adf73bc8371cedfabafb1463fa7963bf1bc923ba242978d4b76b2fd41ed7",
+      "start": "0x7e9b30"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange": {
+      "end": "0x7e9b94",
+      "sha256": "109f4964f42a44dc31e9acdc162af532ee25f7a904266ced3ff8f936cae5b565",
+      "start": "0x7e9b70"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.QuickSort": {
+      "end": "0x7e98f8",
+      "sha256": "3a35266c9903303e60f220b580c5c7fc7d60da84f057fd39d86169ba35955615",
+      "start": "0x7e97c4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetSortStyle": {
+      "end": "0x7e99b0",
+      "sha256": "db6638575da006b04c97fb19c7dd4bf8e108c5a6a60bd4ee1751a41ae457d19d",
+      "start": "0x7e9978"
+    },
+    "CIS_TProjectCGateAgent.TProjectCGateAgent.CommandProjectSave": {
+      "end": "0x120a58c",
+      "sha256": "d951d371d1aca5795c3a45aba88ef801e64587c934e8992778529d815605b81a",
+      "start": "0x120a3e4"
+    },
+    "CIS_TStringAttribute.TStringAttribute.InternalCreate": {
+      "end": "0x7f37d4",
+      "sha256": "b2fc88b81327f8e2c960c8bff3d9364e68678d8ce9ba7fb9ceaf069993c8f4e4",
+      "start": "0x7f37ac"
+    },
+    "CIS_TThermostat.TPlantControlService.FindExistingGroup": {
+      "end": "0xfe2be4",
+      "sha256": "b375c529b20d7d4bdcf23c94e14b660eae67fe67fbdf31e31c172d8173bc8087",
+      "start": "0xfe2afc"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType": {
+      "end": "0xfe6fe4",
+      "sha256": "cee4ff157a9d086126e88dcab78c45f5dcb6e8e0c09296e1a23ad0f41754c301",
+      "start": "0xfe6d88"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupName": {
+      "end": "0xfe6d88",
+      "sha256": "22c8612c4b72fd777faa9dc7cf595a5404759c4f435f7dd15501f59f907bfba1",
+      "start": "0xfe6c84"
+    },
+    "CIS_TThreadWrappedIndySocket.TThreadCommandSocket.ProcessCommand": {
+      "end": "0xf519a0",
+      "sha256": "0969b28dd34aa8a1860969785f76fc8be5c9b5cb739a31da63603d6e95a07ba1",
+      "start": "0xf516a0"
+    },
+    "CIS_TcgcProjectSave.TcgcProjectSave.Create": {
+      "end": "0x1137f74",
+      "sha256": "dbf8e40ee8698e21a68fa0ae3d7a76c444526e7a1088cb0da7e167289305c09f",
+      "start": "0x1137f2c"
+    },
+    "JclStrings.CharIsNumberChar": {
+      "end": "0x7821c0",
+      "sha256": "26c465b0e45cf1e2fedd86c91f0b7f6f31e57b92853af00d96472778eca3a5d8",
+      "start": "0x78217c"
+    },
+    "JclStrings.JclStrings": {
+      "end": "0x1369fac",
+      "sha256": "d18eae48ff7cb4cb57550210fa48c53e3b6f3a546733f8b886884b68ee9cad83",
+      "start": "0x1369f98"
+    },
+    "JclStrings.LoadCharTypes": {
+      "end": "0x7811a8",
+      "sha256": "79e68725a9e6e2b3b7463471399064f9d5269d0e1b968cde84af84a6612a9326",
+      "start": "0x781164"
+    },
+    "JclStrings.StrConsistsOfNumberChars": {
+      "end": "0x7813b4",
+      "sha256": "0099b0469ea60e453e02fea1abdab1dce26ea1cb096517c08a5917c6ac4abcb8",
+      "start": "0x781350"
+    },
+    "SyncObjs.TEvent.Create@0x6526cc": {
+      "end": "0x652734",
+      "sha256": "d52b1c30868b5d372745a58b7af069ba12d27a82955e35219059f40aaff116fb",
+      "start": "0x6526cc"
+    },
+    "SyncObjs.THandleObject.Create": {
+      "end": "0x652608",
+      "sha256": "df63d50515ab010a5b6f3eada853421724aa4fa86663330eb21b52127c36168e",
+      "start": "0x6525c4"
+    },
+    "SyncObjs.THandleObject.WaitFor": {
+      "end": "0x6526cc",
+      "sha256": "9c92acce3af31f3d4d23ae544b1b64b33709679ee6e458a70e0988d0c9d76af1",
+      "start": "0x652638"
+    },
+    "SysUtils.AnsiCompareText": {
+      "end": "0x618d7c",
+      "sha256": "9cc63b66ab4bc741bb7bd430cb0d1bfb97b808927701b8cbba2fbdf882213948",
+      "start": "0x618cb0"
+    },
+    "SysUtils.GetFormatSettings": {
+      "end": "0x623af8",
+      "sha256": "59fa7fe20b60051409ff17db43b144cd373dcfb2b98c4bdea74c1558e6348f7b",
+      "start": "0x62370c"
+    },
+    "SysUtils.GetLocaleChar": {
+      "end": "0x621138",
+      "sha256": "89e69f3dac843094931fe9fbffc88ebb85915111ccdfafffb77655b62eeb2959",
+      "start": "0x62110c"
+    },
+    "SysUtils.LowerCase": {
+      "end": "0x618824",
+      "sha256": "a673244ff7f84d8f63b2ad8c2d29b56a0c89489c85b2b1e0876378e75b6259ce",
+      "start": "0x6187ac"
+    },
+    "SysUtils.LowerCaseFromAnsiString": {
+      "end": "0x6187ac",
+      "sha256": "b4640869f66a5c2091be6745558069deefb057e79f0baa9b34e044795dac22a2",
+      "start": "0x61875c"
+    },
+    "SysUtils.UpperCase": {
+      "end": "0x61875c",
+      "sha256": "31d49e2c60709181dfc1e9cf67b3f0aeed856589842419b8ba2a7b8fc7205753",
+      "start": "0x6186e4"
+    },
+    "System.TObject.InitInstance": {
+      "end": "0x606264",
+      "sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7",
+      "start": "0x60620c"
+    },
+    "Windows.CompareString": {
+      "end": "0x60e27c",
+      "sha256": "d08516504df68989588260acb4c5c87c07927bc8856d821420911d34ffbd1576",
+      "start": "0x60e274"
+    },
+    "Windows.GetStringTypeEx": {
+      "end": "0x60e5d8",
+      "sha256": "51d909813d91cb60afee64b293014177fbef6fcfea6c935df74afd3a6ac69e9e",
+      "start": "0x60e5d0"
+    }
+  },
+  "native_vendor_executed": false,
+  "original_emulated": false,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_io": false,
+  "source_rules": {
+    "address_comparator": "left-right, then distinct left255\u2192-1, then distinct right255\u2192+1; later override wins.",
+    "append": "Nonzero sort style uses midpoint binary insertion into the current list; equal inserts at the midpoint.",
+    "classifier_consumption": "The initial UpdateGroup old-name reuse branch consults HasDefaultTagName only if destination lookup found an old-name candidate; pinned separately by application-change verifier. Later cl=true role default getters can independently classify the newly allocated generic Group N before deciding whether to rename it.",
+    "ctype_initialization": "Each of65536 UTF-16 code units separately calls GetStringTypeExW(0x400,1,unit,1,flags), with flags reset0 and return ignored.",
+    "decimal_separator": "SysUtils.GetFormatSettings uses GetThreadLocale and GetLocaleInfoW(SDECIMAL=14), first UTF-16 unit with period fallback.",
+    "default_name": "Exact localized resource prefix (pinned English resource Group) plus space, nonempty suffix of at most100 UTF-16 units, every unit accepted by CharIsNumberChar.",
+    "default_sort_preference": "SortModeGroups defaults false (tag name); registry preference can select address.",
+    "full_sort": "Unstable midpoint quicksort swaps equal entries; repeated sorts may change duplicate identity order.",
+    "message_scope": "Successful inspected storage paths only; no claim for other commands or exception dialogs.",
+    "name_lookup": "Migration GroupByTagNameExclude returns the first current manager position after excluding the object identity; UpperCase changes ASCII a..z only.",
+    "new_group": "Append receives empty TagName and empty Address; empty Address converts to255 before later address/name setters.",
+    "normal_command_wait": "DBAdd/DBSet/ProjectSave leave command+0x78 false. Their synchroniser uses non-COM, non-alertable waits; its conditional ProcessMessages path is not entered.",
+    "number_character": "C1_DIGIT bit4 from startup StrCharTypes OR plus OR minus OR current DecimalSeparator.",
+    "ordinary_ansi_fallback": "The non-UTF16 branch converts with UStrFromLStr, then uses the same ASCII A..Z bounds; no locale-sensitive case-conversion call occurs in this LowerCase implementation.",
+    "ordinary_lowercase": "The UTF-16 branch changes ASCII A..Z with OR0x20 only. Its equality classes match the ASCII-only UpperCase helper.",
+    "ordinary_name_lookup": "Ordinary FindExistingGroup iterates current manager positions and returns the first equal pair of LowerCase results; it does not call GroupByTagNameExclude.",
+    "rename_timer": "Address/name AfterChange queues a1ms timer under custom sort; timer clears itself then fully sorts.",
+    "tag_comparator": "CompareStringW(USER_DEFAULT,NORM_IGNORECASE)-2, then the same255 overrides.",
+    "unique_name_match": "No manager-order or Windows collation dependency when the consumed eligible match is unique.",
+    "unlabeled_role": "For virtual plant1 CoolStage3 has an empty generated role label. Its default getter preserves an existing provisional group whether HasDefaultTagName succeeds or fails; it does not turn that non-unused group into255.",
+    "xml_load": "AddSessionID appends lazy references without sorting; native XML to complete importer relation order is not established here."
+  }
+}

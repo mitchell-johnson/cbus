@@ -1,0 +1,100 @@
+{
+  "artifact_sha256": {
+    "toolkit-cli/docs/thermostat-application-change-source.md": "9b7866fe93f641ac5bb7acf6ff43958ae90aaa46a001d56723d96222396f5156",
+    "toolkit-cli/docs/thermostat-settings.md": "29c47cd07873a6872b68bd4f334f800e2f12a93828f6da274dd2cf98c001fcf3",
+    "toolkit-cli/research/fixtures/thermostat-application-change-source-review.json": "cb0bb205e8f227726a05fee7d864b797da82a799a62ccbf2ded62a364c8cfd60",
+    "toolkit-cli/research/fixtures/thermostat-application-events-source-review.json": "3e2862334621bf4e2019efedb2e7a974cc73f4896db62cd96d8c76c56353b0cf",
+    "toolkit-cli/research/fixtures/thermostat-application-order-source-review.json": "333b6f0b1c3551df201210938896299e5f1a3e2cdd2b90450209f25472ae11e1",
+    "toolkit-cli/research/fixtures/thermostat-application-selector-source-review.json": "613c0b01156ebca21488408065c4fa698ab988977251b02bad51171509677c8b",
+    "toolkit-cli/research/thermostat_application_change_static.py": "7967641a39ef0be15f42bad686395b3973ee66f9399573d7497a77281484eb28",
+    "toolkit-cli/research/thermostat_application_events_static.py": "08515ba6a287b78fcdde83ba5ab5917261cc1dc6b5435a7ba3ed9d660c2a06bb",
+    "toolkit-cli/research/thermostat_application_order_static.py": "ed287c0bf2cb3401eb42b15ffe40bca092520dd29a9f946eae7b2b3b510394dc",
+    "toolkit-cli/research/thermostat_application_selector_static.py": "eb8f0c1adb18857fea032c2d94c71e2eb3e78e9118521dd0b9d9730aa3c1da92",
+    "toolkit-cli/src/cbus_toolkit/thermostat_output_groups.py": "c09d4e1a05459b5eaf5f26ba9a523470ea4139b28eea59b65d7f4ea1f2d270ea",
+    "toolkit-cli/tests/test_thermostat_application_source.py": "3d4fa9f7a8d9e7c96084821ccccce2923a7fc172c75369a510ef6b035cc8a58e",
+    "toolkit-cli/tests/test_thermostat_output_groups.py": "436848b0b59d8ebca7cdb2fb47675eec85a10981cabd4a77840bf33336268d78"
+  },
+  "base_commit": "1458db3efe87598b741f73dbca41f86ebaaf27e5",
+  "date": "2026-10-04",
+  "format": "cbus-thermostat-application-source-checkpoint-v1",
+  "remaining": [
+    "Complete causal application/selector/Add/Edit history in one retained model and one save.",
+    "Framework caption rematching under PopulateList update locks.",
+    "Consumed manager order and exact Windows NLS/locale dependencies.",
+    "Broader initial application loading and inherited dependency interactions.",
+    "Original GUI, native-server and hardware acceptance remain separate."
+  ],
+  "retained_log_sha256": {
+    "coverage-final.json": "89444b7610cdb1bb9720be22778deb90f1daa5d3327353655225478d24a38a36",
+    "source-goldens-final.log": "dd1cdd746d5db753e8e6568ee53099e3b0d7818497348413075cb47ee8a8101d",
+    "unicode-default-focused-corrected.log": "515f76115009664b94786b6f2c9c363d645ba97c5630e0579901ca3023a0c930",
+    "unicode-default-focused.log": "64bdf4a7a669bdd678023c35c2f8f0622cb48a201a35a147d5ffb08a3f8604da"
+  },
+  "runtime_fix_commit": "1fdfa8081d8b54fd2c7e0b685391f55c7bdf850a",
+  "scope": "Unique ordinary output name lookup accepts unrelated Unicode names. Application-control source evidence is retained; the application migration API remains unimplemented.",
+  "validation": {
+    "coverage": {
+      "census_complete": false,
+      "complete": false,
+      "exit_code": 1
+    },
+    "development_collection_failure": {
+      "count": 1,
+      "reason": "Tests path missing from PYTHONPATH; four import errors before tests ran. Corrected focused run passed."
+    },
+    "diff_check_passed": true,
+    "focused": {
+      "modules": [
+        "test_thermostat_output_groups",
+        "test_thermostat_output_add",
+        "test_thermostat_output_edit",
+        "test_thermostat_remote_references"
+      ],
+      "parent_passes": 44,
+      "skip_reason": "Optional static EXE/MAP checks; CBUS environment stripped for this pure run.",
+      "skips": 4,
+      "subtest_passes": 249
+    },
+    "full_suite_run": false,
+    "new_python_ast_files_passed": 5,
+    "new_vendor_execution": false,
+    "original_instruction_execution_or_emulation": false,
+    "physical_io": false,
+    "rust_changed": false,
+    "rust_checks_rerun": false,
+    "source_goldens": {
+      "component_checks_are_not_a_unique_obligation_count": true,
+      "components": {
+        "change": {
+          "all_checks_passed": true,
+          "checks": 84,
+          "method_spans": 10,
+          "original_executed": false
+        },
+        "events": {
+          "all_checks_passed": true,
+          "checks": 174,
+          "method_spans": 81,
+          "original_executed": false
+        },
+        "order": {
+          "all_checks_passed": true,
+          "checks": 221,
+          "method_spans": 67,
+          "original_executed": false
+        },
+        "selector": {
+          "all_checks_passed": true,
+          "checks": 121,
+          "method_spans": 191,
+          "original_executed": false
+        }
+      },
+      "module": "test_thermostat_application_source",
+      "parent_passes": 2,
+      "skips": 0,
+      "subtest_passes": 8
+    },
+    "wheel_or_backend_acceptance_claimed": false
+  }
+}

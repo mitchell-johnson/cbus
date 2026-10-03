@@ -137,14 +137,17 @@ and programmable schedule references in that order. The bounded output profile
 admits applications 48–95 or 203. Missing application 56 is `Lighting`, 95 is
 `DALI`, 203 is `Enable Control`, and other admitted application names are their
 decimal address. This range is a CLI boundary, not a recovered GUI filter.
+The [application-control investigation](thermostat-application-change-source.md)
+records the broader source rules and remaining migration work.
 
 A manually named output group is retained. An automatically named group with
 this unit's `[CGnn]` prefix can be renamed using the loaded plant/installation.
 A missing source address can reuse a uniquely matching generated name elsewhere
-or create a group at the source address. Ambiguous generated names and consumed
-non-ASCII name searches are refused because original manager/locale ordering is
-not established. This path does not use template allocation or infer manager
-order from XML. Loading effects remain in the transaction even when a later
+or create a group at the source address. Name equality folds ASCII letters
+only; other characters remain unchanged, so unrelated Unicode names do not
+prevent a unique lookup. Ambiguous generated names are refused because the
+original manager order is not established. This path does not use template
+allocation or infer manager order from XML. Loading effects remain in the transaction even when a later
 selection chooses another group.
 
 The selected control must be enabled in the loaded model. Cooling and heating
