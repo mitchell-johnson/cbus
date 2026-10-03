@@ -1,4 +1,9 @@
-"""Owned native acceptance for synthetic retained IOPE scene levels."""
+"""Current opt-in native IOPE acceptance and historical receipt integrity.
+
+The unconditional archive check verifies retained bytes and their recorded
+source closure. It does not establish current native acceptance; the separately
+provisioned native matrix records the implementation it actually executes.
+"""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -26,6 +31,19 @@ IMPLEMENTATION_FILES = (
     "tests/test_iope_scene_levels_native.py", "tests/test_iope_join_groups_native.py",
     "tests/test_iope_workflow_native.py",
 )
+
+
+# These pins describe the retained execution, not the current implementation.
+HISTORICAL_RECEIPT_SHA256 = "24bf05104e7479db8f32a82bbedbfb8c7228bea23285691a92d9d75b61750b9f"
+HISTORICAL_IMPLEMENTATION_SHA256 = {
+    "src/cbus_toolkit/iope_scene_levels.py": "deae0560cf158bc0c7f8b52ce8e95fbf49dc566e6e595d9abe8342ec8bbcf6d8",
+    "src/cbus_toolkit/iope_scene_selectors.py": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a",
+    "src/cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+    "src/cbus_toolkit/din_output_settings.py": "55025c2b874a855cf552a915e7c78ef2b6d7fe82a9c0b9af4bd361453d20fc4c",
+    "tests/test_iope_scene_levels_native.py": "b0f6ac8c07107f7dbbccec22d23406d7c50ab02c8eebeab415a1cdd9fa7274f2",
+    "tests/test_iope_join_groups_native.py": "17a3b1e58b1f01cda4e4c7a2434361e613f5c28c82c0053f79cec4d151435e64",
+    "tests/test_iope_workflow_native.py": "db5b937d6216f5aa52b4f753dbba8374066d03a8efa71a6126536a452fec5881",
+}
 
 
 def implementation_hashes():
@@ -237,9 +255,14 @@ class IopeSceneLevelsNativeTest(unittest.TestCase):
 
 
 class IopeSceneLevelsNativeReceiptTest(unittest.TestCase):
-    def test_receipt_binds_profiles_raw_images_and_implementation(self):
-        report = json.loads((ROOT / "research/fixtures/iope-scene-levels-native-acceptance.json").read_text())
-        self.assertTrue(report["passed"]); self.assertEqual(report["implementation_sha256"], {n: sha256(ROOT / n) for n in IMPLEMENTATION_FILES})
+    """Archive integrity only; current native applicability is not asserted."""
+
+    def test_historical_receipt_binds_profiles_raw_images_and_recorded_implementation(self):
+        retained = (ROOT / "research/fixtures/iope-scene-levels-native-acceptance.json").read_bytes()
+        self.assertEqual(hashlib.sha256(retained).hexdigest(), HISTORICAL_RECEIPT_SHA256)
+        report = json.loads(retained.decode("utf-8"))
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["implementation_sha256"], HISTORICAL_IMPLEMENTATION_SHA256)
         for flag in ("physical_hardware_verified", "original_toolkit_form_executed", "whole_scene_manager_save_executed"):
             self.assertFalse(report[flag])
         self.assertEqual({(r["unit_type"], r["catalog_number"], r["firmware"]) for r in report["profiles"]},
