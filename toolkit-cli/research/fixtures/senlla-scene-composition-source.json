@@ -31,6 +31,14 @@
     {
       "name": "complete-macro-registry-derived.json",
       "sha256": "6227d48edde3c1219e105b7c7206a461b4adaef5502d93c1e1eba12d08d46eda"
+    },
+    {
+      "name": "senlla-scene-parent-update-corrective-vectors.json",
+      "sha256": "0fad4c1e4f8c36336c9fe5c0181320444070b2c1aafef0f3e30619fd36b1fcf8"
+    },
+    {
+      "name": "senlla-fresh-template-counter-correction-derived.json",
+      "sha256": "84799fd3211ca4247d5321d8e6696a629cca7117c5a236e54c54cd0adef67595"
     }
   ],
   "scene_serializer_route": {
@@ -139,7 +147,7 @@
   },
   "qualified_numeric_literals": [
     {
-      "name": "secondary_invoke_transient_state_loses_scene_template",
+      "name": "secondary_unassociated_invoke_preserved_by_parent_key_update",
       "before": {
         "secondary_block_mask": 1,
         "BlockAllocation": [
@@ -276,7 +284,7 @@
           255
         ],
         "SceneKeySelector": [
-          0,
+          1,
           0,
           0,
           0,
@@ -286,7 +294,7 @@
           0
         ],
         "JPCommand": [
-          13,
+          14,
           0,
           0,
           0,
@@ -296,7 +304,7 @@
           0
         ],
         "SRCommand": [
-          0,
+          4,
           0,
           0,
           0,
@@ -306,7 +314,7 @@
           0
         ],
         "LPCommand": [
-          0,
+          10,
           0,
           0,
           0,
@@ -316,7 +324,7 @@
           0
         ],
         "LRCommand": [
-          0,
+          5,
           0,
           0,
           0,
@@ -326,7 +334,7 @@
           0
         ],
         "IndicatorBlockAssignment": [
-          0,
+          7,
           0,
           0,
           0,
@@ -367,7 +375,7 @@
         ]
       },
       "key_template_types_after": [
-        0,
+        24,
         16,
         16,
         16,
@@ -377,19 +385,45 @@
         16
       ],
       "timeline": [
-        "fresh macro FunctionType0, key template nil, raw key0 allocation0",
-        "SceneRampFunction14; setter keytemplate24 enters Scene allocation",
-        "Add linear secondary block0 ->ApplicationState1",
-        "ApplicationState callback derives macro0 under MacroPin ->keytemplate0; no raw copy yet",
-        "force secondaryfalse ->state0; template remains0",
-        "outer unlocked template handler copies CURRENT template0 default group1 stages13/0/0/0",
-        "loader still sets Scene8, trigger165 and rate4; Invoke branch skips raw logical-indicator assignment",
-        "key before-save tests actual current type0: selector0 and logical indicator0"
+        "Template setter begins attribute manager parent key update: key depth0\u21921",
+        "Scene claim has no candidate because linear block0 is unassociated",
+        "AddBlock(0): key depth1\u21922\u21921; direct Secondary/PrimaryGroup refresh skipped",
+        "Force block0 Secondary=false; block callback skips updating key and group/direct PrimaryGroup refresh sees current primary0",
+        "Final linear indicator BlockNumber1; outer handler CURRENT template remains24",
+        "Invoke branch sets Scene8/trigger165/ramp4 and skips raw logical indicator assignment",
+        "Template setter parent EndUpdate depth1\u21920 emits generic key publication, with no deferred AddBlock refresh",
+        "Fresh subset contains24; normal key save uses selector1/Scene index7/14,4,10,5"
       ],
-      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization."
+      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization.",
+      "supersedes_source_literal": "secondary_invoke_transient_state_loses_scene_template",
+      "scope": "numeric key/application component through fresh function combo; before owning ST7 bank/scalar/fresh bank overlays; existing apps56/57, app202/control group/trigger; no swaps/collisions/missing objects",
+      "loaded_key0": {
+        "template": 24,
+        "macro_copy_template": 24,
+        "references": [
+          0
+        ],
+        "application_state": 0,
+        "indicator_block_number": 1,
+        "scene_index": 7,
+        "scene_trigger": 165,
+        "scene_ramp": 4
+      },
+      "fresh_key0": {
+        "template": 24,
+        "macro_copy_template": 24,
+        "references": [
+          0
+        ],
+        "application_state": 0,
+        "indicator_block_number": 1,
+        "scene_index": 7,
+        "scene_trigger": 165,
+        "scene_ramp": 4
+      }
     },
     {
-      "name": "secondary_modify_becomes_ordinary_raw_timer_template",
+      "name": "secondary_unassociated_modify_then_fresh_no_function",
       "before": {
         "secondary_block_mask": 1,
         "BlockAllocation": [
@@ -536,7 +570,7 @@
           0
         ],
         "JPCommand": [
-          11,
+          0,
           0,
           0,
           0,
@@ -546,7 +580,7 @@
           0
         ],
         "SRCommand": [
-          7,
+          0,
           0,
           0,
           0,
@@ -566,7 +600,7 @@
           0
         ],
         "LRCommand": [
-          7,
+          0,
           0,
           0,
           0,
@@ -586,7 +620,7 @@
           0
         ],
         "TimerHighByte": [
-          1,
+          0,
           0,
           0,
           0,
@@ -596,7 +630,7 @@
           0
         ],
         "TimerLowByte": [
-          44,
+          0,
           0,
           0,
           0,
@@ -606,7 +640,7 @@
           0
         ],
         "TimerExpiryCommand": [
-          15,
+          0,
           0,
           0,
           0,
@@ -617,7 +651,7 @@
         ]
       },
       "key_template_types_after": [
-        6,
+        16,
         16,
         16,
         16,
@@ -627,16 +661,51 @@
         16
       ],
       "timeline": [
-        "keytemplate25 enters Scene allocation",
-        "Add linear secondary block0 ->ApplicationState1",
-        "RefreshTemplate keeps25 and derives extension template0 under SceneRampPin",
-        "RefreshMacrofunctionFromKeySecondary sees state1 and Scene25 ->unlocked keytemplate16 and zeros",
-        "force primary ->state0; outer template handler copies current16 zeros",
-        "Modify loader loads raw11/7/0/7 under MacroPin then ordinary derivation chooses6",
-        "changed keytemplate6 defaults primary-block timer0->300seconds, nil expiry->15 before MacroPin guard",
-        "raw logical indicator assignment6 loaded after macro derivation; selector0/stages preserved on key save"
+        "Template25 setter holds parent key depth1",
+        "Unassociated Scene claim AddBlock direct refresh skipped, then Secondary=false before group refresh",
+        "CURRENT template remains25; Modify loader raw11,7,0,7 derives only Extension.SceneRampTemplate, not ordinary key6",
+        "Raw indicator6 loaded afterward as logical BlockNumber7",
+        "Fresh M8 function combo lacks25 and sets unlocked16; default group56 stages become0",
+        "Allocation/group and raw indicator6 remain; no ordinary6 Timer300/Expiry15 defaults",
+        "Normal key save uses selector0/indicator6/zero stages; raw timer and expiry0 retained"
       ],
-      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization."
+      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization.",
+      "supersedes_source_literal": "secondary_modify_becomes_ordinary_raw_timer_template",
+      "scope": "numeric key/application component through fresh function combo; before owning ST7 bank/scalar/fresh bank overlays; existing apps56/57, app202/control group/trigger; no swaps/collisions/missing objects",
+      "loaded_key0": {
+        "template": 25,
+        "references": [
+          0
+        ],
+        "application_state": 0,
+        "indicator_block_number": 7,
+        "scene_index": 0,
+        "raw_stages": [
+          11,
+          7,
+          0,
+          7
+        ],
+        "timer_seconds": 0,
+        "expiry_raw": 0
+      },
+      "fresh_key0": {
+        "template": 16,
+        "references": [
+          0
+        ],
+        "application_state": 0,
+        "indicator_block_number": 7,
+        "scene_index": 0,
+        "raw_stages": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "timer_seconds": 0,
+        "expiry_raw": 0
+      }
     },
     {
       "name": "later_scene_claim_relocates_already_loaded_ordinary_indicator",
@@ -1089,6 +1158,7 @@
   ],
   "owning_composition_requirements": [
     "Maintain shared application/group object identity and ordered key references through every load callback, swap and collision; replay nested callbacks before later source statements.",
+    "Propagate attribute BeginUpdate through its manager to the parent key/block before assignment; finish attribute Changed/dedicated AfterChange before manager/parent EndUpdate. Generic EndUpdate publication at depth zero is unconditional, including equal object-reference assignments. Equal Boolean assignments return immediately. Suppressed direct key refreshes are not deferred.",
     "Retain macro constructor type0 versus keytemplate nil and re-read CURRENT keytemplate after nested Scene claim callbacks; Scene24/25 cannot be finalized from initial selector alone.",
     "Track occupancy/bank/scalar histories at their actual load and fresh positions; final-state-only composition can miss defaults or retain incorrect smart flags.",
     "Use current SceneCollection numeric commands for enabled save; no fresh source Scene-manager edit was found, but an explicit future Scene edit requires owning source-controlled collection operations.",
@@ -1365,6 +1435,172 @@
       "address": "0x1217d60",
       "sha256": "fcc2025b40021f638c60bfa68e567f3bf5790de78dcb55cc6dc4fe5ab61ebcfa",
       "instruction_count": 385
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.BeginUpdate",
+      "address": "0x768268",
+      "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c",
+      "instruction_count": 9
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.Changed",
+      "address": "0x768278",
+      "sha256": "5a9c6a024e075c145d2f93358a03b7d4f84d50bd2c6f0dab270718df286b3167",
+      "instruction_count": 20
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.EndUpdate",
+      "address": "0x7682a4",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.GetUpdating",
+      "address": "0x7682c8",
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.Changed",
+      "address": "0x7eca04",
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6",
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "address": "0x7ec640",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.Changed",
+      "address": "0x7eaa10",
+      "sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "address": "0x7ece44",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "address": "0x7ece6c",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceList.Changed",
+      "address": "0x7f084c",
+      "sha256": "82a07e0263b1e3741b0aeaa3513cf0fdf7d941e72038b7095a6cd827f87c6d08",
+      "instruction_count": 48
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TAttributeManager.BeginUpdate",
+      "address": "0x7e7e10",
+      "sha256": "e2dc560bd6d6af1a5e027ce8feab28b9bc85e6bcb9b191338b707ea08aa91ffd",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TAttributeManager.EndUpdate",
+      "address": "0x7e7e78",
+      "sha256": "4bb2c13a0e0579f16406129064d37d8a43266fe93a5571ebd691265c03805ad7",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.Changed",
+      "address": "0x76a3cc",
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8",
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject",
+      "address": "0x7ddbf4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "address": "0x7f45e0",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "instruction_count": 37
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.InternalCreate",
+      "address": "0x7ea4b4",
+      "sha256": "9e2c3a0fb06d81abdf0874ce4c8f98788d61eb03b5a471887e3e725423798e64",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.Create",
+      "address": "0x7ee09c",
+      "sha256": "31451f6d4004ffd86077e4e118334b6311265c82da01d4c5cdc21c18e126385b",
+      "instruction_count": 27
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.Changed",
+      "address": "0x7ee0ec",
+      "sha256": "3505e275d49d0a0a84bcdae1075b0a8fa965c212c55333a290311ffebef4584d",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.SetAttributeManager",
+      "address": "0x7ecd54",
+      "sha256": "6f8d04e9482282348295d461ccfa19218bd9e261549bc31e0223ec964264de56",
+      "instruction_count": 27
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+      "address": "0x7ec504",
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f",
+      "instruction_count": 68
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create",
+      "address": "0x7ddd50",
+      "sha256": "f6aa1c2bd83f816478674f8701c6278a8682d3380420eb6e43040c6ed8f8f19f",
+      "instruction_count": 56
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.InternalCreate",
+      "address": "0xd10cb8",
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad",
+      "instruction_count": 145
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.SetMacroFunctionTemplate",
+      "address": "0xd1171c",
+      "sha256": "9b8d8858816d9432b30aa4973a357213844d43094067eabf5686446a14f99cfb",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RemoveBlock",
+      "address": "0xd13594",
+      "sha256": "7311a70836388fc297326b3794956c2bf467d6ef6a46f69c122ad8f645bae749",
+      "instruction_count": 47
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshKeySecondaryFromBlockSecondary",
+      "address": "0xd12c94",
+      "sha256": "e340a91b36693c906cc4f0d24db98f365df72873eb2235f9af3d3c272216777b",
+      "instruction_count": 45
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.RefreshKeyIndicatorStateFromBlocks",
+      "address": "0xd08bbc",
+      "sha256": "9906883e6ca80f09c9bc191e09e322ebd83c3c0d6368fcb7d02fb3867265cf3c",
+      "instruction_count": 70
     }
-  ]
+  ],
+  "counter_correction": {
+    "superseded_input_sha256": "4bcf82fbe3043f0e17f84f2e4068a06218db8ab850e93dabad021e5c8b4ef7e2",
+    "reason": "Template attribute BeginUpdate increments its manager parent key before the dedicated callback. AddBlock returns to the still-updating key and skips its direct refresh; the updating-key scan also skips it. There is no deferred replay of that direct refresh.",
+    "corrected_literals": [
+      "secondary_unassociated_invoke_preserved_by_parent_key_update",
+      "secondary_unassociated_modify_then_fresh_no_function"
+    ],
+    "third_literal_independently_rechecked": true,
+    "historical_validation_receipts_unchanged": true
+  }
 }

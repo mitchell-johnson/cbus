@@ -1,7 +1,7 @@
 # SENLLA Scene and application composition source
 
 The [static composition handoff](../research/fixtures/senlla-scene-composition-source.json)
-pins 45 methods and the SENLLA virtual route. It records inherited load/save
+pins 71 methods and the SENLLA virtual route. It records inherited load/save
 order, three qualified key-component literals and two Scene-table boundaries.
 Independent source review reopened all method pins and traced the nested
 callbacks. These deductions do not implement the owning callback engine or
@@ -13,14 +13,23 @@ ST7 loads raw bank and occupancy state later, followed by surface overlays and
 fresh form initialization. Key templates therefore cannot be reconstructed
 from final bank stores as a substitute for the earlier load history.
 
-For an Invoke key on an initially secondary reserved block, an intermediate
-application-state callback can replace Scene template24 with ordinary template0
-before the outer unlocked handler copies its current template commands. In the
-qualified no-collision literal, the final commands are `[13, 0, 0, 0]` and the
-saved Scene selector is zero. A secondary Modify key follows a different path:
-its raw `[11, 7, 0, 7]` reload becomes ordinary template6, with timer 300 seconds
-and expiry command15. A later Scene claim may also remap an already-loaded
-ordinary key's indicator through an ordered block swap.
+The template attribute begins an update on its manager and parent key before
+running its dedicated callback. A nested AddBlock returns to a key that is
+still updating, so its direct refresh and the updating-key scan are suppressed.
+The eventual generic key notification does not replay those direct refreshes.
+In the qualified example with an initially secondary, unassociated reserved
+block, Invoke therefore retains template24, commands `[14, 4, 10, 5]`, Scene
+selector1 and saved Scene index7. Modify retains template25 during raw load;
+the fresh function list then selects template16, yielding zero commands and
+Scene selector0 while retaining raw indicator6. Its timer and expiry remain
+zero. A later Scene claim can still remap another, already-loaded ordinary
+key's indicator through an ordered block swap.
+
+These two examples correct the earlier 45-method fixture, whose deductions
+missed the template attribute's parent update. The fixture records the old
+hash and both independently derived correction receipts. Historical frozen
+checks retain their original inputs and counts. These examples cover the
+key/application component before later ST7, bank and scalar normalization.
 
 Normal CoreNeo save calls the same Scene-table and pointer serializers used by
 `native_sensor_scenes.scene_save_parameters`; those numeric routines have no

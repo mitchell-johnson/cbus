@@ -1,0 +1,543 @@
+{
+  "format": "cbus-senlla-lifecycle-source-v1",
+  "authority": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "scope": {
+    "internal_synchronous_lifecycle": true,
+    "state_one_managed_objects": true,
+    "balanced_update_calls": true,
+    "integer_domain": "signed32; field bounds are established by the owning constructor",
+    "automatic_unit_or_form_handlers": false,
+    "tracked_expression_dispatch": false,
+    "complete_93_parameter_save": false,
+    "original_instruction_execution": false,
+    "native_runtime_acceptance": false,
+    "physical_acceptance": false,
+    "stable_active_unfollowed_tracked_reference": true,
+    "general_expression_parser_or_controller": false
+  },
+  "dependencies": [
+    {
+      "name": "senlla-fresh-attribute-lifecycle-contract-derived.json",
+      "sha256": "36d8538bc14fe13b45f771a07290838a01d0a6034fa8d944892a5214f700736a"
+    },
+    {
+      "name": "senlla-fresh-tracked-reference-lifecycle-derived.json",
+      "sha256": "3414e8a7ccb53c7417580b9831462c07ac57dae81956a241e32ed9e7565564ad"
+    }
+  ],
+  "reference_vectors": [
+    {
+      "assigned": 2,
+      "before_candidate": 3,
+      "before_changed": true,
+      "dedicated_depths": [
+        0
+      ],
+      "old": 1,
+      "original_requested": 2
+    },
+    {
+      "assigned": 1,
+      "before_candidate": null,
+      "before_changed": false,
+      "dedicated_depths": [
+        0
+      ],
+      "old": 1,
+      "original_requested": 2
+    },
+    {
+      "assigned": null,
+      "before_changed": true,
+      "dedicated_depths": [
+        1,
+        0
+      ],
+      "old": 1,
+      "original_requested": null
+    },
+    {
+      "assigned": null,
+      "before_changed": false,
+      "dedicated_depths": [
+        0
+      ],
+      "old": null,
+      "original_requested": null
+    },
+    {
+      "assigned": null,
+      "before_changed": true,
+      "dedicated_depths": [
+        1,
+        0
+      ],
+      "old": null,
+      "original_requested": null
+    },
+    {
+      "assigned": 1,
+      "before_changed": false,
+      "dedicated_depths": [
+        0
+      ],
+      "old": 1,
+      "original_requested": 1
+    }
+  ],
+  "notification_order": [
+    "managed publisher if not updating/enabled/not already published",
+    "generic base OnChange at depth zero",
+    "attribute manager Changed if not updating/enabled",
+    "dedicated attribute AfterChange if enabled, including while updating",
+    "manager EndUpdate after attribute EndUpdate returns",
+    "parent EndUpdate after manager EndUpdate returns"
+  ],
+  "semantics": {
+    "object_reference_equality": "identity; equal default or cancelled writes still complete Begin/End",
+    "boolean_equality": "equal writes return before Begin/End",
+    "integer_before_change": "before range check/update, including equal writes; mutable proposed integer is honored",
+    "reference_before_change": "after Begin; changed flag honored, mutable proposed pointer ignored",
+    "nil_reset": "changed flag true and requested pointer nil cause dedicated callbacks at depths1 and0",
+    "recursive_reference_write": "own attribute updating prevents the setter",
+    "getter_rearm": "object-reference and Boolean AsBoolean resolve attribute and manager parent; Integer AsInteger is a direct raw read",
+    "managed_guard": "ResolveChange rearms; custom key/block Changed resolves before managed publication",
+    "subscriber_order": "registration is identity-unique; notify visits current indices descending from the captured upper index",
+    "final_callback_exception": "assigned value remains; own depth0 but manager and parent End are skipped",
+    "unbalanced_end": "internal owner guard refuses outside the balanced source domain",
+    "tracked_reference": "root publication reads CURRENT pointer; equal identity suppresses current event; changed identity replaces subscription before current event; direct target publication bypasses identity comparison and parent updating guard"
+  },
+  "source_pins": [
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.CurrentElementChanged",
+      "address": "0x84e590",
+      "sha256": "c8d33e8fc8303e8d9601155bf9068e2ef51516e7bb06579578137e8a7304afe8",
+      "instruction_count": 12
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.DoCurrentElementChanged",
+      "address": "0x84e5e8",
+      "sha256": "eb3aa5518f291213aa3df7d087c5053f501beec42283603b147899a9055884ab",
+      "instruction_count": 102
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.DoRootElementChanged",
+      "address": "0x84e7b0",
+      "sha256": "2863558d737c18291c1a917233ae216a1ab643174f5cf046a526bedf98fe641e",
+      "instruction_count": 29
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.RootElementChanged",
+      "address": "0x84eb7c",
+      "sha256": "ad3169bf4f1e16a6ecd1330ff1440e5e76c2bf1365dd40ee15354956d3ff0b83",
+      "instruction_count": 12
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.Update",
+      "address": "0x84ed88",
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce",
+      "instruction_count": 152
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.Changed",
+      "address": "0x768278",
+      "sha256": "5a9c6a024e075c145d2f93358a03b7d4f84d50bd2c6f0dab270718df286b3167",
+      "instruction_count": 20
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.GetValue",
+      "address": "0x7f44b0",
+      "sha256": "8fb79be79e011e868d402e7440be280cebd7688124cae2e66f337ac1fcd22888",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "address": "0x7f45e0",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "instruction_count": 37
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetValue",
+      "address": "0x7f4638",
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TAttributeManager.BeginUpdate",
+      "address": "0x7e7e10",
+      "sha256": "e2dc560bd6d6af1a5e027ce8feab28b9bc85e6bcb9b191338b707ea08aa91ffd",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TAttributeManager.EndUpdate",
+      "address": "0x7e7e78",
+      "sha256": "4bb2c13a0e0579f16406129064d37d8a43266fe93a5571ebd691265c03805ad7",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "address": "0x7ece44",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.Changed",
+      "address": "0x7eca04",
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6",
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "address": "0x7ece6c",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange",
+      "address": "0x7ecd00",
+      "sha256": "c45096cc2a19b8d46a39798914dd615f1109b0a0a7f09bd9ca781a917c35902a",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.Changed",
+      "address": "0x7eaa10",
+      "sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.CanDoChange",
+      "address": "0x7ec674",
+      "sha256": "284e058e22b7f42055defbb8c1338a58d6d7e9f097ecf5815b566e80312a8f2a",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "address": "0x7ec640",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.Changed",
+      "address": "0x7ee0ec",
+      "sha256": "3505e275d49d0a0a84bcdae1075b0a8fa965c212c55333a290311ffebef4584d",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange",
+      "address": "0x7ee114",
+      "sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashObjectReference.Clear",
+      "address": "0x7ed124",
+      "sha256": "14994304322c74e2cf02edafb88631853916bc57153d74619e04fdc6b1cb2481",
+      "instruction_count": 83
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashObjectReference.Reset",
+      "address": "0x7edcbc",
+      "sha256": "3254c064254ef977416dc0c9604d6e02aea4ab06ae949e85e7a8ec90878d5581",
+      "instruction_count": 19
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject",
+      "address": "0x7ed6d4",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740",
+      "instruction_count": 131
+    },
+    {
+      "method": "CIS_TCustomObjectAttribute.TCustomObjectAttribute.GetFlashObject",
+      "address": "0x7dd428",
+      "sha256": "ff7fb92ef86e2dd75acb2f7a72e46afee5d7f2bd22cb0868fc476fa0b6c6dd24",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TFlashLinkManager.TFlashLinkManager.AddObjectExpression",
+      "address": "0xf61740",
+      "sha256": "71110b6045d35c0613cb265888f9638c4cd5f3b88361c947d55030637d521459",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.AsInteger",
+      "address": "0x8506e4",
+      "sha256": "6ac044cd7922f8ff642324542856112d4148197cc964390728742d176024d915",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.GetValue",
+      "address": "0x850770",
+      "sha256": "83bcc34a858babe14f201fa6140ba33c6135efb02710925de20a5ef0d35f7301",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger",
+      "address": "0x8508d0",
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9",
+      "instruction_count": 117
+    },
+    {
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.SetValue",
+      "address": "0x850ac4",
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStatePublisher.Changed",
+      "address": "0x76a7c8",
+      "sha256": "3b1530e099d161fb94bb258ba8569259306efb12df64fcc1f9348d53b6bdd20d",
+      "instruction_count": 25
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStatePublisher.RegisterListner",
+      "address": "0x76a84c",
+      "sha256": "e18dbeb3e105b2c7b2f6aa1d7dc0d4f99ebdf2fb25d0432ef37fbbbad0407edc",
+      "instruction_count": 19
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscriber.DoSubscribe",
+      "address": "0x76a9b4",
+      "sha256": "06060441c9dc5444dfdbd62c476a515868616788f93255a2ae3ef7cda4347c74",
+      "instruction_count": 20
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscriber.ObservedObjectChanged",
+      "address": "0x76aa10",
+      "sha256": "f77d565488bcb7fa0d21e3528e754479da6d1824244b570f956e9f39bb882faf",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscription.ObservedObjectChanged",
+      "address": "0x76abe8",
+      "sha256": "5ece8d1206ad3a57e355e83166509b03b650cf39b869ac248f1bcc6613be4dcf",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscription.RegisterObject",
+      "address": "0x76ab20",
+      "sha256": "e163fd572fabc3de0e39f105647683769864de0b769bef48e222eee4dca6b8d4",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscription.SetObservedObject",
+      "address": "0x76ab44",
+      "sha256": "7085ca9cc04d8d45b89208ae81f92d4ccbba1f3a09c0abe15e0b2921363d0abc",
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.Changed",
+      "address": "0x76a3cc",
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8",
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.DoChangeNotification",
+      "address": "0x76a488",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "instruction_count": 8
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "address": "0x76a444",
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.GetFlashObject",
+      "address": "0x7dda60",
+      "sha256": "cdb226eb2d648c9ad545517953de1fd5f5f4fb017d04a87dab1d248fb0a4042c",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate",
+      "address": "0x7ddab0",
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ObjectChanged",
+      "address": "0x7ddb94",
+      "sha256": "defb321f13691804f565bf1516e77eb5e4d9301f30e71ca2b010ad663a03a02a",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceChanged",
+      "address": "0x7ddbb8",
+      "sha256": "90ad6ac5ea0469f6ec435659b4f33bf047f2aa16066b8a9ca6ca485377674e35",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceReset",
+      "address": "0x7ddbdc",
+      "sha256": "4589079c7e5ff1c36ce256dd8cf7ec5c193d6d71a716f6a0df762f0c2af3e60b",
+      "instruction_count": 12
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject",
+      "address": "0x7ddbf4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TSubscriber.TSubscriber.Subscribe",
+      "address": "0x768cc4",
+      "sha256": "cfa0937ea6133cb9fb47ef04018acfb7fa9f64a5e94508d30430eadd1e317b04",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TddKeyBASE.TddKeyBASE.CBusUnitInputKeyFunctionChanged",
+      "address": "0xf6effc",
+      "sha256": "09b745e023559cd8974e83114951fb7363a7f22afb0d8de0f7f6ece4bc1ba85e",
+      "instruction_count": 88
+    },
+    {
+      "method": "CIS_TddKeyBASE.TddKeyBASE.SetupFlashHooks",
+      "address": "0xf6ea58",
+      "sha256": "5c480861a250383b45b0cc15ca1542b361b2878177965674130880b039d6e84e",
+      "instruction_count": 69
+    },
+    {
+      "method": "CIS_TddKeyM8.TddKeyM8.Initialise",
+      "address": "0xf94544",
+      "sha256": "df3e63ada09689bd67a795f574771ac127a7e1f6df5298cd839e96e9d672a770",
+      "instruction_count": 347
+    },
+    {
+      "method": "CIS_TddNeoBASE.TddNeoBASE.SetupFlashHooks",
+      "address": "0xf93bd8",
+      "sha256": "1b20f29416172c6999ae2198bcd44985f6bd829a9768b7efd55585a0c9b784a7",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.BeginUpdate",
+      "address": "0x768268",
+      "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c",
+      "instruction_count": 9
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.EndUpdate",
+      "address": "0x7682a4",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TBaseObject.TBASEObject.GetUpdating",
+      "address": "0x7682c8",
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean",
+      "address": "0x7f43d8",
+      "sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.DoChangeNotification",
+      "address": "0x7eade4",
+      "sha256": "0a3010193f71c37b59579c1d8c647ebc77e439fff8b241bc5e1fe989efa45957",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_Handles.TFlashExpression.Evaluate",
+      "address": "0x84cc6c",
+      "sha256": "399f61dd31f5955ee80d2faf8ca10042f06817c456961c456c99f8560c1e820d",
+      "instruction_count": 83
+    },
+    {
+      "method": "CIS_Handles.TFlashExpression.SetEvaluationMode",
+      "address": "0x84ce58",
+      "sha256": "3d2186c533563329bbec2d8762ee382ddb1597fed6c289fa5faccf7eae0977d3",
+      "instruction_count": 18
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.Changed",
+      "address": "0x84d824",
+      "sha256": "58e08f90ef77c3b2cb390bb40b29a6bcbd333e6da9bd7c6d849884ccf0aa8638",
+      "instruction_count": 58
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.ExpressionElementChanged",
+      "address": "0x84da84",
+      "sha256": "77d85563d9723d7dfe71ebbc71e5fd29afcbb21b464a7cd7e25d32c0788d7ea4",
+      "instruction_count": 75
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.SetActive",
+      "address": "0x84de00",
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_Handles.TFlashHandle.Create",
+      "address": "0x84fbe8",
+      "sha256": "9d1d363cac88e2b201e999ff52d589a47b1a17de0d32816ad5e26c33385ff0d2",
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.Create",
+      "address": "0x84e434",
+      "sha256": "b9be2de0b848e23753c250146d813082e1a424443d1963765ad019d5e779abd8",
+      "instruction_count": 72
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.GetCurrentElement",
+      "address": "0x84e898",
+      "sha256": "8d398b3cc5eb75bc3fc1236252f5b7ad304908c02c125d9fc0ec45e8a57f3f1c",
+      "instruction_count": 23
+    },
+    {
+      "method": "CIS_Handles.TFlashTrackedHandle.SetRootElement",
+      "address": "0x84ed10",
+      "sha256": "77f983ddc462d965cdc08ea0ab6b15f4e38d41a34e5da04870e0f4db7ccaa987",
+      "instruction_count": 42
+    },
+    {
+      "method": "CIS_TManagedFlashObject.TFlashElementStateSubscriber.SetObservedObject",
+      "address": "0x76a97c",
+      "sha256": "ee54ab76efcd2f4ea5752fbef51cdb6c88748372448af79c23055e9c9bfcb849",
+      "instruction_count": 22
+    }
+  ],
+  "tracked_reference_vectors": [
+    {
+      "current": 1,
+      "handler_count": 1,
+      "prior": null,
+      "route": "root_update"
+    },
+    {
+      "current": 1,
+      "handler_count": 0,
+      "prior": 1,
+      "route": "root_update"
+    },
+    {
+      "current": 2,
+      "handler_count": 1,
+      "prior": 1,
+      "route": "root_update"
+    },
+    {
+      "current": null,
+      "handler_count": 1,
+      "prior": 1,
+      "route": "root_update"
+    },
+    {
+      "current": null,
+      "handler_count": 0,
+      "prior": null,
+      "route": "root_update"
+    },
+    {
+      "current": 1,
+      "handler_count": 1,
+      "prior": 1,
+      "route": "direct_current_target_changed"
+    }
+  ]
+}

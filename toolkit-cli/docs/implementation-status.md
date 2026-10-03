@@ -2,6 +2,14 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA Scene composition evidence](senlla-scene-composition.md) corrects
+two earlier examples after independent tracing of the template attribute's
+parent key update. Invoke retains Scene template24; Modify retains25 during
+raw load before the fresh list selects16. Suppressed direct refreshes are not
+replayed by the generic key notification. The 71-method fixture records the
+correction and preserves historical check receipts. The complete owning
+event engine and public save remain under development.
+
 The [SENLLA owning-dependency source check](../research/fixtures/senlla-owner-dependency-source-check-20261004.json)
 adds the fresh bank graph, observed-block versus owned-lux notification
 paths and direct key-reference occupancy refresh. Reference/maintenance
