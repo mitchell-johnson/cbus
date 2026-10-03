@@ -127,7 +127,7 @@ QUICK_STATUS_OPTION_NAMES = (
 PAGE_CONTROL_OPTION_NAMES = ('group',)
 MRA_COMMON_OPTION_NAMES = (
     'page', 'position', 'variant', 'multiplexer', 'zone', 'page_mode',
-    'label_text', 'label_index', 'on_icon',
+    'label_text', 'label_index', 'on_icon', 'mra_controls',
 )
 MRA_ZONE_OPTION_NAMES = MRA_COMMON_OPTION_NAMES + (
     'key_mode', 'ramp_seconds', 'status_type', 'status_text', 'status_index',
@@ -349,6 +349,10 @@ def _operation(value, *, allow_add_dialog=False):
     if operation == 'scene' and 'scene_controls' in value:
         from .edlt_scene_widget_controls import normalize_controls
         value = {**value, 'scene_controls': normalize_controls(value['scene_controls'])}
+    if operation in MRA_WIDGET_TYPES and 'mra_controls' in value:
+        from .edlt_mra_controls import normalize_mra_controls
+        value = {**value, 'mra_controls': normalize_mra_controls(
+            value['mra_controls'], family=operation)}
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -517,6 +521,7 @@ class ParentTransactionPlan:
     lighting_label_bindings: tuple = ()
     app_group_label_bindings: tuple = ()
     scene_widget_bindings: tuple = ()
+    mra_control_bindings: tuple = ()
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'after_controls', 'before_save',
@@ -543,6 +548,7 @@ class ParentTransactionPlan:
             'lighting_label_bindings': [value.as_dict() for value in self.lighting_label_bindings],
             'app_group_label_bindings': [value.as_dict() for value in self.app_group_label_bindings],
             'scene_widget_bindings': [value.as_dict() for value in self.scene_widget_bindings],
+            'mra_control_bindings': [value.as_dict() for value in self.mra_control_bindings],
             'initial_dialog_show_normalizations': [
                 {'parameter': name, 'before': list(self.expected[name]), 'after': [255],
                  'fact': 'absent in the complete inventory before dialog operations'}
@@ -747,7 +753,7 @@ class EdltParentTransaction:
     @retained_history
     def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
              _dialog_missing_by_operation=(), _lighting_label_bindings=(),
-             _app_group_label_bindings=(), _scene_widget_bindings=()):
+             _app_group_label_bindings=(), _scene_widget_bindings=(), _mra_control_bindings=()):
         operations = normalize_operations(operations)
         from .edlt_lighting_label_controls import LightingLabelBinding
         expected_label_operations = tuple(number for number, row in enumerate(operations, 1)
@@ -761,11 +767,15 @@ class EdltParentTransaction:
             if row['op'] in APP_GROUP_FAMILIES and 'label_controls' in row)
         expected_scene_operations = tuple(number for number, row in enumerate(operations, 1)
             if row['op'] == 'scene' and 'scene_controls' in row)
+        expected_mra_operations = tuple(number for number, row in enumerate(operations, 1)
+            if row['op'] in MRA_WIDGET_TYPES and 'mra_controls' in row)
         for bindings, expected, module, class_name, label in (
                 (_app_group_label_bindings, expected_app_group_operations,
                  'edlt_app_group_label_controls', 'AppGroupLabelBinding', 'AppGroup label_controls'),
                 (_scene_widget_bindings, expected_scene_operations,
-                 'edlt_scene_widget_controls', 'SceneWidgetBinding', 'Scene scene_controls')):
+                 'edlt_scene_widget_controls', 'SceneWidgetBinding', 'Scene scene_controls'),
+                (_mra_control_bindings, expected_mra_operations,
+                 'edlt_mra_controls', 'MRAControlBinding', 'MRA mra_controls')):
             if type(bindings) is not tuple:
                 raise EdltError(label + ' require ordered owner-issued bindings')
             if not expected and not bindings:
@@ -777,6 +787,7 @@ class EdltParentTransaction:
                 raise EdltError(label + ' require one owner-issued binding per ordered operation')
         app_group_bindings = {value.operation_number: value for value in _app_group_label_bindings}
         scene_bindings = {value.operation_number: value for value in _scene_widget_bindings}
+        mra_bindings = {value.operation_number: value for value in _mra_control_bindings}
         if (type(_dialog_initial_missing) is not tuple
                 or any(type(name) is not str or name not in _SETTING_FIELDS['corridor'][:3]
                        for name in _dialog_initial_missing)
@@ -891,10 +902,15 @@ class EdltParentTransaction:
         setting_panels = set()
         metadata_dependencies = []
         validation_placement_projections = 0
-        mra_globals = None
+        mra_control_profile = bool(expected_mra_operations)
+        mra_context = None
+        if mra_control_profile:
+            from .edlt_mra_parent_controls import initial_global_context
+            mra_context = initial_global_context(planning_values)
+        mra_globals = None if mra_context is None else mra_context[:2]
         mra_global_owners = {}
-        mra_source_widget = None
-        mra_source_captured = False
+        mra_source_widget = None if mra_context is None else mra_context[2]
+        mra_source_captured = mra_context is not None
         mra_operations = 0
         scene_manager_composition = None
         scene_manager_seen = False
@@ -1180,7 +1196,13 @@ class EdltParentTransaction:
                 editor = widget_editors.get(kind) or self._editor(kind)
                 label_controls = options.pop('label_controls', None)
                 scene_controls = options.pop('scene_controls', None)
-                if is_mra:
+                mra_controls = options.pop('mra_controls', None)
+                mra_base_receipt = None
+                if is_mra and mra_control_profile:
+                    from .edlt_mra_parent_controls import plan_control_base
+                    widget_plan, mra_base_receipt = plan_control_base(editor, planning_values,
+                        kind=kind, options=options, controls=mra_controls or (), global_context=mra_context)
+                elif is_mra:
                     widget_plan = editor.plan(
                         planning_values, kind=kind,
                         _parent_composition=True, **options)
@@ -1213,6 +1235,12 @@ class EdltParentTransaction:
                     widget_plan = refresh_scene_references(editor, widget_plan, control_record,
                                                           {**projected, **control_changes})
                     widget_plan = replace(widget_plan, changes={**widget_plan.changes, **control_changes})
+                mra_control_receipt = None
+                if mra_controls is not None:
+                    from .edlt_mra_parent_controls import project_owned_controls
+                    widget_plan, mra_control_receipt = project_owned_controls(
+                        self, mra_bindings[number], operation,
+                        {**widget_plan.expected, **widget_plan.changes}, widget_plan)
                 widget = widget_plan.widget
                 if widget in slots:
                     raise EdltError(
@@ -1307,11 +1335,14 @@ class EdltParentTransaction:
                 for parameter in (*allocations, *extra_fields):
                     planning_values[parameter] = control_values[parameter]
                 if is_mra:
-                    planning_values.update(widget_plan.propagation.changes)
+                    if not mra_control_profile:
+                        planning_values.update(widget_plan.propagation.changes)
                     mra_globals = (
                         widget_plan.propagation.multiplexer,
                         widget_plan.propagation.zone,
                     )
+                    if mra_control_profile:
+                        mra_context = (*mra_globals, mra_context[2])
                     if not mra_source_captured:
                         mra_source_widget = widget_plan.propagation.source_widget
                         mra_source_captured = True
@@ -1323,6 +1354,9 @@ class EdltParentTransaction:
                     document['label_controls'] = label_control_receipt
                 if scene_control_receipt is not None:
                     document['scene_controls'] = scene_control_receipt
+                if mra_control_receipt is not None:
+                    document['mra_controls'] = mra_control_receipt
+                    document['mra_control_base'] = mra_base_receipt
                 panel_binding = {
                     'selection_order': [
                         'ShowWidget', 'BaseWidget.SetWidgetData',
@@ -1331,7 +1365,7 @@ class EdltParentTransaction:
                         'ResetBindings(false)',
                     ],
                     'source': PANEL_BINDING_SOURCES[kind],
-                    'standalone_dependency_validation_reused': True,
+                    'standalone_dependency_validation_reused': not (is_mra and mra_control_profile),
                 }
                 if is_mra:
                     panel_binding[
@@ -1358,13 +1392,19 @@ class EdltParentTransaction:
                             f'for {component}: '
                             f'{mra_global_owners[component]} and {owner}')
                     mra_global_owners[component] = owner
-                global_plan = self._editor(kind).plan_globals(
-                    planning_values, _parent_composition=True, **options)
-                planning_values.update(global_plan.propagation.changes)
+                if mra_control_profile:
+                    from .edlt_mra_parent_controls import plan_control_globals
+                    global_plan = plan_control_globals(self._editor(kind), planning_values, options, mra_context)
+                else:
+                    global_plan = self._editor(kind).plan_globals(
+                        planning_values, _parent_composition=True, **options)
+                    planning_values.update(global_plan.propagation.changes)
                 mra_globals = (
                     global_plan.propagation.multiplexer,
                     global_plan.propagation.zone,
                 )
+                if mra_control_profile:
+                    mra_context = (*mra_globals, mra_context[2])
                 if not mra_source_captured:
                     mra_source_widget = global_plan.propagation.source_widget
                     mra_source_captured = True
@@ -1387,7 +1427,7 @@ class EdltParentTransaction:
                     ],
                     'parent_panel_binding': {
                         'source': PANEL_BINDING_SOURCES[kind],
-                        'standalone_dependency_validation_reused': True,
+                        'standalone_dependency_validation_reused': not mra_control_profile,
                         'original_mra_multi_edit_order_verified': False,
                     },
                     'standalone_changes_applied_directly': False,
@@ -1878,7 +1918,7 @@ class EdltParentTransaction:
             initial_scene_manager_cache, operations, tuple(results),
             _json(evidence), _dialog_initial_missing,
             _dialog_missing_by_operation, _lighting_label_bindings,
-            _app_group_label_bindings, _scene_widget_bindings)
+            _app_group_label_bindings, _scene_widget_bindings, _mra_control_bindings)
 
     @staticmethod
     def _interrupted(error, plan, attempted, original_error=None):
@@ -1912,7 +1952,8 @@ class EdltParentTransaction:
                 _dialog_missing_by_operation=plan.dialog_missing_by_operation,
                 _lighting_label_bindings=plan.lighting_label_bindings,
                 _app_group_label_bindings=plan.app_group_label_bindings,
-                _scene_widget_bindings=plan.scene_widget_bindings)
+                _scene_widget_bindings=plan.scene_widget_bindings,
+                _mra_control_bindings=plan.mra_control_bindings)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):

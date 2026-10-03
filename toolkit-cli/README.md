@@ -29,6 +29,11 @@ Programming, use `edlt global-plan --project-xml FILE --unit PATH` offline or
 `cgate edlt-global --auto-metadata --source-database PATH` online, with SHA-bound
 image inputs where needed. Read [automatic source metadata](docs/edlt-global-image-metadata.md);
 destination preservation and category copying remain database operations.
+Zone Control, Source Select and Source Control accept ordered `mra_controls`
+inside the same owning parent. The [MRA callback guide](docs/edlt-mra-controls.md)
+covers finite binding choices, retained static names, hidden status fields and
+explicit Zone macro getter repair. Existing Reset initialization bounds and
+original host/rendering/audio-hardware gaps remain unchanged.
 
 For a declared source/obligation bundle, use
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR` to
@@ -1379,6 +1384,17 @@ required normalization. Source and zone numbers use the original UI's
 one-based numbering. The plans report text allocations, changes to sibling
 widgets and hidden-field restrictions. These commands configure eDLT widgets;
 audio hardware control is separate. See [edlt-mra.md](docs/edlt-mra.md).
+
+For explicit panel callbacks, put `mra_controls` on the parent operation
+`zone-control`, `source-select` or `source-control`; use the existing offline
+`edlt parent-transaction-plan` or database `edlt-parent-transaction` commands.
+Unlike the ordinary 1–7 source arguments above, Select callback source values
+are raw 0–6. Offered status writes retain the upper MRA bits and old text index;
+`get-view` is read only, while `get-zone-macro` explicitly repairs an invalid
+Zone macro pair. Pending text refuses save and Enter means the Enter key.
+Read [callback schemas and boundaries](docs/edlt-mra-controls.md).
+These callbacks do not widen Reset's initial navigation/widget-type profile;
+see [Reset initialization](docs/edlt-reset.md).
 
 General settings configure key timing, the status-report interval, tools-page
 access and power-restore mode:

@@ -1,0 +1,16 @@
+{
+  "format": "cbus-edlt-mra-control-provenance-v1",
+  "frozen_literal_sha256": "f17410679657f3ad00df6761a9283891370fde727c88c97844e98fb5de297a67",
+  "form_binding_phase": "activation-context-only-not-declaration-or-callback-order",
+  "form_binding_phase_explanation": "Property binding declarations are created in InitializeComponent during construction. Their frozen SetUpDataSource nesting denotes activation context only; actual SetUpDataSource runs base setup, panel DataSource assignment and ResetBindings(false).",
+  "enter_means": "Enter key; never focus Enter",
+  "finite_identity_spelling": "Additive proposed API grammar; abstract frozen vector aliases translated without changing values/bytes.",
+  "used_reference_roster": "Source HashSet; no enumeration-order claim.",
+  "whitespace180e": "Input-only pending is valid. Explicit blank commit remains refused without original host Unicode table.",
+  "source_assignment_intents_are_transport_write_counts": false,
+  "original_instructions_executed": false,
+  "framework_instructions_executed": false,
+  "native_original_acceptance": false,
+  "hardware_acceptance": false,
+  "whole_parent_acceptance_claimed": false
+}

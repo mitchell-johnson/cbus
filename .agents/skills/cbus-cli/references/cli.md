@@ -656,6 +656,21 @@ Use the complete schema in `toolkit-cli/docs/edlt-label-controls-images.md`.
 Keep pending text out of SAVE and never import a JSON receipt as continuation.
 
 
+## Explicit MRA parent callbacks
+
+Use `mra_controls` inside the existing parent operation `zone-control`,
+`source-select` or `source-control`, with automatic project metadata issuing
+the exact owner/record/full64-Names binding. See
+`toolkit-cli/docs/edlt-mra-controls.md` for flat callback fields and finite IDs.
+Select callback sources use raw0..6; ordinary source arguments remain1..7.
+`get-view` is read only and Zone `get-zone-macro` invokes the mutating getter.
+Status choices preserve upper bits and the old index; hidden Select status
+remains a static reference. Enter means Enter-key, pending text refuses save,
+and icon Index writes require causal UseBigIcon without implying a modal
+chooser result. Preserve the existing Reset initial-profile guards and
+never replay an uncertain PP/project save. Original host scheduling and
+physical/rendering acceptance remain open.
+
 ## Explicit widget adapters and image-aware bulk copying
 
 For ordered Enable, Timer, Shutter, MultiLevel, Fan, Room Courtesy or Scene edits,

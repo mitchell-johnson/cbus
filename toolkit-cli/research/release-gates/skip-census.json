@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 712,
-    "modules_without_skip_sites": 399,
-    "modules_with_skip_sites": 313,
+    "test_modules": 716,
+    "modules_without_skip_sites": 402,
+    "modules_with_skip_sites": 314,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 37,
+      "unclassified": 38,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 153
+      "none": 154
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -4820,6 +4820,41 @@
           "tests": [
             "NativeMRAWidgetTests::test_original_full_pp_raw_bytes_crc_globals_and_save_reload",
             "OriginalMRAWidgetTests::test_original_model_ui_and_independent_record_vectors"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_mra_control_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_mra_control_static.py::MRAStaticEvidenceTests::test_static_only_pinned_regeneration",
+          "kind": "body.call",
+          "condition": "not vendor",
+          "reason": "Explicit private pinned MRA static source is not configured",
+          "environment": [
+            "CBUS_MRA_CONTROL_STATIC_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "MRAStaticEvidenceTests::test_static_only_pinned_regeneration"
           ]
         }
       ]
