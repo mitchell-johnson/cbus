@@ -29,6 +29,9 @@ checks with the ordinary key and retained
 surface components pass 44 parents and 310 separate subtests, with no skips.
 The 256-byte-domain loop is one parent test. Original instructions, forms,
 vendor services and hardware do not execute in these checks.
+The [frozen source-check receipt](../research/fixtures/senlla-bank-transition-source-check-20261004.json)
+binds all 4,034 tracked inputs to the tested commit and records the exact
+selection. The receipt and this link are post-validation annotations.
 
 This internal component is part of the ordinary-save foundation. Key reference
 ordering after application collisions, occupancy and maintenance event scans,
