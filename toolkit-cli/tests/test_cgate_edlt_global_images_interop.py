@@ -307,8 +307,13 @@ def test_public_global_lost_first_target_save_stops_without_replay(backend, vari
     with journey(backend, variable, tmp_path) as (owner, _relay, evidence, argv, source, vectors, endpoint):
         before = snapshot(owner, source['project'])
         with FaultGate(endpoint, 'PP SAVE_TO_SOURCE', 'drop') as fault:
-            result, call = invoke(fault, evidence, [*argv, '--category', 'general', '--backup-project', 'GLOST'],
-                                  expected=1, complete=False)
+            try:
+                result, call = invoke(fault, evidence, [*argv, '--category', 'general', '--backup-project', 'GLOST'],
+                                      expected=1, complete=False)
+            finally:
+                # Preserve backend-versus-forwarded bytes even if pre-save
+                # transport fails before the selected fault is reached.
+                evidence['lost_save_wires'] = fault.evidence()
             assert fault.matches == 1
             assert_lost_successful_save(fault)
             assert sum(command.startswith('PP SAVE_TO_SOURCE ') for command in call['commands']) == 1
@@ -317,7 +322,6 @@ def test_public_global_lost_first_target_save_stops_without_replay(backend, vari
                                                'PROJECT CLOSE ', 'DBSET', 'DBDELETE'))
                            for command in call['commands'][saved + 1:])
             assert result['edlt_global_programming_evidence']['automatic_retries'] == 0
-            evidence['lost_save_wires'] = fault.evidence()
         after = snapshot(owner, source['project'])
         general = next(case for case in vectors['masks'] if case['categories'] == ['general'])
         preservation(before, after, (source['targets'][0]['path'],), dict(general['ordered_payload']))

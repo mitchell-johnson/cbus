@@ -119,8 +119,10 @@ def owned_backend(kind, binary, work, *, state_path=None, auth_file=None, extra_
             assert endpoint is not None, logs
             lsof = shutil.which("lsof")
             assert lsof is not None, "Owned listener verification requires lsof"
+            # Sandbox mount-stat warnings are unrelated to TCP ownership.
+            # Suppress those warnings while retaining strict exit/PID/listener checks.
             listing = subprocess.run(
-                [lsof, "-nP", "-a", "-p", str(process.pid), "-iTCP", "-sTCP:LISTEN", "-Fpn"],
+                [lsof, "-w", "-nP", "-a", "-p", str(process.pid), "-iTCP", "-sTCP:LISTEN", "-Fpn"],
                 text=True, capture_output=True, timeout=5,
             )
             assert listing.returncode == 0 and not listing.stderr, listing

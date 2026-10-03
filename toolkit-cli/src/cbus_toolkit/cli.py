@@ -1870,6 +1870,8 @@ def build_parser():
             p.add_argument("--project", help=_DATABASE_PROJECT_HELP)
         if action == "get-xml":
             p.add_argument("--output", type=Path, help="Write raw native XML to a new local file")
+            p.add_argument("--max-xml-bytes", type=int,
+                           help="Explicit export byte bound, 1..134217728; requires --output; server limits still apply")
         if action == "set":
             p.add_argument("value")
         if action == "add":
@@ -2917,6 +2919,10 @@ def _cgate(args):
     database_xml_document = None
     database_xml_sha256 = None
     database_project = None
+    export_connection_limits = {}
+    if args.action == "database" and args.remote_action == "get-xml":
+        from .large_xml_export import limits as xml_export_limits
+        export_connection_limits = xml_export_limits(args)
     file_upload_plan = None
     barcode_plan = None
     tweaker_plan = None
@@ -2978,6 +2984,7 @@ def _cgate(args):
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action in ("edlt-labels", "edlt-project-images") or large_xml else {}
     connection_limits.update(wireless_limits)
+    connection_limits.update(export_connection_limits)
     with tweaker_lifecycle_guard, tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "file-upload":
@@ -3075,6 +3082,8 @@ def _cgate(args):
                 result = db.get(args.path, xml=args.remote_action == "get-xml")
                 if args.remote_action == "get-xml" and args.output is not None:
                     raw = xml_text(result).encode("utf-8")
+                    from .large_xml_export import verify_size
+                    verify_size(raw, getattr(args, "max_xml_bytes", None))
                     _write_cgate_xml_export(args.output, raw)
                     result = {"format": "cbus-cgate-dbgetxml-export-v1", "path": args.path,
                               "file": str(args.output), "bytes": len(raw),

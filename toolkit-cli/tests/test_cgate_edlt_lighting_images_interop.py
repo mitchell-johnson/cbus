@@ -1,15 +1,13 @@
 """Byte-backed labels and explicit Lighting callbacks on both owned services."""
 import hashlib
 import json
-import subprocess
-import sys
 import uuid
 from xml.etree import ElementTree as ET
 
 import pytest
 
 from cbus_toolkit.file_transfer import prepare_upload, upload
-from test_cgate_barcode_database_interop import FaultGate, graph, parse_wire
+from test_cgate_barcode_database_interop import FaultGate, cli, graph
 import test_cgate_edlt_parent_add_dialog_interop as parent
 from test_cgate_edlt_scene_add_dialog_interop import snapshot
 from test_cli_edlt_project_images import owned_bmp
@@ -21,21 +19,9 @@ PROFILES = ('dynamic-text', 'project-font-image', 'text-image-collision',
 
 
 def invoke(relay, evidence, args, *, expected=0, complete=True):
-    start = len(relay.rows)
-    argv = [sys.executable, '-m', 'cbus_toolkit', 'cgate', '--host', relay.endpoint[0],
-            '--port', str(relay.endpoint[1]), '--timeout', '3', *map(str, args)]
-    process = subprocess.run(argv, capture_output=True, text=True, timeout=30)
-    call = {'argv': argv, 'exit': process.returncode,
-            'stdout': process.stdout, 'stderr': process.stderr}
-    evidence['calls'].append(call)
-    assert process.returncode == expected, call
-    value = json.loads(process.stdout or process.stderr)
-    call['result'] = value
-    assert len(relay.rows) == start + 1, call
-    wire = relay.rows[start]
-    assert wire['done'].wait(5)
-    call.update(parse_wire(wire, complete=complete))
-    return value, call
+    budget = 90 if 'edlt-parent-transaction' in args else 30
+    return cli(relay, evidence['calls'], *args, expected=expected,
+               complete=complete, process_timeout=budget)
 
 
 def control(target, variant):

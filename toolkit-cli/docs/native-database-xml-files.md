@@ -22,6 +22,36 @@ SHA-256; it refuses to overwrite an existing destination. Without `--output`,
 `get-xml` keeps the existing JSON response behavior. The export is a single
 object snapshot, not a whole-project backup.
 
+For an export that exceeds the existing 4 MiB line or 16 MiB response bound,
+declare an explicit document budget in bytes:
+
+```sh
+cbus-toolkit cgate --host HOST database get-xml //PROJECT \
+  --project PROJECT --output project.xml --max-xml-bytes 25165824
+```
+
+`--max-xml-bytes` requires `--output` and accepts 1..134217728 (128 MiB).
+It bounds the exported UTF-8 snippet; transport admits at most that budget
+plus 64 KiB for command/status framing. The independent 100,000-response-line
+limit still applies. This export connection retains at most one unsolicited
+event; a second event interrupts the read without publication or retry. This
+keeps the widened line bound from multiplying across the ordinary event queue.
+The option affects only this read-only
+export connection, and ordinary reads retain their existing limits. A failed
+or oversized read publishes no file and is never retried. A destination that
+already exists is rejected before connecting; a competing writer is also
+protected by the existing no-overwrite publication step.
+
+The configured client ceiling is not a server capacity guarantee. Both owned
+Rust servers retain a separate 32 MiB queued-wire batch limit; larger replies
+can be refused or disconnected by the server. This path materializes the reply
+and XML in memory, so the document budget is not a total process-memory cap.
+The independent owned loopback wire tests retain a 17 MiB single-line XML
+export, exact byte/hash comparison, unchanged default rejection and failure
+without publication or replay. They establish no original C-Gate capacity,
+maximum-size throughput, filesystem power-loss durability, physical behavior
+or full Toolkit parity. `set-xml` and its limits are unchanged.
+
 `set-xml` reads a nonempty UTF-8 file of at most 16 MiB and sends one C-Gate
 here-document. It reports the source file's SHA-256 and the native `200` or
 `301` receipt. The transport normalizes CRLF before transmission, so the
