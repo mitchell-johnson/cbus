@@ -699,8 +699,14 @@ and all selected non-unused objects must be distinct. Optional level additions d
 `--schedule-levels accept` create missing addresses 1–31 for enabled non-unused
 roles. Existing Level Value metadata stays opaque and is preserved; new Values
 require exact canonical bytes. Ordered `--output-group` selections and typed
-`--output-operation` select/Add/cancel records compose the 23 output roles with
-the same owning transaction. See `toolkit-cli/docs/thermostat-output-add.md`. Omit --set for a bounded load/save of the current snapshot. Keep
+`--output-operation` Select/Add/Edit records, including direct cancellation,
+compose the 23 output roles with the same owning transaction. Edit binds the
+currently selected identity: pass `op: "edit-output-group"`, `parameter`,
+`outcome: "accept"` and optional `name`; cancellation admits no name/address.
+Address/OID are immutable, shared renames remain causal, existing Level Values
+stay opaque and uncertain writes are never replayed. Read
+`toolkit-cli/docs/thermostat-output-add.md` and
+`toolkit-cli/docs/thermostat-output-edit.md`. Omit --set for a bounded load/save of the current snapshot. Keep
 all project networks closed, own project editing exclusively and review uncertain
 creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application

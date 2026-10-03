@@ -154,6 +154,7 @@ test modules are `test_thermostat_output_add.py`,
 after their frozen validation run.
 
 Original native and hardware acceptance remain deferred under issue #72.
-Output Edit/Delete actions, application changes, ordered zone histories and
+Accepted/cancelled [output Edit](thermostat-output-edit.md) now composes with
+this same history. Output Delete, application changes, ordered zone histories and
 complete initialized GUI/message behavior remain open. Thermostat feature
 parity remains `in_progress` under issue #42.

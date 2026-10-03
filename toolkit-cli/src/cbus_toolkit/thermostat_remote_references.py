@@ -319,6 +319,7 @@ class RemoteGroupRename:
     previous_name: str
     name: str
     reason: str
+    output_edit: bool = False
 
     @property
     def kind(self):
@@ -333,9 +334,12 @@ class RemoteGroupRename:
         return 'Group', self.application, self.address
 
     def as_dict(self):
-        return {'action': self.action, 'kind': self.kind, 'application': self.application,
+        value = {'action': self.action, 'kind': self.kind, 'application': self.application,
                 'address': self.address, 'identity': self.identity, 'previous_name': self.previous_name,
                 'name': self.name, 'reason': self.reason}
+        if self.output_edit:
+            value['output_edit'] = self.output_edit
+        return value
 
 
 class _GraphResolver:
@@ -382,13 +386,13 @@ class _GraphResolver:
         self.operations.append(RemoteCreation('Group', application, address, name, reason, output_add))
         return group
 
-    def rename(self, group, name, reason):
+    def rename(self, group, name, reason, *, output_edit=False):
         current = self.live[group.application, group.address]
         if current.identity != group.identity:
             _fail('Group identity changed inside the shared resolver')
         if current.name != name:
             self.operations.append(RemoteGroupRename(group.application, group.address, group.identity,
-                                                     current.name, name, reason))
+                                                     current.name, name, reason, output_edit))
             current = replace(current, name=name)
             self.live[group.application, group.address] = current
         return current
@@ -427,7 +431,8 @@ class RemoteReferencePlan:
             return tuple(dict.fromkeys(name for name, _address in self.output_selections or ()))
         rows = [json.loads(row) for row in self.output_operations]
         return tuple(dict.fromkeys(row['parameter'] for row in rows
-            if row['op'] == 'select-output-group' or row['outcome'] == 'accept'))
+            if row['op'] == 'select-output-group'
+            or row['op'] == 'add-output-group' and row['outcome'] == 'accept'))
 
     @property
     def output_expected(self):
@@ -580,7 +585,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         project = _children(_document(project_xml).documentElement, 'Project')[0]
         tags = _children(project, 'TagName')
         if len(tags) != 1 or tags[0].namespaceURI:
-            _fail('Accepted output Add requires an explicit scalar Project.TagName')
+            _fail('Accepted output Add/Edit requires an explicit scalar Project.TagName')
         project_tag_name = _field(project, 'TagName')
     if dict(graph.unit_identity)['UnitType'] != unit_type:
         _fail('Project thermostat identity differs from the selected unit type')
@@ -644,6 +649,7 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
             output.select(selections)
         output.validate()
         expected.update(output.expected)
+    references = {role: resolver.current(value) for role, value in references.items()}
 
     def unique(roles, label):
         selected = [references[role] for role in roles if references[role] is not None and references[role].address != 255]
@@ -692,6 +698,9 @@ def validate_remote_plan(store, plan):
     if any(type(row) is RemoteCreation and (type(row.output_add) is not bool
             or row.output_add and row.kind != 'Group') for row in (*plan.creations, *plan.graph_operations)):
         _fail('Malformed output Add creation provenance')
+    if any(type(row) is RemoteGroupRename and type(row.output_edit) is not bool
+            for row in plan.graph_operations):
+        _fail('Malformed output Edit rename provenance')
     try:
         if plan.output_operations is not None and (type(plan.output_operations) is not tuple
                 or any(type(row) is not str for row in plan.output_operations)):
@@ -771,6 +780,8 @@ def _graph_operation_names(before, operations, created_oids):
             current[key] = identity, row.name
             added.add(key)
         else:
+            if type(row.output_edit) is not bool:
+                _fail('Malformed output Edit rename provenance')
             if (type(row.identity) is not str or type(row.previous_name) is not str
                     or current.get(key) != (row.identity, row.previous_name)):
                 _fail('Group rename differs from its preceding identity or name')
