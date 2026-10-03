@@ -1,5 +1,13 @@
 # Implementation status and outstanding work
 
+The [focused CI receipt correction](feature-batch-2026-10-03-ci-receipt-regressions.md)
+separates retained native archive integrity from current acceptance, refreshes
+maintained report source bindings and corrects a stale Neo refusal assertion.
+It does not promote a feature category or original/native gate.
+Final seven-module source/fresh-wheel scopes each pass 333 parents,
+719 separate subtests and 4 disclosed skips. All 380 package files
+remain exact to the Time/Date release; production behavior is unchanged.
+
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 The [Time/Date and repository recovery successor](feature-batch-2026-10-03-time-date-recovery.md)
