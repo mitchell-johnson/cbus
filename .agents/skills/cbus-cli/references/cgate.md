@@ -2266,6 +2266,17 @@ software tests and outstanding native/hardware acceptance.
 
 ## Resource bounds
 
+The real cmqttd service admits a 256 MiB serialized version-one JSON repository.
+Its startup and atomic commit paths stream through independent byte limits.
+`DBGET`/`DBGETXML` preserve their existing admission/selection behavior without
+whole-repository rollback snapshots. Inspect `repository_max_bytes`,
+`repository_storage` and `repository_snapshot_free_reads`; this is a bounded
+cmqttd profile, not a native capacity claim. Sixteen simultaneous large backups
+have complete restart/readback/MQTT evidence on owned fixtures. Mutation clones,
+post-rename directory-sync uncertainty and original capacity comparison remain
+open. Read `docs/cgate-repository-capacity.md`; never replay an uncertain save.
+
+
 - Input line: 1 MiB maximum.
 - Here-document body: 16 MiB maximum.
 - CGL import: 10,000 modeled application/group/level objects maximum.

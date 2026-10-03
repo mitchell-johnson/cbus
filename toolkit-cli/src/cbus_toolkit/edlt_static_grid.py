@@ -156,7 +156,8 @@ def requires_retained_names(operations):
             continue
         if row.get('op') == 'static-text-dialog':
             return True
-        if row.get('label_controls') or row.get('scene_controls') or row.get('mra_controls'):
+        if (row.get('label_controls') or row.get('scene_controls')
+                or row.get('mra_controls') or row.get('dual_key_controls')):
             return True
         nested = row.get('operations')
         if (row.get('op') == 'scene-manager'

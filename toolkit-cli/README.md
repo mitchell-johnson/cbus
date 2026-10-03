@@ -35,6 +35,14 @@ covers finite binding choices, retained static names, hidden status fields and
 explicit Zone macro getter repair. Existing Reset initialization bounds and
 original host/rendering/audio-hardware gaps remain unchanged.
 
+Timer, Shutter and Room Courtesy add explicit `dual_key_controls` inside their
+owning parent operation. Raw fields remain untouched until the selected
+source-owned setter/getter is invoked; timer, level, colour and icon bindings
+share one guarded parent save. Read [dual-key controls](docs/edlt-dual-key-controls.md).
+Saved Neo/NeoPro reports now cover all 43 exact classes across 59 source factory
+partitions, including the six couplers' Bistable column and distinct group usage.
+Read [Neo report profiles](docs/project-documentation-neo-profiles.md) for
+required snapshots and remaining original/physical acceptance.
 For a declared source/obligation bundle, use
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR` to
 report mapping and evidence gaps. Its scoped result cannot make the global

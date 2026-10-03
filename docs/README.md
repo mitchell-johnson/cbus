@@ -7,6 +7,9 @@ The repository contains the Python Toolkit CLI and a Rust workspace for MQTT bri
 - [eDLT selector callbacks](../toolkit-cli/docs/edlt-scene-selector-control.md): complete ordered choice views and explicit retained application, trigger, action and dynamic-label bindings.
 - [eDLT selector database limits](../toolkit-cli/docs/edlt-scene-selector-metadata.md): actual inventories, parent Add ordering, creation timeline refusals and separate save boundaries.
 - [eDLT widget control adapters](../toolkit-cli/docs/edlt-widget-control-adapters.md): six AppGroup panels and explicit Scene selection, cycle and status-text callbacks.
+- [eDLT dual-key controls](../toolkit-cli/docs/edlt-dual-key-controls.md): Timer, Shutter and Room Courtesy property/binding histories inside one owning parent save.
+- [Neo/NeoPro report profiles](../toolkit-cli/docs/project-documentation-neo-profiles.md): 43 exact classes, 59 factory partitions and six couplers' Bistable/group-usage behavior.
+- [Large retained repositories](cgate-repository-capacity.md): bounded 256 MiB streaming storage, snapshot-free database reads and sixteen-backup restart/MQTT evidence.
 - [eDLT MRA callbacks](../toolkit-cli/docs/edlt-mra-controls.md): three derived audio panels, retained static bindings, explicit Zone macro getter effects and terminal shared-global propagation.
 - [MRA integration and validation](../toolkit-cli/docs/feature-batch-2026-10-03-mra-controls.md): completed parent callbacks, current source/fresh-wheel evidence, exact skips and outstanding original/physical acceptance.
 - [eDLT automatic Global Programming metadata](../toolkit-cli/docs/edlt-global-image-metadata.md): exact source project/image facts, category copying and independent target preservation.
