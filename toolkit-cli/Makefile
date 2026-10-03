@@ -339,6 +339,14 @@ check-cgate-interop: compile
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-edits-preserve-opaque-existing-value-mock]' \
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[mock]' \
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[unique-ASCII-default-reuse-then-omitted-Edit-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[missing-ASCII-default-create-amid-Unicode-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[distinct-Unicode-Edits-after-ASCII-default-reuse-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[programmable-damper-ASCII-default-reuse-amid-Unicode-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ambiguous-ASCII-default-still-refused-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[mock]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]' \
@@ -762,6 +770,14 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-edits-preserve-opaque-existing-value-daemon]' \
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[daemon]' \
 		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[unique-ASCII-default-reuse-then-omitted-Edit-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[missing-ASCII-default-create-amid-Unicode-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[distinct-Unicode-Edits-after-ASCII-default-reuse-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[programmable-damper-ASCII-default-reuse-amid-Unicode-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ambiguous-ASCII-default-still-refused-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[daemon]' \
+		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]' \

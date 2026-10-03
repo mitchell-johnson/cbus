@@ -378,7 +378,11 @@ Ordered output controls now compose Select, accepted/cancelled Add and
 [Edit](toolkit-cli/docs/thermostat-output-edit.md) in the same settings owner.
 Edit renames the currently selected group while preserving its OID/address,
 shared references and existing Level metadata. See the
-[focused acceptance and remaining scope](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-output-edit-integration.md);
+[Edit acceptance](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-output-edit-integration.md).
+Missing ASCII output/damper defaults also work amid Unicode group names,
+using the recovered ASCII-only comparison and retaining ambiguity refusal.
+See the [default-name guide](toolkit-cli/docs/thermostat-default-names.md) and
+[current focused acceptance](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-unicode-defaults.md);
 full thermostat GUI and hardware parity remain open.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)

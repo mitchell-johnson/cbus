@@ -1,0 +1,72 @@
+{
+  "checks": {
+    "LowerCase_26_codepoint_range": true,
+    "LowerCase_ASCII_A_base": true,
+    "LowerCase_fallback_26_codepoint_range": true,
+    "LowerCase_fallback_ASCII_A_base": true,
+    "LowerCase_fallback_set_bit32_only_in_range": true,
+    "LowerCase_fallback_skip_outside_range": true,
+    "LowerCase_set_bit32_only_in_range": true,
+    "LowerCase_skip_outside_range": true,
+    "UTF16_equality_contents_exact": true,
+    "UTF16_equality_length_exact": true,
+    "UpperCase_ASCII_a_base": true,
+    "UpperCase_xor_bit32": true,
+    "caller_exact_string_equality": true,
+    "caller_folds_existing": true,
+    "caller_folds_requested": true
+  },
+  "contract": "ASCII A..Z folding followed by exact string equality. NonASCII code units remain unchanged. Shared ASCII _upper has identical equality classes.",
+  "default_table_receipt_sha256": "e74a356b9467f03b6f796652199149a9c978033577b0b074b366f7f3dfd596f3",
+  "format": "cbus-thermostat-output-default-ascii-static-v1",
+  "limits": [
+    "No native/original GUI execution or manager sort order proof.",
+    "UTF16 source name profile; no culture casefold or caller-defined Unicode generated defaults."
+  ],
+  "methods": {
+    "CIS_TThermostat.TPlantControlService.FindExistingGroup": {
+      "address": "0xfe2afc",
+      "end": "0xfe2be4",
+      "sha256": "b375c529b20d7d4bdcf23c94e14b660eae67fe67fbdf31e31c172d8173bc8087"
+    },
+    "SysUtils.LowerCase": {
+      "address": "0x6187ac",
+      "end": "0x618824",
+      "sha256": "a673244ff7f84d8f63b2ad8c2d29b56a0c89489c85b2b1e0876378e75b6259ce"
+    },
+    "SysUtils.LowerCaseFromAnsiString": {
+      "address": "0x61875c",
+      "end": "0x6187ac",
+      "sha256": "b4640869f66a5c2091be6745558069deefb057e79f0baa9b34e044795dac22a2"
+    },
+    "SysUtils.UpperCase": {
+      "address": "0x6186e4",
+      "end": "0x61875c",
+      "sha256": "31d49e2c60709181dfc1e9cf67b3f0aeed856589842419b8ba2a7b8fc7205753"
+    },
+    "System.@UStrEqual": {
+      "address": "0x6090ac",
+      "end": "0x609114",
+      "sha256": "6af8d82e87766e21661a77b583dcdbcf966b8d7420d2d0bbc56913bd54b4ba25"
+    }
+  },
+  "original_executed": false,
+  "original_input_hashes": {
+    "EXE": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "MAP": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "physical_io": false,
+  "scope": {
+    "application_migration_implemented": false,
+    "arbitrary_Unicode_generated_defaults_admitted": false,
+    "missing_reference_lookup_only": true
+  },
+  "source_data_read_only": true,
+  "table": {
+    "all_actual_default_labels_ASCII": true,
+    "damper_labels": 4,
+    "default_rows": 174,
+    "non_None_labels": 48
+  },
+  "vendor_instructions_executed": false
+}
