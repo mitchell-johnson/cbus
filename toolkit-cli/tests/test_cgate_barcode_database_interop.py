@@ -245,11 +245,11 @@ def parse_wire(row, *, complete=True):
             "reply_lines": [payloads[tag] for tag in tags]}
 
 
-def cli(relay, calls, *arguments, expected=0, connections=1, complete=True):
+def cli(relay, calls, *arguments, expected=0, connections=1, complete=True, process_timeout=20):
     before = len(relay.rows)
     argv = [sys.executable, "-m", "cbus_toolkit", "cgate", "--host", relay.endpoint[0],
             "--port", str(relay.endpoint[1]), "--timeout", "3", *map(str, arguments)]
-    result = subprocess.run(argv, text=True, capture_output=True, timeout=20)
+    result = subprocess.run(argv, text=True, capture_output=True, timeout=process_timeout)
     call = {"argv": argv, "exit": result.returncode, "stdout": result.stdout, "stderr": result.stderr}
     calls.append(call)
     try:
