@@ -2,6 +2,31 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA current-load/owner source check](../research/fixtures/senlla-live-owner-source-check-20261004.json)
+adds concrete inherited Unit attributes and an owned-project/native-database
+metadata bridge, live bank attributes, persistent no-HWND control primitives,
+late Unit loading and manual light-form handlers. The owning loader now
+retains the same Unit/block/key objects through current PP reads, causal
+Scene and control-group/action-level creation, NeoPro hidden fields and
+ST7/surface loading. It stops at the explicit fresh-identification boundary.
+A separate journal models the fresh synchronous SAVE agent and native
+ordered cache writes; it does not admit whole-unit persistence.
+Fourteen affected modules pass 294 parent cases and
+346 separate subtests with zero failures, errors or skips.
+All 4,129 tracked inputs remain unchanged at frozen authored commit
+`8d6b9b67`. Final independent reviews cover 194 inherited, 50 bank,
+226 late-Unit, 230 control-primitive, 190 manual-form, 165 current-load
+and 63 save-cache source spans, with scope qualifiers retained. Inventory,
+register and census checks pass at 759 modules and all 259 native required
+tests selected. These source checks do not execute native requirements.
+Remaining work includes actual managed occupancy attributes, complete
+identification/director/scalar/focus/Show/Apply and ordered save orchestration,
+loaded application/hidden-reference callbacks and public preview/apply.
+Windows text and active metadata observer boundaries remain explicit.
+No installed-wheel, original/native backend/control or hardware acceptance
+is claimed. Full suites remain deferred for speed; global coverage stays
+false with 487 obligations. Earlier receipts retain their original scope.
+
 The [SENLLA shared-prefix/control source check](../research/fixtures/senlla-prekey-controls-source-check-20261004.json)
 adds a live fresh path with nil initial references and retains the SAME
 Unit, blocks, keys, managers and bank links through initial application/
