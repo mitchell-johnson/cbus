@@ -59,6 +59,18 @@ native shared-key reassignment is not modelled. Native PP database save/reload
 evidence does not establish physical timing or power-failure behavior. Read
 `toolkit-cli/docs/sensors.md` for identities, source evidence and exclusions.
 
+For the eight admitted DIN relay/dimmer firmware-2.7.00 profiles, add
+`--toolkit-save` to `din-settings plan` or `cgate unit ... din-settings` to
+include one recovered agent-save projection after the requested edits. Inspect
+the v2 plan's `pre_save_changes`, `save_normalization` and final `changes`.
+RELDN8 marshalling differs from the ordinary agent: untouched level-store
+recovery bytes can survive, short arrays retain their final stored element,
+and MaxDimmingLevel can change again on a later explicit save. Never repeat
+normalization to seek a fixed point. V1 targeted plans retain their previous
+semantics. Database PP and project saves remain separate; this does not prove
+complete original form or physical output behavior. Read
+`toolkit-cli/docs/din-output-settings.md` before applying.
+
 
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
 `--output NEW.xml` writes a new file exclusively. Captured XML 1.0/1.1,

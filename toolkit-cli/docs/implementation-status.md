@@ -2,6 +2,16 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [DIN agent-save batch](feature-batch-2026-10-03-din-agent-save.md)
+adds opt-in save normalization for the eight current relay/dimmer 2.7.00
+profiles, including RELDN8's ordered marshalling behavior. V2 plans preserve
+one-pass replay and stale/schema validation; v1 targeted plans remain usable.
+Focused source passed 141 parents and fresh installed wheel passed 107, each
+with 588 separate subtests, four provisioning skips and all 20 owned backend
+cases. Broad runs were interrupted at the user's request to prioritize speed;
+no full-suite pass is claimed. Original GUI, other profiles and physical
+acceptance remain open, and the functional completion gate remains nonzero.
+
 The [MRA callback adapter](edlt-mra-controls.md) adds explicit `mra_controls`
 for Zone Control, Source Select and Source Control inside the owning parent.
 Offered status writes preserve upper MRA bits without resetting the old text

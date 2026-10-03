@@ -1,0 +1,220 @@
+{
+  "binary_inputs": {
+    "cgate-mock": "6df3b38363c263c9f42ff89ad16aee5c3aa662dd023245dce52a19dd833d1590",
+    "cmqttd": "50b0f1fdfbe926a2c3cf305f73c083491ef3a83250a987ae2edb1e5655d4dad2"
+  },
+  "candidate_base_commit": "5b446ed325764e18458b3778342ba2603a0f83b9",
+  "execution_tree": "uncommitted candidate bound by the file hashes and quiet manifest; baseline commit alone does not identify the implementation",
+  "feature_inputs": {
+    "toolkit-cli/Makefile": "8dd07f8ea4f7bdb3823d76b93a8bc1da0dcd8491aa6d96991902447450595c72",
+    "toolkit-cli/research/fixtures/din-output-save-source-review.json": "77fcf44924592af4a509d301035a4d9ecaecc33a403d362c16e8a5a7086cf3ca",
+    "toolkit-cli/src/cbus_toolkit/cli.py": "f04a126a5bcf8f38025dd7e8a878bb8823d96cb8c74789ee6a26242e6f3f7d35",
+    "toolkit-cli/src/cbus_toolkit/din_output_settings.py": "a0e105391b3dd8863f9934e6dd39b5bd1f66138de66ec5768cd58e77d956c07a",
+    "toolkit-cli/tests/test_cgate_din_save_interop.py": "8490756f0e5e58773d8ee0713debe184ffc0ff5dd4ec28e99e8a48000a9c3448",
+    "toolkit-cli/tests/test_cli_din_save.py": "789cb46c1be64f72dece831717fac86ff64f9bb3210ffb755bb6505f72603162",
+    "toolkit-cli/tests/test_din_output_save.py": "b0b531294cb825d36eb3bb278ad8882fe19cca35e2f6335219e6db2dfd684ec5"
+  },
+  "format": "cbus-din-agent-save-owned-release-v1",
+  "interrupted_broad_runs": {
+    "accepted_as_complete_gates": false,
+    "maintained_interop_mock_phase": {
+      "daemon_phase_started": false,
+      "exit": 2,
+      "log": {
+        "retained_privately": true,
+        "sha256": "d2612901b76d6ef9e691345335583e0e6576840bc7799f975d62de20b022d0c6"
+      },
+      "parent_passed": 32,
+      "separate_subtests_passed": 158,
+      "skipped": 1
+    },
+    "reason": "User changed objective to avoid full suites and prioritize speed; both pytest processes were interrupted with SIGINT and exited2.",
+    "source": {
+      "exit": 2,
+      "log": {
+        "retained_privately": true,
+        "sha256": "13736bee9b42dcda7a532b0a31c2a2f625fee642fc9ec56b0131627dda1b0bea"
+      },
+      "parent_passed": 558,
+      "separate_subtests_passed": 525,
+      "skipped": 611
+    }
+  },
+  "packaging": {
+    "console": {
+      "console_sha256": "ebe34489dfca2a8682174faf714cbd4ac101455ec72d4b50f26c1a823994be89",
+      "exit": 0,
+      "format": "cbus-din-output-settings-plan-v2",
+      "no_pythonpath": true,
+      "stdout_sha256": "afe7c78ad9b3378cdfb6964a259d4786fb1a8fcbdd0fb85667db40226640255b",
+      "toolkit_save": true
+    },
+    "files": 373,
+    "source_wheel_installed_equal": true,
+    "terminal_receipt": {
+      "retained_privately": true,
+      "sha256": "80bbce92033c98577a8662bc51c444a11a419950607db9daead38e688488e16b"
+    },
+    "wheel_sha256": "21bd1ba22ad866f11f746f48ef562f52b91b4b30310dc4f7428363788bf93d97"
+  },
+  "scope": {
+    "counts_are_overlapping_not_additive": true,
+    "coverage_receipt": {
+      "retained_privately": true,
+      "sha256": "1eb0c2f634631c5c9aad6a5cd8787fad8b9f0634693fa5d283bb69bcbec78984"
+    },
+    "coverage_require_complete_exit": 1,
+    "firmware": "2.7.00",
+    "full_suite_pass_claimed": false,
+    "hardware_or_gui_acceptance": false,
+    "profiles": [
+      "RELDN4",
+      "RELDN8",
+      "RELDN8B",
+      "RELDN12",
+      "DIMDN4",
+      "DIMDN4F",
+      "DIMDN8",
+      "DIMDN8F"
+    ],
+    "public_backend_cases_per_environment": 20,
+    "publication_head_ci_claimed": false
+  },
+  "source_quiet": {
+    "before_manifest": {
+      "retained_privately": true,
+      "sha256": "319ba9cf60388b98e638a57258c2fec93c7c1164445bfb4d063229a78bd9ac81"
+    },
+    "equal": true,
+    "input_count": 2698,
+    "terminal_manifest": {
+      "retained_privately": true,
+      "sha256": "319ba9cf60388b98e638a57258c2fec93c7c1164445bfb4d063229a78bd9ac81"
+    }
+  },
+  "static_review": {
+    "independent_hash_check_passed": true,
+    "method_ranges": 12,
+    "original_instructions_executed": false,
+    "original_server_executed": false
+  },
+  "validation": {
+    "installed_wheel": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "03206b6f76163c18006fe1af136b289ae5df44911d6600d8da6753013ebbf8a9"
+      },
+      "audit_passed": true,
+      "junit_sha256": "7dd898596a8505ccdd4159822c89014a99593394ab4b4021a5ccc23a076b4c66",
+      "modules": [
+        "tests/test_cgate_din_save_interop.py",
+        "tests/test_cli_din_output_settings.py",
+        "tests/test_cli_din_save.py",
+        "tests/test_din_output_save.py",
+        "tests/test_din_output_settings.py",
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py"
+      ],
+      "parent_outcomes": {
+        "passed": 107,
+        "skipped": 4
+      },
+      "public_din_cases": [
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-daemon]"
+      ],
+      "pytest_exit": 0,
+      "skips": [
+        "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+        "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+        "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+        "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal"
+      ],
+      "subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 588,
+        "reported": 588,
+        "skipped": 0
+      },
+      "trace_sha256": "dd264a5c68f9698bf253d1f321f88f17628c60930d7c5c512a29445eeb9283cb"
+    },
+    "source": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "a5fab657f1ae30372bba90d6b087167e197d20c27aca5a3c3a2abea48082b1f4"
+      },
+      "audit_passed": true,
+      "junit_sha256": "e0a51fabb2816daac2d18947fd6c68c3b3b0338677fe4048b0b94571b4067d91",
+      "modules": [
+        "tests/test_cgate_din_save_interop.py",
+        "tests/test_cli_din_output_settings.py",
+        "tests/test_cli_din_save.py",
+        "tests/test_din_output_save.py",
+        "tests/test_din_output_settings.py",
+        "tests/test_parity_register.py",
+        "tests/test_sanitize_evidence_receipts.py",
+        "tests/test_skip_census.py"
+      ],
+      "parent_outcomes": {
+        "passed": 141,
+        "skipped": 4
+      },
+      "public_din_cases": [
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-daemon]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]",
+        "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-daemon]"
+      ],
+      "pytest_exit": 0,
+      "skips": [
+        "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+        "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+        "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+        "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal"
+      ],
+      "subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 588,
+        "reported": 588,
+        "skipped": 0
+      },
+      "trace_sha256": "a6f27b6d3f5d48106c4d096af98bd48940a423489f4eed395e934f1288d5ba7c"
+    }
+  }
+}

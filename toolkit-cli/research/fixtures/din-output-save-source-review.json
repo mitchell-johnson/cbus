@@ -1,0 +1,203 @@
+{
+  "format": "cbus-din-output-save-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "plan_format": "cbus-din-output-settings-plan-v2",
+  "original_code_executed": false,
+  "native_server_executed": false,
+  "physical_hardware_verified": false,
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "profiles": [
+    "RELDN4",
+    "RELDN8",
+    "RELDN8B",
+    "RELDN12",
+    "DIMDN4",
+    "DIMDN4F",
+    "DIMDN8",
+    "DIMDN8F"
+  ],
+  "firmware": "2.7.00",
+  "profile_and_spec_evidence": "research/fixtures/din-output-settings-source-review.json",
+  "methods": [
+    {
+      "name": "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0x122d350",
+      "end": "0x122dbf0",
+      "sha256": "b44ec6798eaf5f124272c0bab07b3c2daf9882dd31f577f767185e4681998614"
+    },
+    {
+      "name": "CIS_TDinRailOutputCGateAgent.TBasicDinRailOutputCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0x122df04",
+      "end": "0x122f064",
+      "sha256": "fd77bccedd64838e8d0e5f7b6d4b064fe69bd172c2d62274c4d3733f64f62842"
+    },
+    {
+      "name": "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0x122f6a8",
+      "end": "0x122f84c",
+      "sha256": "3762d3272cbf2181a7c981ce44d13e2eb6a22c6ea8d102eb4e0747a399d8537f"
+    },
+    {
+      "name": "CIS_TDinRailOutputCGateAgent.TDinRailOutputCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0x122f524",
+      "end": "0x122f6a8",
+      "sha256": "2aa20755933ce20bd59c85c04a00ed3996b7225b39d906e32c5345373db15ff3"
+    },
+    {
+      "name": "CIS_TMarshallingBoxCGateAgent.TMarshallingBoxCGateAgent.AfterLoadProgrammingInformation",
+      "start": "0x12432a8",
+      "end": "0x1243a48",
+      "sha256": "a5c328903ea0c425d9694e2e13c380b24fb8566da70e63c91513b48edc0a4411"
+    },
+    {
+      "name": "CIS_TMarshallingBoxCGateAgent.TMarshallingBoxCGateAgent.BeforeSaveProgrammingInformation",
+      "start": "0x1243fa8",
+      "end": "0x1244d0c",
+      "sha256": "d59bf30b180e9fff31b3edfff4dc18a7fcfc83841db48ac2ef43056683052a46"
+    },
+    {
+      "name": "CIS_TMarshallingBoxCGateAgent.InitialiseCGateVariables",
+      "start": "0x1243e00",
+      "end": "0x1243fa8",
+      "sha256": "df3b3e648ad24bc84ce4080fb71cf3c528a3ecdd3b009b3e1e7e41be0e07848b"
+    },
+    {
+      "name": "CIS_TMarshallingBoxCGateAgent.AddEmptyGroup",
+      "start": "0x1243a48",
+      "end": "0x1243e00",
+      "sha256": "c705d57bd509b7f6e518ee61808b814dc75249ad5884f65b708bfca9f2ab8b06"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLevelStoreEnable",
+      "start": "0xd2a9c0",
+      "end": "0xd2aa1c",
+      "sha256": "d19b60fd964eff93f046c3f03ba615c19bbe119601d1496ce9e0aec0a4248739"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetLightLevel",
+      "start": "0xd2aa1c",
+      "end": "0xd2aa8c",
+      "sha256": "8d9066ba4a152ba57d446fc1070f3b19966e0551589773bd6d2b27cab9be8519"
+    },
+    {
+      "name": "CIS_TCBusDimmerUnit.TDimmerChannel.SetMaximumDimmingLevel",
+      "start": "0xd2acb4",
+      "end": "0xd2ad24",
+      "sha256": "0099e967a4542e3ba0d5e8b2c0ff43975765c875f1999f87a4e4c36de9941889"
+    },
+    {
+      "name": "CIS_Maths.IntArrayElementWithDefault",
+      "start": "0x7f0f30",
+      "end": "0x7f1078",
+      "sha256": "7453a5f695e7c71197288a8d846dc044641fa95e17a06894242510cab403abf1"
+    }
+  ],
+  "ordinary_projection": {
+    "level_store": "Basic save0x122e0f8..0x122e149 emits255 for each enabled channel; disabled channels emit their model raw value.",
+    "padding": "Basic save0x122e8d5..0x122e991 pads only GroupAddress with255 and LightLevel with0 from channel count to11.",
+    "logic": "Basic save0x122e997..0x122ebfd emits all four retained logic groups/levels/store flags; no logic-level255 override.",
+    "max": "Basic save0x122e813..0x122e8c9 emits channel-model max values in dialog order; only a12-channel model stops after4.",
+    "relay_interlock": "Relay AfterLoad0x122f6e1..0x122f736 masks raw>7 with7; before-save0x122f554 writes that retained model value. Dimmer values remain unmasked.",
+    "short_arrays": "RELDN8B writes8-element per-channel arrays into12-slot fields; slots8..11 remain the staged original tail. GroupAddress and LightLevel have the separate twelve-channel padding."
+  },
+  "reldn8": {
+    "source_indices": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      8,
+      9,
+      10
+    ],
+    "override": "Marshalling save0x1243fcc first calls ordinary save, then0x1244004 clears eleven owned array strings and rebuilds them from the mapped channel model.",
+    "raw_levels": "0x1244063 reads GetLightLevel with no level-store branch. This replaces the earlier base forced255 string, preserving untouched mapped raw levels even when store is enabled.",
+    "holes": [
+      0,
+      5,
+      6
+    ],
+    "hole_fields_zero": [
+      "LightLevel",
+      "LevelStoreEnable",
+      "LogicGA13Associations",
+      "LogicGA14Associations",
+      "LogicGA15Associations",
+      "LogicGA16Associations",
+      "LogicFunction",
+      "RestrikeChannel",
+      "MinDimmingLevel",
+      "PowerUpDelay"
+    ],
+    "hole_group_address": 255,
+    "hole_evidence": "AddEmptyGroup0x1243a48 has ten0-space literals and one255-space GroupAddress literal; called once before channel0 and twice after channel3.",
+    "per_channel_tail": "slot11-retained for twelve-slot per-channel arrays: the marshal string has11 tokens and native PP SET leaves its untouched tail. The old broad zero-index11 description is superseded.",
+    "padding": "0x12446a7..0x1244766 separately pads GroupAddress11=255 and LightLevel11=0; logic slots12..15 are appended unchanged.",
+    "max_projection_source_indices": [
+      1,
+      2,
+      3,
+      null
+    ],
+    "max_projection_missing_default": 0,
+    "max_evidence": "AfterLoad0x12436bd..0x12436e2 reads the mapped PP index with IntArrayElementWithDefault ecx=0. InitialiseCGateVariables never clears MaxDimmingLevel(+0x130), so the earlier base dialog-order result is retained; the four-slot PP schema truncates its8-token string.",
+    "max_example": {
+      "before": [
+        200,
+        201,
+        202,
+        203
+      ],
+      "after_one_save": [
+        201,
+        202,
+        203,
+        0
+      ],
+      "after_second_load_save": [
+        202,
+        203,
+        0,
+        0
+      ]
+    },
+    "non_idempotent": true
+  },
+  "pp_array_staging": {
+    "contract": "int/bit PP SET writes while input tokens remain and index<ArraySize; no writes occur to the remaining tail. Excess input elements are not stored.",
+    "existing_model": "src/cbus_toolkit/toolkit_conversion_tweakers.py:staged",
+    "retained_contract": "docs/toolkit-conversion-tweakers.md:Native C-Gate 3.4.0.2001 PP SET",
+    "historical_native_test": "tests/test_toolkit_conversion_tweakers.py:NativeToolkitTweakerTests.test_admitted_pairs_match_the_model_and_persist",
+    "static_derivative_sha256": "beb94436d7efdcd82cea329805feec139d07d5696889160fe5c41f868e85b847",
+    "static_derivative_scope": "Existing private CFR lP.java numeric setter was read, not executed. Its derivation is historical; this audit does not newly bind the derivative to a native-server artifact.",
+    "reviewed_ranges": "lP.a(Param,String,int,ArrayList) integer loop and bit loop each stop on exhausted StringTokenizer or declared array end; return without clearing tail.",
+    "historical_native_receipt": {
+      "path": "research/fixtures/toolkit-dimdn-burden-native.json",
+      "sha256": "13008fa28ef0f6c78d500b8050ebd7c2c7bf0359e311a97e022243c915c9c5f7",
+      "format": "cbus-toolkit-conversion-tweaker-native-v1",
+      "cgate_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
+      "boundary": "Historical eight conversion/persistence cases, not a fresh execution or complete source/artifact binding for this new agent-save workflow. The direct short-array assertion checks the leading two values; retained full parameter comparisons support the existing staging model."
+    }
+  },
+  "scope": {
+    "owned_fields": "The existing DIN editor field set; changes are computed over complete known current values, after requested controls.",
+    "retained_graph": "Active channel/logic group identities are retained as supplied PP addresses. The projection does not replay group resolution, creation or complete original initialization.",
+    "excluded": [
+      "whole original form and parent callbacks",
+      "generic inherited unit/global save fields outside this editor",
+      "Synchronise and Stagger controls",
+      "unsupported shared-group control cascades",
+      "other firmware or unit types",
+      "original GUI/native save/reload acceptance of this new composite",
+      "physical programming and timing"
+    ]
+  },
+  "plan_integrity": {
+    "passes": 1,
+    "pre_save_changes": "Canonical exact integer arrays retain the requested control edits before normalization.",
+    "save_normalization": "Canonical exact integer arrays retain fields changed by the one agent projection.",
+    "apply": "Recompute final changes and normalization from expected plus pre_save_changes; reject mismatches, invalid widths and unused-logic-group references before SET. Stale-check every owned field. No automatic retry or restore."
+  }
+}
