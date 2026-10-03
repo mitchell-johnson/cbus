@@ -94,6 +94,15 @@ check-cgate-interop: compile
 	test -x "$(CGATE_MOCK_BIN)"
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
 		tests/test_rust_cgate_interop.py \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]' \
@@ -360,6 +369,15 @@ check-cgate-interop: compile
 check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]' \
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
 		tests/test_cmqtt_dali_commissioning_interop.py \
 		tests/test_cmqtt_network_new_cli.py \

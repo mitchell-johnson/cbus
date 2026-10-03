@@ -355,6 +355,12 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
   whether the preserved group is implicit or explicitly supplied. The native
   callback can migrate shared key allocations and clear the selected group
   to 255; those additional effects are not modelled by this workflow.
+  The separate [ordered SENLL control history](senll-application-controls.md)
+  admits explicit application/group callbacks on a fresh zero-key graph,
+  including collision clearing and the all-eight-block refresh when application
+  2 is absent. It preserves raw `BlockAllocation` and refuses missing destination
+  group creation/decline decisions. The flat interface retains its existing
+  numeric profile and collision refusal.
 * `indicator` is the LED radio: `light_level`, `on_off` or `enable`.
   `IndicatorBlockAssignment[0]` loads 5 as `enable`, 2 as `on_off` and any
   other value as `light_level`.

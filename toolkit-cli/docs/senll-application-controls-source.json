@@ -1,0 +1,167 @@
+{
+  "format": "cbus-senll-application-controls-source-v1",
+  "source_sha256": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "original_execution": false,
+  "physical_acceptance": false,
+  "static_reader": "research/pir_sensor_review.py Review.code (Capstone x86 static decoding)",
+  "methods": {
+    "0xc9dcc0": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate",
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9",
+      "instruction_count": 109
+    },
+    "0xc9e1d4": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.MaximumVirtualKeyCount",
+      "sha256": "11e48e9d8e0ce913aca69e61db00f54e39b399a4ba3959f4d348377bb4efe8d1",
+      "instruction_count": 22
+    },
+    "0xcc76f8": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks",
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be",
+      "instruction_count": 109
+    },
+    "0xcca51c": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.GetKeyValues",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1",
+      "instruction_count": 596
+    },
+    "0xd0eb24": {
+      "symbol": "CIS_TInputKey.TInputBlock.InternalCreate",
+      "sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0",
+      "instruction_count": 163
+    },
+    "0x7f45e0": {
+      "symbol": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "instruction_count": 37
+    },
+    "0xd0f6ac": {
+      "symbol": "CIS_TInputKey.TInputBlock.HandleSecondaryAfterChange",
+      "sha256": "d9ce2a683e0d6776b8467c714aba6ce6cc21e0f0de8f2f5312c5f63f4f959943",
+      "instruction_count": 13
+    },
+    "0xd0f6cc": {
+      "symbol": "CIS_TInputKey.TInputBlock.RefreshBlockApplicationFromBlockSecondary",
+      "sha256": "e58499ede4893d79806595e701cde9465c1f6f5802d419137f56e67c6a64e184",
+      "instruction_count": 147
+    },
+    "0xd0f8d0": {
+      "symbol": "CIS_TInputKey.TInputBlock.HandleApplicationForBlockAfterChange",
+      "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa",
+      "instruction_count": 11
+    },
+    "0xd0f8e8": {
+      "symbol": "CIS_TInputKey.TInputBlock.RefreshBlockGroupFromBlockApplication",
+      "sha256": "ed03d4991a1357a586c57b404b38fd33a92b5427976e2abdb8500d276b559820",
+      "instruction_count": 91
+    },
+    "0xd0f580": {
+      "symbol": "CIS_TInputKey.TInputBlock.HandleGroupAfterChange",
+      "sha256": "80e4c3a977b4dc4ae8fdd7002364bd597dd1b311213286b0a672c67ac429e43d",
+      "instruction_count": 49
+    },
+    "0xcfb670": {
+      "symbol": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputBlockGroupChanged",
+      "sha256": "6fb713f83264aa2e2954c8a33c08d568bcd3d8457b8159037f5f46f1c203dd9c",
+      "instruction_count": 49
+    },
+    "0xcf4890": {
+      "symbol": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1",
+      "instruction_count": 310
+    },
+    "0xced05c": {
+      "symbol": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b",
+      "instruction_count": 75
+    },
+    "0xced154": {
+      "symbol": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861",
+      "instruction_count": 281
+    },
+    "0xcc85dc": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc",
+      "instruction_count": 159
+    },
+    "0xcc75e4": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup",
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263",
+      "instruction_count": 84
+    },
+    "0xcecf80": {
+      "symbol": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications",
+      "sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833",
+      "instruction_count": 75
+    },
+    "0xc9eb0c": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.Application2ObjectRefresh",
+      "sha256": "874381b811dcb8dd8a56a1d39ffc5bb928635dba4bbf57dcb037e45ccc80102d",
+      "instruction_count": 30
+    },
+    "0xc9f280": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshApplicationTypesFromApplication",
+      "sha256": "ec6aa7aa08d5eca00e874ddce94e05e86ad4f5b6c4c1652768fd6df5c3c96ddd",
+      "instruction_count": 161
+    },
+    "0xfbaebc": {
+      "symbol": "CIS_TddST7Sensors.TddST7LightLevelSensor.HandleAppStateChange",
+      "sha256": "08fc64e80edf352cf0a89f05c0a61885413336c72372f32a0e5b2bbd4222b69c",
+      "instruction_count": 28
+    },
+    "0xfbafd4": {
+      "symbol": "CIS_TddST7Sensors.TddST7LightLevelSensor.RefreshAppStateChange",
+      "sha256": "ac706aad89e075851257a50e3640645fc1c2a5c1d3fbe019bf44ac1c5087f683",
+      "instruction_count": 192
+    },
+    "0xcab0e0": {
+      "symbol": "CIS_TSENLL.TST7SENLL.MaximumKeyCount",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4",
+      "instruction_count": 12
+    },
+    "0xcab074": {
+      "symbol": "CIS_TSENLL.TST7SENLL.GetMaximumVirtualKeyCount",
+      "sha256": "1a9fba4d5469db81463298a9662e6c0f410e3af5b9dffd8e74dccdda225ed0da",
+      "instruction_count": 11
+    },
+    "0xfba2d4": {
+      "symbol": "CIS_TddST7Sensors.TddST7LightLevelSensor.HandleSENLLGroupComboOnIncludeItem",
+      "sha256": "739e1b82fd46381ecfd2a5ee9cf97f4ab783c912e1d6ba50faabe3069c31a560",
+      "instruction_count": 50
+    },
+    "0xfba24c": {
+      "symbol": "CIS_TddST7Sensors.TddST7LightLevelSensor.HandleSENLLEnableGroupOnIncludeItem",
+      "sha256": "20c6dbd138db772fcad7309f9529c0d4eed3e4a77832a1b8443e57c2b0c07179",
+      "instruction_count": 43
+    }
+  },
+  "facts": {
+    "fresh_keys": "MaximumVirtualKeyCount falls back from -1 to MaximumKeyCount0; CoreKey.InternalCreate sets collection count0. No BlockAllocation migration occurs.",
+    "load_order": [
+      "begin update",
+      "load applications",
+      "load all8 raw secondary bits",
+      "load all8 raw groups",
+      "zero-key GetKeyBlocks",
+      "end update",
+      "ApplicationObjectRefresh",
+      "Application2ObjectRefresh",
+      "Corridor and Join references",
+      "PEC reference",
+      "dialog initialization"
+    ],
+    "absent_application2": "After loading raw groups, clear each TRUE secondary Boolean in ascending block order. Only actual Boolean changes invoke callbacks.",
+    "collision": "Scan all8 blocks ascending; exclude self, nil and unused groups. Lookup target application/source address without creation; compare object identity. First collision clears switched group to target unused255; later comparisons see255. Then assign target ApplicationForBlock.",
+    "group_rebind": "ApplicationForBlock callback requires an existing target numeric group or an original create/decline decision. Explicit histories refuse the missing-object case.",
+    "hidden_group_callback": "Changed nonunused group equal to loaded PEC, Join or Corridor group clears to ApplicationForBlock unused255. No enabled/support predicate is tested.",
+    "pec": "Primary application with PECEnablerGroup.",
+    "corridor": "Primary application with CorridorLinkEnablerGroup even when CorridorLinkActive is false.",
+    "join": "Either control group assigned selects application203 and SINGLE control group; else either ordinary join group assigned selects primary and SINGLE group; else application255/group255. The dual field selects the branch, not the first group.",
+    "combo": "At each control step exclude other block and PEC group objects except unused/current own object.",
+    "scope": "Fresh SENLL admitted profile only; PP numeric source getters establish object facts. Missing creation decisions, retained nonzero key graphs, host message scheduling and original GUI execution are excluded."
+  }
+}

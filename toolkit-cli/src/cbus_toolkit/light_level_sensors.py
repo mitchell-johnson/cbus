@@ -8,6 +8,7 @@ values are the values the Toolkit would leave after pressing OK. It edits an
 existing PP session only: it never saves, transfers, or measures light. See
 docs/sensors.md and docs/light-level-sensor-review.json.
 """
+import copy
 from dataclasses import dataclass, replace
 from types import MappingProxyType
 
@@ -80,6 +81,163 @@ LAYOUTS = MappingProxyType({
 BITS = frozenset(('DisableIR', 'CorridorLinkActive', 'PECFunctionActive', 'PECFunctionIRActive',
                   'PIRFunctionIRActive', 'PIRLevelStore', 'PECLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic'))
 POWER_UP = ('disabled', 'enabled', 'resume')
+MAX_ON_OFF_CONTROLS = 64
+
+
+def validate_on_off_controls(value):
+    """Validate an ordered, caller-declared control history; no model state is imported."""
+    if not isinstance(value, (list, tuple)) or not 1 <= len(value) <= MAX_ON_OFF_CONTROLS:
+        raise SensorError('on_off_controls must contain 1..64 application/group operations')
+    result = []
+    for operation in value:
+        if not isinstance(operation, dict) or len(operation) != 1:
+            raise SensorError('Each on/off control accepts exactly one application or group field')
+        if 'application' in operation:
+            choice = operation['application']
+            if not isinstance(choice, str) or choice not in ('primary', 'secondary'):
+                raise SensorError('On/off control application must be primary or secondary')
+            result.append({'application': choice})
+        elif 'group' in operation:
+            result.append({'group': _integer(operation['group'], 'On/off control group', 0, 255)})
+        else:
+            raise SensorError('Each on/off control accepts exactly one application or group field')
+    return result
+
+
+class _OnOffGraph:
+    """Fresh SENLL's eight blocks and zero keys, with source-ordered callbacks.
+
+    A (application, address) pair denotes an already established group object.
+    Only raw block getters and the subsequently loaded hidden getters establish
+    non-unused objects. Missing destination objects need an original creation
+    decision, so explicit histories cannot invent them.
+    """
+
+    def __init__(self, original, updates):
+        self.original, self.updates = original, updates
+        self.applications = original['Application']
+        if (not 48 <= self.applications[0] <= 95 or
+                self.applications[1] != 255 and not 48 <= self.applications[1] <= 95):
+            raise SensorError('Explicit SENLL controls require primary Lighting 48..95 and secondary Lighting 48..95 or 255')
+        mask = original['SecondApplicationBlocks'][0]
+        self.groups = [(self.applications[int(bool(mask & (1 << index)))], address)
+                       for index, address in enumerate(original['GroupAddress'])]
+        self.known = set(self.groups)
+        self.hidden = {}
+        self.journal = {'format': 'cbus-senll-control-history-v1', 'explicit': True,
+                        'initialization_profile': 'fresh_zero_key_callbacks',
+                        'source_group_callbacks_modelled': True,
+                        'phase_order': ['raw_applications_bits_groups', 'secondary_application_refresh',
+                                        'hidden_group_load', 'on_off_controls', 'flat_dialog_edits', 'forced_save'],
+                        'input_key_count': 0, 'block_allocation_mutated': False,
+                        'original_execution': False, 'physical_acceptance': False,
+                        'load': [], 'controls': [], 'unverified_group_lookups': [],
+                        'forced_save_last': True}
+        # GetBlockApplications loads all eight bits before GetBlockGroup; after
+        # EndUpdate, Application2ObjectRefresh clears TRUE bits in index order.
+        if self.applications[1] == 255:
+            for index in range(8):
+                if mask & (1 << index):
+                    self.journal['load'].append(self._switch(index, False, hidden=False))
+        primary = self.applications[0]
+        if original['SingleJoinEnablerControlGroup'][0] != 255 or original['DualJoinEnablerControlGroup'][0] != 255:
+            join = (203, original['SingleJoinEnablerControlGroup'][0])
+        elif original['SingleJoinEnablerGroup'][0] != 255 or original['DualJoinEnablerGroup'][0] != 255:
+            join = (primary, original['SingleJoinEnablerGroup'][0])
+        else:
+            join = (255, 255)
+        # Corridor is loaded from primary even when inactive/unsupported.
+        self.hidden = {'pec': (primary, original['PECEnablerGroup'][0]),
+                       'corridor': (primary, original['CorridorLinkEnablerGroup'][0]), 'join': join}
+        self.known.update(self.hidden.values())
+        self.journal['hidden_groups_after_load'] = {name: list(key) for name, key in self.hidden.items()}
+        self.journal['initialized'] = self.view()
+
+    def view(self):
+        return {'groups': [list(key) for key in self.groups],
+                'second_application_blocks': self.updates['SecondApplicationBlocks'][0]}
+
+    def _set_group(self, index, key, *, hidden):
+        if self.groups[index] == key:
+            return []
+        self.groups[index] = key
+        self.updates['GroupAddress'][index] = key[1]
+        matches = [name for name, reserved in self.hidden.items() if key == reserved] if hidden and key[1] != 255 else []
+        if matches:
+            self.groups[index] = (key[0], 255)
+            self.updates['GroupAddress'][index] = 255
+        return matches
+
+    def _switch(self, index, secondary, *, hidden):
+        before = self.view()
+        bit = 1 << index
+        changed = bool(self.updates['SecondApplicationBlocks'][0] & bit) != secondary
+        row = {'block_index': index, 'application': 'secondary' if secondary else 'primary',
+               'secondary_changed': changed, 'before': before, 'scan': [], 'collision_block_index': None,
+               'hidden_group_callbacks': []}
+        if changed:
+            target = self.applications[int(secondary)]
+            if secondary:
+                self.updates['SecondApplicationBlocks'][0] |= bit
+            else:
+                self.updates['SecondApplicationBlocks'][0] &= ~bit
+            # Re-read the switched group's address at every iteration. Clearing
+            # it on the first match makes all later comparisons use address255.
+            for other in range(8):
+                if other == index or self.groups[other][1] == 255:
+                    continue
+                row['scan'].append(other)
+                candidate = (target, self.groups[index][1])
+                if candidate == self.groups[other]:
+                    row['collision_block_index'] = other
+                    self._set_group(index, (target, 255), hidden=hidden)
+            address = self.groups[index][1]
+            destination = (target, address)
+            if address != 255 and destination not in self.known:
+                raise SensorError('SENLL destination group is not established by the initial source getters; '
+                                  'its creation/decline decision is unsupported')
+            row['hidden_group_callbacks'] = self._set_group(index, destination, hidden=hidden)
+        row['after'] = self.view()
+        return row
+
+    def offered(self):
+        current = self.groups[ON_OFF_BLOCK]
+        excluded = {key[1] for index, key in enumerate(self.groups)
+                    if index != ON_OFF_BLOCK and key[0] == current[0] and key[1] != 255}
+        if self.hidden['pec'][0] == current[0] and self.hidden['pec'][1] != 255:
+            excluded.add(self.hidden['pec'][1])
+        # Toolkit always keeps the combo's current object, even a duplicate.
+        excluded.discard(current[1])
+        known = {key[1] for key in self.known if key[0] == current[0]}
+        known.add(255)
+        return sorted(known - excluded), sorted(excluded)
+
+    def run(self, controls):
+        for operation in controls:
+            offered, excluded = self.offered()
+            if 'application' in operation:
+                secondary = operation['application'] == 'secondary'
+                if secondary and self.applications[1] == 255:
+                    raise SensorError('The secondary application is not set, so the on/off switch is disabled')
+                row = self._switch(ON_OFF_BLOCK, secondary, hidden=True)
+            else:
+                address = operation['group']
+                if address in excluded:
+                    raise SensorError(f'On/off group {address} is excluded by another block or the maintenance enable group')
+                if address not in offered:
+                    raise SensorError('SENLL destination group is not established by the initial source getters; '
+                                      'its creation/decline decision is unsupported')
+                before = self.view()
+                key = (self.groups[ON_OFF_BLOCK][0], address)
+                callbacks = self._set_group(ON_OFF_BLOCK, key, hidden=True)
+                row = {'block_index': ON_OFF_BLOCK, 'group': address, 'before': before, 'after': self.view(),
+                       'hidden_group_callbacks': callbacks}
+            row['requested'] = dict(operation)
+            row['offered_before'], row['excluded_before'] = offered, excluded
+            row['offered_after'], row['excluded_after'] = self.offered()
+            self.journal['controls'].append(row)
+        self.journal['before_forced_save'] = self.view()
+        return self.journal
 
 
 def profile_refusal(unit_type, firmware, catalog_number):
@@ -121,11 +279,14 @@ class LightLevelPlan:
     changes: dict
     dialog: dict
     identity: tuple | None = None
+    control_history: dict | None = None
 
     def __post_init__(self):
         for name in ('expected', 'changes'):
             object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in getattr(self, name).items()}))
         object.__setattr__(self, 'dialog', MappingProxyType(dict(self.dialog)))
+        if self.control_history is not None:
+            object.__setattr__(self, 'control_history', MappingProxyType(copy.deepcopy(dict(self.control_history))))
 
     def as_dict(self):
         firmware, catalog_number = self.identity[1:] if self.identity else (None, None)
@@ -137,6 +298,7 @@ class LightLevelPlan:
                 'not_sent_by_toolkit': list(NOT_SENT),
                 'expected': {k: list(v) for k, v in self.expected.items()},
                 'changes': {k: list(v) for k, v in self.changes.items()},
+                'control_history': copy.deepcopy(dict(self.control_history)) if self.control_history is not None else None,
                 'saved': False, 'device_verified': False}
 
 
@@ -166,7 +328,7 @@ class LightLevelSensor:
     def plan(self, current, *, level_group=None, on_off_group=None, on_off_application=None,
              broadcast_group=None, enable_group=None, indicator=None, target_lux=None,
              margin_percent=None, broadcast_interval_seconds=None, power_up=None,
-             status_report_interval=None, identity=None):
+             status_report_interval=None, identity=None, on_off_controls=None):
         """Plan SENLL dialog edits followed by the complete Toolkit save.
 
         Groups are 0..254, or 255 for none. ``on_off_application`` is
@@ -178,8 +340,13 @@ class LightLevelSensor:
             if not isinstance(identity, tuple) or len(identity) != 3:
                 raise SensorError('Identity must be (unit_type, firmware, catalog_number)')
             identity = check_profile(*identity)
+        if on_off_controls is not None and any(value is not None for value in
+                (on_off_application, on_off_group, level_group, broadcast_group, enable_group)):
+            raise SensorError('Explicit on_off_controls cannot be mixed with flat application/group edits')
+        controls = [] if on_off_controls is None else validate_on_off_controls(on_off_controls)
         original = self.snapshot(current)
         updates = {name: list(values) for name, values in original.items()}
+        history = None if on_off_controls is None else _OnOffGraph(original, updates).run(controls)
         # The SENLL Global frame's native integer selector lists 3..255.
         # Its formatter labels these values in seconds; there is no time-byte
         # conversion. Values below 3 display as 3, but the initialization
@@ -196,7 +363,7 @@ class LightLevelSensor:
         secondary_available = applications[1] != 255
         on_off_mask = 1 << ON_OFF_BLOCK
         # RefreshAppStateChange drops the secondary application when the unit has none.
-        secondary = bool(original['SecondApplicationBlocks'][0] & on_off_mask) and secondary_available
+        secondary = bool(updates['SecondApplicationBlocks'][0] & on_off_mask) and secondary_available
         percent = loaded_margin_percent(original['PECTargetLux'][0], original['PECMarginLux'][0])
         target = min(original['PECTargetLux'][0], MAX_TARGET)
         state = indicator_state(original['IndicatorBlockAssignment'][0])
@@ -265,7 +432,7 @@ class LightLevelSensor:
                   'power_up_loaded': POWER_UP[loaded_power_up], 'power_up': POWER_UP[requested_power_up],
                   'power_up_after_reload': POWER_UP[power_up_state(updates['LightLevel'][9], updates['PECEnablerGroupLogic'][0],
                                                                 updates['PECLevelStore'][0])]}
-        return LightLevelPlan(original, changes, dialog, identity)
+        return LightLevelPlan(original, changes, dialog, identity, history)
 
     @staticmethod
     def _check_groups(original, updates, edits, enable_group):
@@ -290,7 +457,8 @@ class LightLevelSensor:
         if (after[index][0] != before[index][0] and after[index][1] != 255
                 and any(i != index and key == after[index] for i, key in after.items())):
             raise SensorError('The on/off application change reaches a group already used by another block; '
-                              'Toolkit key-block reassignment is not modelled')
+                              'legacy flat key-block reassignment remains refused; '
+                              'use explicit ordered on_off_controls / --on-off-control for the zero-key SENLL callbacks')
         for label, value in edits.items():
             index = BLOCKS[label]
             if value == 255 or after[index] == before[index]:
