@@ -62,3 +62,12 @@ orchestration remain separately owned.
 The numeric source fixture records the exact method hashes, request positions
 and independent indexed literals. Static fidelity and focused Python tests do
 not establish original GUI, native persistence or physical-device acceptance.
+
+The [frozen indexed-block source check](../research/fixtures/senlla-indexed-block-source-check-20261004.json)
+covers fourteen SENLLA modules at authored commit `3acca689`: 247 parents,
+3,846 separate subtests and zero failures, errors or skips. All 4,086 tracked
+inputs remain unchanged in the frozen checkout. Independent reviews clear
+the eighteen block method pins, final request component and current-array
+ST7 overlay. The 135-pin pre-key schedule is static design evidence. The
+key engine, complete owning save/public CLI and installed-wheel/original/
+native/hardware acceptance remain open. Full suites are deferred for speed.

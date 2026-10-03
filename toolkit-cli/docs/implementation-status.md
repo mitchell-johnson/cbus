@@ -2,6 +2,25 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA indexed-block source check](../research/fixtures/senlla-indexed-block-source-check-20261004.json)
+adds 66 source-ordered load requests from the guarded 93-field snapshot.
+Indexed level, expiry membership and application/group lookups retain
+current owning getter/callback boundaries. CoreKey rebuilds LightLevel with
+a255 prefix, eight current block levels and a255 suffix. LightIndex above2
+grows the array; the whole-unit schema/programmer must handle or explicitly
+refuse that exact boundary. ST7 now overlays captured power states on the
+current CoreKey array: resume performs no indexed write, retaining the
+rebuilt value. Independent source reviews clear the eighteen block method
+pins and current-array power overlay. Fourteen modules pass 247 parents and
+3,846 separate subtests with zero skips; all 4,086 tracked inputs remain
+unchanged at authored commit `3acca689`. Inventory/register/census checks
+pass at 748 modules and all 259 native requirements selected. The 135-pin
+constructor/getter/metadata schedule is static design evidence; actual
+pre-key object creation/callback replay, complete key engine, fresh control
+executor and 93-parameter public save remain open. Full suites are deferred
+for speed; no new installed-wheel/original/native/hardware acceptance is
+claimed. Complete coverage remains false with 487 obligations.
+
 The [SENLLA expiry-correction source check](../research/fixtures/senlla-ordinary-expiry-correction-source-check-20261004.json)
 verifies the corrected raw expiry load projection at authored commit
 `248d183e`: thirteen modules, 233 parents and 3,746 separate subtests,

@@ -47,3 +47,12 @@ covers six SENLLA modules at authored commit `3316b13e`: 89 parent tests,
 794 separate subtests, zero failures or skips. All 4,047 tracked inputs
 remain unchanged. This records source components, without an installed
 wheel, public whole-unit save, original runtime or physical acceptance.
+
+The [frozen indexed-block source check](../research/fixtures/senlla-indexed-block-source-check-20261004.json)
+covers fourteen SENLLA modules at authored commit `3acca689`: 247 parents,
+3,846 separate subtests and zero failures, errors or skips. All 4,086 tracked
+inputs remain unchanged in the frozen checkout. Independent reviews clear
+the eighteen block method pins, final request component and current-array
+ST7 overlay. The 135-pin pre-key schedule is static design evidence. The
+key engine, complete owning save/public CLI and installed-wheel/original/
+native/hardware acceptance remain open. Full suites are deferred for speed.
