@@ -1,0 +1,207 @@
+{
+  "behavior": {
+    "all_eight_flag_combinations_preserve_adjacent_memory_bits": true,
+    "effective_memory_layout_is_authority": true,
+    "int_layout_identity_remains_exact": true,
+    "native_bit_packing_ignores_declared_bit_size_and_array_skip": true,
+    "omitted_bit_size_uses_native_one_bit": true,
+    "provider_schema_probe": {
+      "date": "2026-10-04",
+      "format": "cbus-senlla-provider-schema-probe-v1",
+      "original_instructions_executed": false,
+      "physical_acceptance": false,
+      "private_defaults_or_parameter_contents_published": false,
+      "private_spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee",
+      "provider_schema_load_passed": true,
+      "spec_identity": "SENLLA.xml",
+      "synthetic_thirteen_field_view_matches_authored_fixture": true,
+      "three_omitted_bit_widths_use_effective_one_bit": true
+    },
+    "three_store_flags_still_refuse_values_outside_zero_or_one": true
+  },
+  "boundaries": {
+    "coverage_require_complete_exit": 1,
+    "full_inherited_senlla_save_supported": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "historical_surface_release_receipt_unchanged": true,
+    "native_backend_driver_rerun": false,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "publication_head_ci_is_separate": true,
+    "receipt_guide_status_are_post_validation_annotations": true,
+    "vendor_server_executed": false
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "memory_codec": {
+      "bytes": 18803,
+      "identity": "src/cbus_toolkit/memory.py",
+      "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+    },
+    "model": {
+      "bytes": 13161,
+      "identity": "src/cbus_toolkit/senlla_surface.py",
+      "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+    },
+    "snapshots": [
+      {
+        "bytes": 566326,
+        "identity": "inputs-before.json",
+        "sha256": "97fbb75e16a715201cd5babd4f48c3e4c29eef7ba811c2fb08cebe709f4f7bae"
+      },
+      {
+        "bytes": 566326,
+        "identity": "inputs-terminal.json",
+        "sha256": "97fbb75e16a715201cd5babd4f48c3e4c29eef7ba811c2fb08cebe709f4f7bae"
+      }
+    ],
+    "source_input_count": 4023,
+    "tested_head": "724e598212b4f9c35c16d81a80efe14bf88d3224"
+  },
+  "date": "2026-10-04",
+  "format": "cbus-senlla-bit-layout-owned-release-v1",
+  "metadata": {
+    "all_six_reused_unchanged_receipt_source_bindings_valid": true,
+    "census_complete": false,
+    "inventory_register_census_checks": "passed",
+    "native_required_selected": 259,
+    "obligations": 487,
+    "receipts": [
+      {
+        "bytes": 32883,
+        "identity": "research/fixtures/cgate-session-differential-fixed.json",
+        "sha256": "58901f849a8e8e3223f059b2e38dffb0bba328515e0935e188884553344c4dfb"
+      },
+      {
+        "bytes": 35278,
+        "identity": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "sha256": "e9d7b23d93b26a268555f3eceb5acdf34fdc6cc93bd3bc60bb8588536a839f88"
+      },
+      {
+        "bytes": 32339,
+        "identity": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "d7817ce16599952e59a90b313101d32b1ac90905d3b1662057b3d3e105c933be"
+      },
+      {
+        "bytes": 34464,
+        "identity": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "fb06e82957886c9965d67f080538663fb8b7686be2843bccb2d08de1442b0a12"
+      },
+      {
+        "bytes": 61158,
+        "identity": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "20d37d6e0a0711435088ecc1f84996906f2dbf99ce1990abb06cc0e860580212"
+      },
+      {
+        "bytes": 63063,
+        "identity": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "357bbaa90b5897c54ac9f98cae7faa1d4f061f4757447cc782ef9b1835b0b992"
+      }
+    ],
+    "test_modules": 735
+  },
+  "package": {
+    "extras": {
+      "capstone": "5.0.7",
+      "cryptography": "50.0.2",
+      "pefile": "2024.8.26",
+      "pyserial": "3.5",
+      "pytest": "9.1.1",
+      "pyusb": "1.3.1",
+      "pyzipper": "0.3.6",
+      "unicorn": "2.1.4"
+    },
+    "installed_import_no_source_leak": true,
+    "package_files": 380,
+    "proof": {
+      "bytes": 38297,
+      "identity": "package-proof.json",
+      "sha256": "b7642d8abcf5b4c003a15775c17973741f11b266db2e28c792ab0ceee51ee639"
+    },
+    "python": "3.13.14",
+    "source_zip_installed_equal": true,
+    "wheel": {
+      "bytes": 2927895,
+      "identity": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "728f3de6378d17041b55496f2e9fe1300f7c84f9b3e196c01f7dd71f2ceb00f6"
+    }
+  },
+  "phases": {
+    "source": {
+      "audit": {
+        "bytes": 116030,
+        "identity": "source-results.json",
+        "sha256": "76674e8ad7f0cd8e4636c5a1a84d12ea966e5b53cce085ccd256a83cb1159c2f"
+      },
+      "component_parent_passed": 27,
+      "errors": 0,
+      "failures": 0,
+      "junit": {
+        "bytes": 39988,
+        "identity": "source.xml",
+        "sha256": "84e9aa6a77babd5b4ffca4d092ce9a167998fba2406ee4a5cf087e5d737a561d"
+      },
+      "parent_passed": 108,
+      "parent_skipped": 2,
+      "separate_subtests_passed": 259,
+      "skipped_ids": [
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "three_new_regression_ids": [
+        "tests/test_senlla_surface.py::SENLLASurfaceTests::test_ignored_bit_width_and_skip_preserve_view_and_unsigned_guard",
+        "tests/test_senlla_surface.py::SENLLASurfaceTests::test_omitted_bit_metadata_uses_native_one_bit_layout",
+        "tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_accepts_authored_spec_without_bit_width_or_skip"
+      ],
+      "trace": {
+        "bytes": 88551,
+        "identity": "source-trace.json",
+        "sha256": "a447a81706104f0e39f98a23872ef7b22d976e5b5244048072d70969dc1cbdb9"
+      }
+    },
+    "wheel": {
+      "audit": {
+        "bytes": 116030,
+        "identity": "wheel-results.json",
+        "sha256": "da2d77981df0eca4e6fbaea466dd53a39451dd95d3ee394e26aa6a8ba8e1c3a8"
+      },
+      "component_parent_passed": 27,
+      "errors": 0,
+      "failures": 0,
+      "junit": {
+        "bytes": 39989,
+        "identity": "wheel.xml",
+        "sha256": "0574ef72c8440c0b59f20044117e927e26634e6ff0da101c07140f8f5125ad35"
+      },
+      "parent_passed": 108,
+      "parent_skipped": 2,
+      "separate_subtests_passed": 259,
+      "skipped_ids": [
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "three_new_regression_ids": [
+        "tests/test_senlla_surface.py::SENLLASurfaceTests::test_ignored_bit_width_and_skip_preserve_view_and_unsigned_guard",
+        "tests/test_senlla_surface.py::SENLLASurfaceTests::test_omitted_bit_metadata_uses_native_one_bit_layout",
+        "tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_accepts_authored_spec_without_bit_width_or_skip"
+      ],
+      "trace": {
+        "bytes": 88551,
+        "identity": "wheel-trace.json",
+        "sha256": "a447a81706104f0e39f98a23872ef7b22d976e5b5244048072d70969dc1cbdb9"
+      }
+    }
+  },
+  "selection": [
+    "tests/test_senlla_surface.py",
+    "tests/test_cli_senlla_surface.py",
+    "tests/test_cli_sensors.py",
+    "tests/test_cgate_tagged_session_differential.py",
+    "tests/test_cgate_dbsetxml_unit_differential.py",
+    "tests/test_cgate_session_differential.py",
+    "tests/test_sanitize_evidence_receipts.py"
+  ]
+}
