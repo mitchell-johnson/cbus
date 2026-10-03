@@ -326,6 +326,19 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[pending-text-mock]' \
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[invalid-selector-preconnection-mock]' \
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-readonly-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-readonly-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-readonly-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[mixed-three-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-default-then-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-default-then-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-default-then-callbacks-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[timer-injected-state-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[room-courtesy-injected-state-mock]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_lost_successful_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
@@ -615,6 +628,19 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[pending-text-daemon]' \
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[invalid-selector-preconnection-daemon]' \
 		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-readonly-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-readonly-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-readonly-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[mixed-three-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[timer-default-then-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[shutter-default-then-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_callbacks_one_save_and_preservation[room-courtesy-default-then-callbacks-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[timer-injected-state-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[room-courtesy-injected-state-daemon]' \
+		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_lost_successful_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \

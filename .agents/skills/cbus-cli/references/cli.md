@@ -693,3 +693,14 @@ transfer labels/images or program hardware. An empty category selection still
 writes forced checksum fields. Keep the exact source/provider identities and
 observe the complete freshness checks; never replay an uncertain SAVE. See
 `toolkit-cli/docs/edlt-global-image-metadata.md` for offline and live limits.
+
+## Timer, Shutter and Room Courtesy parent callbacks
+
+Use `edlt parent-transaction-plan` offline or
+`cgate unit edlt-parent-transaction` online. Nest `dual_key_controls` in its
+owning `timer`, `shutter` or `room-courtesy` operation; consult the issued view
+before selecting an exact binding choice. A retained controls-only operation
+needs page/position and can omit group; a conversion requires the existing
+explicit group/ordinary configuration profile. See
+`toolkit-cli/docs/edlt-dual-key-controls.md` for events, source clamps, icon
+coupling, timer flags, preservation and one-save/no-replay rules.

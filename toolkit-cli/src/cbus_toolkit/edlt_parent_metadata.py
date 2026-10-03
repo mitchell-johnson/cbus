@@ -488,7 +488,18 @@ def _operation_groups(values, operations):
                         'Secondary ' + kind + ' operation requires a configured '
                         'secondary application')
                 application = secondary
-            add(application, operation['group'],
+            group = operation.get('group')
+            if group is None and 'dual_key_controls' in operation:
+                widget = _candidate_widget(operation, {**values, 'NavWidgetType': (navigation,)})
+                if widget is None:
+                    raise EdltError('Dual-key callbacks require a valid owning page and position')
+                record_kind = values[_pp_field(widget)][0]
+                if record_kind == dynamic_widget_types[kind]:
+                    group = values[_pp_field(widget, 6)][0]
+                    application = secondary if values[_pp_field(widget, 1)][0] & 128 else primary
+                else:
+                    group = 255
+            add(application, group,
                 f'operation {index} {kind} selected group',
                 images=needs_images(operation))
         elif kind == 'enable':
@@ -1510,7 +1521,8 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
-            or any(row.get('label_controls') or row.get('scene_controls') or row.get('mra_controls') for row in operations)
+            or any(row.get('label_controls') or row.get('scene_controls')
+                   or row.get('mra_controls') or row.get('dual_key_controls') for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1643,7 +1655,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     source_operations=None, dialogs=(), extra_creations=(),
                     cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
                     dependency_values=None, lighting_label_bindings=(),
-                    app_group_label_bindings=(), scene_widget_bindings=(), mra_control_bindings=()):
+                    app_group_label_bindings=(), scene_widget_bindings=(), mra_control_bindings=(),
+                    dual_key_control_bindings=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1747,7 +1760,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                          _lighting_label_bindings=lighting_label_bindings,
                          _app_group_label_bindings=app_group_label_bindings,
                          _scene_widget_bindings=scene_widget_bindings,
-                         _mra_control_bindings=mra_control_bindings)
+                         _mra_control_bindings=mra_control_bindings,
+                         _dual_key_control_bindings=dual_key_control_bindings)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1777,6 +1791,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     mra_context = None
     widget_control_history = any(
         'label_controls' in row or 'scene_controls' in row or 'mra_controls' in row
+        or 'dual_key_controls' in row
         for row in operations)
     scene_initialization = None
     scene_initialization_values = supplied
@@ -1837,6 +1852,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     app_group_label_bindings = []
     scene_widget_bindings = []
     mra_control_bindings = []
+    dual_key_control_bindings = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
     seed_levels = {key: dict(rows) for key, rows in levels.items()}
     if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
@@ -2008,7 +2024,12 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 label_controls = options.pop('label_controls', None)
                 scene_controls = options.pop('scene_controls', None)
                 mra_controls = options.pop('mra_controls', None)
-                if kind in MRA_WIDGET_TYPES and mra_control_profile:
+                dual_key_controls = options.pop('dual_key_controls', None)
+                if dual_key_controls is not None:
+                    from .edlt_dual_key_parent_controls import plan_control_base
+                    widget_plan, _base_receipt = plan_control_base(
+                        widget_editor, state, kind=kind, options=options)
+                elif kind in MRA_WIDGET_TYPES and mra_control_profile:
                     from .edlt_mra_parent_controls import plan_control_base
                     widget_plan, _base_receipt = plan_control_base(widget_editor, state,
                         kind=kind, options=options, controls=mra_controls or (), global_context=mra_context)
@@ -2106,6 +2127,23 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                         external_used_indices=external_references(editor.common, projected, widget_plan.widget),
                         project_sha256=_digest(language_text), provider_sha256=_digest(_json(provider)))
                     mra_control_bindings.append(issued)
+                    widget_plan, _receipt = project_owned_controls(editor, issued, row, projected, widget_plan)
+                    projected = {**widget_plan.expected, **widget_plan.changes}
+                if dual_key_controls is not None:
+                    from .edlt_dual_key_controls import issue_dual_key_control_binding
+                    from .edlt_dual_key_parent_controls import (retained_names,
+                        external_references, project_owned_controls)
+                    provider = {'project_images': None if snapshot.project_images is None
+                                else snapshot.project_images.evidence(),
+                                'dltp': None if snapshot.dltp_index is None
+                                else snapshot.dltp_index.evidence()}
+                    issued = issue_dual_key_control_binding(owner=editor, operation=row,
+                        values=projected, family=kind, widget=widget_plan.widget,
+                        operation_number=index + 1, retained_names=retained_names(projected),
+                        external_used_indices=external_references(editor.common, projected, widget_plan.widget),
+                        default_initialized=_base_receipt['converted'],
+                        project_sha256=_digest(language_text), provider_sha256=_digest(_json(provider)))
+                    dual_key_control_bindings.append(issued)
                     widget_plan, _receipt = project_owned_controls(editor, issued, row, projected, widget_plan)
                     projected = {**widget_plan.expected, **widget_plan.changes}
                 slots = {widget_plan.widget: widget_plan.record}
@@ -2351,7 +2389,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         lighting_label_bindings=tuple(lighting_label_bindings),
         app_group_label_bindings=tuple(app_group_label_bindings),
         scene_widget_bindings=tuple(scene_widget_bindings),
-        mra_control_bindings=tuple(mra_control_bindings))
+        mra_control_bindings=tuple(mra_control_bindings),
+        dual_key_control_bindings=tuple(dual_key_control_bindings))
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 

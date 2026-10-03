@@ -11,6 +11,31 @@ with 588 separate subtests, four provisioning skips and all 20 owned backend
 cases. Broad runs were interrupted at the user's request to prioritize speed;
 no full-suite pass is claimed. Original GUI, other profiles and physical
 acceptance remain open, and the functional completion gate remains nonzero.
+The subsequent merge with main `83b49d10` passes 107 parent tests and 588
+separate subtests in both source and a fresh installed wheel, with four skips
+and all 20 DIN backend cases each. See the separate
+[integration receipt](../research/fixtures/din-main-integration-20261003.json);
+the original batch counts above remain historical evidence.
+
+The [repository, dual-key and Neo batch](feature-batch-2026-10-03-repository-dual-key-neo.md)
+adds a 256 MiB streamed cmqttd repository profile with snapshot-free DB reads,
+source-owned Timer/Shutter/Room Courtesy callbacks inside the existing parent
+transaction, and all 43 Neo/NeoPro report types across 59 factory partitions.
+Sixteen simultaneously retained synthetic backups exceed the previous 32 MiB
+limit and survive a fresh daemon process while MQTT delivery continues.
+Read [storage limits](../../docs/cgate-repository-capacity.md),
+[dual-key inputs](edlt-dual-key-controls.md) and
+[Neo profiles](project-documentation-neo-profiles.md). Both affected 36-module source and fresh installed-wheel scopes pass 1,377
+parent tests and 1,216 separate subtests, with 18 disclosed provisioning skips
+and zero failures. All 26 new public cases execute on each scope; all 377
+source/ZIP/installed package files match and 3,985 phase inputs plus both
+release binaries remain quiet. Required Rust checks pass 8,720 tests with one
+private-input ignored case. Exact scopes, skip IDs and independent reviews are
+in the [release receipt](../research/fixtures/repository-dual-key-neo-owned-release-20261003.json).
+Outcome annotations follow frozen executions without changing runtime/test/CI
+inputs; publication-head CI is separate. Original lifecycle/GUI, complete
+native reporting, physical acceptance and mutation-memory scaling remain open.
+The category ledger and unresolved functional percentage are unchanged.
 
 The [MRA callback adapter](edlt-mra-controls.md) adds explicit `mra_controls`
 for Zone Control, Source Select and Source Control inside the owning parent.
@@ -58,7 +83,10 @@ tests and 1,030 separate subtests, with 15 explicit skips and one failure.
 The failure occurred while retaining the fourteenth synthetic Global Programming
 backup: cmqttd refused `PROJECT COPY` at its 32 MiB repository limit and rolled
 back the change. [Issue77](https://github.com/mitchell-johnson/cbus/issues/77)
-tracks that capacity gap. The current affected-module successor verifies all
+tracks that capacity gap. The repository batch above now accepts sixteen simultaneously retained
+large backups in separate service and daemon capacity fixtures; the older
+Global Programming scope below keeps its historical one-backup profile.
+The current affected-module successor verifies all
 16 category masks while checking and removing each test-owned backup in turn,
 plus the eight metadata modules; exact results and package/input proofs belong
 to the [release receipt](../research/fixtures/widget-adapters-global-owned-release-20261003.json).

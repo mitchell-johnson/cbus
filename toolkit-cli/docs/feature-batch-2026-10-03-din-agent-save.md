@@ -60,6 +60,20 @@ binds these scopes to candidate bytes and retained execution traces; its base
 Git commit alone does not identify the uncommitted execution tree. The bounded
 counts overlap and must not be added. Current publication-head CI is not claimed.
 
+The integration successor merges main `83b49d10` (repository capacity,
+dual-key controls and Neo reports) while preserving the published DIN commit
+`801a5775`. DIN runtime and tests remain unchanged; Rust matches the merged
+main revision exactly. Both seven-module source and fresh installed-wheel
+selections passed **107 parent tests and 588 separate subtests**, with the
+same **four provisioning skips** and all **20 public DIN backend cases** each.
+All 2,721 scoped inputs and two freshly rebuilt binaries stayed unchanged;
+all 377 source/wheel/installed package files matched. Six fresh owned metadata
+comparisons, register/census checks and independent merge review passed.
+The [integration receipt](../research/fixtures/din-main-integration-20261003.json)
+also retains the corrected collection/build setup failures. This is focused
+integration evidence; no full suite or new original/native/hardware gate ran.
+Historical release receipts above remain unchanged.
+
 Remaining work includes Synchronise Sliders and Stagger, re-entrant
 shared-group controls, original form initialization and notifications,
 application/group object creation, other firmware/models, and physical

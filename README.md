@@ -84,6 +84,14 @@ MRA Zone Control, Source Select and Source Control also accept explicit
 `mra_controls` inside the parent transaction. These source-owned callbacks
 retain hidden fields and static names; Zone macro repair occurs only on an
 explicit getter. Read [MRA callbacks](toolkit-cli/docs/edlt-mra-controls.md).
+Timer, Shutter and Room Courtesy add explicit `dual_key_controls` inside their
+owning parent operation. Raw fields remain untouched until the selected
+source-owned setter/getter is invoked; timer, level, colour and icon bindings
+share one guarded parent save. Read [dual-key controls](toolkit-cli/docs/edlt-dual-key-controls.md).
+Saved Neo/NeoPro reports now cover all 43 exact classes across 59 source factory
+partitions, including the six couplers' Bistable column and distinct group usage.
+Read [Neo report profiles](toolkit-cli/docs/project-documentation-neo-profiles.md) for
+required snapshots and remaining original/physical acceptance.
 The existing Reset initial-profile guards remain unchanged, and original
 form dispatch, rendering and audio hardware acceptance remain open.
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
