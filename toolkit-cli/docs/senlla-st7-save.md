@@ -31,3 +31,9 @@ forms, vendor services or hardware execute. This is an internal component
 with no public CLI save action or installed-wheel release. The owning
 93-parameter initialization/save lifecycle and Windows Toolkit parity remain
 open in issue41.
+
+The [combined frozen source check](../research/fixtures/senlla-foundation-source-check-20261004.json)
+covers six SENLLA modules at authored commit `3316b13e`: 89 parent tests,
+794 separate subtests, zero failures or skips. All 4,047 tracked inputs
+remain unchanged. This records source components, without an installed
+wheel, public whole-unit save, original runtime or physical acceptance.

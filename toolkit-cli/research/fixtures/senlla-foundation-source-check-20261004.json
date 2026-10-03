@@ -1,0 +1,124 @@
+{
+  "boundaries": {
+    "complete_unit_save_implemented": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "installed_wheel_release": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "owning_loader_implemented": false,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "source check receipt",
+      "component guides",
+      "implementation status"
+    ],
+    "public_cli_save_added": false,
+    "source_component_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 569371,
+        "identity": "inputs-before.json",
+        "sha256": "90a41a73b66ac6ae351d31ecbdf335773695529a07c2f7004bdd6fd26085bcbf"
+      },
+      {
+        "bytes": 569371,
+        "identity": "inputs-terminal.json",
+        "sha256": "90a41a73b66ac6ae351d31ecbdf335773695529a07c2f7004bdd6fd26085bcbf"
+      }
+    ],
+    "source_input_count": 4047,
+    "tested_head": "3316b13ef511f8661888db7372ac9a1f700cc922"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 30152,
+      "identity": "source.xml",
+      "sha256": "ef6f6bcf6ba8dba8dc9051a8c22810d1a64eb422e051b6535a32f136f99fde38"
+    },
+    {
+      "bytes": 163354,
+      "identity": "source-trace.json",
+      "sha256": "d2a83f764b5686c6cab805930b94071ac6d7a5cdf60948fdbe574b0a6a0eea03"
+    },
+    {
+      "bytes": 197110,
+      "identity": "source-results.json",
+      "sha256": "294e6376fc538332ca2585ad3f92d67ea8f064bb0d85ac833bdc19c1514db5c2"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-foundation-source-check-v1",
+  "independent_source_review": {
+    "inherited_scalars": "50 exact method pins and component clear",
+    "key_references": "64 exact method pins and component clear",
+    "occupancy": "27 exact method pins and corrected packed byte outputs clear"
+  },
+  "models": [
+    {
+      "bytes": 4303,
+      "identity": "src/cbus_toolkit/senlla_banks.py",
+      "sha256": "d4e2bfbec17850aad860ef39259f722f2d7da4160baa637d9f85005164cffe0e"
+    },
+    {
+      "bytes": 7002,
+      "identity": "src/cbus_toolkit/senlla_ordinary_keys.py",
+      "sha256": "f4d6218c5cf2b3838120dd240b3825fe555b1eb58b3ba5a95c3d45c1422f8ac5"
+    },
+    {
+      "bytes": 13161,
+      "identity": "src/cbus_toolkit/senlla_surface.py",
+      "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+    },
+    {
+      "bytes": 3086,
+      "identity": "src/cbus_toolkit/senlla_st7_save.py",
+      "sha256": "eaccfb05d68bcb577d3a87757b9673e6c05f3f8523b3cd23ae8427c2c80f6b95"
+    },
+    {
+      "bytes": 9185,
+      "identity": "src/cbus_toolkit/senlla_key_references.py",
+      "sha256": "6c0030577cfafaa103559484bfd96949a2f2be9515455bdb9d1a621c7faa710b"
+    },
+    {
+      "bytes": 8883,
+      "identity": "src/cbus_toolkit/senlla_occupancy.py",
+      "sha256": "1801ebb924b948d30980b0c2d2ea1d5df94e56728685e9ac4bfc3bca013f3bd9"
+    }
+  ],
+  "parent_passed": 89,
+  "selection": [
+    "tests/test_senlla_banks.py",
+    "tests/test_senlla_ordinary_keys.py",
+    "tests/test_senlla_surface.py",
+    "tests/test_senlla_st7_save.py",
+    "tests/test_senlla_key_references.py",
+    "tests/test_senlla_occupancy.py"
+  ],
+  "separate_subtests_passed": 794,
+  "skipped": 0,
+  "static_sources": [
+    {
+      "bytes": 32135,
+      "identity": "research/fixtures/senlla-inherited-scalars-source.json",
+      "sha256": "ec6d63e0c70f4e01c22dd0b4fe9d5c68440870a7c780b24a464e68d159896f69"
+    },
+    {
+      "bytes": 35851,
+      "identity": "research/fixtures/senlla-key-references-source.json",
+      "sha256": "ed72bc67cf175f92e465a0e4dddb6fa8968a348fc44058abc833ea3f7dcf7aa6"
+    },
+    {
+      "bytes": 28594,
+      "identity": "research/fixtures/senlla-occupancy-transition-source.json",
+      "sha256": "207ebafa981f52b584d0f308bf8ac8e81b65a9476500dd178500dbd060443d26"
+    }
+  ]
+}

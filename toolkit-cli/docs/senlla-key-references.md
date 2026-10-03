@@ -30,3 +30,9 @@ component does not infer a collision destination, group-creation decision,
 complete callback replay or whole-unit save. It adds no public CLI action.
 Original/native/hardware acceptance and full Windows Toolkit parity remain
 open in issue41.
+
+The [combined frozen source check](../research/fixtures/senlla-foundation-source-check-20261004.json)
+covers six SENLLA modules at authored commit `3316b13e`: 89 parent tests,
+794 separate subtests, zero failures or skips. All 4,047 tracked inputs
+remain unchanged. This records source components, without an installed
+wheel, public whole-unit save, original runtime or physical acceptance.

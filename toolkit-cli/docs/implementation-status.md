@@ -2,6 +2,17 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA foundation source check](../research/fixtures/senlla-foundation-source-check-20261004.json)
+adds ordered key references, explicit occupancy transitions and captured
+inherited power-save state. PIR occupancy exports use three packed byte
+masks. Six focused modules pass 89 parents and 794 separate subtests with
+zero skips; all 4,047 tracked files remain unchanged during frozen checks.
+Independent reviews verify 141 exact source pins across the three new
+components. The source-only check adds no public save or native/hardware
+acceptance. The census is current at 740 test modules and 259 native
+requirements; complete parity remains open. Full suites are deferred
+for speed.
+
 The [SENLLA provider-schema correction](../research/fixtures/senlla-bit-layout-owned-release-20261004.json)
 uses the native memory codec's one-bit layout for store flags with omitted
 `BitSize`. Source and a fresh installed wheel each pass 108 focused parents and
