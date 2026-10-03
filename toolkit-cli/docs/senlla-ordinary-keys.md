@@ -51,3 +51,11 @@ It introduces no public CLI save action. Scene selectors, group creation and
 application rebinding, inherited sensor normalization, fresh scalar controls,
 the complete 93-parameter save and native/hardware acceptance remain separate
 integration work. Existing read-only surface views retain their original scope.
+
+The [frozen expiry-correction source check](../research/fixtures/senlla-ordinary-expiry-correction-source-check-20261004.json)
+covers thirteen SENLLA modules at authored commit `248d183e`: 233 parents,
+3,746 separate subtests and zero failures, errors or skips. All 4,081 tracked
+inputs remain unchanged in the frozen checkout. The corrected component
+has an independent final source review. The key engine, complete owning
+save/public CLI and installed-wheel/original/native/hardware acceptance
+remain open. Full suites are deferred for speed.

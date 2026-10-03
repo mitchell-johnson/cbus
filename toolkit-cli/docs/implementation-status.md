@@ -2,6 +2,15 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA expiry-correction source check](../research/fixtures/senlla-ordinary-expiry-correction-source-check-20261004.json)
+verifies the corrected raw expiry load projection at authored commit
+`248d183e`: thirteen modules, 233 parents and 3,746 separate subtests,
+zero failures/errors/skips and all 4,081 tracked inputs unchanged. Final
+independent source review is clear. Inventory/register/census checks pass
+at 747 modules and all 259 native requirements selected. Full suites are
+deferred for speed; complete coverage remains false with 487 obligations.
+No new installed-wheel/original/native/hardware acceptance is claimed.
+
 The [SENLLA ordinary-key expiry correction](senlla-ordinary-keys.md)
 distinguishes raw-loaded microfunction0 from an actual nil reference.
 The raw block loader normalizes unsupported expiry nibbles to15 before
