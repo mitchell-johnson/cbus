@@ -2,6 +2,16 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA surface component batch](feature-batch-2026-10-03-senlla-surface.md)
+adds a separate read-only thirteen-field view for SENLLA / 5754PE / 2.4.00..2.4.99,
+with source-derived target/margin, power-up and bank usage overlays. Source and
+a fresh installed wheel each pass 105 parents and 239 separate subtests, with
+two native-service skips. All 380 package files match; all 4,021 tracked inputs
+and both binaries stay unchanged during frozen execution. This eight-key
+class's complete ordinary-save and original/native/physical acceptance remain
+open. Full suites are deferred for speed and complete parity remains nonzero.
+Exact scope and skips are in the linked receipt.
+
 The [SENLL Global interval batch](feature-batch-2026-10-03-senll-global-status.md)
 adds source-owned fresh initialization: loaded 0..2 becomes 3 seconds before
 explicit controls, while raw expected bytes remain stale guarded. Source and a
