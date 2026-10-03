@@ -1,0 +1,384 @@
+{
+  "boundaries": {
+    "complete_inherited_executor_implemented": false,
+    "complete_owning_loader_implemented": false,
+    "complete_unit_save_implemented": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "installed_wheel_release": false,
+    "key_event_engine_included": true,
+    "metadata_creation_backend_implemented": false,
+    "native_control_primitives_implemented": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "persistent_general_control_kernel_included": true,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "toolkit-cli/research/fixtures/senlla-prekey-controls-source-check-20261004.json",
+      "toolkit-cli/docs/senlla-prekey.md",
+      "toolkit-cli/docs/senlla-key-events.md",
+      "toolkit-cli/docs/senlla-key-controls.md",
+      "toolkit-cli/docs/implementation-status.md"
+    ],
+    "public_cli_save_added": false,
+    "shared_object_prekey_prefix_included": true,
+    "source_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files in the frozen checkout",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 576314,
+        "identity": "inputs-before.json",
+        "sha256": "d3c7f4984ac7ed45b8ba432bfa9dec91dc85f36585e887a97c857569f7b132a8"
+      },
+      {
+        "bytes": 576314,
+        "identity": "inputs-terminal.json",
+        "sha256": "d3c7f4984ac7ed45b8ba432bfa9dec91dc85f36585e887a97c857569f7b132a8"
+      }
+    ],
+    "source_input_count": 4101,
+    "tested_head": "9a1e024a7223869ba03b2d044368cc1ab6c4437e"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 117846,
+      "identity": "source.xml",
+      "sha256": "22a1baf507cea1732edbf43a131b4791496ec3776c3a636785197c44ffe619e2"
+    },
+    {
+      "bytes": 763167,
+      "identity": "source-trace.json",
+      "sha256": "a3a475cbe9dffe352fb5ec7e84ed655d2e74d55d45cfdfc9601fc0729bfb66d4"
+    },
+    {
+      "bytes": 912813,
+      "identity": "source-results.json",
+      "sha256": "e6c7d0e532c5769de43d7f5fc446edbf199858183b946280a8f2a39c0dd25697"
+    },
+    {
+      "bytes": 270973,
+      "identity": "metadata-results.json",
+      "sha256": "00bb40a6c18a954a2cb2024e99305a942fde2f2158d2446190aafe6bad71fa8e"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-prekey-controls-source-check-v1",
+  "independent_source_review": {
+    "current_power_array": "Captured power state overlays CURRENT CoreKey array fixed9 then8; resume performs no indexed write, preserving current bytes",
+    "fresh_forms": "190 exact method pins; ordered current-context requests and unit-name/string-tag writer boundary clear",
+    "historical_inputs": "Earlier key387/389 and postraw-only proofs remain preserved; their runtime hashes prove only their original authored candidates",
+    "historical_key_review": "Earlier 387-span/four-file review is preserved; its pre-correction save-order/secondary-loop claims are superseded by the final correction receipt",
+    "indexed_blocks": "18 exact method pins; 66 source-ordered owner requests, current getter/expiry boundaries and prefix/suffix255 native rebuild growth clear",
+    "key_events": "Exact source span review plus save-order and all-eight secondary-loop corrections; shared counters, ordered references, Scene swaps, owned notifications and application tails clear for the declared post-raw-block entry",
+    "lifecycle": "65 exact method pins; final counters, setters and stable active tracked-reference helper clear",
+    "native_save_order": "CoreKey block/allocation capture then CoreNeo Scene capture before Invoke nil-trigger getter/setter; later secondary overlay rereads current state",
+    "ordinary_expiry": "10 exact method pins; all16 nonnil factory identities, allowed expiry list and two replacement literals clear",
+    "persistent_controls": "64 exact spans plus DFM/VMT reopened; current roots, scalar observer, render guards, mutable lists and explicit scheduling/framework/comparison dependencies clear",
+    "prekey": "162 exact spans reopened; actual application/Area and ordered raw setter prefix on SAME runtime, mandatory inherited/metadata executors retained",
+    "prekey_schedule": "135 exact pins reopened; source phase/metadata timeline design evidence only, not an executed loader",
+    "review_receipts": [
+      {
+        "bytes": 5624,
+        "identity": "senlla-key-events-shared-constructor-final-independent-review-derived.json",
+        "sha256": "0a7ea5c3da413aa3607344fd2dfb595c10b38faf5b82a32699d65d08e4c73015"
+      },
+      {
+        "bytes": 4376,
+        "identity": "senlla-prekey-final-independent-review-derived.json",
+        "sha256": "92aba96b84dc6272ea8f47c77d0ec91fe2d46e51634484bcd4f9be96d2a411be"
+      },
+      {
+        "bytes": 5345,
+        "identity": "senlla-key-controls-final-independent-review-derived.json",
+        "sha256": "816dc5cf717cdef935251172e70cb4ff5aca113b63a5bafbba60860cf018516d"
+      },
+      {
+        "bytes": 4977,
+        "identity": "senlla-fresh-key-events-corrected-final-independent-review-derived.json",
+        "sha256": "33e79e4318c36da5c803b1b0e841200dd1894d717b9af32043c4a662acc89438"
+      },
+      {
+        "bytes": 9104,
+        "identity": "senlla-key-events-save-order-secondary-correction-derived.json",
+        "sha256": "f8c2be02e746574edb55254a882cab288a3502511dc1d7fd0a00400aedf4b475"
+      },
+      {
+        "bytes": 4739,
+        "identity": "senlla-before-save-capture-order-derived-v2.json",
+        "sha256": "5c0e21e69cbc4b5710d046015c2890c68eabc2962dd90b23f86ac6e101530365"
+      },
+      {
+        "bytes": 5314,
+        "identity": "senlla-fresh-key-events-final-independent-review-derived.json",
+        "sha256": "3a73eeac7c3378375b2b7f091b9df39628222e9add595308ee7fa849cfc50ec6"
+      },
+      {
+        "bytes": 11068,
+        "identity": "senlla-corekey-late-refresh-source-qualification-derived.json",
+        "sha256": "83f28882cef37e45c65ddc839cd041e07659f11d480e0ee7739e317d49e38878"
+      },
+      {
+        "bytes": 2427,
+        "identity": "senlla-fresh-current-power-array-independent-review-derived.json",
+        "sha256": "8bf02685be5af0c783882e86868a4412df5692e908a9469bc40422d85bc5afb9"
+      },
+      {
+        "bytes": 2426,
+        "identity": "senlla-fresh-block-values-independent-review-derived.json",
+        "sha256": "6c09aefe8fb6556aea51b8915b5eaa63ff9165de571f7d747b69acef7881328f"
+      },
+      {
+        "bytes": 815,
+        "identity": "senlla-fresh-block-values-final-guide-review-derived.json",
+        "sha256": "432db9cc5ef5a68862885fd782585dcf0386470922b15edce5e1baaf7966fa42"
+      },
+      {
+        "bytes": 51273,
+        "identity": "senlla-prekey-getter-block-load-derived.json",
+        "sha256": "3362f4b8e8ebc1e00c3661b9c056370c680d2c2e7b3ea54867df9d797b9b3d77"
+      },
+      {
+        "bytes": 1858,
+        "identity": "senlla-fresh-ordinary-expiry-correction-independent-review-derived.json",
+        "sha256": "dc61b2f0c9e5fd031100872c8381eaf1b21c7a96144155cf2c475857fe5370fb"
+      },
+      {
+        "bytes": 1581,
+        "identity": "senlla-fresh-lifecycle-final-tracked-fixture-review-derived.json",
+        "sha256": "75b4163b37341435a0cb4e858ab4b3d28a481b890a51d3f75dcbe2b2abec9274"
+      },
+      {
+        "bytes": 2659,
+        "identity": "senlla-fresh-forms-final-independent-review-derived.json",
+        "sha256": "931cecf0a338f12faca6b6098e277898eb3b4b8f55e743e51580db9fb83e30fe"
+      },
+      {
+        "bytes": 18638,
+        "identity": "senlla-scene-parent-update-corrective-vectors.json",
+        "sha256": "0fad4c1e4f8c36336c9fe5c0181320444070b2c1aafef0f3e30619fd36b1fcf8"
+      },
+      {
+        "bytes": 14703,
+        "identity": "senlla-fresh-template-counter-correction-derived.json",
+        "sha256": "84799fd3211ca4247d5321d8e6696a629cca7117c5a236e54c54cd0adef67595"
+      }
+    ],
+    "reviewed_input_hashes": {
+      "docs/senlla-key-controls.md": "5877f3b38875bd9332bc555b976c5e6a6f19ebb4418b6c00c4c9cd01adc4e699",
+      "docs/senlla-key-events.md": "b0d9f746f5976c5aed51a328164a59ae5b9d435f63f295759fa7992e120de1e9",
+      "docs/senlla-prekey.md": "5d6eabd57b926a2e7a76d5e3a024ba66d04b05eb4a5bcf66eddf15c08fe92675",
+      "research/fixtures/senlla-block-values-source.json": "7b64eb44b0dc9f1f499c2187dd3ea5fef02c299c2999146cf70c238672b0f04b",
+      "research/fixtures/senlla-fresh-forms-source.json": "42fbd4ce8863bc698ade8e32973a87a51c736c21c55dc90fae1e4f405dacfadb",
+      "research/fixtures/senlla-key-controls-source.json": "7bef36abc184eecac4b96541a40a5e4dbf65b55ee76b0896e1cc30ab8ea19467",
+      "research/fixtures/senlla-key-events-shared-constructor-source.json": "3970f8b8ec5080a8585c792c5cab9126b1f7a458f1ab67654ec9044de577eeb4",
+      "research/fixtures/senlla-key-events-source.json": "eb0d444ba78a7dde84b06c7a13d5a5174d736dcba735eccf61848d51d850e9d2",
+      "research/fixtures/senlla-lifecycle-source.json": "8fa0e7a023b3c45311befa978bfa51bc31d9e90237b3c6915adce614e9418eb5",
+      "research/fixtures/senlla-ordinary-key-source.json": "f4437b8c5be55b9097f3ac04ca83c0ce6909e3c3ac11dc8520c0d47076397b6b",
+      "research/fixtures/senlla-prekey-source.json": "852ba29bdc326dbeb13a84f8e6bc25cf154fce4f13dd53b7c6a7f4834c2cf43e",
+      "research/fixtures/senlla-scene-composition-source.json": "262c21e4d0db7926287560a1faf69d5f4d4c6b61600cfcde3065700ada388ce5",
+      "src/cbus_toolkit/senlla_block_values.py": "dc235b24f6efeedb8bfcda4e3066fd7f8c051efa7767ed321a9b296d8a8ce763",
+      "src/cbus_toolkit/senlla_fresh_forms.py": "995193decad61f89d5c2143fa9482b3c8d9c63deb1fefd2235db11f1398e3bbd",
+      "src/cbus_toolkit/senlla_key_controls.py": "0b3ef310ffd028810abdff8e33e585ca635883e9c40e3dce4cb90a5a57f98e25",
+      "src/cbus_toolkit/senlla_key_events.py": "633d6edeeafa2d276684f118c3e6039609432db0c8db5f8847e5dc084d219b80",
+      "src/cbus_toolkit/senlla_lifecycle.py": "5b32137fd5fdedc8a144a4819d9dade59490999f06037028daba23d99e4b2f8e",
+      "src/cbus_toolkit/senlla_ordinary_keys.py": "e2e3454ab321cbece0010d5ffa3fc676a650514ed99fa72034726695bebca8e5",
+      "src/cbus_toolkit/senlla_prekey.py": "47f6a7ec19f191e2bb28bf29936ee623fc880032347cd5c051fab1e9f986bf53",
+      "src/cbus_toolkit/senlla_st7_save.py": "fb89247f10edc61a8402ddfceb25d2e9474e04c180ca179dd17a32a8dab7df5d",
+      "tests/test_senlla_block_values.py": "fa740b5de0f07a01b355d1283c0b379bd5c81633bdae396aaaa21567ea69fdde",
+      "tests/test_senlla_fresh_forms.py": "ee8722dc0051b167f53eec6e4a49c79c6687f44dfccacd0be52a5656b73b51c0",
+      "tests/test_senlla_key_controls.py": "62db1018581c21748c056692fcdb59c0e34f0556073bd444b83382a98c280a87",
+      "tests/test_senlla_key_events.py": "ed39d589f13ece96f43764487826002e6889307bb81802ac3781d44836bcecca",
+      "tests/test_senlla_lifecycle.py": "9a0a0247df43ce46ad1b13801368f72a2fdbdf3ef5aa0c8f66905d41b9d842f2",
+      "tests/test_senlla_ordinary_keys.py": "a59344052f83b5b58ccf6f7ae765043c6b61e3e68ef86bf43326c4dab755fb96",
+      "tests/test_senlla_prekey.py": "72dd0dd20807fef67558ade4aa9ff9d1c6eba70938bbf2409428c6a21ea5ff8f",
+      "tests/test_senlla_st7_save.py": "1356f2269dd39d539dcbaaccccf825bb12bd519cb8f447bfc54507417537990a"
+    },
+    "scene_correction": "71 exact method pins; two historical examples superseded and third retained",
+    "shared_constructor": "151 exact spans reopened; same Unit/block/key objects, CURRENT application lookup and canonical identity/counter handoff guards clear"
+  },
+  "metadata_checks": {
+    "census": {
+      "modules_with_skip_sites": 317,
+      "native_modules": {
+        "all": 140,
+        "none": 157,
+        "partial": 20
+      },
+      "native_runnable_tests": 259,
+      "native_selected_required_tests": 259,
+      "test_modules": 751
+    },
+    "coverage_require_complete_exit": 1,
+    "global_complete": false,
+    "inventory_current": true,
+    "register": {
+      "census_complete": false,
+      "evidence_records": 3,
+      "obligations": 487,
+      "scope_items": 22103,
+      "status": "current"
+    }
+  },
+  "models": [
+    {
+      "bytes": 4303,
+      "identity": "src/cbus_toolkit/senlla_banks.py",
+      "sha256": "d4e2bfbec17850aad860ef39259f722f2d7da4160baa637d9f85005164cffe0e"
+    },
+    {
+      "bytes": 7662,
+      "identity": "src/cbus_toolkit/senlla_ordinary_keys.py",
+      "sha256": "e2e3454ab321cbece0010d5ffa3fc676a650514ed99fa72034726695bebca8e5"
+    },
+    {
+      "bytes": 13161,
+      "identity": "src/cbus_toolkit/senlla_surface.py",
+      "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+    },
+    {
+      "bytes": 3750,
+      "identity": "src/cbus_toolkit/senlla_st7_save.py",
+      "sha256": "fb89247f10edc61a8402ddfceb25d2e9474e04c180ca179dd17a32a8dab7df5d"
+    },
+    {
+      "bytes": 9185,
+      "identity": "src/cbus_toolkit/senlla_key_references.py",
+      "sha256": "6c0030577cfafaa103559484bfd96949a2f2be9515455bdb9d1a621c7faa710b"
+    },
+    {
+      "bytes": 10436,
+      "identity": "src/cbus_toolkit/senlla_occupancy.py",
+      "sha256": "6facc987651ff652ec3cdf65af674577725fa94c3108841269d3cda53b21cec4"
+    },
+    {
+      "bytes": 3992,
+      "identity": "src/cbus_toolkit/senlla_light_level.py",
+      "sha256": "ecb76375358b01e81985a66f249b98d8f7bbe5719b9abaff3605fb22fb8d1dd6"
+    },
+    {
+      "bytes": 4729,
+      "identity": "src/cbus_toolkit/senlla_surface_banks.py",
+      "sha256": "38704983bcd3764994accf0c921ac432b6757b54247c609c6d1d4dc92d2c352c"
+    },
+    {
+      "bytes": 9659,
+      "identity": "src/cbus_toolkit/senlla_inputs.py",
+      "sha256": "333c08b84038716d7bc29d36d594f7a9d7d4e92861bda83b810524a2a17c2f13"
+    },
+    {
+      "bytes": 8933,
+      "identity": "src/cbus_toolkit/senlla_bank_graph.py",
+      "sha256": "958d3cb0f409806afbf974810f1998869a8bc6f4c474b55adefb5286a042bc1c"
+    },
+    {
+      "bytes": 9400,
+      "identity": "src/cbus_toolkit/senlla_scalars.py",
+      "sha256": "aa02d2296f76f72fd12dc0f6dbb2b62512de910d46b8ae42d51c64fe1a59ac7f"
+    },
+    {
+      "bytes": 14978,
+      "identity": "src/cbus_toolkit/senlla_lifecycle.py",
+      "sha256": "5b32137fd5fdedc8a144a4819d9dade59490999f06037028daba23d99e4b2f8e"
+    },
+    {
+      "bytes": 28026,
+      "identity": "src/cbus_toolkit/senlla_fresh_forms.py",
+      "sha256": "995193decad61f89d5c2143fa9482b3c8d9c63deb1fefd2235db11f1398e3bbd"
+    },
+    {
+      "bytes": 7692,
+      "identity": "src/cbus_toolkit/senlla_block_values.py",
+      "sha256": "dc235b24f6efeedb8bfcda4e3066fd7f8c051efa7767ed321a9b296d8a8ce763"
+    },
+    {
+      "bytes": 75911,
+      "identity": "src/cbus_toolkit/senlla_key_events.py",
+      "sha256": "633d6edeeafa2d276684f118c3e6039609432db0c8db5f8847e5dc084d219b80"
+    },
+    {
+      "bytes": 14465,
+      "identity": "src/cbus_toolkit/senlla_prekey.py",
+      "sha256": "47f6a7ec19f191e2bb28bf29936ee623fc880032347cd5c051fab1e9f986bf53"
+    },
+    {
+      "bytes": 28636,
+      "identity": "src/cbus_toolkit/senlla_key_controls.py",
+      "sha256": "0b3ef310ffd028810abdff8e33e585ca635883e9c40e3dce4cb90a5a57f98e25"
+    }
+  ],
+  "parent_passed": 342,
+  "selection": [
+    "tests/test_senlla_banks.py",
+    "tests/test_senlla_ordinary_keys.py",
+    "tests/test_senlla_surface.py",
+    "tests/test_senlla_st7_save.py",
+    "tests/test_senlla_key_references.py",
+    "tests/test_senlla_occupancy.py",
+    "tests/test_senlla_light_level.py",
+    "tests/test_senlla_surface_banks.py",
+    "tests/test_senlla_inputs.py",
+    "tests/test_senlla_bank_graph.py",
+    "tests/test_senlla_scalars.py",
+    "tests/test_senlla_lifecycle.py",
+    "tests/test_senlla_fresh_forms.py",
+    "tests/test_senlla_block_values.py",
+    "tests/test_senlla_key_events.py",
+    "tests/test_senlla_prekey.py",
+    "tests/test_senlla_key_controls.py"
+  ],
+  "separate_subtests_passed": 3945,
+  "skipped": 0,
+  "static_sources": [
+    {
+      "bytes": 115711,
+      "identity": "research/fixtures/senlla-key-events-source.json",
+      "sha256": "eb0d444ba78a7dde84b06c7a13d5a5174d736dcba735eccf61848d51d850e9d2"
+    },
+    {
+      "bytes": 13843,
+      "identity": "research/fixtures/senlla-block-values-source.json",
+      "sha256": "7b64eb44b0dc9f1f499c2187dd3ea5fef02c299c2999146cf70c238672b0f04b"
+    },
+    {
+      "bytes": 72939,
+      "identity": "research/fixtures/senlla-ordinary-key-source.json",
+      "sha256": "f4437b8c5be55b9097f3ac04ca83c0ce6909e3c3ac11dc8520c0d47076397b6b"
+    },
+    {
+      "bytes": 19682,
+      "identity": "research/fixtures/senlla-lifecycle-source.json",
+      "sha256": "8fa0e7a023b3c45311befa978bfa51bc31d9e90237b3c6915adce614e9418eb5"
+    },
+    {
+      "bytes": 75136,
+      "identity": "research/fixtures/senlla-fresh-forms-source.json",
+      "sha256": "42fbd4ce8863bc698ade8e32973a87a51c736c21c55dc90fae1e4f405dacfadb"
+    },
+    {
+      "bytes": 45680,
+      "identity": "research/fixtures/senlla-scene-composition-source.json",
+      "sha256": "262c21e4d0db7926287560a1faf69d5f4d4c6b61600cfcde3065700ada388ce5"
+    },
+    {
+      "bytes": 41749,
+      "identity": "research/fixtures/senlla-prekey-source.json",
+      "sha256": "852ba29bdc326dbeb13a84f8e6bc25cf154fce4f13dd53b7c6a7f4834c2cf43e"
+    },
+    {
+      "bytes": 45836,
+      "identity": "research/fixtures/senlla-key-events-shared-constructor-source.json",
+      "sha256": "3970f8b8ec5080a8585c792c5cab9126b1f7a458f1ab67654ec9044de577eeb4"
+    },
+    {
+      "bytes": 21266,
+      "identity": "research/fixtures/senlla-key-controls-source.json",
+      "sha256": "7bef36abc184eecac4b96541a40a5e4dbf65b55ee76b0896e1cc30ab8ea19467"
+    }
+  ]
+}

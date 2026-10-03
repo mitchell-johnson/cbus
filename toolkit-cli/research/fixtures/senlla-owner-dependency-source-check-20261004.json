@@ -1,0 +1,174 @@
+{
+  "boundaries": {
+    "complete_owning_loader_implemented": false,
+    "complete_unit_save_implemented": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "installed_wheel_release": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "owning_bank_dependency_graph_implemented": true,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "source check receipt",
+      "component guides",
+      "implementation status"
+    ],
+    "public_cli_save_added": false,
+    "source_dependency_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 572422,
+        "identity": "inputs-before.json",
+        "sha256": "b67b79e1c6a16ef15766eae3231d4a688a5c8e16d050fd41344a7898bd344f91"
+      },
+      {
+        "bytes": 572422,
+        "identity": "inputs-terminal.json",
+        "sha256": "b67b79e1c6a16ef15766eae3231d4a688a5c8e16d050fd41344a7898bd344f91"
+      }
+    ],
+    "source_input_count": 4071,
+    "tested_head": "5efcdc1a76f275a7eb477ad9d38afd7300afa077"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 56217,
+      "identity": "source.xml",
+      "sha256": "20cd4b4f4a3c75083fed384f955fcf1aba27156f5563ec6591d8fd753bf3caac"
+    },
+    {
+      "bytes": 638420,
+      "identity": "source-trace.json",
+      "sha256": "4267c2b6fa48561af73370064d6e02c3490c5f32e547760ea36e0f7d3b582572"
+    },
+    {
+      "bytes": 747960,
+      "identity": "source-results.json",
+      "sha256": "2a34d4277a9700c3764cfce0b1dae0da7d22fee7f33ffc8a2c2ca63da355925b"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-owner-dependency-source-check-v1",
+  "independent_source_review": {
+    "bank_graph": "160 exact pins and final direct-refresh component clear; installed event handler requires owning replay",
+    "review_receipts": [
+      {
+        "bytes": 4027,
+        "identity": "senlla-bank-graph-direct-refresh-independent-review.json",
+        "sha256": "e64a4a174e4fc66934a89aeb4f04f82e7649bb2dd2f38a1bd190e63f955c2df4"
+      },
+      {
+        "bytes": 2046,
+        "identity": "senlla-fresh-baseline-scalars-independent-review.json",
+        "sha256": "bc8e228fa6f70941dab9880034347dde463b29a29b0af5eb9aae53fbb8c8abb3"
+      }
+    ],
+    "scalars": "147 source pins; all 93 field classifications and 11 owned scalar/metadata outputs clear"
+  },
+  "metadata_checks": {
+    "census_complete": false,
+    "contract_inventory": "current",
+    "contract_paths": 442,
+    "coverage_require_complete_exit": 1,
+    "global_complete": false,
+    "native_selected_required_tests": 259,
+    "obligations": 487,
+    "parity_register": "current",
+    "scope_items": 22103,
+    "test_modules": 745,
+    "unchanged_compatibility_bindings_valid": 6
+  },
+  "models": [
+    {
+      "bytes": 4303,
+      "identity": "src/cbus_toolkit/senlla_banks.py",
+      "sha256": "d4e2bfbec17850aad860ef39259f722f2d7da4160baa637d9f85005164cffe0e"
+    },
+    {
+      "bytes": 7002,
+      "identity": "src/cbus_toolkit/senlla_ordinary_keys.py",
+      "sha256": "f4d6218c5cf2b3838120dd240b3825fe555b1eb58b3ba5a95c3d45c1422f8ac5"
+    },
+    {
+      "bytes": 13161,
+      "identity": "src/cbus_toolkit/senlla_surface.py",
+      "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+    },
+    {
+      "bytes": 3086,
+      "identity": "src/cbus_toolkit/senlla_st7_save.py",
+      "sha256": "eaccfb05d68bcb577d3a87757b9673e6c05f3f8523b3cd23ae8427c2c80f6b95"
+    },
+    {
+      "bytes": 9185,
+      "identity": "src/cbus_toolkit/senlla_key_references.py",
+      "sha256": "6c0030577cfafaa103559484bfd96949a2f2be9515455bdb9d1a621c7faa710b"
+    },
+    {
+      "bytes": 10436,
+      "identity": "src/cbus_toolkit/senlla_occupancy.py",
+      "sha256": "6facc987651ff652ec3cdf65af674577725fa94c3108841269d3cda53b21cec4"
+    },
+    {
+      "bytes": 3992,
+      "identity": "src/cbus_toolkit/senlla_light_level.py",
+      "sha256": "ecb76375358b01e81985a66f249b98d8f7bbe5719b9abaff3605fb22fb8d1dd6"
+    },
+    {
+      "bytes": 4729,
+      "identity": "src/cbus_toolkit/senlla_surface_banks.py",
+      "sha256": "38704983bcd3764994accf0c921ac432b6757b54247c609c6d1d4dc92d2c352c"
+    },
+    {
+      "bytes": 9659,
+      "identity": "src/cbus_toolkit/senlla_inputs.py",
+      "sha256": "333c08b84038716d7bc29d36d594f7a9d7d4e92861bda83b810524a2a17c2f13"
+    },
+    {
+      "bytes": 8933,
+      "identity": "src/cbus_toolkit/senlla_bank_graph.py",
+      "sha256": "958d3cb0f409806afbf974810f1998869a8bc6f4c474b55adefb5286a042bc1c"
+    },
+    {
+      "bytes": 9400,
+      "identity": "src/cbus_toolkit/senlla_scalars.py",
+      "sha256": "aa02d2296f76f72fd12dc0f6dbb2b62512de910d46b8ae42d51c64fe1a59ac7f"
+    }
+  ],
+  "parent_passed": 167,
+  "selection": [
+    "tests/test_senlla_banks.py",
+    "tests/test_senlla_ordinary_keys.py",
+    "tests/test_senlla_surface.py",
+    "tests/test_senlla_st7_save.py",
+    "tests/test_senlla_key_references.py",
+    "tests/test_senlla_occupancy.py",
+    "tests/test_senlla_light_level.py",
+    "tests/test_senlla_surface_banks.py",
+    "tests/test_senlla_inputs.py",
+    "tests/test_senlla_bank_graph.py",
+    "tests/test_senlla_scalars.py"
+  ],
+  "separate_subtests_passed": 3644,
+  "skipped": 0,
+  "static_sources": [
+    {
+      "bytes": 47905,
+      "identity": "research/fixtures/senlla-bank-graph-source.json",
+      "sha256": "d0f3f55a2a53eb0e32ebfe892889ed81b374c4cc4db619d6354d0bd45bb52a10"
+    },
+    {
+      "bytes": 48192,
+      "identity": "research/fixtures/senlla-baseline-scalars-source.json",
+      "sha256": "107ec8ce01ae5527c7761b952996f0db57fed79741b6ecf8aa18d0e4a1d7cc41"
+    }
+  ]
+}

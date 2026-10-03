@@ -1,0 +1,1171 @@
+{
+  "allowed_expiry_types": [
+    0,
+    15,
+    4,
+    9,
+    12,
+    6,
+    10
+  ],
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "prior_derived_receipt_sha256": [
+      "3362f4b8e8ebc1e00c3661b9c056370c680d2c2e7b3ea54867df9d797b9b3d77",
+      "8f2ed0af87efe2d840dc5fa3eab589876ff4b868da03f8acb1a7de630539f481",
+      "83f28882cef37e45c65ddc839cd041e07659f11d480e0ee7739e317d49e38878"
+    ]
+  },
+  "block_load_request_count": 66,
+  "canonical_metadata_creation_and_storage_executor_required": true,
+  "complete_toolkit_save": false,
+  "constructor_block_fields": {
+    "application": null,
+    "expiry": null,
+    "expiry_override": null,
+    "group": null,
+    "light_level": 0,
+    "secondary": false,
+    "store1": 0,
+    "store2": 0,
+    "timer": 0,
+    "timer_cached": 0,
+    "timer_min": 0
+  },
+  "constructor_key_application": null,
+  "constructor_unit_applications": [
+    null,
+    null
+  ],
+  "entry_key_application": "primary",
+  "format": "senlla-live-prekey-source-v1",
+  "get_key_blocks_entry_unit_depth": 1,
+  "inherited_owner_executor_required": true,
+  "literal_indexed_levels": [
+    [
+      0,
+      [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80
+      ],
+      10
+    ],
+    [
+      1,
+      [
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90
+      ],
+      10
+    ],
+    [
+      2,
+      [
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ],
+      10
+    ],
+    [
+      3,
+      [
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        0
+      ],
+      11
+    ],
+    [
+      255,
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      263
+    ]
+  ],
+  "method_count": 162,
+  "method_pins": [
+    {
+      "address": "0x7682c8",
+      "instruction_count": 13,
+      "method": "CIS_TBaseObject.TBASEObject.GetUpdating",
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb"
+    },
+    {
+      "address": "0x76a0f0",
+      "instruction_count": 41,
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.Create",
+      "sha256": "9215469e1caa2ba3be6240f941122ea159a70408d0b95304dfb8de53c86e97f9"
+    },
+    {
+      "address": "0x76a46c",
+      "instruction_count": 13,
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.GetInitialised",
+      "sha256": "1c6cb319de5cebf3bdf0250efb1c504569f2a4066a3c8e4423c519c0debdcde0"
+    },
+    {
+      "address": "0x7b7c50",
+      "instruction_count": 54,
+      "method": "CIS_Strings.StringRepeat",
+      "sha256": "30afd3800f92aa78983c2f1a23db05acf5ff6cb2e68762a70483912d0b32a60a"
+    },
+    {
+      "address": "0x7ddab0",
+      "instruction_count": 38,
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate",
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87"
+    },
+    {
+      "address": "0x7e8334",
+      "instruction_count": 55,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Create",
+      "sha256": "6eed2265e367b15bffaf015a64c4b9d074de8bcbfe79290f79110fc6b67733e5"
+    },
+    {
+      "address": "0x7e84ac",
+      "instruction_count": 143,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append",
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3"
+    },
+    {
+      "address": "0x7e9050",
+      "instruction_count": 17,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.InternalCreate",
+      "sha256": "4d57aee5f91dbcb637232a265b3d0857f9210cd9b85b9a73ca9e7489ddfcdd4e"
+    },
+    {
+      "address": "0x7e9fd0",
+      "instruction_count": 18,
+      "method": "CIS_TCustomFlashObject.TFlashObjectCollection.Append",
+      "sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45"
+    },
+    {
+      "address": "0x7ea6ac",
+      "instruction_count": 33,
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.CreateInWorkSpace",
+      "sha256": "1df68a1522c9278cd4e37130bb722b5c23edc3635f7cacea3b3776542659591a"
+    },
+    {
+      "address": "0x7eabb0",
+      "instruction_count": 39,
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.Create",
+      "sha256": "2787031c80b1db46caf9e73c4ddd9b4cfd64e63374100e01cc78fe19a72011b7"
+    },
+    {
+      "address": "0x7ec504",
+      "instruction_count": 68,
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    {
+      "address": "0x7ed6d4",
+      "instruction_count": 131,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740"
+    },
+    {
+      "address": "0x7f0a34",
+      "instruction_count": 32,
+      "method": "CIS_TCustomFlashObject.TFlashObject.SetParent",
+      "sha256": "776be8f2d60e4d817ca85243d44d1213f1d89d0ca80db4873fe7e1946f88f421"
+    },
+    {
+      "address": "0x7f2944",
+      "instruction_count": 27,
+      "method": "CIS_CBus.ByteToLux2550",
+      "sha256": "0e2c812c579d2d1daea7afa1276e5b81d2853fb52aabe27579f43633acc5f30c"
+    },
+    {
+      "address": "0x7f2990",
+      "instruction_count": 30,
+      "method": "CIS_CBus.Lux2550ToByte",
+      "sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    {
+      "address": "0x7f405c",
+      "instruction_count": 15,
+      "method": "CIS_TIdentifiableObject.TPersistableObject.StorageSave@0x7f405c",
+      "sha256": "5d5275b1f2ad0b3c571edecc4ccb584669d4add5c0b89f8ff38cd9e70fc826dd"
+    },
+    {
+      "address": "0x7f409c",
+      "instruction_count": 71,
+      "method": "CIS_TIdentifiableObject.TPersistableObject.StorageSave@0x7f409c",
+      "sha256": "96983cbe85a955cffd0e1d122d33adf65538d2e6620e9493ed7d052a3b3fe0ce"
+    },
+    {
+      "address": "0x7f44d8",
+      "instruction_count": 23,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate",
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    {
+      "address": "0x7f45e0",
+      "instruction_count": 37,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    {
+      "address": "0x84de00",
+      "instruction_count": 38,
+      "method": "CIS_Handles.TFlashExpressionController.SetActive",
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf"
+    },
+    {
+      "address": "0x850798",
+      "instruction_count": 15,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate",
+      "sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    {
+      "address": "0x8508d0",
+      "instruction_count": 117,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger",
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    {
+      "address": "0x850ac4",
+      "instruction_count": 16,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.SetValue",
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    },
+    {
+      "address": "0x85ad00",
+      "instruction_count": 35,
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplications.GetStandardCBusApplication",
+      "sha256": "0c0093ac38ef500cd801c6017b44fdef641ef96ac383f3c4bb34417c6421019e"
+    },
+    {
+      "address": "0x85ad5c",
+      "instruction_count": 37,
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplications.RegisterApplication",
+      "sha256": "6394c24559ca41337290ddf6960567366b166e345750c2ccbdd083e7f7d20fbb"
+    },
+    {
+      "address": "0x85adc4",
+      "instruction_count": 49,
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplications.GetApplicationName",
+      "sha256": "078c110ccb2e15efbdbf43b63ddbaf997656c4204b41ee33081491af4ee86309"
+    },
+    {
+      "address": "0x85ae74",
+      "instruction_count": 78,
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplication.Create",
+      "sha256": "571cba94dc0dbdee553d85d478afc0f22356cd782775017113fc6f2bf3d8b757"
+    },
+    {
+      "address": "0x85b2c4",
+      "instruction_count": 25,
+      "method": "CIS_TStandardCBusApplications.TStandardCBusApplications.GetGroupName",
+      "sha256": "0114adf84ee6a600c5a167903295d1d121e7831b8c583edb857df01d34633a8f"
+    },
+    {
+      "address": "0xc8db30",
+      "instruction_count": 272,
+      "method": "CIS_TKeyMicroFunction.InitialiseKeyMicroFunctionFactory",
+      "sha256": "a9c464e92809cc9721e89eb3bdb4f44a3261eceadc02994f8b86cb218bcfbdbe"
+    },
+    {
+      "address": "0xc8f7ec",
+      "instruction_count": 32,
+      "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionManager.ItemByCBusValue",
+      "sha256": "1c9a7e661d722267b9611a950e546ec0395f941c52311419c4ab344c3227f086"
+    },
+    {
+      "address": "0xc8fcdc",
+      "instruction_count": 14,
+      "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.GetKeyMicroFunction",
+      "sha256": "3114f0b2ae882c8710d139b5710f25c391d91d84edaa715f295c811f132ab332"
+    },
+    {
+      "address": "0xc8fd94",
+      "instruction_count": 92,
+      "method": "CIS_TKeyMicroFunction.TKeyMicroFunctionFactory.GetKeyMicroFunctionsForTimerExpiry",
+      "sha256": "766f620783e7db4697c15b7fd39d8ffe51c1fab38c25deccee0f7e2f1bbd17ac"
+    },
+    {
+      "address": "0xc9d1a4",
+      "instruction_count": 34,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.InternalCreate",
+      "sha256": "2ba74cf9888a4e1502382fee7d0a4cabf53eed188a8411e01924aaf3abb33f14"
+    },
+    {
+      "address": "0xc9d4e0",
+      "instruction_count": 23,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.ApplicationChanged",
+      "sha256": "ea8417313070ddf2be131dd20b547dfc2e2ad9f771b9ba646dd825ba66e25ac5"
+    },
+    {
+      "address": "0xc9d51c",
+      "instruction_count": 30,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.RefreshAreaGroupFromApplication",
+      "sha256": "0bc8f47029dc84fc29f98ab13b418025cbbe39893858d8752c8f976b65fbe7d6"
+    },
+    {
+      "address": "0xc9d57c",
+      "instruction_count": 14,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.SetAreaGroup",
+      "sha256": "9071ee2f2845e7be1962b4f5865c81fc7e3a14bb021e5db746273ea8c3d9ffe5"
+    },
+    {
+      "address": "0xc9d5a0",
+      "instruction_count": 40,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval",
+      "sha256": "60bd2443b95a1ad5197272ee18e17d72cd4b7e8909108ae1be5fee04c6a04fa3"
+    },
+    {
+      "address": "0xc9dcc0",
+      "instruction_count": 109,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate",
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9"
+    },
+    {
+      "address": "0xc9dfd8",
+      "instruction_count": 10,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelPropertiesEnabled",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xc9dfec",
+      "instruction_count": 10,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelStorePropertiesEnabled",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xc9e540",
+      "instruction_count": 14,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.GetLightLevelIndex",
+      "sha256": "6ee00568edd1d4a11749285423d4e1f3b02a3a51ba84d3f9ce775173606c3da5"
+    },
+    {
+      "address": "0xc9e918",
+      "instruction_count": 40,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.SetLightLevelIndex",
+      "sha256": "99831b3a92dd8377f57b98e65ec681fd051f89938956e21295d8c4f7e6f64b53"
+    },
+    {
+      "address": "0xc9e984",
+      "instruction_count": 64,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.ApplicationChanged",
+      "sha256": "1f08c51952fe82263f252d574555689882c38da7a113da2b98dd74d65ff14742"
+    },
+    {
+      "address": "0xc9ea48",
+      "instruction_count": 44,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.Application2Changed",
+      "sha256": "39f1a99939bb76eb6d91ffc8bb3d8194ff47052a156ebd433be941777a591ca9"
+    },
+    {
+      "address": "0xc9eac4",
+      "instruction_count": 30,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.ApplicationObjectRefresh",
+      "sha256": "a8a73328734f54f20d189e04c0a15573a5226123f72d9846f4f56dd969697a8f"
+    },
+    {
+      "address": "0xc9eb0c",
+      "instruction_count": 30,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.Application2ObjectRefresh",
+      "sha256": "874381b811dcb8dd8a56a1d39ffc5bb928635dba4bbf57dcb037e45ccc80102d"
+    },
+    {
+      "address": "0xc9eb54",
+      "instruction_count": 62,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.CheckGroups",
+      "sha256": "6f74e9ce9070a2e3eeaafb7d8b1e87c962f35cb633bf4f80334a94b22b4f7991"
+    },
+    {
+      "address": "0xc9f09c",
+      "instruction_count": 140,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshPrimaryGroupsAsUnused",
+      "sha256": "9d2b79f2d4a780d12ef45e9204ec3e116bd33a45880cca23f1bf225b86d10fef"
+    },
+    {
+      "address": "0xc9f280",
+      "instruction_count": 161,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshApplicationTypesFromApplication",
+      "sha256": "ec6aa7aa08d5eca00e874ddce94e05e86ad4f5b6c4c1652768fd6df5c3c96ddd"
+    },
+    {
+      "address": "0xc9f4a0",
+      "instruction_count": 40,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshOtherApplicationFromApplication",
+      "sha256": "d43a7289be306857647fe0fd5c1760a70b866c439b14040bccfe1c86c20df6ad"
+    },
+    {
+      "address": "0xc9f51c",
+      "instruction_count": 66,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshGroupsFromApplication",
+      "sha256": "012bd2f8248db3a6aae27c0390a62273b63edcab6ed6bf3c00a3143ad3becc06"
+    },
+    {
+      "address": "0xc9f75c",
+      "instruction_count": 94,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshMacroFunctionsFromApplication",
+      "sha256": "1d56e2351b04a7d92559a6397060bc6666dbe27a6afe32854670c3e8cdc9ab21"
+    },
+    {
+      "address": "0xc9fca4",
+      "instruction_count": 8,
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshMacroFunctionOverrides",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    {
+      "address": "0xca0a40",
+      "instruction_count": 42,
+      "method": "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.Create",
+      "sha256": "b71e0e6404166bb3bb73dc7a76562057765593bc65394ac8441646f201cd20d4"
+    },
+    {
+      "address": "0xca0b60",
+      "instruction_count": 15,
+      "method": "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetActive",
+      "sha256": "2a30e4459ec73951c6c3fcb65add225dd459a9556d4ee131ca2915fd9bf45e87"
+    },
+    {
+      "address": "0xca0bc8",
+      "instruction_count": 14,
+      "method": "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetOnExpressionChange",
+      "sha256": "2475c4eaf3c0b6bd7ced1cbe8ebaec32cd3e3fe6f6ba201d3d9628c15f200d57"
+    },
+    {
+      "address": "0xca3820",
+      "instruction_count": 107,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.ApplicationChanged",
+      "sha256": "c0985eb24280bc2db6c951c08ee306ec2243e2a57345480840413debe3435f2d"
+    },
+    {
+      "address": "0xca4044",
+      "instruction_count": 175,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.InternalCreate",
+      "sha256": "09cc527e8535cb915b2d40d3ed7f6069c854b9b74476d69f1d4e14616a34dbb8"
+    },
+    {
+      "address": "0xca46cc",
+      "instruction_count": 49,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection",
+      "sha256": "dcbbec2e2cec682effdc03024a8615631fc194697220698839ac7f3171b8cf94"
+    },
+    {
+      "address": "0xca4d5c",
+      "instruction_count": 34,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate",
+      "sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d"
+    },
+    {
+      "address": "0xca4ed4",
+      "instruction_count": 26,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Add",
+      "sha256": "b64a2b4f1dd770d11ca9ed867bd2bab27c6120386f048119914cf71a19961fb2"
+    },
+    {
+      "address": "0xca4f18",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Append",
+      "sha256": "d80436f1c931c6a5526c94695fe5c9fac5201a2b1f415150a8e4a2f7199b3412"
+    },
+    {
+      "address": "0xcb5b94",
+      "instruction_count": 92,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.FinishAsyncLoad",
+      "sha256": "2c2ebe88e4a69fb54bcf15467521c29b1c61b41086a9cb19cb9f6ba80fbd50b3"
+    },
+    {
+      "address": "0xcb5d0c",
+      "instruction_count": 835,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad",
+      "sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5"
+    },
+    {
+      "address": "0xcb8068",
+      "instruction_count": 83,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject",
+      "sha256": "c781eabff439fdd02b07ea57a61e7f8960f3e7b8e47003586579f832cc208a17"
+    },
+    {
+      "address": "0xcb82b4",
+      "instruction_count": 69,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object",
+      "sha256": "7d0c8b38f42081349c96e981905e6033de2079d09bf64548024e34a9608273af"
+    },
+    {
+      "address": "0xcb86b8",
+      "instruction_count": 93,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadApplications",
+      "sha256": "ae2a2c4675f794be9fa1bbac81b4f04b4ba288385251fbde91ff3dd587c81afe"
+    },
+    {
+      "address": "0xcba510",
+      "instruction_count": 313,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingLoad",
+      "sha256": "cff69824eb799d037c6534bbe8e22d2fea1d7fe56a7ee9fe37e2a0bfd20d767d"
+    },
+    {
+      "address": "0xcbc184",
+      "instruction_count": 112,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetupProgrammingInformation",
+      "sha256": "0ba2ab088df2665336bb31bcabdc9864e62d252151d278d66899d13edc6b2324"
+    },
+    {
+      "address": "0xcbc85c",
+      "instruction_count": 236,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadProgrammingInformation",
+      "sha256": "e7731b63daa8816159d76a0f0fa1194480d0a44c03c5efe6154eb5cb465b7016"
+    },
+    {
+      "address": "0xcbe650",
+      "instruction_count": 116,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "e8dfdd2e282a580cdde0a63a4e3ee0e5f2469bf0d6da9b1ed5090048ea713a16"
+    },
+    {
+      "address": "0xcc5d20",
+      "instruction_count": 82,
+      "method": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "c689e0b038d458fd0cf18c68d0d508e2abd4c5e02e4790d6f65635aa26792411"
+    },
+    {
+      "address": "0xcc66cc",
+      "instruction_count": 14,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "5f8ec869a6b79608d1e2db5913e7f27201c14df1292fa3f964c02b4f0381de65"
+    },
+    {
+      "address": "0xcc66f0",
+      "instruction_count": 25,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadAreaGroupAddress",
+      "sha256": "6254819d7660c094dc8182a97fa5a24bec6ba453c0f7936219c07fef9264cff0"
+    },
+    {
+      "address": "0xcc6738",
+      "instruction_count": 17,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadStatusReportInterval",
+      "sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43"
+    },
+    {
+      "address": "0xcc75e4",
+      "instruction_count": 84,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup",
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+    },
+    {
+      "address": "0xcc76f8",
+      "instruction_count": 109,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks",
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be"
+    },
+    {
+      "address": "0xcc7e74",
+      "instruction_count": 50,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadTimerExpiryCommand",
+      "sha256": "bac15dae88459b24ff7970a640724bb399fe2c22904f271ea3ea0fc2c3cef730"
+    },
+    {
+      "address": "0xcc80c8",
+      "instruction_count": 258,
+      "method": "CIS_TCoreKeyInputCGateAgent.GetBlockValues",
+      "sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9"
+    },
+    {
+      "address": "0xcc85dc",
+      "instruction_count": 159,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc"
+    },
+    {
+      "address": "0xcc8c34",
+      "instruction_count": 288,
+      "method": "CIS_TCoreKeyInputCGateAgent.SetBlockValues",
+      "sha256": "cf8d43125a40a10b67a99313369ee31da01723d189503bed649a33e9b06b2a63"
+    },
+    {
+      "address": "0xcca350",
+      "instruction_count": 33,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.GetControlAppGroup",
+      "sha256": "65f874185368a21450b8b30c98c28c603d4f451e70bd98ab834803489cfbf0e4"
+    },
+    {
+      "address": "0xccb180",
+      "instruction_count": 221,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    {
+      "address": "0xcebe04",
+      "instruction_count": 83,
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "1534462408bb96b90eab0541faf42b7879ea647e9d67928386bafdcf7605a23a"
+    },
+    {
+      "address": "0xcecf80",
+      "instruction_count": 75,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications",
+      "sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833"
+    },
+    {
+      "address": "0xced05c",
+      "instruction_count": 75,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes",
+      "sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b"
+    },
+    {
+      "address": "0xced154",
+      "instruction_count": 281,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    },
+    {
+      "address": "0xced538",
+      "instruction_count": 111,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.SaveCorridorLinkAttributes",
+      "sha256": "ece912340ab41496b139c01dc7856600c26291af8bafc493585c360cafbd3e7b"
+    },
+    {
+      "address": "0xced788",
+      "instruction_count": 338,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "79c18bb0c68bed4b0281f6d9eae01516d5f61ddf7cbb276bea83f25a2519217a"
+    },
+    {
+      "address": "0xcf44c4",
+      "instruction_count": 69,
+      "method": "CIS_TCBusST7SensorCGateAgent.LoadLightLevelBanks",
+      "sha256": "2e324993624dd73d0b25e49fca6eeb1b9ecae9ddd08395c802fc805470821f2d"
+    },
+    {
+      "address": "0xcf4890",
+      "instruction_count": 310,
+      "method": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    {
+      "address": "0xcf52e0",
+      "instruction_count": 183,
+      "method": "CIS_TCBusST7SensorCGateAgent.SavePowerFail",
+      "sha256": "7187571b7da10c70d19b5fa0c519cb011addebaba6c848902198cab93d8816e0"
+    },
+    {
+      "address": "0xcfa608",
+      "instruction_count": 77,
+      "method": "CIS_TCBusST7SensorUnit.GroupsMissing",
+      "sha256": "7aaefc1a8662e66f7ac6b7bf85754031b83cbd833bace380600298396118045d"
+    },
+    {
+      "address": "0xcfa6f0",
+      "instruction_count": 164,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.ApplicationChanged",
+      "sha256": "4bdfa67ca17c61aaa78e7ae94e5a24a765d33b550211046d8a6d8208008b4e42"
+    },
+    {
+      "address": "0xcfb404",
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula",
+      "sha256": "d527e24595b31634d21aa3d3a1951c76c1ac7634ec009305c7298d4b1e75cd40"
+    },
+    {
+      "address": "0xcfb620",
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xcfb754",
+      "instruction_count": 411,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate",
+      "sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d"
+    },
+    {
+      "address": "0xcfc3b4",
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupInvertPropertyEnabled",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xcfc3c8",
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xcfc8cc",
+      "instruction_count": 29,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+      "sha256": "37c9b10ba072426961c98884b3fc8943e0897cd20416821db9359f03e88215e9"
+    },
+    {
+      "address": "0xcff43c",
+      "instruction_count": 126,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate",
+      "sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a"
+    },
+    {
+      "address": "0xcff72c",
+      "instruction_count": 38,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLuxFormula",
+      "sha256": "925562e7c786194638fdbe365087f27968f2d7fce1d6c808089e66fbbba14f44"
+    },
+    {
+      "address": "0xcff79c",
+      "instruction_count": 51,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HandleBlockChange",
+      "sha256": "932553af324cdd471d783b65040b9d5a46dbfda26ae78d50d71ce47c82010445"
+    },
+    {
+      "address": "0xcff830",
+      "instruction_count": 134,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshLuxLevelsFromBlock",
+      "sha256": "1d3b7e23147654f47dbe25463b984b991500a75c909131b3108949bee8cf5bf0"
+    },
+    {
+      "address": "0xcffa18",
+      "instruction_count": 176,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshSwitchAllowedFromBlock",
+      "sha256": "0e66fd6060b0177c440e59aa8334fd69d0c627ea8f2bb5e1e3463e8ded4b3a29"
+    },
+    {
+      "address": "0xcffc98",
+      "instruction_count": 28,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchActiveChanged",
+      "sha256": "79366b9addf7d4ecf52b45b1be7acef34e84cb95b04c2a72d2f59d1e05cbd7f3"
+    },
+    {
+      "address": "0xcffce0",
+      "instruction_count": 133,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged",
+      "sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9"
+    },
+    {
+      "address": "0xcffe78",
+      "instruction_count": 133,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged",
+      "sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f"
+    },
+    {
+      "address": "0xd000e8",
+      "instruction_count": 19,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetBlock",
+      "sha256": "6f34272fed556846644201ecd15043af0599d126182a27b61f26f6071f540b13"
+    },
+    {
+      "address": "0xd0011c",
+      "instruction_count": 38,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetEnableGroupOff",
+      "sha256": "2caede4fb0e2b3f5a6fdfd7e111ef18e5d2abeeb4aac54cf6f2908bf04c461ee"
+    },
+    {
+      "address": "0xd00238",
+      "instruction_count": 38,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchActive",
+      "sha256": "84438b445896051eab82579440b4f2c48ed7e9ac1a603658224a880f5125384f"
+    },
+    {
+      "address": "0xd00400",
+      "instruction_count": 14,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitchCollection.Append",
+      "sha256": "c929fe8c9f1d976ba0bac49af6ae128d5b08587262fb37b0e2bc7235005a2218"
+    },
+    {
+      "address": "0xd068f8",
+      "instruction_count": 10,
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xd08320",
+      "instruction_count": 80,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.CheckGroups",
+      "sha256": "9a378f38e4ad1a25f47783d17045abadc64fc0e208b15bf84d2f0b3742e6c582"
+    },
+    {
+      "address": "0xd0843c",
+      "instruction_count": 57,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.RefreshGroupsFromApplication",
+      "sha256": "91cef95dc6cacc0094dd98e84b04090591230e3b86d9d0fba62fc407f2bfa165"
+    },
+    {
+      "address": "0xd084e4",
+      "instruction_count": 76,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.RefreshSceneGroupsFromPrimaryApplication",
+      "sha256": "08fe4314d449361c7027bfa5d195a0a99575a2a4ab9316c7d3e54aa6f9294138"
+    },
+    {
+      "address": "0xd0871c",
+      "instruction_count": 11,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount",
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    {
+      "address": "0xd08804",
+      "instruction_count": 50,
+      "method": "CIS_TCBusNeoInputUnit.GroupsMissing",
+      "sha256": "4882b27496404807254ffe6ab41e0191a480e5b982921ac5bad1ff51726f0857"
+    },
+    {
+      "address": "0xd08898",
+      "instruction_count": 149,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.ApplicationChanged",
+      "sha256": "ce37de6dccf3dfe7daa870d5be1663ebc604c0abccfe1f19be31aa0df089e864"
+    },
+    {
+      "address": "0xd0d378",
+      "instruction_count": 90,
+      "method": "CIS_TCustomKeyInputUnit.TCustomKeyInputUnit.InternalCreate",
+      "sha256": "c13d99e17e46f456d9ce0d48e455d414fb1843f3cde6eba1777df81015b582e1"
+    },
+    {
+      "address": "0xd0eb24",
+      "instruction_count": 163,
+      "method": "CIS_TInputKey.TInputBlock.InternalCreate",
+      "sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0"
+    },
+    {
+      "address": "0xd0f284",
+      "instruction_count": 40,
+      "method": "CIS_TInputKey.TInputBlock.SetLightStoredLevel1",
+      "sha256": "6e75fe20f71afad147d22496586d33a97cb44458a836aef6528393f000815151"
+    },
+    {
+      "address": "0xd0f2e4",
+      "instruction_count": 40,
+      "method": "CIS_TInputKey.TInputBlock.SetLightStoredLevel2",
+      "sha256": "2ceb8cccc80682bcb06664373cfd5776c49bde78cedb7b9034077c041b2c5534"
+    },
+    {
+      "address": "0xd0f508",
+      "instruction_count": 24,
+      "method": "CIS_TInputKey.TInputBlock.HandleTimerAfterChange",
+      "sha256": "cdf45b8b5146c47b0932b36722dc317125f44dee2e940b486857b164081ce6b6"
+    },
+    {
+      "address": "0xd0f544",
+      "instruction_count": 24,
+      "method": "CIS_TInputKey.TInputBlock.HandleTimerMinAfterChange",
+      "sha256": "63658d27f54424d18f34fa732beae3d8a947f68243faa26a064dfcc7f7800b71"
+    },
+    {
+      "address": "0xd0f580",
+      "instruction_count": 49,
+      "method": "CIS_TInputKey.TInputBlock.HandleGroupAfterChange",
+      "sha256": "80e4c3a977b4dc4ae8fdd7002364bd597dd1b311213286b0a672c67ac429e43d"
+    },
+    {
+      "address": "0xd0f628",
+      "instruction_count": 42,
+      "method": "CIS_TInputKey.TInputBlock.RefreshUnitKeysFromBlockGroup",
+      "sha256": "2e012ac4b7bfaa0f9dc7318af187b6b702bd2204698b7bb9561db19498331d02"
+    },
+    {
+      "address": "0xd0f6ac",
+      "instruction_count": 13,
+      "method": "CIS_TInputKey.TInputBlock.HandleSecondaryAfterChange",
+      "sha256": "d9ce2a683e0d6776b8467c714aba6ce6cc21e0f0de8f2f5312c5f63f4f959943"
+    },
+    {
+      "address": "0xd0f6cc",
+      "instruction_count": 147,
+      "method": "CIS_TInputKey.TInputBlock.RefreshBlockApplicationFromBlockSecondary",
+      "sha256": "e58499ede4893d79806595e701cde9465c1f6f5802d419137f56e67c6a64e184"
+    },
+    {
+      "address": "0xd0f8d0",
+      "instruction_count": 11,
+      "method": "CIS_TInputKey.TInputBlock.HandleApplicationForBlockAfterChange",
+      "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa"
+    },
+    {
+      "address": "0xd0f8e8",
+      "instruction_count": 91,
+      "method": "CIS_TInputKey.TInputBlock.RefreshBlockGroupFromBlockApplication",
+      "sha256": "ed03d4991a1357a586c57b404b38fd33a92b5427976e2abdb8500d276b559820"
+    },
+    {
+      "address": "0xd0fa2c",
+      "instruction_count": 92,
+      "method": "CIS_TInputKey.TInputBlock.RefreshKeysSecondaryFromBlockSecondary",
+      "sha256": "bacb10e6d04a18e3b0e287925d197cb2efb52969e8f213b7a60ff97c937da0a0"
+    },
+    {
+      "address": "0xd0fba0",
+      "instruction_count": 50,
+      "method": "CIS_TInputKey.TInputBlockReferenceCollection.Create",
+      "sha256": "1f34a47e11a9d5386f89ac980027bde0ff943ee6722412fbf84955d7dcf26dbf"
+    },
+    {
+      "address": "0xd10cb8",
+      "instruction_count": 145,
+      "method": "CIS_TInputKey.TInputKey.InternalCreate",
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad"
+    },
+    {
+      "address": "0xd12e54",
+      "instruction_count": 9,
+      "method": "CIS_TInputKey.TInputKey.HandleApplicationForKeyAfterChange",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "address": "0xd13450",
+      "instruction_count": 16,
+      "method": "CIS_TInputKey.TInputKey.HasBlock",
+      "sha256": "ec7d942a0699decf80649be419e702cc0e5dbf3cf372656a8ea5ad62063947e2"
+    },
+    {
+      "address": "0xd134a0",
+      "instruction_count": 33,
+      "method": "CIS_TInputKey.TInputKey.HasApplicationBlocks",
+      "sha256": "7360451b8f4d75e3df5cb25cbf7b74bf372a8056293f0d0df62b796024258cda"
+    },
+    {
+      "address": "0xd13e80",
+      "instruction_count": 34,
+      "method": "CIS_TInputKey.TInputKey.ApplicationStateMatchesSecondaryApplication",
+      "sha256": "726bd6cd372402da4b3792e13f45b37c5c8381e31df2486699eed6213602d8b1"
+    },
+    {
+      "address": "0xd14184",
+      "instruction_count": 67,
+      "method": "CIS_TInputKey.TInputKeyCollection.SetCount",
+      "sha256": "d2e7181b95e55b2e6d24432df444aef33bc45fbb9023da0577d6017d1975919b"
+    },
+    {
+      "address": "0xd14348",
+      "instruction_count": 33,
+      "method": "CIS_TInputKey.TInputKeyCollection.Add",
+      "sha256": "99465c03052b1e0404583f92ceeb6f617702f6c2111211e4a558d3c433b6ef23"
+    },
+    {
+      "address": "0xd143ac",
+      "instruction_count": 14,
+      "method": "CIS_TInputKey.TInputKeyCollection.Append",
+      "sha256": "ca39a34b4a82919b69bf2fa050b603755f1d98f8c78a5b4b3aa45f4aabeef194"
+    },
+    {
+      "address": "0xf25704",
+      "instruction_count": 62,
+      "method": "CIS_TCommonCBus.TCBUSApplication.InternalCreate",
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a"
+    },
+    {
+      "address": "0xf26108",
+      "instruction_count": 37,
+      "method": "CIS_TCommonCBus.TCBUSApplication.GetCanAddGroups",
+      "sha256": "3e453ce7f05420aefb8d0a5fb993d59d207b8b3e63db80e66e23081a47e4df76"
+    },
+    {
+      "address": "0xf26410",
+      "instruction_count": 24,
+      "method": "CIS_TCommonCBus.TCBUSApplicationManager.Add",
+      "sha256": "f4a66264fe9d3d835e75be0238ded1eb7660a1cdd7b84998b5168cc3aca40064"
+    },
+    {
+      "address": "0xf264fc",
+      "instruction_count": 108,
+      "method": "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress",
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b"
+    },
+    {
+      "address": "0xf27984",
+      "instruction_count": 132,
+      "method": "CIS_TCommonCBus.TCBusGroup.InternalCreate",
+      "sha256": "856404baa4ac67bbd744210d3a98f471faf7f9d25c35f22aed8aa627046a42fe"
+    },
+    {
+      "address": "0xf288f0",
+      "instruction_count": 27,
+      "method": "CIS_TCommonCBus.TCBusGroupManager.Add",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9"
+    },
+    {
+      "address": "0xf28b68",
+      "instruction_count": 115,
+      "method": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    {
+      "address": "0xf28f34",
+      "instruction_count": 15,
+      "method": "CIS_TCommonCBus.TCBusGroupManager.FindOrCreateGroupByAddress",
+      "sha256": "f3bd4df31dec3c63a3fe83bcc139e25c057b1cbd24f474aaafcb37d17e79df32"
+    },
+    {
+      "address": "0xf2b174",
+      "instruction_count": 13,
+      "method": "CIS_TCommonCBus.TCBusNetwork.GetTriggerControlApplication",
+      "sha256": "7a795ce0de328e918d74a92aa7b8ac250fb87c9ec98b74c16a9cd7460303c6f9"
+    },
+    {
+      "address": "0xf2ef18",
+      "instruction_count": 9,
+      "method": "CIS_TCommonCBus.TCBUSUnit.Init",
+      "sha256": "5547c878a7e8d53540178200a4cdfd28dfa5b2e3e6039cd5dae69e903bc31ac4"
+    },
+    {
+      "address": "0xf2ef2c",
+      "instruction_count": 271,
+      "method": "CIS_TCommonCBus.TCBUSUnit.InternalCreate",
+      "sha256": "d8b54a3c78dcf4c83813a24a364a4308845111125afcc5e2fc589a0ed4a24f77"
+    },
+    {
+      "address": "0xf30014",
+      "instruction_count": 14,
+      "method": "CIS_TCommonCBus.TCBUSUnit.SetApplicationObject",
+      "sha256": "0a9132483c74b0032962e851f09f39d6e3e9341080b464452901a0e02f085da5"
+    },
+    {
+      "address": "0xf30038",
+      "instruction_count": 14,
+      "method": "CIS_TCommonCBus.TCBUSUnit.SetApplication2Object",
+      "sha256": "154cee2648d9a4528c5c3c0d091a7643c31649eead94c3d1f166e9a9ce4038ce"
+    },
+    {
+      "address": "0xf4322c",
+      "instruction_count": 49,
+      "method": "CIS_TCGateAttribute.TIntArrayCGateAttribute.AsArrayInteger",
+      "sha256": "32a13b1e4da7e2d2d83afbe519057dfab3698da2d88efa989cf91174317d99a7"
+    },
+    {
+      "address": "0xf432c4",
+      "instruction_count": 62,
+      "method": "CIS_TCGateAttribute.TIntArrayCGateAttribute.SetArrayInteger",
+      "sha256": "035ab470c36840078380c7c908601428a0a8707010e2fc429ded135869b2dc23"
+    },
+    {
+      "address": "0x1216ea4",
+      "instruction_count": 10,
+      "method": "CIS_TSENLLA.TSENLLA.IsDualJoinModeSupported",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0x1216eb8",
+      "instruction_count": 10,
+      "method": "CIS_TSENLLA.TSENLLA.IsJoinModeSupported",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0x1217764",
+      "instruction_count": 280,
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797"
+    },
+    {
+      "address": "0x1217b18",
+      "instruction_count": 184,
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.SavePowerFail",
+      "sha256": "a48cda317c9868fbc7a8ea1abb1ed83856e6afa881a37b807f64a8aaa9325bd9"
+    },
+    {
+      "address": "0x136bc30",
+      "instruction_count": 326,
+      "method": "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications",
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    }
+  ],
+  "native_group_manager_order_is_not_registration_order": true,
+  "original_execution": false,
+  "phase_positions": [
+    [
+      "core_begin",
+      "0xcc8607"
+    ],
+    [
+      "base_agent",
+      "0xcbe66d"
+    ],
+    [
+      "unit_init",
+      "0xcbe67c"
+    ],
+    [
+      "nested_unit_begin",
+      "0xcbe68c"
+    ],
+    [
+      "primary_getter",
+      "0xcbe6a1"
+    ],
+    [
+      "primary_setter",
+      "0xcbe6b1"
+    ],
+    [
+      "secondary_getter",
+      "0xcbe6bb"
+    ],
+    [
+      "secondary_setter",
+      "0xcbe6cb"
+    ],
+    [
+      "nested_unit_end",
+      "0xcbe6e7"
+    ],
+    [
+      "metadata",
+      "0xcbe6f2"
+    ],
+    [
+      "learn_tail",
+      "0xcc5d43"
+    ],
+    [
+      "raw_area_getter",
+      "0xcc66de"
+    ],
+    [
+      "status",
+      "0xcc66e6"
+    ],
+    [
+      "core_scalars",
+      "0xcc861f"
+    ],
+    [
+      "secondary_bits",
+      "0xced02e"
+    ],
+    [
+      "block_values",
+      "0xcc80c8"
+    ],
+    [
+      "key_blocks",
+      "0xcc8739"
+    ]
+  ],
+  "physical_acceptance": false,
+  "raw_application255_is_actual_object": true,
+  "raw_expiry_zero_is_nonnil": true,
+  "same_object_handoff_required": true,
+  "secondary_unused_group_created_only_when_source_getter_accesses_it": true,
+  "source_reopen_mismatches": [],
+  "status_initialization_not_global_min3": true
+}

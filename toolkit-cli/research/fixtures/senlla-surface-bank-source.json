@@ -1,0 +1,1058 @@
+{
+  "authority": {
+    "native_form_verified": false,
+    "original_instruction_execution": false,
+    "physical_acceptance": false,
+    "repo_edits": false,
+    "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "tests_run": false
+  },
+  "component_scope": {
+    "excluded": [
+      "raw core or surface loader",
+      "application or key object graph",
+      "asynchronous physical group updates",
+      "arbitrary GUI edits",
+      "complete unit save",
+      "public CLI admission",
+      "native or hardware acceptance"
+    ],
+    "fresh_parameters": "Detached post-frame bank_parameters arrays plus BankSwitchGroupUsed OR flags. No global BankSwitchThresholdGroup or BankSwitchThresholdBehaviour writes.",
+    "input": "Eight explicitly supplied existing BankState values with byte-derived Lux (multiples10), and eight Low/High logical booleans. States incorporate independently owned prior surface load and callback history; manual component vectors do not prove native loader reachability. Stored bytes need not be consistent with supplied Lux because equal native setters preserve them.",
+    "save_overlay": "Separate indexed existing logical-bank serializer writes, applied after frame parameters; Low-group writes LightLevelStore2 from logical HIGH Lux //10, High-group writes LightLevelStore1=255. Untouched indices are absent."
+  },
+  "format": "cbus-senlla-surface-bank-component-source-v1",
+  "frame": {
+    "actual_model_normalization": {
+      "Allowed_false_Active_true": "Disables checkbox but does not clear Checked/Active/use flags.",
+      "RefreshBankEnableable": "Reads current SwitchAllowed, only sets checkbox Enabled through ComponentEnabled, then virtual4 RefreshBankEnabled. Enabled is independent of Checked.",
+      "core_effects": "Unequal HighLux/LowLux setters invoke bank callbacks that update block stored LightLevel1/2 through Lux2550ToByte. Under supplied 0..2550 input domain, setting High=2550 or Low=0 causes no secondary crossing correction.",
+      "critical_order": "Each inactive bank clears its own flags before globally normalizing all banks. A later inactive bank can retain raw use flags when an earlier inactive bank globally normalizes it. The first inactive bank preserves thresholds unless independently changed; subsequent inactive banks may have opposite thresholds replaced before their flags clear.",
+      "exact_equivalent_algorithm": "For i=0..7, if banks[i].Active false: set UseLow=false; set UseHigh=false; for j=0..7 apply current j.UseLow -> setHigh(2550), then j.UseHigh -> setLow(0). After i loop, run that global normalization once more.",
+      "fresh_surface_sets_Active_Allowed_or_maintenance_block": false,
+      "global_handler": "One ascending bank loop: for the current bank UseLow=true sets HighLux=2550 at0xfc0d5a, then the same bank UseHigh=true sets LowLux=0 at0xfc0dca, before the bank index increments at0xfc0e03 and loops at0xfc0e09. Current flags are used regardless panel Enabled.",
+      "global_handler_loop_order": {
+        "index_increment": "0xfc0e03",
+        "loop_back": "0xfc0e09",
+        "low_set_high": "0xfc0d5a",
+        "same_row_high_set_low": "0xfc0dca"
+      },
+      "inactive_guard": "Surface RefreshBankEnabled reads actual bound checkbox Checked at0xfc1377; if false clears model UseLow then UseHigh at0xfc1399/0xfc13b6 and calls global HandleGroupCheckBoxCheck at0xfc13c0."
+    },
+    "construction_order": [
+      {
+        "callsite": "0xfb6a7b",
+        "effect": "Virtual144 surface LightLevel initialized first."
+      },
+      {
+        "callsite": "0xfb6a86",
+        "effect": "Virtual148 surface bank frame initialized second."
+      },
+      {
+        "callsite": "0xfb6a91",
+        "effect": "Virtual14c ST7 occupancy frame initialized third."
+      },
+      {
+        "callsite": "0xfc4b40",
+        "effect": "Surface bank director constructs TfrmSurfaceMountLightLevelBankSwitch under main field444 tsBankSwitch and TcdSurfaceMountLightLevelBankSwitch."
+      },
+      {
+        "callsite": "0xfc4bb6",
+        "effect": "Virtual18 dispatches surface bank Initialise."
+      },
+      {
+        "callsite": "0xfc1148",
+        "effect": "Calls ST7 bank Initialise."
+      },
+      {
+        "callsite": "0xfac6ce",
+        "effect": "Virtual0 installs surface hooks."
+      },
+      {
+        "callsite": "0xfac6d5",
+        "effect": "Virtualc binds surface controls."
+      },
+      {
+        "callsite": "0xfc1152",
+        "effect": "Explicit global HandleGroupCheckBoxCheck after base initialization."
+      }
+    ],
+    "dependencies": {
+      "senlla-bank-transition-derived.json": {
+        "bytes": 10927,
+        "sha256": "fd837fedc905b8235b039ac127fed26d341177462bad13b4ca4a54f28935bbc8"
+      },
+      "senlla-fresh-director-source-handoff.json": {
+        "bytes": 93504,
+        "sha256": "a0b3bd6c5c5794628ed64705a28e0fa172633d543d3a6963f086b32e95da1dd6"
+      },
+      "senlla-fresh-occupancy-frame-derived.json": {
+        "bytes": 121943,
+        "sha256": "89d22bb6a3d5cad25b0a972811dab8e4906389cd15fb85c4ef60ce1bce2b774e"
+      },
+      "senlla-fresh-scalar-derived.json": {
+        "bytes": 80133,
+        "sha256": "25fd21bc121598af9884312776c69f078712bbe916f7f94091febd1a95d0bb11"
+      }
+    },
+    "dfm_facts": {
+      "all_eight_bank_enable_checkboxes_no_serialized_Checked_State_OnClick": true,
+      "base_all_eight_bank_radios_ItemIndex": 0,
+      "base_bank_radios_BooleanInverse": false,
+      "base_bank_radios_items_count": 2,
+      "base_low_and_high_edit_tracks_Max": 100,
+      "base_low_and_high_edit_tracks_Min": 0,
+      "omission_is_not_a_constructor_default": true,
+      "surface_inherited_bank_controls_no_selected_state_or_event_overrides": true
+    },
+    "dfm_resources": {
+      "TFRMLIGHTLEVELBANKSWITCH": {
+        "bytes": 27068,
+        "components": 97,
+        "sha256": "3ac0967570455b20b6f3df00134592347f8d6ec56e96996ab78c356eea9bbdfb"
+      },
+      "TFRMSURFACEMOUNTLIGHTLEVELBANKSWITCH": {
+        "bytes": 21832,
+        "components": 113,
+        "sha256": "46ff1475fd426a8ca7ceeacae3d625172707c04b40a200ea83cbde469423149b"
+      }
+    },
+    "literal_bank_order": [
+      "Active",
+      "Allowed",
+      "UseLow",
+      "UseHigh",
+      "LowLux",
+      "HighLux",
+      "EnableGroupOff"
+    ],
+    "literal_vectors": [
+      {
+        "after_bank": [
+          true,
+          false,
+          true,
+          false,
+          100,
+          2550,
+          true
+        ],
+        "before_bank": [
+          true,
+          false,
+          true,
+          false,
+          100,
+          500,
+          true
+        ],
+        "context": "All other banks active with both use flags false.",
+        "id": "disabled_active_group_control",
+        "stored_high_byte": 255
+      },
+      {
+        "after_bank": [
+          false,
+          false,
+          false,
+          false,
+          100,
+          500,
+          false
+        ],
+        "before_bank": [
+          false,
+          false,
+          true,
+          true,
+          100,
+          500,
+          false
+        ],
+        "context": "Bank1 is first inactive; others active with no group-use flags.",
+        "id": "first_inactive_clears_without_threshold_change"
+      },
+      {
+        "after_banks12": [
+          [
+            false,
+            true,
+            false,
+            false,
+            100,
+            500,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            0,
+            2550,
+            true
+          ]
+        ],
+        "before_banks12": [
+          [
+            false,
+            true,
+            false,
+            false,
+            100,
+            500,
+            false
+          ],
+          [
+            false,
+            false,
+            true,
+            true,
+            100,
+            500,
+            true
+          ]
+        ],
+        "context": "Banks3..8 active with no group-use flags; bank1 causes initial global pass before bank2 binding.",
+        "id": "later_inactive_normalized_before_flags_clear"
+      },
+      {
+        "after_bank": [
+          true,
+          true,
+          true,
+          true,
+          0,
+          2550,
+          false
+        ],
+        "before_bank": [
+          true,
+          true,
+          true,
+          true,
+          100,
+          500,
+          false
+        ],
+        "context": "All other banks active with both use flags false.",
+        "id": "active_both_group_flags",
+        "stored_high_byte": 255,
+        "stored_low_byte": 0
+      }
+    ],
+    "maintenance_observer_admission": {
+      "actual_surface_SetupFlashComponents_calls_inherited_ST7": false,
+      "actual_surface_maint_active_or_block_links_installed": false,
+      "fresh_SENLLA_HandleUnitLightLevelMaintActiveChange_or_BlockChange_delivery": false,
+      "fresh_SENLLA_RefreshBankSwitchAllowed_from_maintenance_frame_callbacks": false,
+      "inherited_ST7_active_SetActive_before_OnValueChange": [
+        "0xfad1a0",
+        "0xfad1ae"
+      ],
+      "inherited_ST7_block_SetActive_before_OnValueChange": [
+        "0xfad14e",
+        "0xfad15c"
+      ],
+      "later_explicit_callback_qualification": "If separately delivered on an inherited ST7 controller, active-change may replace an active maintenance block with FirstAvailableMaintBlock then globally RefreshSwitchAllowedFromBlock; block-change globally refreshes. These callbacks are absent from the actual fresh surface binding.",
+      "surface_margin_link_SetActive_before_OnValueChange": [
+        "0xfc2bac",
+        "0xfc2bba"
+      ],
+      "surface_target_link_SetActive_before_OnValueChange": [
+        "0xfc2b5a",
+        "0xfc2b68"
+      ]
+    },
+    "per_bank_surface_binding": {
+      "RefreshBankEnableable_callsite": "0xfc3036",
+      "RefreshBankHint_callsite": "0xfc3043",
+      "bank_root_link_SetActive_before_OnValueChange": [
+        "0xfc2d05",
+        "0xfc2d13"
+      ],
+      "high_track_configure": "0xfc2e28",
+      "high_track_prepare": "0xfc2ee6",
+      "high_use_prepare_before_click_installed": [
+        "0xfc2f4f",
+        "0xfc2f6d"
+      ],
+      "low_track_configure": "0xfc2e13",
+      "low_track_prepare": "0xfc2ec2",
+      "low_use_prepare_before_click_installed": [
+        "0xfc2f09",
+        "0xfc2f27"
+      ],
+      "manual_switch_click_noop": "0xfc302b",
+      "order": "Banks 1 through 8 in collection order.",
+      "radio_SetBooleanInverse_true": "0xfc2e9e",
+      "radio_expression": "EnableGroupOff",
+      "radio_prepare": "0xfc2e89",
+      "switch_checkbox_prepare": "0xfc2e68",
+      "switch_click_assigned_noop": "0xfc300e",
+      "switch_expression": "SwitchActive"
+    },
+    "remaining_dependencies": [
+      "Internal component input must use loaded stable bank state and byte-derived thresholds; raw block load and occupancy callback ordering are separate retained receipts.",
+      "Connected asynchronous physical group updates, arbitrary user edits, GUI scheduling, root surface application full save and native/hardware acceptance are excluded.",
+      "A supplied raw loaded inactive bank may have Allowed false with Active true after independent raw callbacks; retain both literal state fields rather than deriving Active from Allowed."
+    ],
+    "scalar_render_admission": {
+      "ConfigureCxLuxTrack_Max": 255,
+      "ConfigureCxLuxTrack_Min": 0,
+      "Max_callsite": "0xfc2ac1",
+      "Min_callsite": "0xfc2ab4",
+      "automatic_Active_Allowed_or_EnableGroupOff_setter_from_initial_widget_render": false,
+      "custom_GetText": "0xfac384",
+      "custom_SetText": "0xfac3e8",
+      "initial_render": "Inherited pinned string-controller renderer holds Apply lock and restores the model text cache after widget render; no initial string model write. Checkboxes hold ClicksDisabled while SetChecked; no initial flag or Active write.",
+      "loaded_threshold_domain": "Supplied raw stored byte creates bank Lux in 0..2550 in multiples of 10. Runtime widget position is 0..255 and custom displayed Lux maps position byte back to Lux2550.",
+      "radio_inverse": "SetBooleanInverse changes inverse flag before rerendering index from current bound boolean. Any resulting Click reconstructs that same boolean, and exact Boolean equality suppresses model callbacks."
+    },
+    "scope": "Static fresh surface light-level bank frame initialization after supplied loaded bank/maintenance/occupancy model states; internal component admission only.",
+    "surface_initial_hooks": {
+      "AddObjectExpression_OnValueChange_installed": "0xf617b4",
+      "AddObjectExpression_SetActive": "0xf617c5",
+      "bank_model_setters_from_six_initial_handlers": [],
+      "group_dependency": "Low/high handlers call LoadThresholdGroupLevel. It conditionally requests GroupPhysicalLevel by group virtual88 when interface state matches resource13c22e8, some bank uses that threshold group, and group is not unused. This is a group physical-state load, not a bank flag/threshold setter in the inspected call graph; offline admission avoids asynchronous physical-group updates.",
+      "inherited_hook_callsite": "0xfc335a",
+      "inherited_hook_effect": "Noop base TcdLightLevelBankSwitch.SetupFlashHooks.",
+      "inherited_target": "0xfaac40",
+      "initial_delivery": "The pinned expression-controller activation/TrackedHandle notification chain delivers the installed handler during activation, before component binding.",
+      "ordered_links": [
+        {
+          "add_callsite": "0xfc337d",
+          "expression": "BankSwitchHighGroup",
+          "handler": "0xfc08fc"
+        },
+        {
+          "add_callsite": "0xfc33a0",
+          "expression": "BankSwitchLowGroup",
+          "handler": "0xfc09c8"
+        },
+        {
+          "add_callsite": "0xfc33c3",
+          "expression": "LightLevelTargetGroup",
+          "handler": "0xfc0fbc"
+        },
+        {
+          "add_callsite": "0xfc33e6",
+          "expression": "LightLevelMarginGroup",
+          "handler": "0xfc0f34"
+        },
+        {
+          "add_callsite": "0xfc3409",
+          "expression": "IsUsingLightLevelTargetGroup",
+          "handler": "0xfc0eac"
+        },
+        {
+          "add_callsite": "0xfc342c",
+          "expression": "IsUsingLightLevelMarginGroup",
+          "handler": "0xfc0e24"
+        }
+      ]
+    },
+    "visibility_admission": {
+      "bank_parent_component": "tsBankSwitch",
+      "bank_parent_main_field": "0x444",
+      "bank_tab_hidden_by_the_audited_surface_initializers": false,
+      "hidden_component": "tsEnvironment",
+      "inactive_bank_use_controls_hidden_or_disabled": "After bindings in global HandleGroupCheckBoxCheck and RefreshBankGroupCheckboxEnable; model normalization has already occurred or occurs in the same handler. Visibility does not gate threshold setters.",
+      "main_DFM_bank_TabVisible_override_present": false,
+      "surface_light_director_hide_callsite": "0xfc52b7",
+      "surface_light_director_post_inherited_hide_field": "0x440"
+    },
+    "vmt_facts": {
+      "flash_checkbox_class_symbol": "0xae7da8",
+      "flash_checkbox_virtual74": "0x6f61f8",
+      "flash_checkbox_virtualf0": "0x68a038",
+      "surface_controller_class_symbol": "0xfc05f4",
+      "virtual0": "0xfc3350",
+      "virtual10": "0xfc1434",
+      "virtual18": "0xfc1130",
+      "virtual4": "0xfc1350",
+      "virtual8": "0xfc2768",
+      "virtualc": "0xfc2b14",
+      "vmt_address": "0xfc064c"
+    }
+  },
+  "layouts": {
+    "agent_field_mapping": {
+      "0x258": "BankSwitchThresholdGroup",
+      "0x25c": "BankSwitchThresholdBehaviour",
+      "0x260": "BankSwitchGroupUsed"
+    },
+    "decoded_effective_layouts": {
+      "BankSwitchGroupUsed": {
+        "address": 72,
+        "array_size": 8,
+        "array_skip": 0,
+        "bit_address": 6,
+        "bit_size": 1
+      },
+      "BankSwitchThresholdBehaviour": {
+        "address": 22,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 4,
+        "bit_size": 2
+      },
+      "BankSwitchThresholdGroup": {
+        "address": 21,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8
+      },
+      "BlockGroupLogic": {
+        "address": 72,
+        "array_size": 8,
+        "array_skip": 0,
+        "bit_address": 4,
+        "bit_size": 1
+      },
+      "LightLevel": {
+        "address": 1,
+        "array_size": 10,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8
+      },
+      "LightLevelStore1": {
+        "address": 120,
+        "array_size": 8,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8
+      },
+      "LightLevelStore2": {
+        "address": 128,
+        "array_size": 8,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8
+      }
+    },
+    "domains": {
+      "BankSwitchGroupUsed": "Eight separate one-bit values, byte72+i bit6 for i0..7. Not a packed count1 mask.",
+      "BankSwitchThresholdBehaviour": "One global scalar 2-bit value at byte22 bit4; raw values0..3. There are no eight behavior elements.",
+      "BankSwitchThresholdGroup": "One global group-address byte0..255, with255 unused.",
+      "BlockGroupLogic": "Eight separate one-bit values, byte72+i bit4 for i0..7; per-bank EnableGroupOff.",
+      "LightLevelStore1": "Eight byte values at120+i, high threshold slots in raw core bank load.",
+      "LightLevelStore2": "Eight byte values at128+i, low threshold slots in raw core bank load."
+    },
+    "frame_handoff_sha256": "65f265670e210a8a4f427f451e61ddeab55f3cb03ee6ebaeac3eaa780290c6e1",
+    "fresh_frame_behavior": {
+      "EnableGroupOff": "Radio is bound to bank EnableGroupOff and receives BooleanInverse=true at0xfc2e9e. Model polarity remains literal, no fresh inversion write.",
+      "PP_ownership": "Fresh bank frame changes model use flags and thresholds. Global threshold-group/behavior serialization belongs to the existing surface saver; per-bank BlockGroupLogic/threshold bytes belong to the existing bank serializer. Avoid adding global PP writes to this pure fresh component.",
+      "required_api_inputs": "Eight BankState objects (already include EnableGroupOff) plus eight UseLow and eight UseHigh booleans. No separate per-bank behavior flags."
+    },
+    "literal_raw_usage_vectors": [
+      {
+        "behavior": 1,
+        "group": 10,
+        "high_group": 255,
+        "low_group": 10,
+        "post_surface_low_lux_for_used": 0,
+        "use_high": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "use_low": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          false,
+          true,
+          false
+        ],
+        "used": [
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "behavior": 0,
+        "group": 10,
+        "high_group": 10,
+        "low_group": 255,
+        "use_high": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "use_low": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "used": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "behavior": 2,
+        "group": 10,
+        "high_group": 10,
+        "low_group": 255,
+        "use_high": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "use_low": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "used": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "behavior": 3,
+        "group": 10,
+        "high_group": 10,
+        "low_group": 255,
+        "use_high": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "use_low": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "used": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "behavior": 1,
+        "group": 255,
+        "high_group": 255,
+        "low_group": 255,
+        "use_high": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "use_low": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "used": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "raw_surface_load": {
+      "global_branch": "Raw behavior==1 selects threshold group as low, high group255; every other raw value (0,2,3) selects it as high, low group255.",
+      "global_branch_compare": "0x12178e6",
+      "high_group_set": "0x12179a9",
+      "low_group_set": "0x121792f",
+      "per_bank_set_use_high": "0x1217a9e",
+      "per_bank_set_use_low": "0x1217a4f",
+      "post_flags_low_normalization": "If UseLow true, SetLowLevelLux(0) at0x1217ad8. This precedes fresh bank-frame initialization and updates stored low byte via core callbacks.",
+      "qualification": "Group object lookup/create and raw core bank callbacks precede this component and remain independently owned; fresh bank-frame input states must already reflect this low normalization.",
+      "use_formula": "For each bank: UseLow=BankSwitchGroupUsed[i] && lowGroup notUnused; UseHigh=BankSwitchGroupUsed[i] && highGroup notUnused."
+    },
+    "scope": "Safe numeric effective specification facts and literal mapping needed for an internal pure surface bank-frame component. No specification contents/defaults copied."
+  },
+  "literal_save_vectors": [
+    {
+      "flags": {
+        "use_high": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "use_low": [
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "frame_parameters": {
+        "LightLevelStore1": [
+          255,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "LightLevelStore2": [
+          0,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
+      },
+      "indexed_parameters": {
+        "LightLevelStore2": {
+          "0": 255
+        }
+      }
+    },
+    {
+      "flags": {
+        "use_high": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "use_low": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "frame_parameters": {
+        "LightLevelStore1": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "LightLevelStore2": [
+          10,
+          0,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
+      },
+      "indexed_parameters": {
+        "LightLevelStore1": {
+          "1": 255
+        }
+      }
+    }
+  ],
+  "method_count": 60,
+  "method_pins": {
+    "CIS_CBus.Lux2550ToByte": {
+      "address": "0x7f2990",
+      "instruction_count": 30,
+      "sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    "CIS_GUI.ComponentEnabled": {
+      "address": "0xaeeae0",
+      "instruction_count": 45,
+      "sha256": "e64156f1d5a2561d99fb9c21a9bcf38f91c44d817767ebca7ca98762135764a6"
+    },
+    "CIS_GUI.OneComponentEnabled": {
+      "address": "0xaee9ac",
+      "instruction_count": 101,
+      "sha256": "72e43b31f035b802ec2b0096f6bec3b93691333279c3a1b9c1ff592b9fc11c23"
+    },
+    "CIS_GUI.TFlashCheckbox_Enabled": {
+      "address": "0xaee904",
+      "instruction_count": 19,
+      "sha256": "758e8cba8b08f4f56a0cec8f3713f4e4c5ef60a7c958484964ac80aa95981592"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged": {
+      "address": "0xcffce0",
+      "instruction_count": 133,
+      "sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate": {
+      "address": "0xcff43c",
+      "instruction_count": 126,
+      "sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged": {
+      "address": "0xcffe78",
+      "instruction_count": 133,
+      "sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetHighLevelLux": {
+      "address": "0xd00178",
+      "instruction_count": 40,
+      "sha256": "0a815544de0bd9780fe1be6a44d63da5db0323464f435dc4ea1b2520c87bb199"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetLowLevelLux": {
+      "address": "0xd001d8",
+      "instruction_count": 40,
+      "sha256": "6f5f6661443c852a6e17120aa67fcda7cec36d96a989051d9fb75c63500b67a9"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x1217764",
+      "instruction_count": 280,
+      "sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1217d60",
+      "instruction_count": 385,
+      "sha256": "fcc2025b40021f638c60bfa68e567f3bf5790de78dcb55cc6dc4fe5ab61ebcfa"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchHighGroup": {
+      "address": "0xca461c",
+      "instruction_count": 31,
+      "sha256": "19723e6a22db0676f5dd1556920f8873be63488c973cebc52721f54a604609fb"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchLowGroup": {
+      "address": "0xca4674",
+      "instruction_count": 31,
+      "sha256": "a7a90a97e4dc17160a450f4ee1409dc88e04585a557d5daf1573a71c731d5b83"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate": {
+      "address": "0xca4d5c",
+      "instruction_count": 34,
+      "sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseHighLevelGroup": {
+      "address": "0xca4e1c",
+      "instruction_count": 38,
+      "sha256": "d4560c301a48dc8696d0b0ef2c14dcae81d59ef968587182ce707dca63e90989"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseLowLevelGroup": {
+      "address": "0xca4e78",
+      "instruction_count": 38,
+      "sha256": "e38c1065f22e82a801a6f408d651c531168dcc8ae8e1b29a58ffc4b0a1e78794"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.SetMax": {
+      "address": "0xc0b5c4",
+      "instruction_count": 15,
+      "sha256": "04fef7e6bb69f2a39a38767ddbdf149310e1d58eb10ab7b0c5da39d1b8f90c0b"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.SetMin": {
+      "address": "0xc0b614",
+      "instruction_count": 15,
+      "sha256": "4f471ae9d038ec41c93be52a741549244f993fdcae3d78ab5991f806fb9c86d2"
+    },
+    "CIS_TFlashLinkManager.TFlashLinkManager.AddObjectExpression": {
+      "address": "0xf61740",
+      "instruction_count": 66,
+      "sha256": "71110b6045d35c0613cb265888f9638c4cd5f3b88361c947d55030637d521459"
+    },
+    "CIS_TFlashRadioGroup.TFlashRadioGroup.SetBooleanInverse": {
+      "address": "0xbc0914",
+      "instruction_count": 46,
+      "sha256": "d1ee62b187d30f6d9acb923146e8696dda897e11734a74902def18ff0e81ca44"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.HandleFormBankCheckboxClick": {
+      "address": "0xfaac58",
+      "instruction_count": 9,
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.HandleTrackBankHighChange": {
+      "address": "0xfaadc8",
+      "instruction_count": 94,
+      "sha256": "8c1373620a0bd151b5637e62494555663c2f7dd592dafd77df6690cc1bb37487"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.HandleTrackBankLowChange": {
+      "address": "0xfaaca4",
+      "instruction_count": 96,
+      "sha256": "84dc952a8b56ee4d0ea98cfe69cb1228bee03876ce26785f8013c49fa14e109f"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.RefreshBankEnabled": {
+      "address": "0xfaac68",
+      "instruction_count": 23,
+      "sha256": "ba872baf8938b8a346410a75cd942a3899faa834e86e94c706fff8b8c3689d33"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.SetupFlashHooks": {
+      "address": "0xfaac40",
+      "instruction_count": 8,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.SetupFormAsTab": {
+      "address": "0xfaac1c",
+      "instruction_count": 11,
+      "sha256": "3c3c13f8bd7893b475adf7f35b6af16846fc59b71f1a231d77df395e3aa27b51"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.SetupNonFlashComponents": {
+      "address": "0xfaac4c",
+      "instruction_count": 8,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleBlockChange": {
+      "address": "0xfac2ec",
+      "instruction_count": 51,
+      "sha256": "3eb8de4719e0e968716f2fce35b543708249aa1d41755806898d6ea818c0840e"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleLuxGetCustomText": {
+      "address": "0xfac384",
+      "instruction_count": 37,
+      "sha256": "0b0e0d0c950f584a19914c3a34b81b70409a2b098095a6fc52746d0df0457198"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleLuxSetCustomText": {
+      "address": "0xfac3e8",
+      "instruction_count": 35,
+      "sha256": "09e2ed328576c85ba41210ae64a00935704cfc8fce2689f04dfe6afa5188ccb4"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleUnitLightLevelMaintActiveChange": {
+      "address": "0xfac44c",
+      "instruction_count": 68,
+      "sha256": "28bb88f22d927f73fdb0cc558be10d08ac46d8c8878a07cade938d21ef70f35a"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleUnitLightLevelMaintBlockChange": {
+      "address": "0xfac520",
+      "instruction_count": 29,
+      "sha256": "c9178e979610b3db0eec21c0a25bdfb600db1375f1c6765a14e875926b394d21"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.Initialise": {
+      "address": "0xfac678",
+      "instruction_count": 73,
+      "sha256": "6ab8672746a02bf50e6575ce4f0ac850cb20d8c8eb558708819394786f0f11db"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.RefreshBankEnableable": {
+      "address": "0xfac770",
+      "instruction_count": 28,
+      "sha256": "9d4bd6aac2b08db5c402741f7204239f78119a7e172070f64899e52145e034bf"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.RefreshBankSwitchAllowed": {
+      "address": "0xfaccf8",
+      "instruction_count": 28,
+      "sha256": "bd4db07dff6440920ae965a0fda002fc0d1cc8e1562e82b8711cbecc59846e8e"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.SetupFlashComponents": {
+      "address": "0xfad064",
+      "instruction_count": 287,
+      "sha256": "20c1f4330c8f1c5dccbd98e2c8c907d3a98ea4a68c0c45918100b04707eb553f"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.ConfigureCxLuxTrack": {
+      "address": "0xfc2aa8",
+      "instruction_count": 30,
+      "sha256": "1cc2f383f2e4e4b39c50907b9bc7fea0169b7f5e74786f5392a946f44776838c"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleBankSwitchHighGroupChange": {
+      "address": "0xfc08fc",
+      "instruction_count": 67,
+      "sha256": "5e1c7a3e596dd7b04ae9010fab999e739e1c9f407670e52384756e2d70f9ef92"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleBankSwitchLowGroupChange": {
+      "address": "0xfc09c8",
+      "instruction_count": 67,
+      "sha256": "2c50945040370005ceadd479120ecbfb4c6aaa9a6f89a77e68d8e770abcd4f82"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleGroupCheckBoxCheck": {
+      "address": "0xfc0b10",
+      "instruction_count": 237,
+      "sha256": "fa22d0c76ab582ab17506cff68f7e9b42708942a858f27b234e1d1138edcabf7"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleIsUsingLightLevelMarginGroupChange": {
+      "address": "0xfc0e24",
+      "instruction_count": 50,
+      "sha256": "90bd1a0a73b6e2c47d7d498a2fd0165162e0a247a80cd3ca39454ee6176e28ad"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleIsUsingLightLevelTargetGroupChange": {
+      "address": "0xfc0eac",
+      "instruction_count": 50,
+      "sha256": "b4c147fa01fdc6ad22c0901f574cef641491d566f0f97172e68e58b7045fdb05"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleLightLevelMarginGroupChange": {
+      "address": "0xfc0f34",
+      "instruction_count": 50,
+      "sha256": "7da131bc33ac7c924a51a3d0226c5e9f07303a706a2921f51d3f507fd186ce9e"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleLightLevelTargetGroupChange": {
+      "address": "0xfc0fbc",
+      "instruction_count": 50,
+      "sha256": "92344c8dc77189129cbc7e372b570452f1e0fbe6e9756493b547b024b311012d"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.Initialise": {
+      "address": "0xfc1130",
+      "instruction_count": 22,
+      "sha256": "80a4510a945dbadcc60945e7bc2477b6ac7523c799cc49fe9e43666508828dfc"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.LoadThresholdGroupLevel": {
+      "address": "0xfc117c",
+      "instruction_count": 125,
+      "sha256": "d5cf26aaab90c2cde27dc331e8e134fdeb558b626c6832f4f9bb2e37add74eca"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshBankEnabled": {
+      "address": "0xfc1350",
+      "instruction_count": 42,
+      "sha256": "8301210472a13b24410258c182e363957a5ccf97e8ed4f8d070ed6477c1c6fc7"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshBankGroupCheckboxEnable": {
+      "address": "0xfc13d4",
+      "instruction_count": 33,
+      "sha256": "9d475a4e3077e89d873dd54df70c44bfbf97308c98a2f29bac0ae84cb7396d6c"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshBankHint": {
+      "address": "0xfc1434",
+      "instruction_count": 650,
+      "sha256": "5d60af97447feb5428a779713262dea4a8e9daf72f4c7154efa9af81cd4eac8c"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshHighThresholdCurrentLevelVisible": {
+      "address": "0xfc21bc",
+      "instruction_count": 61,
+      "sha256": "e19d4ea4cbd9cf8804be15795bb9e17080c6fb5db3b8f57478dc0f5af496a9c7"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshLowThresholdCurrentLevelVisible": {
+      "address": "0xfc2270",
+      "instruction_count": 61,
+      "sha256": "73162aa718a0ee72564e4c849b764b333c8b871a936ce5b0def0b7e4346f487f"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RetrieveInnerRangeWithMargin": {
+      "address": "0xfc2324",
+      "instruction_count": 307,
+      "sha256": "38f4658b0c37ccc0c02b89af2b18661c3f38def9477ac3d412c23f5ad3b57962"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.SetMarginMessage": {
+      "address": "0xfc2768",
+      "instruction_count": 138,
+      "sha256": "4db81107f9317e4e180d56bfe107bcbf7ae411bd490a8e3b5fa2c680224b0901"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.SetupFlashComponents": {
+      "address": "0xfc2b14",
+      "instruction_count": 384,
+      "sha256": "998acc2f0a6cc78910454d464f8ee2215de39f01e5f821b7c570850de179a6c9"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.SetupFlashHooks": {
+      "address": "0xfc3350",
+      "instruction_count": 71,
+      "sha256": "fbb10350ea74fecaef28a1875aef9ba843ce232f2c38c1f6414da6b7799591dc"
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.Initialise": {
+      "address": "0xfb6a40",
+      "instruction_count": 63,
+      "sha256": "8a3a2d8a00346efb9ee243998cbd1249d230dfb83c061d8e4bf39e266e07e6da"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfc5298",
+      "instruction_count": 15,
+      "sha256": "f4be6f5e0d5d2972c041cd402759bb7a435301298dcb715de568529f84ef5d36"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.Initialise": {
+      "address": "0xfc4a94",
+      "instruction_count": 48,
+      "sha256": "ebb33b1c2d305e0c1e6eed5ab263c708fd8fdd129af066984481236037d70d69"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormBankSwitch": {
+      "address": "0xfc4b40",
+      "instruction_count": 39,
+      "sha256": "580d6e8a6378a13d6d71a5ffbcda23caff87c54ba9b000095361fa964ae81de9"
+    },
+    "Controls.TControl.SetEnabled": {
+      "address": "0x6f61f8",
+      "instruction_count": 9,
+      "sha256": "00186d1f17dc36dbb4f66aac90bb3d9ba49303704e50bf83c6de451baf9a0eb6"
+    }
+  },
+  "source_receipts": {
+    "senlla-fresh-bank-frame-derived.json": "65f265670e210a8a4f427f451e61ddeab55f3cb03ee6ebaeac3eaa780290c6e1",
+    "senlla-fresh-bank-layouts-derived.json": "95c1fe5cda6f4346dba620ec47e8c8fa93138cebb7ef927d3acc6b73aff07f63"
+  }
+}
