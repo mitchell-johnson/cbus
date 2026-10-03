@@ -1,5 +1,6 @@
 """CI results must distinguish executed calls, setup skips, and subtests."""
 import ast
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -394,6 +395,83 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_cgate_edlt_scene_name_control_interop.py', 'tests/test_ci_test_results.py'})
         self.assertTrue(all((root / 'toolkit-cli' / module).is_file() for module in selected))
 
+
+    def test_thermostat_stack_exact_backend_roster_body_gates_and_inherited_selection(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        # Literal cases from the reviewed source dictionaries and test shapes.
+        # The inherited selection is pinned separately to published main1cc79977.
+        templates = (
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[ordered-history-preserves-opaque-level-value-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-{backend}]',
+            'tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-{backend}]',
+            'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-preserve-opaque-used-value-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-preserve-opaque-existing-value-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-{backend}]',
+            'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-{backend}]',
+        )
+        public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py')
+        all_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        self.assertEqual(len(all_ids), 799)
+        self.assertEqual(len(set(all_ids)), 799)
+        new_ids = set()
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                            ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {row.format(backend=backend) for row in templates}
+            self.assertEqual(len(expected), 39)
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.split('::', 1)[0] in public_modules]
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            new_ids |= {row for row in expected
+                        if not row.startswith('tests/test_thermostat_remote_references_backends.py::')}
+            audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in public_modules:
+                self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
+        self.assertEqual(len(new_ids), 54)
+        inherited = '\n'.join(sorted(set(all_ids) - new_ids)) + '\n'
+        self.assertEqual(len(set(all_ids) - new_ids), 745)
+        self.assertEqual(hashlib.sha256(inherited.encode()).hexdigest(), '1c530f89c4780322fffe47f24ef9aa6943ce387d58b5829ea181c31c741928d8')
+        pure_modules = ('tests/test_thermostat_remote_levels.py', 'tests/test_thermostat_output_groups.py', 'tests/test_thermostat_output_add.py', 'tests/test_thermostat_output_add_native.py')
+        for selection in ('offline', 'installed-wheel'):
+            audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in pure_modules:
+                self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
+            self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', audit_body)
 
     def test_combined_cli_exact_backend_rosters_and_body_requirements(self):
         # Independent literal identities from the reviewed feature shapes;

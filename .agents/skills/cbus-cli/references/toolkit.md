@@ -695,8 +695,12 @@ The remote path admits source 1 through the existing scalar ApplicationNumber
 (Lighting 48–95 or 203) and source 2 through Enable Control 203. Schedule enable
 is derived from program flags. Inspect planned creations and resolved identities:
 one unused setback role is allowed, every enabled schedule role must be non-unused,
-and all selected non-unused objects must be distinct. Optional level additions
-are declined. Omit --set for a bounded load/save of the current snapshot. Keep
+and all selected non-unused objects must be distinct. Optional level additions default to decline; `--setback-levels accept` and
+`--schedule-levels accept` create missing addresses 1–31 for enabled non-unused
+roles. Existing Level Value metadata stays opaque and is preserved; new Values
+require exact canonical bytes. Ordered `--output-group` selections and typed
+`--output-operation` select/Add/cancel records compose the 23 output roles with
+the same owning transaction. See `toolkit-cli/docs/thermostat-output-add.md`. Omit --set for a bounded load/save of the current snapshot. Keep
 all project networks closed, own project editing exclusively and review uncertain
 creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application

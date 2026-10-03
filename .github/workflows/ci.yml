@@ -139,6 +139,10 @@ jobs:
           --require-module tests/test_senlla_surface.py
           --require-module tests/test_thermostat_remote_references.py
           --require-module tests/test_thermostat_settings.py
+          --require-module tests/test_thermostat_remote_levels.py
+          --require-module tests/test_thermostat_output_groups.py
+          --require-module tests/test_thermostat_output_add.py
+          --require-module tests/test_thermostat_output_add_native.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -196,6 +200,9 @@ jobs:
           --require-module tests/test_cgate_senll_inventory_interop.py
           --require-module tests/test_neo_indicator_editor_backends.py
           --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_thermostat_remote_levels_backends.py
+          --require-module tests/test_thermostat_output_groups_backends.py
+          --require-module tests/test_thermostat_output_add_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -259,6 +266,9 @@ jobs:
           --require-module tests/test_cgate_senll_inventory_interop.py
           --require-module tests/test_neo_indicator_editor_backends.py
           --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_thermostat_remote_levels_backends.py
+          --require-module tests/test_thermostat_output_groups_backends.py
+          --require-module tests/test_thermostat_output_add_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -352,6 +362,10 @@ jobs:
           --require-module tests/test_senlla_surface.py
           --require-module tests/test_thermostat_remote_references.py
           --require-module tests/test_thermostat_settings.py
+          --require-module tests/test_thermostat_remote_levels.py
+          --require-module tests/test_thermostat_output_groups.py
+          --require-module tests/test_thermostat_output_add.py
+          --require-module tests/test_thermostat_output_add_native.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips
