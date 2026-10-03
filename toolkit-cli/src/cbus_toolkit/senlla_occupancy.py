@@ -124,6 +124,31 @@ class OccupancyState:
         flags = (template == 29, template == 30, template == 33, template == 34)
         return state._set_flags(tuple(enumerate(flags)))
 
+    def refresh_event_flags(self, template, *, key_index, join_active,
+                            event_template_handler_installed):
+        """Replay the direct key-reference QuickSet, outside Smart decisions.
+
+        The source skips nil templates and joined keys with index >=4. This
+        path preserves fields 0x94/0x95, even when a previous Smart decision
+        disabled macro refresh. This direct method does not set guard 0x97.
+        Changed flags require a nil event-to-template handler. A macro guard
+        suppresses rewriting but does not prevent calling an installed handler;
+        that callback composition remains owned.
+        The owner handles broadcast callbacks before invoking this refresh.
+        """
+        if template is not None and (type(template) is not int or not 0 <= template <= 58):
+            raise SensorError('Macro template requires None or an integer in 0..58')
+        _block(key_index, 'Key index')
+        _boolean(join_active, 'Join active')
+        _boolean(event_template_handler_installed, 'Event-to-template handler installation')
+        if template is None or join_active and key_index >= 4:
+            return OccupancyTransition(self, ())
+        flags = (template == 29, template == 30, template == 33, template == 34)
+        transition = self._set_flags(tuple(enumerate(flags)))
+        if transition.bank_events and event_template_handler_installed:
+            raise SensorError('Direct occupancy refresh needs the owning installed-handler callback replay')
+        return transition
+
     def as_dict(self):
         return {'flags': list(self.flags), 'decision_pending': self.decision_pending,
                 'refresh_from_macro': self.refresh_from_macro}
