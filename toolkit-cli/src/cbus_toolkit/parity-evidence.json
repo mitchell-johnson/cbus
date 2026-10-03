@@ -293,7 +293,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "2970a238e2d03ffc78c5276d0d33d19d91407fc1",
+      "source_revision": "a8fc8e97d698da458f0439ffef3735981f161716",
       "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_tagged_session_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
       "exit_code": 0,
       "invalidates_on": {
@@ -501,7 +501,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "c1cc797d99c62747090d920e29c3bbe896c145c2cc21f99a2205a19ee968c4f3"
+        "fingerprint_sha256": "72b0c43ea7bc4df2357fb93598f398e8415ebb49a221311642d5529c7548b90a"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -516,11 +516,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "0e403d78ab297415866faa45052f49fa8941a5b10db8fc38dde2fb4b9404cc04"
+          "sha256": "fb06e82957886c9965d67f080538663fb8b7686be2843bccb2d08de1442b0a12"
         }
       ],
       "skips": [],
-      "record_sha256": "3226d3d0104e717b7ef436c3c0d13cce29aec8c4f7422c1ce99445798452cbe8"
+      "record_sha256": "21b4a3df8eb628e73c4b698073e51cd64f5135434877f08ac013227e7afd72b9"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",

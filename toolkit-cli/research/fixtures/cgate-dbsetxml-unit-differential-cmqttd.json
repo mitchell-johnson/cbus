@@ -15,7 +15,7 @@
     "sha256": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1",
     "name": "cmqttd"
   },
-  "source_revision": "2970a238e2d03ffc78c5276d0d33d19d91407fc1",
+  "source_revision": "a8fc8e97d698da458f0439ffef3735981f161716",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "cf696742309e1b9d789caf5cb2ce220f3ab8e7605ec811fafecbb7b2308f7d9c",
     "docs/cmqttd-cgate.md": "be12d0d50ab4055bc1f190dfe4f811ddc28fa48e5329f7db816f914676d3a1df",
@@ -214,7 +214,7 @@
     "rust/testdata/vectors/cgate_project_snapshot.json": "4d98b3dd3c5c70b8e9c3dfa6423dbc8e784825338d4526bae0d6a315ecd9ac81",
     "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
-    "toolkit-cli/Makefile": "11c40fa1e4bf9c83b3cdbeca73ed640b4951bdf2f9fe09ff4f877a0d23e99d19",
+    "toolkit-cli/Makefile": "42db0b3db42e080266342aae0a99e3905833e186e789185866821ca9aa199ce5",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
     "toolkit-cli/research/cgate_session_differential.py": "29fc1d9a5994c13522067c0b47d94fdadeb3b5f2b0e3ce0704f54102b4f986d4",
     "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
@@ -627,7 +627,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "0ac792dd0d50699288e0700372171898d1b0f96fcd9df41fe790faf97821888b",
+    "raw_file_sha256": "f92a0d86e51713dc3e9155d46194dd7d5f00b31e34a467cc7f0edcbd431d00ed",
     "raw_retained_privately": true,
     "field_mapping": [
       {
