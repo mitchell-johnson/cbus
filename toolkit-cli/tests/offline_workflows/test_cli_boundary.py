@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import stat
 import subprocess
 import sys
 
@@ -122,7 +123,9 @@ def test_unix_socket_input_refuses_as_a_special_file(tmp_path, monkeypatch):
         scoped.chdir(tmp_path)
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as special:
             special.bind(source.name)
-            assert_json_error(run_cli(input_args(source), cwd=tmp_path), 4)
+            report = assert_json_error(run_cli(input_args(source), cwd=tmp_path), 4)
+            assert report["error"]["code"] == "invalid_input_file"
+            assert stat.S_ISSOCK(source.lstat().st_mode)
 
 
 def test_device_input_and_implicit_stdin_are_refused(tmp_path):

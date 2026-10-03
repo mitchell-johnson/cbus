@@ -307,13 +307,15 @@ def test_actual_installed_console_metadata_and_runtime_origins_are_bound_to_targ
     probe = tmp_path / "probe"
     probe.mkdir()
     receipt = tmp_path / "actual-console-origins.json"
-    (probe / "sitecustomize.py").write_text('''import atexit,json,os,sys
+    (probe / "sitecustomize.py").write_text('''import atexit,hashlib,json,os,sys
 from pathlib import Path
+entry_script=str(Path(sys.argv[0]).resolve())
+entry_script_sha256=hashlib.sha256(Path(entry_script).read_bytes()).hexdigest()
 def record():
     import importlib.metadata
     origins={name:module.__file__ for name,module in sys.modules.items() if name=='cbus_toolkit' or name.startswith('cbus_toolkit.')}
     entries=[{'name':entry.name,'value':entry.value} for entry in importlib.metadata.distribution('cbus-toolkit-cli').entry_points if entry.group=='console_scripts']
-    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':sys.modules['__main__'].__file__,'entries':entries})+'\\n')
+    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':entry_script,'entry_script_sha256':entry_script_sha256,'entries':entries})+'\\n')
 atexit.register(record)
 ''', encoding="utf-8")
     source = (EXAMPLES / "neo-editor.json").resolve()
@@ -322,6 +324,7 @@ atexit.register(record)
     assert_envelope(process)
     captured = json.loads(receipt.read_bytes())
     assert Path(captured["entry_script"]).resolve() == installed_console(installed_target)
+    assert captured["entry_script_sha256"] == hashlib.sha256(installed_console(installed_target).read_bytes()).hexdigest()
     assert {"name": "cbus-toolkit", "value": "cbus_toolkit.cli:main"} in captured["entries"]
     assert {"cbus_toolkit", "cbus_toolkit.cli", "cbus_toolkit.offline_workflows.cli", "cbus_toolkit.offline_workflows.neo_editor_input"}.issubset(captured["origins"])
     for name, origin in captured["origins"].items():

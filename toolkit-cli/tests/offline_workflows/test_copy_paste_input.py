@@ -254,7 +254,9 @@ def test_reports_are_detached_and_do_not_disclose_snapshot_bytes():
 
 
 def test_committed_example_is_a_meaningful_bound_offline_draft():
-    example = Path(adapter.__file__).with_name("examples") / "copy-paste.json"
+    # Explicit caller fixture; examples are source-only and are not wheel resources.
+    example = (Path(__file__).resolve().parents[2] / "src" / "cbus_toolkit"
+               / "offline_workflows" / "examples" / "copy-paste.json")
     value = json.loads(example.read_text())
     report = adapter.evaluate(value, "plan")
     assert report["outcome"] == "prepared"
