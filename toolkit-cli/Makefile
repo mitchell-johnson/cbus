@@ -347,6 +347,45 @@ check-cgate-interop: compile
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-mock]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[mock]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]' \
@@ -778,6 +817,45 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-daemon]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[daemon]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]' \

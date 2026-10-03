@@ -28,6 +28,7 @@ from .thermostat_remote_references import (REMOTE_EDIT_FIELDS, RemoteCreation, R
 from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RULES, ThermostatPostLoadError,
                                     damper_modulation_save, form_save_disabled_remotes, form_save_fans,
                                     form_save_scalars, form_save_temperatures, virtual_plant_type)
+from .thermostat_output_groups import normalize_output_operations
 from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
@@ -131,7 +132,8 @@ class SettingsPlan:
 
 
 def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, str],
-                  edits: Mapping[str, object], *, temperature_preference=None) -> SettingsPlan:
+                  edits: Mapping[str, object], *, temperature_preference=None,
+                  _model_overrides=None, _defer_model_owned=()) -> SettingsPlan:
     _temperature_preference(temperature_preference)
     family = family_for_unit_type(unit_type)
     if not isinstance(edits, Mapping):
@@ -169,6 +171,12 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
         except ThermostatTemplateError:
             continue
     after = dict(current, **parsed)
+    model_overrides = {} if _model_overrides is None else dict(_model_overrides)
+    for name, value in model_overrides.items():
+        maximum = {'InstalledZones': 31, 'DamperModulationEnable': 1}.get(name)
+        if maximum is None or type(value) is not int or not 0 <= value <= maximum or name not in current:
+            raise ThermostatTemplateError('Malformed internal damper model override: ' + str(name))
+        after[name] = value
     missing = sorted(set(parsed) - set(current))
     if missing:
         raise ThermostatTemplateError('Unit snapshot lacks one-byte setting: ' + ', '.join(missing))
@@ -181,11 +189,21 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
     missing = sorted(set(saved) - set(current))
     if missing:
         raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + ', '.join(missing))
-    rewritten = sorted(name for name in parsed if name in saved and saved[name] != parsed[name])
+    model_owned = set(model_overrides)
+    if 'InstalledZones' in model_owned:
+        model_owned.add('ControlledZones')
+    deferred = set(_defer_model_owned)
+    if deferred - {'InstalledZones', 'ControlledZones', 'DamperModulationEnable'}:
+        raise ThermostatTemplateError('Malformed deferred damper form-save ownership')
+    rewritten = sorted(name for name in parsed if name not in model_owned | deferred
+                       and name in saved and saved[name] != parsed[name])
     if rewritten:
         raise ThermostatTemplateError('The original form save would rewrite ' + ', '.join(
             f'{n}={saved[n]}' for n in rewritten) + '; choose values that survive it')
-    dependent = tuple((n, after[n], v) for n, v in sorted(saved.items()) if after.get(n) != v)
+    dependent_values = {n: (after[n], v) for n, v in saved.items() if after.get(n) != v}
+    for name, value in model_overrides.items():
+        dependent_values[name] = (value, saved.get(name, value))
+    dependent = tuple((n, *pair) for n, pair in sorted(dependent_values.items()))
     # The form owns these writes even when the caller did not edit them.  Check
     # every resulting value against the same specification before any staging.
     for name, _loaded, value in dependent:
@@ -226,7 +244,9 @@ class NativeSettingsPlan:
         changes = settings['changed_parameters']
         mutation = bool(changes or self.remote.graph_mutation_required)
         settings['disabled_remote_defaults']['enabled_reference_resolution_replayed'] = True
-        return {'format': 'cbus-native-thermostat-settings-plan-v1', 'path': self.path,
+        return {'damper_controls': json.loads(self.remote.output_projection_json).get('damper_controls')
+                    if self.remote.output_projection_json != 'null' else None,
+                'format': 'cbus-native-thermostat-settings-plan-v1', 'path': self.path,
                 'identity': dict(self.identity), **settings,
                 'remote_references': self.remote.as_dict(),
                 'output_projection': json.loads(self.remote.output_projection_json),
@@ -283,13 +303,27 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             spec = self.store.load(FAMILIES[family]['unit_spec'])
             if not spec.supports_version(identity['FirmwareVersion']):
                 raise ThermostatTemplateError('Thermostat firmware is outside the decoded specification bounds')
+            normalized_operations = normalize_output_operations(output_operations)
+            deferred = set()
+            for encoded in normalized_operations or ():
+                operation = json.loads(encoded)
+                if operation['op'] == 'damper-modulation-binding':
+                    deferred.add('DamperModulationEnable')
+                elif operation['op'] == 'damper-installed-zones':
+                    deferred.update(('InstalledZones', 'ControlledZones'))
             settings = plan_settings(self.store, identity['UnitType'], values, edits,
-                                      temperature_preference=temperature_preference)
+                temperature_preference=temperature_preference, _defer_model_owned=deferred)
             project_xml = self._xml('//' + project)
             remote = plan_remote_references(self.store, identity['UnitType'], values,
                 dict(settings.edits), project_xml=project_xml, unit_path=path,
                 level_prompts=level_prompts, output_selections=output_selections,
                 output_operations=output_operations)
+            output_projection = json.loads(remote.output_projection_json)
+            damper = output_projection.get('damper_controls') if output_projection is not None else None
+            if damper is not None:
+                settings = plan_settings(self.store, identity['UnitType'], values, edits,
+                    temperature_preference=temperature_preference,
+                    _model_overrides=damper['model_overrides'])
             if any(identity.get(name) != value for name, value in remote.graph.unit_identity):
                 raise ThermostatTemplateError('Unit and complete-project XML identities disagree')
             dependent = {name: (loaded, saved) for name, loaded, saved in settings.dependent}

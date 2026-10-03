@@ -172,6 +172,16 @@ history on the same graph and save owner. [Typed output Edit](thermostat-output-
 also shares this owner. Zone history, application changes, template callbacks,
 output Delete and complete initialized GUI behavior remain separate work.
 
+## Explicit damper callbacks
+
+The [damper guide](thermostat-damper-controls.md) describes seven typed
+`--output-operation` events in one output/settings owner. InstalledZones
+assignment and zone update are separate explicit records. Checkbox binding
+assigns the model; Click records a warning request. Final form save owns
+modulation factor serialization. Cache identities belong to this fresh history.
+Complete quick-zone, subscriber dispatch and initialized original lifecycle
+remain open. See the [two-stage acceptance report](feature-batch-2026-10-04-thermostat-damper-controls.md).
+
 ## Temperature preference
 
 Pass `--temperature-preference celsius` or `--temperature-preference fahrenheit` to reproduce the 15 recovered temperature fields' untouched load/save normalization. This is the original **Toolkit process preference**, independent of the thermostat's `TemperatureUnits` PP setting. Without this option, all temperature fields retain raw PP semantics and the plan reports `temperature_normalization.reproduced=false`.

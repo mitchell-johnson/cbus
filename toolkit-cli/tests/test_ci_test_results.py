@@ -403,6 +403,45 @@ class NewInteropSelectionTests(unittest.TestCase):
         # Literal cases from the reviewed source dictionaries and test shapes.
         # The inherited selection is pinned separately to published main1cc79977.
         templates = (
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-{backend}]',
+            'tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[{backend}]',
             'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[unique-ASCII-default-reuse-then-omitted-Edit-{backend}]',
             'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[missing-ASCII-default-create-amid-Unicode-{backend}]',
             'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_load_and_Edit_preserve_Unicode_and_opaque_Values[distinct-Unicode-Edits-after-ASCII-default-reuse-{backend}]',
@@ -458,15 +497,15 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-{backend}]',
             'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-{backend}]',
         )
-        public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py', 'tests/test_thermostat_output_default_unicode_backends.py')
+        public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py', 'tests/test_thermostat_output_default_unicode_backends.py', 'tests/test_thermostat_damper_controls_backends.py')
         all_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
-        self.assertEqual(len(all_ids), 829)
-        self.assertEqual(len(set(all_ids)), 829)
+        self.assertEqual(len(all_ids), 907)
+        self.assertEqual(len(set(all_ids)), 907)
         new_ids = set()
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
                                             ('daemon', 'check-cmqtt-interop', 'cmqttd')):
             expected = {row.format(backend=backend) for row in templates}
-            self.assertEqual(len(expected), 54)
+            self.assertEqual(len(expected), 93)
             body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
             actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
                       if row.split('::', 1)[0] in public_modules]
@@ -477,16 +516,21 @@ class NewInteropSelectionTests(unittest.TestCase):
             audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
             for module in public_modules:
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
-        self.assertEqual(len(new_ids), 84)
+        self.assertEqual(len(new_ids), 162)
+        damper_ids = {row for row in all_ids if row.startswith('tests/test_thermostat_damper_controls_backends.py::')}
+        self.assertEqual(len(damper_ids), 78)
+        prior_829 = '\n'.join(sorted(set(all_ids) - damper_ids)) + '\n'
+        self.assertEqual(len(set(all_ids) - damper_ids), 829)
+        self.assertEqual(hashlib.sha256(prior_829.encode()).hexdigest(), '23ed7add09cabc63c5068070e69b44d7f9004a155a822305cec3287a10975afb')
         unicode_ids = {row for row in all_ids if row.startswith('tests/test_thermostat_output_default_unicode_backends.py::')}
         self.assertEqual(len(unicode_ids), 16)
-        prior_813 = '\n'.join(sorted(set(all_ids) - unicode_ids)) + '\n'
-        self.assertEqual(len(set(all_ids) - unicode_ids), 813)
+        prior_813 = '\n'.join(sorted(set(all_ids) - unicode_ids - damper_ids)) + '\n'
+        self.assertEqual(len(set(all_ids) - unicode_ids - damper_ids), 813)
         self.assertEqual(hashlib.sha256(prior_813.encode()).hexdigest(), 'ec379cc24fe3e9e8935d2165cefdf6099e9b3ce0128b755070a2d564dac83ab0')
         inherited = '\n'.join(sorted(set(all_ids) - new_ids)) + '\n'
         self.assertEqual(len(set(all_ids) - new_ids), 745)
         self.assertEqual(hashlib.sha256(inherited.encode()).hexdigest(), '1c530f89c4780322fffe47f24ef9aa6943ce387d58b5829ea181c31c741928d8')
-        pure_modules = ('tests/test_thermostat_remote_levels.py', 'tests/test_thermostat_output_groups.py', 'tests/test_thermostat_output_add.py', 'tests/test_thermostat_output_add_native.py', 'tests/test_thermostat_output_edit.py', 'tests/test_thermostat_output_edit_native.py', 'tests/test_thermostat_output_edit_opaque_values.py', 'tests/test_thermostat_output_default_unicode.py', 'tests/test_thermostat_output_default_ascii_static.py')
+        pure_modules = ('tests/test_thermostat_remote_levels.py', 'tests/test_thermostat_output_groups.py', 'tests/test_thermostat_output_add.py', 'tests/test_thermostat_output_add_native.py', 'tests/test_thermostat_output_edit.py', 'tests/test_thermostat_output_edit_native.py', 'tests/test_thermostat_output_edit_opaque_values.py', 'tests/test_thermostat_output_default_unicode.py', 'tests/test_thermostat_output_default_ascii_static.py', 'tests/test_thermostat_damper_controls.py', 'tests/test_cli_thermostat_damper_controls.py')
         for selection in ('offline', 'installed-wheel'):
             audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
             for module in pure_modules:

@@ -384,6 +384,12 @@ using the recovered ASCII-only comparison and retaining ambiguity refusal.
 See the [default-name guide](toolkit-cli/docs/thermostat-default-names.md) and
 [current focused acceptance](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-unicode-defaults.md);
 full thermostat GUI and hardware parity remain open.
+Explicit [damper callbacks](toolkit-cli/docs/thermostat-damper-controls.md) share
+that settings history, including cache restoration, InstalledZones updates and
+modulation binding/Click with final plant-factor serialization. See the
+[implementation and validation report](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-damper-controls.md)
+for the supported scope and test evidence. Complete
+quick-zone and automatic GUI notifications remain outstanding.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
 admits 288 of 292 registered source/target pairs. The earlier 123 have historical

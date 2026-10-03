@@ -13,6 +13,7 @@ import json
 
 from .edlt_add_dialog import (AddDialogError, accept_group_dialog, default_group_name,
     standard_group_name, _message, _rewrite, _trim, _upper)
+from .thermostat_damper_controls import DamperControlModel, normalize_damper_operation
 from .native import _tail
 from .thermostat_post_load import (OUTPUTS, DAMPERS, RELAYS, INSTALLATION_NAMES,
     DAMPER_NAMES, _default_name, pp_name, virtual_plant_type)
@@ -66,7 +67,10 @@ def normalize_output_operations(operations):
         if not isinstance(row, Mapping):
             _fail('Each output operation must be a record')
         op = row.get('op')
-        if op == 'select-output-group':
+        damper = normalize_damper_operation(row)
+        if damper is not None:
+            value = damper
+        elif op == 'select-output-group':
             if set(row) != {'op', 'parameter', 'address'}:
                 _fail('Output select operation requires exactly op, parameter and address')
             parameter, address = normalize_output_selections([
@@ -150,6 +154,7 @@ class OutputGroupModel:
         self.add_dialogs = []
         self.edit_dialogs = []
         self.project_tag_name = None
+        self.damper_controls = None
         resolver.application(self.application, 'output_application', False,
             creation_name={56: 'Lighting', 95: 'DALI', 203: 'Enable Control'}.get(
                 self.application, str(self.application)))
@@ -292,6 +297,11 @@ class OutputGroupModel:
         self.project_tag_name = project_tag_name
         for position, encoded in enumerate(operations, 1):
             row = json.loads(encoded)
+            if normalize_damper_operation(row) is not None:
+                if self.damper_controls is None:
+                    self.damper_controls = DamperControlModel(self)
+                self.operations.append(self.damper_controls.process(row, position))
+                continue
             parameter = row['parameter']
             if row['op'] == 'select-output-group':
                 validate_address(parameter, row['address'])
@@ -374,6 +384,8 @@ class OutputGroupModel:
                 'relay_uniqueness_required': False},
             'selection_creates_groups': False, 'complete_form_lifecycle_reproduced': False,
             'zone_history_or_template_callbacks_reproduced': False}
+        if self.damper_controls is not None:
+            result['damper_controls'] = self.damper_controls.as_dict()
         if self.operations is not None:
             result.update(profile='ordinary-agent-load-then-ordered-output-control-outcomes',
                 operations=self.operations, add_dialogs=self.add_dialogs,

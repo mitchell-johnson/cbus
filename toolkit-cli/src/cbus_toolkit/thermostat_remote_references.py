@@ -23,6 +23,8 @@ from .thermostat_remote_levels import (RemoteLevelCreation, normalize_level_prom
 from .thermostat_templates import FAMILIES, ThermostatTemplateError, family_for_unit_type
 from .unitspec import UnitSpecError, UnitSpecStore, _integer
 
+from .thermostat_damper_controls import DAMPER_READ_FIELDS, normalize_damper_operation
+
 FORMAT = 'cbus-thermostat-remote-references-plan-v1'
 SETBACK_FIELDS = ('RemoteSetbackControlSource', 'RemoteSetbackOnGroup', 'RemoteSetbackOffGroup')
 SCHEDULE_GROUP_FIELDS = ('RemoteScheduleOnGroup', 'RemoteScheduleOffGroup', 'RemoteScheduleOverrideGroup')
@@ -544,6 +546,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     selections = normalize_output_selections(output_selections)
     operations = normalize_output_operations(output_operations)
     output_active = selections is not None or operations is not None
+    damper_active = operations is not None and any(
+        normalize_damper_operation(json.loads(row)) is not None for row in operations)
     spec = store.load(FAMILIES[family]['unit_spec'])
     if spec.unit_type != {'basic': 'THERMOSTATB', 'programmable': 'THERMOSTATA'}[family]:
         _fail('Decoded thermostat specification identity differs from the selected family')
@@ -566,7 +570,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     values = {}
     schema = {}
     read_fields = tuple(dict.fromkeys(REMOTE_READ_FIELDS[family]
-        + (OUTPUT_READ_FIELDS if output_active else ())))
+        + (OUTPUT_READ_FIELDS if output_active else ())
+        + (DAMPER_READ_FIELDS if damper_active else ())))
     for name in read_fields:
         if name not in snapshot:
             _fail('Full thermostat snapshot lacks remote dependency: ' + name)
@@ -649,6 +654,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
             output.select(selections)
         output.validate()
         expected.update(output.expected)
+        if output.damper_controls is not None:
+            expected.update(output.damper_controls.expected)
     references = {role: resolver.current(value) for role, value in references.items()}
 
     def unique(roles, label):
