@@ -2,6 +2,21 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA owning-dependency source check](../research/fixtures/senlla-owner-dependency-source-check-20261004.json)
+adds the fresh bank graph, observed-block versus owned-lux notification
+paths and direct key-reference occupancy refresh. Reference/maintenance
+context changes preserve stale permissions until actual source events.
+The inherited scalar component owns eleven fields, binds final project/unit
+metadata and classifies all 93 parameters, including thirteen non-sent or
+protected fields. Ramp bytes and fresh Global initialization follow their
+separate native rules. Eleven focused source modules pass 167 parents and
+3,644 separate subtests with zero skips; all 4,071 tracked inputs remain
+unchanged. Independent reviews clear 160 bank and 147 scalar method pins.
+The census is current at 745 modules and all 259 native requirements.
+Complete owning Scene/application/installed-form callback replay, the
+93-parameter public save and original/native/hardware acceptance remain
+open. Full suites are deferred for speed; complete parity remains false.
+
 The [SENLLA form/input source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
 adds the complete 93-field raw input guard and separate fresh light-level
 and surface-bank components. Margin percentage stays tied to the original

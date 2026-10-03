@@ -44,3 +44,10 @@ The path-free source receipt is
 classification, enum headers, method hashes and literal vectors from static
 analysis of the pinned original. No original instructions, original GUI or
 physical endpoint executed; full Toolkit parity remains open.
+
+The [frozen owning-dependency source check](../research/fixtures/senlla-owner-dependency-source-check-20261004.json)
+covers eleven SENLLA modules at authored commit `5efcdc1a`: 167 parents,
+3,644 separate subtests and zero failures, errors or skips. All 4,071 tracked
+inputs remain unchanged. This adds bank dependencies and scalar ownership,
+with complete owning save/public CLI and installed-wheel/original/native/
+hardware acceptance still open. Full suites are deferred for speed.

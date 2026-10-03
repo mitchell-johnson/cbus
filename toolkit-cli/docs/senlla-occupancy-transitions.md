@@ -34,3 +34,10 @@ covers six SENLLA modules at authored commit `3316b13e`: 89 parent tests,
 794 separate subtests, zero failures or skips. All 4,047 tracked inputs
 remain unchanged. This records source components, without an installed
 wheel, public whole-unit save, original runtime or physical acceptance.
+
+The direct key-reference refresh now has a separate API from Smart
+macro changes. It preserves decision/refresh fields, applies nil/Join
+guards and requires explicit event-to-template handler context.
+Changed flags with an installed handler require owning callback replay.
+See [owning bank dependencies](senlla-bank-graph.md) and the linked
+current source check; the earlier counts above remain historical.

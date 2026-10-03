@@ -53,3 +53,10 @@ broadcast events, including generic block notifications at their causal
 positions. The graph does not synthesize those events or own project metadata,
 whole-form initialization, the complete 93-parameter save, or a public save
 command. Original runtime and hardware acceptance remain open in issue41.
+
+The [frozen owning-dependency source check](../research/fixtures/senlla-owner-dependency-source-check-20261004.json)
+covers eleven SENLLA modules at authored commit `5efcdc1a`: 167 parents,
+3,644 separate subtests and zero failures, errors or skips. All 4,071 tracked
+inputs remain unchanged. This adds bank dependencies and scalar ownership,
+with complete owning save/public CLI and installed-wheel/original/native/
+hardware acceptance still open. Full suites are deferred for speed.
