@@ -288,6 +288,23 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[language-current-rows-mock]' \
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[pending-refusal-mock]' \
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[enable-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[timer-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[shutter-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[multilevel-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[fan-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[room-courtesy-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[all-six-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[fan-four-status-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-select-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-cycle-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-before-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-timer-before-fan-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-timer-before-scene-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[pending-mock]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_controls_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_cgate_edlt_global_images_interop.py::test_public_automatic_global_all_16_masks_preserve_two_divergent_targets[mock]' \
+		'tests/test_cgate_edlt_global_images_interop.py::test_public_global_lost_first_target_save_stops_without_replay[mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
@@ -539,6 +556,23 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[language-current-rows-daemon]' \
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_and_lighting_callbacks[pending-refusal-daemon]' \
 		'tests/test_cgate_edlt_lighting_images_interop.py::test_public_byte_images_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[enable-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[timer-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[shutter-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[multilevel-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[fan-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[room-courtesy-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[all-six-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[fan-four-status-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-select-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-cycle-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-before-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-timer-before-fan-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[scene-name-timer-before-scene-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_control_histories_one_save_and_preservation[pending-daemon]' \
+		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_controls_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_edlt_global_images_interop.py::test_public_automatic_global_all_16_masks_preserve_two_divergent_targets[daemon]' \
+		'tests/test_cgate_edlt_global_images_interop.py::test_public_global_lost_first_target_save_stops_without_replay[daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \

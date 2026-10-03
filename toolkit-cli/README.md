@@ -21,6 +21,15 @@ images. Bind the export by SHA-256 with automatic metadata; explicit
 Lighting `label_controls` then use the actual source-owned label/status choices
 and one parent save. FONT/DYNAMIC/ICON profiles and image-dependent Language
 composition are described in [label controls and images](docs/edlt-label-controls-images.md).
+The same owning parent now accepts `label_controls` on Enable, Timer, Shutter,
+MultiLevel, Fan and Room Courtesy, plus explicit Scene widget `scene_controls`.
+The [adapter guide](docs/edlt-widget-control-adapters.md) explains the different
+status choices, static-name rules and cycle getter side effects. For Global
+Programming, use `edlt global-plan --project-xml FILE --unit PATH` offline or
+`cgate edlt-global --auto-metadata --source-database PATH` online, with SHA-bound
+image inputs where needed. Read [automatic source metadata](docs/edlt-global-image-metadata.md);
+destination preservation and category copying remain database operations.
+
 For a declared source/obligation bundle, use
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR` to
 report mapping and evidence gaps. Its scoped result cannot make the global

@@ -23,7 +23,7 @@ jobs:
   toolkit:
     name: Toolkit source and Rust interoperability
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
 
@@ -77,6 +77,15 @@ jobs:
           --junit "${RUNNER_TEMP}/toolkit-offline.xml"
           --trace "${RUNNER_TEMP}/toolkit-offline-trace.json"
           --output "${RUNNER_TEMP}/toolkit-offline-results.json"
+          --require-module tests/test_edlt_app_group_label_controls.py
+          --require-module tests/test_edlt_app_group_label_properties.py
+          --require-module tests/test_edlt_app_group_label_static.py
+          --require-module tests/test_edlt_scene_widget_controls.py
+          --require-module tests/test_edlt_scene_widget_properties.py
+          --require-module tests/test_edlt_global_image_context.py
+          --require-module tests/test_native_global_image_context.py
+          --require-module tests/test_cli_edlt_global_images.py
+          --require-module tests/test_edlt_parent_widget_controls.py
           --require-module tests/test_edlt_scene_name_control.py
           --require-module tests/test_edlt_scene_names.py
           --require-module tests/test_edlt_scene_name_static.py
@@ -144,6 +153,8 @@ jobs:
           --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --require-module tests/test_cgate_edlt_scene_controls_language_interop.py
           --require-module tests/test_cgate_edlt_lighting_images_interop.py
+          --require-module tests/test_cgate_edlt_widget_controls_interop.py
+          --require-module tests/test_cgate_edlt_global_images_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -193,6 +204,8 @@ jobs:
           --require-module tests/test_cgate_edlt_scene_inventory_interop.py
           --require-module tests/test_cgate_edlt_scene_controls_language_interop.py
           --require-module tests/test_cgate_edlt_lighting_images_interop.py
+          --require-module tests/test_cgate_edlt_widget_controls_interop.py
+          --require-module tests/test_cgate_edlt_global_images_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"
@@ -246,6 +259,15 @@ jobs:
           --junit "${RUNNER_TEMP}/toolkit-wheel.xml"
           --trace "${RUNNER_TEMP}/toolkit-wheel-trace.json"
           --output "${RUNNER_TEMP}/toolkit-wheel-results.json"
+          --require-module tests/test_edlt_app_group_label_controls.py
+          --require-module tests/test_edlt_app_group_label_properties.py
+          --require-module tests/test_edlt_app_group_label_static.py
+          --require-module tests/test_edlt_scene_widget_controls.py
+          --require-module tests/test_edlt_scene_widget_properties.py
+          --require-module tests/test_edlt_global_image_context.py
+          --require-module tests/test_native_global_image_context.py
+          --require-module tests/test_cli_edlt_global_images.py
+          --require-module tests/test_edlt_parent_widget_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips

@@ -20,6 +20,8 @@ from .edlt_global_programming import (EdltGlobalProgramming, GlobalMerge, Global
     _Origin, _issue, _issued, _hash, _json, _values, _scope, _payload_native_value)
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, xml_text
+from .edlt_global_image_context import (check_global_image_context,
+    project_graph, target_preservation_baseline, _sha as _source_sha)
 
 
 def _error_text(error):
@@ -101,14 +103,18 @@ class NativeGlobalTarget:
     raw_before: bytes
     raw_expected: bytes
     crc_expected: bytes
+    preservation: str | None = None
 
     def as_dict(self):
-        return {'path': self.path, 'oid': self.oid, 'xml_hash': _hash(self.xml),
+        result = {'path': self.path, 'oid': self.oid, 'xml_hash': _hash(self.xml),
             'metadata_hash': _hash(self.metadata), 'expected': _values(self.merge.expected),
             'final': _values(self.merge.final),
             'forced_unchanged_parameters': [k for k, v in self.merge.payload.ordered_payload if self.merge.expected[k] == v],
             'raw_before_hex': self.raw_before.hex(), 'raw_expected_hex': self.raw_expected.hex(),
             'crc_expected_hex': self.crc_expected.hex()}
+        if self.preservation is not None:
+            result['preservation_baseline'] = json.loads(self.preservation)
+        return result
 
 
 @dataclass(frozen=True)
@@ -120,14 +126,26 @@ class NativeGlobalPlan:
     source_database: str | None
     source_xml: str | None
     _origin: _Origin = field(repr=False, compare=False)
+    preserved_project: str | None = field(default=None, repr=False)
 
     def as_dict(self):
-        return {'format': 'cbus-native-edlt-global-plan-v1', **_scope(self.payload.source), 'project': self.project,
+        result = {'format': 'cbus-native-edlt-global-plan-v1', **_scope(self.payload.source), 'project': self.project,
             'payload': self.payload.as_dict(), 'targets': [t.as_dict() for t in self.targets],
             'closed_networks': list(self.networks), 'source_database': self.source_database,
             'source_xml_hash': None if self.source_xml is None else _hash(self.source_xml),
             'caller_exclusive_project_required': True, 'global_session_exclusivity_verified': False,
             'batch_atomic': False, 'target_saved': False, 'automatic_retries': 0}
+        if self.preserved_project is not None:
+            result['project_preservation'] = {
+                'preserved_graph_sha256': _source_sha(self.preserved_project),
+                'allowed_pp_values': [{'path': target.path,
+                    'names': [name for name, _ in self.payload.ordered_payload]}
+                    for target in self.targets],
+                'all_other_project_fields_preserved': True,
+                'destination_lifecycle_loads': 0,
+                'label_transfer_performed': False, 'image_upload_performed': False,
+                'language_mutation_performed': False}
+        return result
 
 
 @dataclass(frozen=True)
@@ -171,6 +189,13 @@ class NativeEdltGlobalProgramming:
         raise NativeGlobalProgrammingError(error, evidence) from error
 
     def _xml(self, path): return xml_text(self.database.get(path, xml=True))
+
+    def prepare_project_source(self, source_database, *,
+            project_images=None, dltp_index=None):
+        """Derive source facts from exactly one complete project XML request."""
+        path, project, _network, _unit = _path(source_database)
+        return self.engine.prepare_project_source(self._xml('//' + project), path,
+            project_images=project_images, dltp_index=dltp_index)
 
     def _project_operation(self, operation, project, other=None):
         return _success(self.projects.operation(operation, project, other), 'PROJECT ' + operation.upper())
@@ -252,7 +277,18 @@ class NativeEdltGlobalProgramming:
         crc = bytes(n for name in ('OverallCRC', 'GlobalParameterCRC', 'WidgetsCRC', 'StaticTextCRC', 'ScenesCheckSum') for n in merge.final[name])
         return NativeGlobalTarget(path, oid, text, metadata, merge, raw, self._raw_merge(raw, payload), crc)
 
+    def _check_project_graph(self, plan):
+        context = plan.payload.source.image_context
+        if context is not None:
+            check_global_image_context(context, self.engine)
+            names = tuple(name for name, _ in plan.payload.ordered_payload)
+            actual = project_graph(self._xml('//' + plan.project), plan.project,
+                mutable_parameters=tuple((target.path, names) for target in plan.targets))
+            if actual != plan.preserved_project:
+                raise EdltError('Global source or independently preserved destination project graph changed')
+
     def _check_source(self, plan):
+        self._check_project_graph(plan)
         if plan.source_database is None: return
         if self._xml(plan.source_database) != plan.source_xml:
             raise EdltError('Source database XML changed since preparation/planning')
@@ -267,11 +303,27 @@ class NativeEdltGlobalProgramming:
         self.engine._payload(plan.payload)
         self._factory_source_guard(plan.payload, plan.source_database)
         for target in plan.targets: self.engine._merge(target.merge)
+        context = plan.payload.source.image_context
+        if context is not None:
+            names = tuple(name for name, _ in plan.payload.ordered_payload)
+            expected = project_graph(context.project_xml, plan.project,
+                mutable_parameters=tuple((target.path, names) for target in plan.targets))
+            if plan.preserved_project != expected:
+                raise EdltError('Global project preservation baseline differs from issued source context')
+            for target in plan.targets:
+                if target.preservation != _json(target_preservation_baseline(
+                        context, target.path, dict(target.merge.expected), names)):
+                    raise EdltError('Global destination preservation baseline differs')
 
     def _factory_source_guard(self, payload, source_database):
         factory = payload.source.factory_preparation
         if factory is not None and source_database != factory.context.source:
             raise EdltError('Factory Global Programming requires source_database to equal the exact original source path')
+        context = payload.source.image_context
+        if context is not None:
+            check_global_image_context(context, self.engine)
+            if source_database != context.unit_path:
+                raise EdltError('Image-aware Global Programming requires the exact source_database path')
 
     def plan(self, payload, destinations, *, source_database=None, exclusive_project=False):
         self._start('plan')
@@ -295,13 +347,28 @@ class NativeEdltGlobalProgramming:
                     raise EdltError('Source database must be a separate unit in this same project')
             self._project_operation('use', project)
             networks = self._networks(project)
+            context = payload.source.image_context
+            preserved_project = None
+            if context is not None:
+                current_project = self._xml('//' + project)
+                if project_graph(current_project, project) != project_graph(context.project_xml, project):
+                    raise EdltError('Global project XML changed since image-aware source preparation')
+                names = tuple(name for name, _ in payload.ordered_payload)
+                preserved_project = project_graph(context.project_xml, project,
+                    mutable_parameters=tuple((path, names) for path in paths))
             if any(path.rsplit('/p/', 1)[0].upper() not in {n.upper() for n in networks} for path in paths):
                 raise EdltError('Destination network is not in the closed project inventory')
             targets = tuple(self._read(path, payload) for path in paths)
+            if context is not None:
+                from dataclasses import replace
+                targets = tuple(replace(target, preservation=_json(
+                    target_preservation_baseline(context, target.path,
+                        dict(target.merge.expected), names))) for target in targets)
             if source_database is not None:
                 source_target = self._read(source_database, payload, role='Source')
                 source_xml = source_target.xml
-            plan = _issue(NativeGlobalPlan(project, payload, targets, networks, source_database, source_xml, _Origin(self._owner)))
+            plan = _issue(NativeGlobalPlan(project, payload, targets, networks, source_database, source_xml,
+                _Origin(self._owner), preserved_project))
             self._check_source(plan)
             self.last_evidence.update(state='planned', complete=True, plan=plan.as_dict())
             return plan
@@ -336,6 +403,9 @@ class NativeEdltGlobalProgramming:
             if backup.upper() == plan.project.upper(): raise EdltError('Backup project must differ from the edited project')
             self.last_evidence.update(project=plan.project, backup_project=backup, source_hash=_hash(plan.payload.source.as_dict()),
                                       planned_destinations=[target.path for target in plan.targets])
+            if plan.payload.source.image_context is not None:
+                self.last_evidence.update(source_image_context=plan.payload.source.image_context.as_dict(),
+                    project_preservation=plan.as_dict()['project_preservation'])
             self._check_source(plan)
             for target in plan.targets: self._fresh(plan, target)
             self.last_evidence['state'] = 'backup'
@@ -347,6 +417,8 @@ class NativeEdltGlobalProgramming:
                 self._fresh(plan, target)
                 row = {'path': target.path, 'state': 'staging', 'attempted_parameters': [],
                     'accepted_parameters': [], 'save_attempted': False, 'verified_saved': False}
+                if target.preservation is not None:
+                    row['preservation_baseline'] = json.loads(target.preservation)
                 self.last_evidence['targets'].append(row)
                 self.last_evidence['state'] = 'staging'
                 with self._session(target.path) as session:
@@ -364,6 +436,8 @@ class NativeEdltGlobalProgramming:
                         raise EdltError('Staged native PP values or raw bytes differ; destination was not saved')
                     if _metadata(self._xml(target.path)) != target.metadata: raise EdltError('Destination identity/metadata changed before save')
                     if self._networks(plan.project) != plan.networks: raise EdltError('Project networks changed before save')
+                    if plan.preserved_project is not None:
+                        self._check_project_graph(plan)
                     row.update(state='saving', save_attempted=True)
                     self.last_evidence['target_save_attempted'] = True
                     _success(session.save_to_source(), 'PP SAVE_TO_SOURCE')
@@ -388,6 +462,9 @@ class NativeEdltGlobalProgramming:
             self._valid_plan(plan)
             self.last_evidence.update(_scope(plan.payload.source))
             self.last_evidence.update(project=plan.project, planned_destinations=[target.path for target in plan.targets])
+            if plan.payload.source.image_context is not None:
+                self.last_evidence.update(source_image_context=plan.payload.source.image_context.as_dict(),
+                    project_preservation=plan.as_dict()['project_preservation'])
             self._check_source(plan)
             if self._networks(plan.project) != plan.networks: raise EdltError('Project network inventory changed')
             for target in plan.targets: self.last_evidence['targets'].append(self._observe_target(target))

@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 701,
-    "modules_without_skip_sites": 390,
-    "modules_with_skip_sites": 311,
+    "test_modules": 712,
+    "modules_without_skip_sites": 399,
+    "modules_with_skip_sites": 313,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 35,
+      "unclassified": 37,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 151
+      "none": 153
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -3814,6 +3814,41 @@
         }
       ]
     },
+    "tests/test_edlt_app_group_label_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_app_group_label_static.py::AppGroupStaticTests::test_original_static_annex_regenerates_without_execution",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_VENDOR_ROOT')",
+          "reason": "Pinned private input must be explicitly configured for read-only static regeneration",
+          "environment": [
+            "CBUS_TOOLKIT_VENDOR_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "AppGroupStaticTests::test_original_static_annex_regenerates_without_execution"
+          ]
+        }
+      ]
+    },
     "tests/test_edlt_applications.py": {
       "categories": [
         "unit_specs"
@@ -4380,6 +4415,41 @@
           "tests": [
             "NativeGeneralTests::test_original_full_pp_boundaries_raw_preservation_mra_and_native_save_reload",
             "OriginalGeneralTests::test_all_original_timing_lists_scalar_codes_and_complementary_restore_radios"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_global_image_context.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_global_image_context.py::test_read_only_static_regeneration_when_exact_inputs_explicitly_provisioned",
+          "kind": "body.call",
+          "condition": "root is None",
+          "reason": "Exact private managed static inputs are not explicitly provisioned",
+          "environment": [
+            "CBUS_GLOBAL_IMAGE_STATIC_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_read_only_static_regeneration_when_exact_inputs_explicitly_provisioned"
           ]
         }
       ]

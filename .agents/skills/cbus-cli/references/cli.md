@@ -654,3 +654,27 @@ One Lighting operation may contain ordered `label_controls` records with
 issued at that causal operation from the exact native metadata/image bytes.
 Use the complete schema in `toolkit-cli/docs/edlt-label-controls-images.md`.
 Keep pending text out of SAVE and never import a JSON receipt as continuation.
+
+
+## Explicit widget adapters and image-aware bulk copying
+
+For ordered Enable, Timer, Shutter, MultiLevel, Fan, Room Courtesy or Scene edits,
+use the existing parent command with `--auto-metadata --exclusive-project` and
+SHA-bound project image inputs where consumed. AppGroup `label_controls` and
+Scene `scene_controls` have different schemas; choose values from actual issued
+rows and consult `toolkit-cli/docs/edlt-widget-control-adapters.md`.
+
+```sh
+cbus-toolkit cgate edlt-global --spec-dir PRIVATE_SPECS \
+  --auto-metadata --source-database //PROJECT/254/p/20 \
+  --destination //PROJECT/253/p/21 --exclusive-project --dry-run \
+  --category key-settings --project-images-export images.json \
+  --project-images-sha256 EXPORT_SHA256
+```
+
+Preview first, then apply the same inputs with a new `--backup-project NAME`.
+This copies declared PP categories into existing database targets. It does not
+transfer labels/images or program hardware. An empty category selection still
+writes forced checksum fields. Keep the exact source/provider identities and
+observe the complete freshness checks; never replay an uncertain SAVE. See
+`toolkit-cli/docs/edlt-global-image-metadata.md` for offline and live limits.

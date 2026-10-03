@@ -73,6 +73,13 @@ Use `cgate edlt-project-images PROJECT --output FILE` to obtain the input,
 then bind it by SHA-256 with automatic metadata. Earlier Language changes
 also compose with image-dependent scene initialization in this bounded profile.
 Original GUI scheduling, full image codecs and device rendering remain open.
+Explicit label controls now also cover Enable, Timer, Shutter, MultiLevel, Fan
+and Room Courtesy widgets. Scene widgets add observed selection, cycle and
+status-text callbacks. Global Programming can derive its source lifecycle and
+image facts from the current database before applying selected categories to
+other units. Read [widget controls](toolkit-cli/docs/edlt-widget-control-adapters.md)
+and [automatic bulk metadata](toolkit-cli/docs/edlt-global-image-metadata.md)
+for usable schemas, commands and acceptance limits.
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
 also diagnoses declared source/obligation mappings and evidence gaps. Its
 bounded result leaves the global parity gate unchanged; see

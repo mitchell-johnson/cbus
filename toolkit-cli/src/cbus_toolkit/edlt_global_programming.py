@@ -109,6 +109,22 @@ def _issued(value, kind, owner):
         raise EdltError('Use an intact issued ' + kind.__name__ + ' from this engine')
 
 
+# Automatic provenance is retained separately from the mutable legacy Origin
+# marker. An in-place field edit cannot turn an automatic source into a manual
+# one or replace its original context with a same-owner successor.
+_IMAGE_SOURCES = {}
+
+
+def _bind_image_source(source, context, owner):
+    key = id(source)
+    def expired(reference):
+        issued = _IMAGE_SOURCES.get(key)
+        if issued is not None and issued[0] is reference:
+            del _IMAGE_SOURCES[key]
+    _IMAGE_SOURCES[key] = (weakref.ref(source, expired), context, owner)
+    return source
+
+
 @dataclass(frozen=True)
 class GlobalSource:
     expected: Mapping
@@ -120,6 +136,7 @@ class GlobalSource:
     lifecycle: str
     _origin: _Origin = field(repr=False, compare=False)
     factory_preparation: object | None = field(default=None, repr=False)
+    image_context: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'before_save', 'final'):
@@ -136,6 +153,9 @@ class GlobalSource:
         if self.factory_preparation is not None:
             result['source_preparation'] = 'issued factory Reset, tab removal and explicit Project preworker'
             result['factory_preparation'] = self.factory_preparation.as_dict()
+        if self.image_context is not None:
+            result['image_context'] = self.image_context.as_dict()
+            result['metadata_provenance'] = 'issued exact native project XML and source image providers'
         return result
 
 
@@ -206,6 +226,20 @@ class EdltGlobalProgramming:
     def snapshot(self, values):
         return self.common.snapshot(values)
 
+    def prepare_project_source(self, project_xml, unit_path, *,
+            project_images=None, dltp_index=None):
+        """Prepare one ordinary source lifecycle from issued native image facts."""
+        from .edlt_global_image_context import resolve_global_image_context
+        context = resolve_global_image_context(project_xml, unit_path, self,
+            project_images=project_images, dltp_index=dltp_index)
+        source = self.prepare_source(dict(context.raw_values),
+            metadata=context.metadata, parameter_order=context.parameter_order)
+        result = _issue(GlobalSource(source.expected, source.after_load,
+            source.before_save, source.final, source.metadata,
+            source.parameter_order, source.lifecycle, _Origin(self._owner),
+            image_context=context))
+        return _bind_image_source(result, context, self._owner)
+
     def prepare_source(self, values, *, metadata, parameter_order=None):
         if not isinstance(values, Mapping):
             raise EdltError('Source parameters must be a complete mapping')
@@ -222,8 +256,22 @@ class EdltGlobalProgramming:
         _issued(source, GlobalSource, self._owner)
         if source.factory_preparation is not getattr(source._origin, 'factory_preparation', None):
             raise EdltError('Global source factory preparation identity changed')
+        issued_image = _IMAGE_SOURCES.get(id(source))
+        if ((issued_image is None and source.image_context is not None)
+                or (issued_image is not None and (issued_image[0]() is not source
+                    or issued_image[1] is not source.image_context
+                    or issued_image[2] is not self._owner))):
+            raise EdltError('Global source image context association differs from original issuance')
         for value in (source.expected, source.after_load, source.before_save, source.final):
             self.snapshot(value)
+        if source.image_context is not None:
+            from .edlt_global_image_context import check_global_image_context
+            context = check_global_image_context(source.image_context, self)
+            if (source.factory_preparation is not None
+                    or source.expected != dict(context.values)
+                    or source.metadata != context.metadata
+                    or source.parameter_order != context.parameter_order):
+                raise EdltError('Global source image context and source phases differ')
         if source.factory_preparation is not None:
             from .edlt_global_preparation import _validate_prepared_factory
             prepared = _validate_prepared_factory(source.factory_preparation, self)

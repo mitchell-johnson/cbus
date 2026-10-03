@@ -373,6 +373,14 @@ selection; other or malformed indexes retain their explicit errors.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
+The durable C-Gate model currently limits its serialized repository to 32 MiB.
+Active projects and saved project copies contribute to that total; repeated
+large `PROJECT COPY` backups can therefore fail with `500 Database commit
+failed; change rolled back`. The synthetic Global Programming test reproduced
+this at its fourteenth backup. [Issue 77](https://github.com/mitchell-johnson/cbus/issues/77)
+tracks repository capacity and scaling; a successful bounded fixture does not
+establish original C-Gate capacity parity.
+
 MQTT lighting commands and C-Gate share the PCI but retain separate response
 contracts. The MQTT worker keeps commands FIFO through correlated positive or
 negative PCI confirmation, including bounded byte-identical retries. A positive

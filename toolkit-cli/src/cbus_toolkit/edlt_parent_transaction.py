@@ -38,6 +38,7 @@ from .edlt_parent_form import (
     ORIGINAL_SAVE_ORDER, ORIGINAL_SELECTION_BINDING_ORDER,
     PERCENTAGE_INITIALIZATION_ORDER,
 )
+from .edlt_parent_label_bindings import APP_GROUP_FAMILIES, refresh_scene_references
 from .edlt_percentage import byte_to_percentage, percentage_to_byte
 from .edlt_quick_status import EdltQuickStatus, FIELDS as QUICK_STATUS_FIELDS
 from .edlt_room_courtesy import EdltRoomCourtesyWidget
@@ -62,13 +63,13 @@ LIGHTING_OPTION_NAMES = (
 )
 ENABLE_OPTION_NAMES = (
     'page', 'position', 'variable', 'level', 'page_mode', 'label_type',
-    'label_index', 'label_text', 'status_type', 'status_index', 'status_text',
+    'label_index', 'label_text', 'status_type', 'status_index', 'status_text', 'label_controls',
 )
 FAN_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'speeds', 'low_threshold',
     'high_threshold', 'page_mode', 'label_type', 'label_index', 'label_text',
     'off_text', 'low_text', 'medium_text', 'high_text', 'off_index',
-    'low_index', 'medium_index', 'high_index',
+    'low_index', 'medium_index', 'high_index', 'label_controls',
 )
 HVAC_OPTION_NAMES = (
     'page', 'position', 'group', 'zone', 'decimal_places', 'units',
@@ -78,22 +79,22 @@ MULTILEVEL_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'levels', 'low_threshold',
     'high_threshold', 'page_mode', 'label_type', 'label_index', 'label_text',
     'off_text', 'low_text', 'medium_text', 'high_text', 'off_index',
-    'low_index', 'medium_index', 'high_index',
+    'low_index', 'medium_index', 'high_index', 'label_controls',
 )
 ROOM_COURTESY_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'mode', 'off_colour',
     'on_colour', 'page_mode', 'label_type', 'label_index', 'label_text',
-    'status_type', 'status_index', 'status_text',
+    'status_type', 'status_index', 'status_text', 'label_controls',
 )
 SCENE_OPTION_NAMES = (
     'page', 'position', 'scene', 'page_mode', 'label_type', 'label_index',
     'status_type', 'status_index', 'status_text', 'mode', 'ramp_seconds',
-    'offset', 'scenes', 'cycle_variant',
+    'offset', 'scenes', 'cycle_variant', 'scene_controls',
 )
 SHUTTER_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'mode', 'preset_left',
     'preset_right', 'page_mode', 'label_type', 'label_index', 'label_text',
-    'status_type', 'status_index', 'status_text',
+    'status_type', 'status_index', 'status_text', 'label_controls',
 )
 TIME_DATE_OPTION_NAMES = (
     'page', 'position', 'slices', 'display', 'page_mode', 'date_format',
@@ -102,7 +103,7 @@ TIME_DATE_OPTION_NAMES = (
 TIMER_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'duration_seconds',
     'target_level', 'expiry_level', 'ramp_seconds', 'page_mode', 'label_type',
-    'label_index', 'label_text', 'status_type', 'status_index', 'status_text',
+    'label_index', 'label_text', 'status_type', 'status_index', 'status_text', 'label_controls',
 )
 GENERAL_OPTION_NAMES = (
     'long_press_ms', 'debounce_ms', 'status_report_seconds',
@@ -342,6 +343,12 @@ def _operation(value, *, allow_add_dialog=False):
     if operation == 'lighting' and 'label_controls' in value:
         from .edlt_lighting_label_controls import normalize_controls
         value = {**value, 'label_controls': normalize_controls(value['label_controls'])}
+    if operation in APP_GROUP_FAMILIES and 'label_controls' in value:
+        from .edlt_app_group_label_controls import normalize_controls
+        value = {**value, 'label_controls': normalize_controls(value['label_controls'], family=operation)}
+    if operation == 'scene' and 'scene_controls' in value:
+        from .edlt_scene_widget_controls import normalize_controls
+        value = {**value, 'scene_controls': normalize_controls(value['scene_controls'])}
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -508,6 +515,8 @@ class ParentTransactionPlan:
     dialog_initial_missing: tuple[str, ...] = ()
     dialog_missing_by_operation: tuple = ()
     lighting_label_bindings: tuple = ()
+    app_group_label_bindings: tuple = ()
+    scene_widget_bindings: tuple = ()
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'after_controls', 'before_save',
@@ -532,6 +541,8 @@ class ParentTransactionPlan:
             'firmware': '5.5.00',
             'operations': [dict(value) for value in self.operations],
             'lighting_label_bindings': [value.as_dict() for value in self.lighting_label_bindings],
+            'app_group_label_bindings': [value.as_dict() for value in self.app_group_label_bindings],
+            'scene_widget_bindings': [value.as_dict() for value in self.scene_widget_bindings],
             'initial_dialog_show_normalizations': [
                 {'parameter': name, 'before': list(self.expected[name]), 'after': [255],
                  'fact': 'absent in the complete inventory before dialog operations'}
@@ -735,7 +746,8 @@ class EdltParentTransaction:
 
     @retained_history
     def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
-             _dialog_missing_by_operation=(), _lighting_label_bindings=()):
+             _dialog_missing_by_operation=(), _lighting_label_bindings=(),
+             _app_group_label_bindings=(), _scene_widget_bindings=()):
         operations = normalize_operations(operations)
         from .edlt_lighting_label_controls import LightingLabelBinding
         expected_label_operations = tuple(number for number, row in enumerate(operations, 1)
@@ -745,6 +757,26 @@ class EdltParentTransaction:
                 or tuple(value.operation_number for value in _lighting_label_bindings) != expected_label_operations):
             raise EdltError('Lighting label_controls require one owner-issued automatic binding per ordered operation')
         label_bindings = {value.operation_number: value for value in _lighting_label_bindings}
+        expected_app_group_operations = tuple(number for number, row in enumerate(operations, 1)
+            if row['op'] in APP_GROUP_FAMILIES and 'label_controls' in row)
+        expected_scene_operations = tuple(number for number, row in enumerate(operations, 1)
+            if row['op'] == 'scene' and 'scene_controls' in row)
+        for bindings, expected, module, class_name, label in (
+                (_app_group_label_bindings, expected_app_group_operations,
+                 'edlt_app_group_label_controls', 'AppGroupLabelBinding', 'AppGroup label_controls'),
+                (_scene_widget_bindings, expected_scene_operations,
+                 'edlt_scene_widget_controls', 'SceneWidgetBinding', 'Scene scene_controls')):
+            if type(bindings) is not tuple:
+                raise EdltError(label + ' require ordered owner-issued bindings')
+            if not expected and not bindings:
+                continue
+            from importlib import import_module
+            binding_type = getattr(import_module('.' + module, __package__), class_name)
+            if (any(type(value) is not binding_type for value in bindings)
+                    or tuple(value.operation_number for value in bindings) != expected):
+                raise EdltError(label + ' require one owner-issued binding per ordered operation')
+        app_group_bindings = {value.operation_number: value for value in _app_group_label_bindings}
+        scene_bindings = {value.operation_number: value for value in _scene_widget_bindings}
         if (type(_dialog_initial_missing) is not tuple
                 or any(type(name) is not str or name not in _SETTING_FIELDS['corridor'][:3]
                        for name in _dialog_initial_missing)
@@ -844,11 +876,13 @@ class EdltParentTransaction:
         from .edlt_static_grid import initialize as initialize_static_grid
         initialize_static_grid(planning_values)
         owners, slots, results, selected = {}, {}, [], []
-        static_dialog_seen = any(row['op'] == 'static-text-dialog' for row in operations)
+        from .edlt_static_grid import requires_retained_names
+        static_dialog_seen = requires_retained_names(operations)
 
         def claim_static(parameters, owner):
-            # An explicit grid history edits the same indexed rows before or
-            # after allocations.  Other fields retain exclusive ownership.
+            # Retained control histories share the one Name table in causal
+            # order. A type change can release a row for a later default or
+            # explicit allocation. Other fields retain exclusive ownership.
             self._claim(owners, parameters,
                 'ordered parent static text' if static_dialog_seen else owner)
         blank_transitions = []
@@ -1144,7 +1178,8 @@ class EdltParentTransaction:
                         f'Duplicate widget byte ownership for widget{candidate}: '
                         f'{slots[candidate]} and {owner}')
                 editor = widget_editors.get(kind) or self._editor(kind)
-                label_controls = options.pop('label_controls', None) if kind == 'lighting' else None
+                label_controls = options.pop('label_controls', None)
+                scene_controls = options.pop('scene_controls', None)
                 if is_mra:
                     widget_plan = editor.plan(
                         planning_values, kind=kind,
@@ -1153,13 +1188,31 @@ class EdltParentTransaction:
                     widget_plan = editor.plan(planning_values, **options)
                 label_control_receipt = None
                 if label_controls is not None:
-                    from .edlt_lighting_label_controls import project_lighting_label_controls
-                    control_record, control_changes, label_control_receipt = project_lighting_label_controls(
-                        self, label_bindings[number], operation_number=number,
+                    if kind == 'lighting':
+                        from .edlt_lighting_label_controls import project_lighting_label_controls as project_controls
+                        binding = label_bindings[number]
+                    else:
+                        from .edlt_app_group_label_controls import project_app_group_label_controls as project_controls
+                        binding = app_group_bindings[number]
+                    control_record, control_changes, label_control_receipt = project_controls(
+                        self, binding, operation_number=number,
                         operation=operation, values={**widget_plan.expected, **widget_plan.changes},
-                        record=widget_plan.record, common=editor)
+                        record=widget_plan.record, common=self.common)
                     widget_plan = replace(widget_plan, record=control_record,
                         changes={**widget_plan.changes, **control_changes})
+                scene_control_receipt = None
+                if scene_controls is not None:
+                    from .edlt_scene_widget_controls import project_scene_widget_controls
+                    projected = {**widget_plan.expected, **widget_plan.changes}
+                    control_record, control_changes, scene_control_receipt = project_scene_widget_controls(
+                        self, scene_bindings[number], operation_number=number,
+                        operation=operation, values=projected,
+                        record=widget_plan.record, common=self.common)
+                    if scene_control_receipt['pending']:
+                        raise EdltError('Scene scene_controls have pending text; parent save requires an explicit commit')
+                    widget_plan = refresh_scene_references(editor, widget_plan, control_record,
+                                                          {**projected, **control_changes})
+                    widget_plan = replace(widget_plan, changes={**widget_plan.changes, **control_changes})
                 widget = widget_plan.widget
                 if widget in slots:
                     raise EdltError(
@@ -1268,6 +1321,8 @@ class EdltParentTransaction:
                 document = widget_plan.as_dict()
                 if label_control_receipt is not None:
                     document['label_controls'] = label_control_receipt
+                if scene_control_receipt is not None:
+                    document['scene_controls'] = scene_control_receipt
                 panel_binding = {
                     'selection_order': [
                         'ShowWidget', 'BaseWidget.SetWidgetData',
@@ -1822,7 +1877,8 @@ class EdltParentTransaction:
             lifecycle_plan.changes, initial_cache, initial_application_cache,
             initial_scene_manager_cache, operations, tuple(results),
             _json(evidence), _dialog_initial_missing,
-            _dialog_missing_by_operation, _lighting_label_bindings)
+            _dialog_missing_by_operation, _lighting_label_bindings,
+            _app_group_label_bindings, _scene_widget_bindings)
 
     @staticmethod
     def _interrupted(error, plan, attempted, original_error=None):
@@ -1854,7 +1910,9 @@ class EdltParentTransaction:
                 operations=plan.operations,
                 _dialog_initial_missing=plan.dialog_initial_missing,
                 _dialog_missing_by_operation=plan.dialog_missing_by_operation,
-                _lighting_label_bindings=plan.lighting_label_bindings)
+                _lighting_label_bindings=plan.lighting_label_bindings,
+                _app_group_label_bindings=plan.app_group_label_bindings,
+                _scene_widget_bindings=plan.scene_widget_bindings)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):

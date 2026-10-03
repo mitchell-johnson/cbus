@@ -1,0 +1,633 @@
+{
+  "format": "cbus-edlt-global-image-source-annex-v1",
+  "original_inputs": [
+    {
+      "logical_name": "CBusLogicModel.dll",
+      "sha256": "34e9a52308cf2ea0ac83a2aef9123567d59b5cc35b28f95a2c47c3e6a34e8823",
+      "bytes": 258048
+    },
+    {
+      "logical_name": "EDLTUnit.cs",
+      "sha256": "641f5abc1c3762cd86a0c4b18bc125424a39017a3d78d6edfa4e1e2964af62b2",
+      "bytes": 49270
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "sha256": "aa272e496f89d83e66bc4defe79476cc00c1bb42065835fd0e42b1c8644da873",
+      "bytes": 4197
+    },
+    {
+      "logical_name": "CBusGroup.cs",
+      "sha256": "882ef659aa8114ee8d5a9f51c7d7d14cde7322f7da83a33853c9c6f49a3e7aa2",
+      "bytes": 8372
+    },
+    {
+      "logical_name": "TagDLT.cs",
+      "sha256": "ce6461d96e5017e91f4dc394a27796ff806da3bee12518113b8c2770a1132aa6",
+      "bytes": 2022
+    },
+    {
+      "logical_name": "CBusNetwork.cs",
+      "sha256": "ddd65e5d34d94f3b0468f0db5a8468c0b6b5cdc50b8a49ca27b9f7331000d39c",
+      "bytes": 14751
+    },
+    {
+      "logical_name": "CBusApplication.cs",
+      "sha256": "669554fea6b53c01a2d0d0c1d7cf8c89cd76d68af0b7d2b11f3bb73a6bfe5933",
+      "bytes": 4574
+    },
+    {
+      "logical_name": "CBusBaseUnit.cs",
+      "sha256": "4f0468941222c6696db5836a32fc0b70d18fcf704ea8fe6dd0c2d709a3842487",
+      "bytes": 29217
+    }
+  ],
+  "managed_method_spans": [
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::AfterLoadPPData",
+      "token": "0x06000457",
+      "rva": "0x116d8",
+      "file_offset": 63704,
+      "header_bytes": 12,
+      "code_bytes": 1510,
+      "body_bytes": 1522,
+      "extra_sections": 0,
+      "body_sha256": "4395c73d277ff6c17e959afd0d07a7163f6dde166f06dbb5b868685c962d3f47",
+      "il_sha256": "d06a8b3de4a8062fbede4c1cbbd0cc6183e5da0eb3649631a15886671ef64fdb"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::LoadWidgetsFromAttributes",
+      "token": "0x06000458",
+      "rva": "0x11ccc",
+      "file_offset": 65228,
+      "header_bytes": 12,
+      "code_bytes": 170,
+      "body_bytes": 200,
+      "extra_sections": 1,
+      "body_sha256": "a587f62e152bd8047bb9869cc74dafdc38e1a792cdb0ae779170c3ab90dfb289",
+      "il_sha256": "34588822ca30c2a6bf899dfea18dfef01c645b0e6c72d344061897a45144617f"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::LoadScenes",
+      "token": "0x06000460",
+      "rva": "0x121ec",
+      "file_offset": 66540,
+      "header_bytes": 12,
+      "code_bytes": 701,
+      "body_bytes": 713,
+      "extra_sections": 0,
+      "body_sha256": "9a2b1b555e9c06f8d4c9568f3a1f6a0d4ca31367657f37ac218d6011a3b8d39d",
+      "il_sha256": "9be204e45f261fcac359ffa8f87537848c99fc65afd74ae24e0bb56df0d6b4c0"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::BeforeSavePPData",
+      "token": "0x06000468",
+      "rva": "0x12cf0",
+      "file_offset": 69360,
+      "header_bytes": 12,
+      "code_bytes": 530,
+      "body_bytes": 560,
+      "extra_sections": 1,
+      "body_sha256": "abed2b476f1f96d64ad542a7fa69e2704116bbf30d820c49cbe21110d1a12307",
+      "il_sha256": "17b8c3872974cb593f576f210718a1022607fc8132b6a93cb01b4dcafae35755"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::SaveStaticText",
+      "token": "0x06000464",
+      "rva": "0x129e4",
+      "file_offset": 68580,
+      "header_bytes": 12,
+      "code_bytes": 119,
+      "body_bytes": 131,
+      "extra_sections": 0,
+      "body_sha256": "372028db9241e77fc02b5cd105353db1deb2187048239f3a09f23ec7a6abe1f2",
+      "il_sha256": "ff580cce8c4c1fb1fe3533d4247f0d72ed4d1cd65ff8ceb42c01f0af8bfd263b"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::SaveScenes",
+      "token": "0x06000463",
+      "rva": "0x12678",
+      "file_offset": 67704,
+      "header_bytes": 12,
+      "code_bytes": 812,
+      "body_bytes": 876,
+      "extra_sections": 1,
+      "body_sha256": "3f2d3918d8bfe49d90095038ede25a827a3caa7ae2b146b9619d521e6e50af61",
+      "il_sha256": "b73f03cdc8cd13562c356c4a972507094e74b7dbd2059e38b179fdebd895076c"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::GetMemoryRangeForCRCParameter",
+      "token": "0x0600046b",
+      "rva": "0x12f88",
+      "file_offset": 70024,
+      "header_bytes": 12,
+      "code_bytes": 161,
+      "body_bytes": 173,
+      "extra_sections": 0,
+      "body_sha256": "be29d4806772941d4d878bd4fafb70bd7b2844c3cb0871cfd323316802ac9fb0",
+      "il_sha256": "9b6f3509cc2df3efcb3a93dc345f5d56e487ab1727245d6ab9f55b49bd2d7e41"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::.ctor",
+      "token": "0x0600052f",
+      "rva": "0x14d1c",
+      "file_offset": 77596,
+      "header_bytes": 12,
+      "code_bytes": 198,
+      "body_bytes": 210,
+      "extra_sections": 0,
+      "body_sha256": "769f6686336f7e0704b4a23dae3c8f38c0900a8bfba7db140a0ab6f2ded991d0",
+      "il_sha256": "ddbee17ec52616090368a3bcd15ac7c895511702acf3022e72fbcc9658f809bb"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_LabelValueIndex",
+      "token": "0x06000530",
+      "rva": "0x14df0",
+      "file_offset": 77808,
+      "header_bytes": 12,
+      "code_bytes": 108,
+      "body_bytes": 120,
+      "extra_sections": 0,
+      "body_sha256": "ed341f54daeda9d3368bbe7d82250aa842b4af8b0433eb9db8d71ebe2e7d81e6",
+      "il_sha256": "94befab185af8b8cad93e22cf71c473c303a51ef30ad88e1ecb63a3e5a726651"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::ReadXmlData",
+      "token": "0x06000244",
+      "rva": "0x8abc",
+      "file_offset": 27836,
+      "header_bytes": 12,
+      "code_bytes": 735,
+      "body_bytes": 872,
+      "extra_sections": 1,
+      "body_sha256": "eb0129a0ef266864b719426d7eee1280e7545e2d26366ec718ab3a838055eede",
+      "il_sha256": "45ffa04086d393581d84a9fa9c4e355072c3c411692bf06f8adaaac6e057ed84"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::PopulateDynamicAll",
+      "token": "0x06000240",
+      "rva": "0x87d8",
+      "file_offset": 27096,
+      "header_bytes": 12,
+      "code_bytes": 172,
+      "body_bytes": 200,
+      "extra_sections": 1,
+      "body_sha256": "750b63a5f548349091cf7fcac6d1d751b5b1125114b5a62dcce1bad9d77b9aa7",
+      "il_sha256": "61e5943cd9e5fe904caa54ff13238dc6da09e55d9bd65a2dd0491d4b355b34a2"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::InitialiseGroup",
+      "token": "0x0600022d",
+      "rva": "0x8228",
+      "file_offset": 25640,
+      "header_bytes": 12,
+      "code_bytes": 72,
+      "body_bytes": 84,
+      "extra_sections": 0,
+      "body_sha256": "9c6b825b20a8dbaf6569d64bf0b414924645f15054d7bf7c0d37b611d8276467",
+      "il_sha256": "65a4ada5bdad7f37502a4cac10ca34f4ecf94129813472458e2988f5a9a09c3f"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusNetwork::ReadXmlData",
+      "token": "0x06000292",
+      "rva": "0x9ef8",
+      "file_offset": 33016,
+      "header_bytes": 12,
+      "code_bytes": 1216,
+      "body_bytes": 1352,
+      "extra_sections": 1,
+      "body_sha256": "385e64a609c166655e6d3852ced41f6e6fb30e42c3e263dd0ecb7134fff4a102",
+      "il_sha256": "e58edd886f0289c5454012cc477eb7b4159f551e8d3687fd659812ba893bc05c"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusNetwork::get_DefaultLanguage",
+      "token": "0x0600025a",
+      "rva": "0x9394",
+      "file_offset": 30100,
+      "header_bytes": 1,
+      "code_bytes": 7,
+      "body_bytes": 8,
+      "extra_sections": 0,
+      "body_sha256": "9570be080db5e398f908bbf69012c2aab85eb132f031e3a52eebe0300a0032b0",
+      "il_sha256": "a9c2a46d99930743f53c32a6aee8f2edc21fe4d6a5c761563dad546e66b41e75"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.TagDLT::PopulateImage",
+      "token": "0x0600069d",
+      "rva": "0x19750",
+      "file_offset": 96592,
+      "header_bytes": 12,
+      "code_bytes": 332,
+      "body_bytes": 372,
+      "extra_sections": 1,
+      "body_sha256": "4595773beb8b10a0edb48245c3a6dde4196a3b8c6e72c82199b46756c6330052",
+      "il_sha256": "7e990ce0b170b61912ea753b092fff57fc90c3f9dfc10d4940dfcf0db2c42074"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.CBusApplication::ReadXmlData",
+      "token": "0x06000043",
+      "rva": "0x2e44",
+      "file_offset": 4164,
+      "header_bytes": 12,
+      "code_bytes": 468,
+      "body_bytes": 520,
+      "extra_sections": 1,
+      "body_sha256": "4d76a59ba15836d9e5f16c083c71d1337b68e585c54f5fb14ced612e79f336a3",
+      "il_sha256": "67492f031372bbc1dadcfe9638ac25e88e8b44ef2644d4e49697feea57d38904"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Units.CBusBaseUnit::CalculateCRCForPPAttributes",
+      "token": "0x0600021b",
+      "rva": "0x7d2c",
+      "file_offset": 24364,
+      "header_bytes": 12,
+      "code_bytes": 410,
+      "body_bytes": 452,
+      "extra_sections": 1,
+      "body_sha256": "c898d1fe518e0c8dd5a44ada8e030da39c688eaccddd57f0d26be37c1c392dd3",
+      "il_sha256": "7dd96a6af6e7a2bde1d6ba7af612383e39954b26de8830630a1e71bbb088df9d"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Crc16Ccitt::checkCrc16",
+      "token": "0x06000372",
+      "rva": "0xf394",
+      "file_offset": 54676,
+      "header_bytes": 12,
+      "code_bytes": 32,
+      "body_bytes": 44,
+      "extra_sections": 0,
+      "body_sha256": "11a5eb7999b69bc42c2ef5febadd30e08b5cdce7ae477e739f4ddd11a0ee3315",
+      "il_sha256": "585b7d65618d057627bc685c6a277ecc78b6c7c13083b72ab3b8b20881f95a76"
+    },
+    {
+      "assembly": "CBusLogicModel.dll",
+      "symbol": "CBusLogicModel.Crc16Ccitt::IpUtilityUpdateCrc",
+      "token": "0x06000371",
+      "rva": "0xf350",
+      "file_offset": 54608,
+      "header_bytes": 12,
+      "code_bytes": 53,
+      "body_bytes": 65,
+      "extra_sections": 0,
+      "body_sha256": "f4770db20891d67ec89f7d3ac995383b6b05892db883bb4fb0ab8f8e35514ab9",
+      "il_sha256": "ceafeaf1225ea79043b140279186313190447aa33b69cea8f860451e21ed667f"
+    }
+  ],
+  "decompiled_source_symbols": [
+    {
+      "logical_name": "EDLTUnit.cs",
+      "symbol": "EDLTUnit.AfterLoadPPData",
+      "start_line": 1328,
+      "end_line": 1394,
+      "utf8_bytes": 5996,
+      "sha256": "3882967f7ae7b9a9d5fd1e7c1f326691b4421554b2c88c566a8efa18342a797f",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "EDLTUnit.cs",
+      "symbol": "EDLTUnit.LoadWidgetsFromAttributes",
+      "start_line": 1396,
+      "end_line": 1427,
+      "utf8_bytes": 693,
+      "sha256": "9ef94b8536073ff3b7de3349bf2e7913e5cdc0a9a2d2e0bdc07e95b8811382c3",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "EDLTUnit.cs",
+      "symbol": "EDLTUnit.LoadScenes",
+      "start_line": 1563,
+      "end_line": 1620,
+      "utf8_bytes": 2401,
+      "sha256": "ed779f79696b0b4827c2e5fc65cc07c8e929fde3d0f22ba0d14fe40c45867f39",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "EDLTUnit.cs",
+      "symbol": "EDLTUnit.BeforeSavePPData",
+      "start_line": 1836,
+      "end_line": 1886,
+      "utf8_bytes": 1404,
+      "sha256": "70009f2ba8bd0b0efeced1943fb54bf0f3ae1d5e283e5c2c690e022d3275f0ee",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "EDLTUnit.cs",
+      "symbol": "EDLTUnit.GetMemoryRangeForCRCParameter",
+      "start_line": 1903,
+      "end_line": 1935,
+      "utf8_bytes": 650,
+      "sha256": "f2233912d1011912a115fc80af924d22a8e7d439d1d62e35ecfc62c47dc120eb",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "symbol": "LightingData.ctor",
+      "start_line": 137,
+      "end_line": 164,
+      "utf8_bytes": 883,
+      "sha256": "f93c77c4521d51a16d6cf0019c6f9b849c28e927525a53b3c9678cdb50e76c01",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "LightingData.cs",
+      "symbol": "LightingData.LabelValueIndex",
+      "start_line": 13,
+      "end_line": 49,
+      "utf8_bytes": 711,
+      "sha256": "550e8e2d463552d0a7df8889c90a2c601e0574e1f5d4b86281587a3f276a0861",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusGroup.cs",
+      "symbol": "CBusGroup.ReadXmlData",
+      "start_line": 238,
+      "end_line": 327,
+      "utf8_bytes": 2563,
+      "sha256": "3aea026d4bbe0b81ab7fa650af339346545203dc83ecc0f83dd1d0a544047642",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusGroup.cs",
+      "symbol": "CBusGroup.PopulateDynamicAll",
+      "start_line": 203,
+      "end_line": 223,
+      "utf8_bytes": 533,
+      "sha256": "2d96757aa5f2ea6f7eb0fb5744a30c54778851eb513976ac25a6a27e1402ac55",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusNetwork.cs",
+      "symbol": "CBusNetwork.ReadXmlData",
+      "start_line": 363,
+      "end_line": 516,
+      "utf8_bytes": 3914,
+      "sha256": "ee1615a9f84e143fe2b74c806509b08298fe8767650f31af8bf58ff43494cb5e",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusApplication.cs",
+      "symbol": "CBusApplication.ReadXmlData",
+      "start_line": 113,
+      "end_line": 169,
+      "utf8_bytes": 1549,
+      "sha256": "b35bdbb2721608d0cf4b6c38b1f21cae72070e35f96a1afc508e06284537df20",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "TagDLT.cs",
+      "symbol": "TagDLT.PopulateImage",
+      "start_line": 74,
+      "end_line": 111,
+      "utf8_bytes": 798,
+      "sha256": "c040ea0f4863de264dafc0ac0d5ca600b2dac0f35899c07b9454dd687b222623",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    },
+    {
+      "logical_name": "CBusBaseUnit.cs",
+      "symbol": "CBusBaseUnit.CalculateCRCForPPAttributes",
+      "start_line": 940,
+      "end_line": 980,
+      "utf8_bytes": 1439,
+      "sha256": "9bb1fbd3edcb00952ddc6c9e3986bc0ee4c5eb69ae1273cd49d20b58507f9c4d",
+      "hash_scope": "Exact UTF8 source declaration without terminal newline/BOM; no code copied."
+    }
+  ],
+  "static_checks": [
+    {
+      "id": "source-load-scenes-before-widget-constructors",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::AfterLoadPPData",
+      "ordered_call_suffixes": [
+        "AfterLoadPPData",
+        "get_ValueAsInt",
+        "set_ValueAsInt",
+        "get_StaticLabels",
+        "Clear",
+        "PopulateStaticTextSuggest",
+        "LoadScenes",
+        "LoadWidgetsFromAttributes",
+        "InitializeMRAGlobalValues",
+        "CheckIfGroupsExist"
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-load-defaults-and-lists",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::AfterLoadPPData",
+      "required_integer_constants": [
+        255,
+        56,
+        64,
+        202,
+        203
+      ],
+      "passed": true
+    },
+    {
+      "id": "constructor-current-group-image-subtype",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::.ctor",
+      "ordered_call_suffixes": [
+        "get_SelectedApplication",
+        "GetGroupByAddress",
+        "get_DynamicAll",
+        "get_LabelValueIndex",
+        "get_Image",
+        "set_ValueAsInt"
+      ],
+      "passed": true
+    },
+    {
+      "id": "constructor-type1-to2-and-type2-to1-masks",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::.ctor",
+      "required_integer_constants": [
+        1,
+        2,
+        32,
+        239,
+        16,
+        223
+      ],
+      "passed": true
+    },
+    {
+      "id": "lighting-effective-dynamic-index",
+      "symbol": "CBusLogicModel.Units.EDLT.WidgetData.LightingData::get_LabelValueIndex",
+      "required_integer_constants": [
+        1,
+        2,
+        3,
+        4,
+        13,
+        64,
+        0
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-network-language-before-dynamic-all",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::ReadXmlData",
+      "ordered_call_suffixes": [
+        "ReadXmlData",
+        "InitialiseGroup",
+        "get_DefaultLanguage",
+        "PopulateDynamicAll"
+      ],
+      "passed": true
+    },
+    {
+      "id": "populate-images-before-datastore-list",
+      "symbol": "CBusLogicModel.CBusObjects.CBusGroup::PopulateDynamicAll",
+      "ordered_call_suffixes": [
+        "get_DynamicAll",
+        "Clear",
+        "get_TagsDLT",
+        "get_ProjectImages",
+        "PopulateImage",
+        "Add",
+        "NotifyPropertyChanged"
+      ],
+      "passed": true
+    },
+    {
+      "id": "icon-then-font-or-exact-project-key",
+      "symbol": "CBusLogicModel.TagDLT::PopulateImage",
+      "ordered_call_suffixes": [
+        "get_FlavourID",
+        "get_TagType",
+        "get_ParentGroup",
+        "get_DLTP",
+        "get_TagValue",
+        "set_Image",
+        "get_TagValue",
+        "get_TagType",
+        "IndexOf",
+        "Split",
+        "set_Image"
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-terminal-save-phase-order",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::BeforeSavePPData",
+      "ordered_call_suffixes": [
+        "BeforeSavePPData",
+        "SaveStaticText",
+        "SaveScenes",
+        "SetMRAWidgetGlobalValues",
+        "SetForcedValues"
+      ],
+      "passed": true
+    },
+    {
+      "id": "all-five-original-crc-ranges",
+      "symbol": "CBusLogicModel.Units.EDLT.EDLTUnit::GetMemoryRangeForCRCParameter",
+      "required_integer_constants": [
+        16,
+        9199,
+        239,
+        256,
+        3839,
+        4096,
+        4095,
+        8192,
+        1023
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-crc-memory-before-five-ranges",
+      "symbol": "CBusLogicModel.Units.CBusBaseUnit::CalculateCRCForPPAttributes",
+      "ordered_call_suffixes": [
+        "SetMemoryFromParamStringValue",
+        "GetMappingCRCByteToParameterTag",
+        "GetMemoryRangeForCRCParameter",
+        "checkCrc16"
+      ],
+      "passed": true
+    },
+    {
+      "id": "crc-zero-memory-and-big-endian-byte-spelling",
+      "symbol": "CBusLogicModel.Units.CBusBaseUnit::CalculateCRCForPPAttributes",
+      "required_integer_constants": [
+        9216,
+        8,
+        255
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-crc-seed-fa50",
+      "symbol": "CBusLogicModel.Crc16Ccitt::checkCrc16",
+      "required_integer_constants": [
+        64080
+      ],
+      "passed": true
+    },
+    {
+      "id": "source-crc-polynomial1021-msb-first",
+      "symbol": "CBusLogicModel.Crc16Ccitt::IpUtilityUpdateCrc",
+      "required_integer_constants": [
+        8,
+        32768,
+        4129
+      ],
+      "passed": true
+    },
+    {
+      "id": "stored255-is-not-native-real-group",
+      "symbol": "CBusLogicModel.CBusApplication::ReadXmlData",
+      "required_integer_constants": [
+        255
+      ],
+      "passed": true
+    },
+    {
+      "id": "historical-category-mask-order-and-zero-global-crc",
+      "passed": true,
+      "source_contexts": 2,
+      "masks_per_source": 16,
+      "new_original_execution": false
+    }
+  ],
+  "historical_category_vector": {
+    "logical_name": "edlt-global-programming-vectors.json",
+    "sha256": "e0ac5e0747279cc11e1c697045ec245f063905c8c11a6aae365f1941b6b0a415",
+    "bytes": 622906
+  },
+  "source_contract": {
+    "load": "AfterLoad creates retained static labels/scenes before all widget constructors, then bindings/MRA/group checks. No destination model is loaded by a PP category merge.",
+    "image": "Source network current Language selects TagsDLT; PopulateDynamicAll populates Image before DataStore. ICON resolves exact decimal DLTP key; FONT strips first comma; other tags including TEXT use exact key, first project-image match wins.",
+    "lighting": "Actual selected source group, effective index0 for stored>=4, and null/Image presence distinguish dynamic label types1/2. No caller Boolean or target label is borrowed.",
+    "global_payload": "Existing historical all16 masks preserve source PP attribute order, include source OverallCRC, append zero GlobalParameterCRC and preserve three destination CRC sections. New image profile does not prove a new original worker run.",
+    "scope": "Ordinary complete source lifecycle only. Existing factory six-profile restrictions remain; missing applications are refused rather than invented. Whole project preservation allows only selected target PP Value attributes."
+  },
+  "limits": {
+    "original_instructions_executed": 0,
+    "framework_host_executed": false,
+    "physical_hardware_executed": false,
+    "new_original_global_worker_execution": false,
+    "factory_admission_expanded": false,
+    "image_upload_performed": false,
+    "label_transfer_performed": false,
+    "target_lifecycle_loads": 0,
+    "vendor_code_published": false,
+    "instruction_bytes_published": false
+  }
+}

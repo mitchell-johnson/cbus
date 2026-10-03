@@ -40,6 +40,9 @@ from .edlt_display_model import (
 )
 from .edlt_dltp_index import DltpIndex
 from .edlt_scene_label_images import ProjectImages, check_project_images, check_dltp_images
+from .edlt_parent_label_bindings import (
+    APP_GROUP_FAMILIES, current_scene_rows, refresh_scene_references,
+)
 from .edlt_lifecycle import FORMAT, LifecycleCache, LifecycleGroup
 from .edlt_parent_transaction import (
     EdltParentTransaction, _DYNAMIC_FIELD_OFFSETS, _SETTING_FIELDS, _ACTIVATION_PARAMETERS,
@@ -436,7 +439,7 @@ def _operation_groups(values, operations):
         return default if value is None else value
 
     def needs_images(operation):
-        if operation.get('label_controls'):
+        if operation.get('label_controls') or operation.get('scene_controls'):
             return True
         explicit = any(operation.get(name) in ('dynamic-text', 'dynamic-icon')
                        for name in ('label_type', 'status_type'))
@@ -1507,7 +1510,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
-            or any(row['op'] == 'lighting' and row.get('label_controls') for row in operations)
+            or any(row.get('label_controls') or row.get('scene_controls') for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1639,7 +1642,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     requirements, *, networks, display_preferences,
                     source_operations=None, dialogs=(), extra_creations=(),
                     cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
-                    dependency_values=None, lighting_label_bindings=()):
+                    dependency_values=None, lighting_label_bindings=(),
+                    app_group_label_bindings=(), scene_widget_bindings=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1740,7 +1744,9 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
     parent = editor.plan(supplied if parent_input is None else parent_input, metadata=cache, operations=operations,
                          _dialog_initial_missing=initial_missing,
                          _dialog_missing_by_operation=dialog_contexts,
-                         _lighting_label_bindings=lighting_label_bindings)
+                         _lighting_label_bindings=lighting_label_bindings,
+                         _app_group_label_bindings=app_group_label_bindings,
+                         _scene_widget_bindings=scene_widget_bindings)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1766,6 +1772,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     native_scene_inventory = any(row['op'] == 'scene-manager' and any(
         child['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control')
         for child in row['operations']) for row in operations)
+    widget_control_history = any(
+        'label_controls' in row or 'scene_controls' in row
+        for row in operations)
     scene_initialization = None
     scene_initialization_values = supplied
     scene_initialization_xml = text
@@ -1822,6 +1831,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     dialog_contexts = []
     lowered_so_far = []
     lighting_label_bindings = []
+    app_group_label_bindings = []
+    scene_widget_bindings = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
     seed_levels = {key: dict(rows) for key, rows in levels.items()}
     if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
@@ -1975,7 +1986,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             from .edlt_static_text_dialog import project as project_static_text
             changes, _receipt = project_static_text(state, row)
             state = {**state, **changes}
-        elif kind in WIDGET_OPERATION_NAMES and kind not in ('scene', 'blank') and not scene_results:
+        elif (kind in WIDGET_OPERATION_NAMES and kind != 'blank'
+              and (widget_control_history
+                   or (kind != 'scene' and not scene_results))):
             from .edlt_static_grid import _parent_history_active
             if _parent_history_active() or native_scene_inventory:
                 # An earlier widget reserves its label slot before SceneName
@@ -1984,16 +1997,27 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 widget_editor = ({'measurement': editor.measurement_editor,
                                   'lighting': editor.lighting_editor}.get(kind)
                                  or editor._editor(kind))
-                label_controls = options.pop('label_controls', None) if kind == 'lighting' else None
+                label_controls = options.pop('label_controls', None)
+                scene_controls = options.pop('scene_controls', None)
                 widget_plan = (widget_editor.plan(state, kind=kind,
                     _parent_composition=True, **options) if kind in MRA_WIDGET_TYPES
                     else widget_editor.plan(state, **options))
                 projected = {**widget_plan.expected, **widget_plan.changes}
                 if label_controls is not None:
-                    from .edlt_lighting_label_controls import (
-                        issue_lighting_label_binding, project_lighting_label_controls)
-                    application = projected['SecondaryApplication' if widget_plan.record[1] & 128
-                                            else 'PrimaryApplication'][0]
+                    if kind == 'lighting':
+                        from .edlt_lighting_label_controls import (
+                            issue_lighting_label_binding as issue_binding,
+                            project_lighting_label_controls as project_controls)
+                        bindings = lighting_label_bindings
+                    elif kind in APP_GROUP_FAMILIES:
+                        from .edlt_app_group_label_controls import (
+                            issue_app_group_label_binding as issue_binding,
+                            project_app_group_label_controls as project_controls)
+                        bindings = app_group_label_bindings
+                    else:
+                        raise EdltError('This widget has no source-owned AppGroup label controls')
+                    from .edlt_parent_transaction import _selected_application
+                    application = _selected_application(projected, widget_plan.record, kind)
                     group = widget_plan.record[6]
                     current_project = _children(_container(language_text, 'Installation').documentElement, 'Project')[0]
                     current_network = _one_by_address(current_project, 'Network', snapshot.network)
@@ -2012,16 +2036,46 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                         dynamic_rows, known = _dynamic_labels(current_group, default,
                             snapshot.dltp_index, snapshot.project_images)
                     if not known:
-                        raise EdltError('Lighting label_controls require resolvable source-owned dynamic image rows')
-                    issued = issue_lighting_label_binding(editor,
+                        raise EdltError('Widget label_controls require resolvable source-owned dynamic image rows')
+                    provenance = {} if kind == 'lighting' else {'provider_provenance': {
+                        'project_xml_sha256': _digest(language_text),
+                        'current_default_language': default,
+                        'project_images': None if snapshot.project_images is None
+                                          else snapshot.project_images.evidence(),
+                        'dltp': None if snapshot.dltp_index is None
+                                else snapshot.dltp_index.evidence()}}
+                    issued = issue_binding(editor,
                         operation_number=index + 1, application=application, group=group,
-                        source_values=projected, operation=row, dynamic_rows=dynamic_rows)
-                    lighting_label_bindings.append(issued)
-                    new_record, changes, _receipt = project_lighting_label_controls(editor, issued,
+                        source_values=projected, operation=row, dynamic_rows=dynamic_rows,
+                        **provenance)
+                    bindings.append(issued)
+                    new_record, changes, _receipt = project_controls(editor, issued,
                         operation_number=index + 1, operation=row, values=projected,
                         record=widget_plan.record, common=editor.common)
                     projected.update(changes)
                     widget_plan = replace(widget_plan, record=new_record,
+                        changes={name: value for name, value in projected.items()
+                                 if value != widget_plan.expected[name]})
+                if scene_controls is not None:
+                    from .edlt_scene_widget_controls import (
+                        issue_scene_widget_binding, project_scene_widget_controls)
+                    provider = {'project_images': None if snapshot.project_images is None
+                                else snapshot.project_images.evidence(),
+                                'dltp': None if snapshot.dltp_index is None
+                                else snapshot.dltp_index.evidence()}
+                    issued = issue_scene_widget_binding(editor,
+                        operation_number=index + 1, operation=row, source_values=projected,
+                        scene_rows=current_scene_rows(editor, projected),
+                        project_sha256=_digest(language_text), provider_sha256=_digest(_json(provider)))
+                    scene_widget_bindings.append(issued)
+                    new_record, changes, receipt = project_scene_widget_controls(editor, issued,
+                        operation_number=index + 1, operation=row, values=projected,
+                        record=widget_plan.record, common=editor.common)
+                    if receipt['pending']:
+                        raise EdltError('Scene scene_controls have pending text; parent save requires an explicit commit')
+                    projected.update(changes)
+                    widget_plan = refresh_scene_references(widget_editor, widget_plan, new_record, projected)
+                    widget_plan = replace(widget_plan,
                         changes={name: value for name, value in projected.items()
                                  if value != widget_plan.expected[name]})
                 slots = {widget_plan.widget: widget_plan.record}
@@ -2044,11 +2098,22 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             slot = _candidate_widget(row, state)
             if slot is None:
                 raise ValueError('Parent Add could not resolve Blank placement')
-            # Same raw dependency projection as the existing ordered resolver;
-            # the canonical parent owns the issued Blank transition below.
-            state = {**state, _pp_field(slot): (0,)}
-            if slot >= 6:
-                state['Widget' + str(slot) + 'RestoreLevel'] = (0,)
+            if widget_control_history:
+                # Match canonical retained/fresh-Reset Blank controls. An
+                # already-Blank model does not clear its RestoreLevel.
+                transition = (editor.lifecycle.blank_reset_widget(
+                    reset_transition, slot) if reset_transition is not None
+                    else editor.lifecycle.blank_widget(initial_loaded, slot))
+                state = {**state, **{
+                    name: value for name, value in transition.after_controls.items()
+                    if value != transition.before_controls[name]
+                }}
+            else:
+                # Preserve the existing raw dependency projection outside
+                # histories that issue exact widget-control bindings.
+                state = {**state, _pp_field(slot): (0,)}
+                if slot >= 6:
+                    state['Widget' + str(slot) + 'RestoreLevel'] = (0,)
         elif kind == 'scene-manager':
             if scene_results:
                 raise EdltError('Only one SceneManager may own the retained scene graph')
@@ -2136,8 +2201,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         lowered_so_far.append(row)
         return state, row
 
-    initial_controls = editor.lifecycle.load(supplied,
-        metadata=inventory_cache(seed_groups, seed_levels).lifecycle).after_load
+    initial_loaded = editor.lifecycle.load(supplied,
+        metadata=inventory_cache(seed_groups, seed_levels).lifecycle)
+    initial_controls = initial_loaded.after_load
     from .edlt_static_grid import initialize as initialize_static_grid
     initialize_static_grid(initial_controls)
     for application in seed_groups:
@@ -2242,7 +2308,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         dialog_contexts=tuple(dialog_contexts),
         parent_input=snapshot.raw_map() if reset_requirements is not None else None,
         dependency_values=reset_dependency_values,
-        lighting_label_bindings=tuple(lighting_label_bindings))
+        lighting_label_bindings=tuple(lighting_label_bindings),
+        app_group_label_bindings=tuple(app_group_label_bindings),
+        scene_widget_bindings=tuple(scene_widget_bindings))
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 

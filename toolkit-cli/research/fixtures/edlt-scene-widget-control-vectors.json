@@ -1,0 +1,533 @@
+{
+  "format": "cbus-edlt-scene-widget-control-vectors-v1",
+  "origin": "Independent source-derived explicit callback histories; historical record basis is separately pinned DLL output, not new original-host execution.",
+  "historical_basis": {
+    "path": "tests/test_edlt_scene.py",
+    "sha256": "44f8e5e5440f3c96c1a38795946cd0660b26498d4fec2523682058f72956d4ac",
+    "literal_name": "OPAQUE"
+  },
+  "source_annex": {
+    "path": "research/fixtures/edlt-scene-widget-control-source-annex.json",
+    "sha256": "36534106bc1013bc5f1d26de91a600f4fd96c413f3f294b286e2f55e007d4408"
+  },
+  "cases": [
+    {
+      "id": "view-and-setup-no-cycle-read",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "set-widget"
+        },
+        {
+          "event": "get-view"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_pending": false
+    },
+    {
+      "id": "type-variant-and-radio-hidden-index",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 2,
+          "identity": "label-type:2",
+          "value": 2,
+          "target": "label"
+        },
+        {
+          "event": "variant-selected",
+          "index": 3,
+          "identity": "label-variant:3",
+          "value": 3,
+          "target": "label"
+        },
+        {
+          "event": "type-selected",
+          "index": 2,
+          "identity": "status-type:7",
+          "value": 7,
+          "target": "status"
+        },
+        {
+          "event": "variant-selected",
+          "index": 2,
+          "identity": "status-variant:2",
+          "value": 2,
+          "target": "status"
+        },
+        {
+          "event": "cycle-variant-checked",
+          "radio": "cycle",
+          "checked": true
+        }
+      ],
+      "record_after_hex": "062726250405061e1f090a0302ff0e0f101112131415161718191a1b1c1d1e1f"
+    },
+    {
+      "id": "single-scene-source-value",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "macro-selected",
+          "index": 1,
+          "identity": "scene-macro:26|27",
+          "value": "26|27"
+        },
+        {
+          "event": "scene-selected",
+          "index": 1,
+          "identity": "scene:2",
+          "value": 1
+        }
+      ],
+      "record_after_hex": "068026250405011a1b090a0b0cff0e0f101112131415161718191a1b1c1d1e1f"
+    },
+    {
+      "id": "getter-invalid9-kept-following-normalized",
+      "record_before_hex": "068026250405061e1f090a0b0c000809020304050607161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-cycle"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c000809ffffffffffff161718191a1b1c1d1e1f",
+      "expected_cycle_rows": [
+        0,
+        8
+      ],
+      "expected_first_invalid_slot": 2
+    },
+    {
+      "id": "getter-first-invalid-kept",
+      "record_before_hex": "068026250405061e1f090a0b0cfe0102030405060708161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-cycle"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0cfeffffffffffffffff161718191a1b1c1d1e1f",
+      "expected_cycle_rows": [],
+      "expected_first_invalid_slot": 0
+    },
+    {
+      "id": "nine-raw0through8-can-queries",
+      "record_before_hex": "068026250405061e1f090a0b0c080706050403020100161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-can-add"
+        },
+        {
+          "event": "get-can-remove"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c080706050403020100161718191a1b1c1d1e1f",
+      "expected_can_add": false,
+      "expected_can_remove": true
+    },
+    {
+      "id": "add-eight-scan-keeps-ninth",
+      "record_before_hex": "068026250405061e1f090a0b0c000108030405060706161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "cycle-add"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c000100ffffffffff06161718191a1b1c1d1e1f",
+      "expected_inserted_slot": 2
+    },
+    {
+      "id": "add-full-eight-no-getter-no-change",
+      "record_before_hex": "068026250405061e1f090a0b0c000102030405060763161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "cycle-add"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c000102030405060763161718191a1b1c1d1e1f",
+      "expected_inserted_slot": null
+    },
+    {
+      "id": "null-current-delete-no-getter",
+      "record_before_hex": "068026250405061e1f090a0b0c000109030405060708161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "cycle-delete"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c000109030405060708161718191a1b1c1d1e1f"
+    },
+    {
+      "id": "delete-key-source-getter-and-shift",
+      "record_before_hex": "068026250405061e1f090a0b0c000109030405060708161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-cycle"
+        },
+        {
+          "event": "cycle-current",
+          "index": 1,
+          "identity": "cycle-slot:1",
+          "value": 1
+        },
+        {
+          "event": "cycle-delete-key"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c0009ffffffffffffff161718191a1b1c1d1e1f",
+      "expected_key_handled": true
+    },
+    {
+      "id": "move-down-live-ppattributes",
+      "record_before_hex": "068026250405061e1f090a0b0c0001ff030405060708161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-cycle"
+        },
+        {
+          "event": "cycle-move-down",
+          "index": 0,
+          "identity": "cycle-slot:0"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c0100ffffffffffffff161718191a1b1c1d1e1f",
+      "expected_target_position": 1
+    },
+    {
+      "id": "cell-current-row-exact-scene-choice",
+      "record_before_hex": "068026250405061e1f090a0b0c0001ff030405060708161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "get-cycle"
+        },
+        {
+          "event": "cycle-row-selected",
+          "slot": 0,
+          "index": 1,
+          "identity": "scene:2",
+          "value": 1
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0c0101ffffffffffffff161718191a1b1c1d1e1f"
+    },
+    {
+      "id": "dirty-and-data-error-request-only",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "cycle-dirty",
+          "dirty": true
+        },
+        {
+          "event": "cycle-dirty",
+          "dirty": false
+        },
+        {
+          "event": "cycle-data-error"
+        }
+      ],
+      "record_after_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_commit_context": 512,
+      "expected_data_error_cancel": false
+    },
+    {
+      "id": "static-status-known-row-reuse",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 3,
+          "identity": "status-type:5",
+          "value": 5,
+          "target": "status"
+        },
+        {
+          "event": "status-text",
+          "events": [
+            {
+              "event": "input",
+              "text": "Evening"
+            },
+            {
+              "event": "enter"
+            }
+          ]
+        }
+      ],
+      "record_after_hex": "068526250405061e1f090a0b01ff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_bound_text": "Evening",
+      "expected_reused": true
+    },
+    {
+      "id": "static-status-blank255",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 3,
+          "identity": "status-type:5",
+          "value": 5,
+          "target": "status"
+        },
+        {
+          "event": "status-text",
+          "events": [
+            {
+              "event": "input",
+              "text": "  "
+            },
+            {
+              "event": "leave"
+            }
+          ]
+        }
+      ],
+      "record_after_hex": "068526250405061e1f090a0bffff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_bound_text": ""
+    },
+    {
+      "id": "static-status-pending-no-implicit-close",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 3,
+          "identity": "status-type:5",
+          "value": 5,
+          "target": "status"
+        },
+        {
+          "event": "status-text",
+          "events": [
+            {
+              "event": "input",
+              "text": "Pending"
+            }
+          ]
+        }
+      ],
+      "record_after_hex": "068526250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_pending": true
+    },
+    {
+      "id": "static-status-new-name-old-reference",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 3,
+          "identity": "status-type:5",
+          "value": 5,
+          "target": "status"
+        },
+        {
+          "event": "status-text",
+          "events": [
+            {
+              "event": "input",
+              "text": "New status"
+            },
+            {
+              "event": "enter"
+            }
+          ]
+        }
+      ],
+      "record_after_hex": "068526250405061e1f090a0b3fff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_bound_text": "New status",
+      "expected_static_changes": {
+        "StaticTextString63": [
+          78,
+          101,
+          119,
+          32,
+          115,
+          116,
+          97,
+          116,
+          117,
+          115,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_used_status_index": 12
+    },
+    {
+      "id": "retained-long-name-reuse-before-capacity",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "type-selected",
+          "index": 3,
+          "identity": "status-type:5",
+          "value": 5,
+          "target": "status"
+        },
+        {
+          "event": "status-text",
+          "events": [
+            {
+              "event": "input",
+              "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā"
+            },
+            {
+              "event": "enter"
+            }
+          ]
+        }
+      ],
+      "record_after_hex": "068526250405061e1f090a0b03ff0e0f101112131415161718191a1b1c1d1e1f",
+      "retained_name_override": {
+        "index": 3,
+        "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā",
+        "pp_bytes": [
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          65,
+          196,
+          0
+        ]
+      },
+      "expected_bound_text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAā",
+      "expected_reused": true
+    },
+    {
+      "id": "macro-nudge-no-cycle-read",
+      "record_before_hex": "068026250405061e1f090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "events": [
+        {
+          "event": "macro-selected",
+          "index": 3,
+          "identity": "scene-macro:32|33",
+          "value": "32|33"
+        }
+      ],
+      "record_after_hex": "068026250405062021090a0b0cff0e0f101112131415161718191a1b1c1d1e1f",
+      "expected_notifications": [
+        "LeftButtonMacrofunction",
+        "RampRateEditable",
+        "RightButtonMacrofunction",
+        "SceneSingleSelectionEditable"
+      ]
+    }
+  ],
+  "limits": {
+    "original_host_executed": false,
+    "framework_auto_dispatch_inferred": false,
+    "native_parent_raw8_admitted": false,
+    "physical_device_verified": false
+  }
+}

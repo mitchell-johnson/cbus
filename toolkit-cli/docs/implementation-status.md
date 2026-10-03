@@ -2,6 +2,29 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [widget adapter and Global Programming batch](widget-adapters-global-progress-20261003.md)
+adds source-owned label/status controls for six AppGroup families, Scene widget
+callbacks and automatic source metadata for bulk category copying. These
+functions reuse the owning parent save and current cmqttd/cgate-mock database
+surfaces. Read the [widget schemas](edlt-widget-control-adapters.md) and
+[bulk metadata guide](edlt-global-image-metadata.md) for admitted inputs and
+remaining original GUI, native repository and hardware acceptance. This scoped
+software work does not change the category ledger or resolve the functional
+denominator.
+
+The retained 42-module source and installed-wheel runs each passed 609 parent
+tests and 1,030 separate subtests, with 15 explicit skips and one failure.
+The failure occurred while retaining the fourteenth synthetic Global Programming
+backup: cmqttd refused `PROJECT COPY` at its 32 MiB repository limit and rolled
+back the change. [Issue77](https://github.com/mitchell-johnson/cbus/issues/77)
+tracks that capacity gap. The current affected-module successor verifies all
+16 category masks while checking and removing each test-owned backup in turn,
+plus the eight metadata modules; exact results and package/input proofs belong
+to the [release receipt](../research/fixtures/widget-adapters-global-owned-release-20261003.json).
+This is a separate focused scope, not a successful rerun of all 42 modules or
+acceptance of sixteen simultaneously retained backups. Original host, native
+repository and physical acceptance remain outstanding.
+
 The [label controls and image workflow](edlt-label-controls-images.md) adds
 byte-backed project image exports, explicit decoded DLTP inputs and source-owned
 Lighting label/status histories through one parent save. The [current batch report](label-images-tls-progress-20261003.md)
@@ -27,8 +50,11 @@ bytes and only two parity JSON resources change. Python implementation code is
 unchanged. The earlier 44-module results remain historical evidence for
 `c519ce5d`, without rerunning or recrediting them. This paragraph and the report
 appendix are documentation-only annotations after the successor epochs.
-Correction-head CI awaits publication; no CI success, full Toolkit parity or
-original/native/hardware acceptance is inferred.
+The correction is published as `2cb87cfb`. Its actual [CI run37088519490](https://github.com/mitchell-johnson/cbus/actions/runs/37088519490)
+completed with successful Rust and installed-wheel jobs; source/interoperability
+was cancelled. The current batch increases that source job's bounded budget
+from 90 to 240 minutes. No full CI success, full Toolkit
+parity or original/native/hardware acceptance is inferred.
 
 The [buttons, Language and reconciliation batch](feature-batch-2026-10-03-scene-controls-language-reconciliation.md)
 adds explicit SceneManager Add-button callbacks, sealed text-only Language

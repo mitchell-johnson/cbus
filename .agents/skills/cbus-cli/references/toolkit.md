@@ -918,3 +918,28 @@ their separate old-object references until an explicit setter/refresh. Owner,
 source snapshot, operation position/history and rows seal the in-process binding.
 Static suggestion ordinals require an observed culture/order profile and refuse
 on the current automatic path. Read `toolkit-cli/docs/edlt-label-controls-images.md`.
+
+
+## AppGroup, Scene widget and automatic Global Programming controls
+
+The owning automatic parent now issues explicit `label_controls` for Enable,
+Timer, Shutter, MultiLevel, Fan and Room Courtesy in addition to Lighting. The
+binding requires exact issued identity, owner, causal postordinary PP/history,
+current dynamic rows and all64 retained Names. Fan/MultiLevel's four static
+status controls use ComboBoxStaticText; other target modes use their actual
+panel type choices. Scene operations accept flat ordered `scene_controls` for
+observed choices, status text, cycle getters/current rows and explicit buttons.
+A pure `get-view` does not imply SceneCycle normalization. Raw8 is admitted by
+the explicit component getter; native parent save still requires configured
+active scene references0..7. Read `toolkit-cli/docs/edlt-widget-control-adapters.md`
+before constructing histories. Receipts never issue or resume an owning control.
+
+For Global Programming, `edlt global-plan --project-xml FILE --unit PATH` and
+`cgate edlt-global --auto-metadata --source-database PATH` derive the ordinary
+source from exact project/XML/PP/order/current Language and SHA-bound image
+providers. Live targets must be distinct same-project units other than source.
+The coordinator checks whole-project freshness and each complete874-PP target,
+and preserves unrelated canonical graph data. No label transfer, image upload,
+Language mutation, target lifecycle or factory preparation is implied. Read
+`toolkit-cli/docs/edlt-global-image-metadata.md`; uncertain successful saves stop
+without replay. Original GUI/native/hardware acceptance remains separate.

@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+from dataclasses import dataclass
 
 CATEGORIES = ('key-settings', 'standby', 'colour', 'general')
 EVIDENCE = 'edlt_global_programming_evidence'
@@ -9,9 +10,25 @@ PREPARATION_EVIDENCE = 'edlt_global_preparation_evidence'
 
 
 def options(parser, *, native=False):
-    parser.add_argument('file', type=Path, help='Complete KEYGL5 5.5.00 / 5055EDL source PP snapshot')
-    parser.add_argument('--metadata', type=Path, required=True,
+    parser.add_argument('file', type=Path, nargs='?',
+                        help='Complete source PP snapshot; optional with automatic project metadata')
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--metadata', type=Path,
                         help='Source lifecycle cache; complete application cache when --factory-context is used')
+    if native:
+        source.add_argument('--auto-metadata', action='store_true',
+                            help='Derive the source lifecycle and image facts from one current project snapshot')
+    else:
+        source.add_argument('--project-xml', type=Path,
+                            help='Exact native project XML used to derive the source lifecycle and image facts')
+        parser.add_argument('--unit', help='Selected //PROJECT/network/p/unit; required with --project-xml')
+    parser.add_argument('--project-images-export', type=Path,
+                        help='Complete ordered SHA-bound cbus-edlt-project-images-v1 export')
+    parser.add_argument('--project-images-sha256', help='SHA-256 of the exact project image export bytes')
+    parser.add_argument('--toolkit-dltp-dir', type=Path, help='Toolkit directory containing Images/DLTP')
+    parser.add_argument('--toolkit-dltp-sha256', help='SHA-256 of Images/DLTP/Index.txt')
+    parser.add_argument('--toolkit-dltp-decode', action='store_true',
+                        help='Decode SHA-bound DLTP BMPs in the supported bounded profile')
     parser.add_argument('--factory-context', type=Path,
                         help='Explicit source/form_project/cached_network_project JSON for the bounded original factory preparation')
     parser.add_argument('--category', choices=CATEGORIES, action='append', default=[],
@@ -57,8 +74,70 @@ def read_parameters(path, *, factory=False):
     return values
 
 
+@dataclass(frozen=True)
+class _AutomaticInputs:
+    project_xml: str | None
+    unit: str
+    supplied: dict | None
+    order: list | None
+    categories: tuple[str, ...]
+    providers: dict
+
+
+def _automatic_inputs(args):
+    if getattr(args, 'factory_context', None) is not None:
+        raise ValueError('Automatic image metadata does not admit --factory-context')
+    native = bool(getattr(args, 'auto_metadata', False))
+    unit = getattr(args, 'source_database', None) if native else getattr(args, 'unit', None)
+    if unit is None:
+        raise ValueError('--auto-metadata requires --source-database' if native
+                         else '--project-xml requires --unit')
+    from .native_global_programming import _path
+    canonical, project, _network, _address = _path(unit)
+    if native:
+        destinations = tuple(_path(path) for path in args.destination)
+        if (not 1 <= len(destinations) <= 64
+                or len({path[0].upper() for path in destinations}) != len(destinations)
+                or any(path[1].upper() != project.upper() for path in destinations)
+                or canonical.upper() in {path[0].upper() for path in destinations}):
+            raise ValueError('Automatic destinations must be distinct, separate from the source and in the same project')
+    from .edlt_parent_transaction_cli import presentation
+    providers = presentation(args)
+    providers.pop('display_preferences', None)
+    if providers.get('project_images') is not None:
+        from .edlt_scene_label_images import check_project_images
+        check_project_images(providers['project_images'], project=project)
+    text = None
+    if not native:
+        with args.project_xml.open('rb') as stream:
+            raw = stream.read(16 * 1024 * 1024 + 1)
+        if len(raw) > 16 * 1024 * 1024:
+            raise ValueError('Global Programming project XML exceeds 16 MiB')
+        text = raw.decode('utf-8')
+    supplied = None if args.file is None else read_parameters(args.file)
+    order = read_json(args.parameter_order, limit=128*1024) if args.parameter_order else None
+    if order is not None and (type(order) is not list or len(order) != 874
+                             or any(type(name) is not str for name in order)
+                             or len(set(order)) != 874):
+        raise ValueError('Parameter order must contain all 874 unique names exactly once')
+    categories = tuple(args.category)
+    if len(categories) != len(set(categories)) or any(c not in CATEGORIES for c in categories):
+        raise ValueError('Global Programming categories must be distinct known names')
+    return _AutomaticInputs(text, unit, supplied, order, categories, providers)
+
+
 def inputs(args):
     from .edlt_lifecycle import LifecycleCache
+    automatic = (getattr(args, 'project_xml', None) is not None
+                 or getattr(args, 'auto_metadata', False))
+    if automatic:
+        return _automatic_inputs(args)
+    from .edlt_parent_transaction_cli import presentation
+    presentation(args)
+    if getattr(args, 'unit', None) is not None:
+        raise ValueError('--unit requires --project-xml')
+    if args.file is None:
+        raise ValueError('Supply the source PP file with --metadata')
     factory_path = getattr(args, 'factory_context', None)
     values = read_parameters(args.file, factory=factory_path is not None)
     context = None
@@ -95,6 +174,11 @@ def spec(args):
 
 
 def prepare(engine, data, *, args=None):
+    if isinstance(data, _AutomaticInputs):
+        if data.project_xml is None:
+            raise ValueError('Live automatic source preparation requires its native coordinator')
+        source = engine.prepare_project_source(data.project_xml, data.unit, **data.providers)
+        return _select_automatic(engine, source, data)
     values, metadata, order, categories = data[:4]
     if len(data) == 5:
         from .edlt_global_preparation import EdltGlobalPreparation
@@ -121,6 +205,14 @@ def prepare(engine, data, *, args=None):
             raise
     source = engine.prepare_source(values, metadata=metadata, parameter_order=order)
     return engine.select(source, categories=categories)
+
+
+def _select_automatic(engine, source, data):
+    if data.supplied is not None and engine.snapshot(data.supplied) != dict(source.expected):
+        raise ValueError('Supplied source PP differs from the exact automatic project snapshot')
+    if data.order is not None and tuple(data.order) != source.parameter_order:
+        raise ValueError('--parameter-order cannot reorder an automatic project source')
+    return engine.select(source, categories=data.categories)
 
 
 def offline(args):
@@ -163,13 +255,18 @@ def native(args, client_factory, ssl_context):
     # Source validation is local and precedes opening a transport. Reprepare on
     # the coordinator's own engine after connecting to preserve issued identity.
     from .edlt_global_programming import EdltGlobalProgramming
-    prepare(EdltGlobalProgramming(unit_spec), data, args=args)
+    if not isinstance(data, _AutomaticInputs):
+        prepare(EdltGlobalProgramming(unit_spec), data, args=args)
     manager, result = None, None
     try:
         with client_factory(args.host, args.port or (20123 if args.tls else 20023),
                             timeout=args.timeout, ssl_context=ssl_context) as client:
             manager = NativeEdltGlobalProgramming(client, unit_spec)
-            payload = prepare(manager.engine, data, args=args)
+            if isinstance(data, _AutomaticInputs):
+                source = manager.prepare_project_source(data.unit, **data.providers)
+                payload = _select_automatic(manager.engine, source, data)
+            else:
+                payload = prepare(manager.engine, data, args=args)
             plan = manager.plan(payload, tuple(args.destination), source_database=args.source_database,
                                 exclusive_project=args.exclusive_project)
             result = plan.as_dict() if args.dry_run else manager.apply(plan, backup_project=args.backup_project).as_dict()
