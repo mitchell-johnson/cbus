@@ -257,10 +257,11 @@ class CopyPasteIntent:
         if CopyPhase.PASTE_ATTEMPTED in self.history:
             if self.target is None or self.request is None:
                 raise CopyPasteError("attempted history needs target and request descriptors")
-        if self.phase in (CopyPhase.REFUSED, CopyPhase.UNCERTAIN) and self.refusal is None:
+        if (CopyPhase.REFUSED in self.history or self.phase is CopyPhase.UNCERTAIN) and self.refusal is None:
             raise CopyPasteError("refusal or uncertainty needs a retained reason")
-        if self.phase is CopyPhase.ACCEPTED:
-            if self.refusal is not None or _paste_refusal(self, self.request) is not None:
+        if CopyPhase.ACCEPTED in self.history:
+            if ((self.phase is CopyPhase.ACCEPTED and self.refusal is not None)
+                    or _paste_refusal(self, self.request) is not None):
                 raise CopyPasteError("accepted draft does not satisfy its explicit profile gates")
 
     def report(self) -> dict:

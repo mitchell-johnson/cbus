@@ -26,7 +26,11 @@ def tmp_path(tmp_path_factory):
 def installed_target():
     declared = os.environ.get("CBUS_OFFLINE_INSTALLED_TARGET")
     if declared is None:
+        if os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE") is not None:
+            pytest.fail("Configured installed console requires an explicit installed target")
         pytest.skip("Requires a freshly built task wheel installed in an explicit isolated target")
+    if not declared:
+        pytest.fail("Configured installed target must be a nonempty directory path")
     target = Path(declared).resolve()
     assert target.is_dir()
     assert target != SOURCE_ROOT.resolve()

@@ -2,7 +2,8 @@
 
 Only explicit local JSON files and newly published review reports are exercised.
 Set CBUS_OFFLINE_INSTALLED_TARGET to a freshly installed task wheel for the real
-pip-generated console-script cases; source examples remain caller-supplied files.
+pip-generated console-script cases. CBUS_OFFLINE_INSTALLED_CONSOLE may explicitly
+name the wheel virtualenv console; source examples remain caller-supplied files.
 """
 from __future__ import annotations
 
@@ -30,15 +31,31 @@ def tmp_path(tmp_path_factory):
     return tmp_path_factory.mktemp("public-offline-cli").resolve()
 
 
+def installed_console(target):
+    declared = os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE")
+    if declared == "":
+        pytest.fail("Configured installed console must be a nonempty script path")
+    console = Path(declared).resolve() if declared is not None else (target / "bin/cbus-toolkit").resolve()
+    if not console.is_file():
+        pytest.fail("Configured installed console script is missing: " + str(console))
+    return console
+
+
 @pytest.fixture(scope="module")
 def installed_target():
     declared = os.environ.get("CBUS_OFFLINE_INSTALLED_TARGET")
     if declared is None:
+        if os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE") is not None:
+            pytest.fail("Configured installed console requires CBUS_OFFLINE_INSTALLED_TARGET")
         pytest.skip("Requires the freshly built task wheel installed in an explicit isolated target")
+    if not declared:
+        pytest.fail("Configured installed target must be a nonempty directory path")
     target = Path(declared).resolve()
-    assert target.is_dir()
-    assert target != SOURCE_ROOT.resolve()
-    assert (target / "bin/cbus-toolkit").is_file()
+    if not target.is_dir():
+        pytest.fail("Configured installed target directory is missing: " + str(target))
+    if target == SOURCE_ROOT.resolve() or not (target / "cbus_toolkit/cli.py").is_file():
+        pytest.fail("Configured installed target package is missing or points to source: " + str(target))
+    installed_console(target)
     return target
 
 
@@ -51,7 +68,7 @@ def environment(cwd, package_root=SOURCE_ROOT):
 
 
 def invoke_public(arguments, cwd, target=None, *, stdin=None, timeout=10, extra_environment=None):
-    command = ([str(target / "bin/cbus-toolkit")] if target is not None
+    command = ([str(installed_console(target))] if target is not None
                else [sys.executable, "-S", "-m", "cbus_toolkit"])
     settings = environment(cwd, target if target is not None else SOURCE_ROOT)
     settings.update(extra_environment or {})
@@ -304,7 +321,7 @@ atexit.register(record)
                             extra_environment={"PYTHONPATH": str(probe) + os.pathsep + str(installed_target), "CBUS_PUBLIC_ORIGIN_RECEIPT": str(receipt)})
     assert_envelope(process)
     captured = json.loads(receipt.read_bytes())
-    assert Path(captured["entry_script"]).resolve() == (installed_target / "bin/cbus-toolkit").resolve()
+    assert Path(captured["entry_script"]).resolve() == installed_console(installed_target)
     assert {"name": "cbus-toolkit", "value": "cbus_toolkit.cli:main"} in captured["entries"]
     assert {"cbus_toolkit", "cbus_toolkit.cli", "cbus_toolkit.offline_workflows.cli", "cbus_toolkit.offline_workflows.neo_editor_input"}.issubset(captured["origins"])
     for name, origin in captured["origins"].items():
