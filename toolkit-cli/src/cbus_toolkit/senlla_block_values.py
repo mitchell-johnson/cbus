@@ -6,7 +6,7 @@ before continuing. This component does not construct a unit or apply a save.
 """
 from dataclasses import dataclass
 
-from .senlla_inputs import SENLLAInputSnapshot
+from .senlla_inputs import SENLLAInputSnapshot, SCHEMA, _value
 from .sensors import SensorError
 
 
@@ -25,6 +25,18 @@ def _levels(values):
     return tuple(_integer(value, 255, 'Current block level') for value in values)
 
 
+def current_light_levels(values):
+    """Admit the bounded CURRENT native cache, before physical layout checks.
+
+    The guarded raw profile has ten entries. Source indexed rebuilding can
+    grow its cache to 255 prefix entries plus eight blocks; callbacks may retain
+    that cache for later Count/indexed reads. Final programming is separate.
+    """
+    if not isinstance(values, (tuple, list)) or not 10 <= len(values) <= 263:
+        raise SensorError('Current LightLevel cache requires 10..263 unsigned bytes')
+    return [_integer(value, 255, 'Current LightLevel byte') for value in values]
+
+
 def loaded_expiry_type(raw):
     """Return the post-membership type; raw0 is a real registered type0."""
     raw = _integer(raw, 15, 'Raw timer expiry')
@@ -40,8 +52,8 @@ def rebuild_light_levels(light_index, loaded_count, current_levels):
     repeat is empty. This replaces the original raw prefix and tail values.
     """
     index = _integer(light_index, 255, 'Current LightIndex')
-    if type(loaded_count) is not int or loaded_count != 10:
-        raise SensorError('Guarded SENLLA load requires ten original LightLevel entries')
+    if type(loaded_count) is not int or not 10 <= loaded_count <= 263:
+        raise SensorError('Current SENLLA load count requires 10..263 entries')
     levels = _levels(current_levels)
     return (255,) * index + levels + (255,) * max(loaded_count - index - 8, 0)
 
@@ -143,6 +155,50 @@ class BlockLoadPlan:
 
     def requests(self):
         return self.secondary_requests() + self.value_requests()
+
+    def current_requests(self, parameter_read):
+        """Yield at each source setter, reading current PP only when reached.
+
+        The secondary mask is captured once before its eight setters. Array
+        store/timer/group getters are repeated per row after earlier callbacks.
+        The indexed level itself is read by the executor using CURRENT index.
+        Historical detached requests remain available through ``requests``.
+        """
+        if not callable(parameter_read):
+            raise SensorError('Current block requests require a synchronous PP reader')
+        def read(name, source):
+            value = parameter_read(name, source)
+            if name == 'LightLevel':
+                return current_light_levels(value)
+            if SCHEMA[name][0] != 'sixbit' and (not isinstance(value, (list, tuple))
+                    or any(type(item) is not int for item in value)):
+                raise SensorError('Current block PP requires exact unsigned integers')
+            return _value(name, value)
+
+        mask = read('SecondApplicationBlocks', '0xcecfb3')[0]
+        for block in range(8):
+            yield BlockLoadRequest('set', 'secondary', block,
+                                   bool(mask & (1 << block)), '0xced02e')
+        yield BlockLoadRequest('set', 'light_index', None,
+                               read('LightIndex', '0xcc8159')[0], '0xcc816c')
+        yield BlockLoadRequest('capture', 'loaded_light_count', None,
+                               len(read('LightLevel', '0xcc8182')), '0xcc81aa')
+        for block in range(8):
+            yield BlockLoadRequest('get_indexed_level_and_set', 'light_level', block,
+                                   self.level_for_block(block), '0xcc823a')
+            yield BlockLoadRequest('set', 'store1', block,
+                                   read('LightLevelStore1', '0xcc8267')[block], '0xcc828c')
+            yield BlockLoadRequest('set', 'store2', block,
+                                   read('LightLevelStore2', '0xcc82a2')[block], '0xcc82c7')
+            high = read('TimerHighByte', '0xcc7dc6')[block]
+            low = read('TimerLowByte', '0xcc7df7')[block]
+            yield BlockLoadRequest('set', 'timer', block, (high << 8) | low, '0xcc82df')
+            yield BlockLoadRequest('set_microfunction', 'expiry', block,
+                                   read('TimerExpiryCommand', '0xcc7ea4')[block], '0xcc82f7')
+            yield BlockLoadRequest('check_expiry', 'expiry', block,
+                                   TIMER_EXPIRY_TYPES, '0xcc8357')
+            yield BlockLoadRequest('get_group', 'group', block,
+                                   read('GroupAddress', '0xcc7618')[block], '0xcc83ba')
 
     def parameters(self, current_levels, *, light_index=None):
         """CoreKey's two indexed level fields, before later ST7 power writes.

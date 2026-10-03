@@ -67,6 +67,81 @@ def fresh(snapshot=None, source_owner=None):
 
 
 class SENLLAPrekeyTests(unittest.TestCase):
+    def test_current_cache_growth_before_count_and_indexed_getters(self):
+        snapshot = raw(LightIndex=[3])
+        cache = snapshot.parameters()
+        executor = SourceOwner()
+        def metadata(request, engine):
+            if request.kind == 'application' and request.address == 56:
+                cache['LightLevel'] = [12, 23, 34, 45, 56, 67, 78, 89, 90, 101, 112]
+        executor.before_lookup = metadata
+        owner = SENLLAPrekey(snapshot, source_dispatch=executor.source,
+                            inherited_dispatch=executor.inherited,
+                            parameter_read=lambda name, source, runtime: cache[name])
+        engine = owner.load_to_key_blocks()
+        self.assertEqual(owner.loaded_light_count, 11)
+        self.assertEqual([block.light_level._value for block in engine.blocks],
+                         [45, 56, 67, 78, 89, 90, 101, 112])
+        self.assertEqual(len(snapshot.expected['LightLevel']), 10)
+        reads = [event for event in engine.events if
+                 event['operation'] == 'prekey_parameter_read' and event['field'] == 'LightLevel']
+        self.assertEqual([len(event['value']) for event in reads], [11] * 9)
+
+    def test_current_cache_reads_after_causal_metadata_and_block_callbacks(self):
+        snapshot = raw(GroupAddress=[20] * 8)
+        cache = snapshot.parameters()
+        executor = SourceOwner()
+        def metadata(request, engine):
+            if request.kind == 'application' and request.address == 56:
+                cache['Application'][1] = 58
+                cache['AreaGroupAddress'][0] = 21
+                cache['StatusReportInterval'][0] = 17
+            if request.kind == 'group' and request.address == 23:
+                cache['LightLevelStore1'][1] = 77
+        executor.before_lookup = metadata
+        owner = SENLLAPrekey(snapshot, source_dispatch=executor.source,
+                            inherited_dispatch=executor.inherited,
+                            parameter_read=lambda name, source, runtime: cache[name])
+        engine = owner.runtime
+        retained = (engine.unit, engine.blocks[0].object, engine.blocks[0].store1)
+        def earlier_store(_):
+            cache['LightLevelStore2'][0] = 9
+            cache['TimerHighByte'][0] = 1
+            cache['TimerLowByte'][0] = 44
+            cache['TimerExpiryCommand'][0] = 6
+            cache['GroupAddress'][0] = 23
+            cache['LightLevel'][1] = 88
+        engine.blocks[0].store1.publisher.subscribe(earlier_store)
+        cache['LightLevelStore1'][0] = 5
+        result = owner.load_to_key_blocks()
+        self.assertIs(result, engine)
+        self.assertEqual(engine.secondary_application._value.identity, 58)
+        self.assertEqual(engine.area._value.identity, (56, 21))
+        self.assertEqual(owner.status_report_interval._value, 17)
+        self.assertEqual((engine.blocks[0].store1._value, engine.blocks[0].store2._value,
+                          engine.blocks[0].timer._value, engine.blocks[0].expiry._value.identity,
+                          engine.blocks[0].group._value.identity), (5, 9, 300, 6, (56, 23)))
+        self.assertEqual((engine.blocks[1].store1._value, engine.blocks[1].light_level._value),
+                         (77, 88))
+        self.assertEqual(engine.unit.depth, 1)
+        self.assertTrue(all(a is b for a,b in zip(retained,
+                         (engine.unit, engine.blocks[0].object, engine.blocks[0].store1))))
+        self.assertEqual(snapshot.expected['Application'], (56, 57))
+        reads = [(event['field'], event['source']) for event in engine.events
+                 if event['operation'] == 'prekey_parameter_read']
+        self.assertEqual(reads[:3], [('Application', '0xcb80bc'),
+                                  ('Application', '0xcb80f1'), ('Application', '0xcb830b')])
+        self.assertEqual(reads.count(('SecondApplicationBlocks', '0xcecfb3')), 1)
+
+    def test_current_parameter_reader_unsigned_admission_and_detachment(self):
+        for bad in ([True, 57], [56], [56, -1]):
+            with self.subTest(value=bad):
+                owner, _ = fresh()
+                owner.parameter_read = lambda name, source, runtime: bad if name == 'Application' else owner.raw.expected[name]
+                with self.assertRaises(SensorError):
+                    owner.load_to_key_blocks()
+                self.assertTrue(owner.runtime.failed)
+
     def test_constructor_nil_references_and_post_bank_link_state(self):
         owner, executor = fresh()
         state = owner.snapshot()

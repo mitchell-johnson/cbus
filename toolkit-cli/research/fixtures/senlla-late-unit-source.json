@@ -1,0 +1,1439 @@
+{
+  "format": "cbus-senlla-late-unit-source-v1",
+  "method_count": 226,
+  "methods": [
+    {
+      "method": "CIS_TCBusNeoProInputUnit.TCBusNeoProInputUnit.InternalCreate",
+      "address": "0xca0600",
+      "span_sha256": "8fc4d7465358648f7e05fdebf305bb645445177b6805fc0226c9b0302bd60710",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.ApplicationChanged",
+      "address": "0xca3820",
+      "span_sha256": "c0985eb24280bc2db6c951c08ee306ec2243e2a57345480840413debe3435f2d",
+      "instruction_count": 107
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+      "address": "0xca3984",
+      "span_sha256": "cd3d204d9350c4150e0dade2663b17b03486bf44c2c2642fc50627ef515165bd",
+      "instruction_count": 95
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchHighGroup",
+      "address": "0xca3ac8",
+      "span_sha256": "c1ff091c0fa8c1aaa03b8ea2ebf46332b333268e0474e5676cfd453416239f8d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchLowGroup",
+      "address": "0xca3aec",
+      "span_sha256": "6ce6d826730d48331a027f5a4805351ac995aca6d1fda9ae9fc08fad20c6ddc5",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelMarginGroup",
+      "address": "0xca3b10",
+      "span_sha256": "19266fab2cff3539b25825efd827a96a05d4d285d472e78611bdf0f0609eae3a",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelTargetGroup",
+      "address": "0xca3b34",
+      "span_sha256": "a646af268f895133a607efa6c7fee1cf0cf2f9644e66dddb1d05a0fdee38cdc1",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelBanks",
+      "address": "0xca3b58",
+      "span_sha256": "51f7af190b12ed68e8c95d3b3e67713a81a74f4c48e09a0bf0efb4f9673524ea",
+      "instruction_count": 12
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelMarginGroup",
+      "address": "0xca3b74",
+      "span_sha256": "fd6543f6985d6784f6aa5fbd022ccd9046195ddeeec421ff01a880752302839c",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetGroup",
+      "address": "0xca3b98",
+      "span_sha256": "61cec66661325c7e223cedd28b861c9cea9d018efb8c697e340feb39e28904bd",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetRangeMax",
+      "address": "0xca3bbc",
+      "span_sha256": "c07d7002fe5edd9cf24f4358fcfde9de2f04ba983359cdfe3f0f4a8e1fbc4e5f",
+      "instruction_count": 132
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetRangeMin",
+      "address": "0xca3d70",
+      "span_sha256": "14c3ef237fec8bbad657a3406e312279919d2e87852473cd2e539faaeb554e0f",
+      "instruction_count": 154
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpBankSwitchGroupPresetLevel",
+      "address": "0xca3f6c",
+      "span_sha256": "5d2592016ad193e7474d1dad5baff4aefeb445ebe0475523ffc70826a0d3ea51",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpBankSwitchGroupState",
+      "address": "0xca3f90",
+      "span_sha256": "6d07d93556fcac3534626520ae2aebec8bd058958706ec5c7d67b044427277b1",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpMarginGroupState",
+      "address": "0xca3fb4",
+      "span_sha256": "943e4533f58bc0debd993503add09a7eb956c2869c51041979e852b06fd11db7",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpMarginGroupPresetLevel",
+      "address": "0xca3fd8",
+      "span_sha256": "7caf4fe499b541f1ac6956e5edb8742acba36f4001718fa88e484b7c98b5e7cb",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpTargetGroupPresetLevel",
+      "address": "0xca3ffc",
+      "span_sha256": "752cdd8613addca8a21533b071e616879b6d6b38fa4806bcd1d76fd22becd3cb",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpTargetGroupState",
+      "address": "0xca4020",
+      "span_sha256": "978c8fd604bdfccc9931cd5bd5924b7a77c39bd0aae0ede1d821b1c13006c5c9",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.InternalCreate",
+      "address": "0xca4044",
+      "span_sha256": "09cc527e8535cb915b2d40d3ed7f6069c854b9b74476d69f1d4e14616a34dbb8",
+      "instruction_count": 175
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsConvertableTo",
+      "address": "0xca45c8",
+      "span_sha256": "e087aa2f891649481e17e53727540f6929d339d156a352b92789db6f419e1757",
+      "instruction_count": 29
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchHighGroup",
+      "address": "0xca461c",
+      "span_sha256": "19723e6a22db0676f5dd1556920f8873be63488c973cebc52721f54a604609fb",
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchLowGroup",
+      "address": "0xca4674",
+      "span_sha256": "a7a90a97e4dc17160a450f4ee1409dc88e04585a557d5daf1573a71c731d5b83",
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection",
+      "address": "0xca46cc",
+      "span_sha256": "dcbbec2e2cec682effdc03024a8615631fc194697220698839ac7f3171b8cf94",
+      "instruction_count": 49
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetBankSwitchHighGroup",
+      "address": "0xca475c",
+      "span_sha256": "13c639e6de86075ed37a3a2f4117d7dc8661eab209a31f7408253cc4bc186b92",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetBankSwitchLowGroup",
+      "address": "0xca4780",
+      "span_sha256": "e33e2420dfd9aafdcb6a5f76fd634eb99a55db1ef466648e6305ea4f709604d4",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetIsUsingLightLevelMarginGroup",
+      "address": "0xca47a4",
+      "span_sha256": "e073ce2c791a7466c425b4d0fe80b1344a20809f95d707185b16824892b5c07e",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetIsUsingLightLevelTargetGroup",
+      "address": "0xca4800",
+      "span_sha256": "ac57293a7257c77590a555612b149d418ffd2fad4cca0605423442cff3234d21",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetLightLevelMarginGroup",
+      "address": "0xca485c",
+      "span_sha256": "d7329a4bc8212b88134ab607c4741e9f9119e433f7d021714cca673d63fdca2b",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetLightLevelTargetGroup",
+      "address": "0xca4880",
+      "span_sha256": "312f2e180fcfe2ccd2ba413168b31c92295b66ace05e4537fcc352857343b86d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpBankSwitchGroupPresetLevel",
+      "address": "0xca48a4",
+      "span_sha256": "e2861652bc83b5d438698ccf7232be7a1b72fbeb3c9612f070287b2ca95c810c",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpBankSwitchGroupState",
+      "address": "0xca4904",
+      "span_sha256": "becab6550029a510c794041d6432e5ad742d3cb3d740aa0cab5b9660059f3817",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpMarginGroupState",
+      "address": "0xca4968",
+      "span_sha256": "3a98a90c859fcba763d7a53a4dd38d1e5e302ed7c7b226b9653ab58a5c653527",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpMarginGroupPresetLevel",
+      "address": "0xca49cc",
+      "span_sha256": "9459fffdab386047a41b8e22b6a59dbd235886d72104748c0dcbf01aae76ce0a",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpTargetGroupPresetLevel",
+      "address": "0xca4a2c",
+      "span_sha256": "2859706717496d5b9586110457f756255139afa9fe8f63cf8f383b82828fdc11",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpTargetGroupState",
+      "address": "0xca4a8c",
+      "span_sha256": "97b95a627b22b8b5237119638628a84e16978021d4e24830d89927e18d788708",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.GetUseHighLevelGroup",
+      "address": "0xca4d14",
+      "span_sha256": "e874b73a0bbc283e189aac9f38179a1b9aa0509b08d4766b526bbde039d33cb0",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.GetUseLowLevelGroup",
+      "address": "0xca4d38",
+      "span_sha256": "2e288f425b2eeb9d8628c19e39558f569ea9d9ca5cecb924c315f74b6d0806d7",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate",
+      "address": "0xca4d5c",
+      "span_sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d",
+      "instruction_count": 34
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseHighLevelGroup",
+      "address": "0xca4e1c",
+      "span_sha256": "d4560c301a48dc8696d0b0ef2c14dcae81d59ef968587182ce707dca63e90989",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseLowLevelGroup",
+      "address": "0xca4e78",
+      "span_sha256": "e38c1065f22e82a801a6f408d651c531168dcc8ae8e1b29a58ffc4b0a1e78794",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.LoadOccupancyKeys",
+      "address": "0xcf4208",
+      "span_sha256": "a72596e7e1a9204a1476a546b8e08984eb10ef01c4c5b8fbeb68d2e4f5856e6e",
+      "instruction_count": 106
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.LoadLightLevelBanks",
+      "address": "0xcf44c4",
+      "span_sha256": "2e324993624dd73d0b25e49fca6eeb1b9ecae9ddd08395c802fc805470821f2d",
+      "instruction_count": 69
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.LoadPowerFail",
+      "address": "0xcf46f4",
+      "span_sha256": "4dc8b2868bb23faaade864131f0c8f1ac42ad6bf35ad76ed83f0d7c866d143be",
+      "instruction_count": 122
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xcf4890",
+      "span_sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1",
+      "instruction_count": 310
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.AfterLoad",
+      "address": "0xcfa5a4",
+      "span_sha256": "dd4b25c35ab728f20096200103a66a9ede765b5c0daa39f40f3e0a39950366f5",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.AllowApplication1",
+      "address": "0xcfa5cc",
+      "span_sha256": "eab0a0ce9dd59d9ff244891bd74ed4fccc0d536abc6c2d4a467a49cb9ba3130c",
+      "instruction_count": 20
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.ApplicationChanged",
+      "address": "0xcfa6f0",
+      "span_sha256": "4bdfa67ca17c61aaa78e7ae94e5a24a765d33b550211046d8a6d8208008b4e42",
+      "instruction_count": 164
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeInputGroupDependencyAdvanced",
+      "address": "0xcfa928",
+      "span_sha256": "0c9203f8c3e771a59f4c0853c2930abc93195cf4c50a448ebb66eca756324387",
+      "instruction_count": 331
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.DescribeOtherGroupDependencyAdvanced",
+      "address": "0xcfad94",
+      "span_sha256": "72a4ee5cf0fc957877e042d76aa560e07f6f9e331dbd4469781f59dac768a948",
+      "instruction_count": 97
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.FirstAvailableMaintBlock",
+      "address": "0xcfaedc",
+      "span_sha256": "66906a8d6b35a657dce8f049e754379d0d32e029f59a8becf471565d8fac0aa6",
+      "instruction_count": 55
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetIndicatorControl",
+      "address": "0xcfaf80",
+      "span_sha256": "da3997f5f5fed141db908df14c96e11cb8d9a71284edcddc791e8aba525ba0b7",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredKeyOffset",
+      "address": "0xcfafa4",
+      "span_sha256": "33e5c037b15bfb54d50c07b3bcc180a027f3b9b5ddc3af379ad216ddacda2776",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelActive",
+      "address": "0xcfafc8",
+      "span_sha256": "75482f0daf88467f23b52a6a37cc75457efe34aee64fa705690c3366ed1d79de",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelKey",
+      "address": "0xcfafec",
+      "span_sha256": "bc66f92c1511456b8c462b5795839bfb29f454075edf18d04544e2b118dbd350",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyActive",
+      "address": "0xcfb010",
+      "span_sha256": "d395bd1156b18fe12d80e918bdbb829e7d1537a4e21e56eb5a50f801543b4d9c",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyKey",
+      "address": "0xcfb034",
+      "span_sha256": "54c48bdef234d8dd128a836171d9d9630aba5e09944c0f3915b663a7dc1458ca",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetIsST7",
+      "address": "0xcfb058",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelAmbientFootcandle",
+      "address": "0xcfb06c",
+      "span_sha256": "9cde1d60ca89331c0d8b6b2ad4791b00578e34c2c80398323f548df823668522",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelAmbientLux",
+      "address": "0xcfb0a8",
+      "span_sha256": "9ddd041957b573b7c880edf4dfd3debe72f1e613f85f59e2d6a13c0b4dc6c9d6",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelBroadcastActive",
+      "address": "0xcfb0cc",
+      "span_sha256": "1b09885b92b73a037b650ea9334998e77598f2ad1e6110b23df4fb89ded18c43",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelBroadcastBlock",
+      "address": "0xcfb0f0",
+      "span_sha256": "16fb2471be6fd3333e62d47c25c759ebe5170f457c9bfdf922c272ed776b336c",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintActive",
+      "address": "0xcfb114",
+      "span_sha256": "4048d383ad4710abbdf47b5e617dec18e7fbcbf7bcedca72426e32735a9549f5",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintBlock",
+      "address": "0xcfb138",
+      "span_sha256": "97a1ddd2759f4dad73234cc6b4c032d7cfcc1adcd55fd0f30cd373105beb70a9",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroup",
+      "address": "0xcfb15c",
+      "span_sha256": "1d8b1cda498a1bd21f575297523fe007caa6c5645717682491f642d8d0692f20",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroupOff",
+      "address": "0xcfb180",
+      "span_sha256": "ef2df1ed60451149ddf5cdfa24d5628c276dfa5eb176f6022ced5b2da0b76908",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMarginAsLux",
+      "address": "0xcfb1a4",
+      "span_sha256": "666181f29a66526f9470df8518f713863afdef7d74d127b86b8019c60991c5f2",
+      "instruction_count": 24
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMarginPerc",
+      "address": "0xcfb1e4",
+      "span_sha256": "ad4b394dea60c8971b9b0c5794cae9cbeeb6d4c644448e41aa63bb9d41097dd6",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelScale",
+      "address": "0xcfb208",
+      "span_sha256": "976401242e60826ddcc84e9e206baf38d9b4918c3d858ea33d96e4f9bd524c80",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetAsValue",
+      "address": "0xcfb22c",
+      "span_sha256": "f04212859b6c0694629c155badde536736210fec000b506e626dec0f11ed5326",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetFootcandle",
+      "address": "0xcfb24c",
+      "span_sha256": "9b6e5b5a19c44277db7a077d602dc8b97043d64845a4280661d5cdb91bdda2e1",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetLux",
+      "address": "0xcfb288",
+      "span_sha256": "5ff992394450331b8103a8b61d41f202773a26182b38f341a7fb6f7b01ce0623",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetRangeMax",
+      "address": "0xcfb2ac",
+      "span_sha256": "84dd6796f7d24e41da7ec6f8a33214cb20a604aa778590e9fb7e8cff49a6a7f6",
+      "instruction_count": 46
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetRangeMaxFootcandle",
+      "address": "0xcfb338",
+      "span_sha256": "613eca2f335c6eed3ff337b3885b0f8bfd3168a31f151c099af14c663dee2045",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetRangeMin",
+      "address": "0xcfb378",
+      "span_sha256": "60331a90913ec78295247f72ce75cfdeb5c279af8f4dfa06e87a02356c97d2d6",
+      "instruction_count": 29
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelTargetRangeMinFootcandle",
+      "address": "0xcfb3c4",
+      "span_sha256": "4ee966437bbdefb0300e14dd48e940f866fb318c800640cd16df49eba44e9de2",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula",
+      "address": "0xcfb404",
+      "span_sha256": "d527e24595b31634d21aa3d3a1951c76c1ac7634ec009305c7298d4b1e75cd40",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroup",
+      "address": "0xcfb418",
+      "span_sha256": "b80d51869e9eec671826eda2d4e3274846c8769e4aacace16f83803995e3ce4a",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroupOff",
+      "address": "0xcfb43c",
+      "span_sha256": "7f37e1ff26c0e53f552e404df5ecd87980c375dc11eecdff60baf200886a0937",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerABlock",
+      "address": "0xcfb460",
+      "span_sha256": "8cb721c61d83177b66c51c3922273ca9d86fd1e04677c3f1cbc6c68fd5bdc121",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerAFunction",
+      "address": "0xcfb484",
+      "span_sha256": "2f178ef9c3aa8925775ce854a195b31982bd87dd5726f8fe5fc1bc1e288c2f7d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerAReading",
+      "address": "0xcfb4a8",
+      "span_sha256": "1051513b0d37bccf20bef03be05d46c6b4bc6daedbd7f41149b9ee210065eee2",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBBlock",
+      "address": "0xcfb4cc",
+      "span_sha256": "b11bfa6be5e337fbb29b362af2f28e76c53010a81533edc395497b09eabc12ff",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBFunction",
+      "address": "0xcfb4f0",
+      "span_sha256": "aaa1fd3d03804a683b8870a18386d925236962c76d31576a74f9959ce946360e",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBReading",
+      "address": "0xcfb514",
+      "span_sha256": "8bcda97cef3bb739fe513a6f1354f95b0b2e24279c37b35732218b4beb9e0bca",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPowerUpLightLevelState",
+      "address": "0xcfb538",
+      "span_sha256": "a238d792b760eede632478199cb5d0248b56d293be3b6c00381b371ca46eaf7e",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPowerUpOccupancyState",
+      "address": "0xcfb55c",
+      "span_sha256": "1edfcdf21de0fd6ac995ba44f6f32a44a1ec52c0ec3fc55b4c2d16cc4bca64b4",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.HandleLightLevelBroadcastActiveAfterChange",
+      "address": "0xcfb580",
+      "span_sha256": "3c4b38d3d6c699780b3421544686a2b5de62156e056ec4c3f1ad8657f83382c3",
+      "instruction_count": 30
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.HandleLightLevelBroadcastBlockAfterChange",
+      "address": "0xcfb5d0",
+      "span_sha256": "e89957cd36533785ce4dce3608e7cc0dcf9bb5125b770f8ce4214656543c6a96",
+      "instruction_count": 30
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorBrightnessPropertyEnabled",
+      "address": "0xcfb620",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorControlPropertyEnabled",
+      "address": "0xcfb634",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IndicatorFunctionPropertyEnabled",
+      "address": "0xcfb648",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+      "address": "0xcfb65c",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputBlockGroupChanged",
+      "address": "0xcfb670",
+      "span_sha256": "6fb713f83264aa2e2954c8a33c08d568bcd3d8457b8159037f5f46f1c203dd9c",
+      "instruction_count": 49
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputKeyBlocksChanged",
+      "address": "0xcfb704",
+      "span_sha256": "61218b01b82ea6ff2b8fd705169a0cdcf33cf36098bd58a7bf0076da018c9626",
+      "instruction_count": 25
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate",
+      "address": "0xcfb754",
+      "span_sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d",
+      "instruction_count": 411
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsConvertableTo",
+      "address": "0xcfc338",
+      "span_sha256": "8e8d55676da4c5dd385851863ded76e4c08dda0c2b1c4369e7925d28ddc1b4ae",
+      "instruction_count": 23
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsDualJoinModeSupported",
+      "address": "0xcfc378",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsInfraredNECSupported",
+      "address": "0xcfc38c",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsJoinModeSupported",
+      "address": "0xcfc3a0",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupInvertPropertyEnabled",
+      "address": "0xcfc3b4",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled",
+      "address": "0xcfc3c8",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyJoinKey",
+      "address": "0xcfc3dc",
+      "span_sha256": "22dc1d4405309ddec8fd40525aae45082c5e64688cbb6ab320f97681142923b1",
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsNeoMultisensor",
+      "address": "0xcfc424",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsNeoStandard",
+      "address": "0xcfc438",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionNoOccupancySubsetName",
+      "address": "0xcfc44c",
+      "span_sha256": "bb0c687dfbb5fa33186c55328f6fd0e8ba132eaef232cdddd85c699537a2d7f2",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetName",
+      "address": "0xcfc490",
+      "span_sha256": "6efc5321a9c037dda7bd5faa875f5f72c5376a293e9e594b5922632b3cb736a1",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.MacroFunctionSubsetNameSecondary",
+      "address": "0xcfc4cc",
+      "span_sha256": "5f2207fe366e3fd18e015082abd44402b679a4493423426fc626e82df4567a4b",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshKeyBlockOverrides",
+      "address": "0xcfc508",
+      "span_sha256": "bbc190a6491db7c661de80116e5af131537725621e494d40d88c2a55f2964020",
+      "instruction_count": 67
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBankCollection",
+      "address": "0xcfc5f4",
+      "span_sha256": "a17c0b91ae71a8fbc58e724eb8325d1a1740bd46382cad7f1615a9a6fa664c03",
+      "instruction_count": 48
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFromKeyBlocks",
+      "address": "0xcfc684",
+      "span_sha256": "4f665811d17455469d8e4dca9a10f8df830d3699845dc798431de2ea890fb513",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFunction",
+      "address": "0xcfc754",
+      "span_sha256": "c5b3dbfa64ae12884610b3f10ae251d92aa47214cc43119bdbc07b634dcf55be",
+      "instruction_count": 64
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockTimerExpiryCommandOverride",
+      "address": "0xcfc820",
+      "span_sha256": "7ca9f7ef9f0a0368fe097b4edd5365014e58128b5189b6b9a29ef19e9533383e",
+      "instruction_count": 56
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshMacroFunctionOverrides",
+      "address": "0xcfc8cc",
+      "span_sha256": "37c9b10ba072426961c98884b3fc8943e0897cd20416821db9359f03e88215e9",
+      "instruction_count": 29
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshManualOnDefaults",
+      "address": "0xcfc920",
+      "span_sha256": "7282235709e98bdf96fa6ce0793650d88d3f2125c0316a3154a94c91b7de40dc",
+      "instruction_count": 224
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeyCollection",
+      "address": "0xcfcc40",
+      "span_sha256": "72565ef2901bcd1260c66549aa2e81bfdd4563f1bbf63c2fd4051f9a11b6008b",
+      "instruction_count": 48
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeysFromKeyBlocks",
+      "address": "0xcfccd0",
+      "span_sha256": "370eff28729166aebff913dd1de1231b052a201a95ae7a8d99c28182c7db3de4",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetIndicatorControl",
+      "address": "0xcfcdb0",
+      "span_sha256": "31d457cde0116e83ebfc17fa96a0a753f59b49fd6b12a66d0b277c3a0b1bc55f",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredKeyOffset",
+      "address": "0xcfce14",
+      "span_sha256": "dcd01b3692bfad6c96ee417fdae638ce240de9297c3c5f945b4879cad349b649",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredLightLevelActive",
+      "address": "0xcfce38",
+      "span_sha256": "09a62080b9de05261e91ee9d93572230049840344229f2289f0c0132c2753526",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredLightLevelKey",
+      "address": "0xcfce94",
+      "span_sha256": "d8dc0488f633632cd2303e23d53b4c827da582b06818ed10d82b545a362f40bd",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredOccupancyActive",
+      "address": "0xcfceb8",
+      "span_sha256": "4507742adb5b71af692206a5f063c88c36d94376caeeffee1d590f2dd95b73a1",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredOccupancyKey",
+      "address": "0xcfcf14",
+      "span_sha256": "05c4d48a0a89edd61940c97593b5c609d4547c739301f4bd78b2b19553c0011b",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelAmbientLux",
+      "address": "0xcfcf38",
+      "span_sha256": "32a0601d1bf8ef02acce9ba19d8ae0870aa1334b79899a736feda11db317ec2f",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelAmbientLuxRefreshing",
+      "address": "0xcfcf98",
+      "span_sha256": "87afe6f21a0541d7710b5ffca5e6e3cfd012fed334eea81d42a141f7ac761ccc",
+      "instruction_count": 95
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelBroadcastActive",
+      "address": "0xcfd0ec",
+      "span_sha256": "410fcc094ffe50b38f9a8d5a3cf3596574d05b73ec8988a751ab72ccdee4934a",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelBroadcastBlock",
+      "address": "0xcfd148",
+      "span_sha256": "205e83cefb2a864da6f247b710d376e6f97274dea976d3c474db0522f7cae588",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintActive",
+      "address": "0xcfd16c",
+      "span_sha256": "fb5be8062283283a1111c76950acb7eeaf767a96ae8353c9ce003b783603de17",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintBlock",
+      "address": "0xcfd1c8",
+      "span_sha256": "7cfb45258c22962d697b19e4e9e6ecc9346a8c1cd85d56de21841f82267e3c0a",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroup",
+      "address": "0xcfd1ec",
+      "span_sha256": "d3e2e91c77b3dd5d735b02cd7d3b8184bc392e5155792c7f8cb0ca16db225961",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroupOff",
+      "address": "0xcfd210",
+      "span_sha256": "7a47071e2d84d90379e595cb62d06ab42c5bd5155723b99c4c0591961a38bb83",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMarginPerc",
+      "address": "0xcfd26c",
+      "span_sha256": "3e4be69da9fd6f3497358471cdc48fcf45c863260bb43d480fb75488f5064efb",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelScale",
+      "address": "0xcfd2cc",
+      "span_sha256": "186e43005993483d6687916e1d713f861746a5b6738c23a13181c522351067d2",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelTargetLux",
+      "address": "0xcfd32c",
+      "span_sha256": "79d3df5d1bd1ddf5565be583cb06b1791da9b16e3da370e1832dbb25445c4640",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetOccupancyEnableGroup",
+      "address": "0xcfd38c",
+      "span_sha256": "52d7561b9f7718397a09235736d2cce0e90f673f7582f749baf425dfbb919228",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetOccupancyEnableGroupOff",
+      "address": "0xcfd3b0",
+      "span_sha256": "37245fbcf150bb838c84b9d9c7abc4b62ad1a05524bb3bb47485f953f8c30c7f",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerABlock",
+      "address": "0xcfd40c",
+      "span_sha256": "ed340cfc2b9f99bc59740361d229ad35d4b5d6b99d93346c10c560b8503dad2f",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerAFunction",
+      "address": "0xcfd430",
+      "span_sha256": "1bec4efc285f20ec3a58ce46bff98a0496eb7658c718909d125c42b7c59c5ea1",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerAReading",
+      "address": "0xcfd494",
+      "span_sha256": "aa2350ba23b8c42199cc076c21e278b4024aa92f0450b9db0eed306d033e71df",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBBlock",
+      "address": "0xcfd4f4",
+      "span_sha256": "f637ac5348979e3e229c85080675a343bb7fb20be3f50804c7e2d4148182cb11",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBFunction",
+      "address": "0xcfd518",
+      "span_sha256": "c66b8564ab152bdd229ccecc02b4790db6192b48ff322c656c29b6c73beb8bdb",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBReading",
+      "address": "0xcfd57c",
+      "span_sha256": "93e976a3d99b4512f567c6761d19539f5d0e6d05bd1bddfbaed6e2b64d3a3f09",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpLightLevelState",
+      "address": "0xcfd5dc",
+      "span_sha256": "b48f210ff3f6fd560684b5e6524bac1bd976617c9dd279b97c8859a807b24be2",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPowerUpOccupancyState",
+      "address": "0xcfd640",
+      "span_sha256": "cfea952f0dedc2aa8beae4724047c5af37e1e7af11b5c2136c80c4b43a3f284e",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.IntegerToPotentiometerFunction",
+      "address": "0xcff14c",
+      "span_sha256": "031c9f2558b1ed45a472f033aaa9e9536ffff7add5b4e78b1db97f361765fa1f",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.IntegerToMultisensorIndicatorControl",
+      "address": "0xcff2b8",
+      "span_sha256": "53bb0035e88399e6b10e17fe41f0b37fc6bda48a3e4333158085849d9ba379be",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate",
+      "address": "0xcff43c",
+      "span_sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a",
+      "instruction_count": 126
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalDestroy",
+      "address": "0xcff6f8",
+      "span_sha256": "b2ff56498834a8fa7798885160e02c440c72f4598f80ade7de77cda590f47e88",
+      "instruction_count": 18
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLuxFormula",
+      "address": "0xcff72c",
+      "span_sha256": "925562e7c786194638fdbe365087f27968f2d7fce1d6c808089e66fbbba14f44",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HandleBlockChange",
+      "address": "0xcff79c",
+      "span_sha256": "932553af324cdd471d783b65040b9d5a46dbfda26ae78d50d71ce47c82010445",
+      "instruction_count": 51
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshLuxLevelsFromBlock",
+      "address": "0xcff830",
+      "span_sha256": "1d3b7e23147654f47dbe25463b984b991500a75c909131b3108949bee8cf5bf0",
+      "instruction_count": 134
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshSwitchAllowedFromBlock",
+      "address": "0xcffa18",
+      "span_sha256": "0e66fd6060b0177c440e59aa8334fd69d0c627ea8f2bb5e1e3463e8ded4b3a29",
+      "instruction_count": 176
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchAllowedChanged",
+      "address": "0xcffc64",
+      "span_sha256": "b86dee8fa282cdf3b9c41c8eeacbbead896df969be61cea0c277a02d5b23d952",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchActiveChanged",
+      "address": "0xcffc98",
+      "span_sha256": "79366b9addf7d4ecf52b45b1be7acef34e84cb95b04c2a72d2f59d1e05cbd7f3",
+      "instruction_count": 28
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged",
+      "address": "0xcffce0",
+      "span_sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9",
+      "instruction_count": 133
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged",
+      "address": "0xcffe78",
+      "span_sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f",
+      "instruction_count": 133
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetBlock",
+      "address": "0xd00010",
+      "span_sha256": "20c7353053e63df7c78b3954f0d0a9479ee6efe25b59425667515f55c838db5a",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetEnableGroupOff",
+      "address": "0xd00034",
+      "span_sha256": "5aeac87d5e89cde295b17e9c009ed11ce83f83826a29e75d9d4a21b89cdc5749",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetHighLevelLux",
+      "address": "0xd00058",
+      "span_sha256": "02e82f39d7f9843af7f53bdb12bd378fadbdc553a98fdb55fc38ce95b98c656d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLowLevelLux",
+      "address": "0xd0007c",
+      "span_sha256": "28a80aff14ef698638add72d6473db5e383fbdb282f655de2e3b3901c48ff259",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetSwitchActive",
+      "address": "0xd000a0",
+      "span_sha256": "482cb6c05f8c19d0673a49e168eb7a7d12a48223f0ada5e261cdd0707dc26035",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetSwitchAllowed",
+      "address": "0xd000c4",
+      "span_sha256": "760c1b2ba1212eb38f7ed4f420f5fa009a9ac065a320daf599a05a011f7f702b",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetBlock",
+      "address": "0xd000e8",
+      "span_sha256": "6f34272fed556846644201ecd15043af0599d126182a27b61f26f6071f540b13",
+      "instruction_count": 19
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetEnableGroupOff",
+      "address": "0xd0011c",
+      "span_sha256": "2caede4fb0e2b3f5a6fdfd7e111ef18e5d2abeeb4aac54cf6f2908bf04c461ee",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetHighLevelLux",
+      "address": "0xd00178",
+      "span_sha256": "0a815544de0bd9780fe1be6a44d63da5db0323464f435dc4ea1b2520c87bb199",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetLowLevelLux",
+      "address": "0xd001d8",
+      "span_sha256": "6f5f6661443c852a6e17120aa67fcda7cec36d96a989051d9fb75c63500b67a9",
+      "instruction_count": 40
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchActive",
+      "address": "0xd00238",
+      "span_sha256": "84438b445896051eab82579440b4f2c48ed7e9ac1a603658224a880f5125384f",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchAllowed",
+      "address": "0xd00294",
+      "span_sha256": "0d79c0f5b2ee8e3b8d73d952abca535302be8705f46066bf8c565796d2ac495c",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.InternalCreate",
+      "address": "0xd05d20",
+      "span_sha256": "741eff4762028fb8040c1c78ac798b01daf2cdf1dee6d8a62be162b65eb91421",
+      "instruction_count": 157
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkActive",
+      "address": "0xd06178",
+      "span_sha256": "d701f166e3d35fd694811b2ac42e9b5de8a065495c72ad738ef0994327461654",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkCorridorBlock",
+      "address": "0xd0619c",
+      "span_sha256": "92792a0b3b95198c1c4949bb58b975e2076c859923f1959dad65fcd511a7b003",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkGroup",
+      "address": "0xd061c0",
+      "span_sha256": "9c6e5232f6f3fd71369c0c0cdd4e19656af4dd1ae435bacfc94e7039fddfdf4b",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkOfficeBlock",
+      "address": "0xd061e4",
+      "span_sha256": "ed3b9873dd89da048f4a1e4f212310c88712f0ad023a36f5a5ba594f22e5e28f",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetKeyDisableGroup",
+      "address": "0xd062e4",
+      "span_sha256": "f3058a950bd1d672c83c412de7b7bf82909035eccffea1888521b0fc5e1567ee",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetKeyDisableGroupInvert",
+      "address": "0xd06308",
+      "span_sha256": "82351e462c054d068f9138ab140844403e855538956061db8b0edc39b19bffca",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetCorridorLinkActive",
+      "address": "0xd0632c",
+      "span_sha256": "3750dc649c05024bc00eda2bdbc57aeaec5838ce1add1451a002062080df921a",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetCorridorLinkCorridorBlock",
+      "address": "0xd06388",
+      "span_sha256": "a6f8d42cd9ea5744be93be279a87e849cad0a18567596901205d81bb19eea736",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetCorridorLinkGroup",
+      "address": "0xd063ac",
+      "span_sha256": "85138c1c9a8828020f63b3345b03cb2e13fb2ee13c8ac6f3358bee85ff766363",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetCorridorLinkOfficeBlock",
+      "address": "0xd063d0",
+      "span_sha256": "08c4a4f93bfcd6260d8792847df9eb3c096bc7c492fb1d67577dc17c5b513777",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetKeyDisableGroup",
+      "address": "0xd06510",
+      "span_sha256": "2af48752079cfbbfa5c7bab196b6ce897e962379ed3cd1eb53f1b863886c1ea6",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.SetKeyDisableGroupInvert",
+      "address": "0xd06534",
+      "span_sha256": "ee7ae57f26699f0c284bdc952f6611b7609a7c23d91e9736d464692a88ddfdc8",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkActiveChange",
+      "address": "0xd06640",
+      "span_sha256": "04b55e82e9649d509671b3010f2204a1c3cd3041d8b08e82d22abf4d478bd4f5",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkCorridorBlockBeforeChange",
+      "address": "0xd06660",
+      "span_sha256": "7ea53f10731477efe8d945c305211e82de6c1b69d33c3a92daddc2ec636028db",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkCorridorBlockChange",
+      "address": "0xd06690",
+      "span_sha256": "e6dfbe8babf4ce81141b3c4e900d97a1a13c4d7a87c0150349be8b94b7478986",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkOfficeBlockBeforeChange",
+      "address": "0xd066a8",
+      "span_sha256": "e590c1bf9231ef146ec18b79bfbd34916bc93f9e4f0388415b5c7bc1e8e943af",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkOfficeBlockChange",
+      "address": "0xd066d8",
+      "span_sha256": "d5f44df6d39dd2b2e4efd96ca720d2a547c74842f2e4b58e81b7bf5408ceeda1",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.RefreshCorridorBlockTimer",
+      "address": "0xd06704",
+      "span_sha256": "2b0b49b788e1a4961ff81a8ee45ff633d181a1fd7ffbb8769ae3515e6feee38d",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.RefreshOfficeBlockTimer",
+      "address": "0xd0676c",
+      "span_sha256": "39a9dd86a151e1abbc2a0c5ea5dadc57aead8d0762cb35b5c74998535520a7e9",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsJoinModeSupported",
+      "address": "0xd067d4",
+      "span_sha256": "3683c44c6058b3b712d2c332a203bc554916ed3252083703804d578f9adc4bbd",
+      "instruction_count": 45
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupInvertPropertyEnabled",
+      "address": "0xd06864",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyDisableGroupPropertyEnabled",
+      "address": "0xd06878",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsKeyJoinKey",
+      "address": "0xd0688c",
+      "span_sha256": "1840d7bade9db499277f5f02cc9c737eef509a4c352abdb5023e5cc6c502ac28",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+      "address": "0xd068f8",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsDualJoinModeSupported",
+      "address": "0xd0690c",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate",
+      "address": "0xd06f30",
+      "span_sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4",
+      "instruction_count": 241
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetNightlightEnabled",
+      "address": "0xd07d80",
+      "span_sha256": "58101c02846dce5961bac83bb22a2fb1db189dcbe77900900d6f67d32ce84be0",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetEnableNightlightControl",
+      "address": "0xd07da4",
+      "span_sha256": "38e34040a38c12c5695a50c443e9b6a0ce0de3273740878ec17c46f8172572ae",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetNightlightEnabled",
+      "address": "0xd08050",
+      "span_sha256": "9aa45152245b269476027397697d5f995a59424ce285150db9d90b467ad8cdfb",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetNightlightForced",
+      "address": "0xd080ac",
+      "span_sha256": "956903d4cb4869792f884a404b5b407fb58eac8ce97ca7d9d2a8b1b9f843bebf",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetEnableNightlightControl",
+      "address": "0xd08108",
+      "span_sha256": "ce776016b9c9e301635c522e198693c6e4d662ba1fc3f3351833ce25ca6a634a",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.NightlightPropertyEnabled",
+      "address": "0xd087c4",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.JoinGroupChanged",
+      "address": "0xd08ad0",
+      "span_sha256": "bd751900a6f24c8494e5c67fbf9dd0ad133d352fb45c21660b62d985547dfe85",
+      "instruction_count": 19
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsCorridorLinkingSupported",
+      "address": "0xd08b80",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsJoinModeSupported",
+      "address": "0xd08cbc",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsKeyJoinKey",
+      "address": "0xd08dfc",
+      "span_sha256": "9ab503effa4fedeb1ffa6bf1e8e4139da5df5612bcd04dab78da8ba1a551a557",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsDualJoinModeSupported",
+      "address": "0xd08e14",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4",
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetJoinApplication",
+      "address": "0xd08e28",
+      "span_sha256": "2647ee069e790c0cd76cf5cab7afb814298c92e32732ab6f9bc60704f00b2085",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetJoinGroup",
+      "address": "0xd08e4c",
+      "span_sha256": "30a52deff715d00ff07e8509dfc5771f295dbf1cf89c96476eb4c16b165c6cbd",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetDualJoinGroup",
+      "address": "0xd08e70",
+      "span_sha256": "caf90216618c21e8a3f5a5e87fe890e3e3847fb5cfe0b0fbb57f4eff33a95ce1",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetJoinApplication",
+      "address": "0xd08e94",
+      "span_sha256": "c895d035088570a19ba427a7f8d745ca9c87c96874ff9854dc09f165f8533161",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetJoinGroup",
+      "address": "0xd08eb8",
+      "span_sha256": "3521b237f54cd348ae0e06edf4f779fc61f0adc0a26b720786c2695bec6dcce4",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetDualJoinGroup",
+      "address": "0xd08edc",
+      "span_sha256": "ed67665aea714333981de6f83d196253dc6cc1efe334f99b0e168ad1ab81d644",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.InternalCreate",
+      "address": "0xd0eb24",
+      "span_sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0",
+      "instruction_count": 163
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.GetTimer",
+      "address": "0xd0f0f8",
+      "span_sha256": "2b7ad02acaa6ca43f8116d58335cb7d1a603aed43dce8fb446581a734ffa30e6",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.GetTimerCached",
+      "address": "0xd0f120",
+      "span_sha256": "fe43395a4163d30fb4f0dffa7508331c78a851d2f50573d8544dbe3b90badb84",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.GetTimerMin",
+      "address": "0xd0f148",
+      "span_sha256": "a04c43f0310229780e79ffd4067d0d19d5336b9fb2aaf8bf28a4a80492e88719",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.GetTimerExpiryCommand",
+      "address": "0xd0f170",
+      "span_sha256": "260661f41b801c5d029613e39795ffde3938f16033947842dcd8e4a4162c01e0",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.GetTimerExpiryCommandOverride",
+      "address": "0xd0f194",
+      "span_sha256": "e9943197f171acef36857e0ef383dd65f81c1ecae393c02d4f5f1f19bdd3b62d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetTimer",
+      "address": "0xd0f344",
+      "span_sha256": "3d4d77fb13a4d9ecbb2f828ee8bc4807bcabef34871259d2bdfc4e5b18fe20d1",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetTimerCached",
+      "address": "0xd0f3a4",
+      "span_sha256": "b4266d7ffdff3ac06fbeb955d5a6e81c68f4221e20446574e403fa57c3478713",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetTimerMin",
+      "address": "0xd0f404",
+      "span_sha256": "66e0a777350e4539ee4061620e06e23da938857e0596fbd57b2f43519a23ad56",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetTimerExpiryCommand",
+      "address": "0xd0f464",
+      "span_sha256": "17fae5c5d1e8ac60a12131caa36f0cad6861a9322f1a754e508b5c3e96ecc2f1",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetTimerExpiryCommandOverride",
+      "address": "0xd0f488",
+      "span_sha256": "13b7e9250316ad4b4c328bc405ef1cade4e20d6b2e5eacd0c9c532cb15b4d17d",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.HandleTimerAfterChange",
+      "address": "0xd0f508",
+      "span_sha256": "cdf45b8b5146c47b0932b36722dc317125f44dee2e940b486857b164081ce6b6",
+      "instruction_count": 24
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.HandleTimerMinAfterChange",
+      "address": "0xd0f544",
+      "span_sha256": "63658d27f54424d18f34fa732beae3d8a947f68243faa26a064dfcc7f7800b71",
+      "instruction_count": 24
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.LoadPowerFail",
+      "address": "0x1217558",
+      "span_sha256": "9cb77c575d6714adf689545c2c89a1236201d467a6168fe3321c3f1f1375b960",
+      "instruction_count": 164
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0x1217764",
+      "span_sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797",
+      "instruction_count": 280
+    }
+  ],
+  "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "senlla_virtual_slots": {
+    "0x248": {
+      "target": "0xd06640",
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkActiveChange"
+    },
+    "0x24c": {
+      "target": "0xd06690",
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkCorridorBlockChange"
+    },
+    "0x250": {
+      "target": "0xd06660",
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkCorridorBlockBeforeChange"
+    },
+    "0x254": {
+      "target": "0xd066d8",
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkOfficeBlockChange"
+    },
+    "0x258": {
+      "target": "0xd066a8",
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.HandleCorridorLinkOfficeBlockBeforeChange"
+    },
+    "0x27c": {
+      "target": "0xca46cc",
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection"
+    }
+  },
+  "source_rules": {
+    "unit_manager_shared": true,
+    "references_initially_nil": true,
+    "booleans_initially_false": true,
+    "scalar_initial_ordinal": 0,
+    "native_dedicated_handlers": [
+      "broadcast_active",
+      "broadcast_block",
+      "corridor_active",
+      "corridor_corridor_block_before_and_after",
+      "corridor_office_block_before_and_after",
+      "timer",
+      "timer_minimum"
+    ],
+    "join_attribute_dedicated_handlers": false,
+    "surface_use_attribute_dedicated_handlers": false,
+    "protected_ref_order": [
+      "LightLevelMaintEnableGroup",
+      "JoinGroup",
+      "CorridorLinkGroup"
+    ],
+    "protected_pir_or_surface_groups": false,
+    "st7_ir_key_address": "raw_ordinal_plus_one",
+    "st7_bank_order": "ascending_active_then_off",
+    "power_state_reads": "current_agent_pp_store_then_light_and_logic_when_required",
+    "surface_power_phase": "before_target_or_margin_setters",
+    "surface_assigned_target": {
+      "target_lux_byte": 45,
+      "current_pp_margin_group": 255
+    },
+    "surface_assigned_margin": {
+      "margin_percent": 9
+    },
+    "surface_use_order": "ascending_low_then_high_then_CURRENT_low_lux_zero_if_used",
+    "corridor_active_timer": {
+      "replace_below": 60,
+      "replacement": 300,
+      "minimum": 60
+    },
+    "corridor_inactive_or_old_block_minimum": 0,
+    "equal_corridor_reference_runs_before_and_after": true,
+    "late_bank_setters": "same_live_bank_attributes_with_actual_synchronous_notifications"
+  },
+  "complete_toolkit_save": false,
+  "original_instructions_executed": false,
+  "vendor_specifications_included": false,
+  "full_suite_run": false,
+  "remaining_live_bank_dependency": false,
+  "remaining_persistent_late_form_dependency": true
+}

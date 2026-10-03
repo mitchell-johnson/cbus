@@ -13,7 +13,7 @@ from .senlla_bank_graph import SENLLABankGraph
 from .senlla_key_references import SENLLAKeyReferences
 from .senlla_lifecycle import (AttributeManager, BooleanAttribute, FlashAttribute, FlashObject,
                                IntegerAttribute, ObjectReferenceAttribute,
-                               TrackedReferenceHandle)
+                               TrackedReferenceHandle, ManagedUpdateObject, UpdateObject)
 from .senlla_ordinary_keys import _MATCHES
 from .sensors import SensorError
 
@@ -184,6 +184,39 @@ class SourceLookupRequest:
 
 
 @dataclass(frozen=True)
+class SourceLevelRequest:
+    """One CURRENT canonical group LevelManager lookup, without prefetch."""
+    group: tuple
+    address: int
+    create: bool
+    source: str
+
+    def __post_init__(self):
+        object.__setattr__(self, 'group', _group(self.group))
+        _integer(self.address, 255, 'Source level address')
+        if type(self.create) is not bool or not isinstance(self.source, str) or not self.source:
+            raise SensorError('Source level lookup requires its create flag and source position')
+
+    def as_dict(self):
+        return dict(kind='level', group=list(self.group), address=self.address,
+                    create=self.create, source=self.source)
+
+
+@dataclass(frozen=True)
+class ParameterWriteRequest:
+    """One native cached PP assignment; programming eligibility is separate."""
+    name: str
+    value: object
+    source: str
+    operation: str = 'assign'
+    index: int | None = None
+
+    def as_dict(self):
+        return dict(name=self.name, value=deepcopy(self.value), source=self.source,
+                    operation=self.operation, index=self.index)
+
+
+@dataclass(frozen=True)
 class KeyControlRequest:
     """Synchronous native control work delegated to the complete form owner.
 
@@ -216,6 +249,81 @@ class _Object(FlashObject):
         super().__init__(f'{kind}:{identity}')
         self.kind = kind
         self.identity = identity
+
+
+class _Level(_Object):
+    """Address is identity; the native current Integer Value is separate."""
+    def __init__(self, identity, value, trace):
+        super().__init__('level', identity)
+        self.manager = AttributeManager(self, trace=trace)
+        self.level_value = IntegerAttribute(self.manager, value,
+                          name=f'level:{identity}.value', trace=trace)
+
+
+class _CollectionManager(UpdateObject):
+    """Entity manager publishes its parent after base Changed, at any depth.
+
+    Its Begin/End do not call the parent's Begin/End. AttributeManager is a
+    different native class and must not be substituted for this route.
+    """
+    def __init__(self, parent, name, trace):
+        super().__init__(name, trace=trace)
+        self.parent = parent
+
+    def changed(self):
+        super().changed()
+        self.parent.changed()
+
+
+class _SceneCollection(ManagedUpdateObject):
+    def __init__(self, parent, name, trace):
+        super().__init__(name, trace=trace)
+        self.manager = _CollectionManager(parent, name + '.manager', trace)
+        self.items = []
+
+    def append(self, value):
+        self.items.append(value)
+        self.changed()
+
+    def clear(self):
+        # InternalClear deletes existing rows descending. Empty Clear does
+        # not synthesize the publication that a reserved eight-object pool
+        # would have produced.
+        while self.items:
+            self.items.pop()
+            self.changed()
+
+    def changed(self):
+        super().changed()
+        self.manager.changed()
+
+
+class _Scene(_Object):
+    def __init__(self, ordinal, trace):
+        super().__init__('scene', ordinal)
+        self.manager = AttributeManager(self, trace=trace)
+        self.commands = _SceneCollection(self, f'scene:{ordinal}.commands', trace)
+        self.live_groups = False
+
+
+class _SceneCommand(FlashObject):
+    def __init__(self, scene, ordinal, trace):
+        super().__init__(f'scene:{scene.identity}.command:{ordinal}', trace=trace)
+        self.manager = AttributeManager(self, trace=trace)
+        self.group = ObjectReferenceAttribute(self.manager,
+                          name=self.name + '.group', trace=trace)
+        self.level = IntegerAttribute(self.manager, 0,
+                          name=self.name + '.level', trace=trace)
+
+    def set_group(self, value):
+        self.group.set(value)
+        self.resolve_change()
+        self.changed()
+
+    def set_level(self, value):
+        self.level.set(value)
+        self.resolve_change()
+        self.changed()
 
 
 class _IndicatorNumber(FlashObject):
@@ -426,7 +534,7 @@ class SENLLAKeyEvents:
             full = (*group, level)
             if full in runtime.levels:
                 raise SensorError('Source-existing level identities must be distinct')
-            runtime.levels[full] = _Object('level', full)
+            runtime.levels[full] = _Level(full, level, runtime._trace)
         return runtime
 
     def _initialize(self, context, blocks, bank_graph, *, source_dispatch=None, application_dispatch=None):
@@ -441,19 +549,27 @@ class SENLLAKeyEvents:
         self.macro_decision_handler_installed = False
         self.event_handler_installed = False
         self.control_dispatch = None
+        self.protected_group_attributes = None
         self.source_dispatch = source_dispatch
+        self.level_dispatch = None
         self.application_dispatch = application_dispatch
+        self.live_bank_dispatch = None
+        self._live_occupancy_flags = None
         self.created_groups = []
         self.apps = {value: _Object('application', value) for value in context.application_addresses} if context else {}
         self.groups = {value: _Object('group', value) for value in context.group_identities} if context else {}
         self._source_group_orders = {}
-        self.levels = {value: _Object('level', value) for value in context.trigger_levels} if context else {}
+        self.levels = {value: _Level(value, value[2], self._trace) for value in context.trigger_levels} if context else {}
         self.templates = {value: _Object('template', value) for value in range(59)}
         self.micro = {value: _Object('micro', value) for value in range(128)}
-        self.scenes = tuple(_Object('scene', value) for value in range(8))
+        # Projected entry historically reserves an eight-object pool. Fresh
+        # owning construction has an actual empty native collection instead.
+        self.scenes = tuple(_Object('scene', value) for value in range(8)) if context else ()
         self.scene_commands = ((),) * 8
         self.scene_expected = None
-        self.control_group = None
+        self._control_group_cache = None
+        self._causal_scenes = False
+        self._causal_control = False
         self.unit = FlashObject('unit', trace=self._trace)
         self.block_collection = FlashObject('blocks', trace=self._trace)
         self.unit_manager = AttributeManager(self.unit, trace=self._trace)
@@ -464,6 +580,12 @@ class SENLLAKeyEvents:
                 self.apps.get(context.secondary_application) if context else None, name='unit.secondary_application',
                 after_change=lambda _: self._unit_application_changed(True), trace=self._trace)
         self.area = ObjectReferenceAttribute(self.unit_manager, name='unit.area', trace=self._trace)
+        self.control_app_group = ObjectReferenceAttribute(self.unit_manager,
+                name='unit.control_app_group', after_change=lambda _: self._control_group_changed(),
+                trace=self._trace)
+        self.scenes_enabled = BooleanAttribute(self.unit_manager, False,
+                name='unit.scenes_enabled', trace=self._trace)
+        self.scene_collection = _SceneCollection(self.unit, 'unit.scenes', self._trace)
         self.broadcast_active = BooleanAttribute(self.unit_manager, False, name='unit.broadcast_active',
                 after_change=lambda _: self._broadcast_changed(), trace=self._trace)
         self.broadcast_block = ObjectReferenceAttribute(self.unit_manager, name='unit.broadcast_block',
@@ -492,6 +614,41 @@ class SENLLAKeyEvents:
             raise SensorError('Application side requires a Boolean')
         return (self.secondary_application if secondary else self.primary_application).value
 
+    @property
+    def control_group(self):
+        return self.control_app_group.value if self._causal_control else self._control_group_cache
+
+    @control_group.setter
+    def control_group(self, value):
+        # Historical projected component binding is not a source setter.
+        self._control_group_cache = value
+
+    def set_control_app_group(self, value):
+        if value is not None and (not isinstance(value, _Object) or value.kind != 'group'
+                or self.groups.get(value.identity) is not value or value.identity[0] != 202):
+            raise SensorError('Control group setter requires its actual canonical Trigger group')
+        def execute():
+            self._causal_control = True
+            self.control_app_group.set(value)
+        return self._run(execute)
+
+    def _control_group_changed(self):
+        # d08648 captures Count then reads CURRENT control group for each key.
+        # Membership compares the actual level object pointer, not its byte.
+        count = len(self.keys)
+        for index in range(count):
+            group = self.control_app_group.value
+            if group is None:
+                self.keys[index].scene_trigger.set(None)
+                continue
+            current = self.keys[index].scene_trigger.value
+            group = self.control_app_group.value
+            if group is None:
+                raise SensorError('Control group changed to nil during native level-manager dereference')
+            if current is None or not any(level is current for identity, level in self.levels.items()
+                                           if identity[:2] == group.identity):
+                self.keys[index].scene_trigger.set(None)
+
     def _application_address(self, secondary=False):
         application = self.application_object(secondary)
         return application.identity if application is not None else None
@@ -513,6 +670,56 @@ class SENLLAKeyEvents:
             self.groups[identity] = _Object('group', identity)
             self._source_group_orders.pop(application.identity, None)
         return self.groups[identity]
+
+    def add_source_level(self, group, address, *, value=None):
+        """Register source-confirmed Level address and actual current Value.
+
+        Existing address lookups do not normalize Value. Fresh creation sets
+        Value=address in the native backend before this method is called.
+        """
+        address = _integer(address, 255, 'Source level address')
+        if (not isinstance(group, _Object) or group.kind != 'group'
+                or self.groups.get(group.identity) is not group):
+            raise SensorError('Source level requires its same canonical owning group')
+        if value is None:
+            value = address
+        if type(value) is not int or not -(1 << 31) <= value < (1 << 31):
+            raise SensorError('Native level Value requires a signed 32-bit integer')
+        identity = (*group.identity, address)
+        existing = self.levels.get(identity)
+        if existing is None:
+            existing = self.levels[identity] = _Level(identity, value, self._trace)
+        elif existing.level_value._value != value:
+            raise SensorError('Existing source level requires its actual setter rather than registration replacement')
+        return existing
+
+    def get_source_level(self, group, address, *, create=True, source):
+        address = _integer(address, 255, 'Source level address')
+        if (not isinstance(group, _Object) or group.kind != 'group'
+                or self.groups.get(group.identity) is not group):
+            raise SensorError('LevelManager lookup requires its CURRENT canonical group')
+        request = SourceLevelRequest(group.identity, address, create, source)
+        self._event('source_lookup', request=request.as_dict())
+        identity = (*group.identity, address)
+        current = self.levels.get(identity)
+        if current is not None:
+            return current
+        if self.level_dispatch is None:
+            raise SourceObjectRequired(group.identity[0], address, source,
+                                       kind='level', group=group.identity[1], create=create)
+        returned = self.level_dispatch(request, self)
+        if returned is not None:
+            raise SensorError('Source level dispatcher must complete lookup/creation before returning')
+        current = self.levels.get(identity)
+        if current is None and create:
+            raise SourceObjectRequired(group.identity[0], address, source,
+                                       kind='level', group=group.identity[1], create=create)
+        return current
+
+    def level_value(self, level):
+        if (not isinstance(level, _Level) or self.levels.get(level.identity) is not level):
+            raise SensorError('Level Value getter requires the actual canonical level object')
+        return level.level_value.value
 
     def bind_source_group_order(self, application, addresses):
         """Bind actual CURRENT manager Items order, without changing any object."""
@@ -644,11 +851,18 @@ class SENLLAKeyEvents:
         self.graph = self.graph.with_references(SENLLAKeyReferences(tuple(tuple(key.refs) for key in self.keys)))
 
     def _bank_stores(self):
+        if self.live_bank_dispatch is not None:
+            # Actual bank attributes and tracked block observers own this
+            # route. The bounded graph is only an optional observation.
+            self.live_bank_dispatch.sync_graph_observation()
+            return
         banks = tuple(replace(bank, store1=block.store1.value, store2=block.store2.value)
                       for bank, block in zip(self.graph.banks, self.blocks))
         self.graph = replace(self.graph, banks=banks)
 
     def _bank_feedback_writes(self):
+        if self.live_bank_dispatch is not None:
+            return
         for index, (bank, block) in enumerate(zip(self.graph.banks, self.blocks)):
             if (bank.store1, bank.store2) == (block.store1.value, block.store2.value):
                 continue
@@ -664,6 +878,11 @@ class SENLLAKeyEvents:
                 self._bank_feedback[index] -= 1
 
     def _block_published(self, block):
+        if self.live_bank_dispatch is not None:
+            if self.live_bank_dispatch.block_changed(block, self) is not None:
+                raise SensorError('Live bank observation must finish before returning')
+            self._event('block_published_live', block=block)
+            return
         if self._bank_feedback[block]:
             self._event('bank_feedback_suppressed', block=block)
             return
@@ -676,7 +895,26 @@ class SENLLAKeyEvents:
     def _smart_changed(self, key):
         self._bind_refs()
         self._bank_stores()
-        self.graph = self.graph.macro_changed(key, self._template_type(key),
+        template = self._template_type(key)
+        if self.live_bank_dispatch is not None:
+            transition = self.graph.occupancy[key].macro_changed(template,
+                decision_handler_installed=self.macro_decision_handler_installed,
+                broadcast_key=(self.broadcast_active.value and self._has_broadcast(key)))
+            state = transition.state
+            # Smart assigns its decision fields before the ordered flag
+            # setters. Flag callbacks can themselves change CURRENT flags.
+            states = list(self.graph.occupancy)
+            states[key] = replace(state, light=self.current_occupancy_flags(key)[0],
+                dark=self.current_occupancy_flags(key)[1],
+                any_movement=self.current_occupancy_flags(key)[2],
+                sunset=self.current_occupancy_flags(key)[3])
+            self.graph = replace(self.graph, occupancy=tuple(states))
+            if template is not None and (template in (29,30,33,34,24,25) or state.refresh_from_macro):
+                for flag, value in enumerate((template == 29,template == 30,template == 33,template == 34)):
+                    self._set_live_flag(key, flag, value)
+            self._event('macro_smart', key=key, template=template)
+            return
+        self.graph = self.graph.macro_changed(key, template,
                 decision_handler_installed=self.macro_decision_handler_installed,
                 broadcast_key=(self.broadcast_active.value and self._has_broadcast(key)))
         self._event('macro_smart', key=key, template=self._template_type(key))
@@ -685,12 +923,25 @@ class SENLLAKeyEvents:
     def _quick_flags(self, key):
         self._bind_refs()
         self._bank_stores()
-        self.graph = self.graph.refresh_event_flags(key, self._template_type(key),
+        template = self._template_type(key)
+        join = self.context.join_active if self.context is not None else False
+        if self.live_bank_dispatch is not None:
+            self.graph.occupancy[key].refresh_event_flags(template, key_index=key,
+                join_active=join, event_template_handler_installed=self.event_handler_installed)
+            if template is not None and not (join and key >= 4):
+                for flag, value in enumerate((template == 29,template == 30,template == 33,template == 34)):
+                    self._set_live_flag(key, flag, value)
+            return
+        self.graph = self.graph.refresh_event_flags(key, template,
                 join_active=self.context.join_active if self.context is not None else False,
                 event_template_handler_installed=self.event_handler_installed)
         self._bank_feedback_writes()
 
     def _set_flag(self, key, flag, value):
+        if self.live_bank_dispatch is not None:
+            if self.event_handler_installed and self.current_occupancy_flags(key)[flag] != value:
+                raise SensorError('Installed event-to-template callback requires its owning decision dispatch')
+            return self._set_live_flag(key, flag, value)
         state = self.graph.occupancy[key]
         transition = state._set_flags(((flag, value),))
         if transition.bank_events and self.event_handler_installed:
@@ -699,6 +950,35 @@ class SENLLAKeyEvents:
         self._bank_stores()
         self.graph = self.graph.apply_occupancy_transition(key, transition)
         self._bank_feedback_writes()
+
+    def current_occupancy_flags(self, key):
+        """CURRENT flags at one native event, including nested callbacks."""
+        if type(key) is not int or not 0 <= key < 8:
+            raise SensorError('Occupancy key requires index0..7')
+        if self._live_occupancy_flags is None:
+            return self.graph.occupancy[key].flags
+        return tuple(self._live_occupancy_flags[key])
+
+    def _set_live_flag(self, key, flag, value):
+        if self._live_occupancy_flags is None:
+            self._live_occupancy_flags = [list(state.flags) for state in self.graph.occupancy]
+        flags = self._live_occupancy_flags[key]
+        if flags[flag] == value:
+            return
+        flags[flag] = value
+        if value and flag < 3:
+            for other in ((2,1),(0,2),(0,1))[flag]:
+                self._set_live_flag(key, other, False)
+        # Each nested clear and the initiating flag deliver separate events.
+        # Reread flags after nested work, including an earlier bank callback.
+        current = self.current_occupancy_flags(key)
+        states = list(self.graph.occupancy)
+        states[key] = replace(states[key], light=current[0], dark=current[1],
+                              any_movement=current[2], sunset=current[3])
+        self.graph = replace(self.graph, occupancy=tuple(states))
+        self._event('occupancy_live_event', key=key, flags=list(current))
+        if self.live_bank_dispatch.occupancy_bank_event(key, self) is not None:
+            raise SensorError('Live bank event must finish its native setters before returning')
 
     def _has_broadcast(self, key):
         current = self.broadcast_block.value
@@ -890,6 +1170,20 @@ class SENLLAKeyEvents:
             if block in self.keys[key].refs:
                 self._primary_refresh(key)
         group = self.blocks[block].group.value
+        if self.protected_group_attributes is not None:
+            if (not isinstance(self.protected_group_attributes, tuple)
+                    or len(self.protected_group_attributes) != 3
+                    or any(not isinstance(attr, ObjectReferenceAttribute)
+                           for attr in self.protected_group_attributes)):
+                raise SensorError('Source protection requires CURRENT PEC, Join, Corridor reference attributes')
+            if group is not None and group.identity[1] != 255:
+                for attr in self.protected_group_attributes:
+                    if self.blocks[block].group.value is attr.value:
+                        app = self.blocks[block].application.value
+                        unused = self.get_source_group(app, 255, create=False, source='0xcfb6f0')
+                        self.blocks[block].group.set(unused)
+                        break
+            return
         protected = self.context.protected_groups if self.context is not None else ()
         if group is not None and group.identity[1] != 255 and group.identity in protected:
             app = self.blocks[block].application.value
@@ -1071,11 +1365,18 @@ class SENLLAKeyEvents:
                     if template in (29, 30, 33, 34):
                         self.keys[key].template.set(self.templates[16])
 
-    def load_allocations(self, masks):
+    def load_allocations(self, masks, *, parameter_read=None):
         masks = _eight(masks, 255, 'BlockAllocation')
+        if parameter_read is not None and not callable(parameter_read):
+            raise SensorError('CURRENT allocation reader requires an internal callable executor')
         def execute():
             self._require_phase('get_key_blocks')
-            for key, mask in enumerate(masks):
+            for key in range(8):
+                # AsArrayInteger is called separately before each key row;
+                # callbacks from an earlier row may change a later mask.
+                current = self._read_current_pp(parameter_read, 'BlockAllocation',
+                                                masks, '0xcc7784')
+                mask = _eight(current, 255, 'Current BlockAllocation')[key]
                 for block in range(8):
                     if mask & (1 << block):
                         self._add(key, block)
@@ -1163,13 +1464,96 @@ class SENLLAKeyEvents:
                     if (self.context.primary_application, address) not in self.groups:
                         raise SourceObjectRequired(self.context.primary_application, address, 'scene_table_getter')
             self.control_group = self.groups[identity]
+            if not self.scenes:
+                self.scenes = tuple(_Object('scene', value) for value in range(8))
             self.scene_commands = scenes
             self.scene_expected = {'SceneTable': list(table), 'SceneTablePointer': list(pointers),
                                    'PatchEnable': list(patch)}
             self.phase = 'get_key_values'
         return self._run(execute)
 
-    def load_key_values(self, stages, selector, indicator):
+    def _add_scene(self, source):
+        scene = _Scene(len(self.scene_collection.items), self._trace)
+        self._event('source_scene_add', source=source, ordinal=len(self.scene_collection.items))
+        self.scene_collection.append(scene)
+        self.scenes = tuple(self.scene_collection.items)
+        return scene
+
+    def _read_current_pp(self, reader, name, fallback, source):
+        value = deepcopy(fallback if reader is None else reader(name, source, self))
+        self._event('parameter_read', name=name, source=source, value=deepcopy(value))
+        return value
+
+    def load_scenes_causal(self, table, pointers, patch, *, parameter_read=None):
+        """Execute native Add/command/getter order on the SAME owning objects.
+
+        The owner has already assigned ScenesEnabled and ControlAppGroup at
+        their earlier native positions. No level or Scene group is prefetched.
+        Patch disabled still executes this complete loader.
+        """
+        if parameter_read is not None and not callable(parameter_read):
+            raise SensorError('CURRENT PP reader requires an internal callable executor')
+        loaded_scenes(table, pointers)  # exact unsigned widths/count admission
+        if (not isinstance(patch, (list, tuple)) or len(patch) != 2
+                or any(type(value) is not int or not 0 <= value <= 255 for value in patch)):
+            raise SensorError('PatchEnable requires two bytes')
+        def execute():
+            self._require_phase('core_neo_scenes')
+            self._causal_scenes = True
+            self.scene_collection.clear()
+            self.scenes = ()
+            raw = tuple(self._read_current_pp(parameter_read, 'SceneTable', table, '0xccafb1'))
+            # Native pointer parsing is skipped entirely for an empty table.
+            positions = tuple(pointers)
+            if raw and raw[0] != 255:
+                positions = tuple(self._read_current_pp(
+                    parameter_read, 'SceneTablePointer', pointers, '0xccaff4'))
+            loaded_scenes(raw, positions)
+            if raw[0] != 255:
+                scene = self._add_scene('0xccb01d')
+                ordinal = 0
+                for offset in range(0, 80, 2):
+                    address, value = raw[offset:offset + 2]
+                    found = False
+                    if address != 255:
+                        for index in range(len(scene.commands.items)):
+                            current_group = scene.commands.items[index].group.value
+                            if current_group is None:
+                                raise SensorError('Native Scene duplicate lookup dereferences a nil command group')
+                            if current_group.identity[1] == address:
+                                found = True
+                                break
+                    if address != 255 and not found:
+                        command = _SceneCommand(scene, len(scene.commands.items), self._trace)
+                        scene.commands.append(command)
+                        if len(scene.commands.items) > 40:
+                            raise SensorError('Native Scene command manager exceeds forty commands')
+                        self._event('source_scene_command_add', source='0xccb062',
+                                    scene=ordinal, offset=offset)
+                        application = self.primary_application.value
+                        if application is None:
+                            raise SensorError('Native Scene getter dereferences CURRENT nil primary application')
+                        group = self.get_source_group(application, address, create=True, source='0xccb08e')
+                        command.set_group(group)
+                        command.set_level(value)
+                    if ordinal < 7 and positions[ordinal + 1] == 162 + offset + 2:
+                        ordinal += 1
+                        scene = self._add_scene('0xccb0e8')
+            while len(self.scene_collection.items) < 8:
+                self._add_scene('0xccb117')
+            if len(self.scene_collection.items) != 8:
+                raise SensorError('Source Scene collection must contain eight objects after raw load')
+            self.scenes = tuple(self.scene_collection.items)
+            self.scene_commands = tuple(tuple((command.group._value.identity[1], command.level._value)
+                                             for command in scene.commands.items) for scene in self.scenes)
+            self.scene_expected = {'SceneTable': list(raw), 'SceneTablePointer': list(positions),
+                                   'PatchEnable': list(patch)}
+            self.phase = 'get_key_values'
+        return self._run(execute)
+
+    def load_key_values(self, stages, selector, indicator, *, parameter_read=None):
+        if parameter_read is not None and not callable(parameter_read):
+            raise SensorError('CURRENT PP reader requires an internal callable executor')
         if not isinstance(stages, (list, tuple)) or len(stages) != 8:
             raise SensorError('Key stages require eight four-nibble rows')
         if any(not isinstance(row, (list, tuple)) or len(row) != 4 for row in stages):
@@ -1177,22 +1561,47 @@ class SENLLAKeyEvents:
         rows = tuple(tuple(_integer(value, 15, 'Key stage') for value in row) for row in stages)
         selectors = _eight(selector, 1, 'SceneKeySelector')
         indicators = _eight(indicator, 7, 'IndicatorBlockAssignment')
+        raw_commands = {name: tuple(row[index] for row in rows)
+                        for index, name in enumerate(('JPCommand','SRCommand','LPCommand','LRCommand'))}
+        def current(name, key, source):
+            maximum, fallback = ((1, selectors) if name == 'SceneKeySelector' else
+                                  (7, indicators) if name == 'IndicatorBlockAssignment' else
+                                  (15, raw_commands[name]))
+            return _eight(self._read_current_pp(parameter_read, name, fallback, source),
+                          maximum, name)[key]
         def execute():
             self._require_phase('get_key_values')
-            for key, (row, selected, raw_indicator) in enumerate(zip(rows, selectors, indicators)):
+            for key in range(8):
                 owner = self.keys[key]
+                selected = current('SceneKeySelector', key, '0xcca5d1')
                 if selected:
-                    owner.scene_ramp_function.set(self.micro[row[0]])
-                    owner.template.set(self.templates[24 if row[0] == 14 else 25])
-                    if row[0] == 14:
+                    owner.scene_ramp_function.set(self.micro[current('JPCommand', key, '0xcca5ee')])
+                    invoke = owner.scene_ramp_function.value is self.micro[14]
+                    owner.template.set(self.templates[24 if invoke else 25])
+                    if invoke:
+                        raw_indicator = current('IndicatorBlockAssignment', key, '0xcca679')
                         owner.scene.set(self.scenes[raw_indicator])
-                        trigger = row[2] * 16 + row[3]
-                        level_identity = (*self.control_group.identity, trigger)
-                        if level_identity not in self.levels:
-                            raise SourceObjectRequired(level_identity[0], trigger, 'scene_trigger_getter',
-                                                       kind='level', group=level_identity[1])
-                        owner.scene_trigger.set(self.levels[level_identity])
-                        owner.scene_rate.set(row[1])
+                        control_group = self.control_group
+                        if self._causal_control:
+                            if control_group is not None:
+                                low = current('LRCommand', key, '0xcca6e0')
+                                high = current('LPCommand', key, '0xcca712')
+                                trigger = high * 16 + low
+                                current_group = self.control_group
+                                if current_group is None:
+                                    raise SensorError('Native Invoke getter dereferences CURRENT nil control group')
+                                owner.scene_trigger.set(self.get_source_level(
+                                    current_group, trigger, create=True, source='0xcca758'))
+                        else:
+                            low = current('LRCommand', key, '0xcca6e0')
+                            high = current('LPCommand', key, '0xcca712')
+                            trigger = high * 16 + low
+                            level_identity = (*control_group.identity, trigger)
+                            if level_identity not in self.levels:
+                                raise SourceObjectRequired(level_identity[0], trigger, 'scene_trigger_getter',
+                                                           kind='level', group=level_identity[1])
+                            owner.scene_trigger.set(self.levels[level_identity])
+                        owner.scene_rate.set(current('SRCommand', key, '0xcca77d'))
                         continue
                     # Modify assigns Scene1 here before loading raw macro
                     # stages, and again in the common final branch below.
@@ -1201,10 +1610,18 @@ class SENLLAKeyEvents:
                     owner.template.set(self.templates[16])
                 owner.macro_pin += 1
                 try:
-                    owner.stages = row
+                    sources = (('0xcca81f','0xcca86a','0xcca8b5','0xcca900') if selected else
+                               ('0xccaa07','0xccaa52','0xccaa9d','0xccaae8'))
+                    for index, (name, source) in enumerate(zip(raw_commands, sources)):
+                        value = current(name, key, source)
+                        changed = list(owner.stages)
+                        changed[index] = value
+                        owner.stages = tuple(changed)
                 finally:
                     owner.macro_pin -= 1
                 self._raw_macro_refresh(key)
+                raw_indicator = current('IndicatorBlockAssignment', key,
+                                        '0xcca9a9' if selected else '0xccabcf')
                 owner.indicator.set(raw_indicator + 1)
                 owner.scene.set(self.scenes[0])
             self.phase = 'fresh_function_bindings'
@@ -1329,7 +1746,7 @@ class SENLLAKeyEvents:
                     self.add_source_group(self.apps[identity[0]], identity[1])
             for identity in context.trigger_levels:
                 if identity not in self.levels:
-                    self.levels[identity] = _Object('level', identity)
+                    self.levels[identity] = _Level(identity, identity[2], self._trace)
             self.context = context
             self._event('owning_context_bound')
         return self._run(execute)
@@ -1353,16 +1770,77 @@ class SENLLAKeyEvents:
             self._bank_feedback_writes()
         return self._run(execute)
 
-    def parameters(self):
+    def parameters(self, *, parameter_dispatch=None, corekey_light_level=None, core_neo_prefix=None):
         """Replay private key/block marshalling, including Invoke nil getter.
 
         This native save component can assign an existing trigger255 object.
         Missing creation or a nested callback invalidates an interrupted
         runtime; the caller cannot treat projection as a passive snapshot.
         """
-        return self._run(self._parameters)
+        for callback in (parameter_dispatch, corekey_light_level, core_neo_prefix):
+            if callback is not None and not callable(callback):
+                raise SensorError('Native save-position executors require internal callables')
+        return self._run(lambda: self._parameters(parameter_dispatch, corekey_light_level, core_neo_prefix))
 
-    def _parameters(self):
+    def _write_parameter(self, dispatch, name, value, source, *, operation='assign', index=None):
+        if dispatch is not None:
+            request = ParameterWriteRequest(name, deepcopy(value), source, operation, index)
+            self._event('parameter_write_request', request=request.as_dict())
+            if dispatch(request, self) is not None:
+                raise SensorError('PP write executor must finish its native cached assignment before returning')
+
+    def _scene_compatible(self):
+        # IsSceneLearnCompatible reads command-manager counts only. In
+        # particular, pointer output must not resolve Group references merely
+        # to determine whether a Scene is empty.
+        counts = [len(scene.commands.items) for scene in self.scene_collection.items]
+        return sum(count > 0 for count in counts) <= 4 and max(counts, default=0) <= 10
+
+    def _scene_table(self):
+        table, cursor, nonempty = [255] * 80, 0, 0
+        # The outer count and each command count are captured at their source
+        # loop entries. Every GetItem/Group read within those loops remains
+        # CURRENT, after the preceding getter's possible nested work.
+        for scene_index in range(len(self.scene_collection.items)):
+            if not self.scene_collection.items[scene_index].commands.items:
+                continue
+            if self._scene_compatible():
+                cursor = nonempty * 20
+            nonempty += 1
+            count = len(self.scene_collection.items[scene_index].commands.items)
+            for command_index in range(count):
+                if cursor + 2 > 80:
+                    raise SensorError('Native Scene table exceeds forty commands')
+                command = self.scene_collection.items[scene_index].commands.items[command_index]
+                group = command.group.value
+                if group is None:
+                    address = 255
+                else:
+                    group = self.scene_collection.items[scene_index].commands.items[command_index].group.value
+                    if group is None:
+                        raise SensorError('Native Scene table dereferences CURRENT nil command group')
+                    address = group.identity[1]
+                level = self.scene_collection.items[scene_index].commands.items[command_index].level.value
+                table[cursor:cursor + 2] = [address, level]
+                cursor += 2
+        return table
+
+    def _scene_pointers(self):
+        pointers = [162, 255, 255, 255, 255, 255, 255, 255]
+        if self._scene_compatible():
+            pointers[1:4] = [182, 202, 222]
+        else:
+            count = len(self.scene_collection.items)
+            if count > 8:
+                raise SensorError('Native Scene pointer array requires at most eight Scenes')
+            for index in range(1, count):
+                if not self.scene_collection.items[index].commands.items:
+                    break
+                pointers[index] = pointers[index - 1] + 2 * len(
+                    self.scene_collection.items[index - 1].commands.items)
+        return pointers
+
+    def _parameters(self, dispatch=None, corekey_light_level=None, core_neo_prefix=None):
         if self.failed:
             raise SensorError('An interrupted callback runtime has no save projection')
         if self.phase != 'component_complete':
@@ -1370,19 +1848,38 @@ class SENLLAKeyEvents:
         # CoreKey has already marshalled allocations and block scalars before
         # CoreNeo starts its Scene/key output. Do not retroactively reread
         # these PP fields after a nil-trigger setter's nested callbacks.
-        result = dict(
-            BlockAllocation=[sum(1 << block for block in owner.refs) for owner in self.keys],
-            GroupAddress=[block.group.value.identity[1] for block in self.blocks],
-            LightLevelStore1=[block.store1.value for block in self.blocks],
-            LightLevelStore2=[block.store2.value for block in self.blocks],
-            TimerHighByte=[block.timer.value >> 8 for block in self.blocks],
-            TimerLowByte=[block.timer.value & 255 for block in self.blocks],
-            TimerExpiryCommand=[(block.expiry_override.value or block.expiry.value).identity
-                                if block.expiry_override.value or block.expiry.value else 0
-                                for block in self.blocks])
+        result = {'BlockAllocation': [sum(1 << block for block in owner.refs) for owner in self.keys]}
+        self._write_parameter(dispatch, 'BlockAllocation', result['BlockAllocation'], '0xcc8bf8')
+        result['GroupAddress'] = [block.group.value.identity[1] if block.group.value is not None else 255
+                                  for block in self.blocks]
+        self._write_parameter(dispatch, 'GroupAddress', result['GroupAddress'], '0xcc8d1c')
+        if corekey_light_level is not None and corekey_light_level(self) is not None:
+            raise SensorError('CoreKey LightLevel owner must finish its capture before returning')
+        # Each field is read at its native assignment, after the preceding
+        # cache callback, rather than all being sampled before the first write.
+        for name, values, source in (
+                ('LightLevelStore1', lambda: [block.store1.value for block in self.blocks], '0xcc8f7b'),
+                ('LightLevelStore2', lambda: [block.store2.value for block in self.blocks], '0xcc8fad'),
+                ('TimerHighByte', lambda: [block.timer.value >> 8 for block in self.blocks], '0xcc8827'),
+                ('TimerLowByte', lambda: [block.timer.value & 255 for block in self.blocks], '0xcc8853'),
+                ('TimerExpiryCommand', lambda: [(block.expiry_override.value or block.expiry.value).identity
+                    if block.expiry_override.value or block.expiry.value else 0 for block in self.blocks],
+                 '0xcc88d1')):
+            result[name] = values()
+            self._write_parameter(dispatch, name, result[name], source)
         self._event('corekey_save_capture')
-        if self.scene_expected is not None:
+        if core_neo_prefix is not None and core_neo_prefix(self) is not None:
+            raise SensorError('CoreNeo prefix owner must finish its captures before returning')
+        if self._causal_scenes and self.scenes_enabled.value:
+            result['SceneTable'] = self._scene_table()
+            self._write_parameter(dispatch, 'SceneTable', result['SceneTable'], '0xccc703')
+            result['SceneTablePointer'] = self._scene_pointers()
+            self._write_parameter(dispatch, 'SceneTablePointer', result['SceneTablePointer'], '0xccc731')
+        elif not self._causal_scenes and self.scene_expected is not None:
             result.update(scene_save_parameters(self.scene_expected))
+            for name in ('SceneTable', 'SceneTablePointer'):
+                if name in result:
+                    self._write_parameter(dispatch, name, result[name], 'CoreNeo.' + name)
         self._event('core_neo_scene_save_capture')
         selectors, indicators, rows = [], [], []
         for key, owner in enumerate(self.keys):
@@ -1393,21 +1890,49 @@ class SENLLAKeyEvents:
                 # nil-trigger getter/setter. Nested controls can change the
                 # current template; marshalling still finishes Invoke here.
                 if owner.scene_trigger.value is None:
-                    identity = (*self.control_group.identity, 255)
-                    if identity not in self.levels:
-                        raise SourceObjectRequired(identity[0], 255, 'scene_trigger_before_save_getter',
-                                                   kind='level', group=identity[1])
-                    owner.scene_trigger.set(self.levels[identity])
+                    group = self.control_group
+                    if group is None:
+                        raise SensorError('Native Invoke save dereferences CURRENT nil ControlAppGroup')
+                    if self._causal_control:
+                        owner.scene_trigger.set(self.get_source_level(group, 255, create=True, source='0xccb917'))
+                    else:
+                        identity = (*group.identity, 255)
+                        if identity not in self.levels:
+                            raise SourceObjectRequired(identity[0], 255, 'scene_trigger_before_save_getter',
+                                                       kind='level', group=identity[1])
+                        owner.scene_trigger.set(self.levels[identity])
+                self._write_parameter(dispatch, 'SceneKeySelector', 1, '0xccb93f', operation='index', index=key)
                 scene = owner.scene.value
-                trigger = owner.scene_trigger.value
-                if trigger is None:
-                    raise SensorError('Native Invoke serializer dereferences current trigger after its getter')
-                trigger = trigger.identity[2]
-                indicators.append(scene.identity if scene is not None else 0)
-                rows.append((14, owner.scene_rate.value & 127, trigger >> 4, trigger & 15))
+                ordinal = (self.scene_collection.items.index(scene) if self._causal_scenes and scene in self.scene_collection.items
+                           else scene.identity if scene is not None and not self._causal_scenes else 0)
+                ordinal = ordinal if 0 <= ordinal <= 7 else 0
+                indicators.append(ordinal)
+                self._write_parameter(dispatch, 'IndicatorBlockAssignment', ordinal, '0xccb98f', operation='index', index=key)
+                row = [14]
+                self._write_parameter(dispatch, 'JPCommand', 14, '0xccb9a6', operation='append')
+                row.append(owner.scene_rate.value & 127)
+                self._write_parameter(dispatch, 'SRCommand', row[-1], '0xccb9d4', operation='append')
+                for name, shift, source in (('LPCommand', 4, '0xccba09'), ('LRCommand', 0, '0xccba3e')):
+                    trigger = owner.scene_trigger.value
+                    if trigger is None:
+                        raise SensorError('Native Invoke serializer dereferences current trigger after its getter')
+                    row.append((trigger.identity[2] >> shift) & 15)
+                    self._write_parameter(dispatch, name, row[-1], source, operation='append')
+                rows.append(tuple(row))
             else:
+                self._write_parameter(dispatch, 'SceneKeySelector', int(template == 25),
+                                      '0xccba6d' if template == 25 else '0xccbb97', operation='index', index=key)
                 indicators.append(owner.indicator.value - 1)
-                rows.append(tuple(value & 127 for value in owner.stages))
+                self._write_parameter(dispatch, 'IndicatorBlockAssignment', indicators[-1],
+                                      '0xccbbce', operation='index', index=key)
+                row = []
+                for index, name in enumerate(('JPCommand', 'SRCommand', 'LPCommand', 'LRCommand')):
+                    value = owner.stages[index]
+                    if value is None:
+                        raise SensorError('Native ordinary serializer requires its current microfunction object')
+                    row.append(value & 127)
+                    self._write_parameter(dispatch, name, row[-1], 'CoreNeo.AttribAppend.' + name, operation='append')
+                rows.append(tuple(row))
         result.update({name: [row[index] for row in rows] for index, name in enumerate(
                   ('JPCommand', 'SRCommand', 'LPCommand', 'LRCommand'))})
         result.update(SceneKeySelector=selectors, IndicatorBlockAssignment=indicators)
@@ -1415,6 +1940,7 @@ class SENLLAKeyEvents:
         # marshalling. It deliberately reads the current post-callback mask.
         result['SecondApplicationBlocks'] = [sum(1 << index for index, block in enumerate(self.blocks)
                                                 if block.secondary.value)]
+        self._write_parameter(dispatch, 'SecondApplicationBlocks', result['SecondApplicationBlocks'], '0xced7c7')
         return result
 
     def block_values(self):
@@ -1473,4 +1999,5 @@ class SENLLAKeyEvents:
 
 
 __all__ = ['BlockValues', 'KeyEventContext', 'KeyControlRequest', 'SENLLAKeyEvents',
-           'SourceControlRequired', 'SourceLookupRequest', 'SourceObjectRequired']
+           'SourceControlRequired', 'SourceLookupRequest', 'SourceLevelRequest',
+           'ParameterWriteRequest', 'SourceObjectRequired']

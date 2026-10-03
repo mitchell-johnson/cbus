@@ -32,6 +32,31 @@ def snapshot(**changes):
 
 
 class SENLLABlockValuesTests(unittest.TestCase):
+    def test_current_request_generator_captures_mask_but_rereads_later_rows(self):
+        plan = block_load_plan(snapshot())
+        cache = plan.snapshot.parameters()
+        reads = []
+        def read(name, source):
+            reads.append((name, source))
+            return cache[name]
+        generator = plan.current_requests(read)
+        first = next(generator)
+        self.assertTrue(first.value)
+        cache['SecondApplicationBlocks'][0] = 0
+        rest = []
+        for request in generator:
+            rest.append(request)
+            if request.block == 0 and request.field == 'store1':
+                cache['LightLevelStore2'][0] = 99
+            if request.block == 0 and request.field == 'group':
+                cache['LightLevelStore1'][1] = 77
+        self.assertEqual([x.value for x in rest[:7]],
+                         [False, True, False, False, True, False, True])
+        self.assertEqual(next(x.value for x in rest if x.block == 0 and x.field == 'store2'), 99)
+        self.assertEqual(next(x.value for x in rest if x.block == 1 and x.field == 'store1'), 77)
+        self.assertEqual(reads.count(('SecondApplicationBlocks', '0xcecfb3')), 1)
+        self.assertEqual(reads.count(('GroupAddress', '0xcc7618')), 8)
+        self.assertEqual(plan.snapshot.expected['LightLevelStore1'][1], 2)
     def test_all_secondary_bits_precede_index_and_every_block_row(self):
         plan = block_load_plan(snapshot())
         requests = plan.requests()
@@ -172,7 +197,8 @@ class SENLLABlockValuesTests(unittest.TestCase):
         for value in invalid_indices:
             with self.subTest(index=value), self.assertRaises(SensorError):
                 rebuild_light_levels(value, 10, good)
-        for count in (True, False, None, -1, 0, 8, 9, 11, 10.0, '10'):
+        self.assertEqual(rebuild_light_levels(0, 11, good), tuple(good) + (255,) * 3)
+        for count in (True, False, None, -1, 0, 8, 9, 264, 10.0, '10'):
             with self.subTest(count=count), self.assertRaises(SensorError):
                 rebuild_light_levels(0, count, good)
         for levels in (None, '', [0] * 7, [0] * 9, [True] + [0] * 7,

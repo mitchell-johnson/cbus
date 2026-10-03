@@ -7,8 +7,8 @@ ordered block setters; it neither programs a unit nor completes a 93-field save.
 from dataclasses import dataclass
 from copy import deepcopy
 
-from .senlla_block_values import block_load_plan, TIMER_EXPIRY_TYPES
-from .senlla_inputs import SENLLAInputSnapshot
+from .senlla_block_values import block_load_plan, current_light_levels, TIMER_EXPIRY_TYPES
+from .senlla_inputs import SENLLAInputSnapshot, SCHEMA, _value
 from .senlla_key_events import SENLLAKeyEvents, _SUBSET
 from .senlla_lifecycle import IntegerAttribute
 from .sensors import SensorError
@@ -51,7 +51,8 @@ engine only after the lookup/creation/storage route finishes. inherited_dispatch
 branches at their pinned positions. Both contracts are internal owner boundaries,
 not JSON declarations or simulated proof of native backend persistence.
 """
-    def __init__(self, snapshot, *, source_dispatch=None, inherited_dispatch=None):
+    def __init__(self, snapshot, *, source_dispatch=None, inherited_dispatch=None,
+                 parameter_read=None):
         if not isinstance(snapshot, SENLLAInputSnapshot):
             raise SensorError('Fresh prekey loading requires the complete guarded SENLLA snapshot')
         self.raw = SENLLAInputSnapshot(snapshot.identity, snapshot.expected)
@@ -62,7 +63,10 @@ not JSON declarations or simulated proof of native backend persistence.
             raise SensorError('Source getter dispatcher must be callable')
         if inherited_dispatch is not None and not callable(inherited_dispatch):
             raise SensorError('Inherited owner dispatcher must be callable')
+        if parameter_read is not None and not callable(parameter_read):
+            raise SensorError('Current prekey parameter reader must be callable')
         self.inherited_dispatch = inherited_dispatch
+        self.parameter_read = parameter_read
         self.plan = block_load_plan(self.raw)
         self.initialized = False  # Unit.Init field194; independent of state1.
         self.saving = False       # Native Unit fielddf, not the update counter.
@@ -76,6 +80,17 @@ not JSON declarations or simulated proof of native backend persistence.
         self.status_report_interval = IntegerAttribute(
             self.runtime.unit_manager, 0, name='unit.status_report_interval',
             trace=self.runtime._trace)
+
+    def _read(self, name, source):
+        value = (self.parameter_read(name, source, self.runtime)
+                 if self.parameter_read is not None else self.raw.expected[name])
+        if SCHEMA[name][0] != 'sixbit' and (not isinstance(value, (list, tuple))
+                or any(type(item) is not int for item in value)):
+            raise SensorError('Current prekey PP requires exact unsigned integers: ' + name)
+        current = current_light_levels(value) if name == 'LightLevel' else _value(name, value)
+        self.runtime._event('prekey_parameter_read', field=name, source=source,
+                            value=deepcopy(current))
+        return current
 
     def _owner(self, request):
         self.requests.append(request.as_dict())
@@ -184,7 +199,9 @@ not JSON declarations or simulated proof of native backend persistence.
         block = engine.blocks[request.block]
         if request.operation == 'get_indexed_level_and_set':
             current_index = self.light_index
-            value = self.plan.level_for_block(request.block, light_index=current_index)
+            levels = self._read('LightLevel', '0xcc8230')
+            index = current_index + request.block
+            value = levels[index] if index < len(levels) else 0
             engine._event('prekey_current_indexed_level', block=request.block,
                           light_index=current_index, value=value, source=request.source)
             block.light_level.set(value)
@@ -201,8 +218,14 @@ not JSON declarations or simulated proof of native backend persistence.
             if current.identity not in TIMER_EXPIRY_TYPES:
                 block.expiry.set(engine.micro[15])
         elif request.operation == 'get_group':
-            app = (engine.application_object(True) if block.secondary.value
-                   else block.application.value)
+            if block.secondary.value:
+                app = engine.application_object(True)
+                if app is not None:
+                    app = engine.application_object(True)
+            else:
+                app = block.application.value
+                if app is None:
+                    raise SensorError('Native primary block group getter dereferences nil application')
             group = (None if app is None else engine.get_source_group(
                 app, request.value, create=True, source=request.source))
             engine._event('prekey_current_group_getter', block=request.block,
@@ -234,7 +257,15 @@ the runtime; no partial projection or automatic replay is admitted.
                 engine.unit.begin_update()
                 try:
                     for secondary, source in ((False, '0xcbe6a1'), (True, '0xcbe6bb')):
-                        raw = self.raw.expected['Application'][int(secondary)]
+                        if not secondary:
+                            # Native primary getter tests the string, then
+                            # reads it again for parsing. Guarded input is
+                            # nonempty; the empty-default route is excluded.
+                            self._read('Application', '0xcb80bc')
+                        raw = self._read('Application',
+                                         '0xcb830b' if secondary else '0xcb80f1')[int(secondary)]
+                        if not (48 <= raw <= 95 or secondary and raw == 255):
+                            raise SensorError('Current application is outside the source Lighting profile')
                         app = engine.get_source_application(raw, create=True, source=source)
                         attribute = engine.secondary_application if secondary else engine.primary_application
                         attribute.set(app)
@@ -247,14 +278,14 @@ the runtime; no partial projection or automatic replay is admitted.
                 primary = engine.application_object()
                 if primary is None:
                     raise SensorError('Native raw Area getter dereferences a nil primary application')
-                group = engine.get_source_group(primary, self.raw.expected['AreaGroupAddress'][0],
+                group = engine.get_source_group(primary, self._read('AreaGroupAddress', '0xcc6717')[0],
                                                 create=True, source='0xcc66de')
                 engine.area.set(group)
-                self.status_report_interval.set(self.raw.expected['StatusReportInterval'][0])
+                self.status_report_interval.set(self._read('StatusReportInterval', '0xcc674a')[0])
                 self._owner(PrekeyOwnerRequest('core_scalars_before_blocks', '0xcc861f',
                     ('DebounceTime', 'LongPressTime', 'EEPROMLevelStore', 'EEPROMCheckSumActive',
                      'EEPROMChecksumAlarm', 'RampRate', 'IRBank', 'DisableIR', 'DisableIRNEC')))
-                for request in self.plan.requests():
+                for request in self.plan.current_requests(self._read):
                     self._block_request(request)
                 engine.handoff_to_key_blocks()
                 handed_off = True
