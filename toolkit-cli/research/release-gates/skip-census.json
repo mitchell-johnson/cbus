@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 725,
-    "modules_without_skip_sites": 408,
-    "modules_with_skip_sites": 317,
+    "test_modules": 731,
+    "modules_without_skip_sites": 413,
+    "modules_with_skip_sites": 318,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 39,
+      "unclassified": 40,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 157
+      "none": 158
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -6290,6 +6290,41 @@
           "tests": [
             "NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
             "OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_time_date_control_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TIME_DATE_STATIC_ROOT')",
+          "reason": "Requires explicitly configured pinned original static bytes; no instruction execution",
+          "environment": [
+            "CBUS_TIME_DATE_STATIC_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes"
           ]
         }
       ]

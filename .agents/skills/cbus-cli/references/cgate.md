@@ -2272,9 +2272,17 @@ Its startup and atomic commit paths stream through independent byte limits.
 whole-repository rollback snapshots. Inspect `repository_max_bytes`,
 `repository_storage` and `repository_snapshot_free_reads`; this is a bounded
 cmqttd profile, not a native capacity claim. Sixteen simultaneous large backups
-have complete restart/readback/MQTT evidence on owned fixtures. Mutation clones,
-post-rename directory-sync uncertainty and original capacity comparison remain
-open. Read `docs/cgate-repository-capacity.md`; never replay an uncertain save.
+have complete restart/readback/MQTT evidence on owned fixtures. Mutation clones
+and original capacity comparison remain open. A post-rename directory-sync
+failure now retains the replaced durable model and returns the exact local
+`500 Database commit applied; durability unconfirmed; do not retry` reply.
+Inspect `repository_commit_uncertainty`. The Python transport closes on that
+exact reply; parent/SceneManager recovery suppresses inverse writes even on a
+still-connected supplied client. Ordinary complete 500 errors keep their
+existing behavior. Reconnect explicitly for read-only inspection; no automatic
+retry, restore, project CLOSE/LOAD or power-loss durability claim is permitted.
+All 19 save callers and eight deterministic fault tests are distinct from broad
+OS or hardware acceptance. Read `docs/cgate-repository-capacity.md`.
 
 
 - Input line: 1 MiB maximum.

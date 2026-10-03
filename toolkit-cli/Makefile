@@ -339,6 +339,20 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[timer-injected-state-mock]' \
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[room-courtesy-injected-state-mock]' \
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-mock]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
@@ -641,6 +655,20 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[timer-injected-state-daemon]' \
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_preconnection_refusals[room-courtesy-injected-state-daemon]' \
 		'tests/test_cgate_edlt_dual_key_controls_interop.py::test_public_dual_key_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-daemon]' \
+		'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \
