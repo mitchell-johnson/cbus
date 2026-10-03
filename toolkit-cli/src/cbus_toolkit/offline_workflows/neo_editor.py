@@ -50,6 +50,25 @@ def _thaw(value):
     return value
 
 
+def _same_typed_value(left, right):
+    """Compare frozen facts without Python's bool/int equality coercion."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, Mapping):
+        if len(left) != len(right):
+            return False
+        left_items, right_items = sorted(left.items()), sorted(right.items())
+        return all(_same_typed_value(left_key, right_key)
+                   and _same_typed_value(left_value, right_value)
+                   for (left_key, left_value), (right_key, right_value)
+                   in zip(left_items, right_items))
+    if isinstance(left, tuple):
+        return len(left) == len(right) and all(
+            _same_typed_value(left_item, right_item)
+            for left_item, right_item in zip(left, right))
+    return left == right
+
+
 def _frozen_spec(spec):
     if not isinstance(spec, UnitSpec):
         raise NeoEditorError("Supply an explicit decoded UnitSpec")
@@ -89,13 +108,15 @@ class NeoProfile:
         return {name: getattr(self, name) for name in self.__dataclass_fields__}
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class NeoSnapshot:
     """Exact supplied PP/graph data plus known logical memory and group facts.
 
     Graph bytes and group facts are retained caller inputs. This model does not
     parse a native project, derive an inventory, or establish their provenance.
     Sparse memory omissions stay unknown and are never filled by an edit.
+    Equality preserves scalar types recursively: booleans and integers
+    remain distinct baseline facts, including inside opaque PP values.
     """
 
     values: Mapping[str, Any]
@@ -123,6 +144,14 @@ class NeoSnapshot:
         if len(set(groups)) != len(groups):
             raise NeoEditorError("Duplicate caller group facts are unsupported")
         object.__setattr__(self, "existing_groups", tuple(groups))
+
+    def __eq__(self, other):
+        if type(other) is not type(self):
+            return NotImplemented
+        return (_same_typed_value(self.values, other.values)
+                and _same_typed_value(self.memory.data, other.memory.data)
+                and _same_typed_value(self.graph_bytes, other.graph_bytes)
+                and _same_typed_value(self.existing_groups, other.existing_groups))
 
     def as_dict(self):
         return {"values": _thaw(self.values), "memory": self.memory.as_dict(),
@@ -169,6 +198,9 @@ class NeoEditor:
         spec = _frozen_spec(spec)
         if spec.filename != "KEYM4.xml" or spec.unit_type != profile.unit_type:
             raise NeoEditorError("This editor requires the exact KEYM4.xml profile")
+        if set(spec.parameters) != set(LAYOUTS):
+            raise NeoEditorError("Only the exact synthetic Neo parameter layouts are admitted; "
+                                 "extra or missing declared parameters are unsupported")
         keys = ExtendedKeys(spec)
         if not spec.supports_version(profile.firmware):
             raise NeoEditorError("Specification does not admit the pinned firmware")
@@ -305,7 +337,8 @@ class NeoEditor:
 
     def as_dict(self):
         changes = {name: _thaw(value) for name, value in self.working.values.items()
-                   if value != self.applied.values.get(name)}
+                   if name not in self.applied.values
+                   or not _same_typed_value(value, self.applied.values[name])}
         return {"format": "cbus-offline-neo-editor-v1", "policy": POLICY,
                 "original_terminal_semantics": ORIGINAL_TERMINAL_SEMANTICS,
                 "profile": self.profile.as_dict(), "is_open": self.is_open, "dirty": self.dirty,

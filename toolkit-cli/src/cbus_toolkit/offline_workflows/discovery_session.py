@@ -180,6 +180,8 @@ class Row:
     attempt: int = 0
     tokens: tuple[OperationToken, ...] = ()
     terminal: Outcome | None = None
+    # Stop belongs to a dispatched attempt, even if Retry later resumes another row.
+    stopped_tokens: tuple[OperationToken, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.spec, RowSpec):
@@ -193,8 +195,18 @@ class Row:
         if any(not isinstance(token, OperationToken) or token.attempt != index + 1
                for index, token in enumerate(self.tokens)):
             raise ValueError("Row token attempts must be sequential")
+        if (type(self.stopped_tokens) is not tuple or len(self.stopped_tokens) > len(self.tokens)
+                or any(not isinstance(token, OperationToken) or token not in self.tokens
+                       for token in self.stopped_tokens)
+                or len(set(self.stopped_tokens)) != len(self.stopped_tokens)):
+            raise ValueError("Stopped attempts require immutable unique tokens from this row's bounded history")
         if self.terminal is not None and not isinstance(self.terminal, Outcome):
             raise ValueError("Row terminal observation must be immutable")
+        latest_stopped = bool(self.tokens) and self.tokens[-1] in self.stopped_tokens
+        if self.phase == "unknown_after_dispatch" and self.terminal is None and not latest_stopped:
+            raise ValueError("Unknown opening without a terminal receipt must retain its latest stopped attempt")
+        if latest_stopped and (self.phase != "unknown_after_dispatch" or self.terminal is not None):
+            raise ValueError("A stopped latest attempt must remain unknown without a terminal receipt")
         if self.phase in ("collecting", "open_dispatched") and not self.tokens:
             raise ValueError("Dispatched rows require a captured token")
 
@@ -252,6 +264,8 @@ class DiscoveryState:
             raise ValueError("Opening rows require project and qualified object identities")
         if self.paused and self.surface != Surface.CNI_SCAN:
             raise ValueError("Only the CNI-project surface admits local Pause")
+        if self.surface != Surface.OPEN_NETWORKS and any(row.stopped_tokens for row in self.rows):
+            raise ValueError("Stopped opening attempts belong only to the OpenNetworks surface")
         for row in self.rows:
             for token in row.tokens:
                 if (token.surface != self.surface or token.row_id != row.spec.row_id
@@ -439,7 +453,7 @@ def _row_callback(state: DiscoveryState, callback: Callback) -> Transition:
         reason = reason or "stale_attempt"
     if state.closed:
         reason = reason or "form_closed"
-    if state.stopped and row.phase == "unknown_after_dispatch":
+    if callback.token in row.stopped_tokens:
         reason = reason or "stopped_after_dispatch"
     if row.phase in ("interrupted", "cancelled_before_dispatch"):
         reason = reason or "cancelled_result"
@@ -480,7 +494,10 @@ def _discovery_dispatch(state: DiscoveryState, action: DiscoveryAction) -> Trans
 
 def _stop_rows(state: DiscoveryState, *, close: bool = False, opening: bool = False) -> DiscoveryState:
     rows = tuple(replace(row, phase="cancelled_before_dispatch") if row.phase == "queued"
-                 else replace(row, phase="unknown_after_dispatch" if opening else "interrupted")
+                 else replace(row, phase="unknown_after_dispatch" if opening else "interrupted",
+                              stopped_tokens=(row.stopped_tokens + (row.tokens[-1],)
+                                              if opening and row.tokens[-1] not in row.stopped_tokens
+                                              else row.stopped_tokens))
                  if row.phase in ("collecting", "open_dispatched") else row for row in state.rows)
     context = replace(state.context, form_generation=state.context.form_generation + 1) if close else state.context
     return replace(state, rows=rows, stopped=True, closed=close or state.closed, context=context)

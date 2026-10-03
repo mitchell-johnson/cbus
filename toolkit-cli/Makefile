@@ -714,7 +714,11 @@ check-wheel:
 	case "$$package_path" in "$$source_root"/*) echo "wheel gate imported source tree: $$package_path" >&2; exit 1;; esac; \
 	case "$$package_path" in */site-packages/cbus_toolkit/__init__.py) :;; \
 		*) echo "wheel gate did not import installed package: $$package_path" >&2; exit 1;; esac; \
-	cd "$$tmp"; PYTHONPATH="$$project:$$project/tests" "$$tmp/venv/bin/python" -m pytest \
+	installed_target=$$(dirname "$$(dirname "$$package_path")"); \
+	installed_console="$$tmp/venv/bin/cbus-toolkit"; test -x "$$installed_console"; \
+	cd "$$tmp"; CBUS_OFFLINE_INSTALLED_TARGET="$$installed_target" \
+		CBUS_OFFLINE_INSTALLED_CONSOLE="$$installed_console" \
+		PYTHONPATH="$$project:$$project/tests" "$$tmp/venv/bin/python" -m pytest \
 		"$$project/tests" -q -p no:cacheprovider $(PYTEST_EXTRA)
 
 compile:
