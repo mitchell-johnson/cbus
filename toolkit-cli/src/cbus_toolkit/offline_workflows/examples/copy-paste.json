@@ -1,0 +1,44 @@
+{
+  "format": "cbus-offline-copy-paste-input-v1",
+  "source": {
+    "owner": {
+      "endpoint": "offline:review-fixture",
+      "repository": "synthetic-repository",
+      "project": "DEMO"
+    },
+    "selector": "//DEMO/0254/56/1",
+    "oid": "group-1",
+    "kind": "Group",
+    "snapshot_hex": "3c212d2d73796e7468657469632d2d3e3c47726f7570206f69643d2267726f75702d31223e3c416464726573733e313c2f416464726573733e3c5461674e616d653e4f726967696e616c3c2f5461674e616d653e3c556e6b6e6f776e20613d226669727374222f3e3c556e6b6e6f776e20613d227365636f6e64222f3e3c2f47726f75703e"
+  },
+  "profile": {
+    "mode": "proposed-offline-draft",
+    "source_kind": "Group"
+  },
+  "operations": [
+    {
+      "action": "select-target",
+      "target": {
+        "owner": {
+          "endpoint": "offline:review-fixture",
+          "repository": "synthetic-repository",
+          "project": "DEMO"
+        },
+        "selector": "//DEMO/0254/56",
+        "oid": "application-1",
+        "kind": "Application"
+      }
+    },
+    {
+      "action": "paste",
+      "request": {
+        "address": "0042",
+        "name": "Review draft",
+        "source_sha256": "f243861878b8068fa237031a9fdb1d8fa95e5bfa35b8a2390b883a812691a0b6",
+        "address_conflict": false,
+        "name_conflict": false,
+        "conflict_choice": "refuse"
+      }
+    }
+  ]
+}
