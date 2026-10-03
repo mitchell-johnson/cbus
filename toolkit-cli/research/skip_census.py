@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import argparse
 import ast
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import json
 from pathlib import Path
 import re
@@ -92,7 +92,7 @@ ENV_CATEGORIES = [
     (re.compile(r"CBUS_(HARDWARE_ACCEPTANCE|CNI_ENDPOINT)$"), "hardware"),
     (re.compile(r"CBUS_(DFU_DLL|FIRMWARE_UPDATER|FIRMWARE_ORACLE_BACKEND)$"), "vendor_firmware"),
     (re.compile(r"CBUS_(CGATE_MOCK_BIN|CMQTTD_BIN|SIMULATOR_BIN)$"), "rust_binaries"),
-    (re.compile(r"CBUS_TOOLKIT_WHEEL$"), "installed_wheel"),
+    (re.compile(r"CBUS_(TOOLKIT_WHEEL|OFFLINE_INSTALLED_TARGET|OFFLINE_INSTALLED_CONSOLE)$"), "installed_wheel"),
     (re.compile(r"CBUS_EDLT_.*_METADATA_|_ACCEPTANCE$|_CASES$|_EVIDENCE$|_OUTPUT$|_PROFILES$"),
      "private_evidence_input"),
 ]
@@ -423,6 +423,8 @@ class Site:
     local: dict = field(default_factory=dict)
     # Environment names read by the enclosing body, for in-body skip calls.
     context: tuple[str, ...] = ()
+    # Imported fixture gates are evaluated in their defining module.
+    owner: "ModuleInfo | None" = None
 
 
 @dataclass
@@ -438,18 +440,31 @@ class ModuleInfo:
 _MODULES: dict[str, ModuleInfo] = {}
 
 
-def _test_module(name: str) -> ModuleInfo | None:
-    """Bindings of another test module imported by name (no execution)."""
+def test_modules() -> list[Path]:
+    """Discover nested test modules without importing or executing them."""
+    return sorted(path for path in TESTS.rglob("test_*.py") if path.is_file())
+
+
+def _test_module(name: str, requester: ModuleInfo | None = None) -> ModuleInfo | None:
+    """Resolve explicit test imports, including bare sibling pytest imports."""
     stem = name.removeprefix("tests.")
-    path = TESTS / (stem + ".py")
-    if not stem.startswith("test_") or "." in stem or not path.is_file():
+    pieces = stem.split(".")
+    if not pieces[-1].startswith("test_") or not all(part.isidentifier() for part in pieces):
         return None
-    relative = path.relative_to(ROOT).as_posix()
-    if relative not in _MODULES:
-        module = ModuleInfo(relative, ast.parse(path.read_text(encoding="utf-8"), filename=relative))
-        _MODULES[relative] = module
+    relative = Path(*pieces).with_suffix(".py")
+    candidates = []
+    if len(pieces) == 1 and requester is not None:
+        candidates.append((ROOT / requester.path).parent / relative)
+    candidates.append(TESTS / relative)
+    path = next((candidate for candidate in candidates if candidate.is_file()), None)
+    if path is None:
+        return None
+    key = path.relative_to(ROOT).as_posix()
+    if key not in _MODULES:
+        module = ModuleInfo(key, ast.parse(path.read_text(encoding="utf-8"), filename=key))
+        _MODULES[key] = module
         _bind(module)
-    return _MODULES[relative]
+    return _MODULES[key]
 
 
 def _bind(module: ModuleInfo) -> None:
@@ -463,13 +478,13 @@ def _bind(module: ModuleInfo) -> None:
         elif isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
             module.functions[statement.name] = statement
         elif isinstance(statement, ast.ImportFrom) and statement.module and statement.level == 0:
-            other = _test_module(statement.module)
+            other = _test_module(statement.module, module)
             if other is not None:
                 for alias in statement.names:
                     module.imported[alias.asname or alias.name] = (other, alias.name)
         elif isinstance(statement, ast.Import):
             for alias in statement.names:
-                other = _test_module(alias.name)
+                other = _test_module(alias.name, module)
                 if other is not None and alias.asname:
                     module.aliases[alias.asname] = other
 
@@ -603,6 +618,110 @@ def _is_test_class(node: ast.ClassDef, classes: dict[str, ast.ClassDef]) -> bool
                for base in node.bases)
 
 
+def _fixture_options(function: ast.FunctionDef) -> tuple[str, bool] | None:
+    """Recognize explicit module fixtures; dynamic options remain conservative."""
+    for decorator in function.decorator_list:
+        call = decorator if isinstance(decorator, ast.Call) else None
+        target = call.func if call else decorator
+        if ast.unparse(target) not in ("pytest.fixture", "fixture"):
+            continue
+        name, autouse = function.name, False
+        for keyword in ([] if call is None else call.keywords):
+            if keyword.arg == "name" and isinstance(keyword.value, ast.Constant) \
+                    and isinstance(keyword.value.value, str):
+                name = keyword.value.value
+            elif keyword.arg == "autouse":
+                # Nonliteral autouse is treated as enabled, never silently omitted.
+                autouse = not (isinstance(keyword.value, ast.Constant) and keyword.value.value is False)
+        return name, autouse
+    return None
+
+
+def _direct_parameters(function: ast.FunctionDef) -> set[str]:
+    """Literal direct pytest parameters override fixtures of the same name."""
+    names: set[str] = set()
+    for decorator in function.decorator_list:
+        if not isinstance(decorator, ast.Call) or ast.unparse(decorator.func) != "pytest.mark.parametrize" \
+                or not decorator.args:
+            continue
+        argument = decorator.args[0]
+        declared = (argument.value.split(",") if isinstance(argument, ast.Constant)
+                    and isinstance(argument.value, str) else
+                    [item.value for item in argument.elts if isinstance(item, ast.Constant)
+                     and isinstance(item.value, str)] if isinstance(argument, (ast.List, ast.Tuple)) else [])
+        indirect = next((keyword.value for keyword in decorator.keywords if keyword.arg == "indirect"), None)
+        if indirect is None or (isinstance(indirect, ast.Constant) and indirect.value is False):
+            names.update(name.strip() for name in declared)
+        elif isinstance(indirect, (ast.List, ast.Tuple)) and all(
+                isinstance(item, ast.Constant) and isinstance(item.value, str) for item in indirect.elts):
+            indirect_names = {item.value for item in indirect.elts}
+            names.update(name.strip() for name in declared if name.strip() not in indirect_names)
+    return names
+
+
+def _fixture_definitions(module: ModuleInfo) -> dict[str, tuple[ModuleInfo, ast.FunctionDef, bool]]:
+    """Fixtures exposed in the consuming module, with their source owner.
+
+    Dependencies are resolved in this namespace, matching explicit pytest module
+    registration. Hidden fixtures in an imported function's source module do
+    not become consumer fixtures merely because its body names them.
+    """
+    definitions = {}
+    for function in module.functions.values():
+        options = _fixture_options(function)
+        if options is not None:
+            definitions[options[0]] = (module, function, options[1])
+    for exposed, (owner, name) in module.imported.items():
+        visited = set()
+        while name not in owner.functions and name in owner.imported and (owner.path, name) not in visited:
+            visited.add((owner.path, name))
+            owner, name = owner.imported[name]
+        function = owner.functions.get(name)
+        if function is None or (options := _fixture_options(function)) is None:
+            continue
+        explicit_name = any(isinstance(decorator, ast.Call)
+            and ast.unparse(decorator.func) in ("pytest.fixture", "fixture")
+            and any(keyword.arg == "name" and isinstance(keyword.value, ast.Constant)
+                    and isinstance(keyword.value.value, str) for keyword in decorator.keywords)
+            for decorator in function.decorator_list)
+        registered_name = options[0] if explicit_name else exposed
+        # Consumer-local fixtures retain precedence over imported alternatives.
+        definitions.setdefault(registered_name, (owner, function, options[1]))
+    return definitions
+
+
+def _fixture_sites(module: ModuleInfo, function: ast.FunctionDef) -> list[Site]:
+    """Attach requested/autouse fixture gates from the consuming namespace.
+
+    This does not claim a complete pytest plugin/conftest dependency model.
+    General non-fixture helper classification is retained separately.
+    """
+    direct = _direct_parameters(function)
+    definitions = _fixture_definitions(module)
+    pending = [arg.arg for arg in (*function.args.posonlyargs,
+                                  *function.args.args, *function.args.kwonlyargs)]
+    for decorator in function.decorator_list:
+        if isinstance(decorator, ast.Call) and ast.unparse(decorator.func) == "pytest.mark.usefixtures":
+            pending.extend(arg.value for arg in decorator.args
+                           if isinstance(arg, ast.Constant) and isinstance(arg.value, str))
+    pending.extend(name for name, (_, _, autouse) in definitions.items() if autouse)
+    result, seen = [], set()
+    while pending:
+        name = pending.pop()
+        if name in direct or name in seen:
+            continue
+        seen.add(name)
+        definition = definitions.get(name)
+        if definition is None:
+            continue
+        owner, fixture, _ = definition
+        result.extend(replace(site, owner=owner) for site in
+                      _body_sites(fixture, owner.path+"::"+fixture.name, "fixture."+fixture.name))
+        pending.extend(arg.arg for arg in (*fixture.args.posonlyargs,
+                                          *fixture.args.args, *fixture.args.kwonlyargs))
+    return result
+
+
 def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[str]]:
     relative = path.relative_to(ROOT).as_posix()
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=relative)
@@ -628,13 +747,14 @@ def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[
     for name, function in module.functions.items():
         if name == "setUpModule":
             module_sites.extend(_body_sites(function, relative, "setUpModule"))
-        elif not name.startswith("test"):
+        elif not name.startswith("test") and _fixture_options(function) is None:
             helper_sites.extend(_body_sites(function, relative, "helper." + name))
     for name, function in module.functions.items():
         if name.startswith("test"):
             node = f"{relative}::{name}"
             nodes[node] = (module_sites + _decorator_sites(function.decorator_list, node)
-                           + _body_sites(function, node, "body") + helper_sites)
+                           + _body_sites(function, node, "body") + helper_sites
+                           + _fixture_sites(module, function))
 
     def class_sites(cls: ast.ClassDef, scope: str, seen=()) -> list[Site]:
         sites = []
@@ -668,7 +788,8 @@ def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[
         shared = module_sites + helper_sites + class_sites(cls, scope)
         for method_name, method in methods(cls).items():
             node = f"{scope}::{method_name}"
-            nodes[node] = shared + _decorator_sites(method.decorator_list, node) + _body_sites(method, node, "body")
+            nodes[node] = (shared + _decorator_sites(method.decorator_list, node)
+                           + _body_sites(method, node, "body") + _fixture_sites(module, method))
     return module, nodes, sorted(classes)
 
 
@@ -755,7 +876,7 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
     errors: list[str] = []
     all_nodes: list[str] = []
     ungated_modules = 0
-    for path in sorted(TESTS.glob("test_*.py")):
+    for path in test_modules():
         module, nodes, _ = analyse_module(path)
         all_nodes.extend(nodes)
         site_records: dict[tuple, dict] = {}
@@ -765,9 +886,10 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
             blocking: set[str] = set()
             native_categories: set[str] = set()
             for site in sites:
-                names, categories = _references(module, site)
-                native = _outcome(module, site, NATIVE_ENVIRONMENT)
-                offline = _outcome(module, site, {})
+                owner = site.owner or module
+                names, categories = _references(owner, site)
+                native = _outcome(owner, site, NATIVE_ENVIRONMENT)
+                offline = _outcome(owner, site, {})
                 key = (site.scope, site.kind, _source(site.condition), site.reason)
                 record = site_records.setdefault(key, {
                     "scope": site.scope, "kind": site.kind,
@@ -871,7 +993,7 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
         },
         "categories": CATEGORIES,
         "summary": {
-            "test_modules": len(list(TESTS.glob("test_*.py"))),
+            "test_modules": len(test_modules()),
             "modules_without_skip_sites": ungated_modules,
             "modules_with_skip_sites": len(modules),
             "modules_by_category": dict(sorted(by_category.items())),
@@ -896,7 +1018,7 @@ def suggested_selection(required: list[str]) -> list[str]:
     for module, entry in census["modules"].items():
         for group in entry.get("not_native", []):
             blocked.update(f"{module}::{test}" for test in group["tests"])
-    for path in sorted(TESTS.glob("test_*.py")):
+    for path in test_modules():
         _, nodes, _ = analyse_module(path)
         all_nodes[path.relative_to(ROOT).as_posix()] = list(nodes)
     excluded = set(NATIVE_EXCLUSIONS)

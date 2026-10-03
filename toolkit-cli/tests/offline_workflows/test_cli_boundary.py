@@ -7,7 +7,6 @@ from pathlib import Path
 import socket
 import subprocess
 import sys
-import tempfile
 
 import pytest
 
@@ -116,11 +115,13 @@ def test_fifo_input_refuses_promptly_without_waiting_for_a_writer(tmp_path):
     assert_json_error(run_cli(input_args(source), cwd=tmp_path, timeout=3), 4)
 
 
-def test_unix_socket_input_refuses_as_a_special_file(tmp_path):
-    with tempfile.TemporaryDirectory(prefix="cb-offline-", dir="/private/tmp") as folder:
-        source = Path(folder) / "i.sock"
+def test_unix_socket_input_refuses_as_a_special_file(tmp_path, monkeypatch):
+    source = tmp_path / "i.sock"
+    # A relative socket name stays bounded even under a long canonical fixture root.
+    with monkeypatch.context() as scoped:
+        scoped.chdir(tmp_path)
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as special:
-            special.bind(str(source))
+            special.bind(source.name)
             assert_json_error(run_cli(input_args(source), cwd=tmp_path), 4)
 
 
