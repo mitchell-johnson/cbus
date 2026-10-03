@@ -3,8 +3,55 @@
 `cbus_toolkit.firmware_ncc.evaluate_ncc_post_check(expected_version, exchanges)`
 evaluates the serial branch of the original eDLT firmware updater against an
 already supplied transcript. It is a callable Python helper. It never opens a
-port, sends a command, sleeps, restarts a device or writes firmware. No CLI or
-physical executor is introduced.
+port, sends a command, sleeps, restarts a device or writes firmware. The
+`firmware ncc-transcript` command exposes the same offline model; no physical
+executor is introduced.
+
+## CLI input and exit status
+
+```sh
+cbus-toolkit firmware ncc-transcript --expected-version 1.7.0
+cbus-toolkit firmware ncc-transcript transcript.json --expected-version 1.7.0
+cbus-toolkit --compact firmware ncc-transcript transcript.json --expected-version 1.7.0
+```
+
+Omit the file to evaluate an empty prefix and report the first planned `id`
+step. A file must contain exactly this versioned JSON envelope:
+
+```json
+{
+  "format": "cbus-edlt-ncc-transcript-input-v1",
+  "exchanges": []
+}
+```
+
+Each exchange accepts only `command`, optional `response_hex` and optional
+`outcome`. Encode the supplied response bytes with `bytes.hex()`; hexadecimal
+byte pairs may use either case but cannot contain whitespace. For example,
+`{"command":"id","outcome":"timeout","response_hex":""}` supplies a caller's
+timeout outcome without response bytes. The field `response` from the Python
+API is not admitted in JSON. Missing `response_hex` means empty bytes and a
+missing outcome means `response`; `rs` therefore needs an explicit `write-ok`,
+`timeout` or `io-error` outcome and an empty response. Read timeouts and I/O
+errors can retain partial response bytes, which are counted and hashed before
+the model stops without parsing them.
+
+The JSON file is limited to 1 MiB and must resolve to a regular file. Symlinks
+to regular files are admitted; directories, FIFOs and devices are refused.
+JSON must be UTF-8 without a BOM, with unique keys and finite numbers. The
+envelope requires both `format` and `exchanges`, and the exchange list admits
+at most six rows and 65,536 decoded bytes per response. Unknown fields,
+unsupported command/outcome values, malformed hex and wrong command order are
+refused. Input errors use fixed messages without echoing transcript values or
+paths. Expected firmware versions must be 1–128 printable ASCII characters;
+their exact string equality is distinct from the NCC version comparison.
+
+Valid evaluations print the unchanged `cbus-edlt-ncc-transcript-v1` JSON receipt
+to stdout. Exit status is `0` only when `transcript_checks_passed` is true.
+An incomplete prefix, native failure or native success with verification gaps
+prints its receipt and exits `1`; input errors instead print a structured error
+to stderr and exit `1`. CLI argument errors use argparse's exit status `2`.
+These statuses describe the supplied-data checks and never physical acceptance.
 
 Each exchange is a dictionary with `command` (`id`, `nv`, `nu` or `rs`),
 `response` (bytes, default empty), and `outcome` (default `response`). Reads also
