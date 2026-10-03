@@ -2851,9 +2851,26 @@ impl Server {
             );
         }
         let upper = cmd.body.to_ascii_uppercase();
-        let words: Vec<&str> = cmd.body.split_whitespace().collect();
+        let mut words: Vec<&str> = cmd.body.split_whitespace().collect();
         if words.is_empty() {
             return err(&cmd.tag, status::BAD_REQUEST, "400 Empty command");
+        }
+        // DBSET's native quoted field is one mK string, not a whitespace
+        // token list. Decode the raw tail once, before pending/named/numeric
+        // database routing. OID rewrites can then retain that single value
+        // without unquoting it again. Other verbs and unquoted DBSET tails
+        // keep their existing token contracts.
+        let quoted_dbset_value = words
+            .first()
+            .filter(|verb| verb.eq_ignore_ascii_case("DBSET"))
+            .and_then(|_| cmd.body.split_once(char::is_whitespace))
+            .and_then(|(_, arguments)| arguments.trim_start().split_once(char::is_whitespace))
+            .map(|(_, value)| value.trim())
+            .filter(|value| value.starts_with('"') && value.ends_with('"'))
+            .map(dequote_value);
+        if let Some(value) = &quoted_dbset_value {
+            words.truncate(2);
+            words.push(value);
         }
         let upper_words = words
             .iter()
@@ -10925,6 +10942,29 @@ impl Server {
             }
             if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
+            }
+            if field == Some("TagName") {
+                if let Some(level) = self.level_mut(oid) {
+                    level.tag = value.clone();
+                    let level_path = format!("{}/{}", level.parent, level.address);
+                    if let Some(project) = self.current.as_deref() {
+                        // XML and save use the typed Level. Imported/completed
+                        // Levels may also retain a scalar-read pending mirror;
+                        // update only the same project, OID and canonical path.
+                        for pending in self.db_pending.values_mut().filter(|pending| {
+                            pending.project == project
+                                && pending.oid == oid
+                                && pending.element == "Level"
+                                && pending.path.as_deref() == Some(level_path.as_str())
+                        }) {
+                            pending.fields.insert("TagName".to_string(), value.clone());
+                        }
+                    }
+                    self.db_fields
+                        .insert(format!("{level_path}/TagName"), value.clone());
+                    self.db_fields.insert(words[1].to_string(), value);
+                    return ok(tag, vec![], "200 OK");
+                }
             }
             if field == Some("Value") {
                 if let Some(level) = self.level_mut(oid) {

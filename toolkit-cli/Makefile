@@ -313,6 +313,33 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-preserve-opaque-existing-value-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-preserve-opaque-used-value-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[ordered-history-preserves-opaque-level-value-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-mock]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-mock]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]' \
@@ -702,6 +729,33 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-preserve-opaque-existing-value-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-preserve-opaque-used-value-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[ordered-history-preserves-opaque-level-value-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-daemon]' \
+		'tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-daemon]' \
+		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]' \

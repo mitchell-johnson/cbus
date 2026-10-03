@@ -145,7 +145,9 @@ def invoke(relay,evidence,specs,tmp_path,operations,*,dry_run=False,expected=0,s
         '--spec-dir',specs,'--auto-metadata','--exclusive-project',
         '--display-preferences',prefs,'--operations',path]
     if not dry_run: argv += ['--backup-project','PABACKUP']
-    return cli(relay,evidence['calls'],*argv,expected=expected,complete=expected==0)
+    # A complete creation/save/readback journey can issue many bounded commands.
+    # Keep the per-command wire deadline at3s while bounding the whole process.
+    return cli(relay,evidence['calls'],*argv,expected=expected,complete=expected==0,process_timeout=90)
 
 
 def inventory_timeline(native):
