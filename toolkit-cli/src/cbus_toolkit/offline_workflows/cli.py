@@ -101,6 +101,27 @@ def read_regular_input(path):
             os.close(parent)
 
 
+def _verify_output_bytes(descriptor, payload, *, published=False):
+    """Bind the owned regular inode's stable bytes to the intended report."""
+    before = os.fstat(descriptor)
+    changed = not stat.S_ISREG(before.st_mode) or before.st_size != len(payload)
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    offset = 0
+    while not changed and offset < len(payload):
+        chunk = os.read(descriptor, min(65536, len(payload) - offset))
+        if not chunk or chunk != payload[offset:offset + len(chunk)]:
+            changed = True
+            break
+        offset += len(chunk)
+    after = os.fstat(descriptor)
+    if changed or _fingerprint(before) != _fingerprint(after):
+        code = "output_published_unconfirmed" if published else "output_changed"
+        message = ("Output was published but its bytes are unconfirmed; inspect it without retrying"
+                   if published else "Output temporary bytes changed before publication")
+        raise FileBoundaryError(message, code)
+    return after
+
+
 def write_new_output(path, payload):
     """Publish complete bytes by an exclusive same-directory hard link.
 
@@ -123,7 +144,7 @@ def write_new_output(path, payload):
         else:
             raise FileBoundaryError("Output already exists; select a new filename", "output_exists")
         temp_name = ".cbus-offline-" + uuid.uuid4().hex + ".tmp"
-        temporary = os.open(temp_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+        temporary = os.open(temp_name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
                             0o600, dir_fd=parent)
         owned = os.fstat(temporary)
         owned_temp_identity = (owned.st_dev, owned.st_ino)
@@ -133,8 +154,10 @@ def write_new_output(path, payload):
             if count <= 0:
                 raise OSError("Incomplete output write")
             offset += count
+        complete = _verify_output_bytes(temporary, payload)
         os.fsync(temporary)
-        complete = os.fstat(temporary)
+        if _fingerprint(os.fstat(temporary)) != _fingerprint(complete):
+            raise FileBoundaryError("Output temporary changed during synchronization", "output_changed")
         named = os.stat(temp_name, dir_fd=parent, follow_symlinks=False)
         if (not stat.S_ISREG(named.st_mode) or _fingerprint(named) != _fingerprint(complete)
                 or (named.st_dev, named.st_ino) != owned_temp_identity):
@@ -156,6 +179,11 @@ def write_new_output(path, payload):
             raise FileBoundaryError("Output was published but its temporary identity changed; inspect it without retrying",
                                     "output_published_unconfirmed")
         os.fsync(parent)
+        stable = _verify_output_bytes(temporary, payload, published=True)
+        final = os.stat(name, dir_fd=parent, follow_symlinks=False)
+        if not stat.S_ISREG(final.st_mode) or _fingerprint(final) != _fingerprint(stable):
+            raise FileBoundaryError("Output was published but its final identity is unconfirmed; inspect it without retrying",
+                                    "output_published_unconfirmed")
         os.close(temporary)
         temporary = None
     except FileExistsError as error:
