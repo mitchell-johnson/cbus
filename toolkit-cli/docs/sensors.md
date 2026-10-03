@@ -468,6 +468,16 @@ This is static-source plus native C-Gate evidence. The original Toolkit
 dialog was not executed, and no physical light-level, broadcast or indicator
 behavior was observed.
 
+## SENLLA surface component view
+
+`sensors surface-light-level-view` inspects the separate surface-mount
+SENLLA / 5754PE / 2.4.00..2.4.99 profile offline. It reports thirteen consumed
+surface fields and their source-derived component overlay, preserves its
+identified export and specification inputs, and has no edit or native save
+action. This eight-key class is kept separate from the zero-key SENLL dialog.
+Read [the component guide](senlla-surface.md) for the admitted fields and
+remaining ordinary-save lifecycle work.
+
 ## CLI commands
 
 Offline plans read a PP export snapshot (`cgate … unit … export`) or a bare
