@@ -141,3 +141,10 @@ addresses and arbitrary fields are never reported. `native_execution`,
 `destructive_execution_supported` remain false even when all transcript checks
 pass. Package authenticity, main-firmware transfer, reboot persistence and
 independent physical acceptance remain separate unresolved gates.
+
+The [focused CLI release receipt](firmware-ncc-release-20261003.json) records
+paired source and fresh installed-wheel checks of the public adapter, retained
+NCC model and offline diagnostic test class. It also binds the required owned
+metadata refresh, package-byte comparisons and quiet source snapshots. This
+bounded selection excludes original-assembly, serial peer, native and hardware
+acceptance; it does not replace the full release suite or close issue #64.

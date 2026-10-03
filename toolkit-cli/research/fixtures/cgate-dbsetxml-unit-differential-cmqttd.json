@@ -12,10 +12,10 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "sha256": "e4816312817cf4aa96cdf17aa25f6abb51cb433ed9401e89f13a0ae8861ae48c",
+    "sha256": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1",
     "name": "cmqttd"
   },
-  "source_revision": "801a5775d723cdf5345b4eb425c0814740f9a45f",
+  "source_revision": "70b392815c59f99aeb63a0ccdc38b1949adcf1c9",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "cf696742309e1b9d789caf5cb2ce220f3ab8e7605ec811fafecbb7b2308f7d9c",
     "docs/cmqttd-cgate.md": "be12d0d50ab4055bc1f190dfe4f811ddc28fa48e5329f7db816f914676d3a1df",
@@ -627,7 +627,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "bb9f725395c7cf038de7c1462b186dc27fc903fc5c99c208968d44aa45e7b2c8",
+    "raw_file_sha256": "448fef0147b74047ba151616fcb4257a086e39f628748ef2dedb8f15f5bffc13",
     "raw_retained_privately": true,
     "field_mapping": [
       {

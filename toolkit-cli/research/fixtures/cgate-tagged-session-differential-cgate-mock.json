@@ -8,11 +8,11 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "rust_artifact": {
-    "sha256": "c122ad1baf71f2e2f585b97e444e9527c80edab72b629657a0c8ee0783d929ef",
+    "sha256": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
     "provenance": "current-build",
     "name": "cgate-mock"
   },
-  "source_revision": "801a5775d723cdf5345b4eb425c0814740f9a45f",
+  "source_revision": "70b392815c59f99aeb63a0ccdc38b1949adcf1c9",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "cf696742309e1b9d789caf5cb2ce220f3ab8e7605ec811fafecbb7b2308f7d9c",
     "docs/cmqttd-cgate.md": "be12d0d50ab4055bc1f190dfe4f811ddc28fa48e5329f7db816f914676d3a1df",
@@ -208,8 +208,8 @@
     "b": "201 Service ready\r\n"
   },
   "peer_ports": {
-    "a": 54076,
-    "b": 54077
+    "a": 60506,
+    "b": 60508
   },
   "cases": [
     {
@@ -263,9 +263,9 @@
         "[502] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b>\r\n"
       ],
       "rust_wire_reply": [
-        "[502] 300-sessionID=cmd1 origin=internal from=20261003-214948 tag=Console\r\n",
-        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:54076 from=20261003-214948\r\n",
-        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:54077 from=20261003-214948\r\n"
+        "[502] 300-sessionID=cmd1 origin=internal from=20261003-220823 tag=Console\r\n",
+        "[502] 300-sessionID=cmd3 origin=/127.0.0.1:60506 from=20261003-220823\r\n",
+        "[502] 300 sessionID=cmd5 origin=/127.0.0.1:60508 from=20261003-220823\r\n"
       ],
       "result": "passed"
     },
@@ -320,9 +320,9 @@
         "[504] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[504] 300-sessionID=cmd1 origin=internal from=20261003-214948 tag=Console\r\n",
-        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:54076 from=20261003-214948 tag=native-a\r\n",
-        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:54077 from=20261003-214948 tag=native-b\r\n"
+        "[504] 300-sessionID=cmd1 origin=internal from=20261003-220823 tag=Console\r\n",
+        "[504] 300-sessionID=cmd3 origin=/127.0.0.1:60506 from=20261003-220823 tag=native-a\r\n",
+        "[504] 300 sessionID=cmd5 origin=/127.0.0.1:60508 from=20261003-220823 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -343,9 +343,9 @@
         "[603] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[603] 300-sessionID=cmd1 origin=internal from=20261003-214948 tag=Console\r\n",
-        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:54076 from=20261003-214948 tag=native-a\r\n",
-        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:54077 from=20261003-214948 tag=native-b\r\n"
+        "[603] 300-sessionID=cmd1 origin=internal from=20261003-220823 tag=Console\r\n",
+        "[603] 300-sessionID=cmd3 origin=/127.0.0.1:60506 from=20261003-220823 tag=native-a\r\n",
+        "[603] 300 sessionID=cmd5 origin=/127.0.0.1:60508 from=20261003-220823 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -383,9 +383,9 @@
         "[604] 300 sessionID=<session:b> origin=/127.0.0.1:<port:b> from=<timestamp:b> tag=native-b\r\n"
       ],
       "rust_wire_reply": [
-        "[604] 300-sessionID=cmd1 origin=internal from=20261003-214948 tag=Console\r\n",
-        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:54076 from=20261003-214948 tag=native-a\r\n",
-        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:54077 from=20261003-214948 tag=native-b\r\n"
+        "[604] 300-sessionID=cmd1 origin=internal from=20261003-220823 tag=Console\r\n",
+        "[604] 300-sessionID=cmd3 origin=/127.0.0.1:60506 from=20261003-220823 tag=native-a\r\n",
+        "[604] 300 sessionID=cmd5 origin=/127.0.0.1:60508 from=20261003-220823 tag=native-b\r\n"
       ],
       "result": "passed"
     },
@@ -436,7 +436,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_tagged_session_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "884878ab55bc69a4fa9048d3edc7d72b51d0e5e3cd452ada5836b4443c7afd4e",
+    "raw_file_sha256": "4bcb376a0eef3ab522b32a8351b5119fa931b6a704052fc51b06a2b9a85300db",
     "raw_retained_privately": true,
     "field_mapping": [
       {
