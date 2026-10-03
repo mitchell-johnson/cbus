@@ -1,5 +1,13 @@
 # Implementation status and outstanding work
 
+The [offline NCC command integration](firmware-ncc-main-integration-20261003.json)
+merges current main `86dd5c87`, including the CI receipt correction. Focused
+source and fresh installed wheel each pass 132 parent tests and 98 separate
+subtests, with no skips or failures. All 381 package files match and 4,018
+tracked inputs remain unchanged. Six current-main receipts retain exact valid
+bindings without rerunning their backends. Historical NCC acceptance is
+preserved separately; physical execution, issue #64 and full parity remain open.
+
 The [focused CI receipt correction](feature-batch-2026-10-03-ci-receipt-regressions.md)
 separates retained native archive integrity from current acceptance, refreshes
 maintained report source bindings and corrects a stale Neo refusal assertion.

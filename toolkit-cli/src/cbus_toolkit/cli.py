@@ -1233,6 +1233,9 @@ def _write_unit_template(path, template):
 
 
 def _firmware(args):
+    if args.action == "ncc-transcript":
+        from .firmware_ncc_cli import run as run_ncc_transcript
+        return run_ncc_transcript(args)
     if args.action.startswith("usb-dfu-"):
         from .dfu import MAX_IMAGE_SIZE
         from .dfu_transport import parse_descriptors
@@ -2572,6 +2575,8 @@ def build_parser():
     p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
     firmware = commands.add_parser("firmware", help="eDLT diagnostics, offline firmware inspection and explicitly selected USB DFU operations")
     fwops = firmware.add_subparsers(dest="action", required=True)
+    from .firmware_ncc_cli import options as ncc_transcript_options
+    ncc_transcript_options(fwops)
     p = fwops.add_parser("usb-list", help="List cached metadata for eDLT USB candidates without reading strings or claiming interfaces")
     p.add_argument("--max-devices", type=_number, default=64, help="Maximum enumeration size before reporting an incomplete result")
     p = fwops.add_parser("usb-inspect", help="Read only standard USB descriptors/configuration for an explicitly selected eDLT")
