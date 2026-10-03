@@ -1,18 +1,18 @@
 """Thermostat zone, plant, fan and user-interface settings editor.
 
 Edits one closed database PC_TSA/PC_TSA5 (THERMOSTATA) or PC_TSB/PC_TSB5
-(THERMOSTATB) unit at PP level.  Each value is checked against the caller's
+(THERMOSTATB) unit and its remote reference graph. Each value is checked against the caller's
 decoded unit specification.  Edits are also checked against the recovered
 Toolkit 1.18 form save (``thermostat_post_load``): a value that the original
 recovered BeforeSaveProgrammingInformation projection would rewrite is refused,
 and the dependent fields the form save would rewrite are included.  Apply
-makes a backup, one PP save and a reload readback.  No physical thermostat
+makes a backup, at most one PP save and a project save/reload readback. No physical thermostat
 is programmed.  Individual dialog-rule diagnostics are source-backed; complete
 dialog enable/visibility and event ordering remain unreproduced.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 from typing import Mapping
 from uuid import uuid4
@@ -20,6 +20,9 @@ from uuid import uuid4
 from .addressing import NetworkAddressing
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer
+from .native_thermostat_schedule import _oid
+from .thermostat_remote_references import (REMOTE_EDIT_FIELDS, RemoteReferencePlan,
+    plan_remote_references, project_fingerprint, validate_remote_plan, verify_project_preservation)
 from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RULES, ThermostatPostLoadError,
                                     damper_modulation_save, form_save_disabled_remotes, form_save_fans,
                                     form_save_scalars, form_save_temperatures, virtual_plant_type)
@@ -49,7 +52,7 @@ AFTERLOAD_FLAGS = {'EvapProgramEnabled': (0, 1), 'NonEvapProgramEnabled': (0, 1)
 
 
 def admitted(family):
-    return COMMON + FAMILY_SPECIFIC[family]
+    return COMMON + FAMILY_SPECIFIC[family] + REMOTE_EDIT_FIELDS[family]
 
 
 def _temperature_preference(value):
@@ -79,10 +82,12 @@ class SettingsPlan:
     dialog_rules_json: str
     temperature_preference: str | None = None
     disabled_remote_parameters: tuple[str, ...] = ()
+    remote_expected: tuple[tuple[str, int], ...] = ()
 
     @property
     def expected(self):
-        return dict(self.edits) | {name: saved for name, _loaded, saved in self.dependent}
+        return (dict(self.edits) | {name: saved for name, _loaded, saved in self.dependent}
+                | dict(self.remote_expected))
 
     def as_dict(self):
         before = dict(self.before)
@@ -114,12 +119,14 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
                   edits: Mapping[str, object], *, temperature_preference=None) -> SettingsPlan:
     _temperature_preference(temperature_preference)
     family = family_for_unit_type(unit_type)
-    if not isinstance(edits, Mapping) or not edits:
-        raise ThermostatTemplateError('Supply at least one setting edit')
+    if not isinstance(edits, Mapping):
+        raise ThermostatTemplateError('Supply a mapping of setting edits')
     try:
         spec = store.load(FAMILIES[family]['unit_spec'])
     except UnitSpecError as error:
         raise ThermostatTemplateError(str(error)) from error
+    if spec.unit_type != {'basic': 'THERMOSTATB', 'programmable': 'THERMOSTATA'}[family]:
+        raise ThermostatTemplateError('Decoded specification has the wrong thermostat type')
     allowed = admitted(family)
     parsed = {}
     for name, value in edits.items():
@@ -196,12 +203,23 @@ class NativeSettingsPlan:
     unit_xml: str
     identity: tuple[tuple[str, object], ...]
     networks: tuple[str, ...]
+    remote: RemoteReferencePlan
+    project_xml: str
 
     def as_dict(self):
+        settings = self.settings.as_dict()
+        changes = settings['changed_parameters']
+        mutation = bool(changes or self.remote.creations)
+        settings['disabled_remote_defaults']['enabled_reference_resolution_replayed'] = True
         return {'format': 'cbus-native-thermostat-settings-plan-v1', 'path': self.path,
-                'identity': dict(self.identity), **self.settings.as_dict(),
+                'identity': dict(self.identity), **settings,
+                'remote_references': self.remote.as_dict(),
+                'planned_creations': [row.as_dict() for row in self.remote.creations],
                 'closed_networks': list(self.networks),
-                'apply_would_mutate': bool(self.settings.as_dict()['changed_parameters']),
+                'apply_would_mutate': mutation,
+                'pp_save_count': int(bool(changes)),
+                'target_project_save_count': int(mutation),
+                'backup_source_save_count': int(mutation),
                 'caller_exclusive_project_required': True, 'server_edit_lock_acquired': False}
 
 
@@ -222,6 +240,11 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         super()._start(operation)
         self.last_evidence['format'] = 'cbus-native-thermostat-settings-result-v1'
         del self.last_evidence['original_post_load_adjustments_replayed']
+        self.last_evidence.update(objects=[], graph_mutation_attempted=False,
+            graph_mutation_outcome_uncertain=False, backup_source_save_attempted=False,
+            backup_source_save_confirmed=False, backup_copy_attempted=False,
+            backup_copy_confirmed=False, project_graph_preserved=False,
+            pp_save_count=0, target_project_save_count=0, batch_atomic=False)
 
     def plan(self, path, edits, *, exclusive_project=False, temperature_preference=None):
         self._start('settings-plan')
@@ -236,10 +259,30 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             if network not in networks:
                 raise ThermostatTemplateError('Unit network is absent from the closed project inventory')
             text, identity, values = self._read(path, network, address)
+            family = family_for_unit_type(identity['UnitType'])
+            spec = self.store.load(FAMILIES[family]['unit_spec'])
+            if not spec.supports_version(identity['FirmwareVersion']):
+                raise ThermostatTemplateError('Thermostat firmware is outside the decoded specification bounds')
             settings = plan_settings(self.store, identity['UnitType'], values, edits,
                                       temperature_preference=temperature_preference)
+            project_xml = self._xml('//' + project)
+            remote = plan_remote_references(self.store, identity['UnitType'], values,
+                dict(settings.edits), project_xml=project_xml, unit_path=path)
+            if any(identity.get(name) != value for name, value in remote.graph.unit_identity):
+                raise ThermostatTemplateError('Unit and complete-project XML identities disagree')
+            dependent = {name: (loaded, saved) for name, loaded, saved in settings.dependent}
+            candidate = {name: _safe(value) for name, value in values.items()} | dict(settings.edits)
+            for name, value in remote.expected.items():
+                if name in settings.expected and settings.expected[name] != value:
+                    raise ThermostatTemplateError('Conflicting form-save ownership: ' + name)
+                if candidate[name] != value:
+                    dependent[name] = (candidate[name], value)
+            settings = replace(settings,
+                dependent=tuple((name, *pair) for name, pair in sorted(dependent.items())),
+                remote_expected=tuple(sorted(remote.expected.items())))
             plan = NativeSettingsPlan(path, project, network, settings, text,
-                                      tuple(sorted(identity.items())), networks)
+                                      tuple(sorted(identity.items())), networks, remote, project_xml)
+            self._fresh_settings(plan)
             self._plans[id(plan)] = repr(plan)
             self.last_evidence.update(state='planned', complete=True, plan=plan.as_dict())
             return plan
@@ -261,6 +304,7 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                 raise ThermostatTemplateError('Use an unchanged plan issued by this manager')
             if id(plan) in self._consumed:
                 raise ThermostatTemplateError('This plan already had an apply attempt; review a fresh plan')
+            validate_remote_plan(self.store, plan.remote)
             backup = _project(backup_project) if backup_project is not None else 'B' + uuid4().hex[:7].upper()
             if backup.upper() == plan.project.upper():
                 raise ThermostatTemplateError('Backup project must differ from the edited project')
@@ -270,33 +314,26 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                                       changed_parameters=[row['name'] for row in changes])
             self._operation('use', plan.project)
             self._fresh_settings(plan)
-            if not changes:
+            if not changes and not plan.remote.creations:
                 self.last_evidence.update(state='already_applied', complete=True, backup_project=None)
                 return self.last_evidence
             self.last_evidence['state'] = 'backup'
+            self.last_evidence['backup_source_save_attempted'] = True
             self._operation('save', plan.project)
+            self.last_evidence['backup_source_save_confirmed'] = True
+            self.last_evidence['backup_copy_attempted'] = True
             self._operation('copy', plan.project, backup)
+            self.last_evidence['backup_copy_confirmed'] = True
             self.last_evidence['backup_created'] = True
             self._operation('use', plan.project)
             self._fresh_settings(plan)
+            created_oids = self._create_references(plan)
+            created_xml = self._verify_graph(plan, created_oids)
             self.last_evidence['state'] = 'staging'
-            with self._session(plan.path, plan.network) as session:
-                if tuple(sorted(session.values().items())) != plan.settings.before:
-                    raise ThermostatTemplateError('Unit changed immediately before staging')
-                for row in changes:
-                    reply = session.set(row['name'], str(row['after']))
-                    if getattr(reply, 'code', None) != 200:
-                        raise RuntimeError('PP SET did not complete')
-                staged = self._changed(plan, session.values())
-                self.last_evidence['staged_comparison'] = staged
-                if staged['setting_mismatches'] or staged['unrelated_changes']:
-                    raise ThermostatTemplateError('Staged settings differ from the plan; not saved')
-                self.last_evidence.update(staged_verified=True, state='saving', pp_save_attempted=True)
-                reply = session.save_to_source()
-                if getattr(reply, 'code', None) != 200:
-                    raise RuntimeError('PP SAVE_TO_SOURCE did not complete')
-                self.last_evidence['pp_save_confirmed'] = True
+            if changes:
+                self._save_parameters(plan, changes)
             self.last_evidence['target_save_attempted'] = True
+            self.last_evidence['target_project_save_count'] += 1
             self._operation('save', plan.project)
             self.last_evidence['target_save_confirmed'] = True
             for action in ('close', 'load'):
@@ -314,6 +351,7 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             preserved = (identity == before_identity and after_shape == before_shape
                          and {n: v for n, v in before_stored.items() if n not in expected}
                          == {n: v for n, v in after_stored.items() if n not in expected})
+            self._verify_graph(plan, created_oids, created_xml=created_xml)
             self.last_evidence.update(reloaded_comparison=comparison, unit_record_preserved=preserved,
                                       unrelated_parameters_preserved=not comparison['unrelated_changes'])
             if comparison['setting_mismatches'] or comparison['unrelated_changes'] or not preserved:
@@ -323,6 +361,75 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         except BaseException as error:
             self._fail(error)
 
+    def _save_parameters(self, plan, changes):
+        with self._session(plan.path, plan.network) as session:
+            if tuple(sorted(session.values().items())) != plan.settings.before:
+                raise ThermostatTemplateError('Unit changed immediately before staging')
+            for row in changes:
+                reply = session.set(row['name'], str(row['after']))
+                if getattr(reply, 'code', None) != 200:
+                    raise RuntimeError('PP SET did not complete')
+            staged = self._changed(plan, session.values())
+            self.last_evidence['staged_comparison'] = staged
+            if staged['setting_mismatches'] or staged['unrelated_changes']:
+                raise ThermostatTemplateError('Staged settings differ from the plan; not saved')
+            self.last_evidence.update(staged_verified=True, state='saving', pp_save_attempted=True)
+            self.last_evidence['pp_save_count'] += 1
+            reply = session.save_to_source()
+            if getattr(reply, 'code', None) != 200:
+                raise RuntimeError('PP SAVE_TO_SOURCE did not complete')
+            self.last_evidence['pp_save_confirmed'] = True
+
+    def _create_references(self, plan):
+        known = set(plan.remote.graph.all_oids)
+        created = {}
+        for row in plan.remote.creations:
+            parent = plan.network if row.kind == 'Application' else plan.network + '/' + str(row.application)
+            evidence = row.as_dict() | {'attempted': True, 'confirmed': False}
+            self.last_evidence['objects'].append(evidence)
+            self.last_evidence.update(state='creating_references', graph_mutation_attempted=True,
+                                      graph_mutation_outcome_uncertain=True)
+            response = self.database.add(parent, row.kind, row.address, row.name)
+            if response.code != 301 or len(response.lines) != 1 or not response.lines[0].startswith('301 OID='):
+                raise ThermostatTemplateError('Reference creation did not return exactly one object ID')
+            oid = _oid(response.lines[0][8:])
+            if oid in known:
+                raise ThermostatTemplateError('Reference creation returned an existing object ID')
+            known.add(oid)
+            identity = self.database.get('!' + oid + '/OID')
+            if identity.code != 342 or list(identity.lines) != ['342 !' + oid + '/OID=' + oid]:
+                raise ThermostatTemplateError('Created reference identity could not be resolved')
+            created[(row.kind, row.application, row.address)] = oid
+            evidence.update(confirmed=True, oid=oid)
+            self.last_evidence['graph_mutation_outcome_uncertain'] = False
+        return created
+
+    def _verify_graph(self, plan, created_oids, *, created_xml=None):
+        if self._networks(plan.project) != plan.networks:
+            raise ThermostatTemplateError('Project network inventory changed during the transaction')
+        actual_xml = self._xml('//' + plan.project)
+        changed = {row['name'] for row in plan.settings.as_dict()['changed_parameters']}
+        report = verify_project_preservation(plan.project_xml, actual_xml,
+            plan.path, changed_parameters=changed, created_oids=created_oids)
+        if created_xml is not None:
+            verify_project_preservation(created_xml, actual_xml, plan.path,
+                changed_parameters=changed, created_oids={})
+            report['created_metadata_preserved_after_reload'] = True
+        self.last_evidence.update(project_graph_preserved=True, graph_comparison=report)
+        return actual_xml
+
+    def _fail(self, error):
+        evidence = self.last_evidence
+        extra_uncertain = (evidence['graph_mutation_outcome_uncertain']
+            or evidence['backup_source_save_attempted'] and not evidence['backup_source_save_confirmed']
+            or evidence['backup_copy_attempted'] and not evidence['backup_copy_confirmed'])
+        try:
+            super()._fail(error)
+        except BaseException:
+            if extra_uncertain:
+                evidence.update(outcome_uncertain=True, state='uncertain')
+            raise
+
     def _fresh_settings(self, plan):
         if self._networks(plan.project) != plan.networks:
             raise ThermostatTemplateError('Project network inventory changed since planning')
@@ -330,6 +437,9 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         text, _identity, values = self._read(plan.path, plan.network, address)
         if text != plan.unit_xml or tuple(sorted(values.items())) != plan.settings.before:
             raise ThermostatTemplateError('Unit record or PP parameters changed since planning')
+        if project_fingerprint(self._xml('//' + plan.project), plan.path) != project_fingerprint(
+                plan.project_xml, plan.path):
+            raise ThermostatTemplateError('Project application graph or metadata changed since planning')
 
 
 def _safe(text):

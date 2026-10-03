@@ -45,13 +45,14 @@ def options(commands):
                                  'output application and post-load replay')
         if name == 'apply':
             action.add_argument('--backup-project', help='New backup project name')
-    settings = areas.add_parser('settings', help='Zone, plant, fan and interface settings editor')
+    settings = areas.add_parser('settings', help='Thermostat settings and remote references')
     edits = settings.add_subparsers(dest='action', required=True)
     for name, text in (('preview', 'Validate settings edits against the unit and the original form save'),
-                       ('apply', 'Apply settings edits with backup, one PP save and reload readback')):
+                       ('apply', 'Apply settings and references with backup and reload readback')):
         action = edits.add_parser(name, help=text)
         action.add_argument('unit', help='Existing database thermostat: //PROJECT/network/p/unit')
-        action.add_argument('--set', dest='edits', action='append', required=True, metavar='NAME=VALUE')
+        action.add_argument('--set', dest='edits', action='append', default=[], metavar='NAME=VALUE',
+                            help='Raw setting before one projected load/save; omit to normalize current settings')
         action.add_argument('--temperature-preference', choices=('celsius', 'fahrenheit'),
                             help='Original Toolkit process preference for temperature load/save '
                                  'normalization; separate from the thermostat TemperatureUnits setting')
@@ -84,8 +85,9 @@ def _settings(args, client_factory):
     if args.spec_dir is None:
         raise ValueError('Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications')
     edits = _edits(args.edits)
-    scope = ('PP-level thermostat settings checked against the unit specification and recovered form-save '
-             'fields; complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')
+    scope = ('Thermostat settings and enabled remote references checked against the unit specification, '
+             'complete project graph and recovered form-save fields in one transaction; '
+             'complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')
     with client_factory(args.host, args.port, timeout=args.timeout) as client:
         manager = NativeThermostatSettings(client, UnitSpecStore(args.spec_dir))
         plan = manager.plan(args.unit, edits, exclusive_project=True,

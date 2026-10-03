@@ -238,7 +238,7 @@ class NativeThermostatSettingsTests(unittest.TestCase):
             preview, result = documents
             self.assertEqual(result['state'], 'verified_saved')
             self.assertTrue(result['unit_record_preserved'])
-            self.assertFalse(preview['disabled_remote_defaults']['enabled_reference_resolution_replayed'])
+            self.assertTrue(preview['disabled_remote_defaults']['enabled_reference_resolution_replayed'])
             after = self.values(path)
             self.assertEqual({n: int(after[n], 0) for n in literal}, literal)
             expected = preview['expected']

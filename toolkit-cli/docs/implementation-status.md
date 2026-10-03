@@ -2,6 +2,18 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [thermostat remote-reference batch](feature-batch-2026-10-03-thermostat-remote-references.md)
+joins enabled setback/schedule references, ordered graph creation and identity
+validation with the existing settings form-save projection for all four aliases.
+Graph-only changes commit without a PP save; full-project freshness and
+preservation guard the owning transaction. Focused source and fresh installed
+wheel each pass 137 parent tests and 1,207 separate subtests, with eight disclosed
+skips and all 24 owned backend cases. All 378 package files match and 2,727
+scoped inputs plus both reused binaries remain unchanged. Original GUI,
+native-server and physical acceptance remain open; the functional completion
+gate still exits 1. See the batch report for the preserved audit-configuration
+correction and exact evidence boundaries.
+
 The [DIN agent-save batch](feature-batch-2026-10-03-din-agent-save.md)
 adds opt-in save normalization for the eight current relay/dimmer 2.7.00
 profiles, including RELDN8's ordered marshalling behavior. V2 plans preserve
