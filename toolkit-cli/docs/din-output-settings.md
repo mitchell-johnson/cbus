@@ -71,16 +71,42 @@ Rules reproduced from the original:
 - **Save validation.** A plan is refused when a channel is associated with a
   logic group that has no group address (`UnusedGroupInLogic`).
 
-The editor changes only the parameters named in a plan. It does not reproduce
-these whole-dialog save effects:
+By default the editor changes only the parameters named in a plan. Add
+`--toolkit-save` to include the recovered DIN agent-save projection after the
+requested edits. The flag can be used alone to plan the save of unchanged
+settings. It does not reproduce a complete initialized Toolkit form or its
+implicit callbacks.
 
-- LightLevel = 255 for every level-store channel;
-- 255/0 padding of non-channel indices;
-- RELDN8 zeroing of PP indices 0, 5, 6 and 11;
-- relay `InterLockingChannel & 7`;
-- the Synchronise Sliders and Stagger buttons.
+For the seven ordinary DIN profiles, the save writes 255 to each level-store
+channel, pads `GroupAddress[N..11]` with 255 and `LightLevel[N..11]` with zero,
+and masks relay `InterLockingChannel` with 7. The logic recovery values at
+indices 12..15 retain their own values, even when logic level store is enabled.
 
-`show` reports stored values that a Toolkit save would rewrite.
+RELDN8 uses a different ordered marshalling save. Its active channel indices
+are 1,2,3,4,7,8,9,10. The marshalling step overwrites the basic save's recovery
+levels with the loaded channel model, so untouched recovery bytes can survive
+when level store is enabled. An explicit supported level-store control edit
+still takes its earlier control effect. Slots 0,5,6 are cleared in the
+marshalled arrays (255 for group addresses). Slot 11 is zero in `LightLevel`
+and 255 in `GroupAddress`; other 12-element channel arrays retain their
+original slot 11 because the final short assignment only replaces the prefix.
+`MaxDimmingLevel` saves in dialog order: its four stored values become original
+indices 1,2,3 followed by zero. A later explicit save can therefore change it
+again. The CLI performs one projection and never repeats it to seek a stable
+result. The historical source-review summary's blanket slot-11 zeroing and
+level-store wording is superseded for this opt-in path.
+
+The normalized plan uses a separate version-2 format, retaining its original
+snapshot and pre-save edits so application can reproduce the ordered
+projection. A malformed or altered normalization result is refused. Existing
+version-1 targeted plans remain usable. All owned parameter values are checked
+for staleness before staging either format.
+
+The Synchronise Sliders and Stagger buttons, re-entrant shared-group control
+histories, group-object creation and complete GUI initialization remain open.
+`show` reports the stored values and recovery-level rewrite hints; it is
+not a preview of every ordered RELDN8 save effect. Use `plan --toolkit-save` for that
+preview.
 
 ## Commands
 
@@ -103,6 +129,20 @@ cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 di
 cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/21 din-settings --show
 ```
 
+To include agent-save normalization in an offline plan or a database edit:
+
+```sh
+cbus-toolkit din-settings plan dimmer.json --toolkit-save > save-plan.json
+cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
+  --dry-run din-settings --toolkit-save
+cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
+  din-settings --plan save-plan.json
+```
+
+The dry run stages and verifies the plan but does not save it. Database PP save
+and explicit project save remain separate, and neither establishes physical
+programming or power-cycle persistence.
+
 Other options:
 
 - Logic tab: `--logic-groups 1,4|none`, `--logic-function and|or|min|max`, and
@@ -119,13 +159,15 @@ If a PP write fails or its reply is uncertain, the result is reported with
 
 | Evidence | What it pins |
 | --- | --- |
+| `research/fixtures/din-output-save-source-review.json` | Source-pinned ordinary and marshalling save order for the opt-in projection; short-array effects and the historical summary correction. No new original instruction execution. |
 | `research/fixtures/din-output-settings-source-review.json` | Sanitized static receipt: per-type class, agent, channel map and flags; control-to-parameter bindings with original addresses; transforms; unreproduced save effects; unresolved points. It records input hashes for the executable, map, form resources, help topics and specs. |
 | `research/din_output_levels_original.py`, `research/fixtures/din-output-level-original-vectors.json` | Unicorn execution of the original PercentToLevel, LevelToPercent and Round(percent×2.55) instructions: 458 frozen rows |
 | `research/fixtures/din-output-settings-native-acceptance.json` | Owned C-Gate 3.4.0.2001 acceptance on loopback. See below. |
 | `tests/test_din_output_settings.py`, `tests/test_cli_din_output_settings.py` | Offline, optional-original and native tests |
+| `tests/test_cli_din_save.py`, `tests/test_cgate_din_save_interop.py` | New public offline CLI and owned Rust database save/reload, preservation, plan-refusal and lost-reply cases |
 
-The native acceptance covers all eight admitted types with no CNI or physical
-access:
+The historical native acceptance covers the targeted edit path for all eight
+admitted types with no CNI or physical access. It predates `--toolkit-save`:
 
 - 66 verified edits and 118 raw PP byte assertions.
 - Invalid and boundary edits for each tab.
@@ -136,7 +178,7 @@ access:
 - Refusals for RELDN8SP 2.7.00, RELDN8 2.6.00 and DIMDN8 2.7.01, each leaving
   its values unchanged.
 
-The native CLI test separately checks:
+The historical native CLI test separately checks:
 
 - that the dry-run preview equals the offline plan;
 - saved-plan apply and a stale-plan refusal;

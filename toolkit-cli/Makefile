@@ -93,6 +93,16 @@ build-interop:
 check-cgate-interop: compile
 	test -x "$(CGATE_MOCK_BIN)"
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]' \
 		tests/test_rust_cgate_interop.py \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
@@ -373,6 +383,16 @@ check-cgate-interop: compile
 check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-daemon]' \
+		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-daemon]' \
 		tests/test_cmqtt_interop.py tests/test_cmqtt_programming_methods_interop.py \
 		tests/test_cmqtt_dali_commissioning_interop.py \
 		tests/test_cmqtt_network_new_cli.py \

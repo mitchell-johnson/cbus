@@ -1,0 +1,223 @@
+{
+  "boundaries": {
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "historical_receipts_preserved": true,
+    "native_vendor_server_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "report_status_and_this_receipt_are_post_validation_annotations": true
+  },
+  "candidate": {
+    "binary_sha256": {
+      "cgate-mock": "c122ad1baf71f2e2f585b97e444e9527c80edab72b629657a0c8ee0783d929ef",
+      "cmqttd": "e4816312817cf4aa96cdf17aa25f6abb51cb433ed9401e89f13a0ae8861ae48c"
+    },
+    "din_runtime_and_tests_unchanged": true,
+    "executed_uncommitted_merge_tree": true,
+    "head_before_merge": "801a5775d723cdf5345b4eb425c0814740f9a45f",
+    "inputs_before": {
+      "bytes": 363788,
+      "identity": "inputs-before.json",
+      "sha256": "99dda6ab6b94ab46cf97492a8db398cde45f6e4b117a1a4bcd5363f7111ef7e1"
+    },
+    "inputs_terminal": {
+      "bytes": 363788,
+      "identity": "inputs-terminal.json",
+      "sha256": "99dda6ab6b94ab46cf97492a8db398cde45f6e4b117a1a4bcd5363f7111ef7e1"
+    },
+    "inputs_unchanged": true,
+    "merge_parent": "83b49d10ff803d52f37e09a71dd0ba20d3df4060",
+    "rust_exact_merge_parent": true,
+    "source_input_count": 2721
+  },
+  "date": "2026-10-03",
+  "format": "cbus-din-main-integration-v1",
+  "independent_review": {
+    "no_redundant_test_run": true,
+    "result": "No issues found in both-parent preservation, unchanged DIN/Rust source, generated source and raw artifact bindings, register linkage or private-coordinate scan.",
+    "role": "thermostat_gap read-only integration reviewer"
+  },
+  "metadata": {
+    "census_test_modules": 724,
+    "native_required_tests_unchanged": 259,
+    "primary_comparisons": 64,
+    "register_check": "passed",
+    "sanitized_receipts": {
+      "cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "bytes": 63063,
+        "identity": "cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "1682208443eb1ae4bf698abab24f4806d157e63b0a86dcc58072b4646d9eed76"
+      },
+      "cgate-dbsetxml-unit-differential-mock.json": {
+        "bytes": 61158,
+        "identity": "cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "7435d6de64d0712e99647cd383bf7177e8aa7de74ca8695bf5eba6e7c661b706"
+      },
+      "cgate-session-differential-cmqttd.json": {
+        "bytes": 35278,
+        "identity": "cgate-session-differential-cmqttd.json",
+        "sha256": "6dcdac0facd1e1f08b96af6c52b9201be83d443fd06bbe61665b6006bd0c66b2"
+      },
+      "cgate-session-differential-fixed.json": {
+        "bytes": 32883,
+        "identity": "cgate-session-differential-fixed.json",
+        "sha256": "7a5fe48c7d30f65b4a73df94a9a45aecde310bafe61cc1f478b5d1595b9e32e9"
+      },
+      "cgate-tagged-session-differential-cgate-mock.json": {
+        "bytes": 32339,
+        "identity": "cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "04bf907ffa711ea2f5c9ecd697cdf5a470d5e83eefa18a49d2c9937a9d8576af"
+      },
+      "cgate-tagged-session-differential-cmqttd.json": {
+        "bytes": 34464,
+        "identity": "cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "cab138a27b3f9afb63ca451f5030b43de4be241e027fee2b53211758e8a2131a"
+      }
+    },
+    "separate_combined_network_checks": 4,
+    "six_owned_differentials_passed": true,
+    "skip_census_check": "passed"
+  },
+  "package": {
+    "entry": {
+      "bytes": 42488,
+      "identity": "package-before.json",
+      "sha256": "34d4c9bcac2dbb2f19c1672daf02fabf605e0b26456dec2cac98bb3008c86118"
+    },
+    "files": 377,
+    "installed_package_import_verified": true,
+    "source_wheel_installed_equal": true,
+    "terminal": {
+      "bytes": 42488,
+      "identity": "package-terminal.json",
+      "sha256": "34d4c9bcac2dbb2f19c1672daf02fabf605e0b26456dec2cac98bb3008c86118"
+    },
+    "wheel_sha256": "8b9422c547dcc85a52286d00710dbba3feae8ddcf09052902c487f090ce49074"
+  },
+  "retained_preflight_failures": [
+    {
+      "artifact": {
+        "bytes": 4326,
+        "identity": "source-preflight-failed.log",
+        "sha256": "14e19a393974b1757191136155ac4d98b831451f9eeb4c94f50fb86962a50901"
+      },
+      "cause": "Initial invocation omitted tests from PYTHONPATH; corrected invocation executes every required module.",
+      "exit": 2,
+      "stage": "source collection"
+    },
+    {
+      "artifact": {
+        "bytes": 7076,
+        "identity": "wheel-build-preflight-failed.log",
+        "sha256": "6d2d0bba3ac2ac4495509ec72bdd4981ce37be91bc183fda9d7c4bee5fe5d846"
+      },
+      "cause": "Disabled build isolation without setuptools provisioned; corrected invocation uses declared isolated build dependencies.",
+      "exit": 2,
+      "stage": "wheel build"
+    }
+  ],
+  "scope": "Merge DIN agent-save PR81 with repository/control/report main PR80; focused integration only.",
+  "validation": {
+    "source": {
+      "all_20_public_din_cases_passed": true,
+      "artifacts": {
+        "-results.json": {
+          "bytes": 173657,
+          "identity": "source-results.json",
+          "sha256": "b4b489dd4a9250cd4cddad0eef136601799865a9029f24afea64ba8d6aaaf9a8"
+        },
+        "-trace.json": {
+          "bytes": 140192,
+          "identity": "source-trace.json",
+          "sha256": "dd264a5c68f9698bf253d1f321f88f17628c60930d7c5c512a29445eeb9283cb"
+        },
+        ".log": {
+          "bytes": 219,
+          "identity": "source.log",
+          "sha256": "f52328b719633ee3221734b2289d646d25a36d244f6f0b79e822f6e6df7605d9"
+        },
+        ".xml": {
+          "bytes": 37784,
+          "identity": "source.xml",
+          "sha256": "4043df7d4785e2283b776e31a9ec6175622ea18c495520536731a493cc041054"
+        }
+      },
+      "exit": 0,
+      "passed_parents": 107,
+      "passed_separate_subtests": 588,
+      "provision_skips": [
+        {
+          "class": "tests.test_din_output_save.DinSaveSourceReceiptTest",
+          "name": "test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "reason": "requires pinned Toolkit bytes for static hash check"
+        },
+        {
+          "class": "tests.test_din_output_settings.OriginalLevelVectorTest",
+          "name": "test_original_instructions_regenerate_the_vectors",
+          "reason": "requires exact original Toolkit executable"
+        },
+        {
+          "class": "tests.test_din_output_settings.DinOutputNativeTest",
+          "name": "test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance"
+        },
+        {
+          "class": "tests.test_cli_din_output_settings.DinCliTests",
+          "name": "test_native_preview_apply_saved_plan_and_stale_refusal",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance"
+        }
+      ]
+    },
+    "wheel": {
+      "all_20_public_din_cases_passed": true,
+      "artifacts": {
+        "-results.json": {
+          "bytes": 173656,
+          "identity": "wheel-results.json",
+          "sha256": "fe78d73a51be3fd2fcb43b44ae3a9e4438fe585a91fd458f573cf9903d85a662"
+        },
+        "-trace.json": {
+          "bytes": 140192,
+          "identity": "wheel-trace.json",
+          "sha256": "dd264a5c68f9698bf253d1f321f88f17628c60930d7c5c512a29445eeb9283cb"
+        },
+        ".log": {
+          "bytes": 219,
+          "identity": "wheel.log",
+          "sha256": "86dff7628b13cc1020c6cd8bba4851211926dfec63ccd676b7ee1b6fabe7a157"
+        },
+        ".xml": {
+          "bytes": 37784,
+          "identity": "wheel.xml",
+          "sha256": "035c3c7afe0ca3b561ae9738e7924c7176930b4decd1b86c885848120bf504e1"
+        }
+      },
+      "exit": 0,
+      "passed_parents": 107,
+      "passed_separate_subtests": 588,
+      "provision_skips": [
+        {
+          "class": "tests.test_din_output_save.DinSaveSourceReceiptTest",
+          "name": "test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "reason": "requires pinned Toolkit bytes for static hash check"
+        },
+        {
+          "class": "tests.test_din_output_settings.OriginalLevelVectorTest",
+          "name": "test_original_instructions_regenerate_the_vectors",
+          "reason": "requires exact original Toolkit executable"
+        },
+        {
+          "class": "tests.test_din_output_settings.DinOutputNativeTest",
+          "name": "test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance"
+        },
+        {
+          "class": "tests.test_cli_din_output_settings.DinCliTests",
+          "name": "test_native_preview_apply_saved_plan_and_stale_refusal",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance"
+        }
+      ]
+    }
+  }
+}
