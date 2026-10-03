@@ -148,3 +148,13 @@ NCC model and offline diagnostic test class. It also binds the required owned
 metadata refresh, package-byte comparisons and quiet source snapshots. This
 bounded selection excludes original-assembly, serial peer, native and hardware
 acceptance; it does not replace the full release suite or close issue #64.
+
+The [current-main integration receipt](firmware-ncc-main-integration-20261003.json)
+records a separate frozen merge with main `86dd5c87`, including its CI receipt
+correction. Source and a fresh installed wheel each pass 132 parent tests and
+98 separate subtests, with zero skips or failures. All 381 package files match
+source/ZIP/installed bytes; 4,018 tracked inputs remain unchanged. All six
+maintained main compatibility receipts validate and are reused byte for byte;
+their backend services were not rerun. The original release receipt above is
+unchanged. These checks exclude the serial-peer and original-assembly classes
+and add no physical execution or full-parity claim.
