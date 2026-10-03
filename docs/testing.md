@@ -13,6 +13,29 @@ cargo build --release --workspace
 
 CI runs the same four checks for pull requests and pushes to `main`.
 
+
+On this Mac, the native trust-store test has failed when its executable runs
+from the external build volume and passed from a byte-identical internal copy.
+The precise OS cause is not established. The opt-in
+[`local_test_runner.py`](../rust/scripts/local_test_runner.py) retains each
+executable's hashes, arguments and exit status while executing an internal
+temporary copy. It changes neither assertions nor trust policy. Use this
+profile only when reproducing that location difference, and retain the failed
+ordinary run separately. From `rust/`:
+
+```sh
+cbus_test_runtime=$(mktemp -d /private/tmp/cbus-rust-tests.XXXXXX)
+export CBUS_RUST_TEST_RUNNER_DIR="$cbus_test_runtime"
+export CBUS_RUST_TEST_RUNNER_RECORDS="$cbus_test_runtime/executions.jsonl"
+export CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="python3 -B $PWD/scripts/local_test_runner.py"
+unset SSL_CERT_FILE SSL_CERT_DIR
+cargo test --workspace
+```
+
+Unsetting those CA overrides selects the actual native store; supplying a PEM
+file would test a different profile. Temporary executable copies are removed
+after each owned process exits. The private execution record remains available.
+
 For a Python-only feature chunk, the current user-directed local workflow uses
 focused owning and affected historical modules rather than rerunning every
 suite. The SceneManager inventory release selection is declared in

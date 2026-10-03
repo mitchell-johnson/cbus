@@ -9,6 +9,8 @@ mod net_save_db;
 mod net_save_db_physical_alias;
 #[path = "tests/repository_capacity.rs"]
 mod repository_capacity;
+#[path = "tests/repository_uncertainty.rs"]
+mod repository_uncertainty;
 
 #[test]
 fn native_command_trace_requires_a_recognized_top_level_family() {
@@ -5027,6 +5029,15 @@ async fn pp_write_patch_requires_exactly_one_live_identity_before_any_store() {
 
 #[tokio::test(start_paused = true)]
 async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_races() {
+    patch_commit_case(false).await;
+}
+
+#[tokio::test(start_paused = true)]
+async fn post_rename_pp_patch_keeps_verified_metadata_and_delivers_event_without_replay() {
+    patch_commit_case(true).await;
+}
+
+async fn patch_commit_case(sync_fault: bool) {
     async fn line<R: tokio::io::AsyncBufRead + Unpin>(reader: &mut R) -> Vec<u8> {
         tokio::time::timeout(Duration::from_secs(2), async {
             let mut line = Vec::new();
@@ -5217,11 +5228,15 @@ async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_ra
         200
     );
 
-    for (target, current, tag, mutation) in [
+    let mut cases = vec![
         (0xaf, 0x00, "first", 0),
         (0xb0, 0xaf, "record-race", 1),
         (0xb1, 0xb0, "manifest-race", 2),
-    ] {
+    ];
+    if sync_fault {
+        cases.push((0xb2, 0xb1, "sync-fault", 3));
+    }
+    for (target, current, tag, mutation) in cases {
         if mutation == 2 {
             // Restore the deliberately raced record before starting the
             // independent manifest-replacement case.
@@ -5256,6 +5271,7 @@ async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_ra
                 .status,
             200
         );
+        let _fault = (mutation == 3).then(|| repository_io::fail_next_directory_sync(&path));
         let command = tokio::spawn({
             let service = service.clone();
             async move {
@@ -5290,9 +5306,20 @@ async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_ra
             assert_eq!(response.status, 409, "{response:?}");
             assert!(response.final_text.contains("manifest changed"));
         } else {
-            assert_eq!(response.status, 200, "{response:?}");
+            if mutation == 3 {
+                assert_eq!(response.status, 500, "{response:?}");
+                assert_eq!(response.final_text, repository_io::UNCERTAIN_REPLY);
+                let disk: Database = repository_io::load(&path).unwrap();
+                assert_eq!(
+                    serde_json::to_value(&disk).unwrap(),
+                    serde_json::to_value(Database::from_server(&*service.model.lock().await))
+                        .unwrap()
+                );
+            } else {
+                assert_eq!(response.status, 200, "{response:?}");
+            }
             let event = events.recv().await.unwrap();
-            assert!(event.contains("version=AF"), "{event}");
+            assert!(event.contains(&format!("version={target:02X}")), "{event}");
             assert!(event.contains("manifest_sha256="), "{event}");
             let get = service
                 .handle(
@@ -5301,15 +5328,28 @@ async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_ra
                 )
                 .await;
             assert_eq!(get.status, 300, "{get:?}");
-            assert!(get.final_text.contains("PatchVersion=175"), "{get:?}");
+            assert!(
+                get.final_text.contains(&format!("PatchVersion={target}")),
+                "{get:?}"
+            );
         }
     }
 
     {
         let model = service.model.lock().await;
         let unit = &model.projects["HARNESS"].networks[&254].units[&5];
-        assert_eq!(unit.fields["PatchVersion"], "175");
-        assert_eq!(unit.fields["PatchManifestVersion"], "physical-first");
+        assert_eq!(
+            unit.fields["PatchVersion"],
+            if sync_fault { "178" } else { "175" }
+        );
+        assert_eq!(
+            unit.fields["PatchManifestVersion"],
+            if sync_fault {
+                "physical-sync-fault"
+            } else {
+                "physical-first"
+            }
+        );
         assert_eq!(unit.fields["PatchManifestSha256"].len(), 64);
     }
     assert!(
@@ -5318,14 +5358,24 @@ async fn pp_write_patch_physical_pipeline_persists_version_and_rejects_commit_ra
             .is_err()
     );
 
-    // The rejected concurrent in-memory edit was never persisted; restart
-    // retains the first verified patch receipt and its provenance.
+    // Rejected races never persist. The applied-but-unsynced successor, when
+    // present, retains its verified physical metadata after a fresh restart.
     let (restart_pci, _restart_remote) = pci();
     let restarted = Service::new(&fixture(), None, path.clone(), restart_pci, None).unwrap();
     let model = restarted.model.lock().await;
     let unit = &model.projects["HARNESS"].networks[&254].units[&5];
-    assert_eq!(unit.fields["PatchVersion"], "175");
-    assert_eq!(unit.fields["PatchManifestVersion"], "physical-first");
+    assert_eq!(
+        unit.fields["PatchVersion"],
+        if sync_fault { "178" } else { "175" }
+    );
+    assert_eq!(
+        unit.fields["PatchManifestVersion"],
+        if sync_fault {
+            "physical-sync-fault"
+        } else {
+            "physical-first"
+        }
+    );
     assert_eq!(unit.fields["PatchManifestSha256"].len(), 64);
     drop(model);
     std::fs::remove_file(path).unwrap();

@@ -18,6 +18,10 @@ mod repository_io;
 mod transform;
 mod unravel_plan;
 
+fn repository_uncertain(tag: &str) -> Response {
+    err(tag, 500, repository_io::UNCERTAIN_REPLY)
+}
+
 /// Stream an operator-supplied application catalogue with the native
 /// 343/347/344 XML-snippet envelope. The configured unit-specification
 /// directory is the only permitted source; no vendor catalogue is bundled or
@@ -3132,6 +3136,12 @@ impl Service {
                 serde_json::Value::String("bounded-streamed-atomic-json-v1".to_string());
             capabilities["repository_snapshot_free_reads"] =
                 serde_json::json!(["DBGET", "DBGETXML"]);
+            capabilities["repository_commit_uncertainty"] = serde_json::json!({
+                "applied_reply": repository_io::UNCERTAIN_REPLY,
+                "model_matches_replaced_image": true,
+                "automatic_retry": false,
+                "power_loss_durability_confirmed": false
+            });
             capabilities["saved_project_group_dlt_labels"] = serde_json::Value::Bool(
                 self.model
                     .lock()
@@ -4773,11 +4783,16 @@ impl Service {
         // physical presence.
         preserve_physical_state(&before, &mut model);
         let after_db = Database::from_server(&model);
+        let mut persistence_error = None;
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
-                *model = before;
                 tracing::error!("C-Gate database commit failed: {error}");
-                return err(tag, 500, "500 Database commit failed; change rolled back");
+                if repository_io::commit_applied(&error) {
+                    persistence_error = Some(repository_uncertain(tag));
+                } else {
+                    *model = before;
+                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                }
             }
         }
         if verb == "PP" {
@@ -4841,7 +4856,7 @@ impl Service {
         for event in model.drain_events() {
             let _ = self.events.send(self.event_with_startup_precision(event));
         }
-        response
+        persistence_error.unwrap_or(response)
     }
 
     /// Gate a C-Gate here-document after the connection has bounded and
@@ -4931,7 +4946,7 @@ impl Service {
             };
             let before = model.clone();
             let before_db = Database::from_server(&model);
-            let response = model.handle_document(line, document);
+            let mut response = model.handle_document(line, document);
             if response.status >= 400 {
                 *model = before;
                 return response;
@@ -5000,9 +5015,13 @@ impl Service {
             let after_db = Database::from_server(&model);
             if before_db != after_db {
                 if let Err(error) = after_db.save(&self.state_path) {
-                    *model = before;
                     tracing::error!("C-Gate DBSETXML commit failed: {error}");
-                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                    if repository_io::commit_applied(&error) {
+                        response = repository_uncertain(tag);
+                    } else {
+                        *model = before;
+                        return err(tag, 500, "500 Database commit failed; change rolled back");
+                    }
                 }
             }
             client.current = model.current.clone();
@@ -5016,7 +5035,7 @@ impl Service {
                 .or_else(|| Some(self.project.clone()));
             let before = model.clone();
             let before_db = Database::from_server(&model);
-            let response = cgl::import(&mut model, tag, &words, document);
+            let mut response = cgl::import(&mut model, tag, &words, document);
             // Native keeps changes made before a 408 import failure; every
             // other refusal leaves the model untouched.
             if response.status >= 400 && response.status != 408 {
@@ -5026,9 +5045,13 @@ impl Service {
             let after_db = Database::from_server(&model);
             if before_db != after_db {
                 if let Err(error) = after_db.save(&self.state_path) {
-                    *model = before;
                     tracing::error!("C-Gate CGL import commit failed: {error}");
-                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                    if repository_io::commit_applied(&error) {
+                        response = repository_uncertain(tag);
+                    } else {
+                        *model = before;
+                        return err(tag, 500, "500 Database commit failed; change rolled back");
+                    }
                 }
             }
             for event in model.drain_events() {
@@ -5069,8 +5092,11 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
-                *model = before;
                 tracing::error!("C-Gate CONFIG commit failed: {error}");
+                if repository_io::commit_applied(&error) {
+                    return repository_uncertain(tag);
+                }
+                *model = before;
                 return err(tag, 500, "500 Database commit failed; change rolled back");
             }
         }
@@ -5088,8 +5114,11 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
-                *model = before;
                 tracing::error!("C-Gate FILE commit failed: {error}");
+                if repository_io::commit_applied(&error) {
+                    return repository_uncertain(tag);
+                }
+                *model = before;
                 return err(tag, 500, "500 Database commit failed; change rolled back");
             }
         }
@@ -5244,8 +5273,11 @@ impl Service {
             model.access_admission_enforced = true;
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("C-Gate ACCESS ADD commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                return repository_uncertain(tag);
+            }
+            *model = before;
             return err(tag, 500, "500 Database commit failed; change rolled back");
         }
         ok(tag, vec![], "200 OK.")
@@ -5278,8 +5310,11 @@ impl Service {
             model.access_admission_enforced = true;
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("C-Gate ACCESS DELETE commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                return repository_uncertain(tag);
+            }
+            *model = before;
             return err(tag, 500, "500 Database commit failed; change rolled back");
         }
         ok(tag, vec![], "200 OK.")
@@ -5312,8 +5347,11 @@ impl Service {
         let enforced = model.access_admission_enforced;
         model.access_snapshot_admission.insert(name, enforced);
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("C-Gate ACCESS SAVE commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                return repository_uncertain(tag);
+            }
+            *model = before;
             return err(tag, 500, "500 Database commit failed; change rolled back");
         }
         ok(tag, vec![], "200 OK.")
@@ -5348,8 +5386,11 @@ impl Service {
         model.access_entries = entries;
         model.access_admission_enforced = enforced;
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("C-Gate ACCESS LOAD commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                return repository_uncertain(tag);
+            }
+            *model = before;
             return err(tag, 500, "500 Database commit failed; change rolled back");
         }
         ok(tag, vec![], "200 OK.")
@@ -5432,6 +5473,10 @@ impl Service {
         }
         if let Err(error) = Database::from_server(&repaired).save(&self.state_path) {
             tracing::error!("C-Gate PROJECT REPAIR commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                *model = repaired;
+                return repository_uncertain(tag);
+            }
             return err(
                 tag,
                 500,
@@ -5490,8 +5535,11 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
-                *model = before;
                 tracing::error!("C-Gate TRANSFORM commit failed: {error}");
+                if repository_io::commit_applied(&error) {
+                    return repository_uncertain(tag);
+                }
+                *model = before;
                 return err(tag, 500, "500 Database commit failed; change rolled back");
             }
         }
@@ -5824,8 +5872,11 @@ impl Service {
             return err(tag, 408, &format!("408 Operation failed: {error}"));
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("C-Gate LOG EXTRACT commit failed: {error}");
+            if repository_io::commit_applied(&error) {
+                return repository_uncertain(tag);
+            }
+            *model = before;
             return err(
                 tag,
                 500,
@@ -12503,14 +12554,19 @@ impl Service {
                 },
             );
         }
+        let mut persistence_error = None;
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            *model = before;
             tracing::error!("PP WRITE_PATCH database commit failed: {error}");
-            return err(
-                tag,
-                500,
-                "500 Physical patch verified but database commit failed",
-            );
+            if repository_io::commit_applied(&error) {
+                persistence_error = Some(repository_uncertain(tag));
+            } else {
+                *model = before;
+                return err(
+                    tag,
+                    500,
+                    "500 Physical patch verified but database commit failed",
+                );
+            }
         }
         drop(model);
         let progress = patch_result_progress(&patch, receipt.disposition);
@@ -12521,7 +12577,7 @@ impl Service {
             receipt.disposition.as_str(),
             patch.manifest_sha256
         ));
-        ok(tag, progress, "200 OK")
+        persistence_error.unwrap_or_else(|| ok(tag, progress, "200 OK"))
     }
 
     /// Expose immutable LOAD provenance only on the same connected PCI epoch.
@@ -14139,12 +14195,15 @@ impl Service {
                 let before = model.scene_snapshots.insert(key.clone(), snapshot);
                 let database = Database::from_server(&model);
                 if let Err(error) = database.save(&self.state_path) {
+                    tracing::error!("C-Gate scene commit failed: {error}");
+                    if repository_io::commit_applied(&error) {
+                        return repository_uncertain(tag);
+                    }
                     if let Some(before) = before {
                         model.scene_snapshots.insert(key, before);
                     } else {
                         model.scene_snapshots.remove(&key);
                     }
-                    tracing::error!("C-Gate scene commit failed: {error}");
                     return err(tag, 500, "500 Database commit failed; scene not recorded");
                 }
                 (ok(tag, vec![], "200 OK."), None)
