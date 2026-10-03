@@ -1,0 +1,988 @@
+{
+  "catalogue": {
+    "catalog_number": "5754PE",
+    "firmware": [
+      "2.4.00",
+      "2.4.99"
+    ],
+    "sha256": "c134c752fe4ef62a659c4480cd6702dffcc0096a59b4b0b336b5c383dbea6fe7",
+    "spec_filename": "SENLLA.xml",
+    "unit_type": "SENLLA"
+  },
+  "format": "cbus-senlla-next-frontier-static-audit-v1",
+  "inputs": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "literal_component_vectors": [
+    {
+      "name": "target_group_takes_precedence_over_stored_margin_group",
+      "raw": {
+        "LightLevelMarginGroup": 9,
+        "LightLevelMarginGroupLevelStore": 0,
+        "LightLevelTargetGroup": 7,
+        "LightLevelTargetGroupLevelStore": 1,
+        "PECMarginLux": 8,
+        "PECTargetLux": 40,
+        "PowerUpMarginGroupLevel": 89,
+        "PowerUpTargetGroupLevel": 13
+      },
+      "surface_before_save": {
+        "LightLevelMarginGroup": 7,
+        "LightLevelMarginGroupLevelStore": 1,
+        "LightLevelTargetGroup": 7,
+        "LightLevelTargetGroupLevelStore": 1,
+        "PECMarginLux": 40,
+        "PECTargetLux": 200,
+        "PowerUpMarginGroupLevel": 13,
+        "PowerUpTargetGroupLevel": 13
+      },
+      "surface_loaded": {
+        "margin_group": 255,
+        "margin_percent": 20,
+        "target_byte": 45,
+        "target_group": 7,
+        "using_margin_group": false,
+        "using_target_group": true
+      }
+    },
+    {
+      "name": "independent_margin_group_loads_literal_nine_then_saves_target_byte",
+      "raw": {
+        "LightLevelMarginGroup": 9,
+        "LightLevelTargetGroup": 255,
+        "PECMarginLux": 8,
+        "PECTargetLux": 40
+      },
+      "surface_before_save": {
+        "LightLevelMarginGroup": 9,
+        "LightLevelTargetGroup": 255,
+        "PECMarginLux": 40,
+        "PECTargetLux": 40
+      },
+      "surface_loaded": {
+        "margin_percent": 9,
+        "target_byte": 40,
+        "using_margin_group": true,
+        "using_target_group": false
+      }
+    },
+    {
+      "name": "fixed_modes_clear_disabled_group_store_flags",
+      "raw": {
+        "LightLevelMarginGroup": 255,
+        "LightLevelMarginGroupLevelStore": 1,
+        "LightLevelTargetGroup": 255,
+        "LightLevelTargetGroupLevelStore": 1,
+        "PECMarginLux": 8,
+        "PECTargetLux": 40,
+        "PowerUpMarginGroupLevel": 89,
+        "PowerUpTargetGroupLevel": 13
+      },
+      "surface_before_save": {
+        "LightLevelMarginGroup": 255,
+        "LightLevelMarginGroupLevelStore": 0,
+        "LightLevelTargetGroup": 255,
+        "LightLevelTargetGroupLevelStore": 0,
+        "PECMarginLux": 8,
+        "PECTargetLux": 40,
+        "PowerUpMarginGroupLevel": 89,
+        "PowerUpTargetGroupLevel": 13
+      },
+      "surface_loaded": {
+        "margin_percent": 20,
+        "target_byte": 40,
+        "using_margin_group": false,
+        "using_target_group": false
+      }
+    },
+    {
+      "name": "noncanonical_bank_behaviour_three_with_used_bits_roundtrips_to_high_two",
+      "raw": {
+        "BankSwitchGroupUsed": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "BankSwitchThresholdBehaviour": 3,
+        "BankSwitchThresholdGroup": 31
+      },
+      "surface_before_save": {
+        "BankSwitchGroupUsed": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "BankSwitchThresholdBehaviour": 2,
+        "BankSwitchThresholdGroup": 31
+      },
+      "surface_loaded": {
+        "high_group": 31,
+        "low_group": 255,
+        "use_high": [
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "use_low": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "unused_bank_group_clears_all_usage_and_behaviour",
+      "raw": {
+        "BankSwitchGroupUsed": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "BankSwitchThresholdBehaviour": 1,
+        "BankSwitchThresholdGroup": 255
+      },
+      "surface_before_save": {
+        "BankSwitchGroupUsed": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "BankSwitchThresholdBehaviour": 0,
+        "BankSwitchThresholdGroup": 255
+      },
+      "surface_loaded": {
+        "use_high": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "use_low": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "low_group_serializes_current_high_lux_using_integer_division",
+      "qualification": "Logical unit-state vector; raw high-lux loader binding is not asserted here",
+      "surface_before_save": {
+        "LightLevelStore2[2]": 123
+      },
+      "unit_bank_before_save": {
+        "high_lux": 1234,
+        "index": 2,
+        "use_high": false,
+        "use_low": true
+      }
+    },
+    {
+      "name": "high_group_forces_recall1_byte255",
+      "surface_before_save": {
+        "LightLevelStore1[2]": 255
+      },
+      "unit_bank_before_save": {
+        "index": 2,
+        "use_high": true,
+        "use_low": false
+      }
+    },
+    {
+      "current_level": [
+        0,
+        127,
+        255
+      ],
+      "display_margin_percent": [
+        0,
+        50,
+        100
+      ],
+      "display_target_lux": [
+        8,
+        1000,
+        2000
+      ],
+      "name": "live_group_display_mapping",
+      "qualification": "Recovered ROUND((level+1)*scale/256) display formulas only, no bus writes"
+    }
+  ],
+  "methods": {
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetHighLevelLux": {
+      "address": "0xd00058",
+      "instructions": 14,
+      "sha256": "02e82f39d7f9843af7f53bdb12bd378fadbdc553a98fdb55fc38ce95b98c656d"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetLowLevelLux": {
+      "address": "0xd001d8",
+      "instructions": 40,
+      "sha256": "6f5f6661443c852a6e17120aa67fcda7cec36d96a989051d9fb75c63500b67a9"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadLightLevelBanks": {
+      "address": "0xcf44c4",
+      "instructions": 69,
+      "sha256": "2e324993624dd73d0b25e49fca6eeb1b9ecae9ddd08395c802fc805470821f2d"
+    },
+    "CIS_TCBusST7SensorCGateAgent.SaveLightLevelBanks": {
+      "address": "0xcf50b8",
+      "instructions": 67,
+      "sha256": "d6cc34742890d643856d76ff5f345ecc862a3ce0d90bd0d4137835b417dd279f"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcf4890",
+      "instructions": 310,
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0xcf5558",
+      "instructions": 379,
+      "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMarginPerc": {
+      "address": "0xcfd26c",
+      "instructions": 40,
+      "sha256": "3e4be69da9fd6f3497358471cdc48fcf45c863260bb43d480fb75488f5064efb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelTargetLux": {
+      "address": "0xcfd32c",
+      "instructions": 40,
+      "sha256": "79d3df5d1bd1ddf5565be583cb06b1791da9b16e3da370e1832dbb25445c4640"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.CIS_TCBusSurfaceMountSensorCGateAgent": {
+      "address": "0x13979dc",
+      "instructions": 19,
+      "sha256": "9e29e571e239c789ccab7b3c033ea71510af16e5b5ee70c9b4a16fcb8d0832e7"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.ConvertTargetBytes": {
+      "address": "0x1218340",
+      "instructions": 100,
+      "sha256": "08bf5015fb599d1066ecb9981b63b00e6b7d663b94d720391ba2dd25a30a278a"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.LoadPowerFail": {
+      "address": "0x1217558",
+      "instructions": 164,
+      "sha256": "9cb77c575d6714adf689545c2c89a1236201d467a6168fe3321c3f1f1375b960"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.PrepareForcedParametersSENLL": {
+      "address": "0x1218474",
+      "instructions": 343,
+      "sha256": "a20edf49c2229c5e92373a8373cd0f037741337e92e839f2f5aedee3823e0e23"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.PrepareForcedParametersSENPIR": {
+      "address": "0x1218978",
+      "instructions": 365,
+      "sha256": "62735185707beda65c38b067001ca28c48138cf816c3ba9069e79b50bcddb247"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.SavePowerFail": {
+      "address": "0x1217b18",
+      "instructions": 184,
+      "sha256": "a48cda317c9868fbc7a8ea1abb1ed83856e6afa881a37b807f64a8aaa9325bd9"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountLightLevelSensorCGateAgent.BeforeUnitConversionSave": {
+      "address": "0x1219f28",
+      "instructions": 440,
+      "sha256": "63406ec6cb80a8a7434bb22b711509ac82ec4b54e6f5426a81e28dd5812cf94b"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x1217764",
+      "instructions": 280,
+      "sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x1217d60",
+      "instructions": 385,
+      "sha256": "fcc2025b40021f638c60bfa68e567f3bf5790de78dcb55cc6dc4fe5ab61ebcfa"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeUnitConversionSave": {
+      "address": "0x1218ec0",
+      "instructions": 546,
+      "sha256": "e9e03f3ce9a074e7cd6ac340477482510fde84ad605aad33d2705bf3e48d7c25"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.InternalCreate": {
+      "address": "0x1219864",
+      "instructions": 132,
+      "sha256": "529d5429715ffef330e693fd8d9d23422003b8d502dc8673f2f80890a3dda9f4"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.MultisensorUnit": {
+      "address": "0x1219cd8",
+      "instructions": 25,
+      "sha256": "0571e5b59964d0e578ec693c9ff963633a0679fb9d7004840abe4a19723bf596"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountPIRSensorCGateAgent.BeforeUnitConversionSave": {
+      "address": "0x1219ea0",
+      "instructions": 37,
+      "sha256": "e7d16f17d066cabc3a7ea6e7b30c94db6b2d90bd57fe58e299bcee619629c2b6"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.CIS_TCBusSurfaceMountSensorUnit": {
+      "address": "0x1383230",
+      "instructions": 5,
+      "sha256": "899f5fda1db65fd6b158321ef4d77258d496d4a9fa7b9f7f244b8c26a2cdb899"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.RegisterEnumerations": {
+      "address": "0xca37bc",
+      "instructions": 17,
+      "sha256": "9a5c5946d6a1b8cdddeb97efccea11467f97c58f326940488da58741bebc4a2e"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.InternalCreate": {
+      "address": "0xca4b04",
+      "instructions": 10,
+      "sha256": "f73f1be255adfe917c7da310b3be8c61affd3d2460b47d0e07ac87cd62589235"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.MacroFunctionSubsetName": {
+      "address": "0xca4b18",
+      "instructions": 14,
+      "sha256": "b73cb76a47b631274481dbe3bef2d8039e3e597f82700f40656190431b832a5d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.MacroFunctionSubsetNameSecondary": {
+      "address": "0xca4b54",
+      "instructions": 14,
+      "sha256": "2d20dfe07d0ecc7c4966d3c3f04f9d0a1b7e8f78ee1fa986d316b9b4b5924b72"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountLightLevelSensorUnit.RefreshManualOnDefaults": {
+      "address": "0xca4b90",
+      "instructions": 108,
+      "sha256": "66823174c5f678c98e0d3bf9546c8a4a759e8bb53cb4a80f274f01eb4217cfd1"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.ApplicationChanged": {
+      "address": "0xca3820",
+      "instructions": 107,
+      "sha256": "c0985eb24280bc2db6c951c08ee306ec2243e2a57345480840413debe3435f2d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.DescribeOtherGroupDependencyAdvanced": {
+      "address": "0xca3984",
+      "instructions": 95,
+      "sha256": "cd3d204d9350c4150e0dade2663b17b03486bf44c2c2642fc50627ef515165bd"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchHighGroup": {
+      "address": "0xca3ac8",
+      "instructions": 14,
+      "sha256": "c1ff091c0fa8c1aaa03b8ea2ebf46332b333268e0474e5676cfd453416239f8d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchLowGroup": {
+      "address": "0xca3aec",
+      "instructions": 14,
+      "sha256": "6ce6d826730d48331a027f5a4805351ac995aca6d1fda9ae9fc08fad20c6ddc5"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelMarginGroup": {
+      "address": "0xca3b10",
+      "instructions": 14,
+      "sha256": "19266fab2cff3539b25825efd827a96a05d4d285d472e78611bdf0f0609eae3a"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelTargetGroup": {
+      "address": "0xca3b34",
+      "instructions": 14,
+      "sha256": "a646af268f895133a607efa6c7fee1cf0cf2f9644e66dddb1d05a0fdee38cdc1"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelBanks": {
+      "address": "0xca3b58",
+      "instructions": 12,
+      "sha256": "51f7af190b12ed68e8c95d3b3e67713a81a74f4c48e09a0bf0efb4f9673524ea"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelMarginGroup": {
+      "address": "0xca3b74",
+      "instructions": 14,
+      "sha256": "fd6543f6985d6784f6aa5fbd022ccd9046195ddeeec421ff01a880752302839c"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetGroup": {
+      "address": "0xca3b98",
+      "instructions": 14,
+      "sha256": "61cec66661325c7e223cedd28b861c9cea9d018efb8c697e340feb39e28904bd"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetRangeMax": {
+      "address": "0xca3bbc",
+      "instructions": 132,
+      "sha256": "c07d7002fe5edd9cf24f4358fcfde9de2f04ba983359cdfe3f0f4a8e1fbc4e5f"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetRangeMin": {
+      "address": "0xca3d70",
+      "instructions": 154,
+      "sha256": "14c3ef237fec8bbad657a3406e312279919d2e87852473cd2e539faaeb554e0f"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpBankSwitchGroupPresetLevel": {
+      "address": "0xca3f6c",
+      "instructions": 14,
+      "sha256": "5d2592016ad193e7474d1dad5baff4aefeb445ebe0475523ffc70826a0d3ea51"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpBankSwitchGroupState": {
+      "address": "0xca3f90",
+      "instructions": 14,
+      "sha256": "6d07d93556fcac3534626520ae2aebec8bd058958706ec5c7d67b044427277b1"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpMarginGroupPresetLevel": {
+      "address": "0xca3fd8",
+      "instructions": 14,
+      "sha256": "7caf4fe499b541f1ac6956e5edb8742acba36f4001718fa88e484b7c98b5e7cb"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpMarginGroupState": {
+      "address": "0xca3fb4",
+      "instructions": 14,
+      "sha256": "943e4533f58bc0debd993503add09a7eb956c2869c51041979e852b06fd11db7"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpTargetGroupPresetLevel": {
+      "address": "0xca3ffc",
+      "instructions": 14,
+      "sha256": "752cdd8613addca8a21533b071e616879b6d6b38fa4806bcd1d76fd22becd3cb"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpTargetGroupState": {
+      "address": "0xca4020",
+      "instructions": 14,
+      "sha256": "978c8fd604bdfccc9931cd5bd5924b7a77c39bd0aae0ede1d821b1c13006c5c9"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.InternalCreate": {
+      "address": "0xca4044",
+      "instructions": 175,
+      "sha256": "09cc527e8535cb915b2d40d3ed7f6069c854b9b74476d69f1d4e14616a34dbb8"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsConvertableTo": {
+      "address": "0xca45c8",
+      "instructions": 29,
+      "sha256": "e087aa2f891649481e17e53727540f6929d339d156a352b92789db6f419e1757"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchHighGroup": {
+      "address": "0xca461c",
+      "instructions": 31,
+      "sha256": "19723e6a22db0676f5dd1556920f8873be63488c973cebc52721f54a604609fb"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchLowGroup": {
+      "address": "0xca4674",
+      "instructions": 31,
+      "sha256": "a7a90a97e4dc17160a450f4ee1409dc88e04585a557d5daf1573a71c731d5b83"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection": {
+      "address": "0xca46cc",
+      "instructions": 49,
+      "sha256": "dcbbec2e2cec682effdc03024a8615631fc194697220698839ac7f3171b8cf94"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetBankSwitchHighGroup": {
+      "address": "0xca475c",
+      "instructions": 14,
+      "sha256": "13c639e6de86075ed37a3a2f4117d7dc8661eab209a31f7408253cc4bc186b92"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetBankSwitchLowGroup": {
+      "address": "0xca4780",
+      "instructions": 14,
+      "sha256": "e33e2420dfd9aafdcb6a5f76fd634eb99a55db1ef466648e6305ea4f709604d4"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetIsUsingLightLevelMarginGroup": {
+      "address": "0xca47a4",
+      "instructions": 38,
+      "sha256": "e073ce2c791a7466c425b4d0fe80b1344a20809f95d707185b16824892b5c07e"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetIsUsingLightLevelTargetGroup": {
+      "address": "0xca4800",
+      "instructions": 38,
+      "sha256": "ac57293a7257c77590a555612b149d418ffd2fad4cca0605423442cff3234d21"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetLightLevelMarginGroup": {
+      "address": "0xca485c",
+      "instructions": 14,
+      "sha256": "d7329a4bc8212b88134ab607c4741e9f9119e433f7d021714cca673d63fdca2b"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetLightLevelTargetGroup": {
+      "address": "0xca4880",
+      "instructions": 14,
+      "sha256": "312f2e180fcfe2ccd2ba413168b31c92295b66ace05e4537fcc352857343b86d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpBankSwitchGroupPresetLevel": {
+      "address": "0xca48a4",
+      "instructions": 40,
+      "sha256": "e2861652bc83b5d438698ccf7232be7a1b72fbeb3c9612f070287b2ca95c810c"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpBankSwitchGroupState": {
+      "address": "0xca4904",
+      "instructions": 41,
+      "sha256": "becab6550029a510c794041d6432e5ad742d3cb3d740aa0cab5b9660059f3817"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpMarginGroupPresetLevel": {
+      "address": "0xca49cc",
+      "instructions": 40,
+      "sha256": "9459fffdab386047a41b8e22b6a59dbd235886d72104748c0dcbf01aae76ce0a"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpMarginGroupState": {
+      "address": "0xca4968",
+      "instructions": 41,
+      "sha256": "3a98a90c859fcba763d7a53a4dd38d1e5e302ed7c7b226b9653ab58a5c653527"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpTargetGroupPresetLevel": {
+      "address": "0xca4a2c",
+      "instructions": 40,
+      "sha256": "2859706717496d5b9586110457f756255139afa9fe8f63cf8f383b82828fdc11"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.SetPowerUpTargetGroupState": {
+      "address": "0xca4a8c",
+      "instructions": 41,
+      "sha256": "97b95a627b22b8b5237119638628a84e16978021d4e24830d89927e18d788708"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountPIRSensorUnit.InternalCreate": {
+      "address": "0xca4af0",
+      "instructions": 10,
+      "sha256": "9422a9b399cb64c0a8025b18775ea061b3d5492a7f5e807bd3c461a9fdd01375"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.GetUseHighLevelGroup": {
+      "address": "0xca4d14",
+      "instructions": 14,
+      "sha256": "e874b73a0bbc283e189aac9f38179a1b9aa0509b08d4766b526bbde039d33cb0"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.GetUseLowLevelGroup": {
+      "address": "0xca4d38",
+      "instructions": 14,
+      "sha256": "2e288f425b2eeb9d8628c19e39558f569ea9d9ca5cecb924c315f74b6d0806d7"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate": {
+      "address": "0xca4d5c",
+      "instructions": 34,
+      "sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseHighLevelGroup": {
+      "address": "0xca4e1c",
+      "instructions": 38,
+      "sha256": "d4560c301a48dc8696d0b0ef2c14dcae81d59ef968587182ce707dca63e90989"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.SetUseLowLevelGroup": {
+      "address": "0xca4e78",
+      "instructions": 38,
+      "sha256": "e38c1065f22e82a801a6f408d651c531168dcc8ae8e1b29a58ffc4b0a1e78794"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Add": {
+      "address": "0xca4ed4",
+      "instructions": 26,
+      "sha256": "b64a2b4f1dd770d11ca9ed867bd2bab27c6120386f048119914cf71a19961fb2"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Append": {
+      "address": "0xca4f18",
+      "instructions": 14,
+      "sha256": "d80436f1c931c6a5526c94695fe5c9fac5201a2b1f415150a8e4a2f7199b3412"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Create": {
+      "address": "0xca4f3c",
+      "instructions": 44,
+      "sha256": "23e8234f3660ef57d3251c2ea21dd3fde177b9583de1fb922ae786309d7fc31a"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.GenericAddWithDescendentChecking": {
+      "address": "0xca4fbc",
+      "instructions": 31,
+      "sha256": "05071343acb88fbd40970b73f277c634fe570a6eae2b6ecd9ecb10c387ce9077"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.GetItem": {
+      "address": "0xca5010",
+      "instructions": 14,
+      "sha256": "75ce2a8c8f44c55c5ef1f442e613d8b77710dc79d1258193a3f120539236fb7a"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.IndexOf": {
+      "address": "0xca5034",
+      "instructions": 14,
+      "sha256": "75ce2a8c8f44c55c5ef1f442e613d8b77710dc79d1258193a3f120539236fb7a"
+    },
+    "CIS_TSENLLA.CIS_TSENLLA": {
+      "address": "0x1397948",
+      "instructions": 22,
+      "sha256": "b54ecd29b1f3f604916531c086af82639ccda4950b9a820462da4ce501ae13fd"
+    },
+    "CIS_TSENLLA.TSENLLA.IsDualJoinModeSupported": {
+      "address": "0x1216ea4",
+      "instructions": 10,
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLLA.TSENLLA.IsJoinModeSupported": {
+      "address": "0x1216eb8",
+      "instructions": 10,
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLLA.TSENLLA.LearnModePropertiesEnabled": {
+      "address": "0x1216ecc",
+      "instructions": 10,
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TSENLLA.TSENLLA.MaximumIndicatorCount": {
+      "address": "0x1216ee0",
+      "instructions": 11,
+      "sha256": "59e6fb2de38793277aece641121f7de7fb042017b790a97d004595b91765d0c4"
+    },
+    "CIS_TSENLLA.TSENLLA.MaximumKeyCount": {
+      "address": "0x1216ef8",
+      "instructions": 11,
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleIsUsingMarginGroupChange": {
+      "address": "0xfbce38",
+      "instructions": 34,
+      "sha256": "1bf100f25b4f424db3c367c296737a670970ad6009249d9aea35ca3161a0e493"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleIsUsingTargetGroupChange": {
+      "address": "0xfbce98",
+      "instructions": 34,
+      "sha256": "655bc58998523bae56d415b1b039001bcb2d4e4e81d1a953656378062e2c2b5d"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginGroupChange": {
+      "address": "0xfbcef8",
+      "instructions": 36,
+      "sha256": "d8fcc647b4f93978064cc1a3596ec5f3ba4e25da198d63d340cc964c49ecaa48"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginModeCheckboxClick": {
+      "address": "0xfbcfb0",
+      "instructions": 27,
+      "sha256": "33eae93c83f7a24b57ee6e48cfeb9b4ba7b2180aa0e976299561d0de37a21773"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginPercChange": {
+      "address": "0xfbcf60",
+      "instructions": 29,
+      "sha256": "ca052c5011736240859b0f78d75748a4f792f622caf15f56a3917febd9d2e1b2"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetGroupChange": {
+      "address": "0xfbd000",
+      "instructions": 36,
+      "sha256": "e94c1daabef27e57a49e271230a0829086072125ecda1f3161d46e66c0a87217"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetLuxChange": {
+      "address": "0xfbd068",
+      "instructions": 29,
+      "sha256": "d68bfbb459bd43edfd33c81ecb803f3e4ae078740fa6993894f07d91285b57b7"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetModeCheckboxClick": {
+      "address": "0xfbd0b8",
+      "instructions": 27,
+      "sha256": "52d591729c1f8f38ce5bca04f76c10de443c94e1525ca447d67b72a6935f3b3c"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfbd108",
+      "instructions": 120,
+      "sha256": "90f8edccb96fca7be33f8de1ef49b4351dc3f06bf171d3fe6fd00800c71b905d"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.LoadTargetMarginGroupValue": {
+      "address": "0xfbd43c",
+      "instructions": 90,
+      "sha256": "6f6ca5604ac5920d0daae1be7872251ff987d3a5284960a22d3212a07691549f"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SetupFlashHooks": {
+      "address": "0xfbd584",
+      "instructions": 71,
+      "sha256": "0c49b80b041577822d96031a569f689b5f2d25b7e61afcd6332fbe2934645b48"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SurfaceMountForm": {
+      "address": "0xfbd7d4",
+      "instructions": 13,
+      "sha256": "06a1faed545ebb7c4b0d0ac56ea209fb2b1ee06a0d701cf59c4878168e37c578"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SurfaceMountUnit": {
+      "address": "0xfbd7f0",
+      "instructions": 14,
+      "sha256": "0f7f7d6b6908feba24b592cc135b1db6e49b8c90cb1ee1323626603723c10a1c"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateCurrentMarginValue": {
+      "address": "0xfbd810",
+      "instructions": 119,
+      "sha256": "d7bce286129e24218d0d8483a424e4189c93d9a003b681f3ccfcf847d6417de1"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateCurrentTargetValue": {
+      "address": "0xfbd9e0",
+      "instructions": 72,
+      "sha256": "a4902044013f6275892d480c2060ed95893a56a992ea1b997004290d26ec488e"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateLightLevelRange": {
+      "address": "0xfbdaf0",
+      "instructions": 134,
+      "sha256": "b178f79e65b404a7bd22cd4c1acd30ad94ca68afbfc8b7066c6c728ce75c9d69"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateMarginControlsVisible": {
+      "address": "0xfbdd58",
+      "instructions": 112,
+      "sha256": "cdd88d7c0070b5c680c6bbdd4325de7da40bb306671f08dff3463a5af4a27480"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateModesEnabled": {
+      "address": "0xfbdef0",
+      "instructions": 28,
+      "sha256": "446ba0ca2d0c5fd6c58a7e82680f1f7ed64db20266235fe0360a618a3d4d6201"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateTargetControlCheckboxes": {
+      "address": "0xfbdf44",
+      "instructions": 50,
+      "sha256": "3624ae878fe72df6cd04a2418e650538b9beaa27079b87a2b42b8c51f4761cb0"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateTargetControlsVisible": {
+      "address": "0xfbdfe8",
+      "instructions": 144,
+      "sha256": "88a9f42bb22795f6090ff053a59760cca80868875b90e52e659890fb215903c9"
+    },
+    "CIS_TddSurfaceMountSensors.BankSwitchDuplicateHighGroupError": {
+      "address": "0xfc4e84",
+      "instructions": 65,
+      "sha256": "233c785ec66d0f793b08bc5b185844c10e00b5ce1c0603b12efa5de71d779984"
+    },
+    "CIS_TddSurfaceMountSensors.BankSwitchDuplicateLowGroupError": {
+      "address": "0xfc4f60",
+      "instructions": 65,
+      "sha256": "4a21e0423cd92d9aff8ecb1e6b3888b6e6a26fe53345129ca0dbeeec941e48a7"
+    },
+    "CIS_TddSurfaceMountSensors.BankSwitchHighGroupError": {
+      "address": "0xfc4e44",
+      "instructions": 24,
+      "sha256": "d7800517aa6b0f48fa56670719459a25904666660802e07bd982810e1f314895"
+    },
+    "CIS_TddSurfaceMountSensors.BankSwitchLowGroupError": {
+      "address": "0xfc4e04",
+      "instructions": 24,
+      "sha256": "7b139a0250cd986271131fe24023ab3cedfac098a91c94c268405aa0e2bdfddf"
+    },
+    "CIS_TddSurfaceMountSensors.LightLevelMarginGroupError": {
+      "address": "0xfc4dc4",
+      "instructions": 24,
+      "sha256": "0054f2fa46828b7c82409d2bea498d94f35ff11bdcf4fb7453b41852575de037"
+    },
+    "CIS_TddSurfaceMountSensors.LightLevelTargetGroupError": {
+      "address": "0xfc4d84",
+      "instructions": 24,
+      "sha256": "72d6453bb1511d9851d38d0a3689d50c7d741689f8c62a78b2db965e8e17a299"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfc5298",
+      "instructions": 15,
+      "sha256": "f4be6f5e0d5d2972c041cd402759bb7a435301298dcb715de568529f84ef5d36"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.GetSurfaceMountUnit": {
+      "address": "0xfc4a70",
+      "instructions": 14,
+      "sha256": "e3b43e14db3c26a92d206c2d592dfef353a96bc97cf2a702ce089bbd3ea62c0b"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.Initialise": {
+      "address": "0xfc4a94",
+      "instructions": 48,
+      "sha256": "ebb33b1c2d305e0c1e6eed5ab263c708fd8fdd129af066984481236037d70d69"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormBankSwitch": {
+      "address": "0xfc4b40",
+      "instructions": 39,
+      "sha256": "580d6e8a6378a13d6d71a5ffbcda23caff87c54ba9b000095361fa964ae81de9"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormLightLevel": {
+      "address": "0xfc4bc0",
+      "instructions": 56,
+      "sha256": "93fa5fe65ee48e4cba89001501bb91ba9a4ea18c95c898e299fcd936eafa92ec"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormPowerFail": {
+      "address": "0xfc4c88",
+      "instructions": 39,
+      "sha256": "f0806dfaf4113c1bf4def2b37fb466b2b554724d10836342d5806ae25a5d8379"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.RefreshDialogAfterApply": {
+      "address": "0xfc4d08",
+      "instructions": 39,
+      "sha256": "37dde532432db8f00eea5c01ed0f62ae44066b1e182b89528516f23766fea7d0"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.ValidateProgramming": {
+      "address": "0xfc503c",
+      "instructions": 192,
+      "sha256": "0430a65689602f5345ddd8860d58551aea102585c334c16514da9023d1026641"
+    },
+    "CIS_TnmSurfaceMountSensors.CIS_TnmSurfaceMountSensors": {
+      "address": "0x139149c",
+      "instructions": 19,
+      "sha256": "18620cc0d949ff97cfaa38d7adff888f17215e672e6bea1ab5dd946211fd2f6b"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENLLA.Create": {
+      "address": "0x100265c",
+      "instructions": 27,
+      "sha256": "879f4325e77dac5e2e53b397e9496fc1479879de263598715a3c88e9364931d9"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENLLA.GetDirectorClassByDescriptor": {
+      "address": "0x10026ac",
+      "instructions": 12,
+      "sha256": "05d55055c14111bc777f4e9a1d7d8dc22e68765dafffd82e0af5a29c0362114e"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENPILLA.Create": {
+      "address": "0x1002584",
+      "instructions": 27,
+      "sha256": "c473d803673d494357a346497d1e172ea567cd4402b7291dc3eef06ab73c0340"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENPILLA.GetDirectorClassByDescriptor": {
+      "address": "0x10025d4",
+      "instructions": 12,
+      "sha256": "ea1ef603721c9e2a4074e9a1150be459617fad41026ebff7b2ed6cc0882bdc2f"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENPIRIC.Create": {
+      "address": "0x10025f0",
+      "instructions": 27,
+      "sha256": "f5cd4d6d8740c15b6329761c8cb3ac6e0754b21ad0e3fd28987d6453e2360978"
+    },
+    "CIS_TnmSurfaceMountSensors.TnmSENPIRIC.GetDirectorClassByDescriptor": {
+      "address": "0x1002640",
+      "instructions": 12,
+      "sha256": "c1b464b2f7b98c54aa3a20c8a4864b2ff697ca6c42e80417bfad540d89ef173a"
+    }
+  },
+  "native_server_acceptance": false,
+  "ordinary_save": {
+    "SENLL_forced_helper_is_conversion_only": true,
+    "inherited_first": true,
+    "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeSaveProgrammingInformation",
+    "virtual_slot": "0x9c"
+  },
+  "original_execution": false,
+  "original_gui_execution": false,
+  "physical_acceptance": false,
+  "registration": {
+    "class": "TSENLLA",
+    "dual_join_supported": false,
+    "firmware": [
+      "0",
+      "9"
+    ],
+    "join_supported": false,
+    "learn_mode_properties_enabled": false,
+    "maximum_indicator_count": 1,
+    "maximum_key_count": 8
+  },
+  "remaining_before_complete_public_save": [
+    "Exact inherited8-key load/macro override/key-block marshalling roundtrip",
+    "Fresh inherited/surface DFM control bounds, selected-value callbacks and visibility timeline",
+    "Create/decline group choices and retained selector inventory for new group addresses",
+    "Scene table before-save for nonzero keys and enabled patches",
+    "Global disabled-Learn frame admission for this class",
+    "Bus/cache current-level control side effects"
+  ],
+  "repository_edits": false,
+  "repository_edits_scope": "The earlier read-only frontier audit before component model implementation; this field does not describe later repository changes",
+  "spec_shape": {
+    "added_layouts": {
+      "BankSwitchGroupLevelStore": {
+        "address": 22,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 2,
+        "bit_size": 1,
+        "type": "bit"
+      },
+      "BankSwitchGroupUsed": {
+        "address": 72,
+        "array_size": 8,
+        "array_skip": 0,
+        "bit_address": 6,
+        "bit_size": 1,
+        "type": "int"
+      },
+      "BankSwitchThresholdBehaviour": {
+        "address": 22,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 4,
+        "bit_size": 2,
+        "type": "int"
+      },
+      "BankSwitchThresholdGroup": {
+        "address": 21,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      },
+      "LightLevelMarginGroup": {
+        "address": 20,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      },
+      "LightLevelMarginGroupLevelStore": {
+        "address": 22,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 1,
+        "bit_size": 1,
+        "type": "bit"
+      },
+      "LightLevelTargetGroup": {
+        "address": 19,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      },
+      "LightLevelTargetGroupLevelStore": {
+        "address": 22,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 1,
+        "type": "bit"
+      },
+      "PowerUpBankSwitchGroupLevel": {
+        "address": 18,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      },
+      "PowerUpMarginGroupLevel": {
+        "address": 17,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      },
+      "PowerUpTargetGroupLevel": {
+        "address": 16,
+        "array_size": 1,
+        "array_skip": 0,
+        "bit_address": 0,
+        "bit_size": 8,
+        "type": "int"
+      }
+    },
+    "reference_parameter_count": 82,
+    "surface_include_chain": [
+      "I_SENPILL.xml",
+      "SENPILL_ST7.xml",
+      "SENPILLA.xml",
+      "SENLLA.xml"
+    ],
+    "surface_parameter_count": 93,
+    "unchanged_shared_layouts": 82
+  },
+  "vector_scope": "Surface loader and before-save overlay only; not the complete inherited8-key loader/form/save transaction",
+  "vectors_are_original_execution": false
+}

@@ -1,8 +1,9 @@
-"""CLI for the ST7 PIR and SENLL light-level sensor dialogs.
+"""CLI for ST7 PIR/SENLL dialogs and the separate SENLLA surface view.
 
 Offline: ``cbus-toolkit sensors pir-plan|light-level-plan FILE``. Native:
 ``cbus-toolkit cgate ... unit ... sensor-pir|sensor-light-level``. Both run
 the dialog model and the complete Toolkit save; see docs/sensors.md.
+``surface-light-level-view`` is an offline component view without a save.
 """
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ import os
 from pathlib import Path
 
 NATIVE_ACTIONS = ("sensor-pir", "sensor-light-level")
-OFFLINE_ACTIONS = ("pir-plan", "light-level-plan")
+OFFLINE_ACTIONS = ("pir-plan", "light-level-plan", "surface-light-level-view")
 KEY_FIELDS = ("block", "group", "timer_seconds", "expiry")
 EXPIRY = ("idle", "off", "down", "ramp_off", "recall1", "recall2", "ramp_recall1")
 
@@ -106,7 +107,7 @@ def _light_level_options(parser):
 
 
 def offline_options(sensor_ops):
-    """Add the PIR and SENLL plan actions under ``cbus-toolkit sensors``."""
+    """Add sensor plans and the separate SENLLA component view."""
     p = sensor_ops.add_parser("pir-plan", help="Plan the ST7 PIR dialog and Toolkit save without C-Gate")
     p.add_argument("file", type=Path, help="SENPIROA/SENPIRIA/SENPIRIB PP export, or parameter mapping with --spec")
     p.add_argument("--spec", help="Specification for a bare mapping, for example SENPIRIA_ST7.xml")
@@ -114,6 +115,8 @@ def offline_options(sensor_ops):
     p = sensor_ops.add_parser("light-level-plan", help="Plan the ST7 SENLL dialog and Toolkit save without C-Gate")
     p.add_argument("file", type=Path, help="SENLL 2.0.01..2.4.99 PP export or parameter mapping")
     _light_level_options(p)
+    p = sensor_ops.add_parser("surface-light-level-view", help="Inspect source-proven SENLLA surface components without saving")
+    p.add_argument("file", type=Path, help="Identified SENLLA / 5754PE / 2.4.00..2.4.99 PP export")
 
 
 def native_options(unops):
@@ -162,9 +165,16 @@ def light_level_settings(args):
 
 
 def offline(args):
-    """Return (plan dictionary, exit status) for ``sensors pir-plan|light-level-plan``."""
+    """Return an offline sensor plan or read-only component view and status."""
     from .cli import _parameter_snapshot
     identity = []
+    if args.action == "surface-light-level-view":
+        from .senlla_surface import SENLLASurface, check_profile
+        values = _parameter_snapshot(args.file, check_profile, identity=identity)
+        if not identity:
+            raise ValueError("A SENLLA PP export with unit_type, firmware and catalog_number is required")
+        surface = SENLLASurface(_store(args.spec_dir).load("SENLLA.xml"))
+        return surface.view(values, identity=tuple(identity)).as_dict(), 0
     if args.action == "pir-plan":
         from .pir_sensors import PIRSensor, check_profile
         values = _parameter_snapshot(args.file, check_profile, identity=identity)
