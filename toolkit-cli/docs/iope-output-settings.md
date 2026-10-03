@@ -26,6 +26,16 @@ revision in the interval.
 | Relay restrike checkbox | `channels[n].restrike`, Boolean | `RestrikeChannel[n-1]`, bit 6 of each of four bytes at 0x70 |
 | Shared restrike delay | `restrike_delay`, ordinal 1..254 | `RestrikeDelay`, byte 0x6F; displayed time is ordinal × 10 seconds |
 
+The public commands `cbus-toolkit iope-workflow output restrike-delay-time
+ORDINAL` and `cbus-toolkit iope-workflow output restrike-delay-choices` report
+numeric `minutes` and `seconds` from the source-pinned `FormatTimeShort`
+arithmetic without reading a specification, snapshot or network. The latter
+lists all 254 selectable ordinals. Stored ordinals 0 and 255 remain inspectable
+but unlisted. The helpers live in `cbus_toolkit.iope_output_display`; existing
+output inspection and the standalone native workflow retain their original
+contracts. Localized GUI unit strings have not been recovered. This extension
+has offline source-based tests, not original GUI or native-service acceptance.
+
 Levels use the original Toolkit percentage conversion: 50% stores **127**,
 not 128. Raw level editing is intentionally absent from this workflow.
 The dimmer handlers compare displayed integer percentages. Raising minimum

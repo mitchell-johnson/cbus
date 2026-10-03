@@ -101,7 +101,7 @@ def invoke(relay, evidence, specs, tmp_path, operations, *, dry_run=False, expec
              '--exclusive-project','--operations',path]
     if not dry_run: argv += ['--backup-project','PABACKUP']
     return cli(relay, evidence['calls'], *argv, expected=expected,
-               complete=expected == 0, connections=connections)
+               complete=expected == 0, connections=connections, process_timeout=90)
 
 
 def scene_operations(case):

@@ -50,8 +50,8 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 750,
-    "modules_without_skip_sites": 429,
+    "test_modules": 752,
+    "modules_without_skip_sites": 431,
     "modules_with_skip_sites": 321,
     "modules_by_category": {
       "cgate_test_host": 133,
@@ -316,7 +316,7 @@
         "unclassified"
       ],
       "native": "none",
-      "gated_tests": 5,
+      "gated_tests": 7,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -339,6 +339,8 @@
             "unclassified"
           ],
           "tests": [
+            "test_cli_empty_wire_preserves_call_inventory",
+            "test_cli_process_timeout_retains_partial_attempt",
             "test_public_barcode_failure_is_exact_once_without_rollback",
             "test_public_barcode_guards_are_read_only",
             "test_public_barcode_named_unit_preservation_and_lifecycle",

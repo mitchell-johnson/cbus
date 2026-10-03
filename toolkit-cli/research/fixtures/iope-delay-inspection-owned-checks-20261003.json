@@ -1,0 +1,196 @@
+{
+  "format": "cbus-iope-delay-inspection-owned-checks-v1",
+  "base_commit": "1cc79977ddcc7b4912e9329706d9cd94e8f99b5f",
+  "final_changed_input_sha256": {
+    "toolkit-cli/docs/iope-output-settings.md": "74b8aac1282a5e0323122daf4c98cd4a01819ac5ddadb7d4cf5c5962cafe5d24",
+    "toolkit-cli/research/release-gates/skip-census.json": "89d9a0144a473c5a4cf321cc4f8e7d8808ae68c9d2876b60337475d4ef1320ca",
+    "toolkit-cli/src/cbus_toolkit/cli.py": "2bb733ecb078a64f29ab51363e0204e0b5bc78650f3e8f4e11b5f15884b20320",
+    "toolkit-cli/src/cbus_toolkit/iope_output_display.py": "5926d4decbd6ca59147ad97ca7166311d0d0576494d9bfddae51349b00e7a7f0",
+    "toolkit-cli/tests/test_cgate_barcode_database_interop.py": "59ab4afc17990b33f335e82305b48f5b2532aa02e8381e250dbe9ec9cc1fa7e3",
+    "toolkit-cli/tests/test_cgate_edlt_global_images_interop.py": "ad91388ae9c4a7f2fe7bb9c14029574a233e095962a75e2d0eb95c94b296f75e",
+    "toolkit-cli/tests/test_cgate_edlt_lighting_images_interop.py": "e5067730cf49714f267651491c60c17b62b5ad54fa3abd23a156db749afb1f0e",
+    "toolkit-cli/tests/test_cgate_edlt_parent_add_dialog_interop.py": "88b6a159bae93151d75586b444868adbea4afd0464aa5764f1a2fdee0c2db06d",
+    "toolkit-cli/tests/test_cgate_edlt_scene_controls_language_interop.py": "96d45754897c0b2312390915ce00f516c3436fd4f713a988463ac1a24ee5aca8",
+    "toolkit-cli/tests/test_cgate_edlt_scene_inventory_interop.py": "3bc05585499bfd07d36995058397a9e452462954ee29ecb92bcd858724ef0060",
+    "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": "dc1a037dd60d0a987957a9dd1ae86d095896f1e3d88ac28452a04a174e78d3f4",
+    "toolkit-cli/tests/test_cgate_edlt_static_language_add_interop.py": "5327edccb83d2920a1560a8dace1b08c4e4e982120bef775eec6b99c4fbbc1be",
+    "toolkit-cli/tests/test_cgate_named_database_interop.py": "299f35d5a3b31e0c61085da6802d5a5f6815331cdb7a942ea08111d1dfb5af3c",
+    "toolkit-cli/tests/test_fault_gate_relay.py": "37af43a788b34c28f041f15a006d42733e539d7e0077366f70eb56897e9ea350",
+    "toolkit-cli/tests/test_iope_output_display.py": "d9d9fd9897d675220fb206b5a8a6c27ed5a8d4fc2937d68d790975b8913f99ca"
+  },
+  "checks": {
+    "source_full": {
+      "summaries": [
+        "10032 passed, 1410 skipped, 44486 subtests passed in 4300.58s (1:11:40)"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b6b11c0ca692d24f439f4199b1838715b7c7e5496313f8af7cb92b2000cc1ecd"
+    },
+    "interop_monolithic_before_sqlite": {
+      "summaries": [
+        "2 passed in 0.59s",
+        "390 passed, 1 skipped, 158 subtests passed in 4398.14s (1:13:18)",
+        "1 failed, 226 passed, 1 skipped, 69 subtests passed in 1078.30s (0:17:58)"
+      ],
+      "exit_code": 2,
+      "log_sha256": "6463df5c1de425dbdf597a5385c8e2d4873cb872af1a7848fec11e0851e64a02"
+    },
+    "daemon_after_sqlite": {
+      "summaries": [
+        "531 passed, 1 skipped, 69 subtests passed in 5836.40s (1:37:16)"
+      ],
+      "exit_code": 0,
+      "log_sha256": "4023b32141ca5b7170f8edbe4766b1af8ec345ebce5e6fd032c26a0e5320b61b"
+    },
+    "sqlite_failed_node_recheck": {
+      "summaries": [
+        "1 passed in 59.51s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "8700988ce63ea29e45115b6c3c8cb6546199bd7ac43c4ebd9978bc44d01be94e"
+    },
+    "source_focused_before_relay": {
+      "summaries": [
+        "29 passed, 9 skipped, 86 subtests passed in 2.61s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "34afccfa67e95ec360dc09c2a410b161574dd1ab2cb8c9fdbf53aa5b50c20aa4"
+    },
+    "source_final_feature_focused": {
+      "summaries": [
+        "35 passed, 9 skipped, 86 subtests passed in 2.23s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "8f65e3e9e265d5af0a60dd017b9d4dd3abbf540e810eaa550da92d5c205cf8fd"
+    },
+    "source_iope_guards": {
+      "summaries": [
+        "15 passed, 5 skipped, 22 subtests passed in 3.57s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "20915e6cc611d3fc2927c226299c62171e8667da4d390e727b57873e982e2ae1"
+    },
+    "source_dispatch_guards": {
+      "summaries": [
+        "4 passed, 7 skipped, 22 subtests passed in 0.76s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "bd7c0c0719f8f9fb5848bda753931f91f25e282a950a56870a11e66eaaf4da8f"
+    },
+    "wheel_focused": {
+      "summaries": [
+        "36 passed, 108 subtests passed in 5.47s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "822b1e4ae5c28279a6cc3ac513d7025d6fe1af60a6adaf8eb0b21d899ee6ffa2"
+    },
+    "source_census_repair": {
+      "summaries": [
+        "3 passed, 5 subtests passed in 14.27s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7bea41c98151150e3be771e50fff7a32861d2d9cf47c62d362fff2f243d3c3d0"
+    },
+    "source_relay_regressions": {
+      "summaries": [
+        "10 passed, 9 skipped in 0.62s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "1c0b4f0a661389d4ec55d06d5771ca4fe2a4d74bb6e600ddb032b408c2223a96"
+    },
+    "wheel_relay_regressions": {
+      "summaries": [
+        "10 passed, 9 deselected in 0.54s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "16f1b956339d1af6cf87bd5871eae0be537d06714c815ac243c79515bc5abbac"
+    },
+    "global_lost_save_mock_and_daemon": {
+      "summaries": [
+        "2 passed in 53.03s"
+      ],
+      "exit_code": 0,
+      "log_sha256": "913fead5742599bea644e6b7d266b0fdc2fb698269961fc8fd2623087231e634"
+    }
+  },
+  "failed_predecessors": {
+    "source_before_relay_census_repair": {
+      "exit_code": 2,
+      "failure": "One stale skip-census check (751 versus 752) after relay regression module was added during run",
+      "summaries": [
+        "1 failed, 10025 passed, 1410 skipped, 44486 subtests passed in 5068.54s (1:24:28)"
+      ],
+      "input_sha256_at_start": {
+        "toolkit-cli/docs/iope-output-settings.md": "74b8aac1282a5e0323122daf4c98cd4a01819ac5ddadb7d4cf5c5962cafe5d24",
+        "toolkit-cli/research/release-gates/skip-census.json": "d8654ef22b470351604606606af584c6e94f28a4ac703abfe25bd58ad1c90766",
+        "toolkit-cli/src/cbus_toolkit/cli.py": "2bb733ecb078a64f29ab51363e0204e0b5bc78650f3e8f4e11b5f15884b20320",
+        "toolkit-cli/src/cbus_toolkit/iope_output_display.py": "5926d4decbd6ca59147ad97ca7166311d0d0576494d9bfddae51349b00e7a7f0",
+        "toolkit-cli/tests/test_cgate_barcode_database_interop.py": "9d74a815dac98a06c6faf375c15a291bd96c45e40ba6ef1a33120cd86125b56c",
+        "toolkit-cli/tests/test_cgate_edlt_lighting_images_interop.py": "e5067730cf49714f267651491c60c17b62b5ad54fa3abd23a156db749afb1f0e",
+        "toolkit-cli/tests/test_cgate_edlt_parent_add_dialog_interop.py": "88b6a159bae93151d75586b444868adbea4afd0464aa5764f1a2fdee0c2db06d",
+        "toolkit-cli/tests/test_cgate_edlt_scene_controls_language_interop.py": "96d45754897c0b2312390915ce00f516c3436fd4f713a988463ac1a24ee5aca8",
+        "toolkit-cli/tests/test_cgate_edlt_scene_inventory_interop.py": "3bc05585499bfd07d36995058397a9e452462954ee29ecb92bcd858724ef0060",
+        "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": "dc1a037dd60d0a987957a9dd1ae86d095896f1e3d88ac28452a04a174e78d3f4",
+        "toolkit-cli/tests/test_cgate_edlt_static_language_add_interop.py": "5327edccb83d2920a1560a8dace1b08c4e4e982120bef775eec6b99c4fbbc1be",
+        "toolkit-cli/tests/test_cgate_named_database_interop.py": "299f35d5a3b31e0c61085da6802d5a5f6815331cdb7a942ea08111d1dfb5af3c",
+        "toolkit-cli/tests/test_iope_output_display.py": "d9d9fd9897d675220fb206b5a8a6c27ed5a8d4fc2937d68d790975b8913f99ca"
+      },
+      "log_sha256": "7d64556d19e88a7122f2baa426589f04f6c7c4b5e56d10b9da0aaa661aedce10"
+    },
+    "interop_before_bulk_relay": {
+      "exit_code": 2,
+      "interrupted": true,
+      "failure": "Global lost-save fault was not reached: earlier bulk PP GET timed out",
+      "summaries": [
+        "2 passed in 0.56s",
+        "1 failed, 337 passed, 1 skipped, 158 subtests passed in 3821.20s (1:03:41)"
+      ],
+      "log_sha256": "55e6e1c8ed09f8047c223f76149991fa82dfb0061f322b7508e45623c73b9f78"
+    }
+  },
+  "selected_binary_sha256": {
+    "cgate-mock": "e81e6104c68b61006538ff555c7ecece5efa9227b3fc9a75b02ba7062b9bac46",
+    "cmqttd": "935adbe35c68c9abb6f31ea580a34d921c5a89a817de8f8283e52f6457bd83a1"
+  },
+  "wheel": {
+    "sha256": "84c97eb0da7f9284daf9c420bb9d8d71ca7db9c613da507bdcbf3780e139073b",
+    "matched_source_zip_installed_files": 388,
+    "python": "3.13.5",
+    "import_origin": "isolated-site-packages"
+  },
+  "interop_scopes": {
+    "monolithic_make_exit": 2,
+    "monolithic_interrupted": true,
+    "monolithic_failure": "Portable XML_TO_SQL daemon journey: sqlite3 CLI was not installed",
+    "full_mock_selection_passed_in_monolithic_attempt": true,
+    "full_daemon_selection_passed_after_provision": true,
+    "monolithic_make_exit_zero_claimed": false,
+    "sqlite": {
+      "version": "3.46.1",
+      "cli_sha256": "01e2610becea4b6e85b14e905a05ccfaf418f4b715f3c7641fc2fd5fc9df5da9",
+      "official_debian_package": "sqlite3_3.46.1-7+deb13u2_amd64.deb",
+      "package_sha256": "877b00bd5ab6a3792fdffebd4aeebe0b8178df3c21f0e06f6a3c5186f7a799d9",
+      "workspace_only_provision": true,
+      "temporary_directory": "/tmp"
+    },
+    "source_or_binary_changed_for_provision_repair": false
+  },
+  "protocol_comparisons": {
+    "primary_passed": 64,
+    "combined_network_passed": 4,
+    "original_execution": false
+  },
+  "scope": {
+    "original_instructions": false,
+    "original_gui": false,
+    "native_service_acceptance": false,
+    "physical_acceptance": false,
+    "rust_changes": false,
+    "full_toolkit_parity": false
+  },
+  "remaining": [
+    "Original IOPE parent/GUI and localized display acceptance",
+    "Physical-unit and persistence/timing acceptance",
+    "Complete source-backed census and release acceptance"
+  ]
+}
