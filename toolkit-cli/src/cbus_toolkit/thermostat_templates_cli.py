@@ -60,6 +60,10 @@ def options(commands):
                             help='Accept or decline adding missing remote setback levels (default decline)')
         action.add_argument('--schedule-levels', choices=('accept', 'decline'), default='decline',
                             help='Accept or decline adding missing remote schedule levels (default decline)')
+        action.add_argument('--output-group', action='append', default=[], metavar='PARAMETER=ADDRESS',
+                            help='Select an existing output group after model loading; repeat in control order')
+        action.add_argument('--resolve-output-groups', action='store_true',
+                            help='Resolve current output groups and automatic names during model loading')
         action.add_argument('--host', required=True)
         action.add_argument('--port', type=_port, default=20023)
         action.add_argument('--timeout', type=float, default=30.0)
@@ -89,14 +93,23 @@ def _settings(args, client_factory):
     if args.spec_dir is None:
         raise ValueError('Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications')
     edits = _edits(args.edits)
-    scope = ('Thermostat settings and enabled remote references checked against the unit specification, '
+    output_selections = None
+    if args.resolve_output_groups or args.output_group:
+        output_selections = []
+        for item in args.output_group:
+            parameter, separator, address = item.partition('=')
+            if not separator or not parameter or not address:
+                raise ValueError('Use --output-group PARAMETER=ADDRESS selections')
+            output_selections.append({'parameter': parameter, 'address': address})
+    scope = ('Thermostat settings, remote references and optional ordered output selections checked against the unit specification, '
              'complete project graph and recovered form-save fields in one transaction; '
              'complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')
     with client_factory(args.host, args.port, timeout=args.timeout) as client:
         manager = NativeThermostatSettings(client, UnitSpecStore(args.spec_dir))
         plan = manager.plan(args.unit, edits, exclusive_project=True,
                             temperature_preference=args.temperature_preference,
-                            level_prompts={'setback': args.setback_levels, 'schedule': args.schedule_levels})
+                            level_prompts={'setback': args.setback_levels, 'schedule': args.schedule_levels},
+                            output_selections=output_selections)
         if args.action == 'preview':
             return {**plan.as_dict(), 'scope': scope}, 0
         result = manager.apply(plan, backup_project=args.backup_project)
