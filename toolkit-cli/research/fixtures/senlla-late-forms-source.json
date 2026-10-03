@@ -968,7 +968,8 @@
     "unit_fields": "actual_native_position",
     "block_count": "actual_retained_block_collection",
     "block_group_ToString": "actual_group_then_block_resolve_tails",
-    "occupancy_flags": "retained_kernel_model_owning_managed_flag_adapter_open",
+    "occupancy_flags": "actual_constructor_bound_adapter_getters_when_present_historical_kernel_model_otherwise",
+    "is_scene_template": "nil_check_then_CURRENT_reread_for_each_reached_23_24_25_comparison",
     "key_collection_count": "retained_kernel_collection_identity_open",
     "group_manager_count": "scoped_bridge_provider_identity_open"
   }

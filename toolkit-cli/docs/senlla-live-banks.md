@@ -49,11 +49,24 @@ The key kernel calls the attached `runtime.live_bank_dispatch` synchronously:
 * `occupancy_bank_event(key, runtime)` executes one unequal flag event. The
   kernel must commit that event's current flags before this call, and must
   continue nested and outer flag assignments only after it returns. The bank
-  loop captures reference Count but rereads the reference item at each
-  ordinal. It finds the first current bank Block pointer match, rereads the
+  loop reads the actual occupancy InputKey reference before captured Count,
+  then reads it again before the current reference item at each ordinal.
+  It finds the first current bank Block pointer match, rereads the
   flags before clearing Active, and rereads them again before SetAllowed.
   The aggregate tests Dark, Light, Any, Sunset. The event tests Light, Dark,
   Any, Sunset before Active and Light, Any, Dark, Sunset before Allowed.
+
+The runtime supplies `get_occupancy_flag(key, flag)` for each individual
+short-circuit operand and `occupancy_input_key(key)` for those two reference
+getter sites. With live occupancy attached, these are the SAME Boolean and
+reference attributes created before the banks and before PP loading. The
+Boolean getter rearms only its actual attribute and owning occupancy object;
+an earlier true operand leaves later flag publication guards untouched.
+`current_occupancy_flags` is detached inspection and never supplies a native
+predicate. The historical projected runtime retains its explicit stored flag
+profile through the same single-flag API. The current live occupancy adapter
+admits stable constructor-bound InputKey references; arbitrary rebinding
+requires the actual lifetime owner and is explicitly refused there.
 
 The kernel bypasses its older numerical bank transition and feedback route
 when this dispatcher is attached. A callback may change flags, references,

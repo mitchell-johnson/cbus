@@ -46,7 +46,11 @@ class UnitStringAttribute(FlashAttribute):
     def set(self, value):
         if type(value) is not str:
             raise SensorError('Unit string attribute requires text')
-        decision = StringChange(self._value, value, self._value != value)
+        # Delphi @UStrEqual compares UTF-16 code units, including explicit
+        # surrogate pairs; Python's scalar-string equality is different.
+        changed = (self._value.encode('utf-16le', errors='surrogatepass') !=
+                   value.encode('utf-16le', errors='surrogatepass'))
+        decision = StringChange(self._value, value, changed)
         if self.before_change is not None:
             self._record('before')
             self.before_change(self, decision)
@@ -100,7 +104,7 @@ class SENLLAInheritedOwner:
     lookups on this runtime. Late NeoPro IR setters and Global initialization
     are separate explicit phases for the complete owning orchestrator.
     """
-    def __init__(self, snapshot, bridge, *, parameter_read=None):
+    def __init__(self, snapshot, bridge, *, parameter_read=None, defer_smart_observers=False):
         from .senlla_project_bridge import SENLLAProjectBridge
         if not isinstance(snapshot, SENLLAInputSnapshot) or not isinstance(bridge, SENLLAProjectBridge):
             raise SensorError('Inherited owner requires the guarded snapshot and actual project bridge')
@@ -110,7 +114,8 @@ class SENLLAInheritedOwner:
         self.bridge = bridge
         self.parameter_read = parameter_read
         self.prekey = SENLLAPrekey(self.snapshot, source_dispatch=bridge.dispatch,
-                                  inherited_dispatch=self.dispatch)
+                                  inherited_dispatch=self.dispatch,
+                                  defer_smart_observers=defer_smart_observers)
         self.runtime = self.prekey.runtime
         bridge.bind(self.runtime, self.snapshot)
         manager = self.runtime.unit_manager

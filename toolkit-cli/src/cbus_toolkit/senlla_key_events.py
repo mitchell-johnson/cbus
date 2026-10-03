@@ -30,7 +30,8 @@ _DEFAULTS = {
     17: (12, 0, 0, 0), 18: (12, 0, 0, 0), 19: (6, 0, 0, 0),
     20: (12, 0, 0, 0), 21: (9, 0, 0, 0), 22: (6, 0, 0, 0),
     23: (0, 0, 0, 0), 24: (0, 0, 0, 0), 25: (0, 0, 0, 0),
-    26: (0, 0, 0, 0), 34: (13, 15, 7, 15),
+    26: (0, 0, 0, 0), 29: (7, 0, 0, 0), 30: (13, 7, 7, 0),
+    33: (13, 7, 0, 7), 34: (13, 15, 7, 15),
 }
 _BLOCK_FIELDS = ('secondary', 'group', 'light_level', 'store1', 'store2',
                  'timer', 'timer_cached', 'expiry', 'expiry_override')
@@ -426,7 +427,8 @@ class _Key:
         self._label_flavour = IntegerAttribute(extension_manager, 0, minimum=0, maximum=3,
                                              name=f'key:{index}.label_flavour', trace=owner._trace)
         self.smart = TrackedReferenceHandle(self.template, lambda _: owner._smart_changed(index))
-        self.smart.activate()
+        if not owner.defer_smart_observers:
+            self.smart.activate()
         self.general_hook = None
         self.function_hook = None
 
@@ -495,7 +497,7 @@ class SENLLAKeyEvents:
 
     @classmethod
     def fresh(cls, *, application_addresses=(), group_identities=(), trigger_levels=(),
-              source_dispatch=None, application_dispatch=None):
+              source_dispatch=None, application_dispatch=None, defer_smart_observers=False):
         """Construct once, with nil source references and current inventory only.
 
         The inventory names actual source-existing objects, without PP-selected
@@ -505,6 +507,8 @@ class SENLLAKeyEvents:
         for callback in (source_dispatch, application_dispatch):
             if callback is not None and not callable(callback):
                 raise SensorError('Fresh source dispatchers require internal callable executors')
+        if type(defer_smart_observers) is not bool:
+            raise SensorError('Historical Smart observer deferral requires a Boolean')
         if any(not isinstance(values, (tuple, list)) for values in
                (application_addresses, group_identities, trigger_levels)):
             raise SensorError('Source-existing inventories require ordered detached sequences')
@@ -516,7 +520,8 @@ class SENLLAKeyEvents:
             raise SensorError('Source-existing inventory identities must be distinct')
         runtime = cls.__new__(cls)
         runtime._initialize(None, (None,) * 8, SENLLABankGraph.fresh(),
-                            source_dispatch=source_dispatch, application_dispatch=application_dispatch)
+                            source_dispatch=source_dispatch, application_dispatch=application_dispatch,
+                            defer_smart_observers=defer_smart_observers)
         for address in application_addresses:
             runtime.add_source_application(address)
         for identity in group_identities:
@@ -537,7 +542,8 @@ class SENLLAKeyEvents:
             runtime.levels[full] = _Level(full, level, runtime._trace)
         return runtime
 
-    def _initialize(self, context, blocks, bank_graph, *, source_dispatch=None, application_dispatch=None):
+    def _initialize(self, context, blocks, bank_graph, *, source_dispatch=None, application_dispatch=None,
+                    defer_smart_observers=False):
         self.context = context
         self._fresh_mode = context is None
         self.graph = bank_graph
@@ -554,6 +560,8 @@ class SENLLAKeyEvents:
         self.level_dispatch = None
         self.application_dispatch = application_dispatch
         self.live_bank_dispatch = None
+        self.live_occupancy_dispatch = None
+        self.defer_smart_observers = defer_smart_observers
         self._live_occupancy_flags = None
         self.created_groups = []
         self.apps = {value: _Object('application', value) for value in context.application_addresses} if context else {}
@@ -598,7 +606,8 @@ class SENLLAKeyEvents:
         self._bank_block_links = tuple(block.object for block in self.blocks)
         if self._fresh_mode:
             for index in range(8):
-                self._event('constructor_bank_link_activation', block=index)
+                self._event('constructor_bank_observation_reserved' if self.defer_smart_observers
+                            else 'constructor_bank_link_activation', block=index)
         else:
             self.unit.begin_update()
 
@@ -893,6 +902,8 @@ class SENLLAKeyEvents:
         self._bank_feedback_writes()
 
     def _smart_changed(self, key):
+        if self.live_occupancy_dispatch is not None:
+            return self.live_occupancy_dispatch.macro_changed(key)
         self._bind_refs()
         self._bank_stores()
         template = self._template_type(key)
@@ -921,6 +932,8 @@ class SENLLAKeyEvents:
         self._bank_feedback_writes()
 
     def _quick_flags(self, key):
+        if self.live_occupancy_dispatch is not None:
+            return self.live_occupancy_dispatch.refresh_flags(key)
         self._bind_refs()
         self._bank_stores()
         template = self._template_type(key)
@@ -938,6 +951,8 @@ class SENLLAKeyEvents:
         self._bank_feedback_writes()
 
     def _set_flag(self, key, flag, value):
+        if self.live_occupancy_dispatch is not None:
+            return self.live_occupancy_dispatch.set_flag(key, flag, value)
         if self.live_bank_dispatch is not None:
             if self.event_handler_installed and self.current_occupancy_flags(key)[flag] != value:
                 raise SensorError('Installed event-to-template callback requires its owning decision dispatch')
@@ -952,12 +967,48 @@ class SENLLAKeyEvents:
         self._bank_feedback_writes()
 
     def current_occupancy_flags(self, key):
-        """CURRENT flags at one native event, including nested callbacks."""
+        """Detached current flag observation; native predicates use one getter."""
         if type(key) is not int or not 0 <= key < 8:
             raise SensorError('Occupancy key requires index0..7')
+        if self.live_occupancy_dispatch is not None:
+            from .senlla_live_occupancy import FLAG_NAMES
+            current = self.live_occupancy_dispatch.key(key)
+            return tuple(current.attributes[name]._value for name in FLAG_NAMES)
         if self._live_occupancy_flags is None:
             return self.graph.occupancy[key].flags
         return tuple(self._live_occupancy_flags[key])
+
+    def get_occupancy_flag(self, key, flag):
+        """One source-position Boolean getter, preserving short-circuit order."""
+        if type(key) is not int or not 0 <= key < 8 or type(flag) is not int or not 0 <= flag < 4:
+            raise SensorError('Occupancy getter requires key0..7 and flag0..3')
+        if self.live_occupancy_dispatch is not None:
+            return self.live_occupancy_dispatch.get_flag(key, flag)
+        return self.current_occupancy_flags(key)[flag]
+
+    def occupancy_input_key(self, key):
+        """CURRENT native InputKey getter before event Count/each item read."""
+        if type(key) is not int or not 0 <= key < 8:
+            raise SensorError('Occupancy key requires index0..7')
+        current = self.keys[key]
+        if self.live_occupancy_dispatch is not None:
+            actual = self.live_occupancy_dispatch.key(key).input_key.value
+            if actual is not current.object:
+                raise SensorError('Stable occupancy binding requires its SAME owning InputKey')
+        return current
+
+    def bind_live_occupancy(self, adapter):
+        """Bind actual constructor objects before PP and live bank activation."""
+        from .senlla_live_occupancy import SENLLALiveOccupancy
+        if (not isinstance(adapter, SENLLALiveOccupancy) or adapter.unit is not self.unit
+                or any(occupancy._key is not key for occupancy, key in zip(adapter.keys, self.keys))):
+            raise SensorError('Live occupancy requires the SAME Unit and eight owning keys')
+        if (not self.defer_smart_observers or any(key.smart.active for key in self.keys)
+                or self.phase != 'fresh_constructor' or self.unit.depth
+                or self.live_bank_dispatch is not None or self.live_occupancy_dispatch is not None):
+            raise SensorError('Live occupancy binds once at the deferred constructor before banks and PP')
+        self.live_occupancy_dispatch = adapter
+        self._event('actual_occupancy_constructor_bound', count=8)
 
     def _set_live_flag(self, key, flag, value):
         if self._live_occupancy_flags is None:
@@ -1000,10 +1051,12 @@ class SENLLAKeyEvents:
             candidate = None
             conflict = False
             for index in range(8):
-                flags = self.graph.occupancy[index].flags
-                if not any(flags) and candidate is None:
-                    candidate = self._primary(index)
-                elif any(flags) and self._has_broadcast(index):
+                compatible = not any(self.get_occupancy_flag(index, flag) for flag in range(4))
+                if compatible:
+                    if candidate is None:
+                        self.occupancy_input_key(index)
+                        candidate = self._primary(index)
+                elif self._has_broadcast(index):
                     conflict = True
             if conflict and candidate is not None:
                 self.broadcast_block.set(self.blocks[candidate].object)
@@ -1347,15 +1400,32 @@ class SENLLAKeyEvents:
         self._event('block_swap', first=first, second=second)
 
     def _broadcast_changed(self):
-        current = self.broadcast_block.value
-        maintenance = (self.blocks[self.graph.maintenance_block].object
-                       if self.graph.maintenance_block is not None else None)
-        if (self.graph.maintenance_active and self.broadcast_active.value and maintenance is current):
-            return
+        # The native dedicated handlers test MaintActive BEFORE any broadcast
+        # getter, then short-circuit Active, MaintBlock and BroadcastBlock.
+        if self.live_bank_dispatch is not None:
+            maintenance_active = self.live_bank_dispatch.maintenance_active.value
+        else:
+            maintenance_active = self.graph.maintenance_active
+        if maintenance_active and self.broadcast_active.value:
+            maintenance = (self.live_bank_dispatch.maintenance_block.value
+                           if self.live_bank_dispatch is not None else
+                           self.blocks[self.graph.maintenance_block].object
+                           if self.graph.maintenance_block is not None else None)
+            if maintenance is self.broadcast_block.value:
+                return
         for block in range(8):
             same = self.blocks[block].object is self.broadcast_block.value
-            value = self.micro[8] if same and self.broadcast_active.value else None
-            self.blocks[block].expiry_override.set(value)
+            if same:
+                value = self.micro[8] if self.broadcast_active.value else None
+                # cfc889/cfc899 reread the actual target after Active. A nested
+                # getter/callback must not be reduced to the earlier row.
+                target = self.broadcast_block.value
+                index = self._block_indices.get(target)
+                if index is None:
+                    raise SensorError('Native broadcast timer setter dereferences a nil or foreign Block')
+                self.blocks[index].expiry_override.set(value)
+            else:
+                self.blocks[block].expiry_override.set(None)
         if self.broadcast_active.value and self.broadcast_block.value is not None:
             for key in range(8):
                 if self._has_broadcast(key):
@@ -1994,6 +2064,10 @@ class SENLLAKeyEvents:
             'primary_application': value(self.primary_application),
             'secondary_application': value(self.secondary_application),
             'area': value(self.area),
+            'historical_smart_observers_deferred': self.defer_smart_observers,
+            'live_occupancy': (self.live_occupancy_dispatch.snapshot()
+                               if self.live_occupancy_dispatch is not None else None),
+            'bank_graph_occupancy_authoritative': self.live_occupancy_dispatch is None,
             'bank_graph': self.graph.as_dict(), 'created_groups': [list(value) for value in self.created_groups],
             'events': deepcopy(self.events)}
 

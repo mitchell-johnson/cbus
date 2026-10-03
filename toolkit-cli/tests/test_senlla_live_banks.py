@@ -5,8 +5,10 @@ from pathlib import Path
 import unittest
 
 from cbus_toolkit.senlla_key_events import SENLLAKeyEvents
-from cbus_toolkit.senlla_lifecycle import BooleanAttribute, ObjectReferenceAttribute
+from cbus_toolkit.senlla_lifecycle import (AttributeManager, BooleanAttribute,
+    FlashObject, ObjectReferenceAttribute)
 from cbus_toolkit.senlla_live_banks import SENLLALiveBanks
+from cbus_toolkit.senlla_live_occupancy import SENLLALiveOccupancy
 from cbus_toolkit.sensors import SensorError
 
 
@@ -196,16 +198,104 @@ class SENLLALiveBanksTest(unittest.TestCase):
         runtime, banks = owner()
         runtime.keys[0].refs[:] = [0]
         observed = []
-        class ObservedFlags(tuple):
-            def __getitem__(self, index):
-                observed.append(index)
-                return super().__getitem__(index)
-        runtime.current_occupancy_flags = lambda _: ObservedFlags((False,) * 4)
+        def read_flag(key, flag):
+            observed.append(flag)
+            return False
+        runtime.get_occupancy_flag = read_flag
         banks.banks[0].refresh_allowed()
         self.assertEqual(observed, [1, 0, 2, 3])
         observed.clear()
         banks.occupancy_bank_event(0, runtime)
         self.assertEqual(observed, [0, 1, 2, 3, 0, 2, 1, 3])
+
+    def test_native_short_circuit_rearms_only_actual_accessed_flag_attrs(self):
+        runtime, banks = owner()
+        runtime.keys[0].refs[:] = [0]
+        actual = FlashObject('occupancy:0')
+        manager = AttributeManager(actual)
+        attributes = tuple(BooleanAttribute(manager, name=f'flag:{flag}')
+                           for flag in range(4))
+        attributes[0].set(True)
+        seen = []
+        def read_flag(key, flag):
+            self.assertEqual(key, 0)
+            seen.append(flag)
+            return attributes[flag].value
+        runtime.get_occupancy_flag = read_flag
+        # Inspection is explicitly not a native predicate getter.
+        runtime.current_occupancy_flags = lambda _: self.fail('eager flags inspection')
+        for attr in attributes:
+            attr._published = True
+        actual._published = True
+        banks.banks[0].refresh_allowed()
+        self.assertEqual(seen, [1, 0])
+        self.assertEqual([attr._published for attr in attributes],
+                         [False, False, True, True])
+        self.assertFalse(actual._published)
+        seen.clear()
+        for attr in attributes:
+            attr._published = True
+        banks.occupancy_bank_event(0, runtime)
+        self.assertEqual(seen, [0, 0])
+        self.assertEqual([attr._published for attr in attributes],
+                         [False, True, True, True])
+        self.assertFalse(banks.banks[0].allowed._value)
+
+    def test_event_reads_actual_input_key_before_count_and_each_current_item(self):
+        runtime, banks = owner()
+        actual = FlashObject('occupancy:0')
+        input_key = ObjectReferenceAttribute(AttributeManager(actual),
+                                             name='occupancy:0.InputKey')
+        input_key.set(runtime.keys[0].object)
+        seen = []
+        def current_key(index):
+            seen.append(index)
+            self.assertIs(input_key.value, runtime.keys[0].object)
+            return runtime.keys[0]
+        runtime.occupancy_input_key = current_key
+        input_key._published = actual._published = True
+        banks.occupancy_bank_event(0, runtime)
+        self.assertEqual(seen, [0])
+        self.assertFalse(input_key._published)
+        self.assertFalse(actual._published)
+        runtime.keys[0].refs[:] = [2, 0]
+        seen.clear()
+        banks.occupancy_bank_event(0, runtime)
+        self.assertEqual(seen, [0, 0, 0])
+
+    def test_actual_occupancy_constructed_before_banks_owns_flag_events(self):
+        runtime = SENLLAKeyEvents.fresh(defer_smart_observers=True)
+        occupancy = SENLLALiveOccupancy(runtime.unit, runtime.keys,
+            bank_refresh=lambda current: banks.occupancy_bank_event(current.index, runtime),
+            join_active=lambda current: False,
+            broadcast_active=lambda current: runtime.broadcast_active.value,
+            broadcast_block=lambda current: runtime.broadcast_block.value,
+            has_block=lambda current, block: runtime._block_indices[block]
+                in runtime.keys[current.index].refs,
+            set_template=lambda current, kind: runtime.keys[current.index].template.set(
+                runtime.templates[kind]))
+        runtime.live_occupancy_dispatch = occupancy
+        active = BooleanAttribute(runtime.unit_manager, name='unit.maintenance_active')
+        block = ObjectReferenceAttribute(runtime.unit_manager, name='unit.maintenance_block')
+        banks = SENLLALiveBanks(runtime, maintenance_active=active, maintenance_block=block)
+        runtime.keys[0].refs[:] = [0]
+        bank = banks.banks[0]
+        bank.active.set(True)
+        runtime._set_flag(0, 1, True)
+        self.assertFalse(bank.active._value)
+        self.assertFalse(bank.allowed._value)
+        runtime._set_flag(0, 0, True)
+        self.assertEqual(runtime.current_occupancy_flags(0), (True, False, False, False))
+        self.assertEqual(runtime.graph.occupancy[0].flags, (False,) * 4)
+        self.assertIs(runtime.occupancy_input_key(0), runtime.keys[0])
+        self.assertIs(occupancy.keys[0].input_key._value, runtime.keys[0].object)
+        self.assertFalse(runtime.keys[0].smart.active)
+        current = occupancy.keys[0]
+        for flag in range(4):
+            current.attribute(flag)._published = True
+        banks.occupancy_bank_event(0, runtime)
+        self.assertEqual([current.attribute(flag)._published for flag in range(4)],
+                         [False, True, True, True])
 
     def test_event_captures_count_but_rereads_later_current_reference(self):
         runtime, banks = owner()

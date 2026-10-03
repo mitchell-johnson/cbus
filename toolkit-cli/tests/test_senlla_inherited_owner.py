@@ -293,6 +293,25 @@ class NativeUnitAttributeTests(unittest.TestCase):
         self.assertEqual(attr._value, '😀a')
         self.assertEqual((unit.depth, manager.depth, attr.depth), (0, 0, 0))
 
+    def test_utf16_equal_astral_and_surrogate_strings_do_not_publish(self):
+        unit, manager = self.manager()
+        before = []
+        publications = []
+        original = '\U0001f601'
+        equivalent = '\ud83d\ude01'
+        self.assertNotEqual(original, equivalent)
+        attr = UnitStringAttribute(manager, original, maximum=2,
+            before_change=lambda _, decision: before.append((decision.changed,
+                decision.previous, decision.proposed, unit.depth, manager.depth)),
+            after_change=lambda _: publications.append('dedicated'))
+        attr.publisher.subscribe(lambda _: publications.append('attribute'))
+        unit.publisher.subscribe(lambda _: publications.append('unit'))
+        attr.set(equivalent)
+        self.assertEqual(before, [(False,original,equivalent,0,0)])
+        self.assertEqual(publications, [])
+        self.assertEqual(attr._value, original)
+        self.assertEqual((attr.depth, manager.depth, unit.depth), (0,0,0))
+
     def test_enum_bounds_equal_noop_getter_rearms_and_callback_finally(self):
         unit, manager = self.manager()
         calls = []

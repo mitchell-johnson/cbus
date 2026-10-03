@@ -14,7 +14,7 @@ class SENLLAOwnerLoadTest(unittest.TestCase):
     These tests use actual project persistence and the owning adapters, but
     neither invoke Windows text APIs nor stand in for fresh Show/Apply/save.
     """
-    def owner(self, raw=None, *, creation=None):
+    def owner(self, raw=None, *, creation=None, defer_smart_observers=True):
         from test_senlla_inherited_owner import snapshot, document, english_metadata_name
         from test_senlla_control_primitives import source_strings
         from cbus_toolkit.senlla_project_bridge import SENLLAProjectBridge
@@ -29,7 +29,8 @@ class SENLLAOwnerLoadTest(unittest.TestCase):
         bridge = SENLLAProjectBridge.from_document(project, 254, 42, storage_path=path,
             metadata_name=english_metadata_name,
             creation_dispatch=creation or (lambda request, bridge, runtime: None))
-        inherited = SENLLAInheritedOwner(raw, bridge)
+        inherited = SENLLAInheritedOwner(raw, bridge,
+            defer_smart_observers=defer_smart_observers)
         owner = SENLLAOwner(raw, inherited_owner=inherited,
             control_provider=PersistentControlPrimitives(source_strings(), text=NativeText()))
         return owner, bridge, raw
@@ -129,7 +130,8 @@ class SENLLAOwnerLoadTest(unittest.TestCase):
         bridge = SENLLAProjectBridge.from_document(document(path),254,42,storage_path=path,
             metadata_name=english_metadata_name)
         raw = snapshot()
-        owner = SENLLAOwner(raw, inherited_owner=SENLLAInheritedOwner(raw,bridge),
+        owner = SENLLAOwner(raw, inherited_owner=SENLLAInheritedOwner(
+            raw, bridge, defer_smart_observers=True),
             control_provider=PersistentControlPrimitives(source_strings(),text=NativeText()))
         # Source finally executes the actual partial Unit refresh as well;
         # its nil-primary failure may replace the first metadata refusal.

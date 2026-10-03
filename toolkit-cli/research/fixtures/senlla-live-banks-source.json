@@ -103,6 +103,38 @@
       "final_lux": 2550,
       "final_store": 256,
       "initial_lux": 2550
+    },
+    {
+      "aggregate_flag_reads": [
+        1,
+        0
+      ],
+      "event_flag_reads": [
+        0,
+        0
+      ],
+      "flags": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "untouched_event_publication_guards": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "InputKey_getter_count": 1,
+      "references": []
+    },
+    {
+      "InputKey_getter_count": 3,
+      "references": [
+        2,
+        0
+      ]
     }
   ],
   "method_pins": {
@@ -140,6 +172,11 @@
       "address": "0x768268",
       "instruction_count": 9,
       "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean": {
+      "address": "0x7f43d8",
+      "instruction_count": 16,
+      "sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db"
     },
     "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate": {
       "address": "0x7f44d8",
@@ -230,6 +267,11 @@
       "address": "0xd007f0",
       "instruction_count": 14,
       "sha256": "5aeac87d5e89cde295b17e9c009ed11ce83f83826a29e75d9d4a21b89cdc5749"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetInputKey": {
+      "address": "0xd007a8",
+      "instruction_count": 15,
+      "sha256": "813ee0b691951e6481cf1ae992ccfc616facb528d9a4c0b09c3e37e5f457ec89"
     },
     "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetLightAndMovement": {
       "address": "0xd00814",
@@ -365,6 +407,8 @@
     "attribute_parent_depth_during_dedicated": 1,
     "bank_end": "same current Block pointer suppresses a deferred callback",
     "live_kernel_block_hook": "observes only; actual tracked subscriber already delivered",
+    "occupancy_flags": "One actual BooleanAttribute getter per native short-circuit operand; detached current_occupancy_flags inspection does not rearm other flags.",
+    "occupancy_input_key": "Actual ObjectReference getter before Count and each item, including publication rearm. Current stable constructor-bound adapter refuses arbitrary InputKey rebind.",
     "owned_store_block_publication": "bank updating suppresses its tracked Block callback",
     "root_binding": "SetBlock reference setter precedes expression activation",
     "use_group_attributes": "nil dedicated callbacks; real direct subscribers remain available"
@@ -408,8 +452,8 @@
       "CURRENT Active and opposite-lux clamp"
     ],
     "occupancy": [
-      "capture key reference Count",
-      "CURRENT reference ordinal",
+      "CURRENT occupancy.InputKey getter before captured reference Count",
+      "CURRENT occupancy.InputKey getter before each CURRENT reference ordinal",
       "first CURRENT bank Block-identity match",
       "CURRENT flags then Active=false if any",
       "reread CURRENT flags and CURRENT maintenance",

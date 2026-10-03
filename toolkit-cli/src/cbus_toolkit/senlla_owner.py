@@ -260,6 +260,7 @@ class SENLLAOwner:
         from .senlla_inherited_owner import SENLLAInheritedOwner
         from .senlla_control_primitives import PersistentControlPrimitives
         from .senlla_late_unit import SENLLALateUnit
+        from .senlla_live_occupancy import SENLLALiveOccupancy
         if not isinstance(snapshot, SENLLAInputSnapshot):
             raise SensorError('SENLLA owner requires the complete guarded 93-field snapshot')
         if not isinstance(inherited_owner, SENLLAInheritedOwner):
@@ -271,6 +272,8 @@ class SENLLAOwner:
             raise SensorError('Inherited owner must retain this exact source snapshot and prekey graph')
         if not isinstance(control_provider, PersistentControlPrimitives):
             raise SensorError('Complete SENLLA owner requires its concrete control provider')
+        if not prekey.runtime.defer_smart_observers:
+            raise SensorError('Complete owner requires constructor-deferred historical Smart observers')
         self.inherited_owner = inherited_owner
         self.control_provider = control_provider
         self.prekey = prekey
@@ -281,12 +284,45 @@ class SENLLAOwner:
         inherited_owner.parameter_read = self._parameter_read
         self.prekey.parameter_read = self._parameter_read
         self.runtime.level_dispatch = self._level_lookup
+        # ST7 creates occupancy links before the surface constructor creates
+        # bank objects. Initial nil Templates produce no flag/bank event.
+        self.occupancy = SENLLALiveOccupancy(self.runtime.unit, self.runtime.keys,
+            bank_refresh=self._occupancy_bank_refresh,
+            join_active=lambda _: False,  # SENLLA's source Join support is false.
+            broadcast_active=lambda _: self.runtime.broadcast_active.value,
+            broadcast_block=lambda _: self.runtime.broadcast_block.value,
+            has_block=self._occupancy_has_block,
+            set_template=self._occupancy_set_template,
+            trace=self.runtime._trace)
+        self.runtime.bind_live_occupancy(self.occupancy)
         self.late = SENLLALateUnit(inherited_owner, self.journal)
         self.phase = 'fresh_constructor'
         self.runtime.application_dispatch = self._application_changed
         self.failed = False
         self.events = []
         self._objects = self._object_signature()
+
+    def _occupancy_bank_refresh(self, occupancy):
+        current = self.runtime.live_bank_dispatch
+        if current is None:
+            raise OwnerPhaseRequired('actual_bank_constructor_before_flag_events', '0xcfbb28')
+        return current.occupancy_bank_event(occupancy.index, self.runtime)
+
+    def _occupancy_has_block(self, occupancy, block):
+        actual = occupancy.input_key.value
+        key = self.runtime.keys[occupancy.index]
+        if actual is not key.object:
+            raise SensorError('Stable occupancy requires its SAME owning InputKey')
+        return any(self.runtime.blocks[index].object is block for index in key.refs)
+
+    def _occupancy_set_template(self, occupancy, kind):
+        # RefreshMacroFunctionFromEventFlags already performed its one native
+        # InputKey getter before this actual setter. Validation is inspection.
+        actual = occupancy.input_key._value
+        key = self.runtime.keys[occupancy.index]
+        if actual is not key.object:
+            raise SensorError('Occupancy template setter requires its SAME owning InputKey')
+        key.template.set(self.runtime.templates[kind])
 
     def _parameter_read(self, name, source, runtime):
         if runtime is not self.runtime:
@@ -326,7 +362,9 @@ class SENLLAOwner:
                 *(item for block in engine.blocks for item in
                   (block.object, block.manager, block.application, block.group)),
                 *(item for key in engine.keys for item in
-                  (key.object, key.manager, key.application, key.template)))
+                  (key.object, key.manager, key.application, key.template)),
+                *(item for occupancy in self.occupancy.keys for item in
+                  (occupancy.object, occupancy.manager, *occupancy.attributes.values())))
 
     def _same_objects(self):
         current = self._object_signature()

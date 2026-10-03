@@ -37,12 +37,18 @@ actual Windows text provider, including identical strings; unresolved NLS
 refuses and interrupts the owner. The normal fresh profile has no external
 broadcast form callback installed.
 
-Occupancy predicates and setters currently use the retained kernel's flag
-model and bank event dispatch. Their Boolean values and order are preserved;
-native managed flag attributes and their getter rearming remain a separate
-owner dependency. Key collection and group-manager count identity, current
-manager inventory and metadata notifications retain the kernel and bridge's
-explicit source provider boundaries.
+With the complete owner's constructor-bound occupancy adapter, predicates
+and setters use the actual managed flag attributes and bank event dispatch.
+Broadcast compatibility reads Light, Dark, Any and Sunset in source order,
+stopping at the first true flag; a Scene key skips that predicate entirely.
+Each reached getter rearms its actual managed attribute. Inspection snapshots
+do not serve as getter authority. The Scene predicate first checks current
+Template for nil, then rereads Template separately for each reached type
+23/24/25 comparison; a later nil reference interrupts at its dereference.
+Historical component runtimes retain their
+qualified kernel flag model. Key collection and group-manager count identity,
+current manager inventory, mutable group-address caches and metadata
+notifications retain their explicit owning/provider boundaries.
 
 Authored tests exercise actual project objects, live bank fields, managed
 getter rearming, callback mutation during list population and synchronous combo

@@ -70,11 +70,27 @@ class SENLLALateForms:
         return text
 
     def _is_scene(self, key):
-        current = self.runtime.keys[key].template.value
-        return current is not None and current.identity in (23, 24, 25)
+        if self.runtime.keys[key].template.value is None:
+            return False
+        for kind in (23, 24, 25):
+            current = self.runtime.keys[key].template.value
+            if current is None:
+                raise SensorError('Native IsSceneKey dereferences a CURRENT nil template')
+            if current.identity == kind:
+                return True
+        return False
 
     def _has_block(self, key, actual):
         return actual is not None and self._block_index(actual) in self.runtime.keys[key].refs
+
+    def _broadcast_compatible(self, key):
+        # d0147c reads Light, Dark, Any, Sunset in this order and stops at the
+        # first true value. Inspection flags do not perform native Resolve.
+        for flag, source in enumerate(('0xd01488', '0xd01494', '0xd014a0', '0xd014ac')):
+            self._event('occupancy_getter', key=key, flag=flag, source=source)
+            if self.runtime.get_occupancy_flag(key, flag):
+                return False
+        return True
 
     def _blocks(self, source):
         self.runtime.block_collection.resolve_change()
@@ -155,7 +171,7 @@ class SENLLALateForms:
                 include = True
                 for key in range(len(self.runtime.keys)):
                     if self._has_block(key, block.object) and (
-                            self._is_scene(key) or any(self.runtime.current_occupancy_flags(key))):
+                            self._is_scene(key) or not self._broadcast_compatible(key)):
                         include = False
                         break
                 if include:

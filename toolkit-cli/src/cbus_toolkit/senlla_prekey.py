@@ -52,7 +52,7 @@ branches at their pinned positions. Both contracts are internal owner boundaries
 not JSON declarations or simulated proof of native backend persistence.
 """
     def __init__(self, snapshot, *, source_dispatch=None, inherited_dispatch=None,
-                 parameter_read=None):
+                 parameter_read=None, defer_smart_observers=False):
         if not isinstance(snapshot, SENLLAInputSnapshot):
             raise SensorError('Fresh prekey loading requires the complete guarded SENLLA snapshot')
         self.raw = SENLLAInputSnapshot(snapshot.identity, snapshot.expected)
@@ -76,7 +76,8 @@ not JSON declarations or simulated proof of native backend persistence.
         self.requests = []
         self.runtime = SENLLAKeyEvents.fresh(
             source_dispatch=source_dispatch,
-            application_dispatch=self._application_changed)
+            application_dispatch=self._application_changed,
+            defer_smart_observers=defer_smart_observers)
         self.status_report_interval = IntegerAttribute(
             self.runtime.unit_manager, 0, name='unit.status_report_interval',
             trace=self.runtime._trace)

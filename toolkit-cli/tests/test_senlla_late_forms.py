@@ -9,6 +9,7 @@ from cbus_toolkit.senlla_late_forms import SENLLALateForms
 from cbus_toolkit.senlla_late_unit import SENLLALateUnit
 from cbus_toolkit.senlla_owner import SENLLAParameterJournal
 from cbus_toolkit.senlla_project_bridge import SENLLAProjectBridge
+from cbus_toolkit.sensors import SensorError
 from test_senlla_inherited_owner import document, english_metadata_name, snapshot
 
 
@@ -42,6 +43,69 @@ class SENLLALateFormsTests(unittest.TestCase):
 
     def set(self, name, value):
         self.late.set(name, value, source='authored.control.setup')
+
+    def test_broadcast_population_short_circuits_actual_managed_flag_getters(self):
+        from test_senlla_owner import SENLLAOwnerLoadTest
+        helper = SENLLAOwnerLoadTest()
+        self.addCleanup(helper.doCleanups)
+        for true_flag in range(4):
+            with self.subTest(true_flag=true_flag):
+                owner, _, _ = helper.owner(snapshot(BlockAllocation=[1] + [0] * 7))
+                owner.load()
+                runtime = owner.runtime
+                runtime._set_flag(0, true_flag, True)
+                forms = SENLLALateForms(owner.late)
+                actual = runtime.live_occupancy_dispatch.key(0)
+                for flag in range(4):
+                    actual.attribute(flag)._published = True
+                forms.populate_broadcast()
+                self.assertEqual(forms.broadcast_collection.items,
+                                 [block.object for block in runtime.blocks[1:]])
+                self.assertEqual([(event['key'], event['flag']) for event in forms.events
+                    if event['operation'] == 'occupancy_getter'],
+                    [(0, flag) for flag in range(true_flag + 1)])
+                # Actual getters rearm only the reached managed attributes.
+                self.assertEqual([actual.attribute(flag)._published for flag in range(4)],
+                                 [False] * (true_flag + 1) + [True] * (3 - true_flag))
+
+    def test_scene_broadcast_filter_skips_managed_occupancy_predicate(self):
+        self.runtime.set_template(0, 24)
+        self.forms.populate_broadcast()
+        self.assertNotIn(self.runtime.blocks[0].object, self.forms.broadcast_collection.items)
+        self.assertFalse(any(event['operation'] == 'occupancy_getter' for event in self.forms.events))
+
+    def test_scene_predicate_rereads_current_template_at_each_comparison(self):
+        attribute = self.runtime.keys[0].template
+        original_trace = attribute._trace
+        for kind, count in ((None, 1), (23, 2), (24, 3), (25, 4), (16, 4)):
+            with self.subTest(kind=kind):
+                # Authored getter-only current state, not a template mutation workflow.
+                attribute._value = None if kind is None else self.runtime.templates[kind]
+                observed = []
+                def trace(event):
+                    if event.operation == 'resolve' and event.object_name == attribute.name:
+                        observed.append(event)
+                    original_trace(event)
+                attribute._trace = trace
+                self.assertEqual(self.forms._is_scene(0), kind in (23, 24, 25))
+                self.assertEqual(len(observed), count)
+        attribute._trace = original_trace
+
+    def test_scene_predicate_refuses_nil_after_nonnull_initial_getter(self):
+        attribute = self.runtime.keys[0].template
+        attribute._value = self.runtime.templates[24]
+        observed = []
+        original_trace = attribute._trace
+        def trace(event):
+            if event.operation == 'resolve' and event.object_name == attribute.name:
+                observed.append(event)
+                if len(observed) == 2:
+                    attribute._value = None
+            original_trace(event)
+        attribute._trace = trace
+        with self.assertRaisesRegex(SensorError, 'CURRENT nil template'):
+            self.forms._is_scene(0)
+        self.assertEqual(len(observed), 2)
 
     def test_maintenance_uses_actual_bank_active_and_manager_order(self):
         first, second = self.group(56, 9), self.group(57, 8)

@@ -1,16 +1,20 @@
 # Internal SENLLA owning load and PP journal
 
 `SENLLAOwner` retains the concrete `SENLLAInheritedOwner`, its prekey engine,
-the actual project bridge, the late Unit attributes and the live bank adapter.
+the actual project bridge, the live occupancy objects, the late Unit attributes
+and the live bank adapter.
 It admits the guarded 93-field SENLLA/5754PE/2.4.00..2.4.99 source profile. It
 has no public preview/apply command and does not yet admit a complete save.
 The Windows application, hardware and Windows text APIs were not executed for
 this checkpoint.
 
 Construct the inherited owner against an actual selected `ProjectDocument` or
-native database, then pass that owner and the concrete persistent control
-provider to `SENLLAOwner`. Construction registers the late Unit and bank
-attributes before PP loading. `load()` performs the ordered source getters and
+native database with `defer_smart_observers=True`, then pass that owner and the
+concrete persistent control provider to `SENLLAOwner`. The complete owner
+requires this constructor mode: the historical detached Smart listeners are
+never activated and later removed. Construction creates and binds all eight
+actual occupancy objects before the surface banks bind their blocks. It
+registers the late Unit and bank attributes before PP loading. `load()` performs the ordered source getters and
 setters on those same objects. It returns the same owner at
 `fresh_identification`, with the original outer Unit update balanced to zero.
 
@@ -32,6 +36,48 @@ authored zero-extra-listener metadata profile; that profile is not native
 workflow acceptance. A getter never authorizes a future cached object or a
 replacement graph. Later application changes require the loaded Scene/hidden
 reference dispatcher and explicitly refuse while that dispatcher is open.
+
+## Actual occupancy and bank callbacks
+
+Each occupancy object owns its InputKey reference, four Boolean attributes,
+manager, template follower and native decision/refresh guards. Its reference
+points to the original engine key. The SAME objects and managers remain bound
+through PP loading. Raw ST7 occupancy writes execute the actual setters;
+mutual-exclusion clears finish their nested event callbacks before the initiating
+event reaches the same live bank adapter. Sunset remains independent.
+
+`get_occupancy_flag(key, flag)` executes one actual Boolean getter at its native
+short-circuit position. Bank aggregate checks read Dark, Light, Any, Sunset;
+the event's Active check reads Light, Dark, Any, Sunset; its later Allowed check
+rereads Light, Any, Dark, Sunset. The actual InputKey getter precedes reference
+Count and each CURRENT reference item. Broadcast reassignment evaluates each
+key's compatibility once, then reads InputKey only when it needs a candidate.
+The broadcast dedicated handler reads actual MaintActive before its conditional
+BroadcastActive, MaintBlock and BroadcastBlock getters. Equal nil timer-override
+writes still publish their blocks and deliver the newer actual bank listeners.
+
+Inspection is separate from native getters. `current_occupancy_flags()` and
+the nested `live_occupancy` snapshot read stored values without rearming
+publication. The numeric bank graph's occupancy remains a historical detached
+projection; `bank_graph_occupancy_authoritative` is false when the actual adapter
+is installed. It cannot supply callback authority. The complete owner retains
+the source SENLLA JoinActive=false branch and stable constructor-bound eight
+InputKeys; arbitrary rebind, destruction or collection transitions refuse.
+
+The actual late macro/event decisions remain nil until their real source
+handlers are installed. `install_macro_decision()` and
+`install_event_template_callback()` accept owning callbacks, with the native
+mutable decision state and byte96/97 guards. An installed callback must complete
+its source work or raise. The source event-template setter consumes the one
+InputKey getter already performed by occupancy, and validates canonical binding
+without adding another getter. Its templates29/30/33 copy their exact registered
+default command groups; later fresh function controls still require their own
+ordered callbacks.
+
+The inherited string setter compares UTF-16 units. An astral character and the
+equivalent explicit surrogate pair are equal at this native boundary, so the
+default changed flag is false and no update/publication occurs. BeforeChange
+still runs before that decision and can explicitly change it.
 
 ## Current PP reads
 
@@ -91,7 +137,7 @@ not protocol alias proof.
 
 `initialize()` explicitly refuses at the main identification/director/late
 binding boundary. Persistent scalar controllers, actual focus/exit order,
-remaining managed occupancy identities, and loaded application/hidden reference
+remaining native collection identities, and loaded application/hidden reference
 dispatch are not inferred from final field values. The guarded snapshot also
 excludes extra LOAD-agent Nightlight cache input; its absent-name default false
 branch is explicitly qualified. The complete owner must still execute empty
@@ -105,3 +151,12 @@ Its literal tests cover callback-modified current PP, canonical Scene/level
 creation, original power groups before surface margin cache clearing, source
 capture order and interruption. They establish this checkpoint's boundaries;
 they do not replace native or physical acceptance.
+
+The occupancy integration adds
+[senlla-owner-live-occupancy-source.json](../research/fixtures/senlla-owner-live-occupancy-source.json)
+with 135 method pins, five occupancy VMT slots and the SENLLA Join slot. Its
+focused tests cover actual constructor order, eight raw flag combinations,
+nested event depths, exact short-circuit reads, template defaults and UTF-16
+equality. Group CurrentLevel/TargetLevel identities are separate from Scene
+action-selector levels; those live surface controls and physical-level queries
+remain part of the uncompleted fresh bootstrap.

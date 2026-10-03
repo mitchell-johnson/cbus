@@ -190,17 +190,18 @@ class SENLLALiveBanks:
     def _event(self, operation, **values):
         self.runtime._event(operation, **values)
 
-    def _flags(self, key):
-        reader = getattr(self.runtime, 'current_occupancy_flags', None)
-        flags = reader(key) if reader is not None else self.runtime.graph.occupancy[key].flags
-        if len(flags) != 4 or any(type(value) is not bool for value in flags):
-            raise SensorError('Current occupancy requires four actual Boolean flags')
-        return flags
+    def _flag(self, key, flag):
+        # One actual native Boolean getter, including its publication rearm.
+        # A tuple inspection must not eagerly resolve the three unused attrs.
+        value = self.runtime.get_occupancy_flag(key, flag)
+        if type(value) is not bool:
+            raise SensorError('Current occupancy requires an actual Boolean flag')
+        return value
 
     def _occupied(self, key, order=(1, 0, 2, 3)):
         # The ST7 aggregate and two event predicates use different native
         # Boolean getter orders; each getter rereads current flags.
-        return any(self._flags(key)[index] for index in order)
+        return any(self._flag(key, index) for index in order)
 
     def attach(self):
         current = getattr(self.runtime, 'live_bank_dispatch', None)
@@ -233,9 +234,11 @@ class SENLLALiveBanks:
         """One native event, using CURRENT flags/ref items after each setter."""
         self._same_runtime(runtime)
         key = _index(key, 'Key index')
-        count = len(runtime.keys[key].refs)
+        # Both native InputKey getters are observable: the first precedes
+        # captured Count, the second precedes each CURRENT reference item.
+        count = len(runtime.occupancy_input_key(key).refs)
         for ordinal in range(count):
-            refs = runtime.keys[key].refs
+            refs = runtime.occupancy_input_key(key).refs
             if ordinal >= len(refs):
                 raise SensorError('Native block-reference ordinal became unavailable')
             block = runtime.blocks[_index(refs[ordinal], 'Referenced block')].object
