@@ -1000,3 +1000,19 @@ using Pro blocks/scenes. Read
 `toolkit-cli/docs/project-documentation-neo-profiles.md`. A document generated
 from saved XML or one fresh database snapshot is not original GUI/print or
 physical acceptance.
+
+
+For explicit retained Time/Date callbacks, read
+`toolkit-cli/docs/edlt-time-date-controls.md`. Add `time_date_controls` inside
+the owning ordered `time-date` operation, with exact current source-issued
+ordinal/identity/value for offered writes. Binding reads preserve raw display
+255. Type writes admit only10/11 despite exposing the complete source choice
+lists. Changed10→11 claims its actual next record and available Restore0;
+same11 and11→10 preserve the neighbor. Keep full PP/global/LevelBarStyle,
+static-label, causal Reset and terminal ownership guards. JSON receipts or
+copied/rebound bindings cannot issue continuation authority. Assignment and
+notification intents do not prove raw-token equality, initialization mode,
+implicit WinForms dispatch or rendering. Use one owning PP SAVE plus a separate
+project SAVE and never replay uncertainty. If cmqttd returns the exact applied
+repository500, the transport closes and automatic parent/SceneManager inverse
+recovery is suppressed; fresh read-only inspection remains explicit.

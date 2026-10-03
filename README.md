@@ -88,10 +88,20 @@ Timer, Shutter and Room Courtesy add explicit `dual_key_controls` inside their
 owning parent operation. Raw fields remain untouched until the selected
 source-owned setter/getter is invoked; timer, level, colour and icon bindings
 share one guarded parent save. Read [dual-key controls](toolkit-cli/docs/edlt-dual-key-controls.md).
+Time/Date operations also accept explicit `time_date_controls`: retained
+display/type bindings and shared format choices preserve stored values until
+the declared callback writes them. Growth claims the actual next slice;
+same-type and shrink callbacks preserve it. Read
+[Time/Date controls](toolkit-cli/docs/edlt-time-date-controls.md) for the JSON
+schema and one-save workflow.
 Saved Neo/NeoPro reports now cover all 43 exact classes across 59 source factory
 partitions, including the six couplers' Bistable column and distinct group usage.
 Read [Neo report profiles](toolkit-cli/docs/project-documentation-neo-profiles.md) for
 required snapshots and remaining original/physical acceptance.
+DIN relay/dimmer settings also offer `--toolkit-save` for the source-owned
+agent-save projection across all eight supported 2.7.00 profiles, including
+RELDN8's ordered marshalling. Existing targeted plans remain usable. Read
+[DIN settings](toolkit-cli/docs/din-output-settings.md).
 The existing Reset initial-profile guards remain unchanged, and original
 form dispatch, rendering and audio hardware acceptance remain open.
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
@@ -251,6 +261,12 @@ the
 retains its separate validation record.
 The earlier [DALI/SENLL batch](toolkit-cli/docs/feature-batch-2026-09-30.md)
 retains its separate source-bound acceptance record.
+
+cmqttd distinguishes a repository failure before replacement from a write
+already applied whose directory-sync durability is unconfirmed. The latter
+returns an explicit 500 and the CLI stops automatic recovery writes. Inspect
+state through a fresh connection before any manual recovery; see
+[repository recovery](docs/cgate-repository-capacity.md).
 
 ## Which program do I need?
 

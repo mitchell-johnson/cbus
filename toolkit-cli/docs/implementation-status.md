@@ -2,6 +2,29 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [Time/Date and repository recovery successor](feature-batch-2026-10-03-time-date-recovery.md)
+adds explicit retained Time/Date display/type and global format callbacks inside
+the owning parent transaction. Reads preserve raw values; changed two-slice
+growth owns the actual adjacent record, while equality/shrink preserves it.
+Complete source choices are visible, but this callback profile writes only
+Time/Date types 10/11. Full PP, static-label, lifecycle and XML graph checks
+remain active. Original notifications, GUI scheduling and hardware acceptance
+remain separate.
+cmqttd also preserves an applied replacement after a directory-sync fault and
+reports durability uncertainty rather than claiming rollback. The exact error
+stops transport/parent/SceneManager automatic inverse writes. The batch report
+records the final focused source/wheel and required Rust validation; its author
+and release scopes remain distinct. The category ledger and unresolved global
+functional percentage are unchanged.
+Final affected source and fresh installed-wheel scopes each pass 640
+parents and 1,490 separate subtests with 15 disclosed skips, all 28 new
+Time/Date and 20 preserved DIN public cases. All 380 package files match;
+actual pytest installed origins and 4,012 phase-input pins are verified.
+Required Rust gates pass 8,728 tests with one private-input ignore in
+the documented immutable internal-executable profile; the failed external trust
+epoch is retained separately. Exact evidence and limitations are in the
+[release receipt](../research/fixtures/time-date-recovery-owned-release-20261003.json).
+
 The [DIN agent-save batch](feature-batch-2026-10-03-din-agent-save.md)
 adds opt-in save normalization for the eight current relay/dimmer 2.7.00
 profiles, including RELDN8's ordered marshalling behavior. V2 plans preserve

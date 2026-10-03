@@ -380,8 +380,11 @@ workload exceeds the old 32 MiB failure point and survives fresh daemon restart,
 with exact graph readback and continued MQTT delivery on owned fixtures. Read
 [capacity, durability and remaining limits](cgate-repository-capacity.md) and
 inspect the `repository_*` capability fields before relying on this profile.
-Mutation-memory scaling, post-rename disk-fault acceptance and original C-Gate
-capacity comparison remain open under [issue77](https://github.com/mitchell-johnson/cbus/issues/77).
+An applied replacement followed by a directory-sync fault keeps the changed model
+and returns the exact applied/durability-unconfirmed 500 reply. Eight deterministic
+software fault tests cover this recovery boundary. Mutation-memory scaling, broad
+OS/power-loss fault acceptance and original C-Gate capacity comparison remain open
+under [issue77](https://github.com/mitchell-johnson/cbus/issues/77).
 
 MQTT lighting commands and C-Gate share the PCI but retain separate response
 contracts. The MQTT worker keeps commands FIFO through correlated positive or
