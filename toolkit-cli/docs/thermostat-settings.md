@@ -141,11 +141,14 @@ decimal address. This range is a CLI boundary, not a recovered GUI filter.
 A manually named output group is retained. An automatically named group with
 this unit's `[CGnn]` prefix can be renamed using the loaded plant/installation.
 A missing source address can reuse a uniquely matching generated name elsewhere
-or create a group at the source address. Ambiguous generated names and consumed
-non-ASCII name searches are refused because original manager/locale ordering is
-not established. This path does not use template allocation or infer manager
-order from XML. Loading effects remain in the transaction even when a later
-selection chooses another group.
+or create a group at the source address. The search compares ASCII letters
+without changing non-ASCII code units, so unrelated Unicode names are admitted.
+More than one matching generated name still refuses because original manager
+order is not established. This path does not use template allocation or infer
+manager order from XML. Loading effects remain in the transaction even when a
+later selection chooses another group. Read
+[default names and Unicode inventories](thermostat-default-names.md) for the
+source comparison and preservation boundary.
 
 The selected control must be enabled in the loaded model. Cooling and heating
 use their recovered plant gates; heat fans are disabled for virtual plant 8.
@@ -165,9 +168,9 @@ retry, rollback, deletion or a later save. Whole-project verification permits
 only planned renames and creations, while preserving all retained metadata.
 The [source annex](thermostat-output-groups-source.md) describes this component
 projection. [Typed Add outcomes](thermostat-output-add.md) extend this ordered
-history on the same graph and save owner. Zone history, application changes,
-template callbacks, output Edit/Delete and complete initialized GUI behavior
-remain separate work.
+history on the same graph and save owner. [Typed output Edit](thermostat-output-edit.md)
+also shares this owner. Zone history, application changes, template callbacks,
+output Delete and complete initialized GUI behavior remain separate work.
 
 ## Temperature preference
 
@@ -210,4 +213,4 @@ The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).pla
 - **Earlier temperature packaged check.** The [temperature acceptance receipt](../research/experiments/2026-09-30/thermostat-temperature-focused-acceptance.json) records 45 passing offline tests (598 subtests) and five passing native tests. A fresh installed wheel passed the same 45 offline and five native tests; all 258 package files matched source and installation. No selected test skipped and no full suite ran.
 - **Disabled remote saves.** The [source receipt](../research/experiments/2026-09-30/thermostat-remote-save-static.json) pins 129 checks over 20 methods and nine independent branch examples. The [focused acceptance receipt](../research/experiments/2026-09-30/thermostat-disabled-remotes-focused-acceptance.json) records 50 offline tests with 618 subtests and seven owned native tests. Public CLI parsing/dispatch covers all four aliases, unrelated PP and group preservation, one save/reload followed by a no-op, and invalid-source refusal without writes. No CNI connection occurred. Packaging was unchanged and no new wheel or full suite was run for this slice.
 - **Typed output Add.** Accepted Add and direct cancellation interleave with existing selections after ordinary loading. The [operator workflow](thermostat-output-add.md) distinguishes static source rules, exact name transport, complete preflight and owned backend validation from deferred original/native or physical acceptance. All effects remain inside this settings owner.
-- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Edit/Delete and application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.
+- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Delete and application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.

@@ -706,7 +706,7 @@ currently selected identity: pass `op: "edit-output-group"`, `parameter`,
 Address/OID are immutable, shared renames remain causal, existing Level Values
 stay opaque and uncertain writes are never replayed. Read
 `toolkit-cli/docs/thermostat-output-add.md` and
-`toolkit-cli/docs/thermostat-output-edit.md`. Omit --set for a bounded load/save of the current snapshot. Keep
+`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. Omit --set for a bounded load/save of the current snapshot. Keep
 all project networks closed, own project editing exclusively and review uncertain
 creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
