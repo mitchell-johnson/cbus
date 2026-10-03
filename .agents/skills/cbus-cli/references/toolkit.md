@@ -1000,3 +1000,17 @@ using Pro blocks/scenes. Read
 `toolkit-cli/docs/project-documentation-neo-profiles.md`. A document generated
 from saved XML or one fresh database snapshot is not original GUI/print or
 physical acceptance.
+
+## Per-unit Neo indicator panel
+
+Use `keys neo-indicator-editor-show|neo-indicator-editor-plan` with a decoded
+schema and PP snapshot; the plan takes an ordered `--controls` JSON array.
+The existing-database `cgate unit ... neo-indicator-editor` command accepts
+`--controls` or a reviewed `--plan`, with `--dry-run` for PP staging only.
+This is separate from the Unit Magic bulk options/styles. Thirty ordinary
+profiles at firmware 2.5.00 support physical LED style/on-colour edits,
+read-only derived off-colours, global indicator callbacks and all-eight-slot
+load/save normalization. KEYE remapping and whole-parent form histories remain
+outside this lane. Consult `toolkit-cli/docs/neo-indicator-editor.md` for exact
+control eligibility, catalogue labels, hidden-field normalization and source
+versus runtime acceptance boundaries.

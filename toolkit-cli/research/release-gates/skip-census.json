@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 724,
-    "modules_without_skip_sites": 407,
-    "modules_with_skip_sites": 317,
+    "test_modules": 727,
+    "modules_without_skip_sites": 409,
+    "modules_with_skip_sites": 318,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,7 +62,7 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 109,
+      "original_toolkit": 110,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 157
+      "none": 158
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -7882,6 +7882,42 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_neo_indicator_editor.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Original Toolkit EXE/MAP explicitly required for static hash verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "NeoIndicatorEditorTests::test_optional_original_static_review"
+          ]
         }
       ]
     },

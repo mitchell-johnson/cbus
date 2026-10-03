@@ -2,6 +2,16 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [per-unit Neo indicator panel](neo-indicator-editor.md) adds ordered
+physical LED and global controls for 30 ordinary firmware-2.5.00 profiles,
+including Reflection/Classic load/save normalization and catalogue colours.
+Reviewed plans bind identity, schema, source values and deterministic callback
+replay before staging. Existing Unit Magic bulk commands retain their behavior.
+KEYE remapping, brightness-group object selection/creation, whole-parent form
+history, other profiles and original/native/hardware acceptance remain open
+under issue 39. The [batch report](feature-batch-2026-10-03-neo-indicator-editor.md)
+records the bounded source and owned-backend evidence.
+
 The [DIN agent-save batch](feature-batch-2026-10-03-din-agent-save.md)
 adds opt-in save normalization for the eight current relay/dimmer 2.7.00
 profiles, including RELDN8's ordered marshalling behavior. V2 plans preserve

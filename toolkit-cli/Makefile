@@ -93,6 +93,15 @@ build-interop:
 check-cgate-interop: compile
 	test -x "$(CGATE_MOCK_BIN)"
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]' \
@@ -383,6 +392,15 @@ check-cgate-interop: compile
 check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]' \
