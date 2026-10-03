@@ -2452,6 +2452,8 @@ def build_parser():
     iope_offline_options(commands)
     from .iope_workflow_cli import options as iope_workflow_options
     iope_workflow_options(commands)
+    from .iope_output_display import options as iope_output_display_options
+    iope_output_display_options(commands)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
     from .wireless_cli import options as wireless_options
@@ -4344,6 +4346,9 @@ def run(args):
         from .wireless_cli import offline as wireless_offline
         return wireless_offline(args)
     if args.area == "iope-workflow":
+        if args.family == "output" and args.action in ("restrike-delay-time", "restrike-delay-choices"):
+            from .iope_output_display import run as iope_output_display_run
+            return iope_output_display_run(args)
         from .iope_workflow_cli import run as iope_workflow_run
         return iope_workflow_run(args)
     if args.area == "iope-settings":

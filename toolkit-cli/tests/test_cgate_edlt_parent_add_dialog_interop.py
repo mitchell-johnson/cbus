@@ -177,7 +177,7 @@ def invoke(relay,evidence,specs,tmp_path,case,*,dry_run=False,expected=0,complet
     argv.extend(['edlt-parent-transaction','--spec-dir',specs,'--auto-metadata','--exclusive-project',
                  '--operations',ops,'--display-preferences',prefs])
     if not dry_run:argv.extend(['--backup-project','PABACKUP'])
-    return cli(relay,evidence['calls'],*argv,expected=expected,complete=complete)
+    return cli(relay,evidence['calls'],*argv,expected=expected,complete=complete,process_timeout=90)
 
 
 def values(root):
