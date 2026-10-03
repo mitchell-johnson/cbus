@@ -1,0 +1,507 @@
+{
+  "format": "cbus-senlla-ordinary-key-matches-v1",
+  "source_kind": "static numeric first-match registry constants",
+  "original_instruction_execution": false,
+  "first_matches": [
+    {
+      "stages": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "function_type": 16,
+      "group_type": 56
+    },
+    {
+      "stages": [
+        13,
+        0,
+        0,
+        0
+      ],
+      "function_type": 0,
+      "group_type": 1
+    },
+    {
+      "stages": [
+        15,
+        0,
+        0,
+        0
+      ],
+      "function_type": 1,
+      "group_type": 2
+    },
+    {
+      "stages": [
+        11,
+        0,
+        0,
+        0
+      ],
+      "function_type": 2,
+      "group_type": 3
+    },
+    {
+      "stages": [
+        0,
+        11,
+        2,
+        14
+      ],
+      "function_type": 3,
+      "group_type": 4
+    },
+    {
+      "stages": [
+        0,
+        3,
+        2,
+        14
+      ],
+      "function_type": 3,
+      "group_type": 5
+    },
+    {
+      "stages": [
+        0,
+        3,
+        5,
+        14
+      ],
+      "function_type": 4,
+      "group_type": 6
+    },
+    {
+      "stages": [
+        0,
+        3,
+        4,
+        14
+      ],
+      "function_type": 5,
+      "group_type": 7
+    },
+    {
+      "stages": [
+        11,
+        7,
+        0,
+        7
+      ],
+      "function_type": 6,
+      "group_type": 8
+    },
+    {
+      "stages": [
+        13,
+        7,
+        15,
+        0
+      ],
+      "function_type": 6,
+      "group_type": 9
+    },
+    {
+      "stages": [
+        13,
+        8,
+        13,
+        8
+      ],
+      "function_type": 6,
+      "group_type": 10
+    },
+    {
+      "stages": [
+        0,
+        7,
+        0,
+        7
+      ],
+      "function_type": 6,
+      "group_type": 11
+    },
+    {
+      "stages": [
+        0,
+        7,
+        15,
+        0
+      ],
+      "function_type": 6,
+      "group_type": 12
+    },
+    {
+      "stages": [
+        13,
+        15,
+        0,
+        15
+      ],
+      "function_type": 7,
+      "group_type": 41
+    },
+    {
+      "stages": [
+        0,
+        13,
+        5,
+        14
+      ],
+      "function_type": 8,
+      "group_type": 42
+    },
+    {
+      "stages": [
+        0,
+        15,
+        4,
+        14
+      ],
+      "function_type": 9,
+      "group_type": 43
+    },
+    {
+      "stages": [
+        0,
+        10,
+        5,
+        14
+      ],
+      "function_type": 10,
+      "group_type": 44
+    },
+    {
+      "stages": [
+        0,
+        9,
+        4,
+        14
+      ],
+      "function_type": 11,
+      "group_type": 45
+    },
+    {
+      "stages": [
+        0,
+        12,
+        9,
+        0
+      ],
+      "function_type": 12,
+      "group_type": 46
+    },
+    {
+      "stages": [
+        0,
+        6,
+        9,
+        0
+      ],
+      "function_type": 13,
+      "group_type": 47
+    },
+    {
+      "stages": [
+        12,
+        0,
+        0,
+        0
+      ],
+      "function_type": 14,
+      "group_type": 48
+    },
+    {
+      "stages": [
+        6,
+        0,
+        0,
+        0
+      ],
+      "function_type": 15,
+      "group_type": 49
+    },
+    {
+      "stages": [
+        9,
+        0,
+        0,
+        0
+      ],
+      "function_type": 21,
+      "group_type": 54
+    },
+    {
+      "stages": [
+        7,
+        0,
+        0,
+        0
+      ],
+      "function_type": 31,
+      "group_type": 61
+    },
+    {
+      "stages": [
+        13,
+        7,
+        7,
+        0
+      ],
+      "function_type": 32,
+      "group_type": 62
+    },
+    {
+      "stages": [
+        13,
+        15,
+        7,
+        15
+      ],
+      "function_type": 34,
+      "group_type": 64
+    },
+    {
+      "stages": [
+        13,
+        7,
+        0,
+        7
+      ],
+      "function_type": 33,
+      "group_type": 63
+    },
+    {
+      "stages": [
+        13,
+        0,
+        15,
+        0
+      ],
+      "function_type": 36,
+      "group_type": 66
+    },
+    {
+      "stages": [
+        15,
+        0,
+        13,
+        0
+      ],
+      "function_type": 37,
+      "group_type": 67
+    },
+    {
+      "stages": [
+        11,
+        0,
+        11,
+        0
+      ],
+      "function_type": 38,
+      "group_type": 68
+    },
+    {
+      "stages": [
+        11,
+        7,
+        11,
+        7
+      ],
+      "function_type": 39,
+      "group_type": 69
+    },
+    {
+      "stages": [
+        15,
+        8,
+        13,
+        0
+      ],
+      "function_type": 41,
+      "group_type": 79
+    },
+    {
+      "stages": [
+        3,
+        0,
+        3,
+        0
+      ],
+      "function_type": 42,
+      "group_type": 72
+    },
+    {
+      "stages": [
+        10,
+        0,
+        9,
+        0
+      ],
+      "function_type": 43,
+      "group_type": 73
+    },
+    {
+      "stages": [
+        10,
+        0,
+        15,
+        0
+      ],
+      "function_type": 44,
+      "group_type": 74
+    },
+    {
+      "stages": [
+        13,
+        0,
+        9,
+        0
+      ],
+      "function_type": 45,
+      "group_type": 75
+    },
+    {
+      "stages": [
+        5,
+        14,
+        0,
+        14
+      ],
+      "function_type": 46,
+      "group_type": 82
+    },
+    {
+      "stages": [
+        4,
+        14,
+        0,
+        14
+      ],
+      "function_type": 47,
+      "group_type": 83
+    },
+    {
+      "stages": [
+        0,
+        0,
+        13,
+        0
+      ],
+      "function_type": 48,
+      "group_type": 84
+    },
+    {
+      "stages": [
+        0,
+        0,
+        9,
+        0
+      ],
+      "function_type": 48,
+      "group_type": 95
+    },
+    {
+      "stages": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "function_type": 48,
+      "group_type": 107
+    },
+    {
+      "stages": [
+        0,
+        0,
+        15,
+        0
+      ],
+      "function_type": 48,
+      "group_type": 113
+    },
+    {
+      "stages": [
+        0,
+        7,
+        0,
+        8
+      ],
+      "function_type": 48,
+      "group_type": 13
+    },
+    {
+      "stages": [
+        9,
+        7,
+        9,
+        8
+      ],
+      "function_type": 48,
+      "group_type": 14
+    },
+    {
+      "stages": [
+        0,
+        7,
+        11,
+        8
+      ],
+      "function_type": 48,
+      "group_type": 15
+    },
+    {
+      "stages": [
+        0,
+        7,
+        13,
+        8
+      ],
+      "function_type": 48,
+      "group_type": 16
+    },
+    {
+      "stages": [
+        15,
+        7,
+        15,
+        8
+      ],
+      "function_type": 48,
+      "group_type": 17
+    },
+    {
+      "stages": [
+        13,
+        0,
+        13,
+        0
+      ],
+      "function_type": 49,
+      "group_type": 31
+    },
+    {
+      "stages": [
+        15,
+        0,
+        15,
+        0
+      ],
+      "function_type": 51,
+      "group_type": 33
+    },
+    {
+      "stages": [
+        12,
+        0,
+        12,
+        0
+      ],
+      "function_type": 52,
+      "group_type": 34
+    }
+  ]
+}

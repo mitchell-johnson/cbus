@@ -1,0 +1,1429 @@
+{
+  "author_validation": {
+    "exact_spans_reopened": 165,
+    "full_suite_run": false,
+    "getter_sites_instruction_boundaries": true,
+    "mismatches": 0
+  },
+  "complete_toolkit_save": false,
+  "current_pp_getters": {
+    "Application": [
+      "0xcb80bc",
+      "0xcb80f1",
+      "0xcb830b"
+    ],
+    "AreaGroupAddress": [
+      "0xcc6717"
+    ],
+    "BlockAllocation": [
+      "0xcc7784"
+    ],
+    "ControlAppGroupAddress": [
+      "0xcca397"
+    ],
+    "CorridorLinkActive": [
+      "0xced093"
+    ],
+    "CorridorLinkBlock": [
+      "0xced0f2"
+    ],
+    "CorridorLinkEnablerGroup": [
+      "0xced0b3"
+    ],
+    "CorridorLinkOfficeBlock": [
+      "0xced127"
+    ],
+    "DualJoinEnablerControlGroup": [
+      "0xced312",
+      "0xced38b"
+    ],
+    "DualJoinEnablerGroup": [
+      "0xced3e4",
+      "0xced45b"
+    ],
+    "GroupAddress": [
+      "0xcc7618"
+    ],
+    "KeyDisableInverted": [
+      "0xced2d2"
+    ],
+    "LightIndex": [
+      "0xcc8159"
+    ],
+    "LightLevel": [
+      "0xcc8182",
+      "0xcc8230"
+    ],
+    "LightLevelStore1": [
+      "0xcc8267"
+    ],
+    "LightLevelStore2": [
+      "0xcc82a2"
+    ],
+    "PatchEnable": [
+      "0xccb3ae",
+      "0xccb3cd"
+    ],
+    "SecondApplicationBlocks": [
+      "0xcecfb3"
+    ],
+    "SingleJoinEnablerControlGroup": [
+      "0xced2fa",
+      "0xced34f"
+    ],
+    "SingleJoinEnablerGroup": [
+      "0xced3cc",
+      "0xced41f"
+    ],
+    "StatusReportInterval": [
+      "0xcc674a"
+    ],
+    "TimerExpiryCommand": [
+      "0xcc7ea4"
+    ],
+    "TimerHighByte": [
+      "0xcc7dc6"
+    ],
+    "TimerLowByte": [
+      "0xcc7df7"
+    ]
+  },
+  "dependencies": [
+    {
+      "fixture": "senlla-key-events-shared-constructor-source.json",
+      "sha256": "3970f8b8ec5080a8585c792c5cab9126b1f7a458f1ab67654ec9044de577eeb4"
+    },
+    {
+      "fixture": "senlla-prekey-source.json",
+      "sha256": "852ba29bdc326dbeb13a84f8e6bc25cf154fce4f13dd53b7c6a7f4834c2cf43e"
+    },
+    {
+      "fixture": "senlla-block-values-source.json",
+      "sha256": "7b64eb44b0dc9f1f499c2187dd3ea5fef02c299c2999146cf70c238672b0f04b"
+    },
+    {
+      "fixture": "senlla-inherited-owner-source.json",
+      "sha256": "2b25916df7dbb0f8f88a0efcbf865b8ea079a097e42bf5dbc6da34663a1fd24a"
+    },
+    {
+      "fixture": "senlla-late-unit-source.json",
+      "sha256": "4a9a7ada8b3532ff3fdda8916ce0d4f4a6662dcf6f8aad1a31b1d91946017947"
+    },
+    {
+      "fixture": "senlla-live-banks-source.json",
+      "sha256": "8f20cd69dd646d840d79754c20c0bd2b3fe257373e31441b9a8c06b087196107"
+    }
+  ],
+  "format": "senlla-owner-load-source-v1",
+  "literal_vectors": [
+    {
+      "block_levels": [
+        45,
+        56,
+        67,
+        78,
+        89,
+        90,
+        101,
+        112
+      ],
+      "captured_count": 11,
+      "current_levels": [
+        12,
+        23,
+        34,
+        45,
+        56,
+        67,
+        78,
+        89,
+        90,
+        101,
+        112
+      ],
+      "name": "metadata_growth_current_index3",
+      "raw_count": 10
+    },
+    {
+      "Store1_first": 5,
+      "Store2_after_callback": 9,
+      "expiry_after_callback": 6,
+      "group_after_callback": [
+        56,
+        23
+      ],
+      "later_level": 88,
+      "later_store1": 77,
+      "name": "current_block_callback",
+      "timer_high_low": [
+        1,
+        44
+      ],
+      "timer_seconds": 300
+    },
+    {
+      "LP_LR": [
+        1,
+        7
+      ],
+      "SR": 3,
+      "action_level_address": 23,
+      "control_group": [
+        202,
+        7
+      ],
+      "name": "Scene_and_Invoke_actual_metadata",
+      "scene_group": [
+        56,
+        9
+      ],
+      "scene_level": 44
+    },
+    {
+      "cached_margin_group": 255,
+      "loaded_margin_power_state": 0,
+      "loaded_margin_preset": 29,
+      "margin_group": 9,
+      "margin_storeflag": 0,
+      "name": "source_power_before_margin_cache_clear",
+      "raw_target_margin": [
+        40,
+        8
+      ],
+      "surface_margin_percent": 20,
+      "surface_target": 45,
+      "target_group": 7
+    },
+    {
+      "earlier_GroupAddress_and_store_and_allocation": "retained PP captures",
+      "later_key_and_SecondApplicationBlocks": "CURRENT post-callback reads",
+      "name": "earlier_capture_before_nil_trigger"
+    }
+  ],
+  "method_count": 165,
+  "methods": [
+    {
+      "address": "0x76a420",
+      "byte_count": 12,
+      "instruction_count": 8,
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.InternalCreate",
+      "span_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    {
+      "address": "0x76a444",
+      "byte_count": 28,
+      "instruction_count": 13,
+      "method": "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange",
+      "span_sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b"
+    },
+    {
+      "address": "0x7e7f3c",
+      "byte_count": 44,
+      "instruction_count": 18,
+      "method": "CIS_TCustomFlashObject.TCollectionManager.Add",
+      "span_sha256": "6115903d97d659e87eae16355460eebb033e917a0a311028864b4f5b89eee5b0"
+    },
+    {
+      "address": "0x7e8224",
+      "byte_count": 76,
+      "instruction_count": 27,
+      "method": "CIS_TCustomFlashObject.TCustomFlashObjectCollection.Create",
+      "span_sha256": "e2e7e0f07ca318d3c7f3b56b456f9b9797cb93a43da519ed598dd70077a99144"
+    },
+    {
+      "address": "0x7e8334",
+      "byte_count": 168,
+      "instruction_count": 55,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Create",
+      "span_sha256": "6eed2265e367b15bffaf015a64c4b9d074de8bcbfe79290f79110fc6b67733e5"
+    },
+    {
+      "address": "0x7e84ac",
+      "byte_count": 644,
+      "instruction_count": 143,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append",
+      "span_sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3"
+    },
+    {
+      "address": "0x7e8900",
+      "byte_count": 120,
+      "instruction_count": 46,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Changed",
+      "span_sha256": "b4976d9b63be3603887e2b25726738b7e597bcc93c47c1b80f68fbab80fbdbe9"
+    },
+    {
+      "address": "0x7e8b98",
+      "byte_count": 24,
+      "instruction_count": 11,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Clear",
+      "span_sha256": "cc4d4f3b5203d0df72826ed901e5ca71937f8133bce93fba5d0fd1b315dbe589"
+    },
+    {
+      "address": "0x7e8bb0",
+      "byte_count": 80,
+      "instruction_count": 28,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Delete",
+      "span_sha256": "10c1c65e10256d022edceb8941e62d3308c6093182ba99c41e73822f65781f89"
+    },
+    {
+      "address": "0x7e8f74",
+      "byte_count": 52,
+      "instruction_count": 18,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem",
+      "span_sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c"
+    },
+    {
+      "address": "0x7e9050",
+      "byte_count": 44,
+      "instruction_count": 17,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.InternalCreate",
+      "span_sha256": "4d57aee5f91dbcb637232a265b3d0857f9210cd9b85b9a73ca9e7489ddfcdd4e"
+    },
+    {
+      "address": "0x7e90bc",
+      "byte_count": 24,
+      "instruction_count": 12,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferenceChange",
+      "span_sha256": "4589079c7e5ff1c36ce256dd8cf7ec5c193d6d71a716f6a0df762f0c2af3e60b"
+    },
+    {
+      "address": "0x7e90d4",
+      "byte_count": 28,
+      "instruction_count": 13,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferenceReset",
+      "span_sha256": "9aa48ea9d0b1104b4afa869c5f9da94cf52ff85f352c0f866005a714a048c8b3"
+    },
+    {
+      "address": "0x7e92b4",
+      "byte_count": 84,
+      "instruction_count": 32,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetCollectionManager",
+      "span_sha256": "e476c2cf451954c0c59af86196b1eb9a935bc3d8e26d469e152c6e1eff80669a"
+    },
+    {
+      "address": "0x7e9478",
+      "byte_count": 16,
+      "instruction_count": 9,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferenceUnLinked",
+      "span_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "address": "0x7e9488",
+      "byte_count": 160,
+      "instruction_count": 59,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.InternalClear",
+      "span_sha256": "16d4392d38cd6511d433a2a9ed602f63c64bf354d76acdefbd298b3e5fc9087d"
+    },
+    {
+      "address": "0x7e9b70",
+      "byte_count": 36,
+      "instruction_count": 15,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange",
+      "span_sha256": "109f4964f42a44dc31e9acdc162af532ee25f7a904266ced3ff8f936cae5b565"
+    },
+    {
+      "address": "0x7e9b94",
+      "byte_count": 136,
+      "instruction_count": 47,
+      "method": "CIS_TCustomFlashObject.TFlashObjectCollection.Create",
+      "span_sha256": "4a786ea5f95387f65203289e4ad2a79e48c515e8c8473032cf77ceb61cde0e3d"
+    },
+    {
+      "address": "0x7e9fd0",
+      "byte_count": 52,
+      "instruction_count": 18,
+      "method": "CIS_TCustomFlashObject.TFlashObjectCollection.Append",
+      "span_sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45"
+    },
+    {
+      "address": "0x7ea4b4",
+      "byte_count": 124,
+      "instruction_count": 38,
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.InternalCreate",
+      "span_sha256": "9e2c3a0fb06d81abdf0874ce4c8f98788d61eb03b5a471887e3e725423798e64"
+    },
+    {
+      "address": "0x7eaa10",
+      "byte_count": 52,
+      "instruction_count": 21,
+      "method": "CIS_TCustomFlashObject.TCustomFlashObject.Changed",
+      "span_sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099"
+    },
+    {
+      "address": "0x7ec504",
+      "byte_count": 204,
+      "instruction_count": 68,
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Create",
+      "span_sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    {
+      "address": "0x7ecd00",
+      "byte_count": 40,
+      "instruction_count": 16,
+      "method": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange",
+      "span_sha256": "c45096cc2a19b8d46a39798914dd615f1109b0a0a7f09bd9ca781a917c35902a"
+    },
+    {
+      "address": "0x7ee09c",
+      "byte_count": 80,
+      "instruction_count": 27,
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.Create",
+      "span_sha256": "31451f6d4004ffd86077e4e118334b6311265c82da01d4c5cdc21c18e126385b"
+    },
+    {
+      "address": "0x7ee0ec",
+      "byte_count": 40,
+      "instruction_count": 17,
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.Changed",
+      "span_sha256": "3505e275d49d0a0a84bcdae1075b0a8fa965c212c55333a290311ffebef4584d"
+    },
+    {
+      "address": "0x7ee114",
+      "byte_count": 32,
+      "instruction_count": 15,
+      "method": "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange",
+      "span_sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df"
+    },
+    {
+      "address": "0x7ef1c4",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCustomFlashObject.TFlashAgent.AgentLoad",
+      "span_sha256": "87e2ddade475e9b49ebacf565d607ac23c616888365e655aac49faed9c2e8645"
+    },
+    {
+      "address": "0x7ef2c4",
+      "byte_count": 104,
+      "instruction_count": 40,
+      "method": "CIS_TCustomFlashObject.TFlashAgentFactory.GetFlashAgent",
+      "span_sha256": "35aef7d353182c25f29deba34b9de0a27dd3fbd8ad72a3b382e242bbc2cf628e"
+    },
+    {
+      "address": "0x7ef7f4",
+      "byte_count": 44,
+      "instruction_count": 16,
+      "method": "CIS_TCustomFlashObject.TFlashObject.InternalCreate",
+      "span_sha256": "a8de65e36b107ad2bfe976cc2169ce1ee4ff1e81206e34293bed9430625a97f1"
+    },
+    {
+      "address": "0x7f375c",
+      "byte_count": 40,
+      "instruction_count": 17,
+      "method": "CIS_TStringAttribute.TStringAttribute.GetAsString",
+      "span_sha256": "5fce961a49cc56dba225d5b82c1521f01d29461524b5613c84d9ea9d5426585b"
+    },
+    {
+      "address": "0x7f37ac",
+      "byte_count": 40,
+      "instruction_count": 16,
+      "method": "CIS_TStringAttribute.TStringAttribute.InternalCreate",
+      "span_sha256": "b2fc88b81327f8e2c960c8bff3d9364e68678d8ce9ba7fb9ceaf069993c8f4e4"
+    },
+    {
+      "address": "0x7f3df8",
+      "byte_count": 304,
+      "instruction_count": 86,
+      "method": "CIS_TIdentifiableObject.TPersistableObject.GetAgent",
+      "span_sha256": "3d0764ec35f7b41600ed5799c5c1f54fab97ed03f07cd5c1dd236baf2aee1421"
+    },
+    {
+      "address": "0x7f409c",
+      "byte_count": 196,
+      "instruction_count": 71,
+      "method": "CIS_TIdentifiableObject.TPersistableObject.StorageSave",
+      "span_sha256": "96983cbe85a955cffd0e1d122d33adf65538d2e6620e9493ed7d052a3b3fe0ce"
+    },
+    {
+      "address": "0x7f4160",
+      "byte_count": 196,
+      "instruction_count": 71,
+      "method": "CIS_TIdentifiableObject.TPersistableObject.StorageLoad",
+      "span_sha256": "d0f11ca9984264e4fbe1e070b5f210bc87fb2955e87baa880c1c39df25c1528a"
+    },
+    {
+      "address": "0x7f43d8",
+      "byte_count": 36,
+      "instruction_count": 16,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean",
+      "span_sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db"
+    },
+    {
+      "address": "0x7f4470",
+      "byte_count": 64,
+      "instruction_count": 25,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.GetAsString",
+      "span_sha256": "c6cd2578b33f8ee4537fa9a1a7d6391a005543a4c66c9741afc1707523de0637"
+    },
+    {
+      "address": "0x7f44d8",
+      "byte_count": 112,
+      "instruction_count": 23,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate",
+      "span_sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    {
+      "address": "0x850748",
+      "byte_count": 40,
+      "instruction_count": 17,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.GetAsString",
+      "span_sha256": "e96c6318716cb44b35dd59658668ee4e07dabb4df8f571065caffcf1c9493eb5"
+    },
+    {
+      "address": "0x850798",
+      "byte_count": 36,
+      "instruction_count": 15,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate",
+      "span_sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    {
+      "address": "0xc920e0",
+      "byte_count": 668,
+      "instruction_count": 114,
+      "method": "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.InternalCreate",
+      "span_sha256": "ba365153c6c8a300c83eadee0f33d0a7becdc8b3be34f796a6a79940b82e7e00"
+    },
+    {
+      "address": "0xc92ab0",
+      "byte_count": 140,
+      "instruction_count": 46,
+      "method": "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetMicroFunctionByStage",
+      "span_sha256": "13f0a4a29648ad6a08edbb495b5c5fb281eca17d5387cec9e9e85fbc5e3ff380"
+    },
+    {
+      "address": "0xc96a5c",
+      "byte_count": 376,
+      "instruction_count": 63,
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.InternalCreate",
+      "span_sha256": "421a1128a248d2dc218dfd2db9e1aecb4496d39bbd72481b1c6b36cff1784e42"
+    },
+    {
+      "address": "0xc97004",
+      "byte_count": 68,
+      "instruction_count": 23,
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.SetMicroFunctionByStage",
+      "span_sha256": "8209eddbffc7d4509a8754e5b7a10031683cc97d86c0edbcf8a544bb78df3ed7"
+    },
+    {
+      "address": "0xc97150",
+      "byte_count": 36,
+      "instruction_count": 14,
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.SetKeyPressMicroFunction",
+      "span_sha256": "d0bd67a90bc41e3b10cdb0dfd57e7d0631b521bb9e6da4de5f88ae2cb2d64ce3"
+    },
+    {
+      "address": "0xc99f68",
+      "byte_count": 576,
+      "instruction_count": 82,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoScene.AfterConstruction",
+      "span_sha256": "24898499b0d4537e6499e434d237c38091df631a70fb3723426ec3e51a2df553"
+    },
+    {
+      "address": "0xc9a38c",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoScene.InternalCreate",
+      "span_sha256": "8603bc677b56e4d5aef4223850212f11917bc6c44fdeecb0fe5b725209f96707"
+    },
+    {
+      "address": "0xc9a4d0",
+      "byte_count": 68,
+      "instruction_count": 26,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCollection.Add",
+      "span_sha256": "ba1fafdbb28b2fb49cb65cb94c44738d6d5c8a2e9c6ada5e0fd01f4ea5a2fe93"
+    },
+    {
+      "address": "0xc9a514",
+      "byte_count": 36,
+      "instruction_count": 14,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCollection.GetItem",
+      "span_sha256": "1172e6b0812e0a83b546bb24d916b1e990757a872f26dfdf152af18dad2379f3"
+    },
+    {
+      "address": "0xc9a538",
+      "byte_count": 368,
+      "instruction_count": 27,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCollection.ItemByNumber",
+      "span_sha256": "49dc4af96e3170b5c8a56627740c1aeaeef7994e3f0abafa0fdb58fbd17b2330"
+    },
+    {
+      "address": "0xc9a6a8",
+      "byte_count": 536,
+      "instruction_count": 37,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCollection.SetCount",
+      "span_sha256": "d135e0c430c1f5a8e2861c19cced09c39de1e430c1333024776a38f492c87f6c"
+    },
+    {
+      "address": "0xc9a8c0",
+      "byte_count": 204,
+      "instruction_count": 42,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.InternalCreate",
+      "span_sha256": "1e86ebc0380a81708ffe33fa35f6dffd72a2bc1bfc72889baceda2fe1fb48f9a"
+    },
+    {
+      "address": "0xc9aa48",
+      "byte_count": 52,
+      "instruction_count": 21,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.SetGroup",
+      "span_sha256": "9345f9c0915778e579fe1e3077aa28f46ae24c28ba02cd36659a577febadcf8d"
+    },
+    {
+      "address": "0xc9aa7c",
+      "byte_count": 112,
+      "instruction_count": 46,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.SetLevel",
+      "span_sha256": "49224716cb25f7c14fff2e5f9ade4de8bd994a3f87f1d1a99ed94a722db31102"
+    },
+    {
+      "address": "0xc9ab14",
+      "byte_count": 116,
+      "instruction_count": 40,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.LevelChanged",
+      "span_sha256": "aa6594d98394116bba4d092d9941ecdbc1dcf0309981e28ae99c4889ba0ffc12"
+    },
+    {
+      "address": "0xc9ab88",
+      "byte_count": 424,
+      "instruction_count": 37,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommandManager.Add",
+      "span_sha256": "7785ddcdb781b5088bc381ea21fc32d7a02f8f1982467bdf5b67357ad0a0cfca"
+    },
+    {
+      "address": "0xc9ad70",
+      "byte_count": 64,
+      "instruction_count": 13,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommandManager.InternalCreate",
+      "span_sha256": "1edf3add03e306a8eecc12da377efeb619ca691d1997d65c18f5e8af948149ce"
+    },
+    {
+      "address": "0xc9adb0",
+      "byte_count": 100,
+      "instruction_count": 36,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneCommandManager.ItemByGroupAddress",
+      "span_sha256": "bbadc6a6af6d695b91d995eb01768263c4aaec78967bb8c00bb10f77f38d06f5"
+    },
+    {
+      "address": "0xc9ae14",
+      "byte_count": 96,
+      "instruction_count": 32,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.CreateInWorkSpace",
+      "span_sha256": "e880ea2ba9f929201950365a1a44d28c0e9f1b959b3d09fa9a7b9dcbaaea47f1"
+    },
+    {
+      "address": "0xc9ae74",
+      "byte_count": 808,
+      "instruction_count": 139,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.AfterConstruction",
+      "span_sha256": "0bca9d3950233041f3525a52b37be5ee0321a67edeaf8649b933388998c1a392"
+    },
+    {
+      "address": "0xc9b19c",
+      "byte_count": 196,
+      "instruction_count": 69,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetNumberOfScenesInUse",
+      "span_sha256": "9ba439d6563a57f895ee9f8f5d51a0e77d64c7c3ce3bbe687c3de9eb622364fc"
+    },
+    {
+      "address": "0xc9b260",
+      "byte_count": 252,
+      "instruction_count": 84,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetPercentMemoryInUse",
+      "span_sha256": "00ded6b4c48374abc67508d3c4ce6dc056a1a80779cc6405e882db8b0f6a2541"
+    },
+    {
+      "address": "0xc9b35c",
+      "byte_count": 124,
+      "instruction_count": 41,
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetLargestSceneSize",
+      "span_sha256": "028bb52e189e8dc587313925e31fcd5bfda7f9f09e32de6dee1f96be56c8b714"
+    },
+    {
+      "address": "0xca4044",
+      "byte_count": 1412,
+      "instruction_count": 175,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.InternalCreate",
+      "span_sha256": "09cc527e8535cb915b2d40d3ed7f6069c854b9b74476d69f1d4e14616a34dbb8"
+    },
+    {
+      "address": "0xcb524c",
+      "byte_count": 968,
+      "instruction_count": 187,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.InternalCreate",
+      "span_sha256": "ca6224f18662e8133b0420a1a878288ae003869946a91993b15622293b83b39c"
+    },
+    {
+      "address": "0xcb5d0c",
+      "byte_count": 5552,
+      "instruction_count": 835,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentLoad",
+      "span_sha256": "3534a0cc6d80ac4eab2fd362cd4b73fadf27721da56326bc8cc58f11df4088e5"
+    },
+    {
+      "address": "0xcb72bc",
+      "byte_count": 3412,
+      "instruction_count": 657,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AgentSave",
+      "span_sha256": "ed80928aac4ac6caca38a15d0005eb2d547bb83b70b12ae6e171975518aa056b"
+    },
+    {
+      "address": "0xcb8068",
+      "byte_count": 588,
+      "instruction_count": 83,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplicationObject",
+      "span_sha256": "c781eabff439fdd02b07ea57a61e7f8960f3e7b8e47003586579f832cc208a17"
+    },
+    {
+      "address": "0xcb82b4",
+      "byte_count": 528,
+      "instruction_count": 69,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.GetApplication2Object",
+      "span_sha256": "7d0c8b38f42081349c96e981905e6033de2079d09bf64548024e34a9608273af"
+    },
+    {
+      "address": "0xcbab7c",
+      "byte_count": 1060,
+      "instruction_count": 289,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingGetAll",
+      "span_sha256": "1df6532d4b225c1e27abcf8f0b2fee00e8203e04c422dce6efb6e11a011a7e07"
+    },
+    {
+      "address": "0xcbb4b0",
+      "byte_count": 328,
+      "instruction_count": 98,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetAll",
+      "span_sha256": "d9952cb55c5e5b1cf875e64a39114cb953ba88ab57f2bfd8df38646c3012eb76"
+    },
+    {
+      "address": "0xcbb5f8",
+      "byte_count": 472,
+      "instruction_count": 135,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetSingle",
+      "span_sha256": "f43f1bff2e8120c902a37e03802780742fc6ff11ec80bc4c5ea06dfe78312654"
+    },
+    {
+      "address": "0xcbb7d0",
+      "byte_count": 340,
+      "instruction_count": 113,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.ParameterProgrammingSetOne",
+      "span_sha256": "26d1c9b3bf84c6353b739a81700dfff44c47b3f9491dff13a679d3514e35889e"
+    },
+    {
+      "address": "0xcbc184",
+      "byte_count": 496,
+      "instruction_count": 112,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetupProgrammingInformation",
+      "span_sha256": "0ba2ab088df2665336bb31bcabdc9864e62d252151d278d66899d13edc6b2324"
+    },
+    {
+      "address": "0xcbc85c",
+      "byte_count": 1008,
+      "instruction_count": 236,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadProgrammingInformation",
+      "span_sha256": "e7731b63daa8816159d76a0f0fa1194480d0a44c03c5efe6154eb5cb465b7016"
+    },
+    {
+      "address": "0xcbd704",
+      "byte_count": 72,
+      "instruction_count": 28,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SetCGateAgentEditedState",
+      "span_sha256": "82257f45b72165d01d586494377c9debb1f5562ca76183c5e57f28ed6d6ebace"
+    },
+    {
+      "address": "0xcbdc30",
+      "byte_count": 1104,
+      "instruction_count": 249,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.SaveProgrammingInformation",
+      "span_sha256": "72bc3e201adc4c5b15fa2ac7d77092ce4052bee6e2f9cc856b81e6df6de94b33"
+    },
+    {
+      "address": "0xcbe2b8",
+      "byte_count": 52,
+      "instruction_count": 20,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.UpdateKeepLive",
+      "span_sha256": "8e703378376ca724d76b23d82bf0b7d3a3e2adc3b223bba98c01bd9e4d62eeff"
+    },
+    {
+      "address": "0xcbe4d0",
+      "byte_count": 116,
+      "instruction_count": 38,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.StopProgrammingInformation",
+      "span_sha256": "b5a31f18fe785a6b94e760a3ee203d660a39f43e586d61fe8ef751b05bece4a3"
+    },
+    {
+      "address": "0xcbe5ac",
+      "byte_count": 44,
+      "instruction_count": 16,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AddAsyncCommand",
+      "span_sha256": "2b77935c13da3742671e6a492d39ebd46c5bb63cd05a6359aa1583eb5646a95d"
+    },
+    {
+      "address": "0xcbe5d8",
+      "byte_count": 120,
+      "instruction_count": 43,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.RemoveAndFreeAsyncCommand",
+      "span_sha256": "07639362820fb8fd74f98eab2e2dfb7a1f3af3f6eb990cc4289688aa8110eb30"
+    },
+    {
+      "address": "0xcbe650",
+      "byte_count": 348,
+      "instruction_count": 116,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AfterLoadProgrammingInformation",
+      "span_sha256": "e8dfdd2e282a580cdde0a63a4e3ee0e5f2469bf0d6da9b1ed5090048ea713a16"
+    },
+    {
+      "address": "0xcbe84c",
+      "byte_count": 584,
+      "instruction_count": 164,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "span_sha256": "fc9e972194c6d22ba511438f6bca3f0c9e8f7f438a7569ab359c05bcea05e4e6"
+    },
+    {
+      "address": "0xcc4678",
+      "byte_count": 60,
+      "instruction_count": 21,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.RegisterLoadProgrammingHint",
+      "span_sha256": "0fe653bf6128e91c8cb4c124bdc1a0d9d38af9387e4039e44acd61ea40f2f6ae"
+    },
+    {
+      "address": "0xcc4a7c",
+      "byte_count": 416,
+      "instruction_count": 117,
+      "method": "CIS_TCBusUnitCGateAgent.GetAttributeValue",
+      "span_sha256": "e4b22413e405625081e6cff10ad3c65a50da4a6cd5d403e916e53059b8a4b70a"
+    },
+    {
+      "address": "0xcc4c1c",
+      "byte_count": 116,
+      "instruction_count": 45,
+      "method": "CIS_TCBusUnitCGateAgent.LoadAttribute",
+      "span_sha256": "5f836552cd5706cc6351416962efe4ab5e9a1c341ab37edc4a43cc7eda8303a9"
+    },
+    {
+      "address": "0xcc4c90",
+      "byte_count": 344,
+      "instruction_count": 92,
+      "method": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadTemplateNoValidation",
+      "span_sha256": "3e771f837ecba1a87198d3aac19666996b0fab018d550735054f1cf48e08243e"
+    },
+    {
+      "address": "0xcc5aa0",
+      "byte_count": 236,
+      "instruction_count": 44,
+      "method": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.InternalCreate",
+      "span_sha256": "3fd90721ff749222122e8538368745c6c127fd2e9b84dd0bc4e7c423e9b55135"
+    },
+    {
+      "address": "0xcc6470",
+      "byte_count": 96,
+      "instruction_count": 21,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeAreaGroupAddress",
+      "span_sha256": "152255d9b2c4bcf4e20d614707712af633a3b89c413edef67293ed37dfa92427"
+    },
+    {
+      "address": "0xcc64d0",
+      "byte_count": 104,
+      "instruction_count": 21,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.CreateAttributeStatusReportInterval",
+      "span_sha256": "c51c28f9f1b654cad66f255008ec40781d34fcd77510090fa631186d8212c892"
+    },
+    {
+      "address": "0xcc66f0",
+      "byte_count": 72,
+      "instruction_count": 25,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadAreaGroupAddress",
+      "span_sha256": "6254819d7660c094dc8182a97fa5a24bec6ba453c0f7936219c07fef9264cff0"
+    },
+    {
+      "address": "0xcc6738",
+      "byte_count": 44,
+      "instruction_count": 17,
+      "method": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadStatusReportInterval",
+      "span_sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43"
+    },
+    {
+      "address": "0xcc6d18",
+      "byte_count": 1124,
+      "instruction_count": 173,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate",
+      "span_sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e"
+    },
+    {
+      "address": "0xcc717c",
+      "byte_count": 88,
+      "instruction_count": 21,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerHighByte",
+      "span_sha256": "d140abca9b5b7c46da0895b951b72140be5a6432b8315b36bef80a425b9282df"
+    },
+    {
+      "address": "0xcc71d4",
+      "byte_count": 88,
+      "instruction_count": 21,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerLowByte",
+      "span_sha256": "500b1c8cfa9e7deaba3eebc3cc2c29bac7a0befd85bcbd9fdcedd4e9a22cb3e5"
+    },
+    {
+      "address": "0xcc722c",
+      "byte_count": 100,
+      "instruction_count": 21,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateAttributeTimerExpiryCommand",
+      "span_sha256": "654d5ff0fabdbdd52ec51e10a06c9d8420e6e7fcad2bcaf9d9cd272c17130c32"
+    },
+    {
+      "address": "0xcc7290",
+      "byte_count": 416,
+      "instruction_count": 64,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.CreateEEPROMLevelAttributes",
+      "span_sha256": "1eeb568a802f8c8127f1aadf2af706ac9dc6d268fe27ea7b93c4ae0eedd977ba"
+    },
+    {
+      "address": "0xcc75e4",
+      "byte_count": 276,
+      "instruction_count": 84,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup",
+      "span_sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+    },
+    {
+      "address": "0xcc76f8",
+      "byte_count": 768,
+      "instruction_count": 109,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks",
+      "span_sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be"
+    },
+    {
+      "address": "0xcc7d98",
+      "byte_count": 220,
+      "instruction_count": 69,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadTimerHighAndLowBytes",
+      "span_sha256": "32a0677001fde96ffc4dacc21c456cd47a339de981dc8d3bfad33b6188a28d13"
+    },
+    {
+      "address": "0xcc7e74",
+      "byte_count": 164,
+      "instruction_count": 50,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.LoadTimerExpiryCommand",
+      "span_sha256": "bac15dae88459b24ff7970a640724bb399fe2c22904f271ea3ea0fc2c3cef730"
+    },
+    {
+      "address": "0xcc80c8",
+      "byte_count": 1300,
+      "instruction_count": 258,
+      "method": "CIS_TCoreKeyInputCGateAgent.GetBlockValues",
+      "span_sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9"
+    },
+    {
+      "address": "0xcc87e4",
+      "byte_count": 168,
+      "instruction_count": 50,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.SaveTimerHighAndLowBytes",
+      "span_sha256": "bbcfaada45d5d66b4d4159c184930f8e2e3ca10332280e8d9f8e0ff99f296abf"
+    },
+    {
+      "address": "0xcc888c",
+      "byte_count": 124,
+      "instruction_count": 39,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.SaveTimerExpiryCommand",
+      "span_sha256": "1b52c254f2c04ae5907f33c284d0ff280d284e7876f7ea25aa817c7f108b0932"
+    },
+    {
+      "address": "0xcc8aa8",
+      "byte_count": 396,
+      "instruction_count": 118,
+      "method": "CIS_TCoreKeyInputCGateAgent.SetKeyBlocks",
+      "span_sha256": "c5f0fcab4ac93acf8909297b5d789e087ca59353bfcd6ec9abf27d7b62f1d00b"
+    },
+    {
+      "address": "0xcc8c34",
+      "byte_count": 1020,
+      "instruction_count": 288,
+      "method": "CIS_TCoreKeyInputCGateAgent.SetBlockValues",
+      "span_sha256": "cf8d43125a40a10b67a99313369ee31da01723d189503bed649a33e9b06b2a63"
+    },
+    {
+      "address": "0xcc9030",
+      "byte_count": 336,
+      "instruction_count": 99,
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeSaveProgrammingInformation",
+      "span_sha256": "b3b5ebe63cc58dcf9c3f914dd33099f521afac1d5bfa2d5485c700661d48adbf"
+    },
+    {
+      "address": "0xcc9d04",
+      "byte_count": 1084,
+      "instruction_count": 147,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate",
+      "span_sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    {
+      "address": "0xcca350",
+      "byte_count": 460,
+      "instruction_count": 33,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.GetControlAppGroup",
+      "span_sha256": "65f874185368a21450b8b30c98c28c603d4f451e70bd98ab834803489cfbf0e4"
+    },
+    {
+      "address": "0xcca51c",
+      "byte_count": 2520,
+      "instruction_count": 596,
+      "method": "CIS_TCoreNeoInputCGateAgent.GetKeyValues",
+      "span_sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    {
+      "address": "0xccaef4",
+      "byte_count": 92,
+      "instruction_count": 31,
+      "method": "CIS_TCoreNeoInputCGateAgent.KeysChanged",
+      "span_sha256": "5d9b8cdfc7e2250bd56d0aa52f80b48d330f926a9872df32008dbc43ca1e9dbf"
+    },
+    {
+      "address": "0xccaf50",
+      "byte_count": 560,
+      "instruction_count": 156,
+      "method": "CIS_TCoreNeoInputCGateAgent.GetSceneCommands",
+      "span_sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145"
+    },
+    {
+      "address": "0xccb180",
+      "byte_count": 720,
+      "instruction_count": 221,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "span_sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    {
+      "address": "0xccb450",
+      "byte_count": 848,
+      "instruction_count": 124,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadGetIndicatorValues",
+      "span_sha256": "94a25b6e727c74a699737ff0689b95afd2eed61178faab87f37e43601a5752f7"
+    },
+    {
+      "address": "0xccb7a0",
+      "byte_count": 12,
+      "instruction_count": 8,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadGetNightlightValues",
+      "span_sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    {
+      "address": "0xccb7ac",
+      "byte_count": 168,
+      "instruction_count": 59,
+      "method": "CIS_TCoreNeoInputCGateAgent.AttribAppend",
+      "span_sha256": "8527817c019114cd74b7aed36b6799e6095c148ed0bb5a0c2da75632d22f2c41"
+    },
+    {
+      "address": "0xccb854",
+      "byte_count": 1188,
+      "instruction_count": 348,
+      "method": "CIS_TCoreNeoInputCGateAgent.SetKeyValues",
+      "span_sha256": "c7ece7753ed9e30e2767905b2e2787c93c032cfbdbbe84a508693971ad99a55b"
+    },
+    {
+      "address": "0xccbcf8",
+      "byte_count": 740,
+      "instruction_count": 180,
+      "method": "CIS_TCoreNeoInputCGateAgent.GetNeoUnitSceneTableAsString",
+      "span_sha256": "043bfffdea97dd605159ea91b29212cae2f276c5bb7ee7b95417ef71a05e7e77"
+    },
+    {
+      "address": "0xccbfdc",
+      "byte_count": 892,
+      "instruction_count": 152,
+      "method": "CIS_TCoreNeoInputCGateAgent.GetNeoSceneTablePointersAsString",
+      "span_sha256": "4a32cf9860d93af5a18216fb23dfacde345e0c2116659075e22bb816f8b87840"
+    },
+    {
+      "address": "0xccc358",
+      "byte_count": 1136,
+      "instruction_count": 308,
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "span_sha256": "eff8a563f079b594dc956b6a0692cb9facd2a52ef8d67ed184208fd05ab782d1"
+    },
+    {
+      "address": "0xceba64",
+      "byte_count": 384,
+      "instruction_count": 56,
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.InternalCreate",
+      "span_sha256": "a6d839d57579b2568dfd699e453deadb0aff9faba2af0e78abfcbe146a182e9e"
+    },
+    {
+      "address": "0xcebc08",
+      "byte_count": 240,
+      "instruction_count": 71,
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadGetIndicatorValues",
+      "span_sha256": "93540da2add8d87d4567ddad3b0d85d59f3daea9958aac2ecfa33a7d060dd345"
+    },
+    {
+      "address": "0xcebcf8",
+      "byte_count": 268,
+      "instruction_count": 88,
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadGetNightlightValues",
+      "span_sha256": "c4083357d31a1bba98a1ef59d267bd446633ba2c5961f3edd7cf50c077bdbe20"
+    },
+    {
+      "address": "0xcebe04",
+      "byte_count": 252,
+      "instruction_count": 83,
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "span_sha256": "1534462408bb96b90eab0541faf42b7879ea647e9d67928386bafdcf7605a23a"
+    },
+    {
+      "address": "0xcec648",
+      "byte_count": 796,
+      "instruction_count": 102,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.InternalCreate",
+      "span_sha256": "ead8ff3a29e6d39d99ae2bde53fc5600824c2505aeefc6a8d3715b7a57f819cc"
+    },
+    {
+      "address": "0xcec964",
+      "byte_count": 384,
+      "instruction_count": 54,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.CreateCorridorLinkAttributes",
+      "span_sha256": "0c91c1f176bf5dcc62b7f754c9c7f4f4c800b913661d5adb4a51c13be25b4085"
+    },
+    {
+      "address": "0xcecf80",
+      "byte_count": 220,
+      "instruction_count": 75,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.GetBlockApplications",
+      "span_sha256": "22d41a32513a231956a5272b7e52d42a1f9c2c129d043a4d88f2ed9a7c1e5833"
+    },
+    {
+      "address": "0xced05c",
+      "byte_count": 248,
+      "instruction_count": 75,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.LoadCorridorLinkAttributes",
+      "span_sha256": "1659a5989db5acab67b350277eed067a53c529f389efad84f8468cce9093e79b"
+    },
+    {
+      "address": "0xced154",
+      "byte_count": 996,
+      "instruction_count": 281,
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation",
+      "span_sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    },
+    {
+      "address": "0xcf6eb8",
+      "byte_count": 3176,
+      "instruction_count": 362,
+      "method": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.InternalCreate",
+      "span_sha256": "8b464bd7a94c3adcbc14a663dad23f20ad15a737a71da748e373a67b53b89b12"
+    },
+    {
+      "address": "0xcfb65c",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xcfb670",
+      "byte_count": 148,
+      "instruction_count": 49,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputBlockGroupChanged",
+      "span_sha256": "6fb713f83264aa2e2954c8a33c08d568bcd3d8457b8159037f5f46f1c203dd9c"
+    },
+    {
+      "address": "0xcfc38c",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsInfraredNECSupported",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xcfc3c8",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xcfc424",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsNeoMultisensor",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xcfc438",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsNeoStandard",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd068f8",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+      "span_sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "address": "0xd06f30",
+      "byte_count": 1692,
+      "instruction_count": 241,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate",
+      "span_sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4"
+    },
+    {
+      "address": "0xd07e58",
+      "byte_count": 36,
+      "instruction_count": 14,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetControlAppGroup",
+      "span_sha256": "c3a3d2fb9dc9073e14e8a62a35b611a4d786431fc12baf83ca24380a4e19e060"
+    },
+    {
+      "address": "0xd081c8",
+      "byte_count": 92,
+      "instruction_count": 38,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetScenesEnabled",
+      "span_sha256": "c375826546ff0474d47dae72a38790a068166e8e61013840549970ada15e5003"
+    },
+    {
+      "address": "0xd08280",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoDLT",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd082a8",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoReflection",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd082bc",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoSaturn",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd08648",
+      "byte_count": 184,
+      "instruction_count": 55,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.RefreshInputKeysSceneActionSelectorsFromControlAppGroup",
+      "span_sha256": "4435824c6c58517d56b14ae76cd82476cd3f1ba18b6f310af867c1ffa498f62c"
+    },
+    {
+      "address": "0xd087ec",
+      "byte_count": 24,
+      "instruction_count": 11,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.ControlAppGroupChanged",
+      "span_sha256": "251c8ce8e201bb716e586d05ddb2da37d1f5402e47cf83026626ed508c224367"
+    },
+    {
+      "address": "0xd08a90",
+      "byte_count": 64,
+      "instruction_count": 24,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsSceneLearnCompatible",
+      "span_sha256": "ed4fed0bf76b19ceda0bf13075211b1d8b41223c788db6fc4a3cf988060d5844"
+    },
+    {
+      "address": "0xd08b04",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoClassic",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd08ba8",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsNeoBC",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xd117b4",
+      "byte_count": 236,
+      "instruction_count": 73,
+      "method": "CIS_TInputKey.TInputKey.SetMicroFunction",
+      "span_sha256": "57d7d31ca370bece954e05f89a9b729e6ae15082ddaf3dd8da4a9a4acd797226"
+    },
+    {
+      "address": "0xddfdfc",
+      "byte_count": 2328,
+      "instruction_count": 540,
+      "method": "CIS_TCBusUnitGUIAgent.TCBusUnitGUIAgent.EditUnit",
+      "span_sha256": "9db1b28dff3b1745476fb58f7ae6057d90de84e7f0fc84a8d908596aae434d8c"
+    },
+    {
+      "address": "0xec6124",
+      "byte_count": 520,
+      "instruction_count": 115,
+      "method": "CIS_TddCBusUnit.LoadPP",
+      "span_sha256": "6f2fe6156dff45383b1d93cd49cfbd74207a331d99975169c569c675483bb965"
+    },
+    {
+      "address": "0xec632c",
+      "byte_count": 1808,
+      "instruction_count": 512,
+      "method": "CIS_TddCBusUnit.OpenUnitForProgramming",
+      "span_sha256": "d2aa6ab0cdb4344dac6ed0db9eeb225905045ffe92c2aa04416483d2ecf0d9a8"
+    },
+    {
+      "address": "0xec6b40",
+      "byte_count": 356,
+      "instruction_count": 122,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.Initialise",
+      "span_sha256": "e8d4932b024e0bdcda4d22c3cc75103dd268ff6be251fa32fc7b03119b90c36d"
+    },
+    {
+      "address": "0xec7978",
+      "byte_count": 2540,
+      "instruction_count": 659,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.SaveProgramming",
+      "span_sha256": "f71ec4318642f0c3272837b90576eab72846829ce780467d199b0e041cb1a20c"
+    },
+    {
+      "address": "0xec8664",
+      "byte_count": 920,
+      "instruction_count": 240,
+      "method": "CIS_TddCBusUnit.StorageSave",
+      "span_sha256": "1196638b763c99d7f05e17c3e58a1c7d91e811a9573f6d583a7b9e83cfe4c896"
+    },
+    {
+      "address": "0xec89fc",
+      "byte_count": 444,
+      "instruction_count": 127,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.SaveProgramming_Database",
+      "span_sha256": "ebc4fdf18bde89f19066c301d80388959aca1abaa20968ee4659098cf5f6241d"
+    },
+    {
+      "address": "0xec8bb8",
+      "byte_count": 1916,
+      "instruction_count": 177,
+      "method": "CIS_TddCBusUnit.StorageSave",
+      "span_sha256": "8df9791ee5f295868fcad3db85a9e6a0a2d46c66b4107a1063ea1730cabc0e32"
+    },
+    {
+      "address": "0xec9334",
+      "byte_count": 836,
+      "instruction_count": 218,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.SaveProgramming_Network",
+      "span_sha256": "28b5539d1bd20fe365bbb1d79ef2105a83df626e7c557d12380ae6a3eda6fb70"
+    },
+    {
+      "address": "0xecaa6c",
+      "byte_count": 212,
+      "instruction_count": 64,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.InitialiseEmptyStringParameters",
+      "span_sha256": "5a07201081b9b8883466bd26d5abe91d7ba442f1388151495fc292c2e439efd9"
+    },
+    {
+      "address": "0xecaf84",
+      "byte_count": 20,
+      "instruction_count": 11,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.BeforeSaveProgramming",
+      "span_sha256": "3ecb6e16c7f210c7d176fb6cd303acc163b867495288b2c6bb647a1ba217cbc0"
+    },
+    {
+      "address": "0xf349ec",
+      "byte_count": 20,
+      "instruction_count": 10,
+      "method": "CIS_TCommonCBus.TCBUSUnit.GetIsCSharpUnit",
+      "span_sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "address": "0xf430ac",
+      "byte_count": 220,
+      "instruction_count": 63,
+      "method": "CIS_TCGateAttribute.TBooleanCGateAttribute.Create",
+      "span_sha256": "927943cf4360fae74ec7740a6f08375cbf30447b6c2da541f0a728eb0d1274a6"
+    },
+    {
+      "address": "0xf47a10",
+      "byte_count": 36,
+      "instruction_count": 14,
+      "method": "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+      "span_sha256": "29e51f5d44bbbdf14cf1164607c98dc68cb323c7caa1f2d593bed173972e9341"
+    },
+    {
+      "address": "0xf99a50",
+      "byte_count": 492,
+      "instruction_count": 119,
+      "method": "CIS_TddNeoProBASE.TddNeoProBASE.Initialise",
+      "span_sha256": "3651f473d5e572197fd33eaf6500530aecb51b26fa57d24d8498f87173da74e4"
+    },
+    {
+      "address": "0xfb6a40",
+      "byte_count": 232,
+      "instruction_count": 63,
+      "method": "CIS_TddST7Sensors.TddST7Multisensor.Initialise",
+      "span_sha256": "8a3a2d8a00346efb9ee243998cbd1249d230dfb83c061d8e4bf39e266e07e6da"
+    },
+    {
+      "address": "0x1219864",
+      "byte_count": 1140,
+      "instruction_count": 132,
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.InternalCreate",
+      "span_sha256": "529d5429715ffef330e693fd8d9d23422003b8d502dc8673f2f80890a3dda9f4"
+    }
+  ],
+  "original_execution": false,
+  "physical_acceptance": false,
+  "remaining": [
+    "main identification metadata notifications and actual controls",
+    "persistent scalar focus/exit and complete director bindings",
+    "actual managed occupancy identities",
+    "loaded application/hidden reference dispatch",
+    "complete ordered save and programming/physical readback"
+  ],
+  "scope": "Internal concrete load composition and causal key/Scene/level/PP save building blocks; fresh-control bootstrap/Show/Apply/fullsave/publictransaction are unfinished",
+  "senlla_vmt": {
+    "slots": {
+      "0x1e0": {
+        "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetScenesEnabled",
+        "target": "0xd081c8"
+      },
+      "0x20c": {
+        "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsNeoMultisensor",
+        "target": "0xcfc424"
+      },
+      "0x244": {
+        "method": "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.IsCorridorLinkingSupported",
+        "target": "0xd068f8"
+      },
+      "0x25c": {
+        "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsInfraredNECSupported",
+        "target": "0xcfc38c"
+      },
+      "0x260": {
+        "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsKeyDisableGroupPropertyEnabled",
+        "target": "0xcfc3c8"
+      }
+    },
+    "table": "0x1216bd8"
+  },
+  "source": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_rules": {
+    "Area_order": "capture current primary manager before PP read",
+    "Corridor_order": "capture PP group address before current primary manager",
+    "allocation_capture": "perkey getter before current bit loop",
+    "current_light_level_byte_domain": [
+      0,
+      255
+    ],
+    "current_light_level_count_domain": [
+      10,
+      263
+    ],
+    "final_program_light_level_count": 10,
+    "guarded_nightlight": "extra LOAD-cache input absent from guarded93; defaultfalse branch only",
+    "guarded_raw_light_level_count": 10,
+    "load_order": [
+      "prekey",
+      "current_allocation_per_key",
+      "CoreKeyUnitEnd_and_application_refresh",
+      "CoreNeoPatch_Control_Scene_Key_KeysChanged",
+      "NeoProIR_KeyDisable_Corridor_Join",
+      "ST7",
+      "Surface"
+    ],
+    "same_objects": "Unit/blocks/keys/attributes/bank objects remain identical from construction through load; no adoption at phase transition",
+    "save_agent": "normal synchronous/default lifetime;86 actual fresh attributes,7 absent;blank string/array,Integer0,BooleanFalse",
+    "save_order": "CoreKey block/allocation/LightLevel capture then CoreNeo Scene then key callbacks then later NeoPro secondary mask",
+    "secondary_mask_capture": "one getter before all8 setters"
+  }
+}

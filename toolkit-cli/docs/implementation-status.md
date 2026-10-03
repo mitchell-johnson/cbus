@@ -2,6 +2,202 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA managed-occupancy/scalar source check](../research/fixtures/senlla-occupancy-scalar-source-check-20261004.json)
+binds the same actual occupancy objects, managers, InputKey references and
+Boolean attributes before PP and live-bank construction. The complete
+owner defers the historical Smart listener at the factory; managed
+callbacks now preserve nested setter order, current flag getter rearming
+and the separate aggregate/event short circuits. Manual broadcast
+predicates use actual flag getters and current Scene-template rereads.
+Persistent scalar components add actual caches and track/checkbox/radio/
+status binding positions, with missing collection/address/window contexts
+refused explicitly. A separate identification name component retains the
+actual UnitName/TagName/cache sequence and stops at the source GetHandle/
+EM_GETSEL window boundary. Inherited string equality now uses UTF-16 units.
+Eighteen affected modules pass 357 parent cases and
+411 separate subtests, zero failures/errors/skips.
+All 4,144 tracked inputs remain unchanged at frozen authored commit
+`2cf53ba8`. Six final independent reviews cover the 29 changed component
+paths; scope qualifiers and earlier receipts remain intact. Inventory,
+register and census checks pass at 763 test modules and all 259 native
+required tests selected; those native requirements were not executed.
+Complete identification/director/focus/Show/Apply/save, loaded application/
+hidden-reference callbacks, mutable metadata/cache owners, remaining
+scalar/object bindings and public preview/apply remain open. No original
+Windows/backend/control, installed-wheel or hardware acceptance is claimed.
+Full suites remain deferred for speed; global coverage is false with
+487 obligations. The prior checkpoint below records its historical scope.
+
+The [SENLLA current-load/owner source check](../research/fixtures/senlla-live-owner-source-check-20261004.json)
+adds concrete inherited Unit attributes and an owned-project/native-database
+metadata bridge, live bank attributes, persistent no-HWND control primitives,
+late Unit loading and manual light-form handlers. The owning loader now
+retains the same Unit/block/key objects through current PP reads, causal
+Scene and control-group/action-level creation, NeoPro hidden fields and
+ST7/surface loading. It stops at the explicit fresh-identification boundary.
+A separate journal models the fresh synchronous SAVE agent and native
+ordered cache writes; it does not admit whole-unit persistence.
+Fourteen affected modules pass 294 parent cases and
+346 separate subtests with zero failures, errors or skips.
+All 4,129 tracked inputs remain unchanged at frozen authored commit
+`8d6b9b67`. Final independent reviews cover 194 inherited, 50 bank,
+226 late-Unit, 230 control-primitive, 190 manual-form, 165 current-load
+and 63 save-cache source spans, with scope qualifiers retained. Inventory,
+register and census checks pass at 759 modules and all 259 native required
+tests selected. These source checks do not execute native requirements.
+Remaining work includes actual managed occupancy attributes, complete
+identification/director/scalar/focus/Show/Apply and ordered save orchestration,
+loaded application/hidden-reference callbacks and public preview/apply.
+Windows text and active metadata observer boundaries remain explicit.
+No installed-wheel, original/native backend/control or hardware acceptance
+is claimed. Full suites remain deferred for speed; global coverage stays
+false with 487 obligations. Earlier receipts retain their original scope.
+
+The [SENLLA shared-prefix/control source check](../research/fixtures/senlla-prekey-controls-source-check-20261004.json)
+adds a live fresh path with nil initial references and retains the SAME
+Unit, blocks, keys, managers and bank links through initial application/
+Area callbacks and all raw block setters. Canonical pointers, counter
+balance and CURRENT application lookups are checked at GetKeyBlocks
+handoff. Source manager order remains distinct from registration order.
+Persistent programmatic controls now retain actual root/scalar identities,
+render guards, mutable list contents, current candidate reads and explicit
+posted/delivered message positions. Missing actual primitive execution
+invalidates the owner rather than approving a no-op response. Independent
+reviews clear 151 constructor, 162 prekey and 64 control spans.
+Seventeen modules pass 342 parents and 3,945 separate subtests
+with zero skips; all 4,101 tracked inputs remain unchanged at authored
+commit `9a1e024a`. Inventory/register/census checks pass at
+751 modules and all 259 native requirements selected.
+Actual inherited base/metadata/Learn/scalar execution, metadata backend
+creation/storage and transient observers, late Scene creation topology,
+concrete native-profile control primitives, complete 93-field ownership
+and public preview/apply transaction remain open. They are the next active
+implementation streams. No new original/installed-wheel/native/hardware
+acceptance is claimed. Full suites are deferred for speed; global coverage
+remains false with 487 obligations. Historical proofs remain unchanged.
+
+The [SENLLA key-event source check](../research/fixtures/senlla-key-events-source-check-20261004.json)
+adds a synchronous internal owner from CoreKey GetKeyBlocks onward. Ordered
+allocations, primary/secondary collisions, Scene claims and swaps, macro
+and template callbacks, indicator/Neo ownership and bank feedback use the
+retained lifecycle counters. Actual application255 remains bound after
+secondary bits normalize; current mixed keys are excluded from per-side
+macro admission. Missing native controls or source-phase group/level
+creation refuse explicitly. Private save marshalling captures CoreKey
+block/allocation data and CoreNeo Scene data before an Invoke nil-trigger
+getter can run nested callbacks, then captures the later secondary mask.
+Secondary refresh visits all eight nonupdating keys, retaining every source-block publication. Current LightLevels retain their owning indexed rebuild.
+Fifteen modules pass 287 parents and 3,846 separate subtests
+with zero skips; all 4,091 tracked inputs remain unchanged at authored
+commit `6f57ff00`. Inventory/register/census checks pass at
+749 modules and all 259 native requirements selected.
+The earlier 387-span engine review is preserved; its save-order claim is
+superseded by the final correction review. Actual constructor/pre-key
+shared-object callbacks, metadata backend creation, native form execution,
+later decision handlers and complete 93-field public save remain open.
+Full suites are deferred for speed. No new installed-wheel/original/
+native/hardware acceptance is claimed; complete coverage remains false.
+
+The [SENLLA indexed-block source check](../research/fixtures/senlla-indexed-block-source-check-20261004.json)
+adds 66 source-ordered load requests from the guarded 93-field snapshot.
+Indexed level, expiry membership and application/group lookups retain
+current owning getter/callback boundaries. CoreKey rebuilds LightLevel with
+a255 prefix, eight current block levels and a255 suffix. LightIndex above2
+grows the array; the whole-unit schema/programmer must handle or explicitly
+refuse that exact boundary. ST7 now overlays captured power states on the
+current CoreKey array: resume performs no indexed write, retaining the
+rebuilt value. Independent source reviews clear the eighteen block method
+pins and current-array power overlay. Fourteen modules pass 247 parents and
+3,846 separate subtests with zero skips; all 4,086 tracked inputs remain
+unchanged at authored commit `3acca689`. Inventory/register/census checks
+pass at 748 modules and all 259 native requirements selected. The 135-pin
+constructor/getter/metadata schedule is static design evidence; actual
+pre-key object creation/callback replay, complete key engine, fresh control
+executor and 93-parameter public save remain open. Full suites are deferred
+for speed; no new installed-wheel/original/native/hardware acceptance is
+claimed. Complete coverage remains false with 487 obligations.
+
+The [SENLLA expiry-correction source check](../research/fixtures/senlla-ordinary-expiry-correction-source-check-20261004.json)
+verifies the corrected raw expiry load projection at authored commit
+`248d183e`: thirteen modules, 233 parents and 3,746 separate subtests,
+zero failures/errors/skips and all 4,081 tracked inputs unchanged. Final
+independent source review is clear. Inventory/register/census checks pass
+at 747 modules and all 259 native requirements selected. Full suites are
+deferred for speed; complete coverage remains false with 487 obligations.
+No new installed-wheel/original/native/hardware acceptance is claimed.
+
+The [SENLLA ordinary-key expiry correction](senlla-ordinary-keys.md)
+distinguishes raw-loaded microfunction0 from an actual nil reference.
+The raw block loader normalizes unsupported expiry nibbles to15 before
+key templates; loaded0 survives timer initialization. Ten exact method
+pins and independent replacement literals correct two earlier examples.
+Earlier frozen receipts retain their historical inputs and counts.
+
+The [SENLLA callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
+adds synchronous attribute/parent counters, managed publication, setter
+callbacks and stable active tracked-reference subscriptions. Fresh PEC/PIR
+handlers emit ordered requests and reread the owning context after each
+setter. Native maintenance selection and the unit-name/string-tag writer
+remain explicit executor contracts. Independent reviews clear 65 lifecycle
+and 190 fresh-handler method pins; 71 Scene composition pins correct two
+earlier examples. Thirteen focused modules pass 232 parents and 3,694
+separate subtests with zero skips. All 4,080 tracked inputs remain unchanged
+during the frozen checks at authored commit `25533098`. Inventory/register
+checks pass and the census is current at 747 modules with all 259 native
+requirements selected. Complete coverage remains false with 487 obligations.
+The key event engine, earlier application/group creations, complete owning
+93-parameter save/public CLI and original/native/hardware acceptance remain
+open. Full suites are deferred for speed. Counts below are historical.
+
+The [SENLLA Scene composition evidence](senlla-scene-composition.md) corrects
+two earlier examples after independent tracing of the template attribute's
+parent key update. Invoke retains Scene template24; Modify retains25 during
+raw load before the fresh list selects16. Suppressed direct refreshes are not
+replayed by the generic key notification. The 71-method fixture records the
+correction and preserves historical check receipts. The complete owning
+event engine and public save remain under development.
+
+The [SENLLA owning-dependency source check](../research/fixtures/senlla-owner-dependency-source-check-20261004.json)
+adds the fresh bank graph, observed-block versus owned-lux notification
+paths and direct key-reference occupancy refresh. Reference/maintenance
+context changes preserve stale permissions until actual source events.
+The inherited scalar component owns eleven fields, binds final project/unit
+metadata and classifies all 93 parameters, including thirteen non-sent or
+protected fields. Ramp bytes and fresh Global initialization follow their
+separate native rules. Eleven focused source modules pass 167 parents and
+3,644 separate subtests with zero skips; all 4,071 tracked inputs remain
+unchanged. Independent reviews clear 160 bank and 147 scalar method pins.
+The census is current at 745 modules and all 259 native requirements.
+Complete owning Scene/application/installed-form callback replay, the
+93-parameter public save and original/native/hardware acceptance remain
+open. Full suites are deferred for speed; complete parity remains false.
+
+The [SENLLA form/input source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
+adds the complete 93-field raw input guard and separate fresh light-level
+and surface-bank components. Margin percentage stays tied to the original
+target through the fresh target cap. Bank initialization preserves the
+native ordered threshold effects; later save overlays remain separate.
+Nine focused source modules pass 133 parents and 2,860 separate subtests
+with zero skips; all 4,062 tracked inputs remain unchanged. Independent
+review clears 58 light-level pins, 60 bank pins, 45 qualified Scene
+composition pins and all 93 input layouts. The actual provider accepts
+authored values for all 93 fields with pure memory-codec round trips.
+The census is current at 743 modules and 259 native requirements.
+Whole-unit/public save, installed-wheel/original/native/hardware
+acceptance and complete parity remain open; full suites are deferred
+for speed. Earlier component receipts retain their historical counts.
+
+The [SENLLA foundation source check](../research/fixtures/senlla-foundation-source-check-20261004.json)
+adds ordered key references, explicit occupancy transitions and captured
+inherited power-save state. PIR occupancy exports use three packed byte
+masks. Six focused modules pass 89 parents and 794 separate subtests with
+zero skips; all 4,047 tracked files remain unchanged during frozen checks.
+Independent reviews verify 141 exact source pins across the three new
+components. The source-only check adds no public save or native/hardware
+acceptance. The census is current at 740 test modules and 259 native
+requirements; complete parity remains open. Full suites are deferred
+for speed.
+
 The [SENLLA provider-schema correction](../research/fixtures/senlla-bit-layout-owned-release-20261004.json)
 uses the native memory codec's one-bit layout for store flags with omitted
 `BitSize`. Source and a fresh installed wheel each pass 108 focused parents and

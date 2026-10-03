@@ -1,0 +1,487 @@
+{
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "date": "2026-10-04",
+  "format": "cbus-senlla-bank-transition-static-audit-v1",
+  "literal_vectors": [
+    {
+      "after": [
+        50,
+        50,
+        true,
+        true,
+        false,
+        5,
+        5
+      ],
+      "before": [
+        50,
+        200,
+        false,
+        true,
+        false,
+        5,
+        20
+      ],
+      "id": "activate_inverted",
+      "operations": [
+        [
+          "active",
+          true
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        50,
+        true,
+        false,
+        false,
+        5,
+        5
+      ],
+      "before": [
+        50,
+        200,
+        false,
+        false,
+        false,
+        5,
+        20
+      ],
+      "id": "activate_bypasses_allowed",
+      "operations": [
+        [
+          "active",
+          true
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        50,
+        true,
+        false,
+        false,
+        5,
+        5
+      ],
+      "before": [
+        50,
+        50,
+        true,
+        false,
+        false,
+        5,
+        5
+      ],
+      "id": "same_false_allowed_preserves_active",
+      "operations": [
+        [
+          "allowed",
+          false
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        50,
+        false,
+        false,
+        false,
+        5,
+        5
+      ],
+      "before": [
+        50,
+        50,
+        true,
+        true,
+        false,
+        5,
+        5
+      ],
+      "id": "unequal_false_allowed_clears_active",
+      "operations": [
+        [
+          "allowed",
+          false
+        ]
+      ]
+    },
+    {
+      "after": [
+        200,
+        200,
+        true,
+        true,
+        false,
+        20,
+        20
+      ],
+      "before": [
+        100,
+        100,
+        true,
+        true,
+        false,
+        10,
+        10
+      ],
+      "id": "active_refresh_captured_low_raises_high",
+      "operations": [
+        [
+          "refresh",
+          5,
+          20,
+          true
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        200,
+        false,
+        false,
+        false,
+        5,
+        20
+      ],
+      "before": [
+        100,
+        100,
+        true,
+        true,
+        false,
+        10,
+        10
+      ],
+      "id": "denied_refresh_clears_before_lux",
+      "operations": [
+        [
+          "refresh",
+          5,
+          20,
+          false
+        ]
+      ]
+    },
+    {
+      "after": [
+        51,
+        200,
+        false,
+        true,
+        false,
+        6,
+        20
+      ],
+      "before": [
+        100,
+        200,
+        false,
+        true,
+        false,
+        10,
+        20
+      ],
+      "id": "inactive_high_change_retains_inversion",
+      "operations": [
+        [
+          "high",
+          51
+        ]
+      ]
+    },
+    {
+      "after": [
+        51,
+        51,
+        true,
+        true,
+        false,
+        6,
+        6
+      ],
+      "before": [
+        100,
+        100,
+        true,
+        true,
+        false,
+        10,
+        10
+      ],
+      "id": "active_high_change_lowers_low",
+      "operations": [
+        [
+          "high",
+          51
+        ]
+      ]
+    },
+    {
+      "after": [
+        109,
+        109,
+        true,
+        true,
+        false,
+        11,
+        11
+      ],
+      "before": [
+        100,
+        100,
+        true,
+        true,
+        false,
+        10,
+        10
+      ],
+      "id": "active_low_change_raises_high",
+      "operations": [
+        [
+          "low",
+          109
+        ]
+      ]
+    },
+    {
+      "after": [
+        100,
+        50,
+        false,
+        true,
+        false,
+        7,
+        5
+      ],
+      "before": [
+        100,
+        50,
+        false,
+        true,
+        false,
+        7,
+        5
+      ],
+      "id": "equal_high_preserves_existing_store",
+      "operations": [
+        [
+          "high",
+          100
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        200,
+        true,
+        true,
+        false,
+        5,
+        20
+      ],
+      "before": [
+        50,
+        200,
+        true,
+        true,
+        false,
+        5,
+        20
+      ],
+      "id": "equal_active_has_no_clamp_callback",
+      "operations": [
+        [
+          "active",
+          true
+        ]
+      ]
+    },
+    {
+      "after": [
+        50,
+        50,
+        true,
+        false,
+        true,
+        5,
+        5
+      ],
+      "before": [
+        50,
+        200,
+        false,
+        false,
+        false,
+        5,
+        20
+      ],
+      "id": "raw_active_then_enable_off",
+      "operations": [
+        [
+          "raw",
+          true,
+          true
+        ]
+      ]
+    }
+  ],
+  "method_pins": {
+    "CIS_CBus.ByteToLux2550": {
+      "address": "0x7f2944",
+      "instructions": 27,
+      "sha256": "0e2c812c579d2d1daea7afa1276e5b81d2853fb52aabe27579f43633acc5f30c"
+    },
+    "CIS_CBus.Lux2550ToByte": {
+      "address": "0x7f2990",
+      "instructions": 30,
+      "sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "instructions": 37,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetValue": {
+      "address": "0x7f4638",
+      "instructions": 16,
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLuxFormula": {
+      "address": "0xcff72c",
+      "instructions": 38,
+      "sha256": "925562e7c786194638fdbe365087f27968f2d7fce1d6c808089e66fbbba14f44"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HandleBlockChange": {
+      "address": "0xcff79c",
+      "instructions": 51,
+      "sha256": "932553af324cdd471d783b65040b9d5a46dbfda26ae78d50d71ce47c82010445"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged": {
+      "address": "0xcffce0",
+      "instructions": 133,
+      "sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged": {
+      "address": "0xcffe78",
+      "instructions": 133,
+      "sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshLuxLevelsFromBlock": {
+      "address": "0xcff830",
+      "instructions": 134,
+      "sha256": "1d3b7e23147654f47dbe25463b984b991500a75c909131b3108949bee8cf5bf0"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshSwitchAllowedFromBlock": {
+      "address": "0xcffa18",
+      "instructions": 176,
+      "sha256": "0e66fd6060b0177c440e59aa8334fd69d0c627ea8f2bb5e1e3463e8ded4b3a29"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetEnableGroupOff": {
+      "address": "0xd0011c",
+      "instructions": 38,
+      "sha256": "2caede4fb0e2b3f5a6fdfd7e111ef18e5d2abeeb4aac54cf6f2908bf04c461ee"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetHighLevelLux": {
+      "address": "0xd00178",
+      "instructions": 40,
+      "sha256": "0a815544de0bd9780fe1be6a44d63da5db0323464f435dc4ea1b2520c87bb199"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetLowLevelLux": {
+      "address": "0xd001d8",
+      "instructions": 40,
+      "sha256": "6f5f6661443c852a6e17120aa67fcda7cec36d96a989051d9fb75c63500b67a9"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchActive": {
+      "address": "0xd00238",
+      "instructions": 38,
+      "sha256": "84438b445896051eab82579440b4f2c48ed7e9ac1a603658224a880f5125384f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchAllowed": {
+      "address": "0xd00294",
+      "instructions": 39,
+      "sha256": "0d79c0f5b2ee8e3b8d73d952abca535302be8705f46066bf8c565796d2ac495c"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchActiveChanged": {
+      "address": "0xcffc98",
+      "instructions": 28,
+      "sha256": "79366b9addf7d4ecf52b45b1be7acef34e84cb95b04c2a72d2f59d1e05cbd7f3"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchAllowedChanged": {
+      "address": "0xcffc64",
+      "instructions": 21,
+      "sha256": "b86dee8fa282cdf3b9c41c8eeacbbead896df969be61cea0c277a02d5b23d952"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadLightLevelBanks": {
+      "address": "0xcf44c4",
+      "instructions": 69,
+      "sha256": "2e324993624dd73d0b25e49fca6eeb1b9ecae9ddd08395c802fc805470821f2d"
+    },
+    "CIS_TCBusST7SensorCGateAgent.SaveLightLevelBanks": {
+      "address": "0xcf50b8",
+      "instructions": 67,
+      "sha256": "d6cc34742890d643856d76ff5f345ecc862a3ce0d90bd0d4137835b417dd279f"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula": {
+      "address": "0xcfb404",
+      "instructions": 10,
+      "sha256": "d527e24595b31634d21aa3d3a1951c76c1ac7634ec009305c7298d4b1e75cd40"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "instructions": 117,
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetValue": {
+      "address": "0x850ac4",
+      "instructions": 16,
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    }
+  },
+  "rules": {
+    "active_transition": "Allowed is not consulted; true with high<low sets low:=high",
+    "allowed_transition": "false clears Active only on unequal Allowed transition",
+    "block_change": "Allowed refresh first, then capture both stored levels; set High before Low",
+    "byte_to_lux": "byte *10",
+    "dependency_order": "CoreNeo keys before raw bank load; maintenance and occupancy load afterward",
+    "equal_boolean_or_integer_setters": "no change callback",
+    "high_transition": "writes Store1, then active high<low lowers Low",
+    "low_transition": "writes Store2, then active low>high raises High",
+    "lux_to_byte": "ceil(lux/10) within admitted0..2550",
+    "raw_bank_load": "Active then EnableGroupOff in ascending bank order"
+  },
+  "scope": {
+    "complete_unit_save_implemented": false,
+    "explicit_preexisting_bank_state": true,
+    "logical_lux_domain": [
+      0,
+      2550
+    ],
+    "lux_formula": 3,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "owning_raw_loader_modeled": false,
+    "physical_acceptance": false,
+    "unit_type": "SENLLA"
+  },
+  "state_order": [
+    "high_lux",
+    "low_lux",
+    "switch_active",
+    "switch_allowed",
+    "enable_group_off",
+    "store1",
+    "store2"
+  ]
+}

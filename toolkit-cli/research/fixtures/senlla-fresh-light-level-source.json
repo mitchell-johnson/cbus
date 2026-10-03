@@ -1,0 +1,429 @@
+{
+  "derived_handoff_sha256": "25fd21bc121598af9884312776c69f078712bbe916f7f94091febd1a95d0bb11",
+  "format": "cbus-senlla-fresh-light-level-source-v1",
+  "margin_vectors": [
+    {
+      "control_position": 1,
+      "loaded_margin": 0,
+      "source_margin_after_synchronous_render": 0
+    },
+    {
+      "control_position": 1,
+      "loaded_margin": 1,
+      "source_margin_after_synchronous_render": 1
+    },
+    {
+      "control_position": 50,
+      "loaded_margin": 50,
+      "source_margin_after_synchronous_render": 50
+    },
+    {
+      "control_position": 100,
+      "loaded_margin": 100,
+      "source_margin_after_synchronous_render": 100
+    },
+    {
+      "control_position": 100,
+      "loaded_margin": 101,
+      "source_margin_after_synchronous_render": 101
+    },
+    {
+      "control_position": 100,
+      "loaded_margin": 25500,
+      "source_margin_after_synchronous_render": 25500
+    }
+  ],
+  "method_pins": {
+    "CIS_CBus.CharIsCBusName": {
+      "address": "0x7f2b10",
+      "bytes": 132,
+      "instructions": 50,
+      "sha256": "936ea15856e663d5d5c620e69fedb13878ebf16e78d704b5fa2ecfa8be685faa"
+    },
+    "CIS_FlashGUI.PrepareFlashCxTrackBarEdit": {
+      "address": "0xc10afc",
+      "bytes": 204,
+      "instructions": 60,
+      "sha256": "f35e5d63b4682d44e6d2f48e74021c3e5b962c49cc549490618c0294450035db"
+    },
+    "CIS_FlashGUI.PrepareFlashEdit": {
+      "address": "0xc10804",
+      "bytes": 204,
+      "instructions": 60,
+      "sha256": "43647f90c11f88f4cef63dab2abea37a25baec3784646d0b68b4d2ee53f04c5b"
+    },
+    "CIS_Handles.TFlashExpressionController.Apply": {
+      "address": "0x84d7d0",
+      "bytes": 20,
+      "instructions": 10,
+      "sha256": "2b20a0e320b7c22e3ec0a96c53c0ce12108420c22bd7c12117a6c1e7757f11f4"
+    },
+    "CIS_Handles.TFlashExpressionController.CanAcceptValue": {
+      "address": "0x84d7e4",
+      "bytes": 64,
+      "instructions": 26,
+      "sha256": "211a5e7d21dea18074ae8bdc8d0aee9cd5451e1964faf0e68eb31413db687cbc"
+    },
+    "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged": {
+      "address": "0x84d8c4",
+      "bytes": 420,
+      "instructions": 150,
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e"
+    },
+    "CIS_Handles.TFlashExpressionController.ExitingControl": {
+      "address": "0x84da68",
+      "bytes": 28,
+      "instructions": 14,
+      "sha256": "17e744c7a7db8c56192b9db6948fd6bfba7698167b7ca3a651672baae330634f"
+    },
+    "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged": {
+      "address": "0x84dc5c",
+      "bytes": 80,
+      "instructions": 29,
+      "sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9"
+    },
+    "CIS_Handles.TFlashExpressionController.GetUpdateLocked": {
+      "address": "0x84dd1c",
+      "bytes": 28,
+      "instructions": 13,
+      "sha256": "a011fa54e9af0a8bf558d116ffd0cbe9d3a39331c84bbf3132bd314582041d24"
+    },
+    "CIS_Handles.TFlashExpressionController.LockUpdate": {
+      "address": "0x84dd64",
+      "bytes": 16,
+      "instructions": 9,
+      "sha256": "6e254474c069516e5aa1810bbc314befede5a078b97fbb48da90fcd886b7bc0e"
+    },
+    "CIS_Handles.TFlashExpressionController.UnlockUpdate": {
+      "address": "0x84e008",
+      "bytes": 36,
+      "instructions": 16,
+      "sha256": "119432cbcb5199057bcd82a1c35a14a784099d2dde6eefa6eb296c4e5e7d72e3"
+    },
+    "CIS_Handles.TFlashStringController.Apply": {
+      "address": "0x84f2f8",
+      "bytes": 148,
+      "instructions": 57,
+      "sha256": "73c4dec8995337520e7f986b675c71e86e5d26cc18beb943a0ebbffd584967f8"
+    },
+    "CIS_Handles.TFlashStringController.GetAsString": {
+      "address": "0x84f38c",
+      "bytes": 84,
+      "instructions": 31,
+      "sha256": "bdad58dacb7a206083e18a74aa88a18e23b5045252e67f678a0c762ce763151b"
+    },
+    "CIS_Handles.TFlashStringController.SetAsString": {
+      "address": "0x84f3e0",
+      "bytes": 80,
+      "instructions": 30,
+      "sha256": "ed46f66e4a5f03d891e45d26f185b4cfdb8ed73700fb145f0b2495334df5392b"
+    },
+    "CIS_Handles.TFlashStringController.UpdateCachedValue": {
+      "address": "0x84f430",
+      "bytes": 84,
+      "instructions": 31,
+      "sha256": "13d683614d8b3abc5897c2b3147438cbd49b9ee836dda6708ff7b1fa3b566bcb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMarginPerc": {
+      "address": "0xcfd26c",
+      "bytes": 96,
+      "instructions": 40,
+      "sha256": "3e4be69da9fd6f3497358471cdc48fcf45c863260bb43d480fb75488f5064efb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelTargetLux": {
+      "address": "0xcfd32c",
+      "bytes": 96,
+      "instructions": 40,
+      "sha256": "79d3df5d1bd1ddf5565be583cb06b1791da9b16e3da370e1832dbb25445c4640"
+    },
+    "CIS_TFlashCxTrackBar.TFlashCxTrackBar.ControllerValueChange": {
+      "address": "0xc09b38",
+      "bytes": 168,
+      "instructions": 62,
+      "sha256": "c90dfc6489a2794dcd0a79230fdec3663785b64de7f63a28978d06e0ee31ce4e"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.Change": {
+      "address": "0xc0b978",
+      "bytes": 36,
+      "instructions": 14,
+      "sha256": "7b4221171612c7a854f469c56819f1d9a0302f276d472767b5dbfe42d0b7a2dd"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.ControllerValueChange": {
+      "address": "0xc0ba40",
+      "bytes": 144,
+      "instructions": 48,
+      "sha256": "812eaa1357cdd7031648ffd0e73cb923b587f3d82141c4bccc14e1ad3452d23f"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.Create": {
+      "address": "0xc0bad0",
+      "bytes": 184,
+      "instructions": 51,
+      "sha256": "c534e7c3134469fa7e084a2d035c78e3b10f332a659452f903bbe071f5943941"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.RefreshDisplayFromFlash": {
+      "address": "0xc0bc1c",
+      "bytes": 144,
+      "instructions": 48,
+      "sha256": "78c5e20fae921647f2e8bed97a3f2e7ffff3625e8945ebd05b9c6640a688fc35"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.RefreshFlashFromDisplay": {
+      "address": "0xc0bcac",
+      "bytes": 140,
+      "instructions": 46,
+      "sha256": "d797d8345b279fdc803420a62e800c6f02512a512e6bb416594d3196e6eec5cb"
+    },
+    "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.SetFlashPosition": {
+      "address": "0xc0bd90",
+      "bytes": 28,
+      "instructions": 12,
+      "sha256": "2c02ecd9587e7ba61feb6c6af7758e47dcde51f28eabcfb4fec05b09de6827a6"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.Change": {
+      "address": "0xc0ad20",
+      "bytes": 52,
+      "instructions": 19,
+      "sha256": "dbd4afbbaa5666c6ca009789d458ecdc34dbbb06073a5f6656b9a7e91ec28692"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.OnInternalEditChange": {
+      "address": "0xc0b434",
+      "bytes": 36,
+      "instructions": 14,
+      "sha256": "348e9292c8fa077416bb8ae57c69f53ef2df9ca6af8fc0e442648c11daad1e29"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.OnInternalTrackBarChange": {
+      "address": "0xc0b480",
+      "bytes": 48,
+      "instructions": 18,
+      "sha256": "e78c5e9804a5b78a463523d25e9d7c3c76a5fe37599bf0b5c011467cb68d0585"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.SetPosition": {
+      "address": "0xc0b63c",
+      "bytes": 36,
+      "instructions": 14,
+      "sha256": "1e57a445ef6ae4ae9768894c95c17544d69cbdff64d22205b209b56dd3601bf7"
+    },
+    "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.UpdateEditFromTrackBar": {
+      "address": "0xc0b744",
+      "bytes": 236,
+      "instructions": 80,
+      "sha256": "deeb85e0de4188571ffb9e194c174cc9fd03cfbe44378feaf5114f849d58ef8a"
+    },
+    "CIS_TFlashEdit.TFlashEdit.Change": {
+      "address": "0xae7a54",
+      "bytes": 108,
+      "instructions": 38,
+      "sha256": "0e0a6021912322ed8a172d572175bbb3c4b4df56d42f3b189cb18d8c4fff452f"
+    },
+    "CIS_TFlashEdit.TFlashEdit.ControllerValueChange": {
+      "address": "0xae7ae0",
+      "bytes": 164,
+      "instructions": 54,
+      "sha256": "080bfb0e40a0c0c0984393e09d7168c200c55820a9eaccfd1f2a1d41a67b8dba"
+    },
+    "CIS_TFlashEdit.TFlashEdit.DoExit": {
+      "address": "0xae7ac0",
+      "bytes": 32,
+      "instructions": 12,
+      "sha256": "8e9463504ad675d3a229361904b28364bd54bffd296cd4625310dcea31aa3526"
+    },
+    "CIS_TFlashEdit.TFlashEdit.RenderDisplay": {
+      "address": "0xae7958",
+      "bytes": 164,
+      "instructions": 56,
+      "sha256": "f65c44006ca2281ad57831092381e3000d3c8b03fc51331b77bb8302f5e1e4bb"
+    },
+    "CIS_TcdLightLevelSensor.ConfigureLuxEdit": {
+      "address": "0xfa6588",
+      "bytes": 380,
+      "instructions": 122,
+      "sha256": "7e169aba2f809c2ce554a2eb30467d31dc75175241d393489fb86379f22c7e2b"
+    },
+    "CIS_TcdLightLevelSensor.ConfigureLuxTrack": {
+      "address": "0xfa884c",
+      "bytes": 64,
+      "instructions": 20,
+      "sha256": "9c9a56101bfc72fd5a735d2cb54c46041d15f2116ca9b3bb33cc141d90ce885f"
+    },
+    "CIS_TcdLightLevelSensor.TcdLightLevelSensor.SetupFlashComponents": {
+      "address": "0xfa445c",
+      "bytes": 828,
+      "instructions": 102,
+      "sha256": "0b82cd80b10eced2ce371ee437d42f73a8f755dc9ee8edf07e441c2d7c8d43e6"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleSliderChanged": {
+      "address": "0xfa78fc",
+      "bytes": 212,
+      "instructions": 57,
+      "sha256": "41946999b132812486b8fde17cca65dd3875ffdda574fb7eadb11df58498cacb"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleTargetLuxChange": {
+      "address": "0xfa79d0",
+      "bytes": 104,
+      "instructions": 37,
+      "sha256": "4d3727c32e244c26139cb68acd72a5da0603684dea5b95905cf0bc36350e3e81"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.Initialise": {
+      "address": "0xfa7c08",
+      "bytes": 1044,
+      "instructions": 222,
+      "sha256": "22ac35f6b34b50c19370a4e3dc9a930ae5aa76356683e686e63aa016d74121b9"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetTargetLuxByteValue": {
+      "address": "0xfa8790",
+      "bytes": 56,
+      "instructions": 20,
+      "sha256": "17b140f453a2e6798b99900bedb8137592d78a5b20622101f303d87629765df6"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetTargetLuxEditText": {
+      "address": "0xfa87c8",
+      "bytes": 132,
+      "instructions": 42,
+      "sha256": "852062cd43613d9bbfea68a975369a68196bb4f0c8a17f8bb63513e6f135f7ad"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashComponents": {
+      "address": "0xfa8928",
+      "bytes": 64,
+      "instructions": 22,
+      "sha256": "8daf5ec484fd93105c34003be20dd947f2bcc99b62574f66e5a861cf5e90251a"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashHooks": {
+      "address": "0xfa8968",
+      "bytes": 676,
+      "instructions": 105,
+      "sha256": "64cdd73b4175fd1fd5a98ed6ad6b223fa9135ff24e4e31574b069113455bd7c5"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupNonFlashComponents": {
+      "address": "0xfa8c0c",
+      "bytes": 196,
+      "instructions": 64,
+      "sha256": "7c8c3eb9cec0f9831482ee3ad015a62b76b53b9805ddf1aa110733f8340b2c5f"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginPercChange": {
+      "address": "0xfbcf60",
+      "bytes": 80,
+      "instructions": 29,
+      "sha256": "ca052c5011736240859b0f78d75748a4f792f622caf15f56a3917febd9d2e1b2"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetLuxChange": {
+      "address": "0xfbd068",
+      "bytes": 80,
+      "instructions": 29,
+      "sha256": "d68bfbb459bd43edfd33c81ecb803f3e4ae078740fa6993894f07d91285b57b7"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfbd108",
+      "bytes": 820,
+      "instructions": 120,
+      "sha256": "90f8edccb96fca7be33f8de1ef49b4351dc3f06bf171d3fe6fd00800c71b905d"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SetupFlashHooks": {
+      "address": "0xfbd584",
+      "bytes": 592,
+      "instructions": 71,
+      "sha256": "0c49b80b041577822d96031a569f689b5f2d25b7e61afcd6332fbe2934645b48"
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateLightLevelRange": {
+      "address": "0xfbdaf0",
+      "bytes": 616,
+      "instructions": 134,
+      "sha256": "b178f79e65b404a7bd22cd4c1acd30ad94ca68afbfc8b7066c6c728ce75c9d69"
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormLightLevel": {
+      "address": "0xfc4bc0",
+      "bytes": 200,
+      "instructions": 56,
+      "sha256": "93fa5fe65ee48e4cba89001501bb91ba9a4ea18c95c898e299fcd936eafa92ec"
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.SetupFlashComponents": {
+      "address": "0xdc0dac",
+      "bytes": 640,
+      "instructions": 101,
+      "sha256": "a95241cac5f1c738a333a9da8a9fc7b3a55f10627e1c5d7533ce9dacd8ac11b3"
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameChange": {
+      "address": "0xdc15f0",
+      "bytes": 492,
+      "instructions": 145,
+      "sha256": "bf5c2c02a757a3e177f46a429320e67d7b11646f35750d144a4fc056e70bca28"
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameExit": {
+      "address": "0xdc13cc",
+      "bytes": 480,
+      "instructions": 135,
+      "sha256": "46c8e62ec43e37a6eee52a4559f079a934f2041efc08e592b6565739e8bd1c4d"
+    },
+    "Controls.TControl.SetText": {
+      "address": "0x6f62d8",
+      "bytes": 100,
+      "instructions": 41,
+      "sha256": "10f59879b5e52541c5423af3b5cc89491d61a3cd871d665ead72ed63140619f3"
+    },
+    "StdCtrls.TCustomEdit.CreateParams": {
+      "address": "0x6858a8",
+      "bytes": 244,
+      "instructions": 60,
+      "sha256": "16c7696e80443a647e5877a2d54a0783d6bfff186e5e70ba5859d2c100978ea1"
+    },
+    "StdCtrls.TCustomEdit.SetCharCase": {
+      "address": "0x6853a8",
+      "bytes": 20,
+      "instructions": 5,
+      "sha256": "1369f1a62256436f06b2fbf7ec5ac799b2a49dc74552f5169045ab8aa9aaffb9"
+    },
+    "cxTrackBar.TcxCustomTrackBar.SetPosition": {
+      "address": "0xc08dec",
+      "bytes": 140,
+      "instructions": 53,
+      "sha256": "d8fe45b771720d12d0226ffe3cbc82b8b8ac4cc018ff05791c39038d6673c12d"
+    },
+    "cxTrackBar.TcxCustomTrackBarProperties.FixPosition": {
+      "address": "0xc08038",
+      "bytes": 80,
+      "instructions": 27,
+      "sha256": "80400fab79cd91ed3b3b43a63da4203ee0fd6e1c2181d94437d6cb4d02649772"
+    }
+  },
+  "native_form_verified": false,
+  "original_execution": false,
+  "physical_acceptance": false,
+  "rules": {
+    "fresh_target": "Loaded target above200 is set to200; loaded margin percentage retained.",
+    "later_apply": "May submit the same restored source value; complete lifecycle must compose notifications.",
+    "margin_renderer": "Display clamps1..100 under lock, restoring raw source cache without a clamp-derived source delta.",
+    "projection_authority": "Existing senlla_surface surface load/serializer source slice; bank/global/key/metadata composition excluded."
+  },
+  "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "target_vectors": [
+    {
+      "direct_setter": false,
+      "loaded_target": 0,
+      "resulting_target": 0
+    },
+    {
+      "direct_setter": false,
+      "loaded_target": 1,
+      "resulting_target": 1
+    },
+    {
+      "direct_setter": false,
+      "loaded_target": 199,
+      "resulting_target": 199
+    },
+    {
+      "direct_setter": false,
+      "loaded_target": 200,
+      "resulting_target": 200
+    },
+    {
+      "direct_setter": true,
+      "loaded_target": 201,
+      "resulting_target": 200
+    },
+    {
+      "direct_setter": true,
+      "loaded_target": 255,
+      "resulting_target": 200
+    }
+  ]
+}

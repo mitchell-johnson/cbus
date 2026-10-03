@@ -1,0 +1,80 @@
+{
+  "bank_parent_passed": 9,
+  "boundaries": {
+    "complete_unit_save_implemented": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "installed_wheel_release": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "owning_loader_implemented": false,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "source check receipt",
+      "component guide"
+    ],
+    "public_cli_save_added": false,
+    "source_component_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 567704,
+        "identity": "inputs-before.json",
+        "sha256": "51e94dba217d2baf8818963f89593ec669e39e74bf96d77fb206231fcea64b83"
+      },
+      {
+        "bytes": 567704,
+        "identity": "inputs-terminal.json",
+        "sha256": "51e94dba217d2baf8818963f89593ec669e39e74bf96d77fb206231fcea64b83"
+      }
+    ],
+    "source_input_count": 4034,
+    "tested_head": "2491b40e43d6e20768a882fd6fb144c9c949e282"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 14851,
+      "identity": "source.xml",
+      "sha256": "7be1bbaee2b78db3627c7a7890a62f84767732470ef8c380accf0b33e1e84714"
+    },
+    {
+      "bytes": 66373,
+      "identity": "source-trace.json",
+      "sha256": "bc7dee2fd5a6c9766f2ad728f81cef050d14348139caf5e330b291985772f71e"
+    },
+    {
+      "bytes": 81423,
+      "identity": "source-results.json",
+      "sha256": "7e9e763f54d347a96ba4c14226d37a1d857b7279e08e88581a3217ae2e980e73"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-bank-transition-source-check-v1",
+  "independent_source_review": "clear within explicit existing BankState/formula3 slice",
+  "literal_bank_vectors": 12,
+  "model": {
+    "bytes": 4303,
+    "identity": "src/cbus_toolkit/senlla_banks.py",
+    "sha256": "d4e2bfbec17850aad860ef39259f722f2d7da4160baa637d9f85005164cffe0e"
+  },
+  "parent_passed": 44,
+  "selection": [
+    "tests/test_senlla_banks.py",
+    "tests/test_senlla_ordinary_keys.py",
+    "tests/test_senlla_surface.py"
+  ],
+  "separate_subtests_passed": 310,
+  "skipped": 0,
+  "static_method_pins": 22,
+  "static_source": {
+    "bytes": 10927,
+    "identity": "research/fixtures/senlla-bank-transition-source.json",
+    "sha256": "fd837fedc905b8235b039ac127fed26d341177462bad13b4ca4a54f28935bbc8"
+  }
+}

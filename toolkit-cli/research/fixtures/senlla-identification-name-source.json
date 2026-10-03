@@ -1,0 +1,455 @@
+{
+  "format": "cbus-senlla-identification-name-source-v1",
+  "source": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "methods": [
+    {
+      "method": "StdCtrls.TCustomEdit.GetSelStart",
+      "address": "0x6855cc",
+      "span_sha256": "10ce255ce9d5d8fe46bc785f8535cf5fd3e5f02206d7101ef5f81f89dff66827",
+      "byte_count": 36,
+      "instruction_count": 16
+    },
+    {
+      "method": "StdCtrls.TCustomEdit.SetSelStart",
+      "address": "0x6855f0",
+      "span_sha256": "5e31a75172f3e4e5c00cc4ea282eba6186bb99481d479958bbcb3d1f4907830c",
+      "byte_count": 32,
+      "instruction_count": 15
+    },
+    {
+      "method": "StdCtrls.TCustomEdit.GetSelLength",
+      "address": "0x685610",
+      "span_sha256": "490a60fef1aef7b641778e048551ae400737cce5dc5d4407d9223366e561bed6",
+      "byte_count": 48,
+      "instruction_count": 19
+    },
+    {
+      "method": "StdCtrls.TCustomEdit.SetSelLength",
+      "address": "0x685640",
+      "span_sha256": "6711bf5c2d68688eb40a0b7427c1e49997656c6543cd0c3cd9adb96c50623d8b",
+      "byte_count": 100,
+      "instruction_count": 38
+    },
+    {
+      "method": "StdCtrls.TCustomEdit.Change",
+      "address": "0x685c80",
+      "span_sha256": "775ac5a540032dd2cc2fc173b934b3fd6a6355e111db3880df3ae49f051101ed",
+      "byte_count": 36,
+      "instruction_count": 11
+    },
+    {
+      "method": "StdCtrls.TCustomEdit.CMTextChanged",
+      "address": "0x685e8c",
+      "span_sha256": "72d12362d08dc23214fa6ff0b4696d7b374557276f70087a35e26aef8984e351",
+      "byte_count": 56,
+      "instruction_count": 21
+    },
+    {
+      "method": "Controls.TControl.SetTextBuf",
+      "address": "0x6f56d0",
+      "span_sha256": "fc78f3554ce7d94f881f17c94f6ab33cc7a70bcb621e3ac769efd4a7f923d9ae",
+      "byte_count": 36,
+      "instruction_count": 14
+    },
+    {
+      "method": "Controls.TControl.GetText",
+      "address": "0x6f62a0",
+      "span_sha256": "935a3f80eb9e69c78990309b5b642d80716ec9bbd6778249b48f56c0e1e66b4f",
+      "byte_count": 56,
+      "instruction_count": 25
+    },
+    {
+      "method": "Controls.TControl.SetText",
+      "address": "0x6f62d8",
+      "span_sha256": "10f59879b5e52541c5423af3b5cc89491d61a3cd871d665ead72ed63140619f3",
+      "byte_count": 100,
+      "instruction_count": 41
+    },
+    {
+      "method": "Controls.TWinControl.DoExit",
+      "address": "0x6fd5b4",
+      "span_sha256": "5f1f85dd1ed70e083092d84832fa20a0dd9cdd681867495c38b54dccd30c0825",
+      "byte_count": 32,
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange",
+      "address": "0x7ecd00",
+      "span_sha256": "c45096cc2a19b8d46a39798914dd615f1109b0a0a7f09bd9ca781a917c35902a",
+      "byte_count": 40,
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "address": "0x7ece44",
+      "span_sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "byte_count": 40,
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "address": "0x7ece6c",
+      "span_sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "byte_count": 40,
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_CBus.CharIsCBusName",
+      "address": "0x7f2b10",
+      "span_sha256": "936ea15856e663d5d5c620e69fedb13878ebf16e78d704b5fa2ecfa8be685faa",
+      "byte_count": 132,
+      "instruction_count": 50
+    },
+    {
+      "method": "CIS_TStringAttribute.TStringAttribute.GetAsString",
+      "address": "0x7f375c",
+      "span_sha256": "5fce961a49cc56dba225d5b82c1521f01d29461524b5613c84d9ea9d5426585b",
+      "byte_count": 40,
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TStringAttribute.TStringAttribute.GetValue",
+      "address": "0x7f3784",
+      "span_sha256": "3830dbd363d33eb8a77a07e76082c803eff6f61085e4e1ba2138e7404f36e710",
+      "byte_count": 40,
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TStringAttribute.TStringAttribute.InternalSetAsString",
+      "address": "0x7f37d4",
+      "span_sha256": "330257dc83aadc5bdb317bdeaba91e23b789bae49704cf85edf625fc04127c2a",
+      "byte_count": 460,
+      "instruction_count": 121
+    },
+    {
+      "method": "CIS_TStringAttribute.TStringAttribute.SetValue",
+      "address": "0x7f39a0",
+      "span_sha256": "a67d5dafb78a0a50cba55a19106f14eaae4711315660e5b2d2ad22ee95e5780c",
+      "byte_count": 88,
+      "instruction_count": 34
+    },
+    {
+      "method": "CIS_TStringAttribute.TStringAttribute.SetAsString",
+      "address": "0x7f3b28",
+      "span_sha256": "777856caf320242bbfb37ea187954b5968fc8bb4ab0a7d1269c134c85d55776b",
+      "byte_count": 28,
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.Apply",
+      "address": "0x84d7d0",
+      "span_sha256": "2b20a0e320b7c22e3ec0a96c53c0ce12108420c22bd7c12117a6c1e7757f11f4",
+      "byte_count": 20,
+      "instruction_count": 10
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.CanAcceptValue",
+      "address": "0x84d7e4",
+      "span_sha256": "211a5e7d21dea18074ae8bdc8d0aee9cd5451e1964faf0e68eb31413db687cbc",
+      "byte_count": 64,
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.Changed",
+      "address": "0x84d824",
+      "span_sha256": "58e08f90ef77c3b2cb390bb40b29a6bcbd333e6da9bd7c6d849884ccf0aa8638",
+      "byte_count": 160,
+      "instruction_count": 58
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged",
+      "address": "0x84d8c4",
+      "span_sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e",
+      "byte_count": 420,
+      "instruction_count": 150
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.ExitingControl",
+      "address": "0x84da68",
+      "span_sha256": "17e744c7a7db8c56192b9db6948fd6bfba7698167b7ca3a651672baae330634f",
+      "byte_count": 28,
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged",
+      "address": "0x84dc5c",
+      "span_sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9",
+      "byte_count": 80,
+      "instruction_count": 29
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.GetUpdateLocked",
+      "address": "0x84dd1c",
+      "span_sha256": "a011fa54e9af0a8bf558d116ffd0cbe9d3a39331c84bbf3132bd314582041d24",
+      "byte_count": 28,
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.LockUpdate",
+      "address": "0x84dd64",
+      "span_sha256": "6e254474c069516e5aa1810bbc314befede5a078b97fbb48da90fcd886b7bc0e",
+      "byte_count": 16,
+      "instruction_count": 9
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.SetActive",
+      "address": "0x84de00",
+      "span_sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf",
+      "byte_count": 100,
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_Handles.TFlashExpressionController.UnlockUpdate",
+      "address": "0x84e008",
+      "span_sha256": "119432cbcb5199057bcd82a1c35a14a784099d2dde6eefa6eb296c4e5e7d72e3",
+      "byte_count": 36,
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_Handles.TFlashStringController.Apply",
+      "address": "0x84f2f8",
+      "span_sha256": "73c4dec8995337520e7f986b675c71e86e5d26cc18beb943a0ebbffd584967f8",
+      "byte_count": 148,
+      "instruction_count": 57
+    },
+    {
+      "method": "CIS_Handles.TFlashStringController.GetAsString",
+      "address": "0x84f38c",
+      "span_sha256": "bdad58dacb7a206083e18a74aa88a18e23b5045252e67f678a0c762ce763151b",
+      "byte_count": 84,
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_Handles.TFlashStringController.SetAsString",
+      "address": "0x84f3e0",
+      "span_sha256": "ed46f66e4a5f03d891e45d26f185b4cfdb8ed73700fb145f0b2495334df5392b",
+      "byte_count": 80,
+      "instruction_count": 30
+    },
+    {
+      "method": "CIS_Handles.TFlashStringController.UpdateCachedValue",
+      "address": "0x84f430",
+      "span_sha256": "13d683614d8b3abc5897c2b3147438cbd49b9ee836dda6708ff7b1fa3b566bcb",
+      "byte_count": 84,
+      "instruction_count": 31
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.Create",
+      "address": "0xae7884",
+      "span_sha256": "8bcbb3b6dfc9413284888ecb8fd84eaa1899f4ed85fc8901ba312848d76b38af",
+      "byte_count": 212,
+      "instruction_count": 57
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.RenderDisplay",
+      "address": "0xae7958",
+      "span_sha256": "f65c44006ca2281ad57831092381e3000d3c8b03fc51331b77bb8302f5e1e4bb",
+      "byte_count": 164,
+      "instruction_count": 56
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.Change",
+      "address": "0xae7a54",
+      "span_sha256": "0e0a6021912322ed8a172d572175bbb3c4b4df56d42f3b189cb18d8c4fff452f",
+      "byte_count": 108,
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.DoExit",
+      "address": "0xae7ac0",
+      "span_sha256": "8e9463504ad675d3a229361904b28364bd54bffd296cd4625310dcea31aa3526",
+      "byte_count": 32,
+      "instruction_count": 12
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.ControllerValueChange",
+      "address": "0xae7ae0",
+      "span_sha256": "080bfb0e40a0c0c0984393e09d7168c200c55820a9eaccfd1f2a1d41a67b8dba",
+      "byte_count": 164,
+      "instruction_count": 54
+    },
+    {
+      "method": "CIS_TFlashEdit.TFlashEdit.UpdateEnableState",
+      "address": "0xae7c68",
+      "span_sha256": "c870506536d8711c8a4acf75437d9a9ac167d0c8c5a793aba1e9ee4a32850de0",
+      "byte_count": 56,
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_FlashGUI.PrepareFlashEdit",
+      "address": "0xc10804",
+      "span_sha256": "43647f90c11f88f4cef63dab2abea37a25baec3784646d0b68b4d2ee53f04c5b",
+      "byte_count": 204,
+      "instruction_count": 60
+    },
+    {
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.GetData",
+      "address": "0xdc0984",
+      "span_sha256": "759ee4e42f8fbdd161ad91a058074b2c2a24c966d8b2f4f7680a9d43bc0f0d20",
+      "byte_count": 44,
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.SetData",
+      "address": "0xdc0b6c",
+      "span_sha256": "9a562488d987c17a3713b96fb1fa51c0b63d8cd68b67eb4cedefc7a27a873d2f",
+      "byte_count": 576,
+      "instruction_count": 154
+    },
+    {
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.SetupFlashComponents",
+      "address": "0xdc0dac",
+      "span_sha256": "a95241cac5f1c738a333a9da8a9fc7b3a55f10627e1c5d7533ce9dacd8ac11b3",
+      "byte_count": 640,
+      "instruction_count": 101
+    },
+    {
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameExit",
+      "address": "0xdc13cc",
+      "span_sha256": "46c8e62ec43e37a6eee52a4559f079a934f2041efc08e592b6565739e8bd1c4d",
+      "byte_count": 480,
+      "instruction_count": 135
+    },
+    {
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameChange",
+      "address": "0xdc15f0",
+      "span_sha256": "bf5c2c02a757a3e177f46a429320e67d7b11646f35750d144a4fc056e70bca28",
+      "byte_count": 492,
+      "instruction_count": 145
+    },
+    {
+      "method": "CIS_TCBusObject.TCGateObject.InternalCreate",
+      "address": "0xf47718",
+      "span_sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260",
+      "byte_count": 360,
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TCBusObject.TCGateObject.HandleTagNameAfterChange",
+      "address": "0xf47b04",
+      "span_sha256": "a46b76fa204592199ff06435847c7f67f4f44b69a4c313a13ef1790d57661a23",
+      "byte_count": 196,
+      "instruction_count": 61
+    },
+    {
+      "method": "CIS_TCBusObject.TCGateObject.TagNameBeforeChange",
+      "address": "0xf48228",
+      "span_sha256": "2a548f988428e39627a1b2f2ea550bd51b23b893cd4b990f2399d84f2a737829",
+      "byte_count": 24,
+      "instruction_count": 10
+    }
+  ],
+  "method_count": 48,
+  "virtual_slots": [
+    {
+      "class_symbol": "CIS_TStringAttribute..TStringAttribute",
+      "slot": "0x24",
+      "target": "0x7ecd00",
+      "method": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange"
+    },
+    {
+      "class_symbol": "CIS_TStringAttribute..TStringAttribute",
+      "slot": "0x2c",
+      "target": "0x7f375c",
+      "method": "CIS_TStringAttribute.TStringAttribute.GetAsString"
+    },
+    {
+      "class_symbol": "CIS_TStringAttribute..TStringAttribute",
+      "slot": "0x30",
+      "target": "0x7f3b28",
+      "method": "CIS_TStringAttribute.TStringAttribute.SetAsString"
+    },
+    {
+      "class_symbol": "CIS_TStringAttribute..TStringAttribute",
+      "slot": "0x7c",
+      "target": "0x7f39a0",
+      "method": "CIS_TStringAttribute.TStringAttribute.SetValue"
+    },
+    {
+      "class_symbol": "CIS_TCBusObject..TCISTagAttribute",
+      "slot": "0x24",
+      "target": "0x7ecd00",
+      "method": "CIS_TCustomFlashObject.TCISAttribute.ResolveChange"
+    },
+    {
+      "class_symbol": "CIS_TCBusObject..TCISTagAttribute",
+      "slot": "0x2c",
+      "target": "0x7f375c",
+      "method": "CIS_TStringAttribute.TStringAttribute.GetAsString"
+    },
+    {
+      "class_symbol": "CIS_TCBusObject..TCISTagAttribute",
+      "slot": "0x30",
+      "target": "0x7f3b28",
+      "method": "CIS_TStringAttribute.TStringAttribute.SetAsString"
+    },
+    {
+      "class_symbol": "CIS_TCBusObject..TCISTagAttribute",
+      "slot": "0x7c",
+      "target": "0x7f39a0",
+      "method": "CIS_TStringAttribute.TStringAttribute.SetValue"
+    }
+  ],
+  "dfm": {
+    "name": "TFRMUNITIDENTIFICATION",
+    "byte_count": 7311,
+    "sha256": "e267091bcff7d0d808858d2ac4008810e73a20a2feacedf58549118242942834",
+    "selected_fields": {
+      "control": "edtUnitName",
+      "char_case": "ecUpperCase",
+      "max_length": 8,
+      "update_mode": "umExit",
+      "on_change": "edtUnitNameChange",
+      "on_exit": "edtUnitNameExit"
+    }
+  },
+  "character_predicate": {
+    "bitset_address": "0x7f2b74",
+    "byte_count": 32,
+    "sha256": "0334dc8113e30bdae7a56cfcb7f19ce0cad692f5e78bb08dfeeeb1f4bf65c475",
+    "accepted_ranges": [
+      [
+        33,
+        59
+      ],
+      [
+        61,
+        61
+      ],
+      [
+        63,
+        96
+      ]
+    ]
+  },
+  "rules": {
+    "current_attribute_reread_after_render": true,
+    "cache_restore_does_not_clear_callback_dirty": true,
+    "direct_exit_applies_unit_name": false,
+    "real_exit_form_handler_before_apply": true,
+    "tag_name_predicate": [
+      "empty",
+      "exact_NEWUNIT"
+    ],
+    "tag_name_empty_short_circuit": true,
+    "control_text_helper_uppercases": false,
+    "control_text_helper_clamps": false,
+    "name_change_first_native_boundary": {
+      "source": "0x6855de",
+      "operations": [
+        "GetHandle",
+        "SendMessage_EM_GETSEL"
+      ]
+    },
+    "native_selection_boundary_skipped_for_valid_text": false
+  },
+  "scope": "Same retained string attribute/cache and direct identification name handler prefix; native edit window ownership and complete identification remain open.",
+  "complete_toolkit_save": false,
+  "original_execution": false,
+  "native_window_execution": false,
+  "hardware_acceptance": false,
+  "full_suite_run": false
+}
