@@ -2,6 +2,22 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
+adds synchronous attribute/parent counters, managed publication, setter
+callbacks and stable active tracked-reference subscriptions. Fresh PEC/PIR
+handlers emit ordered requests and reread the owning context after each
+setter. Native maintenance selection and the unit-name/string-tag writer
+remain explicit executor contracts. Independent reviews clear 65 lifecycle
+and 190 fresh-handler method pins; 71 Scene composition pins correct two
+earlier examples. Thirteen focused modules pass 232 parents and 3,694
+separate subtests with zero skips. All 4,080 tracked inputs remain unchanged
+during the frozen checks at authored commit `25533098`. Inventory/register
+checks pass and the census is current at 747 modules with all 259 native
+requirements selected. Complete coverage remains false with 487 obligations.
+The key event engine, earlier application/group creations, complete owning
+93-parameter save/public CLI and original/native/hardware acceptance remain
+open. Full suites are deferred for speed. Counts below are historical.
+
 The [SENLLA Scene composition evidence](senlla-scene-composition.md) corrects
 two earlier examples after independent tracing of the template attribute's
 parent key update. Invoke retains Scene template24; Modify retains25 during

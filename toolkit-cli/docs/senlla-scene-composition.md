@@ -50,3 +50,12 @@ tests, 2,860 separate subtests, zero failures or skips. All 4,062 tracked
 inputs remain unchanged. This is source-component evidence; public
 whole-unit save and installed-wheel/original/native/physical acceptance
 remain open.
+
+The [frozen callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
+covers thirteen SENLLA modules at authored commit `25533098`: 232 parents,
+3,694 separate subtests and zero failures, errors or skips. All 4,080 tracked
+inputs remain unchanged in the frozen checkout. This source-only increment
+adds reviewed synchronous lifecycle and fresh form request components.
+The key event engine, complete owning save/public CLI and installed-wheel/
+original/native/hardware acceptance remain open. Full suites are deferred
+for speed; earlier check receipts retain their historical scopes.

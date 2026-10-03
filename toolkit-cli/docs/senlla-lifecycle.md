@@ -21,7 +21,10 @@ change. Reference BeforeChange can cancel a write, but its replacement pointer
 is ignored by the native setter. Integer BeforeChange runs before validation
 and honors its proposed integer.
 
-Managed publication has its own guard. Reference and Boolean getters rearm it;
+Managed publication has its own guard. This helper admits the native live
+managed state1. Its `enabled` flag projects publication eligibility; it
+does not model construction state0 or destruction state2. Reference and
+Boolean getters rearm it;
 the direct integer getter does not. Custom key/block Changed rearms before
 publishing. Subscribers run in reverse registration order, using the current
 list at each index. The source prevents duplicate registration by identity.
@@ -44,3 +47,12 @@ predictions. This component does not install application, Scene, general
 expression-controller or form handlers, expose a public whole-unit save, or establish
 original, native-service or hardware acceptance. Integer bounds belong to the
 owning constructor; invalid counter balancing refuses at this internal boundary.
+
+The [frozen callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
+covers thirteen SENLLA modules at authored commit `25533098`: 232 parents,
+3,694 separate subtests and zero failures, errors or skips. All 4,080 tracked
+inputs remain unchanged in the frozen checkout. This source-only increment
+adds reviewed synchronous lifecycle and fresh form request components.
+The key event engine, complete owning save/public CLI and installed-wheel/
+original/native/hardware acceptance remain open. Full suites are deferred
+for speed; earlier check receipts retain their historical scopes.

@@ -176,3 +176,12 @@ The scalar serializer still requires actual final UnitName and
 Project.TagName metadata context. Raw PP text is not evidence of native
 ecUpperCase or MaxLength window behavior; control rendering and a later actual
 exit remain executor facts.
+
+The [frozen callback-prerequisite source check](../research/fixtures/senlla-callback-prerequisite-source-check-20261004.json)
+covers thirteen SENLLA modules at authored commit `25533098`: 232 parents,
+3,694 separate subtests and zero failures, errors or skips. All 4,080 tracked
+inputs remain unchanged in the frozen checkout. This source-only increment
+adds reviewed synchronous lifecycle and fresh form request components.
+The key event engine, complete owning save/public CLI and installed-wheel/
+original/native/hardware acceptance remain open. Full suites are deferred
+for speed; earlier check receipts retain their historical scopes.
