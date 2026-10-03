@@ -130,7 +130,8 @@ def _other_usage(unit: Unit, profile: NeoProfile, application: int, group: int) 
     # Pro profiles with possible join support are admitted only with all four
     # join PP groups disabled. Keep an unknown dependency when Other is queried
     # independently of the body decoder and that boundary is not established.
-    possible_join = profile.is_pro and unit.unit_type.upper() not in {"KEYM8", "KEYE1"}
+    possible_join = profile.is_pro and (profile.join_supported if profile.join_supported is not None
+                                       else unit.unit_type.upper() not in {"KEYM8", "KEYE1"})
     if possible_join:
         for name in JOIN_PARAMETERS:
             values = _array(unit, name, 1)
@@ -138,7 +139,8 @@ def _other_usage(unit: Unit, profile: NeoProfile, application: int, group: int) 
                 missing.append(name + " (requires disabled join)")
         if application == 255 and group == 255:
             missing.append("unused join-group identity")
-    if profile.is_pro:
+    other_pro = profile.is_pro if profile.other_dependency_pro is None else profile.other_dependency_pro
+    if other_pro:
         if application == 203:
             append("KeyDisableGroup", "Key Disable Group")
         if apps is not None and application == apps[0]:

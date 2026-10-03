@@ -89,6 +89,10 @@ jobs:
           --require-module tests/test_edlt_mra_control_static.py
           --require-module tests/test_edlt_mra_controls.py
           --require-module tests/test_edlt_parent_mra_controls.py
+          --require-module tests/test_edlt_dual_key_control_static.py
+          --require-module tests/test_edlt_dual_key_controls.py
+          --require-module tests/test_edlt_parent_dual_key_controls.py
+          --require-module tests/test_project_documentation_neo_profiles.py
           --require-module tests/test_edlt_scene_name_control.py
           --require-module tests/test_edlt_scene_names.py
           --require-module tests/test_edlt_scene_name_static.py
@@ -159,6 +163,7 @@ jobs:
           --require-module tests/test_cgate_edlt_widget_controls_interop.py
           --require-module tests/test_cgate_edlt_global_images_interop.py
           --require-module tests/test_cgate_edlt_mra_controls_interop.py
+          --require-module tests/test_cgate_edlt_dual_key_controls_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -211,6 +216,7 @@ jobs:
           --require-module tests/test_cgate_edlt_widget_controls_interop.py
           --require-module tests/test_cgate_edlt_global_images_interop.py
           --require-module tests/test_cgate_edlt_mra_controls_interop.py
+          --require-module tests/test_cgate_edlt_dual_key_controls_interop.py
           --require-module tests/test_cmqtt_network_save_db_cli.py
           --require-module tests/test_cgate_file_upload.py
           --summary "${GITHUB_STEP_SUMMARY}"
@@ -276,6 +282,10 @@ jobs:
           --require-module tests/test_edlt_mra_control_static.py
           --require-module tests/test_edlt_mra_controls.py
           --require-module tests/test_edlt_parent_mra_controls.py
+          --require-module tests/test_edlt_dual_key_control_static.py
+          --require-module tests/test_edlt_dual_key_controls.py
+          --require-module tests/test_edlt_parent_dual_key_controls.py
+          --require-module tests/test_project_documentation_neo_profiles.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips

@@ -84,7 +84,7 @@ MULTILEVEL_OPTION_NAMES = (
 ROOM_COURTESY_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'mode', 'off_colour',
     'on_colour', 'page_mode', 'label_type', 'label_index', 'label_text',
-    'status_type', 'status_index', 'status_text', 'label_controls',
+    'status_type', 'status_index', 'status_text', 'label_controls', 'dual_key_controls',
 )
 SCENE_OPTION_NAMES = (
     'page', 'position', 'scene', 'page_mode', 'label_type', 'label_index',
@@ -94,7 +94,7 @@ SCENE_OPTION_NAMES = (
 SHUTTER_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'mode', 'preset_left',
     'preset_right', 'page_mode', 'label_type', 'label_index', 'label_text',
-    'status_type', 'status_index', 'status_text', 'label_controls',
+    'status_type', 'status_index', 'status_text', 'label_controls', 'dual_key_controls',
 )
 TIME_DATE_OPTION_NAMES = (
     'page', 'position', 'slices', 'display', 'page_mode', 'date_format',
@@ -103,7 +103,7 @@ TIME_DATE_OPTION_NAMES = (
 TIMER_OPTION_NAMES = (
     'page', 'position', 'group', 'application', 'duration_seconds',
     'target_level', 'expiry_level', 'ramp_seconds', 'page_mode', 'label_type',
-    'label_index', 'label_text', 'status_type', 'status_index', 'status_text', 'label_controls',
+    'label_index', 'label_text', 'status_type', 'status_index', 'status_text', 'label_controls', 'dual_key_controls',
 )
 GENERAL_OPTION_NAMES = (
     'long_press_ms', 'debounce_ms', 'status_report_seconds',
@@ -319,6 +319,8 @@ def _operation(value, *, allow_add_dialog=False):
             ', '.join(SUPPORTED_OPERATION_NAMES))
     allowed, required = _OPERATION_SHAPES[operation]
     unexpected = set(value) - {'op', *allowed}
+    if operation in ('timer', 'shutter', 'room-courtesy') and 'dual_key_controls' in value:
+        required = tuple(name for name in required if name != 'group')
     missing = set(required) - set(value)
     if unexpected:
         raise EdltError(
@@ -353,6 +355,10 @@ def _operation(value, *, allow_add_dialog=False):
         from .edlt_mra_controls import normalize_mra_controls
         value = {**value, 'mra_controls': normalize_mra_controls(
             value['mra_controls'], family=operation)}
+    if operation in ('timer', 'shutter', 'room-courtesy') and 'dual_key_controls' in value:
+        from .edlt_dual_key_controls import normalize_dual_key_controls
+        value = {**value, 'dual_key_controls': normalize_dual_key_controls(
+            value['dual_key_controls'], family=operation)}
     # A canonical key order makes plan identity independent of JSON key order.
     return {'op': operation, **{name: value[name] for name in allowed if name in value}}
 
@@ -522,6 +528,7 @@ class ParentTransactionPlan:
     app_group_label_bindings: tuple = ()
     scene_widget_bindings: tuple = ()
     mra_control_bindings: tuple = ()
+    dual_key_control_bindings: tuple = ()
 
     def __post_init__(self):
         for name in ('expected', 'after_load', 'after_controls', 'before_save',
@@ -549,6 +556,7 @@ class ParentTransactionPlan:
             'app_group_label_bindings': [value.as_dict() for value in self.app_group_label_bindings],
             'scene_widget_bindings': [value.as_dict() for value in self.scene_widget_bindings],
             'mra_control_bindings': [value.as_dict() for value in self.mra_control_bindings],
+            'dual_key_control_bindings': [value.as_dict() for value in self.dual_key_control_bindings],
             'initial_dialog_show_normalizations': [
                 {'parameter': name, 'before': list(self.expected[name]), 'after': [255],
                  'fact': 'absent in the complete inventory before dialog operations'}
@@ -753,7 +761,8 @@ class EdltParentTransaction:
     @retained_history
     def plan(self, current, *, metadata, operations, _dialog_initial_missing=(),
              _dialog_missing_by_operation=(), _lighting_label_bindings=(),
-             _app_group_label_bindings=(), _scene_widget_bindings=(), _mra_control_bindings=()):
+             _app_group_label_bindings=(), _scene_widget_bindings=(), _mra_control_bindings=(),
+             _dual_key_control_bindings=()):
         operations = normalize_operations(operations)
         from .edlt_lighting_label_controls import LightingLabelBinding
         expected_label_operations = tuple(number for number, row in enumerate(operations, 1)
@@ -769,13 +778,17 @@ class EdltParentTransaction:
             if row['op'] == 'scene' and 'scene_controls' in row)
         expected_mra_operations = tuple(number for number, row in enumerate(operations, 1)
             if row['op'] in MRA_WIDGET_TYPES and 'mra_controls' in row)
+        expected_dual_key_operations = tuple(number for number, row in enumerate(operations, 1)
+            if row['op'] in ('timer', 'shutter', 'room-courtesy') and 'dual_key_controls' in row)
         for bindings, expected, module, class_name, label in (
                 (_app_group_label_bindings, expected_app_group_operations,
                  'edlt_app_group_label_controls', 'AppGroupLabelBinding', 'AppGroup label_controls'),
                 (_scene_widget_bindings, expected_scene_operations,
                  'edlt_scene_widget_controls', 'SceneWidgetBinding', 'Scene scene_controls'),
                 (_mra_control_bindings, expected_mra_operations,
-                 'edlt_mra_controls', 'MRAControlBinding', 'MRA mra_controls')):
+                 'edlt_mra_controls', 'MRAControlBinding', 'MRA mra_controls'),
+                (_dual_key_control_bindings, expected_dual_key_operations,
+                 'edlt_dual_key_controls', 'DualKeyControlBinding', 'Dual-key dual_key_controls')):
             if type(bindings) is not tuple:
                 raise EdltError(label + ' require ordered owner-issued bindings')
             if not expected and not bindings:
@@ -788,6 +801,7 @@ class EdltParentTransaction:
         app_group_bindings = {value.operation_number: value for value in _app_group_label_bindings}
         scene_bindings = {value.operation_number: value for value in _scene_widget_bindings}
         mra_bindings = {value.operation_number: value for value in _mra_control_bindings}
+        dual_key_bindings = {value.operation_number: value for value in _dual_key_control_bindings}
         if (type(_dialog_initial_missing) is not tuple
                 or any(type(name) is not str or name not in _SETTING_FIELDS['corridor'][:3]
                        for name in _dialog_initial_missing)
@@ -1197,8 +1211,14 @@ class EdltParentTransaction:
                 label_controls = options.pop('label_controls', None)
                 scene_controls = options.pop('scene_controls', None)
                 mra_controls = options.pop('mra_controls', None)
+                dual_key_controls = options.pop('dual_key_controls', None)
+                dual_key_base_receipt = None
                 mra_base_receipt = None
-                if is_mra and mra_control_profile:
+                if dual_key_controls is not None:
+                    from .edlt_dual_key_parent_controls import plan_control_base
+                    widget_plan, dual_key_base_receipt = plan_control_base(
+                        editor, planning_values, kind=kind, options=options)
+                elif is_mra and mra_control_profile:
                     from .edlt_mra_parent_controls import plan_control_base
                     widget_plan, mra_base_receipt = plan_control_base(editor, planning_values,
                         kind=kind, options=options, controls=mra_controls or (), global_context=mra_context)
@@ -1240,6 +1260,12 @@ class EdltParentTransaction:
                     from .edlt_mra_parent_controls import project_owned_controls
                     widget_plan, mra_control_receipt = project_owned_controls(
                         self, mra_bindings[number], operation,
+                        {**widget_plan.expected, **widget_plan.changes}, widget_plan)
+                dual_key_control_receipt = None
+                if dual_key_controls is not None:
+                    from .edlt_dual_key_parent_controls import project_owned_controls
+                    widget_plan, dual_key_control_receipt = project_owned_controls(
+                        self, dual_key_bindings[number], operation,
                         {**widget_plan.expected, **widget_plan.changes}, widget_plan)
                 widget = widget_plan.widget
                 if widget in slots:
@@ -1295,6 +1321,7 @@ class EdltParentTransaction:
                                                     widget_plan.record, kind)
                 if application is not None:
                     group = (operation['variable'] if kind == 'enable'
+                             else widget_plan.record[6] if dual_key_controls is not None
                              else operation['group'])
                     metadata_dependencies.append(self._require_group(
                         cache, application, group,
@@ -1357,6 +1384,9 @@ class EdltParentTransaction:
                 if mra_control_receipt is not None:
                     document['mra_controls'] = mra_control_receipt
                     document['mra_control_base'] = mra_base_receipt
+                if dual_key_control_receipt is not None:
+                    document['dual_key_controls'] = dual_key_control_receipt
+                    document['dual_key_control_base'] = dual_key_base_receipt
                 panel_binding = {
                     'selection_order': [
                         'ShowWidget', 'BaseWidget.SetWidgetData',
@@ -1365,7 +1395,8 @@ class EdltParentTransaction:
                         'ResetBindings(false)',
                     ],
                     'source': PANEL_BINDING_SOURCES[kind],
-                    'standalone_dependency_validation_reused': not (is_mra and mra_control_profile),
+                    'standalone_dependency_validation_reused': not ((is_mra and mra_control_profile)
+                        or dual_key_controls is not None),
                 }
                 if is_mra:
                     panel_binding[
@@ -1918,7 +1949,8 @@ class EdltParentTransaction:
             initial_scene_manager_cache, operations, tuple(results),
             _json(evidence), _dialog_initial_missing,
             _dialog_missing_by_operation, _lighting_label_bindings,
-            _app_group_label_bindings, _scene_widget_bindings, _mra_control_bindings)
+            _app_group_label_bindings, _scene_widget_bindings, _mra_control_bindings,
+            _dual_key_control_bindings)
 
     @staticmethod
     def _interrupted(error, plan, attempted, original_error=None):
@@ -1953,7 +1985,8 @@ class EdltParentTransaction:
                 _lighting_label_bindings=plan.lighting_label_bindings,
                 _app_group_label_bindings=plan.app_group_label_bindings,
                 _scene_widget_bindings=plan.scene_widget_bindings,
-                _mra_control_bindings=plan.mra_control_bindings)
+                _mra_control_bindings=plan.mra_control_bindings,
+                _dual_key_control_bindings=plan.dual_key_control_bindings)
         except TypeError as error:
             raise EdltError('Invalid parent transaction plan options') from error
         if canonical != plan or _json(canonical.as_dict()) != _json(plan.as_dict()):

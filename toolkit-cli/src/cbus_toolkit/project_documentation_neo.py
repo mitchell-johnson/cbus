@@ -8,7 +8,6 @@ join modes remain outside this projection.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import re
 from typing import TYPE_CHECKING, Callable
 
 from .device_scenes import SceneEntry, _decode
@@ -23,8 +22,6 @@ if TYPE_CHECKING:
 
 JOIN_PARAMETERS = ("JoinPrimaryApplication", "DualJoinPrimaryApplication",
                    "JoinSecondaryApplication", "DualJoinSecondaryApplication")
-NEO_KEY_PROFILES = {"KEYM8": (8, True), "KEYM4": (4, True),
-                    "KEYA3": (3, False), "KEYB4": (4, False)}
 
 
 @dataclass(frozen=True)
@@ -33,6 +30,10 @@ class NeoProfile:
     is_pro: bool
     infrared_virtual_keys: bool
     key_mask: bool = False
+    key_mask_default: int = 1
+    bistable: bool = False
+    other_dependency_pro: bool | None = None
+    join_supported: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -70,23 +71,17 @@ class NeoData:
     scenes: tuple[tuple[SceneEntry, ...], ...]
     trigger_group: int
     joins: tuple[tuple[int, int], ...]
+    bistable_switches: tuple[bool, ...] | None = None
 
 
 def neo_profile(unit: Unit) -> NeoProfile:
     """Admit explicit class/version combinations backed by the source receipt."""
-    typ = unit.unit_type.upper()
-    if not re.fullmatch(r"[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{2}", unit.firmware):
-        raise ValueError("unrecovered Neo class/firmware")
-    version = tuple(map(int, unit.firmware.split(".")))
-    if typ in NEO_KEY_PROFILES:
-        count, infrared = NEO_KEY_PROFILES[typ]
-        if (1, 3, 1) <= version <= (1, 5, 2):
-            return NeoProfile(count, False, infrared)
-        if (1, 5, 3) <= version <= (2, 9, 99):
-            return NeoProfile(count, True, infrared)
-    if typ == "KEYE1" and unit.firmware == "2.5.00":
-        return NeoProfile(4, True, False, True)
-    raise ValueError("unrecovered Neo class/firmware")
+    from .project_documentation_neo_profiles import profile_facts
+    facts = profile_facts(unit)
+    return NeoProfile(facts.physical_key_count, facts.is_pro, facts.infrared_virtual_keys,
+                      facts.key_mask_default is not None, facts.key_mask_default or 1,
+                      facts.bistable, facts.other_dependency_pro,
+                      facts.join_supported(unit.firmware))
 
 
 def _key_application(applications: tuple[int, int], mask: int, secondary: int, key: int) -> int:
@@ -132,8 +127,12 @@ def neo_data(unit: Unit, profile: NeoProfile | None = None, *,
     connected = 255
     if profile.key_mask:
         mask = _required_array(unit, "KeyMask", 1)[0]
-        # This profile is KEYE1: GetDefaultKeyMask derives one from its suffix.
-        connected = (mask if mask & 1 else 1) & 15
+        # KEYEx replaces a mask without bit zero with its exact type default.
+        connected = (mask if mask & 1 else profile.key_mask_default) & 15
+    bistable = None
+    if profile.bistable:
+        switches = _required_array(unit, "BistableSwitchBlock", 1)[0]
+        bistable = tuple(bool(switches & (1 << key)) for key in range(profile.physical_key_count))
     scene_flags = _required_array(unit, "SceneKeySelector", 8, 1)
     scene_numbers = _required_array(unit, "IndicatorBlockAssignment", 8, 7)
     trigger_group = _required_array(unit, "ControlAppGroupAddress", 1)[0]
@@ -183,7 +182,7 @@ def neo_data(unit: Unit, profile: NeoProfile | None = None, *,
                             expiry[index] if expiry[index] in _KEY_TIMER_EXPIRY else 15)
                    for index, group in enumerate(groups))
     return NeoData(applications, profile.is_pro, profile.physical_key_count, timings, blocks,
-                   tuple(keys), scenes, trigger_group, joins)
+                   tuple(keys), scenes, trigger_group, joins, bistable)
 
 
 def _controls(network: Network, data: NeoData, key: NeoKey) -> str:
@@ -242,14 +241,19 @@ def neo_body_lines(network: Network, data: NeoData, *, include_scenes: bool = Tr
     lines += [f"<tr><th>{label}</th><td>{value}</td></tr>"
               for label, value in zip(("Debounce", "Long Press", "Ramp 1", "Ramp 2"), data.timings)]
     lines += ["</table>", "<br/>", '<table border="1">',
-              "<tr><th>Key</th><th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>"]
+              "<tr><th>Key</th>" + ("<th>Bistable</th>" if data.bistable_switches is not None else "")
+              + "<th>Macro Function</th><th>Micro Functions</th><th>Controls</th></tr>"]
     for index, key in enumerate(data.keys):
         micro = "&nbsp;"
         if key.macro_type == 26:
             micro = ('<table border="1"><tr><th>SP</th><th>SR</th><th>LP</th><th>LR</th></tr><tr>'
                      + "".join(f"<td>{MICRO_FUNCTION_LABELS[command]}</td>" for command in key.commands)
                      + "</tr></table>")
-        lines.append(f"<tr><td>{key.prefix}{index + 1}</td><td>{format_html_string(key.macro_label)}</td>"
+        bistable_cell = ""
+        if data.bistable_switches is not None:
+            value = ("Yes" if data.bistable_switches[index] else "No") if index < data.physical_key_count else "&nbsp;"
+            bistable_cell = f"<td>{value}</td>"
+        lines.append(f"<tr><td>{key.prefix}{index + 1}</td>{bistable_cell}<td>{format_html_string(key.macro_label)}</td>"
                      f"<td>{micro}</td><td>{_controls(network, data, key)}</td></tr>")
     lines.append("</table>")
     if not include_scenes or not any(data.scenes):

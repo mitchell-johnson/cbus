@@ -966,3 +966,25 @@ and preserves unrelated canonical graph data. No label transfer, image upload,
 Language mutation, target lifecycle or factory preparation is implied. Read
 `toolkit-cli/docs/edlt-global-image-metadata.md`; uncertain successful saves stop
 without replay. Original GUI/native/hardware acceptance remains separate.
+
+## Dual-key callbacks and complete Neo report factory profiles
+
+For Timer, Shutter and Room Courtesy parent operations, `dual_key_controls`
+adds explicit property and binding histories. Use a controls-only retained
+page/position operation to preserve raw macro, level, ramp and hidden bytes;
+ordinary scalar edits and explicit conversions retain their existing
+configuration/default profile before callbacks. Inspect the issued control
+view and exact choices; getters may clamp source fields, while receipt/view
+serialization never invents mutation getters. The parent owns one PP save,
+static Names and uncertain-save recovery. Read
+`toolkit-cli/docs/edlt-dual-key-controls.md`; original input parsing, framework
+notifications, modal icon selection, rendering and hardware remain open.
+
+Saved Neo/NeoPro reports cover 43 exact types across 59 source factory partitions.
+Require the complete admitted PP/dependency graph rather than infer absent
+values. KEYEx masks/defaults/IR positions and six couplers' Bistable cells have
+source-specific rules; the couplers inherit Neo Other-usage behavior even while
+using Pro blocks/scenes. Read
+`toolkit-cli/docs/project-documentation-neo-profiles.md`. A document generated
+from saved XML or one fresh database snapshot is not original GUI/print or
+physical acceptance.

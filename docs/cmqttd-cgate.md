@@ -373,13 +373,15 @@ selection; other or malformed indexes retain their explicit errors.
 Project files and the persistent database contain site information and must
 not be committed or published.
 
-The durable C-Gate model currently limits its serialized repository to 32 MiB.
-Active projects and saved project copies contribute to that total; repeated
-large `PROJECT COPY` backups can therefore fail with `500 Database commit
-failed; change rolled back`. The synthetic Global Programming test reproduced
-this at its fourteenth backup. [Issue 77](https://github.com/mitchell-johnson/cbus/issues/77)
-tracks repository capacity and scaling; a successful bounded fixture does not
-establish original C-Gate capacity parity.
+The durable C-Gate repository now admits up to **256 MiB** of serialized JSON.
+Commits and startup reads use bounded streaming I/O; `DBGET` and `DBGETXML`
+avoid whole-repository rollback/projection snapshots. The retained sixteen-backup
+workload exceeds the old 32 MiB failure point and survives fresh daemon restart,
+with exact graph readback and continued MQTT delivery on owned fixtures. Read
+[capacity, durability and remaining limits](cgate-repository-capacity.md) and
+inspect the `repository_*` capability fields before relying on this profile.
+Mutation-memory scaling, post-rename disk-fault acceptance and original C-Gate
+capacity comparison remain open under [issue77](https://github.com/mitchell-johnson/cbus/issues/77).
 
 MQTT lighting commands and C-Gate share the PCI but retain separate response
 contracts. The MQTT worker keeps commands FIFO through correlated positive or
