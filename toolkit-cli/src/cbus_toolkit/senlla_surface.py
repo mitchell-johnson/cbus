@@ -170,9 +170,11 @@ class SENLLASurface:
         for name, expected in LAYOUTS.items():
             try:
                 parameter = self.spec.get(name)
-                actual = (parameter.address, parameter.array_size, parameter.bit_size,
-                          int(parameter.fields.get('BitAddress') or '0', 0),
-                          int(parameter.fields.get('ArraySkip') or '0', 0))
+                layout = self.codec.layout(name)
+                # Native bit packing ignores BitSize and ArraySkip, including
+                # the schema's default BitSize8 when that field is absent.
+                actual = (layout.address, layout.array_size, layout.bit_size,
+                          layout.bit_address, 0 if parameter.type == 'bit' else layout.array_skip)
                 kind = 'bit' if name in BITS else 'int'
                 valid = actual == expected and parameter.type == kind
             except (KeyError, ValueError):

@@ -32,12 +32,14 @@ ROWS = (
 )
 
 
-def fixture(filename='SENLLA.xml'):
+def fixture(filename='SENLLA.xml', *, omit_bit_metadata=False):
     parameters = {}
     for name, kind, address, count, bits, bit, skip, values in ROWS:
         fields = {'Name': name, 'Type': kind, 'Address': str(address), 'ArraySize': str(count),
                   'BitSize': str(bits), 'BitAddress': str(bit), 'ArraySkip': str(skip),
                   'DefaultValue': ' '.join(map(str, values))}
+        if kind == 'bit' and omit_bit_metadata:
+            del fields['BitSize'], fields['ArraySkip']
         parameters[name] = ParameterSpec(name, kind, 'authored-senlla-component.xml', fields)
     return UnitSpec(filename, {'Type': 'SENLLA'}, ('authored-senlla-component.xml',), parameters)
 
@@ -80,6 +82,8 @@ class SENLLASurfaceTests(unittest.TestCase):
             SENLLASurface(fixture('SENLL_ST7.xml'))
         for name, parameter in self.spec.parameters.items():
             for field in ('Address', 'ArraySize', 'BitSize', 'BitAddress', 'ArraySkip'):
+                if parameter.type == 'bit' and field in ('BitSize', 'ArraySkip'):
+                    continue
                 fields = {**parameter.fields, field: str(int(parameter.fields[field]) + 1)}
                 wrong = replace(parameter, fields=fields)
                 spec = replace(self.spec, parameters={**self.spec.parameters, name: wrong})
@@ -89,6 +93,40 @@ class SENLLASurfaceTests(unittest.TestCase):
             wrong = replace(parameter, type=wrong_kind, fields={**parameter.fields, 'Type': wrong_kind})
             with self.subTest(name=name, field='Type'), self.assertRaisesRegex(SensorError, name):
                 SENLLASurface(replace(self.spec, parameters={**self.spec.parameters, name: wrong}))
+
+    def test_omitted_bit_metadata_uses_native_one_bit_layout(self):
+        spec = fixture(omit_bit_metadata=True)
+        surface = SENLLASurface(spec)
+        names = ('LightLevelTargetGroupLevelStore', 'LightLevelMarginGroupLevelStore',
+                 'BankSwitchGroupLevelStore')
+        for name in names:
+            self.assertEqual(spec.get(name).bit_size, 8)
+            self.assertEqual(surface.codec.layout(name).bit_size, 1)
+        for mask in range(8):
+            with self.subTest(mask=mask):
+                flags = {name: [(mask >> bit) & 1] for bit, name in enumerate(names)}
+                current = {**spec.defaults(), **flags}
+                self.assertEqual(surface.view(current, identity=IDENTITY).as_dict(),
+                                 self.surface.view(current, identity=IDENTITY).as_dict())
+                encoded = surface.codec.encode_many(flags).apply(MemoryImage.from_bytes(b'\xf8' * 256))
+                self.assertEqual(encoded.byte(22), 0xf8 | mask)
+                for name, values in flags.items():
+                    self.assertEqual(surface.codec.decode(name, encoded), values[0])
+
+    def test_ignored_bit_width_and_skip_preserve_view_and_unsigned_guard(self):
+        baseline = self.surface.view(self.spec.defaults(), identity=IDENTITY).as_dict()
+        for name in sorted(BITS):
+            parameter = self.spec.get(name)
+            for bits in (2, 8, 64):
+                for skip in (1, 3):
+                    with self.subTest(name=name, bits=bits, skip=skip):
+                        fields = {**parameter.fields, 'BitSize': str(bits), 'ArraySkip': str(skip)}
+                        spec = replace(self.spec, parameters={
+                            **self.spec.parameters, name: replace(parameter, fields=fields)})
+                        surface = SENLLASurface(spec)
+                        self.assertEqual(surface.view(spec.defaults(), identity=IDENTITY).as_dict(), baseline)
+                        with self.assertRaisesRegex(SensorError, name):
+                            surface.view({**spec.defaults(), name: [2]}, identity=IDENTITY)
 
     def test_missing_or_invalid_raw_fields_refuse_without_input_mutation(self):
         for name in LAYOUTS:

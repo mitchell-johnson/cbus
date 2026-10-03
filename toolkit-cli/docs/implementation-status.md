@@ -10,9 +10,20 @@ Final seven-module source/fresh-wheel scopes each pass 333 parents,
 719 separate subtests and 4 disclosed skips. All 380 package files
 remain exact to the Time/Date release; production behavior is unchanged.
 
-Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
 The feature notes below retain the independently reviewed source-head scopes for the SENLL, DIN, NCC, Neo and thermostat additions. They are historical evidence; combined current source and installed-wheel validation is pending. The separate SENLLA surface remains read-only.
+
+The [SENLLA provider-schema correction](../research/fixtures/senlla-bit-layout-owned-release-20261004.json)
+uses the native memory codec's one-bit layout for store flags with omitted
+`BitSize`. Source and a fresh installed wheel each pass 108 focused parents and
+259 separate subtests, with two native-service skips. All 380 package files
+match and all 4,023 tracked inputs stay unchanged during frozen execution.
+The decoded provider schema accepts synthetic component values; no vendor
+contents are retained. All six unchanged compatibility receipts and metadata
+checks pass. Complete SENLLA ordinary-save and Windows Toolkit parity remain
+open; full suites remain deferred for speed. The earlier batch below retains
+its historical validation counts.
 
 The [SENLLA surface component batch](feature-batch-2026-10-03-senlla-surface.md)
 adds a separate read-only thirteen-field view for SENLLA / 5754PE / 2.4.00..2.4.99,
