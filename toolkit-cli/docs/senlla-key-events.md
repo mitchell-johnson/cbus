@@ -33,7 +33,9 @@ Join state and actual trigger-level objects. Primary Lighting is 48–95;
 secondary admits Lighting, the actual application 255 object, or actual nil.
 Application 255 remains bound after its later secondary-bit normalization.
 Its unused group is an app-owned object, distinct from another application's
-unused group and from nil.
+unused group and from nil. A secondary unused group is not required before
+its first actual getter. A zero-use secondary application can therefore remain
+bound while its manager contains no unused group.
 
 `BlockValues` holds eight source-loaded blocks: Secondary, actual Group,
 current LightLevel, two stored levels, Timer, cached Timer, expiry and expiry
@@ -151,6 +153,69 @@ group/application/project creation observers, the complete native control
 executor, later ST7 decision handlers and final 93-field serialization. Extra
 reference receivers, replacement/destruction, nonlive state2 and nonzero
 timer-minimum histories are outside this stable internal profile.
+
+## Same-object constructor seam
+
+`SENLLAKeyEvents.fresh(application_addresses=(), group_identities=(),
+trigger_levels=(), source_dispatch=None, application_dispatch=None)` creates
+the Unit, eight blocks, eight keys and their managers/attributes once. Unit
+primary/secondary/Area, block application/group/expiry and key application
+references start nil. Scalars and key reference lists start zero/empty.
+The graph starts at the source-proven result of constructor bank-link
+activation: Allowed true, Active false, High/Low/stores zero. Each bank keeps
+its original bound block; Unit updating does not suppress its observer.
+
+The ordered inventory arguments identify actual source-existing objects.
+They do not select Unit applications or supply a later PP context. The
+application dispatcher receives `(engine, secondary)` synchronously during
+the actual Unit reference setter. It owns the inherited Area and application
+callback sequence, including guards and nested counters. Missing dispatch
+refuses. The separate prekey owner executes the initial application and raw
+block requests on these same attributes.
+
+`get_source_application` and `get_source_group` probe the current canonical
+objects. A registry miss yields immutable `SourceLookupRequest`, including
+for create-false probes: an unregistered identity is not proof of absence in
+the actual manager. The synchronous source executor performs the actual
+lookup and, when requested, creation/storage/observer work, then confirms a found identity
+through `add_source_application`/`add_source_group`. Those registration
+methods preserve existing object identity and do not execute native creation.
+The getter rereads its registry after the executor returns. Create-false may
+return nil only after that actual lookup; create-true requires a confirmed
+canonical object. Missing executors refuse unknown lookups. The block
+application callback captures the old numeric group address, probes the current
+application with create-false, then performs an allow-enabled getter and a
+second current-application getter for assignment. Both later calls occur when
+the probe found an existing group. Each rereads the application because a
+creation/storage callback may change it. Fresh nil-decision uses allow=true;
+an installed missing-group decision or create-enabled nil result still needs
+its separate source executor.
+
+Dictionary registration order is not native GroupManager Items order.
+`bind_source_group_order(application, addresses)` binds the actual current
+manager order, requiring exactly its currently registered groups without
+replacing them. New registration invalidates that order until rebound.
+Later controls must use `current_source_group_order`, which refuses an
+unbound order; the identity inventory in `KeyEventContext` cannot substitute
+for this source list.
+
+`begin_prekey_load()` begins the outer CoreKey Unit update.
+`handoff_to_key_blocks()` requires Unit depth1 with the Unit manager and all
+three Unit reference attributes balanced, balanced blocks/keys, canonical
+engine-owned application/group pointers, primary-bound state0 keys and empty
+reference lists. Matching numeric addresses cannot substitute foreign objects.
+It derives the context from actual current references and retains every
+original object, counter, subscription and graph. It does not adopt raw rows,
+rebuild a snapshot or infer omitted callbacks. The existing kernel phases
+then continue on that same engine. A whole prekey operation uses one outer
+`_run` so its native cleanup executes before failure invalidates the runtime.
+
+The [constructor seam source receipt](../research/fixtures/senlla-key-events-shared-constructor-source.json)
+qualifies this adapter and continuity evidence. Source metadata/Learn/scalar
+execution, canonical creation observers, native list order and the complete
+ordinary save still require their owning executors. Focused seam tests use
+explicit fake executors to isolate identity/counter continuity; they do not
+establish complete inherited callbacks or native GUI acceptance.
 
 The [frozen key-event source check](../research/fixtures/senlla-key-events-source-check-20261004.json)
 covers fifteen SENLLA modules at authored commit `6f57ff00`: 287 parents,

@@ -1,9 +1,9 @@
 """Internal SENLLA key/application/Scene callbacks at their owning positions.
 
-The entry is CoreKey GetKeyBlocks, after the owning loader has established
-applications, Area, raw blocks and their group objects. This is a synchronous
-runtime, not an input-file authority or a complete unit-save implementation.
-Its detached snapshots keep data assignment separate from native publication.
+The projected entry is CoreKey GetKeyBlocks. A separate fresh factory retains
+the same nil-reference objects through an internal prekey executor and validates
+their handoff. This synchronous runtime is not input-file authority or a
+complete unit-save implementation. Snapshots do not replace source callbacks.
 """
 from dataclasses import dataclass, replace
 from copy import deepcopy
@@ -90,9 +90,8 @@ class KeyEventContext:
         groups = tuple(_group(value) for value in self.group_identities)
         if len(set(groups)) != len(groups) or any(app not in apps for app, _ in groups):
             raise SensorError('Group inventory must contain distinct objects in established applications')
-        for app in (primary, secondary):
-            if app is not None and (app, 255) not in groups:
-                raise SensorError('Each current Lighting application requires its actual unused group object')
+        if (primary, 255) not in groups:
+            raise SensorError('The primary application requires its source-established unused group object')
         protected = tuple(_group(value) for value in self.protected_groups)
         if any(value not in groups for value in protected):
             raise SensorError('Protected group references must already exist at this causal position')
@@ -144,15 +143,44 @@ class BlockValues:
 
 class SourceObjectRequired(SensorError):
     """An actual source getter reaches an uncomposed object-creation route."""
-    def __init__(self, application, address, source, *, kind='group', group=None):
+    def __init__(self, application, address, source, *, kind='group', group=None, create=None):
         self._request = {'kind': kind, 'application': application, 'address': address, 'source': source}
         if group is not None:
             self._request['group'] = group
-        super().__init__(f'Native {source} requires the owning GroupManager creation route for {application}/{address}')
+        if create is not None:
+            self._request['create'] = create
+            super().__init__(f'Native {source} requires the owning {kind} lookup route for {application}/{address}')
+        else:
+            super().__init__(f'Native {source} requires the owning GroupManager creation route for {application}/{address}')
 
     @property
     def request(self):
         return dict(self._request)
+
+
+@dataclass(frozen=True)
+class SourceLookupRequest:
+    """An internal lookup position requiring actual creation/storage execution."""
+    kind: str
+    application: int | None
+    address: int
+    create: bool
+    source: str
+
+    def __post_init__(self):
+        if self.kind not in ('application', 'group'):
+            raise SensorError('Source lookup requires application or group')
+        _integer(self.address, 255, 'Source lookup address')
+        if self.application is not None:
+            _integer(self.application, 255, 'Source lookup application')
+        if self.kind == 'group' and self.application is None:
+            raise SensorError('Source group lookup requires an actual application')
+        if type(self.create) is not bool or not isinstance(self.source, str) or not self.source:
+            raise SensorError('Source lookup requires its create flag and source position')
+
+    def as_dict(self):
+        return dict(kind=self.kind, application=self.application, address=self.address,
+                    create=self.create, source=self.source)
 
 
 @dataclass(frozen=True)
@@ -233,19 +261,19 @@ class _Block:
         self.object = FlashObject(f'block:{index}', trace=owner._trace)
         self.manager = AttributeManager(self.object, trace=owner._trace)
         self.application = ObjectReferenceAttribute(
-            self.manager, owner.apps[raw.group[0]], name=f'block:{index}.application',
+            self.manager, owner.apps[raw.group[0]] if raw is not None else None, name=f'block:{index}.application',
             after_change=lambda _: owner._block_application_changed(index), trace=owner._trace)
         self.secondary = BooleanAttribute(
-            self.manager, raw.secondary, name=f'block:{index}.secondary',
+            self.manager, raw.secondary if raw is not None else False, name=f'block:{index}.secondary',
             after_change=lambda _: owner._secondary_changed(index), trace=owner._trace)
         self.group = ObjectReferenceAttribute(
-            self.manager, owner.groups[raw.group], name=f'block:{index}.group',
+            self.manager, owner.groups[raw.group] if raw is not None else None, name=f'block:{index}.group',
             after_change=lambda _: owner._group_changed(index), trace=owner._trace)
         for field in ('light_level', 'store1', 'store2', 'timer', 'timer_cached'):
-            setattr(self, field, IntegerAttribute(self.manager, getattr(raw, field),
+            setattr(self, field, IntegerAttribute(self.manager, getattr(raw, field) if raw is not None else 0,
                     name=f'block:{index}.{field}', trace=owner._trace))
         for field in ('expiry', 'expiry_override'):
-            value = getattr(raw, field)
+            value = getattr(raw, field) if raw is not None else None
             value = None if value is None else owner.micro[value]
             setattr(self, field, ObjectReferenceAttribute(self.manager, value,
                     name=f'block:{index}.{field}', trace=owner._trace))
@@ -253,7 +281,7 @@ class _Block:
 
 
 class _Key:
-    def __init__(self, owner, index):
+    def __init__(self, owner, index, application):
         self.object = FlashObject(f'key:{index}', trace=owner._trace)
         self.manager = AttributeManager(self.object, trace=owner._trace)
         self.refs = []
@@ -266,7 +294,7 @@ class _Key:
                 after_change=lambda _: owner._template_changed(index), trace=owner._trace)
         self.primary_group = ObjectReferenceAttribute(self.manager, name=f'key:{index}.primary_group',
                 after_change=lambda _: owner._primary_group_changed(index), trace=owner._trace)
-        self.application = ObjectReferenceAttribute(self.manager, owner.apps[owner.context.primary_application],
+        self.application = ObjectReferenceAttribute(self.manager, application,
                 name=f'key:{index}.application', trace=owner._trace)
         self.application_state = IntegerAttribute(self.manager, 0, minimum=0, maximum=2,
                 name=f'key:{index}.application_state',
@@ -355,20 +383,71 @@ class SENLLAKeyEvents:
             raise SensorError('Owning bank graph and raw block stores must agree at entry')
         if any(bank_graph.references.ordered_references):
             raise SensorError('GetKeyBlocks entry requires the fresh empty key-reference collection')
+        self._initialize(context, blocks, bank_graph)
+
+    @classmethod
+    def fresh(cls, *, application_addresses=(), group_identities=(), trigger_levels=(),
+              source_dispatch=None, application_dispatch=None):
+        """Construct once, with nil source references and current inventory only.
+
+        The inventory names actual source-existing objects, without PP-selected
+        application references. Missing creation/storage and unit application
+        callbacks require synchronous internal executors at their source sites.
+        """
+        for callback in (source_dispatch, application_dispatch):
+            if callback is not None and not callable(callback):
+                raise SensorError('Fresh source dispatchers require internal callable executors')
+        if any(not isinstance(values, (tuple, list)) for values in
+               (application_addresses, group_identities, trigger_levels)):
+            raise SensorError('Source-existing inventories require ordered detached sequences')
+        application_addresses = tuple(_integer(value, 255, 'Source application address')
+                                      for value in application_addresses)
+        group_identities = tuple(_group(value) for value in group_identities)
+        if (len(set(application_addresses)) != len(application_addresses)
+                or len(set(group_identities)) != len(group_identities)):
+            raise SensorError('Source-existing inventory identities must be distinct')
+        runtime = cls.__new__(cls)
+        runtime._initialize(None, (None,) * 8, SENLLABankGraph.fresh(),
+                            source_dispatch=source_dispatch, application_dispatch=application_dispatch)
+        for address in application_addresses:
+            runtime.add_source_application(address)
+        for identity in group_identities:
+            app, address = _group(identity)
+            if app not in runtime.apps:
+                raise SensorError('Source-existing group requires its actual application')
+            runtime.add_source_group(runtime.apps[app], address)
+        for identity in trigger_levels:
+            if not isinstance(identity, (tuple, list)) or len(identity) != 3:
+                raise SensorError('Source-existing level requires application/group/level')
+            group = _group(identity[:2])
+            level = _integer(identity[2], 255, 'Source-existing trigger level')
+            if group not in runtime.groups or group[0] != 202:
+                raise SensorError('Source-existing trigger level requires its actual Trigger group')
+            full = (*group, level)
+            if full in runtime.levels:
+                raise SensorError('Source-existing level identities must be distinct')
+            runtime.levels[full] = _Object('level', full)
+        return runtime
+
+    def _initialize(self, context, blocks, bank_graph, *, source_dispatch=None, application_dispatch=None):
         self.context = context
+        self._fresh_mode = context is None
         self.graph = bank_graph
         self.events = []
-        self.phase = 'get_key_blocks'
+        self.phase = 'fresh_constructor' if self._fresh_mode else 'get_key_blocks'
         self.failed = False
         self.hooks_installed = False
         self.group_decision_handler_installed = False
         self.macro_decision_handler_installed = False
         self.event_handler_installed = False
         self.control_dispatch = None
+        self.source_dispatch = source_dispatch
+        self.application_dispatch = application_dispatch
         self.created_groups = []
-        self.apps = {value: _Object('application', value) for value in context.application_addresses}
-        self.groups = {value: _Object('group', value) for value in context.group_identities}
-        self.levels = {value: _Object('level', value) for value in context.trigger_levels}
+        self.apps = {value: _Object('application', value) for value in context.application_addresses} if context else {}
+        self.groups = {value: _Object('group', value) for value in context.group_identities} if context else {}
+        self._source_group_orders = {}
+        self.levels = {value: _Object('level', value) for value in context.trigger_levels} if context else {}
         self.templates = {value: _Object('template', value) for value in range(59)}
         self.micro = {value: _Object('micro', value) for value in range(128)}
         self.scenes = tuple(_Object('scene', value) for value in range(8))
@@ -378,15 +457,158 @@ class SENLLAKeyEvents:
         self.unit = FlashObject('unit', trace=self._trace)
         self.block_collection = FlashObject('blocks', trace=self._trace)
         self.unit_manager = AttributeManager(self.unit, trace=self._trace)
+        self.primary_application = ObjectReferenceAttribute(self.unit_manager,
+                self.apps[context.primary_application] if context else None, name='unit.primary_application',
+                after_change=lambda _: self._unit_application_changed(False), trace=self._trace)
+        self.secondary_application = ObjectReferenceAttribute(self.unit_manager,
+                self.apps.get(context.secondary_application) if context else None, name='unit.secondary_application',
+                after_change=lambda _: self._unit_application_changed(True), trace=self._trace)
+        self.area = ObjectReferenceAttribute(self.unit_manager, name='unit.area', trace=self._trace)
         self.broadcast_active = BooleanAttribute(self.unit_manager, False, name='unit.broadcast_active',
                 after_change=lambda _: self._broadcast_changed(), trace=self._trace)
         self.broadcast_block = ObjectReferenceAttribute(self.unit_manager, name='unit.broadcast_block',
                 after_change=lambda _: self._broadcast_changed(), trace=self._trace)
-        self.blocks = tuple(_Block(self, index, raw) for index, raw in enumerate(blocks))
-        self.keys = tuple(_Key(self, index) for index in range(8))
-        self._block_indices = {block.object: index for index, block in enumerate(self.blocks)}
         self._bank_feedback = [0] * 8
-        self.unit.begin_update()
+        self.blocks = tuple(_Block(self, index, raw) for index, raw in enumerate(blocks))
+        app = self.apps[context.primary_application] if context else None
+        self.keys = tuple(_Key(self, index, app) for index in range(8))
+        self._block_indices = {block.object: index for index, block in enumerate(self.blocks)}
+        self._bank_block_links = tuple(block.object for block in self.blocks)
+        if self._fresh_mode:
+            for index in range(8):
+                self._event('constructor_bank_link_activation', block=index)
+        else:
+            self.unit.begin_update()
+
+    def _unit_application_changed(self, secondary):
+        if self.application_dispatch is None:
+            raise SensorError('Unit application setter requires its source application callback executor')
+        result = self.application_dispatch(self, secondary)
+        if result is not None:
+            raise SensorError('Unit application dispatcher must finish its actual callbacks before returning')
+
+    def application_object(self, secondary=False):
+        if type(secondary) is not bool:
+            raise SensorError('Application side requires a Boolean')
+        return (self.secondary_application if secondary else self.primary_application).value
+
+    def _application_address(self, secondary=False):
+        application = self.application_object(secondary)
+        return application.identity if application is not None else None
+
+    def add_source_application(self, address):
+        """Bind a source-confirmed existing/created identity without inventing its history."""
+        address = _integer(address, 255, 'Source application address')
+        if address not in self.apps:
+            self.apps[address] = _Object('application', address)
+        return self.apps[address]
+
+    def add_source_group(self, application, address):
+        address = _integer(address, 255, 'Source group address')
+        if (not isinstance(application, _Object) or application.kind != 'application'
+                or self.apps.get(application.identity) is not application):
+            raise SensorError('Source group requires the same actual engine-owned application object')
+        identity = (application.identity, address)
+        if identity not in self.groups:
+            self.groups[identity] = _Object('group', identity)
+            self._source_group_orders.pop(application.identity, None)
+        return self.groups[identity]
+
+    def bind_source_group_order(self, application, addresses):
+        """Bind actual CURRENT manager Items order, without changing any object."""
+        if (not isinstance(application, _Object) or application.kind != 'application'
+                or self.apps.get(application.identity) is not application):
+            raise SensorError('Source manager order requires the same actual application object')
+        if not isinstance(addresses, (tuple, list)):
+            raise SensorError('Source manager order requires its actual ordered address sequence')
+        addresses = tuple(_integer(address, 255, 'Source manager group address') for address in addresses)
+        registered = {address for app, address in self.groups if app == application.identity}
+        if len(set(addresses)) != len(addresses) or set(addresses) != registered:
+            raise SensorError('Source manager order must contain exactly its currently registered groups')
+        self._source_group_orders[application.identity] = tuple(self.groups[(application.identity, address)]
+                                                                for address in addresses)
+
+    def current_source_group_order(self, application):
+        if (not isinstance(application, _Object) or application.kind != 'application'
+                or self.apps.get(application.identity) is not application):
+            raise SensorError('Source manager order requires the same actual application object')
+        if application.identity not in self._source_group_orders:
+            raise SensorError('Actual current GroupManager Items order requires its owning source executor')
+        return self._source_group_orders[application.identity]
+
+    def _source_lookup(self, request, inventory, identity):
+        self._event('source_lookup', request=request.as_dict())
+        result = inventory.get(identity)
+        if result is not None:
+            return result
+        if self.source_dispatch is None:
+            raise SourceObjectRequired(request.application, request.address, request.source,
+                                       kind=request.kind, create=request.create)
+        returned = self.source_dispatch(request, self)
+        if returned is not None:
+            raise SensorError('Source dispatcher must complete actual lookup/creation before returning')
+        result = inventory.get(identity)
+        if result is None and request.create:
+            raise SourceObjectRequired(request.application, request.address, request.source,
+                                       kind=request.kind, create=request.create)
+        return result
+
+    def get_source_application(self, address, create=True, *, source):
+        request = SourceLookupRequest('application', None, address, create, source)
+        return self._source_lookup(request, self.apps, address)
+
+    def get_source_group(self, application, address, create=True, *, source):
+        if (not isinstance(application, _Object) or application.kind != 'application'
+                or self.apps.get(application.identity) is not application):
+            raise SensorError('Source group lookup requires the same actual application object')
+        request = SourceLookupRequest('group', application.identity, address, create, source)
+        return self._source_lookup(request, self.groups, (application.identity, address))
+
+    def begin_prekey_load(self):
+        def execute():
+            self._require_phase('fresh_constructor')
+            if self.unit.depth != 0:
+                raise SensorError('CoreKey fresh load requires the balanced constructor Unit')
+            self.unit.begin_update()
+            self.phase = 'prekey_load'
+        return self._run(execute)
+
+    def handoff_to_key_blocks(self):
+        def execute():
+            self._require_phase('prekey_load')
+            if (self.unit.depth != 1 or self.unit_manager.updating
+                    or any(attribute.updating for attribute in
+                           (self.primary_application, self.secondary_application, self.area))
+                    or any(block.object.updating for block in self.blocks)):
+                raise SensorError('GetKeyBlocks handoff requires Unitdepth1 and balanced managers, attributes and blocks')
+            primary = self.application_object()
+            secondary = self.application_object(True)
+            if primary is None:
+                raise SensorError('GetKeyBlocks handoff requires actual primary Lighting')
+            if (not isinstance(primary, _Object) or self.apps.get(primary.identity) is not primary
+                    or (secondary is not None and (not isinstance(secondary, _Object)
+                        or self.apps.get(secondary.identity) is not secondary))):
+                raise SensorError('GetKeyBlocks handoff requires canonical engine-owned application objects')
+            for block in self.blocks:
+                application = block.application.value
+                group = block.group.value
+                selected = secondary if block.secondary.value else primary
+                if (application is not selected or application is None
+                        or self.apps.get(application.identity) is not application
+                        or not isinstance(group, _Object) or self.groups.get(group.identity) is not group
+                        or group.identity[0] != application.identity):
+                    raise SensorError('GetKeyBlocks handoff requires canonical current app-owned block groups')
+            if any(key.object.updating or key.refs or key.application.value is not primary
+                   or key.application_state.value != 0 for key in self.keys):
+                raise SensorError('GetKeyBlocks handoff requires balanced empty primary key references')
+            if any(self.graph.references.ordered_references):
+                raise SensorError('GetKeyBlocks handoff cannot replace an existing key graph')
+            context = KeyEventContext(primary.identity, secondary.identity if secondary else None,
+                                      tuple(self.apps), tuple(self.groups), trigger_levels=tuple(self.levels))
+            self.context = context
+            self.phase = 'get_key_blocks'
+            self._event('same_object_get_key_blocks_handoff')
+        return self._run(execute)
 
     def _trace(self, event):
         if len(self.events) >= 100000:
@@ -464,7 +686,7 @@ class SENLLAKeyEvents:
         self._bind_refs()
         self._bank_stores()
         self.graph = self.graph.refresh_event_flags(key, self._template_type(key),
-                join_active=self.context.join_active,
+                join_active=self.context.join_active if self.context is not None else False,
                 event_template_handler_installed=self.event_handler_installed)
         self._bank_feedback_writes()
 
@@ -580,10 +802,9 @@ class SENLLAKeyEvents:
         state = owner.application_state.value
         if state == 2:
             block = key if key in owner.refs else self._primary(key)
-            app = self.blocks[block].application.value if block is not None else self.apps[self.context.primary_application]
+            app = self.blocks[block].application.value if block is not None else self.application_object()
         else:
-            address = self.context.secondary_application if state == 1 else self.context.primary_application
-            app = self.apps[address] if address is not None else None
+            app = self.application_object(state == 1)
         owner.application.set(app)
         # The native count is captured once; each item is read after callbacks.
         for ordinal in range(len(owner.refs)):
@@ -609,7 +830,7 @@ class SENLLAKeyEvents:
 
     def _secondary_changed(self, source):
         block = self.blocks[source]
-        address = self.context.secondary_application if block.secondary.value else self.context.primary_application
+        address = self._application_address(block.secondary.value)
         for destination in range(8):
             if destination == source:
                 continue
@@ -639,8 +860,21 @@ class SENLLAKeyEvents:
             raise SensorError('Native block application refresh has no application object')
         old = block.group.value
         address = old.identity[1] if old is not None else 255
-        identity = (app.identity, address)
-        group = self.groups.get(identity)
+        if self._fresh_mode:
+            group = self.get_source_group(app, address, create=False, source='block_application_probe')
+            if group is None and self.group_decision_handler_installed:
+                raise SensorError('Missing destination group requires the installed native unit decision')
+            # d0f9d5 tests a first allow-enabled getter, then d0f9f2 reads
+            # CURRENT AppForBlock again and supplies a second getter result
+            # to SetGroup. Creation/storage observers can change that app.
+            # A create-enabled nil result remains an explicit source boundary.
+            self.get_source_group(block.application.value, address, create=True,
+                                  source='block_application_getter')
+            group = self.get_source_group(block.application.value, address, create=True,
+                                          source='block_application_assignment_getter')
+            block.group.set(group)
+            return
+        group = self.groups.get((app.identity, address))
         if group is None:
             if self.group_decision_handler_installed:
                 raise SensorError('Missing destination group requires the installed native unit decision')
@@ -656,7 +890,8 @@ class SENLLAKeyEvents:
             if block in self.keys[key].refs:
                 self._primary_refresh(key)
         group = self.blocks[block].group.value
-        if group is not None and group.identity[1] != 255 and group.identity in self.context.protected_groups:
+        protected = self.context.protected_groups if self.context is not None else ()
+        if group is not None and group.identity[1] != 255 and group.identity in protected:
             app = self.blocks[block].application.value
             self.blocks[block].group.set(self.groups[(app.identity, 255)])
 
@@ -855,7 +1090,7 @@ class SENLLAKeyEvents:
             self._require_phase('corekey_application_refresh')
             self.unit.end_update()
             for secondary in (False, True):
-                app = self.context.secondary_application if secondary else self.context.primary_application
+                app = self._application_address(secondary)
                 if app in (None, 255):
                     for block in self.blocks:
                         block.secondary.set(False)
@@ -888,7 +1123,7 @@ class SENLLAKeyEvents:
         # Virtual188 is source-qualified, rather than silently omitted.
         # Core.CheckGroups probes each matching block's CURRENT application
         # manager without creating. Pre-Neo Scene managers are still empty.
-        app = self.context.secondary_application if secondary else self.context.primary_application
+        app = self._application_address(secondary)
         if any(self.scene_commands):
             raise SensorError('Prekey application group refresh requires the fresh empty Scene manager')
         if app in (None, 255):
@@ -1076,6 +1311,8 @@ class SENLLAKeyEvents:
         """
         if not isinstance(context, KeyEventContext):
             raise SensorError('Context binding requires source-established KeyEventContext')
+        if self.context is None:
+            raise SensorError('Context binding requires the completed SAME-object GetKeyBlocks handoff')
         if (context.primary_application, context.secondary_application) != (
                 self.context.primary_application, self.context.secondary_application):
             raise SensorError('Application reference changes require their owning setter route')
@@ -1086,10 +1323,10 @@ class SENLLAKeyEvents:
         def execute():
             for identity in context.application_addresses:
                 if identity not in self.apps:
-                    self.apps[identity] = _Object('application', identity)
+                    self.add_source_application(identity)
             for identity in context.group_identities:
                 if identity not in self.groups:
-                    self.groups[identity] = _Object('group', identity)
+                    self.add_source_group(self.apps[identity[0]], identity[1])
             for identity in context.trigger_levels:
                 if identity not in self.levels:
                     self.levels[identity] = _Object('level', identity)
@@ -1104,6 +1341,8 @@ class SENLLAKeyEvents:
         bytes use the native bank-owned feedback suppression; this operation
         never invents occupancy or aggregate Allowed refresh events.
         """
+        if self.context is None:
+            raise SensorError('Fresh prekey loading cannot adopt a detached bank graph')
         if not isinstance(graph, SENLLABankGraph):
             raise SensorError('Bank adoption requires the owning SENLLABankGraph')
         if graph.references.ordered_references != tuple(tuple(key.refs) for key in self.keys):
@@ -1188,6 +1427,8 @@ class SENLLAKeyEvents:
         """
         if self.failed:
             raise SensorError('An interrupted callback runtime has no block projection')
+        if any(block.group._value is None for block in self.blocks):
+            raise SensorError('Source-loaded block projection requires actual current group objects')
         return tuple(BlockValues(
             block.secondary._value, block.group._value.identity,
             block.light_level._value, block.store1._value, block.store2._value,
@@ -1224,11 +1465,12 @@ class SENLLAKeyEvents:
                            application=value(block.application),
                            **{field: value(getattr(block, field)) for field in _BLOCK_FIELDS})
                        for index, block in enumerate(self.blocks)],
-            'primary_application': self.context.primary_application,
-            'secondary_application': self.context.secondary_application,
+            'primary_application': value(self.primary_application),
+            'secondary_application': value(self.secondary_application),
+            'area': value(self.area),
             'bank_graph': self.graph.as_dict(), 'created_groups': [list(value) for value in self.created_groups],
             'events': deepcopy(self.events)}
 
 
 __all__ = ['BlockValues', 'KeyEventContext', 'KeyControlRequest', 'SENLLAKeyEvents',
-           'SourceControlRequired', 'SourceObjectRequired']
+           'SourceControlRequired', 'SourceLookupRequest', 'SourceObjectRequired']

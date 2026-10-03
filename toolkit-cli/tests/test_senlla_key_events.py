@@ -4,7 +4,8 @@ import unittest
 
 from cbus_toolkit.senlla_bank_graph import SENLLABankGraph
 from cbus_toolkit.senlla_key_events import (BlockValues, KeyEventContext, SENLLAKeyEvents,
-                                          SourceControlRequired, SourceObjectRequired)
+                                          SourceControlRequired, SourceLookupRequest,
+                                          SourceObjectRequired)
 from cbus_toolkit.sensors import SensorError
 
 
@@ -48,6 +49,283 @@ def load(runtime, *, masks=None, stages=None, selector=None, indicator=None, fre
 
 
 class SENLLAKeyEventsTest(unittest.TestCase):
+    @staticmethod
+    def fresh_app_dispatch(runtime, secondary):
+        # Isolate SAME-object callback mechanics, not a complete inherited
+        # Unit/Neo/ST7/surface application handler or object-creation executor.
+        app = runtime.application_object(secondary)
+        if app is None:
+            return
+        if not secondary:
+            old = runtime.area.value
+            runtime.area.set(runtime.get_source_group(app, old.identity[1] if old else 255,
+                                                       source='test_current_area'))
+        for block in runtime.blocks:
+            if block.secondary.value == secondary:
+                block.application.set(app)
+        for key in runtime.keys:
+            if key.application_state.value == int(secondary):
+                key.application.set(app)
+
+    def test_fresh_constructor_uses_nil_references_despite_existing_inventory(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=[56, 57],
+                    group_identities=[(56, 255), (57, 255)],
+                    application_dispatch=self.fresh_app_dispatch)
+        snapshot = runtime.snapshot()
+        self.assertEqual(snapshot['phase'], 'fresh_constructor')
+        self.assertEqual(snapshot['unit_depth'], 0)
+        self.assertIsNone(snapshot['primary_application'])
+        self.assertIsNone(snapshot['secondary_application'])
+        self.assertIsNone(snapshot['area'])
+        self.assertEqual([row['application'] for row in snapshot['keys']], [None] * 8)
+        self.assertEqual([row['references'] for row in snapshot['keys']], [[]] * 8)
+        for row in snapshot['blocks']:
+            self.assertIsNone(row['application'])
+            self.assertIsNone(row['group'])
+            self.assertIsNone(row['expiry'])
+            self.assertIsNone(row['expiry_override'])
+            self.assertEqual([row[field] for field in ('light_level', 'store1', 'store2', 'timer', 'timer_cached')], [0] * 5)
+        self.assertEqual([bank.switch_allowed for bank in runtime.graph.banks], [True] * 8)
+        self.assertFalse(any(event['operation'] == 'source_lookup' for event in snapshot['events']))
+        with self.assertRaisesRegex(SensorError, 'handoff'):
+            runtime.bind_context(owner().context)
+        with self.assertRaisesRegex(SensorError, 'detached bank graph'):
+            runtime.adopt_bank_graph(SENLLABankGraph.fresh())
+        with self.assertRaisesRegex(SensorError, 'group objects'):
+            runtime.block_values()
+        self.assertIsNone(runtime.context)
+
+    def test_shared_prekey_handoff_keeps_original_objects_and_publishes_while_unit_updating(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56, 57),
+                    group_identities=((56, 255), (57, 255)),
+                    application_dispatch=self.fresh_app_dispatch)
+        objects = (runtime.unit, runtime.unit_manager, runtime.primary_application,
+                   runtime.secondary_application, runtime.area,
+                   *(attribute for block in runtime.blocks for attribute in
+                     (block.object, block.manager, block.application, block.group, block.store1)),
+                   *(attribute for key in runtime.keys for attribute in
+                     (key.object, key.manager, key.application, key.template, key._indicator)))
+        runtime.begin_prekey_load()
+        runtime.unit.begin_update()
+        try:
+            runtime.primary_application.set(runtime.apps[56])
+            runtime.secondary_application.set(runtime.apps[57])
+        finally:
+            runtime.unit.end_update()
+        runtime.blocks[0].store1.set(90)
+        runtime.blocks[0].store2.set(140)
+        for block in runtime.blocks:
+            block.expiry.set(runtime.micro[0])
+        runtime.handoff_to_key_blocks()
+        retained = (runtime.unit, runtime.unit_manager, runtime.primary_application,
+                    runtime.secondary_application, runtime.area,
+                    *(attribute for block in runtime.blocks for attribute in
+                      (block.object, block.manager, block.application, block.group, block.store1)),
+                    *(attribute for key in runtime.keys for attribute in
+                      (key.object, key.manager, key.application, key.template, key._indicator)))
+        self.assertEqual(retained, objects)
+        self.assertTrue(all(current is original for current, original in zip(retained, objects)))
+        self.assertTrue(all(link is block.object for link, block in zip(runtime._bank_block_links, runtime.blocks)))
+        self.assertEqual(runtime.unit.depth, 1)
+        self.assertEqual((runtime.graph.banks[0].high_lux, runtime.graph.banks[0].low_lux), (900, 1400))
+        self.assertEqual([key.application._value.identity for key in runtime.keys], [56] * 8)
+        self.assertTrue(any(event['operation'] == 'block_published' for event in runtime.events))
+        self.assertTrue(any(event.get('object') == 'unit' and event['operation'] == 'begin'
+                            and event['depth'] == 3 for event in runtime.events))
+        runtime.load_allocations([1] + [0] * 7)
+        runtime.finish_corekey_application_refresh()
+        self.assertEqual(runtime.unit.depth, 0)
+        self.assertEqual(runtime.keys[0].refs, [0])
+        self.assertIs(runtime.blocks[0].group._value, runtime.groups[(56, 255)])
+
+    def test_source_lookup_rereads_confirmed_identity_after_executor(self):
+        requests = []
+        def dispatch(request, runtime):
+            self.assertIsInstance(request, SourceLookupRequest)
+            requests.append(request.as_dict())
+            if not request.create:
+                return
+            if request.kind == 'application':
+                runtime.add_source_application(request.address)
+            else:
+                runtime.add_source_group(runtime.apps[request.application], request.address)
+        runtime = SENLLAKeyEvents.fresh(source_dispatch=dispatch)
+        self.assertIsNone(runtime.get_source_application(56, create=False, source='test_probe'))
+        self.assertEqual([(row['kind'], row['create']) for row in requests], [('application', False)])
+        app = runtime.get_source_application(56, source='test_app_getter')
+        group = runtime.get_source_group(app, 255, source='test_group_getter')
+        self.assertIs(runtime.get_source_application(56, source='test_app_again'), app)
+        self.assertIs(runtime.get_source_group(app, 255, source='test_group_again'), group)
+        self.assertEqual([(row['kind'], row['address'], row['create']) for row in requests],
+                         [('application', 56, False), ('application', 56, True), ('group', 255, True)])
+        self.assertIs(runtime.add_source_application(56), app)
+        self.assertIs(runtime.add_source_group(app, 255), group)
+
+    def test_same_object_handoff_does_not_request_unused_secondary_group(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56, 255),
+                    group_identities=((56, 255),), application_dispatch=self.fresh_app_dispatch)
+        runtime.begin_prekey_load()
+        runtime.primary_application.set(runtime.apps[56])
+        runtime.secondary_application.set(runtime.apps[255])
+        for block in runtime.blocks:
+            block.expiry.set(runtime.micro[0])
+        runtime.handoff_to_key_blocks()
+        self.assertNotIn((255, 255), runtime.groups)
+        self.assertEqual(runtime.context.secondary_application, 255)
+        runtime.load_allocations([0] * 8)
+        runtime.finish_corekey_application_refresh()
+        self.assertNotIn((255, 255), runtime.groups)
+        self.assertIs(runtime.secondary_application._value, runtime.apps[255])
+        primary_end = next(index for index, event in enumerate(runtime.events)
+                           if event['operation'] == 'application_group_refresh_qualified_noop'
+                           and not event['secondary'])
+        secondary_end = next(index for index, event in enumerate(runtime.events)
+                             if event['operation'] == 'application_group_refresh_qualified_noop'
+                             and event['secondary'])
+        self.assertFalse(any(event['operation'] == 'block_published'
+                             for event in runtime.events[primary_end + 1:secondary_end]))
+
+    def test_source_manager_order_needs_actual_binding_after_registration(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56,),
+                                        group_identities=((56, 255), (56, 20)))
+        app = runtime.apps[56]
+        with self.assertRaisesRegex(SensorError, 'Items order'):
+            runtime.current_source_group_order(app)
+        runtime.bind_source_group_order(app, [20, 255])
+        self.assertEqual([group.identity[1] for group in runtime.current_source_group_order(app)], [20, 255])
+        group = runtime.add_source_group(app, 7)
+        with self.assertRaisesRegex(SensorError, 'Items order'):
+            runtime.current_source_group_order(app)
+        with self.assertRaises(SensorError):
+            runtime.bind_source_group_order(app, [255, 7])
+        runtime.bind_source_group_order(app, [7, 20, 255])
+        self.assertIs(runtime.current_source_group_order(app)[0], group)
+        self.assertEqual([value.identity[1] for value in runtime.current_source_group_order(app)], [7, 20, 255])
+        self.assertIs(runtime.add_source_group(app, 7), group)
+        self.assertIs(runtime.current_source_group_order(app)[0], group)
+
+    def test_fresh_block_application_probes_before_missing_group_create(self):
+        requests = []
+        def dispatch(request, runtime):
+            requests.append(request.as_dict())
+            if request.create:
+                runtime.add_source_group(runtime.apps[request.application], request.address)
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56,), source_dispatch=dispatch)
+        runtime.blocks[0].application.set(runtime.apps[56])
+        lookup = [row['request'] for row in runtime.events if row['operation'] == 'source_lookup']
+        self.assertEqual([(row['create'], row['source']) for row in lookup],
+                         [(False, 'block_application_probe'), (True, 'block_application_getter'),
+                          (True, 'block_application_assignment_getter')])
+        self.assertEqual([request['create'] for request in requests], [False, True])
+        self.assertIs(runtime.blocks[0].group._value, runtime.groups[(56, 255)])
+
+    def test_source_false_probe_can_find_actual_group_before_engine_registration(self):
+        requests = []
+        def dispatch(request, runtime):
+            requests.append(request.as_dict())
+            # Actual source backend already has this group; register its found
+            # identity without executing or claiming a create/storage action.
+            runtime.add_source_group(runtime.apps[request.application], request.address)
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56,), source_dispatch=dispatch)
+        runtime.blocks[0].application.set(runtime.apps[56])
+        self.assertEqual([request['create'] for request in requests], [False])
+        self.assertIs(runtime.blocks[0].group._value, runtime.groups[(56, 255)])
+        lookup = [row['request'] for row in runtime.events if row['operation'] == 'source_lookup']
+        self.assertEqual([row['create'] for row in lookup], [False, True, True])
+
+    def test_block_application_assignment_rereads_app_after_creation_observer(self):
+        requests = []
+        def dispatch(request, runtime):
+            requests.append(request.as_dict())
+            if request.create:
+                runtime.add_source_group(runtime.apps[request.application], request.address)
+                # Isolate native getter reentrancy using a fake storage observer;
+                # this does not accept a native GroupManager creation backend.
+                runtime.blocks[0].application.set(runtime.apps[57])
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56, 57),
+                    group_identities=((57, 255),), source_dispatch=dispatch)
+        runtime.blocks[0].application.set(runtime.apps[56])
+        self.assertEqual([(row['application'], row['create']) for row in requests],
+                         [(56, False), (56, True)])
+        lookup = [row['request'] for row in runtime.events if row['operation'] == 'source_lookup']
+        self.assertEqual([(row['application'], row['create']) for row in lookup],
+                         [(56, False), (56, True), (57, False), (57, True),
+                          (57, True), (57, True)])
+        self.assertIs(runtime.blocks[0].application._value, runtime.apps[57])
+        self.assertIs(runtime.blocks[0].group._value, runtime.groups[(57, 255)])
+        self.assertIsNot(runtime.blocks[0].group._value, runtime.groups[(56, 255)])
+
+    def _fresh_handoff_owner(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56, 57),
+                    group_identities=((56, 255), (57, 255)),
+                    application_dispatch=self.fresh_app_dispatch)
+        runtime.begin_prekey_load()
+        runtime.primary_application.set(runtime.apps[56])
+        runtime.secondary_application.set(runtime.apps[57])
+        return runtime
+
+    def test_handoff_refuses_foreign_same_numeric_identity_objects(self):
+        foreign = self._fresh_handoff_owner()
+        for field in ('primary', 'secondary', 'block_application', 'block_group'):
+            with self.subTest(field=field):
+                runtime = self._fresh_handoff_owner()
+                # Inject topology without setter callbacks to exercise the
+                # handoff's independent canonical pointer authority guard.
+                if field == 'primary':
+                    runtime.primary_application._value = foreign.apps[56]
+                elif field == 'secondary':
+                    runtime.secondary_application._value = foreign.apps[57]
+                elif field == 'block_application':
+                    runtime.blocks[0].application._value = foreign.apps[56]
+                else:
+                    runtime.blocks[0].group._value = foreign.groups[(56, 255)]
+                with self.assertRaisesRegex(SensorError, 'canonical'):
+                    runtime.handoff_to_key_blocks()
+                self.assertTrue(runtime.failed)
+                self.assertIsNone(runtime.context)
+
+    def test_handoff_refuses_live_manager_or_unit_attribute_at_outer_depth_one(self):
+        for field in ('manager', 'primary_application', 'secondary_application', 'area'):
+            with self.subTest(field=field):
+                runtime = self._fresh_handoff_owner()
+                if field == 'manager':
+                    runtime.unit_manager.begin_update()
+                    runtime.unit.end_update()
+                else:
+                    getattr(runtime, field).begin_update()
+                    runtime.unit_manager.end_update()
+                self.assertEqual(runtime.unit.depth, 1)
+                with self.assertRaisesRegex(SensorError, 'balanced managers, attributes'):
+                    runtime.handoff_to_key_blocks()
+                self.assertTrue(runtime.failed)
+                self.assertIsNone(runtime.context)
+
+    def test_unknown_false_lookup_without_executor_cannot_establish_absence(self):
+        runtime = SENLLAKeyEvents.fresh(application_addresses=(56,))
+        with self.assertRaises(SourceObjectRequired) as caught:
+            runtime._run(lambda: runtime.get_source_group(runtime.apps[56], 20, create=False,
+                                                          source='actual_false_probe'))
+        self.assertIs(caught.exception.request['create'], False)
+        self.assertNotIn((56, 20), runtime.groups)
+        self.assertTrue(runtime.failed)
+
+    def test_fresh_missing_source_executor_refuses_without_future_object(self):
+        runtime = SENLLAKeyEvents.fresh()
+        with self.assertRaises(SourceObjectRequired) as caught:
+            runtime._run(lambda: runtime.get_source_application(56, source='actual_getter'))
+        self.assertEqual(caught.exception.request['kind'], 'application')
+        self.assertEqual(runtime.apps, {})
+        self.assertTrue(runtime.failed)
+        with self.assertRaises(SensorError):
+            runtime.begin_prekey_load()
+
+    def test_shared_handoff_refuses_unfinished_source_load(self):
+        runtime = SENLLAKeyEvents.fresh()
+        runtime.begin_prekey_load()
+        with self.assertRaisesRegex(SensorError, 'primary Lighting'):
+            runtime.handoff_to_key_blocks()
+        self.assertTrue(runtime.failed)
+
     def test_unassociated_secondary_invoke_preserves_scene_under_parent_depth(self):
         runtime = load(owner(secondary=1), stages=[[14, 4, 10, 5]] + [[0] * 4] * 7,
                        selector=[1] + [0] * 7, indicator=[7] + [0] * 7)
@@ -500,6 +778,8 @@ class SENLLAKeyEventsTest(unittest.TestCase):
         self.assertEqual(runtime.snapshot()['bank_graph'], old['bank_graph'])
         self.assertEqual(runtime.events[-1], {'operation': 'owning_context_bound'})
         self.assertIn((56, 21), runtime.groups)
+        with self.assertRaisesRegex(SensorError, 'Items order'):
+            runtime.current_source_group_order(runtime.apps[56])
         # The actual later Group setter, rather than context binding, owns the
         # now-protected-group collision and clears this block.
         runtime.set_group(0, (56, 20))
