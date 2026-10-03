@@ -26,7 +26,8 @@
 #                       Python client and pipelined XML reads on both Rust servers
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
-#                       full offline suite without importing from src/
+#                       offline suite with installed origins in the parent process;
+#                       explicit source-comparison subprocesses are separate
 #   make check-parity-register  verify generated scope/evidence accounting
 #   make refresh-parity-receipts
 #                       rebuild both servers, re-run every source-bound
@@ -63,6 +64,14 @@ check-offline: compile check-parity-register
 		--ignore=tests/test_cmqtt_programming_methods_interop.py \
 		--ignore=tests/test_cmqtt_dali_commissioning_interop.py \
 		$(PYTEST_EXTRA)
+
+print-offline-workflow-audit-args:
+	@test -d tests/offline_workflows || exit 1; \
+	modules=$$(find tests/offline_workflows -type f -name 'test_*.py') || exit $$?; \
+	test -n "$$modules" || { echo "offline workflow audit found no test modules" >&2; exit 1; }; \
+	printf '%s\n' "$$modules" | LC_ALL=C sort | while IFS= read -r module; do \
+		printf '%s %s\n' --require-module "$$module"; \
+	done
 
 check-parity-register:
 	$(PY) research/build_cgate_contract_inventory.py --check
@@ -724,7 +733,7 @@ check-wheel:
 compile:
 	$(PY) -m compileall -q src/cbus_toolkit
 
-.PHONY: check check-offline check-native check-hardware build-interop \
+.PHONY: check check-offline print-offline-workflow-audit-args check-native check-hardware build-interop \
 	check-session-differential \
 	check-tagged-session-differential \
 	check-dbsetxml-unit-differential \

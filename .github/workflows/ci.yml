@@ -72,8 +72,11 @@ jobs:
         if: ${{ always() }}
         working-directory: toolkit-cli
         run: >-
+          offline_workflow_audit_args=$(make --no-print-directory -s print-offline-workflow-audit-args) &&
           .venv/bin/python research/ci_test_results.py
           --selection offline
+          $offline_workflow_audit_args
+          --allow-unconfigured-installed-module
           --junit "${RUNNER_TEMP}/toolkit-offline.xml"
           --trace "${RUNNER_TEMP}/toolkit-offline-trace.json"
           --output "${RUNNER_TEMP}/toolkit-offline-results.json"
@@ -259,8 +262,10 @@ jobs:
         if: ${{ always() }}
         working-directory: toolkit-cli
         run: >-
+          offline_workflow_audit_args=$(make --no-print-directory -s print-offline-workflow-audit-args) &&
           python research/ci_test_results.py
           --selection installed-wheel
+          $offline_workflow_audit_args
           --require-module tests/offline_workflows/test_cli_installed.py
           --require-module tests/offline_workflows/test_public_cli_integration.py
           --require-installed-configuration

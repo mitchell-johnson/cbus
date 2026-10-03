@@ -303,21 +303,89 @@ def test_actual_installed_console_matches_public_source_for_all_modes(installed_
     assert source.read_bytes() == raw
 
 
+def _console_origin_probe_source():
+    return r"""import atexit,hashlib,json,os,stat,sys
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
+_probe_main_module=sys.modules['__main__']
+def record():
+    import importlib.metadata
+    loader=_probe_main_module.__loader__
+    if type(loader) is not SourceFileLoader:
+        raise TypeError('Console origin requires an actual SourceFileLoader')
+    loaded_filename=loader.get_filename('__main__')
+    if type(loaded_filename) is not str:
+        raise TypeError('Console loader filename must be a string')
+    loaded_path=Path(loaded_filename).resolve(strict=True)
+    if '__file__' in vars(_probe_main_module):
+        main_file=_probe_main_module.__file__
+        if type(main_file) is not str:
+            raise TypeError('Console __main__.__file__ must be a string')
+        entry_path=Path(main_file).resolve(strict=True)
+        if entry_path!=loaded_path:
+            raise ValueError('Console file and loader origins disagree')
+        entry_origin='__main__.__file__'
+    else:
+        entry_path=loaded_path
+        entry_origin='SourceFileLoader.get_filename'
+    if not stat.S_ISREG(entry_path.stat().st_mode):
+        raise ValueError('Console origin must be a regular file')
+    origins={name:module.__file__ for name,module in sys.modules.items() if name=='cbus_toolkit' or name.startswith('cbus_toolkit.')}
+    entries=[{'name':entry.name,'value':entry.value} for entry in importlib.metadata.distribution('cbus-toolkit-cli').entry_points if entry.group=='console_scripts']
+    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':str(entry_path),'entry_script_sha256':hashlib.sha256(entry_path.read_bytes()).hexdigest(),'entry_script_loader':type(loader).__name__,'entry_script_origin':entry_origin,'entries':entries})+'\n', encoding='utf-8')
+atexit.register(record)
+"""
+
+
+def test_console_origin_probe_retains_actual_loader_when_main_file_removed_at_exit(installed_target, tmp_path):
+    script = tmp_path / "actual-probe-script.py"
+    receipt = tmp_path / "loader-origin.json"
+    script.write_text(_console_origin_probe_source() + """
+import cbus_toolkit
+def remove_main_file():
+    main=sys.modules['__main__']
+    main.__file__=main.__loader__.get_filename('__main__')
+    del main.__file__
+atexit.register(remove_main_file)
+""", encoding="utf-8")
+    settings = environment(tmp_path, installed_target)
+    settings["CBUS_PUBLIC_ORIGIN_RECEIPT"] = str(receipt)
+    process = subprocess.run([sys.executable, "-S", str(script)], cwd=tmp_path, env=settings,
+                             capture_output=True, check=False, timeout=10)
+    assert process.returncode == 0, (process.stdout, process.stderr)
+    assert process.stdout == process.stderr == b""
+    captured = json.loads(receipt.read_bytes())
+    assert Path(captured["entry_script"]) == script
+    assert captured["entry_script_sha256"] == hashlib.sha256(script.read_bytes()).hexdigest()
+    assert captured["entry_script_loader"] == "SourceFileLoader"
+    assert captured["entry_script_origin"] == "SourceFileLoader.get_filename"
+    assert Path(captured["origins"]["cbus_toolkit"]).is_relative_to(installed_target)
+
+
+def test_console_origin_probe_preserves_missing_module_file_error(installed_target, tmp_path):
+    script = tmp_path / "missing-module-origin.py"
+    receipt = tmp_path / "invalid-origin.json"
+    script.write_text(_console_origin_probe_source() + """
+import cbus_toolkit,types
+name='cbus_toolkit.probe_missing_origin'
+sys.modules[name]=types.ModuleType(name)
+""", encoding="utf-8")
+    settings = environment(tmp_path, installed_target)
+    settings["CBUS_PUBLIC_ORIGIN_RECEIPT"] = str(receipt)
+    process = subprocess.run([sys.executable, "-S", str(script)], cwd=tmp_path, env=settings,
+                             capture_output=True, check=False, timeout=10)
+    assert process.returncode == 0
+    assert process.stdout == b""
+    assert b"AttributeError" in process.stderr
+    assert b"cbus_toolkit.probe_missing_origin" in process.stderr and b"__file__" in process.stderr
+    assert not receipt.exists()
+
+
 def test_actual_installed_console_metadata_and_runtime_origins_are_bound_to_target(installed_target, tmp_path):
     probe = tmp_path / "probe"
     probe.mkdir()
     receipt = tmp_path / "actual-console-origins.json"
-    (probe / "sitecustomize.py").write_text('''import atexit,hashlib,json,os,sys
-from pathlib import Path
-entry_script=str(Path(sys.argv[0]).resolve())
-entry_script_sha256=hashlib.sha256(Path(entry_script).read_bytes()).hexdigest()
-def record():
-    import importlib.metadata
-    origins={name:module.__file__ for name,module in sys.modules.items() if name=='cbus_toolkit' or name.startswith('cbus_toolkit.')}
-    entries=[{'name':entry.name,'value':entry.value} for entry in importlib.metadata.distribution('cbus-toolkit-cli').entry_points if entry.group=='console_scripts']
-    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':entry_script,'entry_script_sha256':entry_script_sha256,'entries':entries})+'\\n')
-atexit.register(record)
-''', encoding="utf-8")
+    (probe / "sitecustomize.py").write_text(_console_origin_probe_source(), encoding="utf-8")
     source = (EXAMPLES / "neo-editor.json").resolve()
     process = invoke_public(workflow_arguments(source, "neo-editor", "plan"), tmp_path, installed_target,
                             extra_environment={"PYTHONPATH": str(probe) + os.pathsep + str(installed_target), "CBUS_PUBLIC_ORIGIN_RECEIPT": str(receipt)})
@@ -325,6 +393,8 @@ atexit.register(record)
     captured = json.loads(receipt.read_bytes())
     assert Path(captured["entry_script"]).resolve() == installed_console(installed_target)
     assert captured["entry_script_sha256"] == hashlib.sha256(installed_console(installed_target).read_bytes()).hexdigest()
+    assert captured["entry_script_loader"] == "SourceFileLoader"
+    assert captured["entry_script_origin"] in ("__main__.__file__", "SourceFileLoader.get_filename")
     assert {"name": "cbus-toolkit", "value": "cbus_toolkit.cli:main"} in captured["entries"]
     assert {"cbus_toolkit", "cbus_toolkit.cli", "cbus_toolkit.offline_workflows.cli", "cbus_toolkit.offline_workflows.neo_editor_input"}.issubset(captured["origins"])
     for name, origin in captured["origins"].items():

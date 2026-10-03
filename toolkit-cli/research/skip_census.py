@@ -16,7 +16,10 @@ evidence inputs) is provisioned.
 The committed census records every gated site and why each test node is or is
 not runnable under that profile.  ``--check`` also fails when a node that the
 profile can run is missing from ``research/release-gates/native.json``, or
-when that selection covers a node the profile would skip.
+when that selection covers a node the profile would skip. Explicit module
+fixtures are resolved in the consumer namespace. Recognized unsupported fixture
+forms remain unknown and fail the check; this is not a complete pytest plugin
+or conftest model.
 """
 from __future__ import annotations
 
@@ -435,6 +438,7 @@ class ModuleInfo:
     functions: dict[str, ast.FunctionDef] = field(default_factory=dict)
     imported: dict[str, tuple["ModuleInfo", str]] = field(default_factory=dict)
     aliases: dict[str, "ModuleInfo"] = field(default_factory=dict)
+    fixture_diagnostics: list[str] = field(default_factory=list)
 
 
 _MODULES: dict[str, ModuleInfo] = {}
@@ -618,6 +622,41 @@ def _is_test_class(node: ast.ClassDef, classes: dict[str, ast.ClassDef]) -> bool
                for base in node.bases)
 
 
+def _required_argument_names(function: ast.FunctionDef, *, is_method: bool = False) -> tuple[str, ...]:
+    """Required fixture names under pytest's ordinary signature rules.
+
+    Only positional-or-keyword and keyword-only parameters without defaults
+    request fixtures. A bound method drops the first name when its receiver is
+    not positional-only; module functions retain names such as self and cls.
+    """
+    count = max(0, len(function.args.args) - len(function.args.defaults))
+    positional = [arg.arg for arg in function.args.args[:count]]
+    keyword = [arg.arg for arg, default in zip(function.args.kwonlyargs, function.args.kw_defaults)
+               if default is None]
+    names = tuple((*positional, *keyword))
+    return names[1:] if is_method and not function.args.posonlyargs else names
+
+
+def _unsupported_fixture_site(module: ModuleInfo, scope: str, node: ast.AST, form: str) -> Site:
+    message = (f"{module.path}:{node.lineno}: unsupported pytest fixture form "
+               f"{form} in {scope}")
+    module.fixture_diagnostics.append(message)
+    return Site(scope, "fixture.unsupported", None, True, message, owner=module)
+
+
+def _unsupported_fixture_marks(module: ModuleInfo, value: ast.AST, scope: str,
+                               forms: tuple[str, ...], context: str) -> list[Site]:
+    sites = []
+    for node in ast.walk(value):
+        if not isinstance(node, ast.Call):
+            continue
+        name = ast.unparse(node.func)
+        for form in forms:
+            if name in ("pytest.mark." + form, "mark." + form):
+                sites.append(_unsupported_fixture_site(module, scope, node, context + "-" + form))
+    return sites
+
+
 def _fixture_options(function: ast.FunctionDef) -> tuple[str, bool] | None:
     """Recognize explicit module fixtures; dynamic options remain conservative."""
     for decorator in function.decorator_list:
@@ -690,7 +729,8 @@ def _fixture_definitions(module: ModuleInfo) -> dict[str, tuple[ModuleInfo, ast.
     return definitions
 
 
-def _fixture_sites(module: ModuleInfo, function: ast.FunctionDef) -> list[Site]:
+def _fixture_sites(module: ModuleInfo, function: ast.FunctionDef, *,
+                   is_method: bool = False) -> list[Site]:
     """Attach requested/autouse fixture gates from the consuming namespace.
 
     This does not claim a complete pytest plugin/conftest dependency model.
@@ -698,8 +738,7 @@ def _fixture_sites(module: ModuleInfo, function: ast.FunctionDef) -> list[Site]:
     """
     direct = _direct_parameters(function)
     definitions = _fixture_definitions(module)
-    pending = [arg.arg for arg in (*function.args.posonlyargs,
-                                  *function.args.args, *function.args.kwonlyargs)]
+    pending = list(_required_argument_names(function, is_method=is_method))
     for decorator in function.decorator_list:
         if isinstance(decorator, ast.Call) and ast.unparse(decorator.func) == "pytest.mark.usefixtures":
             pending.extend(arg.value for arg in decorator.args
@@ -717,8 +756,7 @@ def _fixture_sites(module: ModuleInfo, function: ast.FunctionDef) -> list[Site]:
         owner, fixture, _ = definition
         result.extend(replace(site, owner=owner) for site in
                       _body_sites(fixture, owner.path+"::"+fixture.name, "fixture."+fixture.name))
-        pending.extend(arg.arg for arg in (*fixture.args.posonlyargs,
-                                          *fixture.args.args, *fixture.args.kwonlyargs))
+        pending.extend(_required_argument_names(fixture))
     return result
 
 
@@ -731,10 +769,16 @@ def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[
     classes: dict[str, ast.ClassDef] = {}
     module_sites: list[Site] = []
     for statement in tree.body:
-        if isinstance(statement, ast.Assign):
-            for target in statement.targets:
-                if isinstance(target, ast.Name) and target.id == "pytestmark":
+        if isinstance(statement, (ast.Assign, ast.AnnAssign)):
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            for target in targets:
+                if isinstance(target, ast.Name) and target.id == "pytestmark" and statement.value is not None:
                     module_sites.extend(_pytestmark_sites(statement.value, relative))
+                    module_sites.extend(_unsupported_fixture_marks(
+                        module, statement.value, relative, ("usefixtures",), "module"))
+        elif isinstance(statement, ast.ImportFrom) and statement.level:
+            module_sites.append(_unsupported_fixture_site(
+                module, relative, statement, "relative-import"))
         elif isinstance(statement, ast.ClassDef):
             classes[statement.name] = statement
         elif isinstance(statement, ast.If):
@@ -762,10 +806,18 @@ def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[
             if isinstance(base, ast.Name) and base.id in classes and base.id not in seen:
                 sites.extend(class_sites(classes[base.id], scope, (*seen, cls.name)))
         sites.extend(_decorator_sites(cls.decorator_list, scope))
+        for decorator in cls.decorator_list:
+            sites.extend(_unsupported_fixture_marks(
+                module, decorator, scope, ("usefixtures", "parametrize"), "class"))
         for item in cls.body:
-            if isinstance(item, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "pytestmark"
-                                                    for t in item.targets):
-                sites.extend(_pytestmark_sites(item.value, scope))
+            if isinstance(item, (ast.Assign, ast.AnnAssign)) and item.value is not None:
+                targets = item.targets if isinstance(item, ast.Assign) else [item.target]
+                if any(isinstance(target, ast.Name) and target.id == "pytestmark" for target in targets):
+                    sites.extend(_pytestmark_sites(item.value, scope))
+                    sites.extend(_unsupported_fixture_marks(
+                        module, item.value, scope, ("usefixtures", "parametrize"), "class"))
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and _fixture_options(item) is not None:
+                sites.append(_unsupported_fixture_site(module, scope, item, "class-fixture"))
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and not item.name.startswith("test"):
                 kind = item.name if item.name in ("setUp", "setUpClass", "asyncSetUp") else "helper." + item.name
                 sites.extend(_body_sites(item, scope, kind, _env_names(cls)))
@@ -788,8 +840,15 @@ def analyse_module(path: Path) -> tuple[ModuleInfo, dict[str, list[Site]], list[
         shared = module_sites + helper_sites + class_sites(cls, scope)
         for method_name, method in methods(cls).items():
             node = f"{scope}::{method_name}"
+            method_sites = []
+            if any(ast.unparse(decorator) in ("classmethod", "builtins.classmethod")
+                   for decorator in method.decorator_list):
+                method_sites.append(_unsupported_fixture_site(module, node, method, "class-method"))
+            is_method = not any(ast.unparse(decorator) in ("staticmethod", "builtins.staticmethod")
+                                for decorator in method.decorator_list)
             nodes[node] = (shared + _decorator_sites(method.decorator_list, node)
-                           + _body_sites(method, node, "body") + _fixture_sites(module, method))
+                           + _body_sites(method, node, "body") + method_sites
+                           + _fixture_sites(module, method, is_method=is_method))
     return module, nodes, sorted(classes)
 
 
@@ -852,6 +911,8 @@ def _source(node) -> str:
 
 def _outcome(module: ModuleInfo, site: Site, environment: dict[str, str]) -> str:
     """Return skips, runs or unknown for one site."""
+    if site.kind == "fixture.unsupported":
+        return "unknown"
     if site.kind.endswith(".runtime"):
         return "runtime"
     if site.condition is None:
@@ -878,6 +939,7 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
     ungated_modules = 0
     for path in test_modules():
         module, nodes, _ = analyse_module(path)
+        errors.extend(sorted(set(module.fixture_diagnostics)))
         all_nodes.extend(nodes)
         site_records: dict[tuple, dict] = {}
         node_status: dict[str, dict] = {}
@@ -897,7 +959,7 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
                     "reason": site.reason or None,
                     "environment": sorted(names), "categories": sorted(categories),
                     "offline": offline, "native": native})
-                if native == "unknown":
+                if native == "unknown" and site.kind != "fixture.unsupported":
                     resolution = (UNKNOWN_RESOLUTIONS.get(node) or UNKNOWN_RESOLUTIONS.get(site.scope)
                                   or UNKNOWN_RESOLUTIONS.get(module.path))
                     if resolution:
@@ -913,6 +975,8 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
                     status = "unknown" if native == "unknown" and status != "skips" else "skips"
                 elif status == "ungated" and offline != "runs":
                     status = "runs"
+            if any(site.kind == "fixture.unsupported" for site in sites):
+                status = "unknown"
             node_status[node] = {"status": status, "blocking": sorted(blocking),
                                  "native": bool(native_categories)}
         gated = {node: value for node, value in node_status.items() if value["status"] != "ungated"}
@@ -944,6 +1008,8 @@ def build(selection: list[str]) -> tuple[dict, list[str], list[str]]:
                                                                      item["condition"] or "",
                                                                      item["reason"] or "")),
         }
+        if module.fixture_diagnostics:
+            entry["fixture_diagnostics"] = sorted(set(module.fixture_diagnostics))
         if skipped:
             # Group the reasons a node cannot run in the native gate.
             reasons: dict[str, list[str]] = {}

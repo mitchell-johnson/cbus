@@ -50,15 +50,16 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 716,
-    "modules_without_skip_sites": 402,
-    "modules_with_skip_sites": 314,
+    "test_modules": 741,
+    "modules_without_skip_sites": 425,
+    "modules_with_skip_sites": 316,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
       "host_tool": 11,
+      "installed_wheel": 2,
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
@@ -75,7 +76,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 154
+      "none": 156
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -83,6 +84,85 @@
     "native_selection_selectors": 162
   },
   "modules": {
+    "tests/offline_workflows/test_cli_installed.py": {
+      "categories": [
+        "installed_wheel"
+      ],
+      "native": "none",
+      "gated_tests": 4,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/offline_workflows/test_cli_installed.py::installed_target",
+          "kind": "fixture.installed_target.call",
+          "condition": "declared is None",
+          "reason": "Requires a freshly built task wheel installed in an explicit isolated target",
+          "environment": [
+            "CBUS_OFFLINE_INSTALLED_CONSOLE",
+            "CBUS_OFFLINE_INSTALLED_TARGET"
+          ],
+          "categories": [
+            "installed_wheel"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "installed_wheel"
+          ],
+          "tests": [
+            "test_all_actual_import_origins_and_bytes_are_installed_and_match_final_source",
+            "test_every_source_file_example_runs_through_installed_entrypoint",
+            "test_installed_entrypoint_rejects_duplicate_json_and_forged_authority",
+            "test_installed_unknown_contract_exit_three_is_review_material_with_no_authority"
+          ]
+        }
+      ]
+    },
+    "tests/offline_workflows/test_public_cli_integration.py": {
+      "categories": [
+        "installed_wheel"
+      ],
+      "native": "none",
+      "gated_tests": 5,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/offline_workflows/test_public_cli_integration.py::installed_target",
+          "kind": "fixture.installed_target.call",
+          "condition": "declared is None",
+          "reason": "Requires the freshly built task wheel installed in an explicit isolated target",
+          "environment": [
+            "CBUS_OFFLINE_INSTALLED_CONSOLE",
+            "CBUS_OFFLINE_INSTALLED_TARGET"
+          ],
+          "categories": [
+            "installed_wheel"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "installed_wheel"
+          ],
+          "tests": [
+            "test_actual_installed_console_keeps_typed_errors_and_nooverwrite",
+            "test_actual_installed_console_matches_public_source_for_all_modes",
+            "test_actual_installed_console_metadata_and_runtime_origins_are_bound_to_target",
+            "test_console_origin_probe_preserves_missing_module_file_error",
+            "test_console_origin_probe_retains_actual_loader_when_main_file_removed_at_exit"
+          ]
+        }
+      ]
+    },
     "tests/test_addressing.py": {
       "categories": [
         "cgate_test_host",

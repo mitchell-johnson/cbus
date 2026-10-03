@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
-from research.ci_test_results import AuditError, audit, main
+from research.ci_test_results import AuditError, audit, main, pytest_configure
 
 
 FIRST = "tests/test_first.py::test_with_subtests"
@@ -710,6 +710,197 @@ class CITestResultsTests(unittest.TestCase):
         self.assertFalse(receipt["passed"])
         self.assertRegex(receipt["error"], "configured target and console")
         self.assertNotIn("counts", receipt)
+
+    def write_unconfigured_installed_selection(self, *, count=18,
+                                               module="tests/offline_workflows/test_cli_installed.py"):
+        nodes = [module + "::test_installed[" + str(index) + "]" for index in range(count)]
+        self.write_selection([(FIRST, "passed"), *((node, "skipped") for node in nodes)],
+                             [{"id": FIRST, "outcome": "passed"}],
+                             installed_configuration={"target_declared": False,
+                                                      "console_declared": False})
+        return nodes
+
+    def test_source_collection_qualifies_exact_eighteen_unconfigured_setup_skips(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        nodes = self.write_unconfigured_installed_selection()
+        receipt = audit(self.junit, self.trace, [module],
+                        allow_unconfigured_installed_module=True)
+        self.assertTrue(receipt["passed"])
+        self.assertEqual(receipt["missing_required_modules"], [])
+        self.assertEqual(receipt["counts"]["passed"], 1)
+        self.assertEqual(receipt["counts"]["skipped"], 18)
+        self.assertEqual(receipt["source_only_installed_skip_qualifications"], [{
+            "module": module, "scope": "source-only-unconfigured-installed-collection",
+            "expected_cases": 18, "setup_skipped": 18, "call_events": 0,
+            "case_ids": sorted(nodes), "counts_as_passing_execution": False,
+            "installed_offline_configuration": {"target_declared": False,
+                                                "console_declared": False},
+        }])
+
+    def test_unconfigured_installed_setup_skips_remain_missing_without_explicit_flag(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        self.write_unconfigured_installed_selection()
+        receipt = audit(self.junit, self.trace, [module])
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_modules"], [module])
+        self.assertEqual(receipt["source_only_installed_skip_qualifications"], [])
+
+    def test_source_skip_qualification_rejects_missing_seventeen_and_nineteen_cases(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        for count in (0, 17, 19):
+            with self.subTest(count=count):
+                self.write_unconfigured_installed_selection(count=count)
+                receipt = audit(self.junit, self.trace, [module],
+                                allow_unconfigured_installed_module=True)
+                self.assertFalse(receipt["passed"])
+                self.assertEqual(receipt["missing_required_modules"], [module])
+                self.assertEqual(receipt["source_only_installed_skip_qualifications"], [])
+
+    def test_source_skip_qualification_requires_both_captured_exact_false_declarations(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        configurations = (None, {}, {"target_declared": False}, {"console_declared": False},
+                          {"target_declared": True, "console_declared": False},
+                          {"target_declared": False, "console_declared": True},
+                          {"target_declared": True, "console_declared": True},
+                          {"target_declared": 0, "console_declared": False},
+                          {"target_declared": False, "console_declared": 0},
+                          {"target_declared": "false", "console_declared": False})
+        for configuration in configurations:
+            with self.subTest(configuration=configuration):
+                self.write_unconfigured_installed_selection()
+                trace = json.loads(self.trace.read_text())
+                trace.pop("installed_offline_configuration")
+                if configuration is not None:
+                    trace["installed_offline_configuration"] = configuration
+                self.trace.write_text(json.dumps(trace))
+                receipt = audit(self.junit, self.trace, [module],
+                                allow_unconfigured_installed_module=True)
+                self.assertFalse(receipt["passed"])
+                self.assertEqual(receipt["source_only_installed_skip_qualifications"], [])
+
+    def test_declared_empty_installed_settings_are_captured_as_configured(self):
+        for environment, expected in (
+            ({}, {"target_declared": False, "console_declared": False}),
+            ({"CBUS_OFFLINE_INSTALLED_TARGET": ""},
+             {"target_declared": True, "console_declared": False}),
+            ({"CBUS_OFFLINE_INSTALLED_CONSOLE": ""},
+             {"target_declared": False, "console_declared": True}),
+            ({"CBUS_OFFLINE_INSTALLED_TARGET": "", "CBUS_OFFLINE_INSTALLED_CONSOLE": ""},
+             {"target_declared": True, "console_declared": True}),
+        ):
+            with self.subTest(environment=environment), patch.dict("os.environ", environment, clear=True):
+                config = type("SyntheticConfig", (), {})()
+                pytest_configure(config)
+                self.assertEqual(config._cbus_ci_installed_offline, expected)
+
+    def test_source_skip_qualification_does_not_admit_another_required_module(self):
+        for module in ("tests/offline_workflows/test_public_cli_integration.py",
+                       "tests/nested/test_cli_installed.py"):
+            with self.subTest(module=module):
+                self.write_unconfigured_installed_selection(module=module)
+                receipt = audit(self.junit, self.trace, [module],
+                                allow_unconfigured_installed_module=True)
+                self.assertFalse(receipt["passed"])
+                self.assertEqual(receipt["source_only_installed_skip_qualifications"], [])
+
+    def test_source_skip_qualification_refuses_call_skips_and_failed_calls(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        for outcome in ("skipped", "failed"):
+            with self.subTest(outcome=outcome):
+                nodes = self.write_unconfigured_installed_selection()
+                calls = [{"id": FIRST, "outcome": "passed"}, {"id": nodes[0], "outcome": outcome}]
+                self.write_selection([(FIRST, "passed"), *((node, "skipped") for node in nodes)],
+                                     calls, installed_configuration={"target_declared": False,
+                                                                     "console_declared": False})
+                if outcome == "failed":
+                    root = ET.parse(self.junit).getroot()
+                    suite = root.find("testsuite")
+                    suite.set("failures", "1")
+                    case = suite.findall("testcase")[1]
+                    case.remove(case.find("skipped"))
+                    ET.SubElement(case, "failure", message="synthetic installed failure")
+                    self.junit.write_bytes(ET.tostring(root))
+                    trace = json.loads(self.trace.read_text())
+                    trace["session_exitstatus"] = 1
+                    self.trace.write_text(json.dumps(trace))
+                receipt = audit(self.junit, self.trace, [module],
+                                allow_unconfigured_installed_module=True)
+                self.assertFalse(receipt["passed"])
+                self.assertEqual(receipt["source_only_installed_skip_qualifications"], [])
+
+    def test_source_skip_qualification_cannot_hide_missing_started_or_collected_cases(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        for field in ("started", "collected"):
+            with self.subTest(field=field):
+                self.write_unconfigured_installed_selection()
+                trace = json.loads(self.trace.read_text())
+                trace[field].pop()
+                self.trace.write_text(json.dumps(trace))
+                with self.assertRaisesRegex(AuditError, "did not start exactly once"):
+                    audit(self.junit, self.trace, [module],
+                          allow_unconfigured_installed_module=True)
+
+    def test_source_skip_qualification_cannot_credit_a_non_skipped_case_without_a_call(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        self.write_unconfigured_installed_selection()
+        root = ET.parse(self.junit).getroot()
+        suite = root.find("testsuite")
+        suite.set("skipped", "17")
+        case = suite.findall("testcase")[1]
+        case.remove(case.find("skipped"))
+        self.junit.write_bytes(ET.tostring(root))
+        with self.assertRaisesRegex(AuditError, "no passing call event"):
+            audit(self.junit, self.trace, [module],
+                  allow_unconfigured_installed_module=True)
+
+    def test_source_skip_qualification_flag_requires_an_exact_boolean(self):
+        for value in (None, 0, 1, "true"):
+            with self.subTest(value=value), self.assertRaisesRegex(AuditError, "qualification flag"):
+                audit(self.junit, self.trace, [], allow_unconfigured_installed_module=value)
+
+    def test_source_skip_qualification_never_satisfies_wheel_execution_or_configuration(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        self.write_unconfigured_installed_selection()
+        receipt = audit(self.junit, self.trace, [module],
+                        allow_unconfigured_installed_module=True,
+                        required_passing_prefixes={module + "::": 18})
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [module + "::"])
+        with self.assertRaisesRegex(AuditError, "configured target and console"):
+            audit(self.junit, self.trace, [module],
+                  allow_unconfigured_installed_module=True,
+                  require_installed_configuration=True)
+
+    def test_source_skip_qualification_does_not_hide_other_missing_modules_or_all_skipped_job(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        self.write_unconfigured_installed_selection()
+        receipt = audit(self.junit, self.trace, [module, "tests/test_missing.py"],
+                        allow_unconfigured_installed_module=True)
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_modules"], ["tests/test_missing.py"])
+        nodes = [module + "::test_installed[" + str(index) + "]" for index in range(18)]
+        self.write_selection([(node, "skipped") for node in nodes], [],
+                             installed_configuration={"target_declared": False,
+                                                      "console_declared": False})
+        receipt = audit(self.junit, self.trace, [module],
+                        allow_unconfigured_installed_module=True)
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["counts"]["passed"], 0)
+
+    def test_cli_source_skip_qualification_is_explicit_and_keeps_default_strict(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        self.write_unconfigured_installed_selection()
+        output = self.folder / "source-skip-receipt.json"
+        arguments = ["ci_test_results.py", "--junit", str(self.junit), "--trace", str(self.trace),
+                     "--output", str(output), "--selection", "offline", "--require-module", module]
+        with patch("sys.argv", arguments):
+            self.assertEqual(main(), 1)
+        with patch("sys.argv", [*arguments, "--allow-unconfigured-installed-module"]):
+            self.assertEqual(main(), 0)
+        receipt = json.loads(output.read_text())
+        self.assertEqual(len(receipt["source_only_installed_skip_qualifications"]), 1)
+        self.assertEqual(receipt["counts"]["passed"], 1)
+        self.assertEqual(receipt["counts"]["skipped"], 18)
 
     def test_missing_input_writes_a_path_free_failure_receipt(self):
         output = self.folder / "receipt.json"

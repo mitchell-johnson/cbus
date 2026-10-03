@@ -1,5 +1,7 @@
 """The committed skip census and native release-gate selection stay exact."""
 import ast
+from contextlib import redirect_stderr, redirect_stdout
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -180,6 +182,247 @@ class SkipCensusTests(unittest.TestCase):
         sites = skip_census._fixture_sites(module, module.functions['test_source'])
         self.assertEqual(len(sites), 1)
         self.assertEqual(skip_census._outcome(module, sites[0], {}), 'skips')
+
+
+
+    def test_required_arguments_preserve_module_self_and_ignore_defaults(self):
+        shape = ast.parse(
+            "def shape(ignored, /, needed, default=None, *, required, optional=None): pass\n").body[0]
+        self.assertEqual(skip_census._required_argument_names(shape), ("needed", "required"))
+        self.assertEqual(skip_census._required_argument_names(shape, is_method=True),
+                         ("needed", "required"))
+        method = ast.parse("def method(receiver, self, *, cls): pass\n").body[0]
+        self.assertEqual(skip_census._required_argument_names(method), ("receiver", "self", "cls"))
+        self.assertEqual(skip_census._required_argument_names(method, is_method=True), ("self", "cls"))
+        source = (
+            "import os, pytest\n"
+            "@pytest.fixture\n"
+            "def self():\n"
+            "    if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+            "@pytest.fixture\n"
+            "def cls():\n"
+            "    if not os.environ.get('CBUS_OFFLINE_INSTALLED_TARGET'): pytest.skip('wheel required')\n"
+            "@pytest.fixture\n"
+            "def outer(self): return self\n"
+            "@pytest.fixture\n"
+            "def optional(self=None): return self\n"
+            "def test_required(self, *, cls): pass\n"
+            "def test_defaults(self=None, *, cls=None): pass\n"
+            "def test_outer(outer): pass\n"
+            "def test_optional(optional): pass\n")
+        module = skip_census.ModuleInfo("tests/test_synthetic.py", ast.parse(source))
+        skip_census._bind(module)
+        self.assertEqual(len(skip_census._fixture_sites(module, module.functions["test_required"])), 2)
+        self.assertEqual(skip_census._fixture_sites(module, module.functions["test_defaults"]), [])
+        self.assertEqual(len(skip_census._fixture_sites(module, module.functions["test_outer"])), 1)
+        self.assertEqual(skip_census._fixture_sites(module, module.functions["test_optional"]), [])
+
+    def test_imported_fixture_alias_is_requested_only_by_required_arguments(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "tests" / "nested"
+            folder.mkdir(parents=True)
+            (folder / "test_shared.py").write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def artifact():\n"
+                "    if not os.environ.get('CBUS_OFFLINE_INSTALLED_TARGET'): pytest.skip('wheel required')\n")
+            path = folder / "test_consumer.py"
+            path.write_text(
+                "import pytest\nfrom test_shared import artifact as gate\n"
+                "@pytest.fixture\n"
+                "def optional(gate=None): return gate\n"
+                "def test_default(gate=None): pass\n"
+                "def test_keyword_default(*, gate=None): pass\n"
+                "def test_positional_only(gate, /): pass\n"
+                "def test_optional(optional): pass\n"
+                "def test_required(*, gate): pass\n")
+            with patch.object(skip_census, "ROOT", root), patch.object(skip_census, "TESTS", root / "tests"), \
+                    patch.object(skip_census, "_MODULES", {}):
+                module, nodes, _ = skip_census.analyse_module(path)
+                for name in ("test_default", "test_keyword_default", "test_positional_only", "test_optional"):
+                    self.assertEqual(nodes[f"tests/nested/test_consumer.py::{name}"], [])
+                site, = nodes["tests/nested/test_consumer.py::test_required"]
+                self.assertEqual(site.owner.path, "tests/nested/test_shared.py")
+                self.assertEqual(skip_census._outcome(site.owner, site, {}), "skips")
+                self.assertEqual(skip_census._outcome(site.owner, site,
+                    {"CBUS_OFFLINE_INSTALLED_TARGET": skip_census.PROVIDED}), "runs")
+                self.assertEqual(module.fixture_diagnostics, [])
+
+    def test_module_usefixtures_remains_unknown_and_check_refuses_even_with_resolution(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "tests"
+            folder.mkdir()
+            path = folder / "test_marked.py"
+            path.write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def guard(): return None\n"
+                "pytestmark = pytest.mark.usefixtures('guard')\n"
+                "def test_native():\n"
+                "    if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n")
+            (folder / "test_annotated.py").write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def guard(): return None\n"
+                "pytestmark: object\n"
+                "pytestmark: object = pytest.mark.usefixtures('guard')\n"
+                "def test_native():\n"
+                "    if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n")
+            node = "tests/test_marked.py::test_native"
+            annotated_node = "tests/test_annotated.py::test_native"
+            manifest = root / "native.json"
+            manifest.write_text(json.dumps({"tests": []}))
+            census_path = root / "skip-census.json"
+            with patch.object(skip_census, "ROOT", root), patch.object(skip_census, "TESTS", folder), \
+                    patch.object(skip_census, "_MODULES", {}), \
+                    patch.object(skip_census, "UNKNOWN_RESOLUTIONS", {
+                        node: ("runs", "synthetic override"), annotated_node: ("runs", "synthetic override")}), \
+                    patch.object(skip_census, "NATIVE_MANIFEST", manifest), \
+                    patch.object(skip_census, "CENSUS_PATH", census_path):
+                module, nodes, _ = skip_census.analyse_module(path)
+                self.assertIn(node, nodes)
+                unsupported, = [site for site in nodes[node] if site.kind == "fixture.unsupported"]
+                self.assertEqual(skip_census._outcome(module, unsupported, skip_census.NATIVE_ENVIRONMENT), "unknown")
+                census, required, errors = skip_census.build([])
+                self.assertEqual(required, [])
+                self.assertTrue(any("module-usefixtures" in error for error in errors))
+                entry = census["modules"]["tests/test_marked.py"]
+                self.assertEqual(entry["native"], "none")
+                self.assertEqual(entry["native_runnable_tests"], 0)
+                record, = [site for site in entry["sites"] if site["kind"] == "fixture.unsupported"]
+                self.assertEqual(record["native"], "unknown")
+                self.assertNotIn("native_resolution", record)
+                self.assertEqual(entry["not_native"][0]["tests"], ["test_native"])
+                annotated = census["modules"]["tests/test_annotated.py"]
+                self.assertEqual(annotated["native"], "none")
+                self.assertEqual(annotated["native_runnable_tests"], 0)
+                self.assertEqual(annotated["not_native"][0]["tests"], ["test_native"])
+                annotated_site, = [site for site in annotated["sites"] if site["kind"] == "fixture.unsupported"]
+                self.assertEqual(annotated_site["native"], "unknown")
+                self.assertNotIn("native_resolution", annotated_site)
+                census_path.write_text(skip_census.render(census))
+                before = census_path.read_bytes()
+                error_output = io.StringIO()
+                with redirect_stderr(error_output), redirect_stdout(io.StringIO()):
+                    self.assertEqual(skip_census.main(["--check"]), 1)
+                self.assertIn("module-usefixtures", error_output.getvalue())
+                self.assertNotIn("is stale", error_output.getvalue())
+                self.assertEqual(census_path.read_bytes(), before)
+                _, selected_required, selected_errors = skip_census.build([node])
+                self.assertEqual(selected_required, [])
+                self.assertTrue(any("native profile skips" in error for error in selected_errors))
+
+    def test_class_fixture_marks_overrides_and_parameters_fail_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "tests"
+            folder.mkdir()
+            path = folder / "test_classes.py"
+            path.write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def guard(): return None\n"
+                "@pytest.mark.usefixtures('guard')\n"
+                "class TestDeclared:\n"
+                "    def test_native(self):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+                "class TestMarked:\n"
+                "    pytestmark = [pytest.mark.usefixtures('guard')]\n"
+                "    def test_native(self):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+                "class TestAnnotated:\n"
+                "    pytestmark: list\n"
+                "    pytestmark: list = [pytest.mark.usefixtures('guard')]\n"
+                "    def test_native(self):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+                "class TestOverride:\n"
+                "    @pytest.fixture\n"
+                "    def guard(self): return None\n"
+                "    def test_native(self, guard):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+                "@pytest.mark.parametrize('guard', [None])\n"
+                "class TestParameterized:\n"
+                "    def test_native(self, guard):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n"
+                "class TestClassMethod:\n"
+                "    @classmethod\n"
+                "    def test_native(cls, guard):\n"
+                "        if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n")
+            with patch.object(skip_census, "ROOT", root), patch.object(skip_census, "TESTS", folder), \
+                    patch.object(skip_census, "_MODULES", {}):
+                module, nodes, _ = skip_census.analyse_module(path)
+                self.assertEqual(len(nodes), 6)
+                for node, sites in nodes.items():
+                    with self.subTest(node=node):
+                        unsupported, = [site for site in sites if site.kind == "fixture.unsupported"]
+                        self.assertEqual(skip_census._outcome(module, unsupported, skip_census.NATIVE_ENVIRONMENT), "unknown")
+                census, required, errors = skip_census.build([])
+                self.assertEqual(required, [])
+                self.assertEqual(census["modules"]["tests/test_classes.py"]["native"], "none")
+                for form in ("class-usefixtures", "class-fixture", "class-parametrize", "class-method"):
+                    self.assertTrue(any(form in error for error in errors), form)
+
+    def test_method_receiver_and_staticmethod_keep_required_module_fixture(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "tests"
+            folder.mkdir()
+            path = folder / "test_methods.py"
+            path.write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def self():\n"
+                "    if not os.environ.get('CBUS_OFFLINE_INSTALLED_TARGET'): pytest.skip('wheel required')\n"
+                "class TestMethods:\n"
+                "    def test_bound(receiver, self): pass\n"
+                "    def test_positional_receiver(receiver, /, self): pass\n"
+                "    @staticmethod\n"
+                "    def test_static(self): pass\n")
+            with patch.object(skip_census, "ROOT", root), patch.object(skip_census, "TESTS", folder), \
+                    patch.object(skip_census, "_MODULES", {}):
+                module, nodes, _ = skip_census.analyse_module(path)
+                self.assertEqual(len(nodes), 3)
+                for node, sites in nodes.items():
+                    with self.subTest(node=node):
+                        site, = sites
+                        self.assertEqual(skip_census._outcome(module, site, {}), "skips")
+                        self.assertEqual(skip_census._outcome(module, site,
+                            {"CBUS_OFFLINE_INSTALLED_TARGET": skip_census.PROVIDED}), "runs")
+                self.assertEqual(module.fixture_diagnostics, [])
+
+    def test_nested_relative_fixture_import_retains_unknown_node_and_refuses_selection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / "tests" / "nested"
+            folder.mkdir(parents=True)
+            (root / "tests" / "__init__.py").write_text("")
+            (folder / "__init__.py").write_text("")
+            (folder / "test_shared.py").write_text(
+                "import os, pytest\n"
+                "@pytest.fixture\n"
+                "def gate():\n"
+                "    if not os.environ.get('CBUS_OFFLINE_INSTALLED_TARGET'): pytest.skip('wheel required')\n")
+            path = folder / "test_consumer.py"
+            path.write_text(
+                "import os, pytest\nfrom .test_shared import gate\n"
+                "def test_native(gate):\n"
+                "    if not os.environ.get('CBUS_CGATE_TEST_HOST'): pytest.skip('host required')\n")
+            node = "tests/nested/test_consumer.py::test_native"
+            with patch.object(skip_census, "ROOT", root), patch.object(skip_census, "TESTS", root / "tests"), \
+                    patch.object(skip_census, "_MODULES", {}):
+                module, nodes, _ = skip_census.analyse_module(path)
+                self.assertIn(node, nodes)
+                unsupported, = [site for site in nodes[node] if site.kind == "fixture.unsupported"]
+                self.assertEqual(skip_census._outcome(module, unsupported, skip_census.NATIVE_ENVIRONMENT), "unknown")
+                census, required, errors = skip_census.build([node])
+                self.assertEqual(required, [])
+                self.assertTrue(any("relative-import" in error for error in errors))
+                self.assertTrue(any("native profile skips" in error for error in errors))
+                entry = census["modules"]["tests/nested/test_consumer.py"]
+                self.assertEqual(entry["native"], "none")
+                self.assertEqual(entry["not_native"][0]["tests"], ["test_native"])
 
 
 if __name__ == "__main__":

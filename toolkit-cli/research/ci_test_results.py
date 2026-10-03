@@ -25,6 +25,8 @@ except ModuleNotFoundError:  # The wheel job audits with the base Python.
 
 FORMAT = "cbus-ci-test-results-v1"
 TRACE_FORMAT = "cbus-ci-pytest-trace-v1"
+UNCONFIGURED_INSTALLED_MODULE = "tests/offline_workflows/test_cli_installed.py"
+UNCONFIGURED_INSTALLED_CASES = 18
 TOOLKIT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -53,8 +55,8 @@ def pytest_configure(config) -> None:
     config._cbus_ci_started = []
     config._cbus_ci_call_events = []
     config._cbus_ci_installed_offline = {
-        "target_declared": bool(os.environ.get("CBUS_OFFLINE_INSTALLED_TARGET")),
-        "console_declared": bool(os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE")),
+        "target_declared": os.environ.get("CBUS_OFFLINE_INSTALLED_TARGET") is not None,
+        "console_declared": os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE") is not None,
     }
 
 
@@ -160,7 +162,10 @@ def _required_module_path(module: str) -> None:
 
 def audit(junit_path: Path, trace_path: Path, required_modules: list[str], *,
           required_passing_prefixes: dict[str, int] | None = None,
-          require_installed_configuration: bool = False) -> dict:
+          require_installed_configuration: bool = False,
+          allow_unconfigured_installed_module: bool = False) -> dict:
+    _require(type(allow_unconfigured_installed_module) is bool,
+             "Invalid source-only installed module qualification flag")
     junit, cases = _junit(junit_path)
     trace = json.loads(trace_path.read_text())
     _require(isinstance(trace, dict) and trace.get("format") == TRACE_FORMAT,
@@ -194,13 +199,40 @@ def audit(junit_path: Path, trace_path: Path, required_modules: list[str], *,
     _require(type(trace.get("session_exitstatus")) is int,
              "Invalid pytest exit status in CI trace")
     missing_modules = []
+    source_only_installed_skip_qualifications = []
+    configuration = trace.get("installed_offline_configuration")
     for module in required_modules:
         _required_module_path(module)
         if not any(case["id"].startswith(module + "::")
                    and any(event["id"] == case["id"] and event["outcome"] == "passed"
                            for event in calls)
                    and case["outcome"] == "passed" for case in cases):
-            missing_modules.append(module)
+            module_cases = [case for case in cases if case["id"].startswith(module + "::")]
+            module_ids = [case["id"] for case in module_cases]
+            module_collected = [nodeid for nodeid in trace["collected"]
+                                if nodeid.startswith(module + "::")]
+            module_started = [nodeid for nodeid in trace["started"]
+                              if nodeid.startswith(module + "::")]
+            qualifies = (allow_unconfigured_installed_module
+                         and module == UNCONFIGURED_INSTALLED_MODULE
+                         and isinstance(configuration, dict)
+                         and configuration.get("target_declared") is False
+                         and configuration.get("console_declared") is False
+                         and len(module_ids) == UNCONFIGURED_INSTALLED_CASES
+                         and len(set(module_ids)) == UNCONFIGURED_INSTALLED_CASES
+                         and Counter(module_ids) == Counter(module_collected) == Counter(module_started)
+                         and all(case["outcome"] == "skipped" for case in module_cases)
+                         and not any(event["id"].startswith(module + "::") for event in calls))
+            if qualifies:
+                source_only_installed_skip_qualifications.append({
+                    "module": module, "scope": "source-only-unconfigured-installed-collection",
+                    "expected_cases": UNCONFIGURED_INSTALLED_CASES,
+                    "setup_skipped": len(module_ids), "call_events": 0,
+                    "case_ids": sorted(module_ids), "counts_as_passing_execution": False,
+                    "installed_offline_configuration": configuration,
+                })
+            else:
+                missing_modules.append(module)
     if require_installed_configuration:
         configuration = trace.get("installed_offline_configuration")
         _require(isinstance(configuration, dict)
@@ -259,6 +291,7 @@ def audit(junit_path: Path, trace_path: Path, required_modules: list[str], *,
         "call_events": call_events, "cases": cases,
         "required_modules": required_modules,
         "missing_required_modules": missing_modules,
+        "source_only_installed_skip_qualifications": source_only_installed_skip_qualifications,
         "required_passing_prefixes": required_prefix_results,
         "missing_required_passing_prefixes": missing_prefixes,
         "installed_offline_configuration": trace.get("installed_offline_configuration"),
@@ -276,6 +309,8 @@ def main() -> int:
     parser.add_argument("--require-passing-prefix", action="append", nargs=2,
                         metavar=("PREFIX", "COUNT"), default=[])
     parser.add_argument("--require-installed-configuration", action="store_true")
+    parser.add_argument("--allow-unconfigured-installed-module", action="store_true",
+                        help="Qualify only the 18 unconfigured installed-module setup skips in source collection")
     parser.add_argument("--summary", type=Path)
     args = parser.parse_args()
     try:
@@ -284,7 +319,8 @@ def main() -> int:
                  "Duplicate required CI passing prefix")
         receipt = audit(args.junit, args.trace, args.require_module,
                         required_passing_prefixes=prefixes,
-                        require_installed_configuration=args.require_installed_configuration)
+                        require_installed_configuration=args.require_installed_configuration,
+                        allow_unconfigured_installed_module=args.allow_unconfigured_installed_module)
     except AuditError as error:
         receipt = {"format": FORMAT, "passed": False, "error": str(error)}
     except (OSError, ValueError, KeyError, TypeError, ET.ParseError,
