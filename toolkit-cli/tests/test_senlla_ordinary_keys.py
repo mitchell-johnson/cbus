@@ -109,6 +109,30 @@ class SENLLAOrdinaryKeysTests(unittest.TestCase):
         self.assertEqual(result.timer_seconds, (1, 300, 300, 65535, 300, 300, 300, 300))
         self.assertEqual(result.expiry_commands, (15, 9, 15, 4, 15, 15, 15, 15))
 
+    def test_declared_reference_order_controls_primary_timer_and_recall_store(self):
+        references = [(2, 0)] + [()] * 7
+        masks, groups = [5] + [0] * 7, [None] * 8
+        rows = [(11, 7, 0, 7)] + [(0, 0, 0, 0)] * 7
+        result = project(rows=rows, masks=masks, groups=groups, block_references=references)
+        self.assertEqual(result.timer_seconds, (0, 0, 300, 0, 0, 0, 0, 0))
+        self.assertEqual(result.expiry_commands, (0, 0, 15, 0, 0, 0, 0, 0))
+        self.assertEqual(result.parameters()['BlockAllocation'], masks)
+        rows[0] = (12, 0, 0, 0)
+        result = project(rows=rows, masks=masks, groups=groups, block_references=references,
+                         store1=[249, 0, 252, 0, 0, 0, 0, 0])
+        self.assertEqual(result.templates[0], 18)
+        self.assertEqual(result.stages[0], (12, 0, 0, 0))
+        self.assertEqual(references, [(2, 0)] + [()] * 7)
+
+    def test_declared_reference_rows_refuse_mask_mismatch_duplicates_and_wrong_domains(self):
+        for row in ((0,), (0, 0), (1, 2), (0, 8), (0, True), '0 2'):
+            with self.subTest(row=row), self.assertRaises(SensorError):
+                project(masks=[5] + [0] * 7, groups=[None] * 8,
+                        block_references=[row] + [()] * 7)
+        for rows in ([], [()] * 7, [()] * 9, 'bad'):
+            with self.subTest(rows=rows), self.assertRaises(SensorError):
+                project(block_references=rows)
+
     def test_first_recall_category_wins_with_same_group_identity(self):
         group = object()
         rows = [(12, 0, 0, 0), (12, 0, 0, 0), (6, 0, 0, 0), (9, 0, 0, 0)] + [(0, 0, 0, 0)] * 4

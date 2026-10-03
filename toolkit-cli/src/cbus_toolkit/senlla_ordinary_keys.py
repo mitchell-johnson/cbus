@@ -68,17 +68,30 @@ class OrdinaryKeys:
         }
 
 
-def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expiry_commands, *, primary_groups):
+def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expiry_commands, *,
+                       primary_groups, block_references=None):
     """Project eight ordinary keys; no group lookup, form, session or I/O runs.
 
     ``primary_groups`` contains the exact eight source-loaded references.
     Multi-block and zero-block keys have None; singleton references must be
     supplied by the owning group loader, including its unused-group object.
+    ``block_references`` optionally supplies the owning loader's ordered rows
+    after allocation transfers; omitting it uses direct raw ascending order.
     """
     if not isinstance(stages, (list, tuple)) or len(stages) != 8:
         raise SensorError('Ordinary key stages require exactly eight rows')
     raw = tuple(_array(row, 4, 15, 'Ordinary key stages') for row in stages)
     masks = _array(block_masks, 8, 255, 'Block allocation')
+    if block_references is None:
+        references = tuple(tuple(index for index in range(8) if mask & (1 << index)) for mask in masks)
+    else:
+        if not isinstance(block_references, (list, tuple)) or len(block_references) != 8:
+            raise SensorError('Block references require exactly eight ordered rows')
+        references = tuple(_array(row, mask.bit_count(), 7, 'Ordered block references')
+                           for row, mask in zip(block_references, masks))
+        if any(len(set(row)) != len(row) or sum(1 << index for index in row) != mask
+               for row, mask in zip(references, masks)):
+            raise SensorError('Ordered block references must match their allocation mask without duplicates')
     first = _array(store1, 8, 255, 'LightLevelStore1')
     second = _array(store2, 8, 255, 'LightLevelStore2')
     timers = list(_array(timer_seconds, 8, 65535, 'Block timers'))
@@ -91,8 +104,8 @@ def load_ordinary_keys(stages, block_masks, store1, store2, timer_seconds, expir
     if any(mask.bit_count() == 1 and group is None for mask, group in zip(masks, groups)):
         raise SensorError('Singleton keys require their loaded primary group object')
     templates, defaults = [], []
-    for key, (row, mask) in enumerate(zip(raw, masks)):
-        block = primary_block_index(mask)
+    for key, (row, blocks) in enumerate(zip(raw, references)):
+        block = blocks[0] if blocks else None
         function = loaded_template(row, store1=first[block] if block is not None else None,
                                    store2=second[block] if block is not None else None)
         templates.append(function)

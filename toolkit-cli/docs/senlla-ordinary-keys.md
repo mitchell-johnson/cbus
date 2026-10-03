@@ -8,6 +8,14 @@ fresh form's ordered resets of incompatible recall categories sharing one
 primary-group object. Group comparison uses object identity, including nil.
 Zero and multiple block references have no primary group; singleton references
 require the owning loader's object, including its per-application unused group.
+The optional `block_references` argument preserves explicit ordered rows after
+application collision transfers. The first retained reference supplies timer
+and recall-store values, even when it is not the lowest set bit in the saved
+mask. The default remains direct raw ascending order. Reference rows must match
+their mask without duplicates. The
+[ordered-reference source handoff](../research/fixtures/senlla-key-references-source.json)
+records the native append-before-extract transfer and its literal reference
+order; the component consumes that declared state without replaying callbacks.
 
 The component covers all 65,536 valid four-nibble combinations. The full
 source-derived registry contains 126 groups and 59 ordered templates; only 50
