@@ -103,7 +103,9 @@ The smallest remaining runtime prerequisite is an original ready-form state arou
 `--output-group PARAMETER=ADDRESS` selects an existing group after ordinary
 thermostat model loading. Repeat it in the intended control order, including
 repeated parameters. `--resolve-output-groups` runs that load without an explicit
-selection. Omitting both options retains the earlier bounded remote-only graph
+selection. `--output-operation JSON` adds an ordered select or accepted/cancelled
+Add outcome and can be interleaved with `--output-group`. Omitting all output
+options retains the earlier bounded remote-only graph
 projection. All selected and saved values must fit the decoded specification.
 
 ```sh
@@ -116,8 +118,10 @@ cbus-toolkit thermostat settings preview //HOME/254/p/4 \
 
 That history swaps current low/medium groups 20/21 through unused group 255.
 A direct first selection of 21 is refused while the medium selector uses it.
-Each selection must refer to a group present after loading; typed Add controls
-are not implemented. The exact field names are:
+Each selection must refer to a group present after loading or created by an
+earlier accepted Add. See [typed output Add](thermostat-output-add.md) for its
+exact JSON records, naming rules and cancellation behavior. The exact field
+names are:
 
 | Controls | Parameters |
 | --- | --- |
@@ -160,8 +164,10 @@ TagName immediately before one OID-addressed write. A lost reply stops without
 retry, rollback, deletion or a later save. Whole-project verification permits
 only planned renames and creations, while preserving all retained metadata.
 The [source annex](thermostat-output-groups-source.md) describes this component
-projection; zone history, application changes, template callbacks, Add dialogs
-and complete initialized GUI behavior remain separate work.
+projection. [Typed Add outcomes](thermostat-output-add.md) extend this ordered
+history on the same graph and save owner. Zone history, application changes,
+template callbacks, output Edit/Delete and complete initialized GUI behavior
+remain separate work.
 
 ## Temperature preference
 
@@ -203,4 +209,5 @@ The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).pla
 - **Temperature and mask persistence.** The [new native receipt](../research/experiments/2026-09-30/thermostat-settings-temperature-native.json) records public CLI preview/apply for all four unit aliases with both preferences, deliberately opposite device `TemperatureUnits`, untouched dependent changes, save/reload and preservation. All eight temperature cases saved correctly and preview did not write. The owned C-Gate sentinel received no hardware connection.
 - **Earlier temperature packaged check.** The [temperature acceptance receipt](../research/experiments/2026-09-30/thermostat-temperature-focused-acceptance.json) records 45 passing offline tests (598 subtests) and five passing native tests. A fresh installed wheel passed the same 45 offline and five native tests; all 258 package files matched source and installation. No selected test skipped and no full suite ran.
 - **Disabled remote saves.** The [source receipt](../research/experiments/2026-09-30/thermostat-remote-save-static.json) pins 129 checks over 20 methods and nine independent branch examples. The [focused acceptance receipt](../research/experiments/2026-09-30/thermostat-disabled-remotes-focused-acceptance.json) records 50 offline tests with 618 subtests and seven owned native tests. Public CLI parsing/dispatch covers all four aliases, unrelated PP and group preservation, one save/reload followed by a no-op, and invalid-source refusal without writes. No CNI connection occurred. Packaging was unchanged and no new wheel or full suite was run for this slice.
-- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Add/application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.
+- **Typed output Add.** Accepted Add and direct cancellation interleave with existing selections after ordinary loading. The [operator workflow](thermostat-output-add.md) distinguishes static source rules, exact name transport, complete preflight and owned backend validation from deferred original/native or physical acceptance. All effects remain inside this settings owner.
+- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Edit/Delete and application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.

@@ -1,6 +1,19 @@
 # Implementation status and outstanding work
 
-Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
+
+[Typed thermostat output Add](feature-batch-2026-10-04-thermostat-output-add.md) extends the existing
+settings owner with ordered accepted/cancelled Add outcomes interleaved with
+existing group selections. It preserves numeric allocation, exact Unicode
+names, accepted-only Project.TagName validation and the shared graph through
+one save. Source and a fresh installed wheel each pass 227 parent tests and
+1,404 separate subtests, with 11 disclosed skips and all 72 selected backend
+cases. All 380 package files match; 4,026 repository inputs and both fresh
+binaries remain unchanged during final execution. The source review pins 211
+checks. A quoted-DBSET backend fix passes 56 focused Rust database tests;
+formatting, workspace Clippy and release builds pass. Full suites were not run.
+Original/native-server and physical acceptance remain deferred under issue
+72, and the thermostat category remains `in_progress` under issue 42.
 
 The [thermostat output-group batch](feature-batch-2026-10-03-thermostat-output-groups.md)
 adds ordinary load resolution and ordered existing-group selections across all
@@ -9,9 +22,10 @@ one save owner. Source and a fresh installed wheel each pass 187 parent tests
 and 1,296 separate subtests, with ten disclosed skips and all 56 selected
 backend cases. Exact package inventories match across all 380 files; 4,016
 repository inputs and both reused PR92 binaries remain unchanged during final
-execution. The static review pins 221 checks. Output Add/application changes,
-zone histories, complete GUI lifecycle and native/hardware acceptance remain
-open; full feature coverage still exits 1. Issue 42 tracks continued work.
+execution. The static review pins 221 checks. These historical counts predate
+the typed Add increment above. Application changes, zone histories, complete
+GUI lifecycle and native/hardware acceptance remain open; full feature
+coverage still exits 1. Issue 42 tracks continued work.
 
 The [thermostat optional-level batch](feature-batch-2026-10-03-thermostat-remote-levels.md)
 adds explicit setback/schedule accept-or-decline choices inside the existing
