@@ -13,6 +13,12 @@ cargo build --release --workspace
 
 CI runs the same four checks for pull requests and pushes to `main`.
 
+Retained native receipts may describe an earlier implementation. Their archive
+checks verify immutable recorded bytes and source pins; they do not establish
+current native applicability. The separately provisioned matrix records its
+actual implementation, and evidence validation still rejects changed current
+invalidation inputs. See the [receipt correction report](../toolkit-cli/docs/feature-batch-2026-10-03-ci-receipt-regressions.md).
+
 
 On this Mac, the native trust-store test has failed when its executable runs
 from the external build volume and passed from a byte-identical internal copy.
