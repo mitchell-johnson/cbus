@@ -137,6 +137,8 @@ and programmable schedule references in that order. The bounded output profile
 admits applications 48–95 or 203. Missing application 56 is `Lighting`, 95 is
 `DALI`, 203 is `Enable Control`, and other admitted application names are their
 decimal address. This range is a CLI boundary, not a recovered GUI filter.
+The [application-control investigation](thermostat-application-change-source.md)
+records the broader source rules and remaining migration work.
 
 A manually named output group is retained. An automatically named group with
 this unit's `[CGnn]` prefix can be renamed using the loaded plant/installation.

@@ -1,0 +1,766 @@
+{
+  "boundary": {
+    "add_edit_focus_and_cached_index": "Separate selector callback proof; not inferred from model notifications.",
+    "exception_or_template_history_admitted": false,
+    "host_scheduling_executed": false,
+    "normal_storage_message_pump_and_collection_sort_proof": "Separate manager/order source receipt.",
+    "original_gui_executed": false,
+    "selector_filter_and_no_posted_rebind_proof": "thermostat_application_selector_static.py"
+  },
+  "checks": {
+    "0x1131060": true,
+    "0x1131202": true,
+    "0x1131219": true,
+    "0x113124d": true,
+    "0x1131927": true,
+    "0x113193d": true,
+    "0x1132fd8": true,
+    "0x113301c": true,
+    "0x128e4eb": true,
+    "0x128e4f3": true,
+    "0x128e4fb": true,
+    "0x128e50a": true,
+    "0x128e50f": true,
+    "0x128e515": true,
+    "0x128e518": true,
+    "0x128e527": true,
+    "0x129775c": true,
+    "0x12994f5": true,
+    "0x606217": true,
+    "0x60621e": true,
+    "0x606224": true,
+    "0x7682ae": true,
+    "0x7682b4": true,
+    "0x7682bf": true,
+    "0x76a3d6": true,
+    "0x76a3eb": true,
+    "0x76a3f4": true,
+    "0x76a407": true,
+    "0x7ddae9": true,
+    "0x7ddafc": true,
+    "0x7ddb0f": true,
+    "0x7ddba3": true,
+    "0x7ddba7": true,
+    "0x7ddbc7": true,
+    "0x7ddbce": true,
+    "0x7ddbd5": true,
+    "0x7ddc06": true,
+    "0x7ddc19": true,
+    "0x7ddc34": true,
+    "0x7ddc37": true,
+    "0x7ddc4d": true,
+    "0x7ddc7e": true,
+    "0x7ddc82": true,
+    "0x7ddc8d": true,
+    "0x7ddca4": true,
+    "0x7e7e28": true,
+    "0x7e7e2d": true,
+    "0x7e7e82": true,
+    "0x7e7e98": true,
+    "0x7ec54c": true,
+    "0x7ec56b": true,
+    "0x7ec576": true,
+    "0x7ec586": true,
+    "0x7ec64b": true,
+    "0x7ec653": true,
+    "0x7ec65c": true,
+    "0x7ec66c": true,
+    "0x7ec680": true,
+    "0x7ec685": true,
+    "0x7eca0e": true,
+    "0x7eca39": true,
+    "0x7ece61": true,
+    "0x7ece76": true,
+    "0x7ece8c": true,
+    "0x7ed742": true,
+    "0x7ed746": true,
+    "0x7ed824": true,
+    "0x7ed82e": true,
+    "0x7ed833": true,
+    "0x84d4d5": true,
+    "0x84d8f7": true,
+    "0x84d90d": true,
+    "0x84d9cd": true,
+    "0x84da34": true,
+    "0x84e4a1": true,
+    "0x84e4e1": true,
+    "0x84e8c2": true,
+    "0x84eeab": true,
+    "0x84eed5": true,
+    "0x84f53c": true,
+    "0x84f53f": true,
+    "0x84f547": true,
+    "0x84f54b": true,
+    "0x84f550": true,
+    "0x84f569": true,
+    "0x84f574": true,
+    "0xbbbfc1": true,
+    "0xbbbfd2": true,
+    "0xcbca5d": true,
+    "0xd91158": true,
+    "0xd91164": true,
+    "0xd91180": true,
+    "0xd9118c": true,
+    "0xd9119a": true,
+    "0xd911b2": true,
+    "0xd911eb": true,
+    "0xd911fb": true,
+    "0xd9120b": true,
+    "0xd9124b": true,
+    "0xd9126a": true,
+    "0xd9127f": true,
+    "0xd9167e": true,
+    "0xd917ef": true,
+    "0xd919c4": true,
+    "0xec64b9": true,
+    "0xec64d0": true,
+    "0xec6bb9": true,
+    "0xec6bf3": true,
+    "0xec6c13": true,
+    "0xec79ee": true,
+    "0xec8073": true,
+    "0xec96aa": true,
+    "0xec97b7": true,
+    "0xf26527": true,
+    "0xf2652e": true,
+    "0xf2656f": true,
+    "0xf2657b": true,
+    "0xf26581": true,
+    "0xf265b6": true,
+    "0xf265c4": true,
+    "0xf265d6": true,
+    "0xf2ef7c": true,
+    "0xf2ef8e": true,
+    "0xf2ef99": true,
+    "0xfeb472": true,
+    "0xfeb47a": true,
+    "0xfeb487": true,
+    "0xfeb495": true,
+    "0xfeb4a8": true,
+    "0xfeb4bf": true,
+    "0xfeb4c5": true,
+    "0xfeb4d7": true,
+    "0xfec7a7": true,
+    "0xfec7b7": true,
+    "0xfec80e": true,
+    "CIS_Handles..TFlashTrackedHandle+0x10": true,
+    "CIS_TCBusThermostatCGateAgent..TCBusBasicThermostatCGateAgent+0xa4": true,
+    "CIS_TCBusThermostatCGateAgent..TCBusProgrammableThermostatCGateAgent+0xa4": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x0": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x3c": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x4": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x8": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa0": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa4": true,
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa8": true,
+    "CIS_TThermostat..TPC_TSA+0xb8": true,
+    "CIS_TThermostat..TPC_TSA5+0xb8": true,
+    "CIS_TThermostat..TPC_TSB+0xb8": true,
+    "CIS_TThermostat..TPC_TSB5+0xb8": true,
+    "CIS_TThermostat..TThermostat+0xb8": true,
+    "application_attribute_no_forwarding_or_changing_override": true,
+    "base_application_changed_no_calls": true,
+    "cbus_parameter_hook_only_installed_zones": true,
+    "closeup_only_one_commit_entry": true,
+    "controller_force_same_default_zero": true,
+    "direct_toggle_accesses_in_consumed_methods_only_application_changed": true,
+    "exit_does_not_commit_again": true,
+    "initial_raw_application_path_has_no_selector_or_lighting_filter": true,
+    "inner_reference_callback_once": true,
+    "manager_end_updates_owner_not_each_attribute": true,
+    "no_application_second_setter_in_parent_initialise": true,
+    "no_synchronous_message_pump_in_model_or_posting_handlers": true,
+    "old_reference_unsubscribe_does_not_reset": true,
+    "one_after_change_callback": true,
+    "one_inner_reference_assignment": true,
+    "one_outer_attribute_begin": true,
+    "one_outer_attribute_end_in_finally": true,
+    "parent_link_rebind_order_zone_then_plant": true,
+    "parent_post_install_tail_only_status_zones_and_delay": true,
+    "posted_handler_no_direct_application_assignment_or_link_rebind": true,
+    "publication_precedes_after_change_callback": true,
+    "reference_forwarding_default_zero": true,
+    "reset_only_nil_branch": true,
+    "same_item_does_not_reach_apply": true
+  },
+  "event_rules": {
+    "application_identity_axes": [
+      "current model Application",
+      "Plant/Zone list-bound Application",
+      "actual Application of each retained Group reference"
+    ],
+    "attribute_publication": "Synchronous handle update and parent refresh post precede ApplicationChanged.",
+    "changed_existing_application_callback_count": 1,
+    "changed_selection_with_flag_false": "Refresh references and bound lists, then set flag true.",
+    "changed_selection_with_flag_true": "Clear flag; do not refresh references or bound lists.",
+    "combo_changed_message": 1062,
+    "object_reference_internal_notification": "Suppressed while the attribute update is active.",
+    "parent_refresh_message": 1158,
+    "posted_parent_refresh": "Frame refresh and focus restoration; no direct model or link assignment.",
+    "same_current_application_callback_count": 0,
+    "same_selection_preserves_flag": true,
+    "save_guard": "SaveProgramming and SaveTemplate set +0xdf only within their save/cleanup paths.",
+    "template_guard": "Separate +0x1e0 load-template scope, not public readiness."
+  },
+  "format": "cbus-thermostat-application-events-static-v1",
+  "initialized_profile": {
+    "decision_callback_installed_after_load": true,
+    "entry": "Successful ordinary programming load followed by thermostat parent initialization.",
+    "initial_application": "Raw ApplicationNumber byte 0..255, including 115 and 255; lookup/create directly, without selector or lighting filtering.",
+    "initial_application_changed_flag": false,
+    "initial_save_guard": false,
+    "initial_template_guard": false,
+    "not_an_operator_supplied_state": true,
+    "reopen": "Destroy clears callbacks; ordinary AfterLoad calls the reference setter even for the same object."
+  },
+  "literal_event_cases": [
+    {
+      "current": "A",
+      "flag": false,
+      "history": [
+        "A"
+      ],
+      "initial_current": "A",
+      "list_binding": "A",
+      "migration_passes": 0,
+      "model_callbacks": 0
+    },
+    {
+      "current": "B",
+      "flag": true,
+      "history": [
+        "B"
+      ],
+      "initial_current": "A",
+      "list_binding": "B",
+      "migration_passes": 1,
+      "model_callbacks": 1
+    },
+    {
+      "current": "B",
+      "flag": true,
+      "history": [
+        "B",
+        "B"
+      ],
+      "initial_current": "A",
+      "list_binding": "B",
+      "migration_passes": 1,
+      "model_callbacks": 1
+    },
+    {
+      "current": "C",
+      "flag": false,
+      "history": [
+        "B",
+        "C"
+      ],
+      "initial_current": "A",
+      "list_binding": "B",
+      "migration_passes": 1,
+      "model_callbacks": 2
+    },
+    {
+      "current": "D",
+      "flag": true,
+      "history": [
+        "B",
+        "C",
+        "D"
+      ],
+      "initial_current": "A",
+      "list_binding": "D",
+      "migration_passes": 2,
+      "model_callbacks": 3
+    }
+  ],
+  "method_spans": {
+    "CIS_FlashGUI.PrepareFlashCxApplicationComboBox": {
+      "end": "0xc103a4",
+      "sha256": "a1d0cad77140f83b20810622743c3bf2758baaadcdcf01ac85587f3a894ca130",
+      "start": "0xc10234"
+    },
+    "CIS_Handles.TFlashElementController.Apply": {
+      "end": "0x84f504",
+      "sha256": "485c1e1be4392491bb05156026e168e5c269f8f84c87575008a641f88c0a25db",
+      "start": "0x84f484"
+    },
+    "CIS_Handles.TFlashElementController.SetAsElement": {
+      "end": "0x84f57c",
+      "sha256": "abcc396fa6d4502a64c1a91b6df22ea4b8a970f91bd7681934562e4894840191",
+      "start": "0x84f528"
+    },
+    "CIS_Handles.TFlashExpressionController.Apply": {
+      "end": "0x84d7e4",
+      "sha256": "2b20a0e320b7c22e3ec0a96c53c0ce12108420c22bd7c12117a6c1e7757f11f4",
+      "start": "0x84d7d0"
+    },
+    "CIS_Handles.TFlashExpressionController.Create": {
+      "end": "0x84d6c4",
+      "sha256": "3faa04cacc05609dfe063e35c71e5509fae37191ebdd3b72b755772b0c13d7e5",
+      "start": "0x84d460"
+    },
+    "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged": {
+      "end": "0x84da68",
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e",
+      "start": "0x84d8c4"
+    },
+    "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged": {
+      "end": "0x84dcac",
+      "sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9",
+      "start": "0x84dc5c"
+    },
+    "CIS_Handles.TFlashExpressionController.HandleIsReference": {
+      "end": "0x84dd64",
+      "sha256": "63cffe2adc73fb63b565a9fb09e64cd826e0de951364fab0e3ebccaff4a94b01",
+      "start": "0x84dd38"
+    },
+    "CIS_Handles.TFlashExpressionController.SetFromElement": {
+      "end": "0x84df14",
+      "sha256": "b2258e55371e1bcad35f9ad975a2f418fe1b850611ab1f486d125ec6ca839966",
+      "start": "0x84deb0"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Create": {
+      "end": "0x84e51c",
+      "sha256": "b9be2de0b848e23753c250146d813082e1a424443d1963765ad019d5e779abd8",
+      "start": "0x84e434"
+    },
+    "CIS_Handles.TFlashTrackedHandle.CurrentElementChanged": {
+      "end": "0x84e5b0",
+      "sha256": "c8d33e8fc8303e8d9601155bf9068e2ef51516e7bb06579578137e8a7304afe8",
+      "start": "0x84e590"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoCurrentElementChanged": {
+      "end": "0x84e6f0",
+      "sha256": "eb3aa5518f291213aa3df7d087c5053f501beec42283603b147899a9055884ab",
+      "start": "0x84e5e8"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoRootElementChanged": {
+      "end": "0x84e804",
+      "sha256": "2863558d737c18291c1a917233ae216a1ab643174f5cf046a526bedf98fe641e",
+      "start": "0x84e7b0"
+    },
+    "CIS_Handles.TFlashTrackedHandle.GetCurrentElement": {
+      "end": "0x84e8d0",
+      "sha256": "8d398b3cc5eb75bc3fc1236252f5b7ad304908c02c125d9fc0ec45e8a57f3f1c",
+      "start": "0x84e898"
+    },
+    "CIS_Handles.TFlashTrackedHandle.RootElementChanged": {
+      "end": "0x84eb9c",
+      "sha256": "ad3169bf4f1e16a6ecd1330ff1440e5e76c2bf1365dd40ee15354956d3ff0b83",
+      "start": "0x84eb7c"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Update": {
+      "end": "0x84ef40",
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce",
+      "start": "0x84ed88"
+    },
+    "CIS_TBaseObject.TBASEObject.EndUpdate": {
+      "end": "0x7682c8",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc",
+      "start": "0x7682a4"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1297c54",
+      "sha256": "e9e5b47cc0d3ccda66271e5d888ffbffc0e213c94defa99a1718a813a7cea96e",
+      "start": "0x1297738"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1299b98",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5",
+      "start": "0x12994d0"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.LoadProgrammingInformation": {
+      "end": "0xcbcc4c",
+      "sha256": "e7731b63daa8816159d76a0f0fa1194480d0a44c03c5efe6154eb5cb465b7016",
+      "start": "0xcbc85c"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress": {
+      "end": "0xf267c8",
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b",
+      "start": "0xf264fc"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.ApplicationChanged": {
+      "end": "0xf340d4",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a",
+      "start": "0xf340c4"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.InternalCreate": {
+      "end": "0xf2f5ec",
+      "sha256": "d8b54a3c78dcf4c83813a24a364a4308845111125afcc5e2fc589a0ed4a24f77",
+      "start": "0xf2ef2c"
+    },
+    "CIS_TCommonCBus.TCBUSUnit.SetApplicationObject": {
+      "end": "0xf30038",
+      "sha256": "0a9132483c74b0032962e851f09f39d6e3e9341080b464452901a0e02f085da5",
+      "start": "0xf30014"
+    },
+    "CIS_TCustomFlashObject.TAttributeManager.BeginUpdate": {
+      "end": "0x7e7e38",
+      "sha256": "e2dc560bd6d6af1a5e027ce8feab28b9bc85e6bcb9b191338b707ea08aa91ffd",
+      "start": "0x7e7e10"
+    },
+    "CIS_TCustomFlashObject.TAttributeManager.EndUpdate": {
+      "end": "0x7e7ea0",
+      "sha256": "4bb2c13a0e0579f16406129064d37d8a43266fe93a5571ebd691265c03805ad7",
+      "start": "0x7e7e78"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate": {
+      "end": "0x7ece6c",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "start": "0x7ece44"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.Changed": {
+      "end": "0x7eca48",
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6",
+      "start": "0x7eca04"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.EndUpdate": {
+      "end": "0x7ece94",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "start": "0x7ece6c"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.Changed": {
+      "end": "0x7eaa44",
+      "sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099",
+      "start": "0x7eaa10"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.CanDoChange": {
+      "end": "0x7ec694",
+      "sha256": "284e058e22b7f42055defbb8c1338a58d6d7e9f097ecf5815b566e80312a8f2a",
+      "start": "0x7ec674"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Changed": {
+      "end": "0x7ec674",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "start": "0x7ec640"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "end": "0x7ec5d0",
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f",
+      "start": "0x7ec504"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.UnSubscribeReference": {
+      "end": "0x7efa3c",
+      "sha256": "21ea4980d728520707307fe342bcd412db4ae826cd7d709f5297d9cd83067ac2",
+      "start": "0x7ef9f4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ObjectChanged": {
+      "end": "0x7ed3e8",
+      "sha256": "7afab599ae69adb9977c6f08f5ef6891571a67dfb79150c353a955e49ad4d334",
+      "start": "0x7ed3c4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ResolveReference": {
+      "end": "0x7ed68c",
+      "sha256": "fb0c76794fcaaf8c758111beb938ca33aba43d4f07bf4b74de29132c5abc56e7",
+      "start": "0x7ed41c"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": {
+      "end": "0x7ed85c",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740",
+      "start": "0x7ed6d4"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceList.Remove": {
+      "end": "0x7f082c",
+      "sha256": "f3e3be075bd2968aedbffdedf5ae28953fcd89290c9ad49df0283967954eae9d",
+      "start": "0x7f0808"
+    },
+    "CIS_TCustomObjectAttribute.TCustomObjectAttribute.InternalCreate": {
+      "end": "0x7dd528",
+      "sha256": "7b3a5987536445e882d5ccbe4474abf1209ebe412c856b84e898331915b7daff",
+      "start": "0x7dd50c"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.Create": {
+      "end": "0xbbbd98",
+      "sha256": "08b5e894aac90fbfb70708f95f0dbc90d211a506b756308ff1a71f9724d18648",
+      "start": "0xbbbbe4"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoCloseUp": {
+      "end": "0xbbbe2c",
+      "sha256": "5214b88aeab33a9d8048f390994863d573fd0591757175426396c9556b7fd99f",
+      "start": "0xbbbe10"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoExit": {
+      "end": "0xbbbea8",
+      "sha256": "12fd1192df2adcae099c5f4fd23b9067d2e7722ed94c4b8cc8edba59889df950",
+      "start": "0xbbbe5c"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoIndexChange": {
+      "end": "0xbbbff4",
+      "sha256": "6b6afbec815029ae3ccf3dcbdebfb20549a7c83c6948396f97feebc35dd72ea6",
+      "start": "0xbbbee8"
+    },
+    "CIS_TManagedFlashObject.TFlashElementStatePublisher.Changed": {
+      "end": "0x76a804",
+      "sha256": "3b1530e099d161fb94bb258ba8569259306efb12df64fcc1f9348d53b6bdd20d",
+      "start": "0x76a7c8"
+    },
+    "CIS_TManagedFlashObject.TFlashElementStateSubscriber.ObservedObjectChanged": {
+      "end": "0x76aa64",
+      "sha256": "f77d565488bcb7fa0d21e3528e754479da6d1824244b570f956e9f39bb882faf",
+      "start": "0x76aa10"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Changed": {
+      "end": "0x76a420",
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8",
+      "start": "0x76a3cc"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.Create": {
+      "end": "0x7dddf4",
+      "sha256": "f6aa1c2bd83f816478674f8701c6278a8682d3380420eb6e43040c6ed8f8f19f",
+      "start": "0x7ddd50"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.GetFlashObject": {
+      "end": "0x7dda88",
+      "sha256": "cdb226eb2d648c9ad545517953de1fd5f5f4fb017d04a87dab1d248fb0a4042c",
+      "start": "0x7dda60"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate": {
+      "end": "0x7ddb2c",
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87",
+      "start": "0x7ddab0"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.MakeInitialised": {
+      "end": "0x7dde34",
+      "sha256": "45464e5e856778bdfad77531977ae136326c6f3d33a4f3ca316129b8aebf3825",
+      "start": "0x7dddf4"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ObjectChanged": {
+      "end": "0x7ddbb8",
+      "sha256": "defb321f13691804f565bf1516e77eb5e4d9301f30e71ca2b010ad663a03a02a",
+      "start": "0x7ddb94"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceChanged": {
+      "end": "0x7ddbdc",
+      "sha256": "90ad6ac5ea0469f6ec435659b4f33bf047f2aa16066b8a9ca6ca485377674e35",
+      "start": "0x7ddbb8"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceReset": {
+      "end": "0x7ddbf4",
+      "sha256": "4589079c7e5ff1c36ce256dd8cf7ec5c193d6d71a716f6a0df762f0c2af3e60b",
+      "start": "0x7ddbdc"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject": {
+      "end": "0x7ddcb4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb",
+      "start": "0x7ddbf4"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFromElement": {
+      "end": "0x7ddcd4",
+      "sha256": "28854b22dfc300d43d8cf6488215dc15d7a1be7a308f4a6038dd989d08c3d21e",
+      "start": "0x7ddcb4"
+    },
+    "CIS_TThermostat.TCBusParameters.HookEvents": {
+      "end": "0xfdb9f0",
+      "sha256": "9f6b1b05234f96622b709ddfad37f9611d64077d00999fb7ed8cfab6932a0b73",
+      "start": "0xfdb9d0"
+    },
+    "CIS_TThermostat.TCBusParameters.UnhookEvents": {
+      "end": "0xfdba0c",
+      "sha256": "89b5d6e0d14ba0db02aed9d63a0a8ce074bc2056c799f7aec9a0ed8773a58822",
+      "start": "0xfdb9f0"
+    },
+    "CIS_TThermostat.TThermostat.ApplicationChanged": {
+      "end": "0xfeb4e4",
+      "sha256": "a84668ba7f2e584d0effe8bd52e4965f915f969ba8d796650d82f8ebf56c00b6",
+      "start": "0xfeb460"
+    },
+    "CIS_TThermostat.TThermostat.InternalCreate": {
+      "end": "0xfea404",
+      "sha256": "c295d6af4e272c8e00994ff747e39ab3d790e8fcd360a371dbe4e920f213f0da",
+      "start": "0xfea134"
+    },
+    "CIS_TThermostat.TThermostat.RefreshThermostatGroups": {
+      "end": "0xfecbcc",
+      "sha256": "9fdf94dc1f117b7579bc94e762da142c664cc6e3905ad618faaf1998203cfafe",
+      "start": "0xfec798"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateApplicationLink": {
+      "end": "0x11273dc",
+      "sha256": "746a5a28f90773bbbd7424b3ce04587094542544f2d6557c839fc044ff6e89f8",
+      "start": "0x1127390"
+    },
+    "CIS_TcdThermostatZoneManagement.TcdThermostatZoneManagement.UpdateApplicationLink": {
+      "end": "0xfee6e0",
+      "sha256": "c26e52329568fa3a94a68df99cdd13125164d024975567906a186193e63ac3ec",
+      "start": "0xfee694"
+    },
+    "CIS_TddCBusUnit.LoadPP": {
+      "end": "0xec632c",
+      "sha256": "6f2fe6156dff45383b1d93cd49cfbd74207a331d99975169c569c675483bb965",
+      "start": "0xec6124"
+    },
+    "CIS_TddCBusUnit.OpenUnitForProgramming": {
+      "end": "0xec6a3c",
+      "sha256": "d2aa6ab0cdb4344dac6ed0db9eeb225905045ffe92c2aa04416483d2ecf0d9a8",
+      "start": "0xec632c"
+    },
+    "CIS_TddCBusUnit.TddCBusUnit.Initialise": {
+      "end": "0xec6ca4",
+      "sha256": "e8d4932b024e0bdcda4d22c3cc75103dd268ff6be251fa32fc7b03119b90c36d",
+      "start": "0xec6b40"
+    },
+    "CIS_TddCBusUnit.TddCBusUnit.SaveProgramming": {
+      "end": "0xec8364",
+      "sha256": "f71ec4318642f0c3272837b90576eab72846829ce780467d199b0e041cb1a20c",
+      "start": "0xec7978"
+    },
+    "CIS_TddCBusUnit.TddCBusUnit.SaveTemplate": {
+      "end": "0xec97fc",
+      "sha256": "ebf28c8cc96b8ea7a17efc402fc1bc36c9d23df9b2052be5d7ac6eca99fd3ed5",
+      "start": "0xec9678"
+    },
+    "CIS_TddThermostat.TddThermostat.Destroy": {
+      "end": "0x1131ad0",
+      "sha256": "900a7e724ccd4184798e447555c2df350b01d7d88bb8fd92f4e4ff9950c40db3",
+      "start": "0x11318bc"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleBeforeLoadTemplate": {
+      "end": "0x1132ff8",
+      "sha256": "f5ed50f4e679d655acb0a17f51e18d816ce560a52a58c48432d438d61b1bebbc",
+      "start": "0x1132fc4"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleLightingApplicationChange": {
+      "end": "0x1132fc4",
+      "sha256": "0e9408b3bcaffc907cdc934e6ad7a1d1a40f2b4805c32cb573ac1091fa8c915f",
+      "start": "0x1132f9c"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleLoadTemplate": {
+      "end": "0x113303c",
+      "sha256": "968f432fe43ee5ee75db7b811b2d0b9e3db77d5a74b321ff4d7b11bfacfc6474",
+      "start": "0x1132ff8"
+    },
+    "CIS_TddThermostat.TddThermostat.Initialise": {
+      "end": "0x11312ac",
+      "sha256": "d7af809c3aab325a2581cc051b05ddecc98ae71f30215b8720a6119ec3fc57da",
+      "start": "0x1131054"
+    },
+    "CIS_TddThermostat.TddThermostat.InitialiseForm": {
+      "end": "0x1132a24",
+      "sha256": "85c0d383c08bce07376803223fe854d766f1f1e9d760e72bfde249cdbb17a5a2",
+      "start": "0x113295c"
+    },
+    "CIS_TddThermostat.TddThermostat.InitialiseSubForms": {
+      "end": "0x1132c74",
+      "sha256": "185a180194e3779da70e14cedb824c65541a8fcceafed27e5858eb80e55e8702",
+      "start": "0x1132a24"
+    },
+    "CIS_TddThermostat.TddThermostat.UpdateZoneCheckboxes": {
+      "end": "0x1132d04",
+      "sha256": "22ab9e21f939ed028ee119f842f2ef6c710ecb5996ec91b469ef825d10b219af",
+      "start": "0x1132c74"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.HandleAfterComboChange": {
+      "end": "0xd91294",
+      "sha256": "b5650f6ee2c6cacdf7e75fae7084ecb38bdc9828c8c9c76b9c36f920c00308cb",
+      "start": "0xd911dc"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.HandleApplicationChange": {
+      "end": "0xd911dc",
+      "sha256": "997818354d143f8d6285324672631920fa0cdcc10fa1238d3020eed89b12b238",
+      "start": "0xd91130"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.SetCBusUnit": {
+      "end": "0xd9181c",
+      "sha256": "f7d8c6e49ba0c490902377a9a87f478a170ad6b1ba7b24eaa8bc08d2a39a3b93",
+      "start": "0xd9165c"
+    },
+    "CIS_TfrmUnitIDBase.TfrmUnitIDBase.SetupFlashComponents": {
+      "end": "0xd91b10",
+      "sha256": "118a3333e07633f9cfa7ff0f9fe2f4ca1eab74ac877da8d5fc3936d2531b3909",
+      "start": "0xd91858"
+    },
+    "System.TObject.InitInstance": {
+      "end": "0x606264",
+      "sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7",
+      "start": "0x60620c"
+    }
+  },
+  "native_vendor_executed": false,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_io": false,
+  "virtual_slots": {
+    "CIS_Handles..TFlashTrackedHandle+0x10": {
+      "method": "CIS_Handles.TFlashTrackedHandle.GetCurrentElement",
+      "slot": "0x84be88",
+      "target": "0x84e898"
+    },
+    "CIS_TCBusThermostatCGateAgent..TCBusBasicThermostatCGateAgent+0xa4": {
+      "method": "CIS_TCBusThermostatCGateAgent.TCBusBasicThermostatCGateAgent.AfterLoadProgrammingInformation",
+      "slot": "0x128b664",
+      "target": "0x1297738"
+    },
+    "CIS_TCBusThermostatCGateAgent..TCBusProgrammableThermostatCGateAgent+0xa4": {
+      "method": "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation",
+      "slot": "0x128b84c",
+      "target": "0x12994d0"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x0": {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate",
+      "slot": "0x7dd8b0",
+      "target": "0x7ece44"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x3c": {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFromElement",
+      "slot": "0x7dd8ec",
+      "target": "0x7ddcb4"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x4": {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "slot": "0x7dd8b4",
+      "target": "0x7ec640"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0x8": {
+      "method": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate",
+      "slot": "0x7dd8b8",
+      "target": "0x7ece6c"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa0": {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.CanDoChange",
+      "slot": "0x7dd950",
+      "target": "0x7ec674"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa4": {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.GetFlashObject",
+      "slot": "0x7dd954",
+      "target": "0x7dda60"
+    },
+    "CIS_TObjectReferenceAttribute..TObjectReferenceAttribute+0xa8": {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject",
+      "slot": "0x7dd958",
+      "target": "0x7ddbf4"
+    },
+    "CIS_TThermostat..TPC_TSA+0xb8": {
+      "method": "CIS_TThermostat.TThermostat.ApplicationChanged",
+      "slot": "0xfda248",
+      "target": "0xfeb460"
+    },
+    "CIS_TThermostat..TPC_TSA5+0xb8": {
+      "method": "CIS_TThermostat.TThermostat.ApplicationChanged",
+      "slot": "0xfda458",
+      "target": "0xfeb460"
+    },
+    "CIS_TThermostat..TPC_TSB+0xb8": {
+      "method": "CIS_TThermostat.TThermostat.ApplicationChanged",
+      "slot": "0xfd9e24",
+      "target": "0xfeb460"
+    },
+    "CIS_TThermostat..TPC_TSB5+0xb8": {
+      "method": "CIS_TThermostat.TThermostat.ApplicationChanged",
+      "slot": "0xfda034",
+      "target": "0xfeb460"
+    },
+    "CIS_TThermostat..TThermostat+0xb8": {
+      "method": "CIS_TThermostat.TThermostat.ApplicationChanged",
+      "slot": "0xfd97b8",
+      "target": "0xfeb460"
+    }
+  }
+}
