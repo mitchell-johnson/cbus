@@ -1,0 +1,905 @@
+{
+  "format": "cbus-senll-inventory-source-review-v1",
+  "source_sha256": {
+    "CBusToolkit.exe": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "CBusToolkit.map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "static_reader": "research/pir_sensor_review.py Review.code; Capstone x86 static decoding",
+  "original_execution": false,
+  "native_execution": false,
+  "physical_acceptance": false,
+  "firmware_and_catalogue_profile": {
+    "unit_type": "SENLL",
+    "toolkit_class": "TST7SENLL",
+    "firmware_bands": [
+      [
+        "2.0.01",
+        "2.0.99"
+      ],
+      [
+        "2.1.00",
+        "2.1.99"
+      ],
+      [
+        "2.2.00",
+        "2.2.99"
+      ],
+      [
+        "2.3.00",
+        "2.3.99"
+      ],
+      [
+        "2.4.00",
+        "2.4.99"
+      ]
+    ],
+    "catalog_numbers": [
+      "5031PE",
+      "5031PEWP",
+      "SLC5031PE",
+      "SLC5031PEWP,GY"
+    ],
+    "spec_filename": "SENLL_ST7.xml",
+    "declared_spec_type": "SENPILL",
+    "complete_snapshot_application_admission": {
+      "primary_minimum": 48,
+      "primary_maximum": 95,
+      "secondary_minimum": 48,
+      "secondary_maximum": 95,
+      "secondary_absent_value": 255,
+      "applies_to_flat_and_control_history_paths": true,
+      "broader_group_object_semantics_proven": false,
+      "rule": "Complete47-field snapshots require a primary Lighting application and either a secondary Lighting application or absent255. Other application families and a nil/unused primary manager were not established by this source recovery. Legacy43-field flat behavior remains separate."
+    }
+  },
+  "specification_sha256": {
+    "SENLL_ST7.xml": "8cde972f010c216f7d4d8db556b0e3407fa582053776c38e4f76b6692666a033",
+    "SENPILL_ST7.xml": "9f5fe3088980cb8554aa11599b55342164f0be5fb411f92623d08606990ae388",
+    "I_SENPILL.xml": "ec4f917bdaf32e3fa1879cc60286d8e6b107685a9f306cb5435b14bff2d2c483"
+  },
+  "layout_evidence": {
+    "method": "Read-only decoded specification parsing and MemoryCodec layout comparison; no vendor instructions executed.",
+    "existing_workflow_layout_count": 43,
+    "inventory_layout_count": 4,
+    "complete_snapshot_layout_count": 47,
+    "layout_columns": [
+      "address",
+      "array_size",
+      "bit_size",
+      "bit_address",
+      "array_skip"
+    ],
+    "parameter_layouts": {
+      "PIRLightMovement": {
+        "type": "int",
+        "layout": [
+          50,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIRDarkMovement": {
+        "type": "int",
+        "layout": [
+          51,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIRDark": {
+        "type": "int",
+        "layout": [
+          52,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "DisableIR": {
+        "type": "bit",
+        "layout": [
+          53,
+          1,
+          1,
+          2,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "IRBankKeyOffset": {
+        "type": "int",
+        "layout": [
+          53,
+          1,
+          3,
+          4,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "CorridorLinkOfficeBlock": {
+        "type": "int",
+        "layout": [
+          68,
+          1,
+          3,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "CorridorLinkBlock": {
+        "type": "int",
+        "layout": [
+          68,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "CorridorLinkActive": {
+        "type": "bit",
+        "layout": [
+          68,
+          1,
+          1,
+          7,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "CorridorLinkEnablerGroup": {
+        "type": "int",
+        "layout": [
+          92,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "BroadcastBlock": {
+        "type": "int",
+        "layout": [
+          70,
+          1,
+          3,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "BroadcastActive": {
+        "type": "int",
+        "layout": [
+          70,
+          1,
+          3,
+          5,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIREnablerGroup": {
+        "type": "int",
+        "layout": [
+          88,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECEnablerGroup": {
+        "type": "int",
+        "layout": [
+          89,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "SingleJoinEnablerGroup": {
+        "type": "int",
+        "layout": [
+          90,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "DualJoinEnablerGroup": {
+        "type": "int",
+        "layout": [
+          91,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "SingleJoinEnablerControlGroup": {
+        "type": "int",
+        "layout": [
+          93,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "DualJoinEnablerControlGroup": {
+        "type": "int",
+        "layout": [
+          94,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECFunctionBlock": {
+        "type": "int",
+        "layout": [
+          96,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECFunctionActive": {
+        "type": "bit",
+        "layout": [
+          96,
+          1,
+          1,
+          6,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECFunctionIRKey": {
+        "type": "int",
+        "layout": [
+          97,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECFunctionIRActive": {
+        "type": "bit",
+        "layout": [
+          97,
+          1,
+          1,
+          6,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIRFunctionIRKey": {
+        "type": "int",
+        "layout": [
+          98,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIRFunctionIRActive": {
+        "type": "bit",
+        "layout": [
+          98,
+          1,
+          1,
+          6,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIRLevelStore": {
+        "type": "bit",
+        "layout": [
+          99,
+          1,
+          1,
+          4,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECEnablerGroupLogic": {
+        "type": "bit",
+        "layout": [
+          99,
+          1,
+          1,
+          5,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PIREnablerGroupLogic": {
+        "type": "bit",
+        "layout": [
+          99,
+          1,
+          1,
+          6,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PotentiometerAFunction": {
+        "type": "int",
+        "layout": [
+          101,
+          1,
+          2,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PotentiometerBFunction": {
+        "type": "int",
+        "layout": [
+          101,
+          1,
+          2,
+          5,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PotentiometerATimerBlock": {
+        "type": "int",
+        "layout": [
+          102,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PotentiometerBTimerBlock": {
+        "type": "int",
+        "layout": [
+          103,
+          1,
+          3,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PotentiometerBBankSwitchEnable": {
+        "type": "int",
+        "layout": [
+          103,
+          1,
+          1,
+          6,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "RampRate": {
+        "type": "int",
+        "layout": [
+          64,
+          2,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "LightLevel": {
+        "type": "int",
+        "layout": [
+          1,
+          10,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "GroupAddress": {
+        "type": "int",
+        "layout": [
+          80,
+          8,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "Application": {
+        "type": "int",
+        "layout": [
+          33,
+          2,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "SecondApplicationBlocks": {
+        "type": "int",
+        "layout": [
+          69,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECTargetLux": {
+        "type": "int",
+        "layout": [
+          27,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECMarginLux": {
+        "type": "int",
+        "layout": [
+          28,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "IndicatorBlockAssignment": {
+        "type": "int",
+        "layout": [
+          96,
+          8,
+          3,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "TimerHighByte": {
+        "type": "int",
+        "layout": [
+          136,
+          8,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "TimerLowByte": {
+        "type": "int",
+        "layout": [
+          144,
+          8,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "PECLevelStore": {
+        "type": "bit",
+        "layout": [
+          99,
+          1,
+          1,
+          3,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "StatusReportInterval": {
+        "type": "int",
+        "layout": [
+          66,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "existing_workflow"
+      },
+      "AreaGroupAddress": {
+        "type": "int",
+        "layout": [
+          67,
+          1,
+          8,
+          0,
+          0
+        ],
+        "role": "inventory"
+      },
+      "SceneTablePointer": {
+        "type": "int",
+        "layout": [
+          152,
+          8,
+          8,
+          0,
+          0
+        ],
+        "role": "inventory"
+      },
+      "PatchEnable": {
+        "type": "int",
+        "layout": [
+          160,
+          2,
+          8,
+          0,
+          0
+        ],
+        "role": "inventory"
+      },
+      "SceneTable": {
+        "type": "int",
+        "layout": [
+          162,
+          80,
+          8,
+          0,
+          0
+        ],
+        "role": "inventory"
+      }
+    }
+  },
+  "methods": {
+    "0xcbe650": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "e8dfdd2e282a580cdde0a63a4e3ee0e5f2469bf0d6da9b1ed5090048ea713a16",
+      "instruction_count": 116
+    },
+    "0xcc66cc": {
+      "symbol": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "5f8ec869a6b79608d1e2db5913e7f27201c14df1292fa3f964c02b4f0381de65",
+      "instruction_count": 14
+    },
+    "0xcc66f0": {
+      "symbol": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadAreaGroupAddress",
+      "sha256": "6254819d7660c094dc8182a97fa5a24bec6ba453c0f7936219c07fef9264cff0",
+      "instruction_count": 25
+    },
+    "0xcc85dc": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc",
+      "instruction_count": 159
+    },
+    "0xccb180": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838",
+      "instruction_count": 221
+    },
+    "0xccaf50": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.GetSceneCommands",
+      "sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145",
+      "instruction_count": 156
+    },
+    "0xc9a4d0": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCollection.Add",
+      "sha256": "ba1fafdbb28b2fb49cb65cb94c44738d6d5c8a2e9c6ada5e0fd01f4ea5a2fe93",
+      "instruction_count": 26
+    },
+    "0xc9ab88": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCommandManager.Add",
+      "sha256": "7785ddcdb781b5088bc381ea21fc32d7a02f8f1982467bdf5b67357ad0a0cfca",
+      "instruction_count": 37
+    },
+    "0xc9adb0": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCommandManager.ItemByGroupAddress",
+      "sha256": "bbadc6a6af6d695b91d995eb01768263c4aaec78967bb8c00bb10f77f38d06f5",
+      "instruction_count": 36
+    },
+    "0xc9aa48": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.SetGroup",
+      "sha256": "9345f9c0915778e579fe1e3077aa28f46ae24c28ba02cd36659a577febadcf8d",
+      "instruction_count": 21
+    },
+    "0xc9aa7c": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.SetLevel",
+      "sha256": "49224716cb25f7c14fff2e5f9ade4de8bd994a3f87f1d1a99ed94a722db31102",
+      "instruction_count": 46
+    },
+    "0xc9aa24": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneCommand.GetLevel",
+      "sha256": "bc642aaed9ab3fe434c457f76fe7260dceb151f015362465ece12a0b17df4efa",
+      "instruction_count": 14
+    },
+    "0x7e9fd0": {
+      "symbol": "CIS_TCustomFlashObject.TFlashObjectCollection.Append",
+      "sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45",
+      "instruction_count": 18
+    },
+    "0xd07e10": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetScenesEnabled",
+      "sha256": "0bbc6872ebd1f38ea8ca1f18d8fab20a5dd8289371f91e1839051f09fb87cae6",
+      "instruction_count": 14
+    },
+    "0xd081c8": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetScenesEnabled",
+      "sha256": "c375826546ff0474d47dae72a38790a068166e8e61013840549970ada15e5003",
+      "instruction_count": 38
+    },
+    "0xd08a90": {
+      "symbol": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsSceneLearnCompatible",
+      "sha256": "ed4fed0bf76b19ceda0bf13075211b1d8b41223c788db6fc4a3cf988060d5844",
+      "instruction_count": 24
+    },
+    "0xc9b19c": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetNumberOfScenesInUse",
+      "sha256": "9ba439d6563a57f895ee9f8f5d51a0e77d64c7c3ce3bbe687c3de9eb622364fc",
+      "instruction_count": 69
+    },
+    "0xc9b35c": {
+      "symbol": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetLargestSceneSize",
+      "sha256": "028bb52e189e8dc587313925e31fcd5bfda7f9f09e32de6dee1f96be56c8b714",
+      "instruction_count": 41
+    },
+    "0xccbcf8": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.GetNeoUnitSceneTableAsString",
+      "sha256": "043bfffdea97dd605159ea91b29212cae2f276c5bb7ee7b95417ef71a05e7e77",
+      "instruction_count": 180
+    },
+    "0xccbfdc": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.GetNeoSceneTablePointersAsString",
+      "sha256": "4a32cf9860d93af5a18216fb23dfacde345e0c2116659075e22bb816f8b87840",
+      "instruction_count": 152
+    },
+    "0xcf8bd0": {
+      "symbol": "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "1154fcd38a9410e08f4eed7c4be195cd981ad69025bf9780081586ac85d20471",
+      "instruction_count": 98
+    },
+    "0xcf5558": {
+      "symbol": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a",
+      "instruction_count": 379
+    },
+    "0xced788": {
+      "symbol": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "79c18bb0c68bed4b0281f6d9eae01516d5f61ddf7cbb276bea83f25a2519217a",
+      "instruction_count": 338
+    },
+    "0xcebf00": {
+      "symbol": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "b2c5a333f6dd843e6036ec360efd736d71ebd4c76b95439f5771560c7a6a0afe",
+      "instruction_count": 85
+    },
+    "0xccc358": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "eff8a563f079b594dc956b6a0692cb9facd2a52ef8d67ed184208fd05ab782d1",
+      "instruction_count": 308
+    },
+    "0xcc9030": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "b3b5ebe63cc58dcf9c3f914dd33099f521afac1d5bfa2d5485c700661d48adbf",
+      "instruction_count": 99
+    },
+    "0xcc6764": {
+      "symbol": "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "0eba1bc768f21b3c94a74fa80aa1bfdf9695c0067129c740a4260fddd73ff775",
+      "instruction_count": 14
+    },
+    "0xcc5e18": {
+      "symbol": "CIS_TCBusLearnUnitCGateAgent.TCBusLearnUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "2024dc480053a06d475acc374d63f4099a6cd465bc37547fd9b6dcf7e3e5315b",
+      "instruction_count": 105
+    },
+    "0xcbe84c": {
+      "symbol": "CIS_TCBusUnitCGateAgent.TCBusUnitCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "fc9e972194c6d22ba511438f6bca3f0c9e8f7f438a7569ab359c05bcea05e4e6",
+      "instruction_count": 164
+    },
+    "0xcac4e0": {
+      "symbol": "CIS_TCGateAgent.TCGateAgent.BeforeSaveProgrammingInformation",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "instruction_count": 8
+    },
+    "0xccb854": {
+      "symbol": "CIS_TCoreNeoInputCGateAgent.SetKeyValues",
+      "sha256": "c7ece7753ed9e30e2767905b2e2787c93c032cfbdbbe84a508693971ad99a55b",
+      "instruction_count": 348
+    },
+    "0xcc7430": {
+      "symbol": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.ReorderKeyIndex",
+      "sha256": "f888768a7f60f3c9de772b1c32f446cbc0b1fad98783f50cd2050b8e4734bef4",
+      "instruction_count": 12
+    },
+    "0xd14110": {
+      "symbol": "CIS_TInputKey.TInputKeyCollection.GetCount",
+      "sha256": "67c4feac8cc38c4c9bb5cc96cc4959b7ceb80db8e34d9c7a0416c97be7d3c3ee",
+      "instruction_count": 13
+    },
+    "0xcf939c": {
+      "symbol": "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.PrepareForcedParameters",
+      "sha256": "855b1d8907575a1d17ea3edc9b6d74926f535a2ef2e858662dcc19815256eb67",
+      "instruction_count": 316
+    },
+    "0xcab0e0": {
+      "symbol": "CIS_TSENLL.TST7SENLL.MaximumKeyCount",
+      "sha256": "57fc31bd73a7fdc771374c9d579bd0dfedfccb041f226f19e9e74682d538bce4",
+      "instruction_count": 12
+    },
+    "0xcab074": {
+      "symbol": "CIS_TSENLL.TST7SENLL.GetMaximumVirtualKeyCount",
+      "sha256": "1a9fba4d5469db81463298a9662e6c0f410e3af5b9dffd8e74dccdda225ed0da",
+      "instruction_count": 11
+    },
+    "0xc9e1d4": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.MaximumVirtualKeyCount",
+      "sha256": "11e48e9d8e0ce913aca69e61db00f54e39b399a4ba3959f4d348377bb4efe8d1",
+      "instruction_count": 22
+    },
+    "0xc9dcc0": {
+      "symbol": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate",
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9",
+      "instruction_count": 109
+    }
+  },
+  "load": {
+    "phase_order": [
+      "fresh zero-key unit construction",
+      "begin inherited update and load primary/secondary application objects",
+      "primary Area group getter",
+      "all eight raw secondary bits and block groups",
+      "end inherited update; primary then secondary application object refresh",
+      "load PatchEnable-derived ScenesEnabled",
+      "unconditional SceneTable command getters",
+      "zero-key key-value load",
+      "Corridor and Single/Dual Join getters",
+      "PEC and PIR enable getters",
+      "explicit on/off controls"
+    ],
+    "area": {
+      "attribute_member": "0xf0",
+      "application": "primary",
+      "create_enabled": true,
+      "group_lookup_site": "0xcc6721",
+      "before_raw_block_refresh": true,
+      "callback_reserved": false
+    },
+    "patch": {
+      "attribute_member": "0x17c",
+      "required_bytes": 2,
+      "disabled_value": [
+        157,
+        64
+      ],
+      "scene_enabled_rule": "False only for exact bytes [157,64]; true for every other admitted byte pair.",
+      "first_read_site": "0xccb3ae",
+      "second_read_site": "0xccb3cd",
+      "set_enabled_site": "0xccb3e9"
+    },
+    "scenes": {
+      "table_attribute_member": "0x184",
+      "pointer_attribute_member": "0x188",
+      "table_bytes": 80,
+      "pointer_bytes": 8,
+      "scene_count_after_load": 8,
+      "first_group_255_rule": "No scene command is read and no pointer is read natively; later table bytes are ignored. The bounded complete snapshot still requires and binds all eight pointer bytes.",
+      "walk": "For a nonunused first group, begin scene0 and visit all 40 raw pairs in increasing byte offset. Ignore group255 anywhere. For each other group, retain only its first occurrence in the current scene, including its level and insertion order.",
+      "duplicates": "A duplicate within one scene skips command addition, create-enabled group lookup and SetLevel. The first level wins. The same group in another scene is a separate command.",
+      "boundary": "After every raw pair, including duplicates and unused groups, increase offset by2. Advance exactly one scene if current scene index<7 and pointer[current+1] equals162+new_offset. Pointer0 never selects the start. Unmatched/odd next pointers block later pointers.",
+      "application": "primary",
+      "create_enabled": true,
+      "group_lookup_site": "0xccb08e",
+      "maximum_total_commands": 40,
+      "per_scene_add_assertion_maximum": 40,
+      "levels": "Admitted raw levels0..255 are retained; unused-group pairs do not contribute a command or level.",
+      "known_objects": "Create-enabled scene getter objects become available after block application refresh and remain established across later controls and save.",
+      "callback_reserved": false
+    }
+  },
+  "save": {
+    "fresh_zero_key_precondition": "SENLL constructs zero InputKeys. Retained nonzero-key models and additional scene-editing or implicit GUI callbacks are outside this profile.",
+    "before_save_chain": [
+      "LightLevel",
+      "Multisensor",
+      "CoreNeoPro",
+      "NeoInput",
+      "CoreNeo",
+      "CoreKey",
+      "Input",
+      "Learn",
+      "Unit",
+      "CGate"
+    ],
+    "no_pre_serializer_reordering": "Inspected inherited helpers do not pack, compact or reorder the loaded scene collection before serialization. Base CGate BeforeSave is empty.",
+    "patch": {
+      "programmable_flag_clear_site": "0xccc6c0",
+      "value_written": false,
+      "value_preserved": true,
+      "rule": "PatchEnable is unconditionally marked nonprogrammable before the scene-enabled test. Neither enabled nor disabled serialization writes its value."
+    },
+    "disabled": "Mark SceneTable and SceneTablePointer nonprogrammable; preserve their entire admitted raw arrays, including duplicates, ignored levels and noncanonical pointers.",
+    "enabled": {
+      "scene_enabled_test_site": "0xccc6ce",
+      "table_serializer_call_site": "0xccc6ec",
+      "pointer_serializer_call_site": "0xccc71a",
+      "fields_marked_programmable": [
+        "SceneTable",
+        "SceneTablePointer"
+      ],
+      "compatible_rule": "Number of nonempty scenes<=4 AND largest scene has<=10 commands. A scene with11..40 commands is admitted and uses compact mode.",
+      "table": "Initialize exactly80 bytes to255. Visit the original eight scene indices in order and skip empty scenes. Preserve command insertion order. Compatible mode begins each nonempty scene at20*nonempty_ordinal; compact mode appends all nonempty scene command pairs consecutively.",
+      "pointers": "Initialize eight values to255. Fresh loaded collection count8 establishes pointer0=162. Compatible mode always emits [162,182,202,222,255,255,255,255]. Compact mode visits original scene indices1..7, stops at the first empty current scene, and otherwise sets pointer[i]=pointer[i-1]+2*command_count(scene[i-1]). It does not renumber holes to match the table packing.",
+      "table_capacity_proof": "Input has exactly40 pairs, and loading can only discard pairs. Compact output is therefore<=80 bytes. Compatible mode has at most four nonempty scenes with at most ten commands each, so its greatest written offset is<80.",
+      "text_format": "Native output contains exactly80 table tokens or8 pointer tokens: lowercase 0xHH hexadecimal, one space between tokens, no leading or trailing space. The CLI stages numeric PP semantic equivalents and does not claim this literal native text format."
+    },
+    "zero_key_tail": {
+      "set_key_values_call_site": "0xccc751",
+      "count_read_site": "0xccb894",
+      "zero_count_branch_site": "0xccb89a",
+      "zero_count_branch_target": "0xccbcb7",
+      "rule": "Count-1<0 skips the entire key loop, including scene extension/key handling. Initial IndicatorBlockAssignment programmable flag work does not reorder scenes or change PatchEnable."
+    },
+    "forced_save": "Multisensor and LightLevel forced-save work follows the inherited scene serialization. PrepareForcedParameters does not access SceneTable, SceneTablePointer or PatchEnable."
+  },
+  "plan_binding": {
+    "complete_expected_field_count": 47,
+    "inventory_fields": [
+      "AreaGroupAddress",
+      "SceneTablePointer",
+      "PatchEnable",
+      "SceneTable"
+    ],
+    "requires_complete_inventory_when_any_present": true,
+    "native_schema_and_stale_binding": "Validate all consumed layouts and values, bind them into expected parameters before staging, and compare their final expected readback. Partial inventory does not establish source getter facts.",
+    "area_and_patch_controls": "No new Area or Patch setter is authorized by inventory input.",
+    "derived_scene_changes": "Only the source-derived enabled serializer output may change SceneTable or SceneTablePointer; disabled arrays remain untouched. Derive and validate changes from bound expected fields, not a caller-issued cache.",
+    "missing_destination": "Continue refusing destinations not established by admitted getters; source metadata outside this snapshot and original creation/declined-creation decisions remain unavailable."
+  },
+  "limits": [
+    "Static source and read-only decoded-layout evidence only; no original instructions, original GUI or vendor service executed.",
+    "No hardware, physical sensor, network catalogue, power-cycle or persistence acceptance is established by this receipt.",
+    "The exact Scene rules are bounded to fresh zero-key SENLL ST7, explicit80/8-byte scene arrays, explicit two-byte PatchEnable and the existing Lighting application profile.",
+    "This inventory is the union of admitted source getters, not a complete native network catalogue.",
+    "Retained nonzero-key graphs, scene editing, implicit GUI notifications, host scheduling and missing group creation/decline decisions remain outside the admitted profile.",
+    "Method hashes and counts use Review.code MAP spans, which may include alignment or adjacent literal data; they do not measure executable parity."
+  ]
+}

@@ -115,6 +115,22 @@ check-cgate-interop: compile
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-before-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-select-not-reserved-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-after-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-select-not-reserved-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-padding-walk-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-first-level-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-across-boundary-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compatible-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compact-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-single-scene-eleven-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-first-sentinel-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-odd-pointer-blocks-later-boundaries-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[flat-enabled-compatible-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]' \
@@ -419,6 +435,22 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-daemon]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-before-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-select-not-reserved-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-after-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-select-not-reserved-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-padding-walk-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-first-level-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-across-boundary-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compatible-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compact-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-single-scene-eleven-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-first-sentinel-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-odd-pointer-blocks-later-boundaries-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[flat-enabled-compatible-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]' \
