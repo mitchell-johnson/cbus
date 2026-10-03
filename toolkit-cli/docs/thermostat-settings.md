@@ -165,9 +165,14 @@ retry, rollback, deletion or a later save. Whole-project verification permits
 only planned renames and creations, while preserving all retained metadata.
 The [source annex](thermostat-output-groups-source.md) describes this component
 projection. [Typed Add outcomes](thermostat-output-add.md) extend this ordered
-history on the same graph and save owner. Zone history, application changes,
-template callbacks, output Edit/Delete and complete initialized GUI behavior
-remain separate work.
+history on the same graph and save owner. Accepted/cancelled
+[output Edit outcomes](thermostat-output-edit.md) also interleave in that
+history: they rename the currently selected non-unused object without changing
+its address or identity. An omitted name retains the complete preloaded text;
+explicit replacements use the original 32 UTF-16 entry limit before trimming.
+Zone history, application changes, template callbacks and complete initialized
+GUI behavior remain separate work. The recovered thermostat combo action
+mask exposes Add/Edit; generic Delete/Clear methods are not visible controls.
 
 ## Temperature preference
 
@@ -210,4 +215,5 @@ The Python API is `NativeThermostatSettings(client, UnitSpecStore(spec_dir)).pla
 - **Earlier temperature packaged check.** The [temperature acceptance receipt](../research/experiments/2026-09-30/thermostat-temperature-focused-acceptance.json) records 45 passing offline tests (598 subtests) and five passing native tests. A fresh installed wheel passed the same 45 offline and five native tests; all 258 package files matched source and installation. No selected test skipped and no full suite ran.
 - **Disabled remote saves.** The [source receipt](../research/experiments/2026-09-30/thermostat-remote-save-static.json) pins 129 checks over 20 methods and nine independent branch examples. The [focused acceptance receipt](../research/experiments/2026-09-30/thermostat-disabled-remotes-focused-acceptance.json) records 50 offline tests with 618 subtests and seven owned native tests. Public CLI parsing/dispatch covers all four aliases, unrelated PP and group preservation, one save/reload followed by a no-op, and invalid-source refusal without writes. No CNI connection occurred. Packaging was unchanged and no new wheel or full suite was run for this slice.
 - **Typed output Add.** Accepted Add and direct cancellation interleave with existing selections after ordinary loading. The [operator workflow](thermostat-output-add.md) distinguishes static source rules, exact name transport, complete preflight and owned backend validation from deferred original/native or physical acceptance. All effects remain inside this settings owner.
-- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, output Edit/Delete and application-change controls, the remaining Toolkit tabs and physical thermostats. Template post-load replay has its separate evidence and limits.
+- **Typed output Edit.** Accepted Edit and direct cancellation target the selected non-unused group within the same ordered history. The [operator guide](thermostat-output-edit.md) covers omitted/preloaded names, explicit input limits, duplicate exclusion, quoted TagName storage and the explicit owned same-name no-op projection. Address, identity and reference assignments remain intact.
+- **Open.** Complete dialog lifecycle and edit admission, initialization group/application effects outside the bounded remote getters, an exposed quick-zone save workflow, application-change controls, the remaining Toolkit tabs and physical thermostats. Generic output Delete/Clear are not exposed by the recovered thermostat action mask. Template post-load replay has its separate evidence and limits.
