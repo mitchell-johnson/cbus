@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 730,
-    "modules_without_skip_sites": 412,
-    "modules_with_skip_sites": 318,
+    "test_modules": 750,
+    "modules_without_skip_sites": 429,
+    "modules_with_skip_sites": 321,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,7 +62,7 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 109,
+      "original_toolkit": 112,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 158
+      "none": 161
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -3213,6 +3213,41 @@
           ],
           "tests": [
             "DialogMapTests::test_regeneration_from_original_inputs_matches_committed_map"
+          ]
+        }
+      ]
+    },
+    "tests/test_din_output_controls.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "requires pinned original bytes for static hash check only",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "DinControlSourceTest::test_static_method_and_constant_bytes_without_execution"
           ]
         }
       ]
@@ -7920,6 +7955,42 @@
         }
       ]
     },
+    "tests/test_neo_indicator_editor.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Original Toolkit EXE/MAP explicitly required for static hash verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "NeoIndicatorEditorTests::test_optional_original_static_review"
+          ]
+        }
+      ]
+    },
     "tests/test_networks.py": {
       "categories": [
         "cgate_test_host"
@@ -10762,6 +10833,42 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_thermostat_remote_references.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "RemoteReferenceTests::test_optional_static_source"
+          ]
         }
       ]
     },

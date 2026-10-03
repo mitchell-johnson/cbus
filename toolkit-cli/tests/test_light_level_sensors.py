@@ -110,7 +110,7 @@ class LightLevelSaveModelTest(unittest.TestCase):
         self.assertFalse(result['saved'])
         self.assertEqual(self.sensor.plan(session.values()).changes, {})
 
-    def test_global_interval_native_integer_bounds_and_unverified_loaded_values(self):
+    def test_global_interval_native_integer_bounds_and_loaded_minimum(self):
         for interval in (3, 4, 31, 127, 255):
             with self.subTest(interval=interval):
                 session = self.session()
@@ -129,11 +129,11 @@ class LightLevelSaveModelTest(unittest.TestCase):
         for loaded in (0, 1, 2):
             with self.subTest(loaded=loaded):
                 session = self.session(StatusReportInterval=[loaded])
-                with self.assertRaisesRegex(SensorError, 'unverified Global initialization'):
-                    self.sensor.configure(session)
-                self.assertEqual(session.calls, [])
-                self.sensor.configure(session, status_report_interval=3)
+                result = self.sensor.configure(session)
+                self.assertEqual(result['expected']['StatusReportInterval'], [loaded])
+                self.assertEqual(result['dialog']['status_report_interval'], 3)
                 self.assertEqual(ints(session.current['StatusReportInterval']), [3])
+                self.assertEqual(self.sensor.plan(session.values()).changes, {})
 
     def test_broadcast_interval_boundaries_and_other_timers_preserved(self):
         for seconds, high, low in ((10, 0, 10), (255, 0, 255), (256, 1, 0), (513, 2, 1), (65535, 255, 255)):
@@ -502,11 +502,9 @@ class LightLevelSensorNativeTest(unittest.TestCase):
                 case['dialog_cases'] += 1
             for stored in (0, 1, 2):
                 session.set('StatusReportInterval', str(stored))
-                before_invalid = session.values()
-                with self.assertRaisesRegex(SensorError, 'unverified Global initialization'):
-                    sensor.configure(session)
-                self.assertEqual(session.values(), before_invalid)
-                sensor.configure(session, status_report_interval=3)
+                result = sensor.configure(session)
+                self.assertEqual(result['expected']['StatusReportInterval'], [stored])
+                self.assertEqual(result['dialog']['status_report_interval'], 3)
                 self.assertEqual(raw_bytes(session, 66, 1), bytes((3,)))
                 case['raw_byte_assertions'] += 1
                 case['dialog_cases'] += 1

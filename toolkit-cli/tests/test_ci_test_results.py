@@ -1,4 +1,5 @@
 """CI results must distinguish executed calls, setup skips, and subtests."""
+import ast
 import json
 from pathlib import Path
 import re
@@ -392,6 +393,209 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_cli_edlt_scene_manager.py',
             'tests/test_cgate_edlt_scene_name_control_interop.py', 'tests/test_ci_test_results.py'})
         self.assertTrue(all((root / 'toolkit-cli' / module).is_file() for module in selected))
+
+
+    def test_combined_cli_exact_backend_rosters_and_body_requirements(self):
+        # Independent literal identities from the reviewed feature shapes;
+        # neither production output nor the Makefile defines the expectation.
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        new_patterns = (
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-{backend}]',
+            'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN4-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8B-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN12-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4F-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8F-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-{backend}]',
+            'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-{backend}]',
+            'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-before-refresh-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-select-not-reserved-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-after-refresh-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-select-not-reserved-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-padding-walk-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-first-level-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-across-boundary-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compatible-hole-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compact-hole-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-single-scene-eleven-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-first-sentinel-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-odd-pointer-blocks-later-boundaries-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[flat-enabled-compatible-hole-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-{backend}]',
+            'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-{backend}]',
+            'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[legacy43-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[complete47-{backend}]',
+            'tests/test_cgate_senll_global_interop.py::test_public_senll_global_lost_save_is_not_replayed[{backend}]',
+        )
+        preserved_patterns = (
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-{backend}]',
+            'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-{backend}]',
+            'tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[{backend}]',
+        )
+        new_modules = (
+            'tests/test_cgate_din_controls_interop.py',
+            'tests/test_cgate_senll_controls_interop.py',
+            'tests/test_cgate_senll_global_interop.py',
+            'tests/test_cgate_senll_inventory_interop.py',
+            'tests/test_neo_indicator_editor_backends.py',
+            'tests/test_thermostat_remote_references_backends.py',
+        )
+        preserved_modules = ('tests/test_cgate_edlt_time_date_controls_interop.py',
+                             'tests/test_cgate_din_save_interop.py')
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                           ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = re.findall(r"'(tests/test_[^']+)'", body)
+            for modules, patterns, count in ((new_modules, new_patterns, 73),
+                                             (preserved_modules, preserved_patterns, 24)):
+                selected = [node for node in actual if node.split('::', 1)[0] in modules]
+                expected = {pattern.format(backend=backend) for pattern in patterns}
+                self.assertEqual(len(selected), count)
+                self.assertEqual(len(selected), len(set(selected)))
+                self.assertEqual(set(selected), expected)
+            audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in (*new_modules, *preserved_modules, 'tests/test_cgate_named_database_interop.py'):
+                self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
+
+    def test_combined_cli_offline_and_wheel_modules_and_senlla_readonly_cases(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        pure_modules = (
+            'tests/test_application_events.py',
+            'tests/test_cli_din_controls.py',
+            'tests/test_cli_firmware_ncc.py',
+            'tests/test_cli_neo_indicator_editor.py',
+            'tests/test_cli_senll_controls.py',
+            'tests/test_cli_senlla_surface.py',
+            'tests/test_cli_sensors.py',
+            'tests/test_din_output_controls.py',
+            'tests/test_firmware_diagnostics.py',
+            'tests/test_firmware_ncc.py',
+            'tests/test_input_options.py',
+            'tests/test_light_level_sensors.py',
+            'tests/test_native_sensor_scenes.py',
+            'tests/test_neo_indicator_editor.py',
+            'tests/test_senll_control_history.py',
+            'tests/test_senll_global_status.py',
+            'tests/test_senll_source_inventory.py',
+            'tests/test_senlla_surface.py',
+            'tests/test_thermostat_remote_references.py',
+            'tests/test_thermostat_settings.py',
+        )
+        for selection in ('offline', 'installed-wheel'):
+            body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in pure_modules:
+                self.assertEqual(body.count('--require-module ' + module + '\n'), 1)
+            self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', body)
+        expected = (
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_exact_profile_and_canonical_firmware_boundaries',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_thirteen_independent_layouts_and_types',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_missing_or_invalid_raw_fields_refuse_without_input_mutation',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_raw_numeric_spellings_preserve_the_original_consumed_values',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_raw_unsigned_domain_survives_permissive_schema_ranges',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_target_group_precedes_margin_group_and_copies_target_power',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_independent_margin_group_loads_nine_and_serializes_target_byte',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_unused_groups_clear_store_flags_but_preserve_all_presets',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_power_state_uses_original_group_before_margin_precedence',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_fixed_margin_roundtrip_uses_x87_and_all_raw_target_byte_values',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_source_projection_outside_native_byte_refuses_without_clipping',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_all_bank_behaviours_and_eight_usage_bits',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_unused_bank_group_or_no_usage_clears_usage_and_behaviour',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_bank_usage_does_not_consume_block_switch_active',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_logical_bank_serializer_low_then_high_precedence',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_logical_bank_level_vectors_are_explicit_and_independent_of_raw_loader',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_current_level_display_literals_and_half_even_ties',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_masked_component_bytes_preserve_unrelated_neighbours',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_eight_keys_scenes_global_and_all_unconsumed_inputs_are_untouched',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_view_is_deeply_detached_and_immutable',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_schema_drift_after_construction_is_refused',
+            'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_routes_source_pinned_component_without_mutating_inputs',
+            'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_identity_and_bare_mapping_refuse_before_loading_schema',
+            'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_new_view_has_no_edit_flags_and_does_not_broaden_senll_save_gate',
+            'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_accepts_authored_spec_without_bit_width_or_skip',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_ignored_bit_width_and_skip_preserve_view_and_unsigned_guard',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_omitted_bit_metadata_uses_native_one_bit_layout',
+        )
+        actual = set()
+        for module in ('tests/test_senlla_surface.py', 'tests/test_cli_senlla_surface.py'):
+            tree = ast.parse((root / 'toolkit-cli' / module).read_text())
+            for cls in tree.body:
+                if isinstance(cls, ast.ClassDef):
+                    for method in cls.body:
+                        if isinstance(method, ast.FunctionDef) and method.name.startswith('test_'):
+                            actual.add(module + '::' + cls.name + '::' + method.name)
+        self.assertEqual(len(expected), 27)
+        self.assertEqual(actual, set(expected))
 
 
 class CITestResultsTests(unittest.TestCase):

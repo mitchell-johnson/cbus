@@ -93,6 +93,25 @@ build-interop:
 check-cgate-interop: compile
 	test -x "$(CGATE_MOCK_BIN)"
 	CBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN4-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8B-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN12-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4F-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8F-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-mock]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-mock]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]' \
@@ -104,6 +123,48 @@ check-cgate-interop: compile
 		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]' \
 		tests/test_rust_cgate_interop.py \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-mock]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-before-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-select-not-reserved-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-after-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-select-not-reserved-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-padding-walk-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-first-level-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-across-boundary-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compatible-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compact-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-single-scene-eleven-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-first-sentinel-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-odd-pointer-blocks-later-boundaries-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[flat-enabled-compatible-hole-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-mock]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[legacy43-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[complete47-mock]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_lost_save_is_not_replayed[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_named_safe_graph_separate_project_selected_sessions[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_renamed_associated_level_cli_owner_and_wire[mock]' \
 		'tests/test_cgate_named_database_interop.py::test_public_associated_empty_tags_copy_after_reload[mock]' \
@@ -252,6 +313,18 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[mock-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[mock]' \
@@ -397,6 +470,67 @@ check-cgate-interop: compile
 check-cmqtt-interop: compile
 	test -x "$(CMQTTD_BIN)"
 	CBUS_CMQTTD_BIN="$(CMQTTD_BIN)" $(PY) -m pytest \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[missing-secondary-load-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[hidden-enable-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[ordered-return-to-retained-group-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[dual-join-lookup-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[pir-enable-lookup-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[missing-destination-daemon]' \
+		'tests/test_cgate_senll_controls_interop.py::test_public_senll_refusal_is_read_only[excluded-after-collision-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-before-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[area-select-not-reserved-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-after-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-select-not-reserved-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[scene-padding-walk-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-first-level-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-duplicate-across-boundary-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compatible-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-compact-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-single-scene-eleven-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-first-sentinel-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[enabled-odd-pointer-blocks-later-boundaries-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_save_and_reopen[flat-enabled-compatible-hole-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[late-scene-cannot-help-refresh-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_inventory_refusal_before_staging[first-sentinel-suppresses-getter-daemon]' \
+		'tests/test_cgate_senll_inventory_interop.py::test_public_senll_enabled_scene_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-0-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-1-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[stored-2-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-3-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[preserved-255-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_save_and_reopen[override-0-to-17-complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[legacy43-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_invalid_override_is_read_only[complete47-daemon]' \
+		'tests/test_cgate_senll_global_interop.py::test_public_senll_global_lost_save_is_not_replayed[daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN4-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN8B-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[RELDN12-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN4F-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_ordered_controls_all_profiles[DIMDN8F-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-daemon]' \
+		'tests/test_cgate_din_controls_interop.py::test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-daemon]' \
+		'tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]' \
 		'tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]' \
@@ -568,6 +702,18 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-thermostat]' \
 		'tests/test_cgate_project_documentation_native_addresses_interop.py::test_public_native_report_exact_named_identity_and_physical_references[daemon-wireless]' \
 		'tests/test_cgate_project_documentation_st7_light_level_interop.py::test_public_database_document_st7_zero_timers_stored_scenes_and_direct_roles[daemon]' \

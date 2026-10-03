@@ -8,8 +8,11 @@ values are the values the Toolkit would leave after pressing OK. It edits an
 existing PP session only: it never saves, transfers, or measures light. See
 docs/sensors.md and docs/light-level-sensor-review.json.
 """
+import copy
 from dataclasses import dataclass, replace
 from types import MappingProxyType
+
+from .native_sensor_scenes import loaded_scenes, scene_save_parameters
 
 from .macros import _numbers
 from .memory import MemoryCodec
@@ -77,9 +80,222 @@ LAYOUTS = MappingProxyType({
     'PECLevelStore': (99, 1, 1, 3, 0),
     'StatusReportInterval': (66, 1, 8, 0, 0),
 })
+# These inherited getters establish inventory; they are not dialog controls.
+# Keep them separate so the earlier 43-field PP profile stays compatible when
+# every inventory field is absent from a caller's retained snapshot.
+INVENTORY_LAYOUTS = MappingProxyType({
+    'AreaGroupAddress': (67, 1, 8, 0, 0),
+    'SceneTablePointer': (152, 8, 8, 0, 0),
+    'PatchEnable': (160, 2, 8, 0, 0),
+    'SceneTable': (162, 80, 8, 0, 0),
+})
 BITS = frozenset(('DisableIR', 'CorridorLinkActive', 'PECFunctionActive', 'PECFunctionIRActive',
                   'PIRFunctionIRActive', 'PIRLevelStore', 'PECLevelStore', 'PECEnablerGroupLogic', 'PIREnablerGroupLogic'))
 POWER_UP = ('disabled', 'enabled', 'resume')
+MAX_ON_OFF_CONTROLS = 64
+
+
+def validate_on_off_controls(value):
+    """Validate an ordered, caller-declared control history; no model state is imported."""
+    if not isinstance(value, (list, tuple)) or not 1 <= len(value) <= MAX_ON_OFF_CONTROLS:
+        raise SensorError('on_off_controls must contain 1..64 application/group operations')
+    result = []
+    for operation in value:
+        if not isinstance(operation, dict) or len(operation) != 1:
+            raise SensorError('Each on/off control accepts exactly one application or group field')
+        if 'application' in operation:
+            choice = operation['application']
+            if not isinstance(choice, str) or choice not in ('primary', 'secondary'):
+                raise SensorError('On/off control application must be primary or secondary')
+            result.append({'application': choice})
+        elif 'group' in operation:
+            result.append({'group': _integer(operation['group'], 'On/off control group', 0, 255)})
+        else:
+            raise SensorError('Each on/off control accepts exactly one application or group field')
+    return result
+
+
+class _OnOffGraph:
+    """Fresh SENLL's eight blocks and zero keys, with source-ordered callbacks.
+
+    A (application, address) pair denotes an already established group object.
+    The admitted raw block and selected hidden getters establish non-unused
+    objects. Complete source snapshots additionally establish Area before the
+    raw-block refresh and Scene objects afterward. Missing destination creation
+    decisions remain outside this profile.
+    """
+
+    def __init__(self, original, updates):
+        self.original, self.updates = original, updates
+        self.applications = original['Application']
+        if (not 48 <= self.applications[0] <= 95 or
+                self.applications[1] != 255 and not 48 <= self.applications[1] <= 95):
+            raise SensorError('Explicit SENLL controls require primary Lighting 48..95 and secondary Lighting 48..95 or 255')
+        mask = original['SecondApplicationBlocks'][0]
+        self.groups = [(self.applications[int(bool(mask & (1 << index)))], address)
+                       for index, address in enumerate(original['GroupAddress'])]
+        self.known = set(self.groups)
+        self.hidden = {}
+        inventory = set(INVENTORY_LAYOUTS) <= set(original)
+        self.journal = {'format': 'cbus-senll-control-history-v1', 'explicit': True,
+                        'initialization_profile': 'fresh_zero_key_callbacks',
+                        'metadata_profile': 'raw_blocks_and_selected_hidden_getters',
+                        'unmodelled_group_inventories': ['AreaGroupAddress', 'SceneTable/SceneTablePointer'],
+                        'source_group_callbacks_modelled': True,
+                        'phase_order': ['raw_applications_bits_groups', 'secondary_application_refresh',
+                                        'hidden_group_load', 'on_off_controls', 'flat_dialog_edits', 'forced_save'],
+                        'input_key_count': 0, 'block_allocation_mutated': False,
+                        'original_execution': False, 'physical_acceptance': False,
+                        'load': [], 'controls': [], 'unverified_group_lookups': [],
+                        'forced_save_last': True}
+        if inventory:
+            primary = self.applications[0]
+            area = (primary, original['AreaGroupAddress'][0])
+            # The Area getter is causally available to an absent-application2
+            # rebind. Scene and hidden getters are not yet available here.
+            self.known.add(area)
+            self.journal.update(
+                metadata_profile='complete_area_scene_and_hidden_getters',
+                unmodelled_group_inventories=[],
+                phase_order=['applications_load', 'area_group_load', 'raw_bits_groups_load',
+                             'secondary_application_refresh', 'scene_group_load', 'hidden_group_load',
+                             'on_off_controls', 'flat_dialog_edits', 'scene_before_save', 'forced_save'],
+                source_inventory={'fields': {name: list(original[name]) for name in INVENTORY_LAYOUTS},
+                                  'area_group_before_block_refresh': list(area)})
+        # GetBlockApplications loads all eight bits before GetBlockGroup; after
+        # EndUpdate, Application2ObjectRefresh clears TRUE bits in index order.
+        if self.applications[1] == 255:
+            for index in range(8):
+                if mask & (1 << index):
+                    self.journal['load'].append(self._switch(index, False, hidden=False))
+        if inventory:
+            table = original['SceneTable']
+            suppressed = table[0] == 255
+            offsets = [] if suppressed else list(range(0, len(table), 2))
+            scene_groups = [{'offset': offset, 'group': [self.applications[0], table[offset]]}
+                            for offset in offsets if table[offset] != 255]
+            created = [{'scene': index, 'group': [self.applications[0], group], 'level': level}
+                       for index, commands in enumerate(loaded_scenes(table, original['SceneTablePointer']))
+                       for group, level in commands]
+            self.known.update(tuple(row['group']) for row in created)
+            # Pointer and padding bytes do not constrain this getter walk.
+            # Preserve all raw inventory bytes for the owning save projection.
+            self.journal['source_inventory']['scene_groups_after_block_refresh'] = {
+                'first_group_suppresses_getters': suppressed,
+                'scanned_even_offsets': offsets, 'groups': scene_groups,
+                'groups_are_raw_pairs': True, 'created_group_objects': created,
+                'pointer_and_padding_bytes_preserved': True}
+        primary = self.applications[0]
+        if original['SingleJoinEnablerControlGroup'][0] != 255 or original['DualJoinEnablerControlGroup'][0] != 255:
+            join = (203, original['SingleJoinEnablerControlGroup'][0])
+            dual_join = (203, original['DualJoinEnablerControlGroup'][0])
+        elif original['SingleJoinEnablerGroup'][0] != 255 or original['DualJoinEnablerGroup'][0] != 255:
+            join = (primary, original['SingleJoinEnablerGroup'][0])
+            dual_join = (primary, original['DualJoinEnablerGroup'][0])
+        else:
+            join = (255, 255)
+            dual_join = (255, 255)
+        # Corridor is loaded from primary even when inactive/unsupported.
+        self.hidden = {'pec': (primary, original['PECEnablerGroup'][0]),
+                       'corridor': (primary, original['CorridorLinkEnablerGroup'][0]), 'join': join}
+        self.known.update(self.hidden.values())
+        # AfterLoad performs both create-enabled Join getters in the selected
+        # branch. Only the single Join object participates in the callback.
+        self.known.add(dual_join)
+        # The unconditional occupancy enable getter runs even though this
+        # class has zero occupancy keys. It does not reserve a callback group.
+        pir_enable = (primary, original['PIREnablerGroup'][0])
+        self.known.add(pir_enable)
+        self.journal['hidden_groups_after_load'] = {name: list(key) for name, key in self.hidden.items()}
+        self.journal['dual_join_group_after_load'] = list(dual_join)
+        self.journal['pir_enable_group_after_load'] = list(pir_enable)
+        self.journal['initialized'] = self.view()
+
+    def view(self):
+        return {'groups': [list(key) for key in self.groups],
+                'second_application_blocks': self.updates['SecondApplicationBlocks'][0]}
+
+    def _set_group(self, index, key, *, hidden):
+        if self.groups[index] == key:
+            return []
+        self.groups[index] = key
+        self.updates['GroupAddress'][index] = key[1]
+        matches = [name for name, reserved in self.hidden.items() if key == reserved] if hidden and key[1] != 255 else []
+        if matches:
+            self.groups[index] = (key[0], 255)
+            self.updates['GroupAddress'][index] = 255
+        return matches
+
+    def _switch(self, index, secondary, *, hidden):
+        before = self.view()
+        bit = 1 << index
+        changed = bool(self.updates['SecondApplicationBlocks'][0] & bit) != secondary
+        row = {'block_index': index, 'application': 'secondary' if secondary else 'primary',
+               'secondary_changed': changed, 'before': before, 'scan': [], 'collision_block_index': None,
+               'hidden_group_callbacks': []}
+        if changed:
+            target = self.applications[int(secondary)]
+            if secondary:
+                self.updates['SecondApplicationBlocks'][0] |= bit
+            else:
+                self.updates['SecondApplicationBlocks'][0] &= ~bit
+            # Re-read the switched group's address at every iteration. Clearing
+            # it on the first match makes all later comparisons use address255.
+            for other in range(8):
+                if other == index or self.groups[other][1] == 255:
+                    continue
+                row['scan'].append(other)
+                candidate = (target, self.groups[index][1])
+                if candidate == self.groups[other]:
+                    row['collision_block_index'] = other
+                    self._set_group(index, (target, 255), hidden=hidden)
+            address = self.groups[index][1]
+            destination = (target, address)
+            if address != 255 and destination not in self.known:
+                raise SensorError('SENLL destination group is not established by the admitted source getters; '
+                                  'additional metadata or creation/decline decision is unsupported')
+            row['hidden_group_callbacks'] = self._set_group(index, destination, hidden=hidden)
+        row['after'] = self.view()
+        return row
+
+    def offered(self):
+        current = self.groups[ON_OFF_BLOCK]
+        excluded = {key[1] for index, key in enumerate(self.groups)
+                    if index != ON_OFF_BLOCK and key[0] == current[0] and key[1] != 255}
+        if self.hidden['pec'][0] == current[0] and self.hidden['pec'][1] != 255:
+            excluded.add(self.hidden['pec'][1])
+        # Toolkit always keeps the combo's current object, even a duplicate.
+        excluded.discard(current[1])
+        known = {key[1] for key in self.known if key[0] == current[0]}
+        known.add(255)
+        return sorted(known - excluded), sorted(excluded)
+
+    def run(self, controls):
+        for operation in controls:
+            offered, excluded = self.offered()
+            if 'application' in operation:
+                secondary = operation['application'] == 'secondary'
+                if secondary and self.applications[1] == 255:
+                    raise SensorError('The secondary application is not set, so the on/off switch is disabled')
+                row = self._switch(ON_OFF_BLOCK, secondary, hidden=True)
+            else:
+                address = operation['group']
+                if address in excluded:
+                    raise SensorError(f'On/off group {address} is excluded by another block or the maintenance enable group')
+                if address not in offered:
+                    raise SensorError('SENLL destination group is not established by the admitted source getters; '
+                                      'additional metadata or creation/decline decision is unsupported')
+                before = self.view()
+                key = (self.groups[ON_OFF_BLOCK][0], address)
+                callbacks = self._set_group(ON_OFF_BLOCK, key, hidden=True)
+                row = {'block_index': ON_OFF_BLOCK, 'group': address, 'before': before, 'after': self.view(),
+                       'hidden_group_callbacks': callbacks}
+            row['requested'] = dict(operation)
+            row['offered_before'], row['excluded_before'] = offered, excluded
+            row['offered_after'], row['excluded_after'] = self.offered()
+            self.journal['controls'].append(row)
+        self.journal['before_forced_save'] = self.view()
+        return self.journal
 
 
 def profile_refusal(unit_type, firmware, catalog_number):
@@ -121,11 +337,14 @@ class LightLevelPlan:
     changes: dict
     dialog: dict
     identity: tuple | None = None
+    control_history: dict | None = None
 
     def __post_init__(self):
         for name in ('expected', 'changes'):
             object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in getattr(self, name).items()}))
         object.__setattr__(self, 'dialog', MappingProxyType(dict(self.dialog)))
+        if self.control_history is not None:
+            object.__setattr__(self, 'control_history', MappingProxyType(copy.deepcopy(dict(self.control_history))))
 
     def as_dict(self):
         firmware, catalog_number = self.identity[1:] if self.identity else (None, None)
@@ -137,6 +356,7 @@ class LightLevelPlan:
                 'not_sent_by_toolkit': list(NOT_SENT),
                 'expected': {k: list(v) for k, v in self.expected.items()},
                 'changes': {k: list(v) for k, v in self.changes.items()},
+                'control_history': copy.deepcopy(dict(self.control_history)) if self.control_history is not None else None,
                 'saved': False, 'device_verified': False}
 
 
@@ -146,27 +366,50 @@ class LightLevelSensor:
         if spec.filename != PROFILE['spec_filename']:
             raise SensorError('Use SENLL_ST7.xml for SENLL 2.0.01..2.4.99')
         self.spec, self.codec = spec, MemoryCodec(spec)
-        for name, expected in LAYOUTS.items():
-            layout = self.codec.layout(name)
-            actual = (layout.address, layout.array_size, layout.bit_size, layout.bit_address, layout.array_skip)
-            if actual != expected or layout.parameter.type != ('bit' if name in BITS else 'int'):
+        self._verify_layouts(LAYOUTS)
+
+    def _verify_layouts(self, layouts):
+        for name, expected in layouts.items():
+            try:
+                layout = self.codec.layout(name)
+                actual = (layout.address, layout.array_size, layout.bit_size, layout.bit_address, layout.array_skip)
+                supported = actual == expected and layout.parameter.type == ('bit' if name in BITS else 'int')
+            except (ValueError, KeyError):
+                supported = False
+            if not supported:
                 raise SensorError('Unsupported light-level sensor parameter layout: ' + name)
 
     def snapshot(self, current):
+        inventory = set(INVENTORY_LAYOUTS).intersection(current)
+        if inventory and inventory != set(INVENTORY_LAYOUTS):
+            raise SensorError('Complete SENLL source inventory requires AreaGroupAddress, SceneTablePointer, '
+                              'PatchEnable and SceneTable together')
+        layouts = dict(LAYOUTS)
+        if inventory:
+            self._verify_layouts(INVENTORY_LAYOUTS)
+            layouts.update(INVENTORY_LAYOUTS)
         result = {}
-        for name in LAYOUTS:
+        for name in layouts:
             if name not in current:
                 raise SensorError('Missing current light-level sensor parameter: ' + name)
-            values = _numbers(current[name])
+            try:
+                values = _numbers(current[name])
+            except ValueError:
+                raise SensorError('Invalid current light-level sensor parameter: ' + name) from None
             if not self.spec.get(name).validate_value(list(values))['valid']:
                 raise SensorError('Invalid current light-level sensor parameter: ' + name)
             result[name] = values
+        if inventory:
+            primary, secondary = result['Application']
+            if not 48 <= primary <= 95 or secondary != 255 and not 48 <= secondary <= 95:
+                raise SensorError('Complete SENLL source inventory requires primary Lighting 48..95 '
+                                  'and secondary Lighting 48..95 or 255')
         return result
 
     def plan(self, current, *, level_group=None, on_off_group=None, on_off_application=None,
              broadcast_group=None, enable_group=None, indicator=None, target_lux=None,
              margin_percent=None, broadcast_interval_seconds=None, power_up=None,
-             status_report_interval=None, identity=None):
+             status_report_interval=None, identity=None, on_off_controls=None):
         """Plan SENLL dialog edits followed by the complete Toolkit save.
 
         Groups are 0..254, or 255 for none. ``on_off_application`` is
@@ -178,25 +421,37 @@ class LightLevelSensor:
             if not isinstance(identity, tuple) or len(identity) != 3:
                 raise SensorError('Identity must be (unit_type, firmware, catalog_number)')
             identity = check_profile(*identity)
+        if on_off_controls is not None and any(value is not None for value in
+                (on_off_application, on_off_group, level_group, broadcast_group, enable_group)):
+            raise SensorError('Explicit on_off_controls cannot be mixed with flat application/group edits')
+        controls = [] if on_off_controls is None else validate_on_off_controls(on_off_controls)
         original = self.snapshot(current)
         updates = {name: list(values) for name, values in original.items()}
-        # The SENLL Global frame's native integer selector lists 3..255.
-        # Its formatter labels these values in seconds; there is no time-byte
-        # conversion. Values below 3 display as 3, but the initialization
-        # callback's writeback has not been executed in the original GUI.
-        status_interval = original['StatusReportInterval'][0]
+        graph = None if on_off_controls is None else _OnOffGraph(original, updates)
+        # Fresh Global setup binds OnChange before Populate sets ItemIndex.
+        # The native formatter clamps the label to 3; the resulting text
+        # callback writes that integer back before any explicit controls.
+        # Keep the raw loaded byte in original for stale/readback binding.
+        status_interval = max(3, original['StatusReportInterval'][0])
+        updates['StatusReportInterval'][0] = status_interval
+        if graph is not None:
+            phases = graph.journal['phase_order']
+            phases.insert(phases.index('on_off_controls'), 'global_status_initialization')
+            graph.journal['global_status_initialization'] = {
+                'raw_value': original['StatusReportInterval'][0],
+                'initialized_value': status_interval,
+                'unit': 'seconds',
+            }
+        history = None if graph is None else graph.run(controls)
         if status_report_interval is not None:
             status_interval = _integer(status_report_interval, 'Status report interval', 3, 255)
-        elif status_interval < 3:
-            raise SensorError('Stored StatusReportInterval below 3 has an unverified Global initialization writeback; '
-                              'supply status_report_interval in 3..255 explicitly')
         updates['StatusReportInterval'][0] = status_interval
         # Dialog state loaded by the Toolkit before any edit.
         applications = original['Application']
         secondary_available = applications[1] != 255
         on_off_mask = 1 << ON_OFF_BLOCK
         # RefreshAppStateChange drops the secondary application when the unit has none.
-        secondary = bool(original['SecondApplicationBlocks'][0] & on_off_mask) and secondary_available
+        secondary = bool(updates['SecondApplicationBlocks'][0] & on_off_mask) and secondary_available
         percent = loaded_margin_percent(original['PECTargetLux'][0], original['PECMarginLux'][0])
         target = min(original['PECTargetLux'][0], MAX_TARGET)
         state = indicator_state(original['IndicatorBlockAssignment'][0])
@@ -250,6 +505,17 @@ class LightLevelSensor:
         if margin_percent is not None:
             percent = _integer(margin_percent, 'Margin percent', 0, 100)
         self._check_groups(original, updates, edits, enable_group)
+        if 'PatchEnable' in original:
+            updates.update(scene_save_parameters(original))
+            if history is not None:
+                history['scene_before_save'] = {
+                    'enabled': original['PatchEnable'] != (157, 64),
+                    'loaded_command_counts': [len(commands) for commands in
+                                              loaded_scenes(original['SceneTable'], original['SceneTablePointer'])],
+                    'area_and_patch_preserved': True,
+                    'scene_table_after_save': list(updates['SceneTable']),
+                    'scene_pointers_after_save': list(updates['SceneTablePointer']),
+                }
         self._toolkit_save(original, updates, target, percent, state)
         if updates['PECMarginLux'][0] > 255:
             raise SensorError(f'The loaded {percent}% margin at target byte {target} exceeds the native margin byte; '
@@ -265,7 +531,7 @@ class LightLevelSensor:
                   'power_up_loaded': POWER_UP[loaded_power_up], 'power_up': POWER_UP[requested_power_up],
                   'power_up_after_reload': POWER_UP[power_up_state(updates['LightLevel'][9], updates['PECEnablerGroupLogic'][0],
                                                                 updates['PECLevelStore'][0])]}
-        return LightLevelPlan(original, changes, dialog, identity)
+        return LightLevelPlan(original, changes, dialog, identity, history)
 
     @staticmethod
     def _check_groups(original, updates, edits, enable_group):
@@ -290,7 +556,8 @@ class LightLevelSensor:
         if (after[index][0] != before[index][0] and after[index][1] != 255
                 and any(i != index and key == after[index] for i, key in after.items())):
             raise SensorError('The on/off application change reaches a group already used by another block; '
-                              'Toolkit key-block reassignment is not modelled')
+                              'legacy flat key-block reassignment remains refused; '
+                              'use explicit ordered on_off_controls / --on-off-control for the zero-key SENLL callbacks')
         for label, value in edits.items():
             index = BLOCKS[label]
             if value == 255 or after[index] == before[index]:
@@ -324,14 +591,37 @@ class LightLevelSensor:
         return check_profile(session.unit_type, session.firmware, session.catalog_number, subject='Native session')
 
     def apply(self, session, plan):
-        if not isinstance(plan, LightLevelPlan) or set(plan.expected) != set(LAYOUTS) or any(
-                n not in LAYOUTS for n in plan.changes):
+        complete = set(LAYOUTS) | set(INVENTORY_LAYOUTS)
+        if not isinstance(plan, LightLevelPlan) or set(plan.expected) not in (set(LAYOUTS), complete):
             raise SensorError('Plan contains fields outside the light-level sensor workflow')
+        allowed = set(LAYOUTS)
+        if set(plan.expected) == complete:
+            allowed.update(('SceneTable', 'SceneTablePointer'))
+        if set(plan.changes) - allowed:
+            raise SensorError('Plan contains fields outside the light-level sensor workflow')
+        status_interval = plan.changes.get('StatusReportInterval', plan.expected['StatusReportInterval'])
+        if len(status_interval) != 1:
+            raise SensorError('Initialized Global status report interval must have one value in 3..255')
+        _integer(status_interval[0], 'Initialized Global status report interval', 3, 255)
+        if set(plan.expected) == complete:
+            # Inventory is bound input, never an arbitrary scene-edit surface.
+            # Recompute mandatory native save changes from the immutable input,
+            # rejecting both forged bytes and omitted normalization.
+            source = self.snapshot(plan.expected)
+            derived = {name: tuple(values) for name, values in scene_save_parameters(source).items()
+                       if tuple(values) != source[name]}
+            supplied = {name: values for name, values in plan.changes.items() if name in INVENTORY_LAYOUTS}
+            if supplied != derived:
+                raise SensorError('Scene save changes differ from source-derived normalization')
+            self.snapshot({**plan.expected, **plan.changes})
         self.codec.encode_many(plan.changes)
         identity = self._verify_profile(session)
         if plan.identity is not None and plan.identity != identity:
             raise SensorError('Plan was created for another unit firmware or catalogue number')
-        verify_native_schema(session, self.spec, LAYOUTS, BITS)
+        layouts = LAYOUTS if set(plan.expected) == set(LAYOUTS) else {**LAYOUTS, **INVENTORY_LAYOUTS}
+        if set(plan.expected) == complete:
+            self._verify_layouts(INVENTORY_LAYOUTS)
+        verify_native_schema(session, self.spec, layouts, BITS)
         if self.snapshot(session.values()) != dict(plan.expected):
             raise SensorError('PP parameters changed since the light-level sensor plan was created')
         attempted = []
@@ -353,5 +643,5 @@ class LightLevelSensor:
         return self.apply(session, self.plan(session.values(), identity=identity, **options))
 
 
-__all__ = ['FORCED', 'INDICATORS', 'LAYOUTS', 'LightLevelPlan', 'LightLevelSensor', 'NOT_SENT', 'PROFILE',
+__all__ = ['FORCED', 'INDICATORS', 'INVENTORY_LAYOUTS', 'LAYOUTS', 'LightLevelPlan', 'LightLevelSensor', 'NOT_SENT', 'PROFILE',
            'check_profile', 'indicator_state', 'profile_refusal', 'target_byte']

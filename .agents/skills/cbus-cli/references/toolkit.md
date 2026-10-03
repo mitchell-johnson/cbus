@@ -53,11 +53,17 @@ For ST7 SENLL 2.0.01..2.4.99, `sensors light-level-plan` and
 and `--status-report-interval 3..255` seconds. They apply the complete recovered
 forced save, including a loaded broadcast minimum of 10 and power-up encoding
 before the maintenance polarity reset. Report the selected and reloaded power-up
-states separately. A stored Global interval below 3 requires an explicit valid
-selection; an application toggle colliding with another block is refused because
-native shared-key reassignment is not modelled. Native PP database save/reload
-evidence does not establish physical timing or power-failure behavior. Read
-`toolkit-cli/docs/sensors.md` for identities, source evidence and exclusions.
+states separately. Fresh Global initialization changes stored0..2 to3 before
+an explicit valid selection; the raw value remains part of stale-state guards. Repeat `--on-off-control application=primary|secondary` or
+`group=N|none` for an explicit ordered application/group history, including
+the source-owned eight-block load and collision callbacks. The admitted SENLL
+class has zero runtime InputKeys; its history never changes BlockAllocation.
+Missing destination objects and mixed flat group/application edits refuse
+before staging. Legacy flat plans retain their previous collision refusal.
+Read `toolkit-cli/docs/senll-application-controls.md` for the exact graph and
+metadata boundaries. Native PP database save/reload evidence does not establish
+physical timing or power-failure behavior. Read `toolkit-cli/docs/sensors.md`
+for identities, source evidence and exclusions.
 
 For the eight admitted DIN relay/dimmer firmware-2.7.00 profiles, add
 `--toolkit-save` to `din-settings plan` or `cgate unit ... din-settings` to
@@ -70,6 +76,16 @@ normalization to seek a fixed point. V1 targeted plans retain their previous
 semantics. Database PP and project saves remain separate; this does not prove
 complete original form or physical output behavior. Read
 `toolkit-cli/docs/din-output-settings.md` before applying.
+
+For ordered DIN Min/Max, Turn On and recovery-delay controls, use
+`--controls FILE` with the documented JSON operation array. Both Synchronise
+checkboxes start off, assignments to unchanged displayed positions preserve
+their raw bytes, and coupled slider notifications retain source order.
+Stagger steps use dialog channel order and the original delay conversion.
+Direct edit flags cannot be mixed into a history; optional `--toolkit-save`
+performs one final save projection. Inspect `control_history` and the nested
+`settings_plan`; imported histories replay before staging. Recovery-level
+sharing, group creation and implicit initial form notifications remain open.
 
 
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
@@ -665,7 +681,7 @@ verification is not unnamed-bit persistence. Display edits and label edits
 require separate invocations. Read `toolkit-cli/docs/classic-dlt-display.md` for
 source/native evidence and the remaining physical delivery/rendering limits.
 
-Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings project disabled remote defaults but do not resolve enabled references or create their application graph. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
+Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings compose scalar/fan/temperature form-save rules with enabled remote references and their ordered application/group creation. The whole-project snapshot binds one owning transaction; graph-only changes use no PP save and one final project save. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
 
 Thermostat settings apply one recovered form save, including dependent scalar,
 fan, slave-plant and relay-drive normalization. The result can differ on a later
@@ -675,6 +691,14 @@ Quick-zone and dialog helpers remain bounded pure-model functions, separate
 from complete GUI lifecycle and physical acceptance. The explicit process
 `--temperature-preference celsius|fahrenheit` adds 15 recovered field-specific
 load/save pairs; it is independent of the device TemperatureUnits setting.
+The remote path admits source 1 through the existing scalar ApplicationNumber
+(Lighting 48–95 or 203) and source 2 through Enable Control 203. Schedule enable
+is derived from program flags. Inspect planned creations and resolved identities:
+one unused setback role is allowed, every enabled schedule role must be non-unused,
+and all selected non-unused objects must be distinct. Optional level additions
+are declined. Omit --set for a bounded load/save of the current snapshot. Keep
+all project networks closed, own project editing exclusively and review uncertain
+creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
 and explicit `--group-sort address-ascending`; other manager orders remain refused. Read `toolkit-cli/docs/thermostat-settings.md` and
 `toolkit-cli/docs/thermostat-templates.md`.
@@ -1016,3 +1040,17 @@ implicit WinForms dispatch or rendering. Use one owning PP SAVE plus a separate
 project SAVE and never replay uncertainty. If cmqttd returns the exact applied
 repository500, the transport closes and automatic parent/SceneManager inverse
 recovery is suppressed; fresh read-only inspection remains explicit.
+
+## Per-unit Neo indicator panel
+
+Use `keys neo-indicator-editor-show|neo-indicator-editor-plan` with a decoded
+schema and PP snapshot; the plan takes an ordered `--controls` JSON array.
+The existing-database `cgate unit ... neo-indicator-editor` command accepts
+`--controls` or a reviewed `--plan`, with `--dry-run` for PP staging only.
+This is separate from the Unit Magic bulk options/styles. Thirty ordinary
+profiles at firmware 2.5.00 support physical LED style/on-colour edits,
+read-only derived off-colours, global indicator callbacks and all-eight-slot
+load/save normalization. KEYE remapping and whole-parent form histories remain
+outside this lane. Consult `toolkit-cli/docs/neo-indicator-editor.md` for exact
+control eligibility, catalogue labels, hidden-field normalization and source
+versus runtime acceptance boundaries.

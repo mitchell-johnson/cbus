@@ -1,8 +1,9 @@
-"""CLI for the ST7 PIR and SENLL light-level sensor dialogs.
+"""CLI for ST7 PIR/SENLL dialogs and the separate SENLLA surface view.
 
 Offline: ``cbus-toolkit sensors pir-plan|light-level-plan FILE``. Native:
 ``cbus-toolkit cgate ... unit ... sensor-pir|sensor-light-level``. Both run
 the dialog model and the complete Toolkit save; see docs/sensors.md.
+``surface-light-level-view`` is an offline component view without a save.
 """
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ import os
 from pathlib import Path
 
 NATIVE_ACTIONS = ("sensor-pir", "sensor-light-level")
-OFFLINE_ACTIONS = ("pir-plan", "light-level-plan")
+OFFLINE_ACTIONS = ("pir-plan", "light-level-plan", "surface-light-level-view")
 KEY_FIELDS = ("block", "group", "timer_seconds", "expiry")
 EXPIRY = ("idle", "off", "down", "ramp_off", "recall1", "recall2", "ramp_recall1")
 
@@ -50,6 +51,23 @@ def _group(text):
     return 255 if text.lower() == "none" else _number(text)
 
 
+def _on_off_control(text):
+    field, equals, value = text.partition('=')
+    if not equals or field not in ('application', 'group'):
+        raise argparse.ArgumentTypeError('Use application=primary|secondary or group=0..254|none')
+    if field == 'application':
+        if value not in ('primary', 'secondary'):
+            raise argparse.ArgumentTypeError('On/off control application must be primary or secondary')
+        return {'application': value}
+    try:
+        value = _group(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError('On/off control group must be 0..254 or none/255') from error
+    if not 0 <= value <= 255:
+        raise argparse.ArgumentTypeError('On/off control group must be 0..254 or none/255')
+    return {'group': value}
+
+
 def _pir_options(parser):
     parser.add_argument("--key", dest="pir_keys", type=_key, action="append", default=[],
                         help="Fixed key 1..4 edit KEY:FIELD=VALUE[,...]; fields block (1..4), group "
@@ -75,6 +93,8 @@ def _light_level_options(parser):
         parser.add_argument("--" + name, dest="ll_" + name.replace("-", "_"), type=_group,
                             help=help_text + "; 0..254, or 255/none")
     parser.add_argument("--on-off-application", dest="ll_on_off_application", choices=("primary", "secondary"))
+    parser.add_argument('--on-off-control', dest='ll_on_off_controls', type=_on_off_control, action='append',
+                        help='Ordered fresh SENLL callback: application=primary|secondary or group=N|none; repeat for history')
     parser.add_argument("--indicator", dest="ll_indicator", choices=("light-level", "on-off", "enable"))
     parser.add_argument("--target-lux", dest="ll_target_lux", type=_number, help="0..2000 lux; stored as Ceil(lux/10)")
     parser.add_argument("--margin-percent", dest="ll_margin_percent", type=_number, help="0..100")
@@ -87,7 +107,7 @@ def _light_level_options(parser):
 
 
 def offline_options(sensor_ops):
-    """Add the PIR and SENLL plan actions under ``cbus-toolkit sensors``."""
+    """Add sensor plans and the separate SENLLA component view."""
     p = sensor_ops.add_parser("pir-plan", help="Plan the ST7 PIR dialog and Toolkit save without C-Gate")
     p.add_argument("file", type=Path, help="SENPIROA/SENPIRIA/SENPIRIB PP export, or parameter mapping with --spec")
     p.add_argument("--spec", help="Specification for a bare mapping, for example SENPIRIA_ST7.xml")
@@ -95,6 +115,8 @@ def offline_options(sensor_ops):
     p = sensor_ops.add_parser("light-level-plan", help="Plan the ST7 SENLL dialog and Toolkit save without C-Gate")
     p.add_argument("file", type=Path, help="SENLL 2.0.01..2.4.99 PP export or parameter mapping")
     _light_level_options(p)
+    p = sensor_ops.add_parser("surface-light-level-view", help="Inspect source-proven SENLLA surface components without saving")
+    p.add_argument("file", type=Path, help="Identified SENLLA / 5754PE / 2.4.00..2.4.99 PP export")
 
 
 def native_options(unops):
@@ -127,20 +149,32 @@ def pir_settings(args):
 
 
 def light_level_settings(args):
+    controls = getattr(args, 'll_on_off_controls', None)
+    if controls is not None and any(value is not None for value in
+            (args.ll_on_off_group, args.ll_on_off_application, args.ll_level_group,
+             args.ll_broadcast_group, args.ll_enable_group)):
+        raise ValueError('Explicit --on-off-control cannot be mixed with flat application/group edits')
     settings = {"level_group": args.ll_level_group, "on_off_group": args.ll_on_off_group,
                 "broadcast_group": args.ll_broadcast_group, "enable_group": args.ll_enable_group,
                 "on_off_application": args.ll_on_off_application,
                 "indicator": args.ll_indicator.replace("-", "_") if args.ll_indicator else None,
                 "target_lux": args.ll_target_lux, "margin_percent": args.ll_margin_percent,
                 "broadcast_interval_seconds": args.ll_broadcast_interval_seconds, "power_up": args.ll_power_up,
-                "status_report_interval": args.ll_status_report_interval}
+                "status_report_interval": args.ll_status_report_interval, 'on_off_controls': controls}
     return {k: v for k, v in settings.items() if v is not None}
 
 
 def offline(args):
-    """Return (plan dictionary, exit status) for ``sensors pir-plan|light-level-plan``."""
+    """Return an offline sensor plan or read-only component view and status."""
     from .cli import _parameter_snapshot
     identity = []
+    if args.action == "surface-light-level-view":
+        from .senlla_surface import SENLLASurface, check_profile
+        values = _parameter_snapshot(args.file, check_profile, identity=identity)
+        if not identity:
+            raise ValueError("A SENLLA PP export with unit_type, firmware and catalog_number is required")
+        surface = SENLLASurface(_store(args.spec_dir).load("SENLLA.xml"))
+        return surface.view(values, identity=tuple(identity)).as_dict(), 0
     if args.action == "pir-plan":
         from .pir_sensors import PIRSensor, check_profile
         values = _parameter_snapshot(args.file, check_profile, identity=identity)

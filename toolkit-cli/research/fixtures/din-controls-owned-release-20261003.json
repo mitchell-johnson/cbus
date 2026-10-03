@@ -1,0 +1,570 @@
+{
+  "boundaries": {
+    "component_smoke_results_overlap_and_are_not_added": true,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "implicit_initial_binding_callbacks": false,
+    "new_native_vendor_acceptance": false,
+    "other_firmware_and_models": false,
+    "physical_acceptance": false,
+    "recovery_level_and_shared_group_callbacks": false,
+    "report_status_and_release_receipt_are_post_validation_annotations": true
+  },
+  "candidate": {
+    "base_commit": "abe214e13e030f054d44e152298f51cf9353ac19",
+    "binary_sha256": {
+      "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+      "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+    },
+    "inputs_before": {
+      "bytes": 364692,
+      "identity": "inputs-before.json",
+      "sha256": "79c8eebbedaab070b8793b05fb1fb63901872a5e13e077f14939b9f77f7b4b6b"
+    },
+    "inputs_terminal": {
+      "bytes": 364692,
+      "identity": "inputs-terminal.json",
+      "sha256": "79c8eebbedaab070b8793b05fb1fb63901872a5e13e077f14939b9f77f7b4b6b"
+    },
+    "inputs_unchanged": true,
+    "runtime_test_metadata_inputs": {
+      "toolkit-cli/Makefile": {
+        "bytes": 93165,
+        "sha256": "c94d295b7f622c03a2fa2fd74036fb442e9579af59c5203241fe540865bc7304"
+      },
+      "toolkit-cli/research/din_output_controls_static.py": {
+        "bytes": 4796,
+        "sha256": "2f120591728ad3baa56dfac207c3626f3a6163a92c891d214dfac086b27dcc50"
+      },
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "bytes": 63063,
+        "sha256": "e263fba9e56b016e578b2ece2f1c0896bb8fe7ef6ac4ba9c68d6a5fe80e343b6"
+      },
+      "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+        "bytes": 61158,
+        "sha256": "9ab04f0077cc34a4d59fa928b38aad72dd34f961a9a6e5b11d9b32399ed7ea40"
+      },
+      "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+        "bytes": 35278,
+        "sha256": "6de271b5892c448e85b03412236a250ba27cdf10c482bb6e4539d77da702afb9"
+      },
+      "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+        "bytes": 32883,
+        "sha256": "0b24a9bb1fa94ad1d769f0144478b1a8f297ebc523a01390f79e2a7f1b845f63"
+      },
+      "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+        "bytes": 2877,
+        "sha256": "4d06e35edba91a12e84e29810be10a0a0b2e0c3e1eebb4f7ce808ef7ed6f88d9"
+      },
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+        "bytes": 32339,
+        "sha256": "ddad383004d4f4881869126682b8a00b85d2ebeb8ce79b2b4eab7c54a50498ff"
+      },
+      "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+        "bytes": 34464,
+        "sha256": "8b4a742323cbc962a722be641f59efbdc6e621deb7e729e64214aaf4479d5e16"
+      },
+      "toolkit-cli/research/fixtures/din-output-controls-source-review.json": {
+        "bytes": 20119,
+        "sha256": "3381d6161578acd32fd2c77c37143371a1fc8eb29da93da445ba868877cdecfd"
+      },
+      "toolkit-cli/research/release-gates/skip-census.json": {
+        "bytes": 382678,
+        "sha256": "666b5a5b1a6564430fda91074239684c8a281b5c1ecd14461d122b58394e1cf4"
+      },
+      "toolkit-cli/src/cbus_toolkit/cli.py": {
+        "bytes": 278020,
+        "sha256": "95a02bedc945d45b90347714f4a6c890873b3ad7653cbe2f91496710787176ff"
+      },
+      "toolkit-cli/src/cbus_toolkit/din_output_controls.py": {
+        "bytes": 15543,
+        "sha256": "8b56ede26100887175e8eeba88927c24d8bf21d5f91ae3d03b8630d4a02b08bc"
+      },
+      "toolkit-cli/src/cbus_toolkit/din_output_settings.py": {
+        "bytes": 38976,
+        "sha256": "efc0c4831ff756059b76ac231fe2c475599100c3320d55ba806474b50bc26b16"
+      },
+      "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+        "bytes": 32529,
+        "sha256": "9e7f174abc6cafd162a11e45aa0cc6059e0a1f76f0b434c1da2b7719bbc426b8"
+      },
+      "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+        "bytes": 12931091,
+        "sha256": "8c2c42153a18098e301da000d1fe7f6792fde4c3146762e5b4207e2ce25729af"
+      },
+      "toolkit-cli/tests/test_cgate_din_controls_interop.py": {
+        "bytes": 12754,
+        "sha256": "949bec8282e99cc230281b377fb1cb505dc6a8831720621cabc6455a19ffb37d"
+      },
+      "toolkit-cli/tests/test_cli_din_controls.py": {
+        "bytes": 4095,
+        "sha256": "df8fce8fb3fd18ade3e3203443d27883cc1343e79b85fd2cdd6fc95aee86f17d"
+      },
+      "toolkit-cli/tests/test_din_output_controls.py": {
+        "bytes": 15164,
+        "sha256": "871d78bc00c41b912921ece5340f8539973a8a5b1158416d17cc102deb546f6d"
+      }
+    },
+    "rust_source_unchanged": true,
+    "scoped_inputs": 2728,
+    "uncommitted_execution_tree": true
+  },
+  "date": "2026-10-03",
+  "format": "cbus-din-controls-owned-release-v1",
+  "independent_review": {
+    "delay_view_correction_verified": true,
+    "outcome": "passed",
+    "outcome_artifact": {
+      "bytes": 16945,
+      "identity": "independent-outcome-review.json",
+      "sha256": "5a5446cde4e4cfb9a9811a977d8eeb37c015e3e0d71cd85564124c3fd31a7731"
+    },
+    "outcome_review_pending": false,
+    "reviewer": "sensor_gap",
+    "source_review_blocking_findings": 0
+  },
+  "metadata": {
+    "differentials": {
+      "cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "bytes": 63063,
+        "identity": "cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "e263fba9e56b016e578b2ece2f1c0896bb8fe7ef6ac4ba9c68d6a5fe80e343b6"
+      },
+      "cgate-dbsetxml-unit-differential-mock.json": {
+        "bytes": 61158,
+        "identity": "cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "9ab04f0077cc34a4d59fa928b38aad72dd34f961a9a6e5b11d9b32399ed7ea40"
+      },
+      "cgate-session-differential-cmqttd.json": {
+        "bytes": 35278,
+        "identity": "cgate-session-differential-cmqttd.json",
+        "sha256": "6de271b5892c448e85b03412236a250ba27cdf10c482bb6e4539d77da702afb9"
+      },
+      "cgate-session-differential-fixed.json": {
+        "bytes": 32883,
+        "identity": "cgate-session-differential-fixed.json",
+        "sha256": "0b24a9bb1fa94ad1d769f0144478b1a8f297ebc523a01390f79e2a7f1b845f63"
+      },
+      "cgate-tagged-session-differential-cgate-mock.json": {
+        "bytes": 32339,
+        "identity": "cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "ddad383004d4f4881869126682b8a00b85d2ebeb8ce79b2b4eab7c54a50498ff"
+      },
+      "cgate-tagged-session-differential-cmqttd.json": {
+        "bytes": 34464,
+        "identity": "cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "8b4a742323cbc962a722be641f59efbdc6e621deb7e729e64214aaf4479d5e16"
+      }
+    },
+    "native_required_tests_unchanged": 259,
+    "primary_comparisons": 64,
+    "register_check": "passed",
+    "separate_combined_network_checks": 4,
+    "skip_census_check": "passed",
+    "test_modules": 727
+  },
+  "package": {
+    "actual_pytest_process_import": {
+      "bytes": 7253,
+      "identity": "actual-wheel-import.json",
+      "sha256": "89721ea019422319b95730690d66b91171906ea9074893b70a940bf50af6f84e"
+    },
+    "entry": {
+      "bytes": 42599,
+      "identity": "package-before.json",
+      "sha256": "a86a1cdc257af97c923e4ca7e29821340d1e4ec0b5afc4da3e0c58dfa5803501"
+    },
+    "file_count": 378,
+    "installed_console": {
+      "bytes": 371,
+      "identity": "installed-console.json",
+      "sha256": "3b754f4e962edd173c6b7ac2676bbdfedda4e3e2bd0620ff06d778d93733f5c1"
+    },
+    "source_zip_installed_equal": true,
+    "terminal": {
+      "bytes": 42599,
+      "identity": "package-terminal.json",
+      "sha256": "a86a1cdc257af97c923e4ca7e29821340d1e4ec0b5afc4da3e0c58dfa5803501"
+    },
+    "wheel_sha256": "8d02c1b4e725b3c0458b8cf4710d877285cf46372bdf94a7d9a46c948b5eb15c"
+  },
+  "post_validation_environment_recovery": {
+    "internal_disk_refused_reporting_heredoc": true,
+    "only_task_owned_disposable_venvs_moved_to_external_storage": true,
+    "original_venv_paths_preserved_by_symlinks": true,
+    "rust_binaries_unchanged": true,
+    "test_epochs_affected": false
+  },
+  "scope": "Eight explicit ordered DIN control kinds on the eight admitted firmware-2.7.00 profiles.",
+  "static": {
+    "form_resources": 3,
+    "method_ranges": 40,
+    "original_code_executed": false,
+    "verification": {
+      "bytes": 414,
+      "identity": "static-verification.json",
+      "sha256": "91d7fdc54cc223c6bf33952e6dc6ce099536654160f01da9d8fac2d7c404485d"
+    },
+    "vmt_slots": 12
+  },
+  "validation": {
+    "source": {
+      "artifacts": {
+        "-results.json": {
+          "bytes": 197038,
+          "identity": "source-results.json",
+          "sha256": "6b52c0b8f86fd620e4f3590ae864fe052bdbda8c13fcdcc29819d73ccab9237d"
+        },
+        "-trace.json": {
+          "bytes": 158155,
+          "identity": "source-trace.json",
+          "sha256": "aa567c2fa3a4986191f9f2f2c1906d34343fedc4884be0bcfd26ca76c6f88f80"
+        },
+        ".log": {
+          "bytes": 248,
+          "identity": "source.log",
+          "sha256": "60d9948ed7fbc8cc0ce16ec17b0fbeeaa32bca66b1e9f468941d135fce917ce2"
+        },
+        ".xml": {
+          "bytes": 45836,
+          "identity": "source.xml",
+          "sha256": "543f16aa67092d1b6b6324501497ead36d9315696d3cb6f2668e17f126b27428"
+        }
+      },
+      "exit": 0,
+      "parents_passed": 130,
+      "public_backend_case_names": [
+        "test_public_din_ordered_controls_all_profiles[RELDN4-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN4-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8B-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8B-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN12-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN12-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4F-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4F-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8F-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8F-daemon]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-mock]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-daemon]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-mock]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-daemon]"
+      ],
+      "public_backend_cases": 20,
+      "raw_public_evidence": {
+        "test_public_din_controls_lost_0/din-controls-evidence.json": {
+          "bytes": 65103,
+          "identity": "din-controls-evidence.json",
+          "sha256": "9b44105f760a6af82c12075d365770a905471db6369794d5d2f92119cd6f9965"
+        },
+        "test_public_din_controls_lost_1/din-controls-evidence.json": {
+          "bytes": 66671,
+          "identity": "din-controls-evidence.json",
+          "sha256": "b25c07672df74cecdc10113fb194b062faca6d50a3fff8c669a9f362cd425cdc"
+        },
+        "test_public_din_controls_lost_2/din-controls-evidence.json": {
+          "bytes": 67901,
+          "identity": "din-controls-evidence.json",
+          "sha256": "1b5996af12b099bd7701b67b6df36f70dbcf25e8405f1a6069288f4a5eafe05d"
+        },
+        "test_public_din_controls_lost_3/din-controls-evidence.json": {
+          "bytes": 69469,
+          "identity": "din-controls-evidence.json",
+          "sha256": "7c56ec521bba0679b920f99412877691fe79e8ddaf5d0fed25f3be0aecedaf1c"
+        },
+        "test_public_din_ordered_contro0/din-controls-evidence.json": {
+          "bytes": 238759,
+          "identity": "din-controls-evidence.json",
+          "sha256": "fd8a8211f129044d8ad47173814261b9b6bdf314dabd4a7f4462e832e4e739e5"
+        },
+        "test_public_din_ordered_contro1/din-controls-evidence.json": {
+          "bytes": 240713,
+          "identity": "din-controls-evidence.json",
+          "sha256": "d1737f2917f8ef5d575dced5986eb36ac35bdc8cce546fd589de47b91d812433"
+        },
+        "test_public_din_ordered_contro10/din-controls-evidence.json": {
+          "bytes": 510810,
+          "identity": "din-controls-evidence.json",
+          "sha256": "d3eba1c975e9f49dee229468bd934d7ff465374fff351b0f11584bcb6602ae28"
+        },
+        "test_public_din_ordered_contro11/din-controls-evidence.json": {
+          "bytes": 512878,
+          "identity": "din-controls-evidence.json",
+          "sha256": "386cfe35179977f36276ac895fb7bcc0d799c2a4512b9288412c0dca435ca403"
+        },
+        "test_public_din_ordered_contro12/din-controls-evidence.json": {
+          "bytes": 644351,
+          "identity": "din-controls-evidence.json",
+          "sha256": "57c607e06d4ffc50a8cc1520b0817a710381d336894c5a6a2823e12bb5716e5f"
+        },
+        "test_public_din_ordered_contro13/din-controls-evidence.json": {
+          "bytes": 646419,
+          "identity": "din-controls-evidence.json",
+          "sha256": "b54fe7013bc75d3a236e8088eeb404af3f985bd97278a78b9311c111c0b1da34"
+        },
+        "test_public_din_ordered_contro14/din-controls-evidence.json": {
+          "bytes": 644515,
+          "identity": "din-controls-evidence.json",
+          "sha256": "5eab2022a1d92b1db5eb9a556a706a4e707bac7b3497fcf669cfe6e33151524e"
+        },
+        "test_public_din_ordered_contro15/din-controls-evidence.json": {
+          "bytes": 646583,
+          "identity": "din-controls-evidence.json",
+          "sha256": "0b36e4d69509aecb140cdb0cd4696cf8ecfb2235f205df71a5dc632b01f6150a"
+        },
+        "test_public_din_ordered_contro2/din-controls-evidence.json": {
+          "bytes": 296654,
+          "identity": "din-controls-evidence.json",
+          "sha256": "32c1a60d01fa53401b61af58c8af9503d490742efc99d55952f6d451db203225"
+        },
+        "test_public_din_ordered_contro3/din-controls-evidence.json": {
+          "bytes": 298608,
+          "identity": "din-controls-evidence.json",
+          "sha256": "9f7bb061f822be1f4f963e10b45333381eceb7e8c39a95072eaa7f47df911b08"
+        },
+        "test_public_din_ordered_contro4/din-controls-evidence.json": {
+          "bytes": 287332,
+          "identity": "din-controls-evidence.json",
+          "sha256": "bfc1d64e0a9b3b851927f622cf4f22842e1f8ea20e593f3baf91def18878121b"
+        },
+        "test_public_din_ordered_contro5/din-controls-evidence.json": {
+          "bytes": 289286,
+          "identity": "din-controls-evidence.json",
+          "sha256": "0ac1e0f07546949e3de7c8567599323741d136bef51bf668a0029038cde31908"
+        },
+        "test_public_din_ordered_contro6/din-controls-evidence.json": {
+          "bytes": 301294,
+          "identity": "din-controls-evidence.json",
+          "sha256": "34889f38704ce6c71f82e899be4e3ad197b5a341ae4550b638ec12a26c94901c"
+        },
+        "test_public_din_ordered_contro7/din-controls-evidence.json": {
+          "bytes": 303246,
+          "identity": "din-controls-evidence.json",
+          "sha256": "2b9f046fe7706a55750962162445e3d38612fb00e1baaa2a944db4ff5afdcc79"
+        },
+        "test_public_din_ordered_contro8/din-controls-evidence.json": {
+          "bytes": 510624,
+          "identity": "din-controls-evidence.json",
+          "sha256": "6e82792a1cc20298df09ad6ad82210590e74bfcde45eb9fc8a476dfe4bef0166"
+        },
+        "test_public_din_ordered_contro9/din-controls-evidence.json": {
+          "bytes": 512690,
+          "identity": "din-controls-evidence.json",
+          "sha256": "d35582f3e41367490acac6bef763a92697b20e4cb8403f570fed453d8c0edd82"
+        }
+      },
+      "separate_subtests_passed": 640,
+      "skips": [
+        {
+          "class": "tests.test_din_output_controls.DinControlSourceTest",
+          "name": "test_static_method_and_constant_bytes_without_execution",
+          "reason": "requires pinned original bytes for static hash check only"
+        },
+        {
+          "class": "tests.test_din_output_save.DinSaveSourceReceiptTest",
+          "name": "test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "reason": "requires pinned Toolkit bytes for static hash check"
+        },
+        {
+          "class": "tests.test_din_output_settings.OriginalLevelVectorTest",
+          "name": "test_original_instructions_regenerate_the_vectors",
+          "reason": "requires exact original Toolkit executable"
+        },
+        {
+          "class": "tests.test_din_output_settings.DinOutputNativeTest",
+          "name": "test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance"
+        },
+        {
+          "class": "tests.test_cli_din_output_settings.DinCliTests",
+          "name": "test_native_preview_apply_saved_plan_and_stale_refusal",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance"
+        }
+      ]
+    },
+    "wheel": {
+      "artifacts": {
+        "-results.json": {
+          "bytes": 197037,
+          "identity": "wheel-results.json",
+          "sha256": "6e26495bc63e210a1b10c3b6a3d5d505cbce6db66925b8287dba255820f4b4a8"
+        },
+        "-trace.json": {
+          "bytes": 158155,
+          "identity": "wheel-trace.json",
+          "sha256": "aa567c2fa3a4986191f9f2f2c1906d34343fedc4884be0bcfd26ca76c6f88f80"
+        },
+        ".log": {
+          "bytes": 248,
+          "identity": "wheel.log",
+          "sha256": "679a907a19a520634ac2cdfa65ed3d90c032e31cc93aac17d9310b4fc102dc86"
+        },
+        ".xml": {
+          "bytes": 45836,
+          "identity": "wheel.xml",
+          "sha256": "b8414a3145fb041474ecf862e5abe127e5b863da6b34d16b075a6b94e58d5585"
+        }
+      },
+      "exit": 0,
+      "parents_passed": 130,
+      "public_backend_case_names": [
+        "test_public_din_ordered_controls_all_profiles[RELDN4-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN4-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8B-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN8B-daemon]",
+        "test_public_din_ordered_controls_all_profiles[RELDN12-mock]",
+        "test_public_din_ordered_controls_all_profiles[RELDN12-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4F-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN4F-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8-daemon]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8F-mock]",
+        "test_public_din_ordered_controls_all_profiles[DIMDN8F-daemon]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-mock]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[DIMDN8-daemon]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-mock]",
+        "test_public_din_controls_lost_successful_save_is_not_replayed[RELDN8-daemon]"
+      ],
+      "public_backend_cases": 20,
+      "raw_public_evidence": {
+        "test_public_din_controls_lost_0/din-controls-evidence.json": {
+          "bytes": 65082,
+          "identity": "din-controls-evidence.json",
+          "sha256": "0becc75405be20962f5c87c98d32fbc62078ef8eb24d6e4174cc9a21872849b6"
+        },
+        "test_public_din_controls_lost_1/din-controls-evidence.json": {
+          "bytes": 66648,
+          "identity": "din-controls-evidence.json",
+          "sha256": "44fe6fc79da50de312390d4f14d4d32a2e69c30cb681df6302de6a4ec790c1f2"
+        },
+        "test_public_din_controls_lost_2/din-controls-evidence.json": {
+          "bytes": 67880,
+          "identity": "din-controls-evidence.json",
+          "sha256": "aa48e91a6918a30a1fbed9849eabf9284ff581443309255f767910a254f23844"
+        },
+        "test_public_din_controls_lost_3/din-controls-evidence.json": {
+          "bytes": 69446,
+          "identity": "din-controls-evidence.json",
+          "sha256": "fede0ad34dfee192683c0045b121ea4ac0c4cda71cb54322228a345a3cdd8ae1"
+        },
+        "test_public_din_ordered_contro0/din-controls-evidence.json": {
+          "bytes": 238618,
+          "identity": "din-controls-evidence.json",
+          "sha256": "aa9aefb5dccbcf574af21867aa1982d9d5b38b4dd7bdbd1007e171d5634ea11b"
+        },
+        "test_public_din_ordered_contro1/din-controls-evidence.json": {
+          "bytes": 240570,
+          "identity": "din-controls-evidence.json",
+          "sha256": "e9a4b644d98d0e73e5ea28eb768b52e383e5d23899839b0e813f98cb4bcc3144"
+        },
+        "test_public_din_ordered_contro10/din-controls-evidence.json": {
+          "bytes": 510625,
+          "identity": "din-controls-evidence.json",
+          "sha256": "87ce5ec0a289100e6d107fbd75f577e5350c12f173412c9c6bb9d1c13548fb7e"
+        },
+        "test_public_din_ordered_contro11/din-controls-evidence.json": {
+          "bytes": 512691,
+          "identity": "din-controls-evidence.json",
+          "sha256": "a008aeaf7fb961a1a9345680f125c796f05ffb426f0e7e90564822afaddf8d85"
+        },
+        "test_public_din_ordered_contro12/din-controls-evidence.json": {
+          "bytes": 644166,
+          "identity": "din-controls-evidence.json",
+          "sha256": "1ce430576fb86675db3bf99945b349aad3487bdade02a92a1369a338294eb408"
+        },
+        "test_public_din_ordered_contro13/din-controls-evidence.json": {
+          "bytes": 646233,
+          "identity": "din-controls-evidence.json",
+          "sha256": "6d72b8d8ab540fed27318d87d96b3bdf8edd04b63a28bc712a89d8af35087634"
+        },
+        "test_public_din_ordered_contro14/din-controls-evidence.json": {
+          "bytes": 644330,
+          "identity": "din-controls-evidence.json",
+          "sha256": "223cf8abd5a32491123474ed8945991c76bad6228499fda895d61ca0f3531bc6"
+        },
+        "test_public_din_ordered_contro15/din-controls-evidence.json": {
+          "bytes": 646396,
+          "identity": "din-controls-evidence.json",
+          "sha256": "6b54db2dc88ef3d4c73a5098977d8d7819901e6f6dfc1b66988a462833f60c75"
+        },
+        "test_public_din_ordered_contro2/din-controls-evidence.json": {
+          "bytes": 296513,
+          "identity": "din-controls-evidence.json",
+          "sha256": "b217c101090294fc400d68a3ef3140a624d838256f43cf56617c4c08ed884f34"
+        },
+        "test_public_din_ordered_contro3/din-controls-evidence.json": {
+          "bytes": 298465,
+          "identity": "din-controls-evidence.json",
+          "sha256": "511767f31c7aa1ea9d5596c610deffa8144f20fd1f2f7e93d34f8b9fe9f50f62"
+        },
+        "test_public_din_ordered_contro4/din-controls-evidence.json": {
+          "bytes": 287191,
+          "identity": "din-controls-evidence.json",
+          "sha256": "1479532af5f18d71c70f349a869ec4ed76eaf5afaf7cc056119a9090893ebc66"
+        },
+        "test_public_din_ordered_contro5/din-controls-evidence.json": {
+          "bytes": 289143,
+          "identity": "din-controls-evidence.json",
+          "sha256": "fb3f255688fd3ae4012d39eea9ba1246aac587cddcb180c99b047ae597bc5f80"
+        },
+        "test_public_din_ordered_contro6/din-controls-evidence.json": {
+          "bytes": 301151,
+          "identity": "din-controls-evidence.json",
+          "sha256": "8ad56f703fd80294bf1ea505e7569ccfa36e52bb3ec6e964f01e1a6ec4a6afe1"
+        },
+        "test_public_din_ordered_contro7/din-controls-evidence.json": {
+          "bytes": 303103,
+          "identity": "din-controls-evidence.json",
+          "sha256": "3d8a22cfc3ec948701f7af9d733383a5a76042e4ade633c195a6877e1c6d35f2"
+        },
+        "test_public_din_ordered_contro8/din-controls-evidence.json": {
+          "bytes": 510439,
+          "identity": "din-controls-evidence.json",
+          "sha256": "1d102d7e9cf1b094544c255c47caacd9faf34903ac7986d03be66f6098cdd28b"
+        },
+        "test_public_din_ordered_contro9/din-controls-evidence.json": {
+          "bytes": 512503,
+          "identity": "din-controls-evidence.json",
+          "sha256": "e7ae612b95eb9c3dbb4c4c2aa6bfc62432369cf51d8bc5686a5945583af013c9"
+        }
+      },
+      "separate_subtests_passed": 640,
+      "skips": [
+        {
+          "class": "tests.test_din_output_controls.DinControlSourceTest",
+          "name": "test_static_method_and_constant_bytes_without_execution",
+          "reason": "requires pinned original bytes for static hash check only"
+        },
+        {
+          "class": "tests.test_din_output_save.DinSaveSourceReceiptTest",
+          "name": "test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "reason": "requires pinned Toolkit bytes for static hash check"
+        },
+        {
+          "class": "tests.test_din_output_settings.OriginalLevelVectorTest",
+          "name": "test_original_instructions_regenerate_the_vectors",
+          "reason": "requires exact original Toolkit executable"
+        },
+        {
+          "class": "tests.test_din_output_settings.DinOutputNativeTest",
+          "name": "test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance"
+        },
+        {
+          "class": "tests.test_cli_din_output_settings.DinCliTests",
+          "name": "test_native_preview_apply_saved_plan_and_stale_refusal",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance"
+        }
+      ]
+    }
+  }
+}

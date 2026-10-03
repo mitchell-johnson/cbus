@@ -1,0 +1,208 @@
+{
+  "boundaries": {
+    "complete_inventory_application_profile": "primary Lighting48..95; secondary Lighting48..95 or absent255",
+    "coverage_require_complete_exit": 1,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "missing_object_creation_decisions_admitted": false,
+    "native_vendor_server_executed": false,
+    "numeric_pp_equivalence_only": true,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "publication_head_ci_is_separate": true,
+    "report_status_and_this_receipt_are_post_validation_annotations": true,
+    "retained_nonzero_key_models_admitted": false
+  },
+  "candidate": {
+    "authored_head": "2970a238e2d03ffc78c5276d0d33d19d91407fc1",
+    "binary_sha256": {
+      "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+      "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+    },
+    "dependency_head": "fe0348ba6c03812a095a9d1101a94da054e299b4",
+    "dependency_pr": 82,
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 564562,
+        "identity": "inputs-before.json",
+        "sha256": "e2fc6029328faecba020eab94e997ee080100a020d4d4c4214a75053489f5cb1"
+      },
+      {
+        "bytes": 564562,
+        "identity": "inputs-terminal.json",
+        "sha256": "e2fc6029328faecba020eab94e997ee080100a020d4d4c4214a75053489f5cb1"
+      }
+    ],
+    "source_input_count": 4008,
+    "tested_head": "2ba1bacd8b5ecc8e518151a6764a2ffe40ee9279"
+  },
+  "date": "2026-10-03",
+  "format": "cbus-senll-inventory-owned-release-v1",
+  "historical_setup_failures": [
+    {
+      "cause": "Parent editable package imported without explicit candidate src path; corrected by explicit PYTHONPATH; retained in task transcript.",
+      "phase": "initial helper collection",
+      "result": "collection error before any test executed"
+    },
+    {
+      "cause": "Wheel basename corrected before installing or testing; first-attempt log retained separately.",
+      "phase": "initial wheel install",
+      "result": "missing distribution filename"
+    }
+  ],
+  "independent_review": {
+    "consumed_layouts": 47,
+    "inventory_bytes_individually_stale_probed": 91,
+    "result": "clear",
+    "scene_save_model": "First duplicate level, pointer boundaries, fixed/compact holes,40-command bound, preserved Patch/Area; source-derived changes reject forgery/omission and prospective application-profile escape before writing.",
+    "selector_review": "All32 Make selectors exactly equal collection,16 per backend.",
+    "static_method_pins": 38
+  },
+  "metadata": {
+    "all_six_primary_comparisons": 64,
+    "census_complete": false,
+    "fresh_combined_checks": 4,
+    "fresh_primary_comparisons": 46,
+    "inventory_register_census_checks": "passed",
+    "native_required_selected": 259,
+    "obligations": 487,
+    "publication_local_coordinate_fields": 0,
+    "raw_and_sanitized_validated": true,
+    "refreshed_receipts": [
+      {
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "e4b3e1dd620c12cf165dfad4a69af36683a6e70c0f493066859cc123fde6a33e"
+      },
+      {
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "0e403d78ab297415866faa45052f49fa8941a5b10db8fc38dde2fb4b9404cc04"
+      },
+      {
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "addd36136c33b031233cee5b6eb41f7e0fcc7e4ceebf3ebbfb35d31c54b1587f"
+      },
+      {
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "76b618f9ba58ceb890ed42d303d67283be4ec22524b624a2e76b42db6293cb9b"
+      }
+    ],
+    "reused_unchanged_session_receipts": 2,
+    "source_bindings_recomputed_by_maintained_drivers": true,
+    "test_modules": 731
+  },
+  "package": {
+    "extras": {
+      "capstone": "5.0.7",
+      "cryptography": "50.0.2",
+      "pefile": "2024.8.26",
+      "pyserial": "3.5",
+      "pytest": "9.1.1",
+      "pyusb": "1.3.1",
+      "pyzipper": "0.3.6",
+      "unicorn": "2.1.4"
+    },
+    "installed_import_no_source_leak": true,
+    "package_files": 379,
+    "proof": {
+      "bytes": 38204,
+      "identity": "package-proof.json",
+      "sha256": "bf5376369473f919c72842cbd224a9bb355c4ad8f0ea9e4b16ee7bde14b8d9dd"
+    },
+    "python": "3.13.14",
+    "source_zip_installed_equal": true,
+    "wheel": {
+      "bytes": 2923378,
+      "identity": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "4bf513a0fd65bbcab9d13f61058337adacc59854418623515c3a61d181b16f6f"
+    }
+  },
+  "phases": {
+    "source": {
+      "all_public_sensor_backend_cases": 54,
+      "audit": {
+        "bytes": 227196,
+        "identity": "source-results.json",
+        "sha256": "a773413909d49640d66784bee15e7dbe6056b65612b039b018db65f90d7c969d"
+      },
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 709,
+        "skipped": 4,
+        "tests": 713
+      },
+      "junit": {
+        "bytes": 75520,
+        "identity": "source.xml",
+        "sha256": "d77338b9bef70a9585fb7b7279f1fedf69f4bbb8d95e1b7c232806b980996313"
+      },
+      "new_public_backend_cases": 32,
+      "parent_passed": 202,
+      "parent_skipped": 4,
+      "separate_subtests_passed": 507,
+      "skipped_ids": [
+        "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+        "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "trace": {
+        "bytes": 175116,
+        "identity": "source-trace.json",
+        "sha256": "8ce5c248bd3d4df868720f3b74a1b52f1dff90ddcd1eb4476ab43c5361a37e4a"
+      }
+    },
+    "wheel": {
+      "all_public_sensor_backend_cases": 54,
+      "audit": {
+        "bytes": 227196,
+        "identity": "wheel-results.json",
+        "sha256": "653144cb4df07167aeba805a3a78e0807638460d30b423c2949e24a250e8cbd5"
+      },
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 709,
+        "skipped": 4,
+        "tests": 713
+      },
+      "junit": {
+        "bytes": 75520,
+        "identity": "wheel.xml",
+        "sha256": "979f5fe646ac120a16af9e6bedeeafbd3ac747cf740cac1146512bcd31b138c4"
+      },
+      "new_public_backend_cases": 32,
+      "parent_passed": 202,
+      "parent_skipped": 4,
+      "separate_subtests_passed": 507,
+      "skipped_ids": [
+        "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+        "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "trace": {
+        "bytes": 175116,
+        "identity": "wheel-trace.json",
+        "sha256": "8ce5c248bd3d4df868720f3b74a1b52f1dff90ddcd1eb4476ab43c5361a37e4a"
+      }
+    }
+  },
+  "selection": [
+    "tests/test_senll_source_inventory.py",
+    "tests/test_native_sensor_scenes.py",
+    "tests/test_senll_control_history.py",
+    "tests/test_light_level_sensors.py",
+    "tests/test_cli_senll_controls.py",
+    "tests/test_cli_sensors.py",
+    "tests/test_cgate_senll_controls_interop.py",
+    "tests/test_cgate_senll_inventory_interop.py",
+    "tests/test_cgate_tagged_session_differential.py",
+    "tests/test_cgate_dbsetxml_unit_differential.py",
+    "tests/test_cgate_session_differential.py",
+    "tests/test_sanitize_evidence_receipts.py"
+  ]
+}

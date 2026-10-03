@@ -355,6 +355,12 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
   whether the preserved group is implicit or explicitly supplied. The native
   callback can migrate shared key allocations and clear the selected group
   to 255; those additional effects are not modelled by this workflow.
+  The separate [ordered SENLL control history](senll-application-controls.md)
+  admits explicit application/group callbacks on a fresh zero-key graph,
+  including collision clearing and the all-eight-block refresh when application
+  2 is absent. It preserves raw `BlockAllocation` and refuses missing destination
+  group creation/decline decisions. The flat interface retains its existing
+  numeric profile and collision refusal.
 * `indicator` is the LED radio: `light_level`, `on_off` or `enable`.
   `IndicatorBlockAssignment[0]` loads 5 as `enable`, 2 as `on_off` and any
   other value as `light_level`.
@@ -376,8 +382,12 @@ Level, Bank Switch, Environment and Scenes tabs. The recovered controls are:
 * `status_report_interval` is the Global selector's native integer, 3..255
   seconds, written to `StatusReportInterval` at byte 66. The learn-mode
   controls are hidden for SENLL, while this selector remains available.
-  Stored values 0..2 have an unverified initialization callback writeback;
-  supply an explicit valid interval to edit such a snapshot.
+  Fresh Global initialization changes stored values 0..2 to 3 before any
+  explicit valid selection; values 3..255 remain unchanged. The original
+  raw byte remains in the plan's expected map, so two different raw values
+  that both initialize to 3 still produce a stale-plan refusal. The source
+  [callback review](senll-global-status-source-review.json) and
+  [Global interval notes](senll-global-status.md) explain this behavior.
 
 ### SENLL Toolkit save model
 
@@ -457,6 +467,16 @@ CBUS_LIGHT_LEVEL_SENSOR_REPORT=research/runtime/light-level-sensor-acceptance.js
 This is static-source plus native C-Gate evidence. The original Toolkit
 dialog was not executed, and no physical light-level, broadcast or indicator
 behavior was observed.
+
+## SENLLA surface component view
+
+`sensors surface-light-level-view` inspects the separate surface-mount
+SENLLA / 5754PE / 2.4.00..2.4.99 profile offline. It reports thirteen consumed
+surface fields and their source-derived component overlay, preserves its
+identified export and specification inputs, and has no edit or native save
+action. This eight-key class is kept separate from the zero-key SENLL dialog.
+Read [the component guide](senlla-surface.md) for the admitted fields and
+remaining ordinary-save lifecycle work.
 
 ## CLI commands
 

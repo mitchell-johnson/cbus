@@ -102,11 +102,78 @@ projection. A malformed or altered normalization result is refused. Existing
 version-1 targeted plans remain usable. All owned parameter values are checked
 for staleness before staging either format.
 
-The Synchronise Sliders and Stagger buttons, re-entrant shared-group control
-histories, group-object creation and complete GUI initialization remain open.
+The ordered Synchronise and Stagger controls below cover Turn On/Min-Max and
+recovery delay. Recovery-level synchronization/staggering, re-entrant
+shared-group control histories, group-object creation and complete GUI
+initialization remain open.
 `show` reports the stored values and recovery-level rewrite hints; it is
 not a preview of every ordered RELDN8 save effect. Use `plan --toolkit-save` for that
 preview.
+
+## Ordered slider controls
+
+Use `--controls FILE` with a JSON array to retain the order of slider edits,
+Synchronise checkboxes and Stagger buttons. Both offline `din-settings plan`
+and database `cgate unit ... din-settings` accept the file. Direct edit flags
+cannot be combined with a control history. Add `--toolkit-save` when the same
+plan should include one final agent-save projection.
+
+| Operation | Fields | Available profiles |
+| --- | --- | --- |
+| `synchronise` | `tab`: `turn-on` or `recovery`; `enabled`: Boolean | Every admitted profile |
+| `minimum` | `channel`, `percent` | Every admitted profile |
+| `maximum` | `channel`, `percent` | Dimmers |
+| `recovery-delay` | `channel`, `raw` from 5 to 255 | Dimmers |
+| `stagger-minimum` | `step_percent` | Dimmers |
+| `stagger-maximum` | `step_percent` | Dimmers |
+| `stagger-turn-on` | `step_percent` | Relays |
+| `stagger-recovery-delay` | `step_seconds`: 5, 10, 20 or 30 | Dimmers |
+
+Channels are numbered from one in dialog order, including RELDN8's remapping.
+Percentages range from 0 to 100. A percentage stagger step ranges from one
+to the integer part of 100 divided by the channel count. Both Synchronise
+checkboxes start off for each explicit history.
+The relay Recovery checkbox can be retained in the history, but its level and
+level-store callbacks are not admitted here; it does not enable a relay delay.
+Delay operations require every active stored `PowerUpDelay` to be at least
+five. The implicit loading callbacks for smaller stored delays remain unproved.
+
+For example, this history enables synchronized Min/Max sliders, moves channel
+one's minimum to 30 percent and then staggers the recovery delays:
+
+```json
+[
+  {"op": "synchronise", "tab": "turn-on", "enabled": true},
+  {"op": "minimum", "channel": 1, "percent": 30},
+  {"op": "stagger-recovery-delay", "step_seconds": 20}
+]
+```
+
+```sh
+cbus-toolkit din-settings plan dimmer.json --controls controls.json --toolkit-save > plan.json
+cbus-toolkit cgate unit --lock-address //TEST/254 --source /db//TEST/254/p/20 \
+  --dry-run din-settings --plan plan.json
+```
+
+The history preserves control behavior that differs from raw parameter edits.
+Assigning a slider its existing displayed position emits no change: a stored
+raw level of 26 displays as 10 percent and survives an assignment of 10.
+Synchronized Min/Max edits preserve the order of coupled callbacks. Stagger
+sets channels in order while suppressing synchronization notifications; local
+Min/Max coupling still applies. Relay Turn On staggering writes the minimum
+threshold. Minimum/Turn On steps ascend from one step; maximum steps ascend
+to 100 percent. The largest Turn On step choice also forces the last channel
+to 100 percent, including cases where the channel count does not divide 100.
+Delay staggering uses the original conversion above 60 seconds;
+eight channels at a 20-second step produce raw values
+`20,40,60,62,64,66,68,70`.
+
+The history plan contains `operations`, `initial_controls`, `final_controls`,
+`control_history` and its nested `settings_plan`. Applying an imported plan
+replays the history and checks the complete result before PP staging. Inspect
+the final changes and optional save normalization before applying. This is an
+explicit control history; implicit initial form notifications and recovery
+level/group callbacks are outside its admitted scope.
 
 ## Commands
 
@@ -159,12 +226,14 @@ If a PP write fails or its reply is uncertain, the result is reported with
 
 | Evidence | What it pins |
 | --- | --- |
+| `research/fixtures/din-output-controls-source-review.json`, `research/din_output_controls_static.py` | Static method, form and VMT bindings for ordered slider controls, guard/coupling order and the exact extended delay constant. The reproducer reads pinned bytes without executing them. |
 | `research/fixtures/din-output-save-source-review.json` | Source-pinned ordinary and marshalling save order for the opt-in projection; short-array effects and the historical summary correction. No new original instruction execution. |
 | `research/fixtures/din-output-settings-source-review.json` | Sanitized static receipt: per-type class, agent, channel map and flags; control-to-parameter bindings with original addresses; transforms; unreproduced save effects; unresolved points. It records input hashes for the executable, map, form resources, help topics and specs. |
 | `research/din_output_levels_original.py`, `research/fixtures/din-output-level-original-vectors.json` | Unicorn execution of the original PercentToLevel, LevelToPercent and Round(percent×2.55) instructions: 458 frozen rows |
 | `research/fixtures/din-output-settings-native-acceptance.json` | Owned C-Gate 3.4.0.2001 acceptance on loopback. See below. |
 | `tests/test_din_output_settings.py`, `tests/test_cli_din_output_settings.py` | Offline, optional-original and native tests |
 | `tests/test_cli_din_save.py`, `tests/test_cgate_din_save_interop.py` | New public offline CLI and owned Rust database save/reload, preservation, plan-refusal and lost-reply cases |
+| `tests/test_din_output_controls.py`, `tests/test_cli_din_controls.py`, `tests/test_cgate_din_controls_interop.py` | Literal ordered control histories, replay/schema guards, public CLI and both owned database backends |
 
 The historical native acceptance covers the targeted edit path for all eight
 admitted types with no CNI or physical access. It predates `--toolkit-save`:

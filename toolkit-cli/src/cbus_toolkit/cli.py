@@ -235,6 +235,8 @@ def _din_options(parser):
     parser.add_argument("--logic-level-store", choices=onoff)
     parser.add_argument("--toolkit-save", action="store_true", default=None,
                         help="Include the admitted Toolkit agent-save normalization for every channel")
+    parser.add_argument("--controls", dest="din_controls", type=Path,
+                        help="JSON array of ordered DIN slider, Synchronise and Stagger controls")
 
 
 def _din_settings(args):
@@ -263,6 +265,16 @@ def _din_editor(args, unit_type):
     if unit_type not in PROFILES:
         check_profile(unit_type, None)
     return DinOutputEditor(UnitSpecStore(args.spec_dir).load(PROFILES[unit_type].spec_filename), unit_type)
+
+
+def _din_control_plan(editor, args, current, *, identity=None):
+    from .edlt_global_cli import read_json
+    edits = {k: v for k, v in _din_settings(args).items() if v is not None}
+    if set(edits) - {"toolkit_save"}:
+        raise ValueError("--controls cannot be combined with direct edit options; put ordered edits in the control history")
+    operations = read_json(args.din_controls, limit=1024 * 1024)
+    return editor.control_plan(current, operations, identity=identity,
+                               toolkit_save=bool(args.toolkit_save))
 
 
 def _edlt_database_profile(unit_type, firmware, catalog_number):
@@ -1221,6 +1233,9 @@ def _write_unit_template(path, template):
 
 
 def _firmware(args):
+    if args.action == "ncc-transcript":
+        from .firmware_ncc_cli import run as run_ncc_transcript
+        return run_ncc_transcript(args)
     if args.action.startswith("usb-dfu-"):
         from .dfu import MAX_IMAGE_SIZE
         from .dfu_transport import parse_descriptors
@@ -1616,9 +1631,14 @@ def build_parser():
     events = cgops.add_parser("events", help="Stream JSON event records and report any lost events")
     events.add_argument("--mode", default="e8s1c1", help="Native event mode, such as e8s1c1")
     event_limit = events.add_mutually_exclusive_group()
-    event_limit.add_argument("--count", type=_number, default=1, help="Stop after this many events")
+    event_limit.add_argument("--count", type=_number, default=1, help="Stop after this many emitted events")
     event_limit.add_argument("--follow", action="store_true", help="Continue until interrupted; --timeout is the maximum idle wait")
     events.add_argument("--state", help="Request the current state of this already loaded network or C-Group")
+    events.add_argument("--application", type=_byte, choices=range(48, 96), metavar="48..95",
+                        help="Filter admitted native Lighting records by application")
+    events.add_argument("--group", type=_byte, help="Filter admitted native Lighting records by group (0..255)")
+    events.add_argument("--source-unit", type=_byte,
+                        help="Filter admitted native Lighting records by their literal source byte (0..255)")
     trigger = cgops.add_parser("trigger", help="Trigger events, indicator kill and cached application state")
     trigops = trigger.add_subparsers(dest="remote_action", required=True)
     for action in ("event", "kill", "get", "state", "groups"):
@@ -2555,6 +2575,8 @@ def build_parser():
     p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
     firmware = commands.add_parser("firmware", help="eDLT diagnostics, offline firmware inspection and explicitly selected USB DFU operations")
     fwops = firmware.add_subparsers(dest="action", required=True)
+    from .firmware_ncc_cli import options as ncc_transcript_options
+    ncc_transcript_options(fwops)
     p = fwops.add_parser("usb-list", help="List cached metadata for eDLT USB candidates without reading strings or claiming interfaces")
     p.add_argument("--max-devices", type=_number, default=64, help="Maximum enumeration size before reporting an incomplete result")
     p = fwops.add_parser("usb-inspect", help="Read only standard USB descriptors/configuration for an explicitly selected eDLT")
@@ -3188,9 +3210,12 @@ def _cgate(args):
                 raise RuntimeError("Trigger command did not complete: " + response.final)
             return {"queued": True, "device_verified": False, "response": response}, 0
         if args.action == "events":
+            from .application_events import LightingEventFilter, project_lighting_event
             from .events import NativeEvents
             if args.count < 1:
                 raise ValueError("Event count must be positive")
+            event_filter = LightingEventFilter(getattr(args, "application", None), getattr(args, "group", None),
+                                              getattr(args, "source_unit", None))
             monitor = NativeEvents(client)
             monitor.subscribe(args.mode)
             if args.state:
@@ -3198,13 +3223,28 @@ def _cgate(args):
                 if not response.successful:
                     raise RuntimeError("State request did not complete: " + response.final)
             received = 0
+            observed = 0
+            overflow_seen = False
             while args.follow or received < args.count:
                 event = monitor.read()
-                print(json.dumps({"type": "event", **dataclasses.asdict(event)}, ensure_ascii=True), flush=True)
+                observed += 1
+                projection = project_lighting_event(event) if event_filter.active else None
+                if not event_filter.matches(event, projection):
+                    continue
+                payload = {"type": "event", **dataclasses.asdict(event)}
+                if event_filter.active:
+                    payload["lighting"] = dataclasses.asdict(projection) if projection is not None else None
+                print(json.dumps(payload, ensure_ascii=True), flush=True)
                 received += 1
                 if event.category == "overflow":
-                    return {"type": "event-summary", "received": received, "events_lost": True}, 1
-            return {"type": "event-summary", "received": received, "events_lost": client.events_lost}, int(client.events_lost)
+                    overflow_seen = True
+                    break
+            events_lost = overflow_seen or client.events_lost
+            summary = {"type": "event-summary", "received": received, "events_lost": events_lost}
+            if event_filter.active:
+                summary.update(observed=observed, filtered=observed - received,
+                               filters=dataclasses.asdict(event_filter))
+            return summary, int(events_lost)
         if args.action == "conversion":
             if args.remote_action == "tweak-replace":
                 from .toolkit_tweaker_lifecycle import execute
@@ -3652,6 +3692,11 @@ def _programming(args, client):
     from .sensor_dialog_cli import NATIVE_ACTIONS as sensor_dialog_actions
     mutable = mutable or args.remote_action in sensor_dialog_actions
     destination = args.destination or args.source
+    if args.remote_action == "neo-indicator-editor":
+        if not args.source or not args.source.lower().startswith("/db//"):
+            raise ValueError("The Neo indicator editor requires an existing database --source")
+        if args.destination is not None and args.destination != args.source:
+            raise ValueError("The Neo indicator editor saves only to its selected database source")
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
     if args.remote_action in ("edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes") and destination and not destination.lower().startswith("/db//"):
@@ -3894,18 +3939,24 @@ def _programming(args, client):
             din_editor._verify_profile(session)
             edits = {k: v for k, v in _din_settings(args).items() if v is not None}
             if args.show:
-                if edits or args.din_plan is not None:
-                    raise ValueError("--show cannot be combined with edits or --plan")
+                if edits or args.din_plan is not None or args.din_controls is not None:
+                    raise ValueError("--show cannot be combined with edits, --controls or --plan")
                 return din_editor.show(session.values())
             if args.din_plan is not None:
                 from .din_output_settings import DinPlan
+                from .din_output_controls import DinControlPlan, CONTROL_PLAN_FORMAT
                 from .edlt_global_cli import read_json
-                if edits:
-                    raise ValueError("--plan cannot be combined with edit options")
-                result = din_editor.apply(session, DinPlan.from_dict(read_json(args.din_plan, limit=1024 * 1024)))
+                if edits or args.din_controls is not None:
+                    raise ValueError("--plan cannot be combined with edit options or --controls")
+                data = read_json(args.din_plan, limit=1024 * 1024)
+                plan_type = (DinControlPlan if isinstance(data, dict)
+                             and data.get("format") == CONTROL_PLAN_FORMAT else DinPlan)
+                result = din_editor.apply(session, plan_type.from_dict(data))
+            elif args.din_controls is not None:
+                result = din_editor.apply(session, _din_control_plan(din_editor, args, session.values()))
             else:
                 if not edits:
-                    raise ValueError("Supply DIN edit options, --plan or --show")
+                    raise ValueError("Supply DIN edit options, --controls, --plan or --show")
                 result = din_editor.configure(session, **edits)
             values = session.values()
         elif args.remote_action == "sensor-occupancy":
@@ -4308,6 +4359,8 @@ def run(args):
         editor = _din_editor(args, unit_type)
         if args.action == "show":
             return editor.show(values), 0
+        if args.din_controls is not None:
+            return _din_control_plan(editor, args, values, identity=tuple(identity) or None).as_dict(), 0
         edits = {k: v for k, v in _din_settings(args).items() if v is not None}
         return editor.plan(values, identity=tuple(identity) or None, **edits).as_dict(), 0
     if args.area == "sensors":
