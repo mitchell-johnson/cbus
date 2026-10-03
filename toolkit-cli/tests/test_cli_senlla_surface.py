@@ -99,6 +99,24 @@ class SENLLASurfaceCLITests(unittest.TestCase):
                 offline(args)
             store.assert_not_called()
 
+    def test_public_view_accepts_authored_spec_without_bit_width_or_skip(self):
+        with tempfile.TemporaryDirectory() as folder:
+            directory = Path(folder)
+            spec_file, snapshot = directory / 'SENLLA.xml', directory / 'sensor.json'
+            spec = fixture(omit_bit_metadata=True)
+            self.write_spec(spec_file, spec)
+            values = {**spec.defaults(), 'LightLevelTargetGroup': '7',
+                      'LightLevelTargetGroupLevelStore': '1'}
+            self.snapshot(snapshot, values)
+            before = (spec_file.read_bytes(), snapshot.read_bytes())
+            result = self.run_cli('sensors', '--spec-dir', directory,
+                                  'surface-light-level-view', snapshot)
+            self.assertEqual(result['expected']['LightLevelTargetGroupLevelStore'], [1])
+            self.assertEqual(result['component_parameters']['LightLevelMarginGroupLevelStore'], [1])
+            self.assertEqual(result['consumed_parameter_count'], 13)
+            self.assertFalse(result['complete_toolkit_save'])
+            self.assertEqual((spec_file.read_bytes(), snapshot.read_bytes()), before)
+
     def test_new_view_has_no_edit_flags_and_does_not_broaden_senll_save_gate(self):
         with tempfile.TemporaryDirectory() as folder:
             snapshot = Path(folder) / 'sensor.json'
