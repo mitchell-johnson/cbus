@@ -2,6 +2,18 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [thermostat optional-level batch](feature-batch-2026-10-03-thermostat-remote-levels.md)
+adds explicit setback/schedule accept-or-decline choices inside the existing
+settings owner. Accepted prompts fill missing Level addresses 1–31 with exact
+zone labels and preserve existing values and metadata. A shared backend fix
+makes OID Level label updates reach exported and persisted records. Source and
+fresh installed wheel each pass 159 parents and 1,250 separate subtests, with
+nine disclosed skips and all 40 selected backend cases. All 379 package files
+match; 2,734 inputs plus both fresh binaries stay unchanged. Focused Rust tests,
+formatting, workspace Clippy and release builds pass. Full suites, original
+native acceptance and physical thermostats remain outside this checkpoint;
+complete feature coverage still exits 1. Issues 42 and 90 track the work.
+
 The [thermostat remote-reference batch](feature-batch-2026-10-03-thermostat-remote-references.md)
 joins enabled setback/schedule references, ordered graph creation and identity
 validation with the existing settings form-save projection for all four aliases.

@@ -252,6 +252,14 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[mock]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]' \
@@ -566,6 +574,14 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_history_preview_apply_and_preservation[malformed-preserved-daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_pending_cell_close_refuses_without_write[daemon]' \
 		'tests/test_cgate_edlt_static_grid_editor_interop.py::test_public_static_grid_lost_successful_save_is_not_replayed[daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]' \
+		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]' \
 		'tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]' \

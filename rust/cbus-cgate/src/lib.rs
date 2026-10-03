@@ -10926,6 +10926,29 @@ impl Server {
             if self.known_oids.contains(oid) && !self.oid_in_current_project(oid) {
                 return err(tag, status::ABSENT, "401 Object not found");
             }
+            if field == Some("TagName") {
+                if let Some(level) = self.level_mut(oid) {
+                    level.tag = value.clone();
+                    let level_path = format!("{}/{}", level.parent, level.address);
+                    if let Some(project) = self.current.as_deref() {
+                        // XML and save use the typed Level. Imported/completed
+                        // Levels may also retain a scalar-read pending mirror;
+                        // update only the same project, OID and canonical path.
+                        for pending in self.db_pending.values_mut().filter(|pending| {
+                            pending.project == project
+                                && pending.oid == oid
+                                && pending.element == "Level"
+                                && pending.path.as_deref() == Some(level_path.as_str())
+                        }) {
+                            pending.fields.insert("TagName".to_string(), value.clone());
+                        }
+                    }
+                    self.db_fields
+                        .insert(format!("{level_path}/TagName"), value.clone());
+                    self.db_fields.insert(words[1].to_string(), value);
+                    return ok(tag, vec![], "200 OK");
+                }
+            }
             if field == Some("Value") {
                 if let Some(level) = self.level_mut(oid) {
                     let byte: i64 = value.parse().unwrap_or(-1);
