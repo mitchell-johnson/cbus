@@ -16,6 +16,14 @@ source-derived `component_overlay`. This overlay covers the surface serializer,
 not the whole Toolkit dialog transaction; the result marks
 `complete_toolkit_save` false. No C-Gate endpoint or edit options are involved.
 
+The three store flags use the memory codec's effective one-bit layout.
+Their specification may omit `BitSize`, which defaults to eight in descriptive
+schema metadata. Native bit packing still consumes one bit and ignores
+`ArraySkip`; integer field layouts remain exact. The
+[provider-schema correction receipt](../research/fixtures/senlla-bit-layout-owned-release-20261004.json)
+records focused source and installed-wheel validation, including all eight
+store-flag combinations and the public command with authored omitted metadata.
+
 The native surface loader gives a used target group precedence over a stored
 margin group: it loads logical target byte 45 and clears the loaded margin
 group. Its serializer writes the target group into both group slots, target
