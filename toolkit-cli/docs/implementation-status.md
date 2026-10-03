@@ -2,6 +2,16 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLL Global interval batch](feature-batch-2026-10-03-senll-global-status.md)
+adds source-owned fresh initialization: loaded 0..2 becomes 3 seconds before
+explicit controls, while raw expected bytes remain stale guarded. Source and a
+fresh installed wheel each pass 196 parents and 644 separate subtests, with
+four provision-dependent skips and all 30 new public Global cases. All 379
+package files match; all 4,014 tracked files and both binaries stay unchanged
+during frozen acceptance. Full suites remain deferred for speed. Broader sensor
+profiles, original GUI/native and physical acceptance remain open; the complete
+parity gate remains nonzero. The linked receipt records exact scope and skips.
+
 The [complete SENLL inventory batch](feature-batch-2026-10-03-senll-inventory.md)
 adds source-ordered Area/Scene getter authority and exact inherited enabled
 scene save rules, with all 47 consumed fields guarded by schema, stale state

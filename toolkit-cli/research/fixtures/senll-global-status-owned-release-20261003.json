@@ -1,0 +1,250 @@
+{
+  "behavior": {
+    "complete47_and_legacy43_profiles": true,
+    "explicit_interval_domain": [
+      3,
+      255
+    ],
+    "fresh_loaded_interval_0_1_2": 3,
+    "fresh_loaded_interval_3_through_255": "preserved",
+    "invalid_final_interval_refuses_before_native_io": true,
+    "phase": "after source getter loading, before explicit OnOff controls and later flat dialog overrides",
+    "raw_expected_bytes_preserved": true
+  },
+  "boundaries": {
+    "complete_inventory_application_profile": "primary Lighting48..95; secondary Lighting48..95 or absent255",
+    "coverage_require_complete_exit": 1,
+    "dependency_public_inventory_and_event_scopes_not_rerun_or_added_to_this_scope": true,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "native_vendor_server_executed": false,
+    "numeric_pp_equivalence_only": true,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "publication_head_ci_is_separate": true,
+    "report_status_and_this_receipt_are_post_validation_annotations": true,
+    "retained_nonzero_key_models_admitted": false
+  },
+  "candidate": {
+    "authored_head": "a8fc8e97d698da458f0439ffef3735981f161716",
+    "binary_sha256": {
+      "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+      "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+    },
+    "dependency_head": "dfac586214f69d2ecd312caec6c3b3e6a44e9803",
+    "dependency_pr": 86,
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 565342,
+        "identity": "inputs-before.json",
+        "sha256": "7f46a500b1db415a7799f9e4b8bd4d8fd48586ea3e15aa7c07220fecc86c31b0"
+      },
+      {
+        "bytes": 565342,
+        "identity": "inputs-terminal.json",
+        "sha256": "7f46a500b1db415a7799f9e4b8bd4d8fd48586ea3e15aa7c07220fecc86c31b0"
+      }
+    ],
+    "source_input_count": 4014,
+    "tested_head": "0fac205860d266fe1f1523aaec2c49ff1bb8f7d8"
+  },
+  "date": "2026-10-03",
+  "format": "cbus-senll-global-status-owned-release-v1",
+  "historical_preflight": {
+    "all_28_failures_preceded_public_and_offline_cli_invocations": true,
+    "artifacts": [
+      {
+        "bytes": 49034,
+        "identity": "senll-global-public-attempt1-fixture-count.log",
+        "sha256": "72d3e25b0f74bf7a4024aedef51e7abe8bfaa8bca97fd584946249b7a0a4fde1"
+      },
+      {
+        "bytes": 54718,
+        "identity": "senll-global-public-attempt1-fixture-count.xml",
+        "sha256": "4d9e21adc895960dbf250a2a2f156ca07b2793c89786bba613fa890566a975ea"
+      }
+    ],
+    "cause": "Synthetic harness compared consumed43/47 fields with full52/56 PP maps; test-only correction retained full graph and PP preservation checks.",
+    "corrected_preflight": "30 passed,0 skipped; separate overlapping scope not added to release counts",
+    "included_in_final_acceptance_counts": false,
+    "owned_synthetic_seed_setup_mutated_database": true,
+    "result": "28 failed,2 passed before final freeze"
+  },
+  "independent_review": {
+    "additional_byte_profile_probes": 512,
+    "additional_probes_are_not_release_test_counts": true,
+    "code_and_source_result": "clear",
+    "release_artifact_result": "clear",
+    "selector_review": "All30 Make selectors exactly equal collection,15 per backend.",
+    "static_method_pins_verified": 44
+  },
+  "metadata": {
+    "all_six_primary_comparisons": 64,
+    "census_complete": false,
+    "fresh_combined_checks": 4,
+    "fresh_primary_comparisons": 46,
+    "inventory_register_census_checks": "passed",
+    "native_required_selected": 259,
+    "obligations": 487,
+    "publication_local_coordinate_fields": 0,
+    "raw_and_sanitized_validated": true,
+    "refreshed_receipts": [
+      {
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "d7817ce16599952e59a90b313101d32b1ac90905d3b1662057b3d3e105c933be"
+      },
+      {
+        "fixture": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "fb06e82957886c9965d67f080538663fb8b7686be2843bccb2d08de1442b0a12"
+      },
+      {
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "20d37d6e0a0711435088ecc1f84996906f2dbf99ce1990abb06cc0e860580212"
+      },
+      {
+        "fixture": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "357bbaa90b5897c54ac9f98cae7faa1d4f061f4757447cc782ef9b1835b0b992"
+      }
+    ],
+    "reused_unchanged_session_receipts": 2,
+    "source_bindings_recomputed_by_maintained_drivers": true,
+    "test_modules": 733
+  },
+  "package": {
+    "extras": {
+      "capstone": "5.0.7",
+      "cryptography": "50.0.2",
+      "pefile": "2024.8.26",
+      "pyserial": "3.5",
+      "pytest": "9.1.1",
+      "pyusb": "1.3.1",
+      "pyzipper": "0.3.6",
+      "unicorn": "2.1.4"
+    },
+    "installed_import_no_source_leak": true,
+    "package_files": 379,
+    "proof": {
+      "bytes": 38204,
+      "identity": "package-proof.json",
+      "sha256": "bd91d5a150c66b145899475f3c706269b3c7da3bc4357c9b240733dcc4273195"
+    },
+    "python": "3.13.14",
+    "source_zip_installed_equal": true,
+    "wheel": {
+      "bytes": 2923501,
+      "identity": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "8ee321e949c271157496556788923096feb9898caa30b563c91428423a507fcf"
+    }
+  },
+  "phases": {
+    "source": {
+      "audit": {
+        "bytes": 249610,
+        "identity": "source-results.json",
+        "sha256": "fa4653b8f171a1eea45f8ae2421a1c8e3bf7e92480e96c69176e2f26c96cb554"
+      },
+      "closed_graph_cni_trap_contacts": 0,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 840,
+        "skipped": 4,
+        "tests": 844
+      },
+      "junit": {
+        "bytes": 72854,
+        "identity": "source.xml",
+        "sha256": "de8d66959f62912ff6ce6d2001a3796adc7e0a3e2529a49d9e45e2cbb124ebc7"
+      },
+      "lost_successful_save_cases_without_replay": 2,
+      "new_public_backend_cases": 30,
+      "offline_cli_calls": 28,
+      "parent_passed": 196,
+      "parent_skipped": 4,
+      "positive_cases": 24,
+      "public_cli_calls": 78,
+      "read_only_refusal_cases": 4,
+      "separate_subtests_passed": 644,
+      "skipped_ids": [
+        "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+        "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "trace": {
+        "bytes": 196163,
+        "identity": "source-trace.json",
+        "sha256": "2a912d7b23b3dc8fe6f8163067426a48c609019a38f1896c508bdce368cb36cc"
+      }
+    },
+    "wheel": {
+      "audit": {
+        "bytes": 249610,
+        "identity": "wheel-results.json",
+        "sha256": "348c7020c61cefa737a358da582e95465ea5139a67d1058ee2f87422bc818d1f"
+      },
+      "closed_graph_cni_trap_contacts": 0,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 840,
+        "skipped": 4,
+        "tests": 844
+      },
+      "junit": {
+        "bytes": 72854,
+        "identity": "wheel.xml",
+        "sha256": "dd76b614cfa39883fbd50cde8ec5077ac8523a92b1b642d2bc234089f66f1ccb"
+      },
+      "lost_successful_save_cases_without_replay": 2,
+      "new_public_backend_cases": 30,
+      "offline_cli_calls": 28,
+      "parent_passed": 196,
+      "parent_skipped": 4,
+      "positive_cases": 24,
+      "public_cli_calls": 78,
+      "read_only_refusal_cases": 4,
+      "separate_subtests_passed": 644,
+      "skipped_ids": [
+        "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+        "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+        "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values"
+      ],
+      "trace": {
+        "bytes": 196163,
+        "identity": "wheel-trace.json",
+        "sha256": "2a912d7b23b3dc8fe6f8163067426a48c609019a38f1896c508bdce368cb36cc"
+      }
+    }
+  },
+  "selection": [
+    "tests/test_senll_source_inventory.py",
+    "tests/test_native_sensor_scenes.py",
+    "tests/test_senll_control_history.py",
+    "tests/test_light_level_sensors.py",
+    "tests/test_cli_senll_controls.py",
+    "tests/test_cli_sensors.py",
+    "tests/test_senll_global_status.py",
+    "tests/test_cgate_senll_global_interop.py",
+    "tests/test_cgate_tagged_session_differential.py",
+    "tests/test_cgate_dbsetxml_unit_differential.py",
+    "tests/test_cgate_session_differential.py",
+    "tests/test_sanitize_evidence_receipts.py"
+  ],
+  "static_source": {
+    "audit": {
+      "bytes": 12286,
+      "identity": "docs/senll-global-status-source-review.json",
+      "sha256": "7cca636cf06fe50dc8c1f516ca13718925ce887e88d912dbb80e3c6b39d2084f"
+    },
+    "fresh_frame_resource_bytes": 672,
+    "method_pins": 44,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "resource_sha256": "16cfdb9d1b70a021a9174407da8ae9fd851ad6a4ae2b769bf6f58ede791d498f"
+  }
+}
