@@ -2,6 +2,29 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA shared-prefix/control source check](../research/fixtures/senlla-prekey-controls-source-check-20261004.json)
+adds a live fresh path with nil initial references and retains the SAME
+Unit, blocks, keys, managers and bank links through initial application/
+Area callbacks and all raw block setters. Canonical pointers, counter
+balance and CURRENT application lookups are checked at GetKeyBlocks
+handoff. Source manager order remains distinct from registration order.
+Persistent programmatic controls now retain actual root/scalar identities,
+render guards, mutable list contents, current candidate reads and explicit
+posted/delivered message positions. Missing actual primitive execution
+invalidates the owner rather than approving a no-op response. Independent
+reviews clear 151 constructor, 162 prekey and 64 control spans.
+Seventeen modules pass 342 parents and 3,945 separate subtests
+with zero skips; all 4,101 tracked inputs remain unchanged at authored
+commit `9a1e024a`. Inventory/register/census checks pass at
+751 modules and all 259 native requirements selected.
+Actual inherited base/metadata/Learn/scalar execution, metadata backend
+creation/storage and transient observers, late Scene creation topology,
+concrete native-profile control primitives, complete 93-field ownership
+and public preview/apply transaction remain open. They are the next active
+implementation streams. No new original/installed-wheel/native/hardware
+acceptance is claimed. Full suites are deferred for speed; global coverage
+remains false with 487 obligations. Historical proofs remain unchanged.
+
 The [SENLLA key-event source check](../research/fixtures/senlla-key-events-source-check-20261004.json)
 adds a synchronous internal owner from CoreKey GetKeyBlocks onward. Ordered
 allocations, primary/secondary collisions, Scene claims and swaps, macro

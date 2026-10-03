@@ -156,3 +156,15 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:tests .venv/bin/python -m unittest test
 Other prekey, application, metadata and save ownership stays with its existing
 components. This evidence does not admit a complete SENLLA SAVE or change the
 global parity/acceptance ledger.
+
+The [frozen shared-prefix/control source check](../research/fixtures/senlla-prekey-controls-source-check-20261004.json)
+covers seventeen SENLLA modules at authored commit `9a1e024a`: 342
+parents, 3,945 separate subtests and zero failures, errors or skips.
+All 4,101 tracked inputs remain unchanged in the frozen checkout. Final
+independent reviews clear 151 shared-constructor, 162 prekey and 64 control
+spans. These checks cover the same-object prefix and persistent control
+kernel. Inherited metadata/base execution, actual backend creation/storage,
+late Scene topology, concrete framework/comparison/scheduler primitives and
+complete 93-field public save remain open. Test executors do not establish
+original/native backend or hardware acceptance. Full suites are deferred
+for speed; historical receipts retain their original scopes and hashes.

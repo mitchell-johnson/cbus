@@ -226,3 +226,15 @@ clears the final event kernel and native save-order/all-eight secondary-loop cor
 the final correction receipt. Full pre-key object continuity, native form
 execution, complete 93-field public save and installed-wheel/original/
 native/hardware acceptance remain open. Full suites are deferred for speed.
+
+The [frozen shared-prefix/control source check](../research/fixtures/senlla-prekey-controls-source-check-20261004.json)
+covers seventeen SENLLA modules at authored commit `9a1e024a`: 342
+parents, 3,945 separate subtests and zero failures, errors or skips.
+All 4,101 tracked inputs remain unchanged in the frozen checkout. Final
+independent reviews clear 151 shared-constructor, 162 prekey and 64 control
+spans. These checks cover the same-object prefix and persistent control
+kernel. Inherited metadata/base execution, actual backend creation/storage,
+late Scene topology, concrete framework/comparison/scheduler primitives and
+complete 93-field public save remain open. Test executors do not establish
+original/native backend or hardware acceptance. Full suites are deferred
+for speed; historical receipts retain their original scopes and hashes.
