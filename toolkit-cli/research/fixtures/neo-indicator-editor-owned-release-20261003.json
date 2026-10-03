@@ -1,0 +1,401 @@
+{
+  "binary_inputs": {
+    "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+    "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+  },
+  "candidate_base_commit": "2b46f35a4c1c3644ce11f3a29718e0fed54498ac",
+  "development_setup_history": "Retained logs include a missing basetemp directory, temporary-launcher startup stalls, and an empty-wire parser assumption fixed for valid zero-command guards. These are not counted as passing release gates.",
+  "execution_tree": "Uncommitted candidate bound by feature hashes and the quiet manifest; base commit alone does not identify execution bytes.",
+  "failed_initial_release_attempts": {
+    "editor_or_literal_changes_for_repair": false,
+    "reason": "Eight owned child startups stalled in temporary Python launchers before executing Rust or making CLI calls; direct-binary test harness replaces the wrapper. Underlying interpreter stall cause unclaimed.",
+    "repair_delta": "Two test harness files, four regenerated modeled differential fixtures, and two generated parity metadata files changed between failed and repaired phases.",
+    "runs": {
+      "source": {
+        "accepted_as_pass": false,
+        "audit": {
+          "retained_privately": true,
+          "sha256": "c106efdafb5bbd8b9c40e24ce27a5caab8ea17ed6a7f219ca6dff51cc296ca4a"
+        },
+        "failed_ids": [
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-daemon]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-mock]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-daemon]"
+        ],
+        "log": {
+          "retained_privately": true,
+          "sha256": "8ff05fb6740ab37e55ed00506da18b443100b2462539b65f9f77d2d3d5c7757d"
+        },
+        "parent_outcomes": {
+          "failure": 4,
+          "passed": 104,
+          "skipped": 10
+        },
+        "separate_subtests_passed": 735
+      },
+      "wheel": {
+        "accepted_as_pass": false,
+        "audit": {
+          "retained_privately": true,
+          "sha256": "14bb72a2d428f695eac3b596143466bc75ec7604813e245134241f67046dbaab"
+        },
+        "failed_ids": [
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-mock]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-daemon]",
+          "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-mock]"
+        ],
+        "log": {
+          "retained_privately": true,
+          "sha256": "e9b8619a730689859ddaa98771c87940916296206cab85d814dbc4ed3bd9baeb"
+        },
+        "parent_outcomes": {
+          "failure": 4,
+          "passed": 104,
+          "skipped": 10
+        },
+        "separate_subtests_passed": 735
+      }
+    },
+    "timeout_or_ownership_checks_weakened": false
+  },
+  "feature_inputs": {
+    "toolkit-cli/Makefile": "f25667b37ee448a55044523cc34cf62e5a3d22763207130f9d13b1ae3ea9e93d",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "ddd4b38f2f387dc892475936134123d6fa81989f7686509b5cb9d9373b6f79e5",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "27d4a4236a8cc6e60d049aa2df217365497e24d6dc97e46db34b4d6b4ff1dcbf",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "51a182ab0757519bf36d6352f30be663ead160cdcbd76f48b0f8ddb53004556c",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "0485a27dc5aaab3535e66d493d72ec6186abfa52956bba7312b93d7a5a792fe8",
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "89b9e5edea5f74b92bd3baaf779fd24cdf00c8df4df0dad2a3262b8c5e919844",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "51dc2f0028820c28c0b999718c5b43c9ac051fff6ce66839f9a09226dd0e1603",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "4649e9b9e68f9b25eaf358b4b8492fe9093172fcaa05e18d00be509f3dc451ab",
+    "toolkit-cli/research/fixtures/neo-indicator-editor-source-review.json": "03b3f52d70a21a3a95a048a91084139977668bf74a12a8a6c1c25e2357855195",
+    "toolkit-cli/research/neo_indicator_editor_static.py": "058c914c5d22d6d87c652d8276cc5b805649e17d8d67d94201ab2cb78e1196f0",
+    "toolkit-cli/research/release-gates/skip-census.json": "5ed268c7dc13316d3c2d652e14714da14516a9d12f10899ec20e11e546d363fe",
+    "toolkit-cli/src/cbus_toolkit/cli.py": "1c53f267ebef2fe37e3b2de3834b1ea81695297d60c580e225c153ffea7ff1b0",
+    "toolkit-cli/src/cbus_toolkit/key_options_cli.py": "e51e4def6fe41671e4ab1d69ab81466548c6827312d5bb4661bb87fcdd628308",
+    "toolkit-cli/src/cbus_toolkit/neo_indicator_editor.py": "327c82c1a7fafbfc6d52f9904276df29497cee7756acb1a9576a2f6f8793e9a5",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "9fc4e7061e6c2f69b11dd9393aedda1c2ff990cbe9e64b4a73b757a3242dfbdd",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "cbacc73e6cd85c997f0abaec327e4a40b945c6535ee6d7b00a0b41543923945b",
+    "toolkit-cli/tests/test_cgate_named_database_interop.py": "879b9e3bad64739818c6cf34e13b6846384157650710551c60f7918cc1bf7c46",
+    "toolkit-cli/tests/test_cli_neo_indicator_editor.py": "0a37fe8f96d86971792b329a5af302690c91d4070fcf60d1ce3c2643ae877e8a",
+    "toolkit-cli/tests/test_input_options.py": "b774b383e2eaa610b994f64704a07e71fe9e8ee8b1f182fb56f0bdd93340cced",
+    "toolkit-cli/tests/test_neo_indicator_editor.py": "54f5b41e979c5c1e99d0339fedee76874592ee59702e4d98bbc6fea65f00083a",
+    "toolkit-cli/tests/test_neo_indicator_editor_backends.py": "67d377273a82d020ed75a9f46d6fb0e8bf89a81d3113433ef80932982c59b1e8"
+  },
+  "format": "cbus-neo-indicator-editor-owned-release-v1",
+  "fresh_modeled_receipts": {
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "ddd4b38f2f387dc892475936134123d6fa81989f7686509b5cb9d9373b6f79e5",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "27d4a4236a8cc6e60d049aa2df217365497e24d6dc97e46db34b4d6b4ff1dcbf",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "51a182ab0757519bf36d6352f30be663ead160cdcbd76f48b0f8ddb53004556c",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "0485a27dc5aaab3535e66d493d72ec6186abfa52956bba7312b93d7a5a792fe8",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "51dc2f0028820c28c0b999718c5b43c9ac051fff6ce66839f9a09226dd0e1603",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "4649e9b9e68f9b25eaf358b4b8492fe9093172fcaa05e18d00be509f3dc451ab"
+  },
+  "independent_outcome_review": {
+    "retained_privately": true,
+    "sha256": "8bff32563d11e3f6d5c8bcd538d6a0c19bee0c85cf30325833c01907e2d2f04b"
+  },
+  "independent_source_review": {
+    "retained_privately": true,
+    "sha256": "de3b18c8c9c840f9a0a3eef21f4fea0d4dd3f2a1034d048123b9c713fa2b282e"
+  },
+  "packaging": {
+    "actual_pytest_import_guard": {
+      "retained_privately": true,
+      "sha256": "379315044c996b60e7b09ddd87edbfaec49e2d8dc5c0d9be3f860867d4a834de"
+    },
+    "console": {
+      "console_sha256": "a864c3861ff05019592eca92ae5bc40be88349e673b8e47827e189b6a8dee55d",
+      "exit": 0,
+      "format": "cbus-neo-indicator-editor-plan-v1",
+      "literal_result_verified": true,
+      "no_pythonpath": true,
+      "stdout_sha256": "fd07eb2417654e414a0df87227a2df56eccf28ed9cab9e37d73bb32a16be6e38"
+    },
+    "files": 378,
+    "source_wheel_installed_equal": true,
+    "terminal_receipt": {
+      "retained_privately": true,
+      "sha256": "1b721fe1abe01c68cd03256155c719f89330486b1c31650a93bae6900649c660"
+    },
+    "wheel_sha256": "32386921e7e39199093c9e405f6303d35f7be9742ba2cdf723993c73cb87c474"
+  },
+  "retained_backend_scope": {
+    "lost_response_direct_owner_packed_reads_retained": false,
+    "lost_response_journeys_with_fresh_parameters_and_xml": 8,
+    "lost_response_packed_assertions_passed": true,
+    "normal_journeys_with_packed_receipts_and_project_reopen": 28
+  },
+  "rust_reuse_review": {
+    "retained_privately": true,
+    "sha256": "009268aab0eb359eb660163f4b7c7d5f44a4000bb84382391e89efedb27c3919"
+  },
+  "scope": {
+    "counts_are_overlapping_not_additive": true,
+    "coverage": {
+      "retained_privately": true,
+      "sha256": "1eb0c2f634631c5c9aad6a5cd8787fad8b9f0634693fa5d283bb69bcbec78984"
+    },
+    "coverage_require_complete_exit": 1,
+    "firmware": "2.5.00",
+    "full_suite_pass_claimed": false,
+    "issue": 39,
+    "native_server_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "profiles": 30,
+    "publication_head_ci_claimed": false
+  },
+  "source_quiet": {
+    "before_manifest": {
+      "retained_privately": true,
+      "sha256": "2ac056337f9b6b61fda38a921db4d625f1fc2380469bbc874571acd2240bfd4d"
+    },
+    "equal": true,
+    "input_count": 2728,
+    "terminal_manifest": {
+      "retained_privately": true,
+      "sha256": "2ac056337f9b6b61fda38a921db4d625f1fc2380469bbc874571acd2240bfd4d"
+    }
+  },
+  "static_review": {
+    "decoded_specs_checked": 30,
+    "format": "cbus-neo-indicator-editor-static-verification-v1",
+    "forms_checked": 1,
+    "methods_checked": 187,
+    "native_server_executed": false,
+    "original_code_executed": false,
+    "profiles_checked": 30,
+    "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "verified": true,
+    "vmt_slots_checked": 601
+  },
+  "validation": {
+    "source": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "84d2359b52e43c184564a77d34bdadf374e15c4b98841f5edddd939a2c88bfa1"
+      },
+      "exit": 0,
+      "junit_sha256": "3242e1e702dae6c3b4ad760cb69f122845d94923dadcc264b866ed2b992daa4f",
+      "log": {
+        "retained_privately": true,
+        "sha256": "1308628450b0821c2daf609245da7f3a66d1546798d1652f7c7853bf434dd59f"
+      },
+      "modules": [
+        "tests/test_neo_indicator_editor.py",
+        "tests/test_cli_neo_indicator_editor.py",
+        "tests/test_neo_indicator_editor_backends.py",
+        "tests/test_input_options.py",
+        "tests/test_extended_macros.py",
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py"
+      ],
+      "parent_passed": 108,
+      "passed": true,
+      "public_backend_cases": [
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "separate_subtests_passed": 735,
+      "skipped": 10,
+      "skipped_ids": [
+        "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+        "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+        "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+        "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+        "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+        "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+        "tests/test_extended_macros.py::ExtendedBinaryTest::test_neo_saves_shared_function_codes_and_clears_scene_selector",
+        "tests/test_extended_macros.py::ExtendedHelpTest::test_neo_family_help_links_the_standard_presets_and_four_events",
+        "tests/test_extended_macros.py::ExtendedNativeTest::test_all_profiles_all_presets_raw_bytes_preservation_and_project_reload",
+        "tests/test_extended_macros.py::ExtendedNativeTest::test_refused_profiles_and_cross_type_plans_before_writes"
+      ],
+      "trace_sha256": "0e86091a0624e2cf86429d3bd8e3879e4aeac6b71e419abb76a3f5369f00c110"
+    },
+    "wheel": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "5506a77c1b2c6962166997d4bf9b01bc0d7ca5095345d90839862134ef11cd1a"
+      },
+      "exit": 0,
+      "junit_sha256": "4a5f1a6093aab79f9ca01244ade161020d3eb63a6ff33a612e121035c9b44bf4",
+      "log": {
+        "retained_privately": true,
+        "sha256": "2c51a097722c3f444ec2c6f0f3cfc41d595affa5230b2ac911dd98a566ad1964"
+      },
+      "modules": [
+        "tests/test_neo_indicator_editor.py",
+        "tests/test_cli_neo_indicator_editor.py",
+        "tests/test_neo_indicator_editor_backends.py",
+        "tests/test_input_options.py",
+        "tests/test_extended_macros.py",
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py"
+      ],
+      "parent_passed": 108,
+      "passed": true,
+      "public_backend_cases": [
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[neo-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[reflection-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[classic-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[saturn-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[decorator-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[avanti-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_all_contexts[catalogue-red-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[reflection-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor_backends.py::test_public_neo_indicator_editor_lost_successful_save_is_not_replayed[saturn-daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "separate_subtests_passed": 735,
+      "skipped": 10,
+      "skipped_ids": [
+        "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+        "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+        "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+        "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+        "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+        "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+        "tests/test_extended_macros.py::ExtendedBinaryTest::test_neo_saves_shared_function_codes_and_clears_scene_selector",
+        "tests/test_extended_macros.py::ExtendedHelpTest::test_neo_family_help_links_the_standard_presets_and_four_events",
+        "tests/test_extended_macros.py::ExtendedNativeTest::test_all_profiles_all_presets_raw_bytes_preservation_and_project_reload",
+        "tests/test_extended_macros.py::ExtendedNativeTest::test_refused_profiles_and_cross_type_plans_before_writes"
+      ],
+      "trace_sha256": "0e86091a0624e2cf86429d3bd8e3879e4aeac6b71e419abb76a3f5369f00c110"
+    }
+  }
+}

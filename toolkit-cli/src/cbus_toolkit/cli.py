@@ -3692,6 +3692,11 @@ def _programming(args, client):
     from .sensor_dialog_cli import NATIVE_ACTIONS as sensor_dialog_actions
     mutable = mutable or args.remote_action in sensor_dialog_actions
     destination = args.destination or args.source
+    if args.remote_action == "neo-indicator-editor":
+        if not args.source or not args.source.lower().startswith("/db//"):
+            raise ValueError("The Neo indicator editor requires an existing database --source")
+        if args.destination is not None and args.destination != args.source:
+            raise ValueError("The Neo indicator editor saves only to its selected database source")
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
     if args.remote_action in ("edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes") and destination and not destination.lower().startswith("/db//"):

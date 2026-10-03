@@ -1032,3 +1032,17 @@ implicit WinForms dispatch or rendering. Use one owning PP SAVE plus a separate
 project SAVE and never replay uncertainty. If cmqttd returns the exact applied
 repository500, the transport closes and automatic parent/SceneManager inverse
 recovery is suppressed; fresh read-only inspection remains explicit.
+
+## Per-unit Neo indicator panel
+
+Use `keys neo-indicator-editor-show|neo-indicator-editor-plan` with a decoded
+schema and PP snapshot; the plan takes an ordered `--controls` JSON array.
+The existing-database `cgate unit ... neo-indicator-editor` command accepts
+`--controls` or a reviewed `--plan`, with `--dry-run` for PP staging only.
+This is separate from the Unit Magic bulk options/styles. Thirty ordinary
+profiles at firmware 2.5.00 support physical LED style/on-colour edits,
+read-only derived off-colours, global indicator callbacks and all-eight-slot
+load/save normalization. KEYE remapping and whole-parent form histories remain
+outside this lane. Consult `toolkit-cli/docs/neo-indicator-editor.md` for exact
+control eligibility, catalogue labels, hidden-field normalization and source
+versus runtime acceptance boundaries.

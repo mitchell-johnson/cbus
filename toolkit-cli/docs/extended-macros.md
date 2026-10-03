@@ -171,8 +171,11 @@ cbus-toolkit keys --spec-dir "$CBUS_UNITSPEC_DIR" neo-indicator-plan KEYM4.xml v
 cbus-toolkit cgate unit ... neo-indicator-styles --spec KEYB4.xml --colour blue --style status_dual
 ```
 
-The per-unit indicator editor (`TfrmNeoInputIndicators8`), `NightlightColour`
-and `EnableNightlightControl` are not covered.
+The separate [per-unit indicator editor](neo-indicator-editor.md)
+(`TfrmNeoInputIndicators8`) adds physical LED edits, ordered control histories
+and `NightlightColour` for 30 ordinary profiles at firmware 2.5.00.
+`EnableNightlightControl` is hidden by the original form setup and is not
+offered. These commands remain the existing Unit Magic bulk workflows.
 
 ## Event and memory mapping
 

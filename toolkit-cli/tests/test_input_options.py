@@ -169,7 +169,9 @@ class NeoIndicatorTests(unittest.TestCase):
 
 
 def run_cli(test, *args, status=0, prefix=()):
-    env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"))
+    # Keep the selected source or installed-wheel environment. Forcing src/
+    # here would silently bypass the fresh-wheel gate in CLI subprocesses.
+    env = dict(os.environ)
     process = subprocess.run([sys.executable, "-m", "cbus_toolkit", *map(str, prefix), *map(str, args)],
                              text=True, capture_output=True, env=env)
     test.assertEqual(process.returncode, status, process.stderr + process.stdout)
