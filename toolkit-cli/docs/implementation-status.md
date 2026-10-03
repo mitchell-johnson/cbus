@@ -1,6 +1,6 @@
 # Implementation status and outstanding work
 
-The [combined CLI integration](feature-batch-2026-10-03-combined-cli-integration.md) brings the reviewed SENLL controls/inventory/Global initialization, read-only SENLLA view, ordered DIN controls, offline NCC transcript, Neo indicator and thermostat remote-reference workflows onto the current base. Current combined source/fresh-wheel acceptance is pending; the retained feature-head counts below are historical, and the global parity gate remains incomplete.
+The [combined CLI integration](feature-batch-2026-10-03-combined-cli-integration.md) brings the reviewed SENLL controls/inventory/Global initialization, read-only SENLLA view, ordered DIN controls, offline NCC transcript, Neo indicator and thermostat remote-reference workflows onto the current base. Current combined source and fresh installed wheel each passed 1,002 parent tests and 3,305 separate subtests, with 37 disclosed provision skips. All 65 selected modules were collected, all 64 body-required modules passed, and all 146 new backend identities plus the preserved Time/Date28/DIN-save20 and SENLLA27 passed. Earlier feature-head counts below remain historical; the global parity gate remains incomplete.
 
 The [focused CI receipt correction](feature-batch-2026-10-03-ci-receipt-regressions.md)
 separates retained native archive integrity from current acceptance, refreshes
@@ -12,7 +12,7 @@ remain exact to the Time/Date release; production behavior is unchanged.
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
-The feature notes below retain the independently reviewed source-head scopes for the SENLL, DIN, NCC, Neo and thermostat additions. They are historical evidence; combined current source and installed-wheel validation is pending. The separate SENLLA surface remains read-only.
+The feature notes below retain the independently reviewed source-head scopes for the SENLL, DIN, NCC, Neo and thermostat additions. They are historical evidence. The current combined acceptance is bound separately by the [integrated release receipt](../research/fixtures/combined-cli-owned-release-20261003.json); source/wheel/author counts are not added. The separate SENLLA surface remains read-only.
 
 The [SENLLA provider-schema correction](../research/fixtures/senlla-bit-layout-owned-release-20261004.json)
 uses the native memory codec's one-bit layout for store flags with omitted

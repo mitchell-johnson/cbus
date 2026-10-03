@@ -582,6 +582,9 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_routes_source_pinned_component_without_mutating_inputs',
             'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_identity_and_bare_mapping_refuse_before_loading_schema',
             'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_new_view_has_no_edit_flags_and_does_not_broaden_senll_save_gate',
+            'tests/test_cli_senlla_surface.py::SENLLASurfaceCLITests::test_public_view_accepts_authored_spec_without_bit_width_or_skip',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_ignored_bit_width_and_skip_preserve_view_and_unsigned_guard',
+            'tests/test_senlla_surface.py::SENLLASurfaceTests::test_omitted_bit_metadata_uses_native_one_bit_layout',
         )
         actual = set()
         for module in ('tests/test_senlla_surface.py', 'tests/test_cli_senlla_surface.py'):
@@ -591,7 +594,7 @@ class NewInteropSelectionTests(unittest.TestCase):
                     for method in cls.body:
                         if isinstance(method, ast.FunctionDef) and method.name.startswith('test_'):
                             actual.add(module + '::' + cls.name + '::' + method.name)
-        self.assertEqual(len(expected), 24)
+        self.assertEqual(len(expected), 27)
         self.assertEqual(actual, set(expected))
 
 
