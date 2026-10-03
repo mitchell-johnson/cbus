@@ -1,0 +1,1370 @@
+{
+  "format": "cbus-senlla-normal-scene-composition-static-v1",
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "spec_filename": "SENLLA.xml",
+    "spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee"
+  },
+  "scope": {
+    "read_only_source_audit": true,
+    "original_instruction_execution": false,
+    "original_gui_acceptance": false,
+    "native_runtime_acceptance": false,
+    "physical_acceptance": false,
+    "repository_edits": false,
+    "complete_93_parameter_owned_save_implemented": false
+  },
+  "dependencies": [
+    {
+      "name": "scene-application-allocation-callback-derived.json",
+      "sha256": "ed72bc67cf175f92e465a0e4dddb6fa8968a348fc44058abc833ea3f7dcf7aa6"
+    },
+    {
+      "name": "scene-decision-constructor-chain-derived.json",
+      "sha256": "e5597a5c6ca45ad7698cdb86779d6226c67f230e55ddbd209dbfb56969cb8b9c"
+    },
+    {
+      "name": "ordinary-eight-key-algorithm-derived.json",
+      "sha256": "520d78e5fd21db161d81b1f4d9db2b337b7db0a0798b78753297f540ee2cca8d"
+    },
+    {
+      "name": "complete-macro-registry-derived.json",
+      "sha256": "6227d48edde3c1219e105b7c7206a461b4adaef5502d93c1e1eba12d08d46eda"
+    }
+  ],
+  "scene_serializer_route": {
+    "senlla_vmt": "0x1216bd8",
+    "vmt_slots": [
+      {
+        "slot": "0x1dc",
+        "address": "0xd07e10",
+        "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetScenesEnabled"
+      },
+      {
+        "slot": "0x1e0",
+        "address": "0xd081c8",
+        "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetScenesEnabled"
+      },
+      {
+        "slot": "0x220",
+        "address": "0xd08a90",
+        "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsSceneLearnCompatible"
+      }
+    ],
+    "enabled_gate_call": "0xccc6ce",
+    "table_call": "0xccc6ec",
+    "pointers_call": "0xccc71a",
+    "all_eight_keys_call": "0xccc751",
+    "table_method": "0xccbcf8",
+    "pointers_method": "0xccbfdc",
+    "numeric_table_helpers_have_key_count_dependency": false,
+    "existing_pure_helper": "native_sensor_scenes.scene_save_parameters has the same numeric getter/serializer grammar; its zero-key scope name does not change the shared native call route.",
+    "grammar": "First table group255 suppresses getter walk; otherwise40 pair positions feed eight original scene slots, retain first level for repeated group, ignore255, advance scene after every pair only when next raw pointer equals162+offset. Save fixed mode iff nonempty scene count<=4 and largest scene<=10; fixed pointers162/182/202/222/255/255/255/255. Otherwise pack nonempty scenes but pointer walk stops at first empty original scene index1 onward. Patch exact157/64 disables writes; every other Patch value enables table/pointer serialization. Patch is preserved."
+  },
+  "load_order": [
+    {
+      "phase": "CoreKey",
+      "source": "0xcc85dc",
+      "facts": "BeginUpdate(unit); inherited input attrs/apps; NeoPro eight secondary bits, raw block groups/Stores/timers/expiry; raw eight key masks ascending Add/RemoveByNumber with direct callbacks; EndUpdate(unit); ApplicationObjectRefresh then Application2ObjectRefresh. Raw masks do not imply final reference order."
+    },
+    {
+      "phase": "CoreNeo",
+      "source": "0xccb180",
+      "facts": "Inherited CoreKey complete; Patch gate sets ScenesEnabled; GetControlAppGroup atccb3fd (app202 create-enabled group), GetSceneCommands atccb403, GetKeyValues atccb40a, then KeysChanged. Scene getter/key load run regardless of Patch."
+    },
+    {
+      "phase": "CoreNeoPro",
+      "source": "0xced154",
+      "facts": "Inherited CBusNeo wrapper complete; KeyDisable, Corridor, Join refs and related scalar flags load after eight key command load. They cannot affect earlier Scene claim collision decisions as future facts."
+    },
+    {
+      "phase": "ST7Multisensor",
+      "source": "0xcf4890",
+      "facts": "Inherited CoreNeoPro complete; target/margin load before LoadLightLevelBanks atcf4a40; PEC refs/maintenance/broadcast follow; LoadOccupancyKeys atcf4b90; occupancy enable, power fail, potentiometers. Bank clamps can rewrite Stores after key templates were derived; do not derive key templates anew from post-bank Stores."
+    },
+    {
+      "phase": "SurfaceMultisensor",
+      "source": "0x1217764",
+      "facts": "Inherited ST7 complete; surface power/target/margin/bank-group overlays load next."
+    },
+    {
+      "phase": "FreshDirector",
+      "facts": "M8 InitialiseFunctionCombos occurs before hooks and decision handler; Scene25 absent from SENLLA lists becomes unlocked16 and zeros. Scene24 present survives. Fresh binding application/group controls render only; no explicit click callbacks. Surface scalar/bank fresh normalization happens later; target>200 clamp preserves original logical marginpercent."
+    }
+  ],
+  "normal_before_save_order": [
+    {
+      "phase": "CoreKey",
+      "source": "0xcc9030",
+      "facts": "Inherited input/global scalars, EEPROM level attributes; SetKeyBlocks then SetBlockValues reflect actual ordered membership and block object state."
+    },
+    {
+      "phase": "CoreNeo",
+      "source": "0xccc358",
+      "facts": "Inherited CoreKey complete atccc37b; ControlAppGroup/infrared/nightlight attrs; enabled SceneTable/pointers atccc6ec/ccc71a; SetKeyValues all8 atccc751. Patch disabled skips only table/pointers, not all8 keys."
+    },
+    {
+      "phase": "CBusNeo",
+      "source": "0xcebf00",
+      "facts": "Inherited CoreNeo complete; Neo wrapper adds its supported model scalars."
+    },
+    {
+      "phase": "CoreNeoPro",
+      "source": "0xced788",
+      "facts": "Inherited CBusNeo complete; SecondApplicationBlocks save atced7c7 precedes Infrared/disable/corridor/join overlays."
+    },
+    {
+      "phase": "ST7Multisensor",
+      "source": "0xcf5558",
+      "facts": "Inherited CoreNeoPro complete; scalar target/margin and bank/PEC/broadcast/occupancy/power/potentiometer output overlays. Scene/key bytes were already marshalled; no full key re-decode occurs here."
+    },
+    {
+      "phase": "SurfaceMultisensor",
+      "source": "0x1217d60",
+      "facts": "Inherited ST7 complete; surface target/margin/bank group encodings and stored threshold overlays, then SavePowerFail at121827e. Conversion PrepareForcedParametersSENLL excluded from normal chain."
+    }
+  ],
+  "swap_data_order": {
+    "cache": "All source first-block values cached initially.",
+    "writes": "Write second-block current Secondary,Group,LightLevel,Store1,Store2,Timer,TimerCached,Expiry,ExpiryOverride to first block in this order; then cached first-block values to second in same order. This is setter/callback order, not an atomic tuple exchange.",
+    "source": "0xd10540",
+    "caller": "Scene claim holds both block BeginUpdate during SwapData then SwapMappings, ends linear block before candidate."
+  },
+  "fresh_nil_decision": {
+    "independent_constructor_review_clear": true,
+    "constructor_chain_count": 18,
+    "facts": "No setter/direct1b8/1bc write in inherited constructor spans; initial method pointer nil. Existing target group bypasses decision. Fresh missing target group uses default createAllowed=true before M8 hook install f94993. Later handler-present callback consults UNIT PRIMARY CanAddGroups, accepts by-reference override or decline; decline resolves target unused255. Direct app202/control-group/trigger-level create-enabled getters do not use that unit hook.",
+    "metadata_boundary": "Numeric PP determinism is insufficient to publish new project tags. Safe full owner must bind actual existing inventory or model exact source getter creations with project ownership; a caller Boolean cannot establish missing-object outcomes."
+  },
+  "qualified_numeric_literals": [
+    {
+      "name": "secondary_invoke_transient_state_loses_scene_template",
+      "before": {
+        "secondary_block_mask": 1,
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after_key_component": {
+        "secondary_block_mask": 0,
+        "BlockAllocation": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          13,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "key_template_types_after": [
+        0,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "timeline": [
+        "fresh macro FunctionType0, key template nil, raw key0 allocation0",
+        "SceneRampFunction14; setter keytemplate24 enters Scene allocation",
+        "Add linear secondary block0 ->ApplicationState1",
+        "ApplicationState callback derives macro0 under MacroPin ->keytemplate0; no raw copy yet",
+        "force secondaryfalse ->state0; template remains0",
+        "outer unlocked template handler copies CURRENT template0 default group1 stages13/0/0/0",
+        "loader still sets Scene8, trigger165 and rate4; Invoke branch skips raw logical-indicator assignment",
+        "key before-save tests actual current type0: selector0 and logical indicator0"
+      ],
+      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization."
+    },
+    {
+      "name": "secondary_modify_becomes_ordinary_raw_timer_template",
+      "before": {
+        "secondary_block_mask": 1,
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after_key_component": {
+        "secondary_block_mask": 0,
+        "BlockAllocation": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          44,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "key_template_types_after": [
+        6,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "timeline": [
+        "keytemplate25 enters Scene allocation",
+        "Add linear secondary block0 ->ApplicationState1",
+        "RefreshTemplate keeps25 and derives extension template0 under SceneRampPin",
+        "RefreshMacrofunctionFromKeySecondary sees state1 and Scene25 ->unlocked keytemplate16 and zeros",
+        "force primary ->state0; outer template handler copies current16 zeros",
+        "Modify loader loads raw11/7/0/7 under MacroPin then ordinary derivation chooses6",
+        "changed keytemplate6 defaults primary-block timer0->300seconds, nil expiry->15 before MacroPin guard",
+        "raw logical indicator assignment6 loaded after macro derivation; selector0/stages preserved on key save"
+      ],
+      "qualification": "Apps56/57 are admitted existing Lighting objects. All block groups are canonical unused255; no swaps, no collisions, no missing target groups, existing app202/control group/trigger165. Numeric key component after, before owning ST7 bank/scalar/fresh normalization."
+    },
+    {
+      "name": "later_scene_claim_relocates_already_loaded_ordinary_indicator",
+      "before": {
+        "secondary_block_mask": 0,
+        "BlockAllocation": [
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          13,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          1,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "TimerExpiryCommand": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "LightLevelStore1": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "LightLevelStore2": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ]
+      },
+      "after_key_component": {
+        "secondary_block_mask": 0,
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneKeySelector": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          13,
+          14,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          2,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "TimerExpiryCommand": [
+          2,
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "LightLevelStore1": [
+          11,
+          10,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "LightLevelStore2": [
+          21,
+          20,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ]
+      },
+      "key_template_types_after": [
+        0,
+        24,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "timeline": [
+        "key0 ordinary On0 loads block1 and raw indicator1 ->logical BlockNumber2",
+        "key1 Scene24 reserves linear block1, occupied only by key0",
+        "candidate=key0 linear block0 unused; SwapData(candidate0,linear1) then SwapMappings",
+        "key0 Remove1 then Add0; group20 object and raw On stages retained; matching logical indicator2 remaps to1 ->saved assignment0",
+        "key1 claims now-unused primary block1 and selects Scene6; Invoke serialization keeps Scene index5"
+      ],
+      "qualification": "All block applications primary; no missing objects or hidden-group collision. This captures exchange/indicator consequences before ST7 bank load/Store clamps and fresh form. It must not be recomputed using original allocation masks."
+    }
+  ],
+  "scene_table_literals": [
+    {
+      "name": "enabled_first_sentinel_empty_getter",
+      "before": {
+        "PatchEnable": [
+          0,
+          0
+        ],
+        "SceneTable_first_pair": [
+          255,
+          7
+        ],
+        "SceneTablePointer": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "SceneTable": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "SceneTablePointer": [
+          162,
+          182,
+          202,
+          222,
+          255,
+          255,
+          255,
+          255
+        ],
+        "PatchEnable": [
+          0,
+          0
+        ]
+      },
+      "qualification": "Remaining raw table bytes arbitrary; first group255 suppresses them before any scene command getter insertion."
+    },
+    {
+      "name": "disabled_preserves_noncanonical_table_pointers",
+      "before": {
+        "PatchEnable": [
+          157,
+          64
+        ],
+        "SceneTablePointer": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "after": {
+        "SceneTable": "exact original80 bytes",
+        "SceneTablePointer": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "PatchEnable": [
+          157,
+          64
+        ]
+      },
+      "qualification": "All eight keys still load and save; preserving table bytes is separate from Scene-key allocation normalization."
+    }
+  ],
+  "owning_composition_requirements": [
+    "Maintain shared application/group object identity and ordered key references through every load callback, swap and collision; replay nested callbacks before later source statements.",
+    "Retain macro constructor type0 versus keytemplate nil and re-read CURRENT keytemplate after nested Scene claim callbacks; Scene24/25 cannot be finalized from initial selector alone.",
+    "Track occupancy/bank/scalar histories at their actual load and fresh positions; final-state-only composition can miss defaults or retain incorrect smart flags.",
+    "Use current SceneCollection numeric commands for enabled save; no fresh source Scene-manager edit was found, but an explicit future Scene edit requires owning source-controlled collection operations.",
+    "Bind all consumed93 raw expected/schema bytes and staleness/readback; do not write numeric inventory-only fields arbitrarily.",
+    "Original GUI/runtime/hardware acceptance stays false."
+  ],
+  "source_pins": [
+    {
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.InternalCreate",
+      "address": "0xc96a5c",
+      "sha256": "421a1128a248d2dc218dfd2db9e1aecb4496d39bbd72481b1c6b36cff1784e42",
+      "instruction_count": 63
+    },
+    {
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.AssignTemplate",
+      "address": "0xc96c60",
+      "sha256": "f0257da639b24bd6eace5603830c373214f745de495af74adca68074195eba10",
+      "instruction_count": 35
+    },
+    {
+      "method": "CIS_TKeyMacroFunction.TKeyMacroFunction.GetFunctionType",
+      "address": "0xc96e08",
+      "sha256": "6d2d05695272bc7cba013a53799b18630fa2bc84d2c13d0609b490c7e2da2305",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.SetSceneRampRate",
+      "address": "0xc99d54",
+      "sha256": "211341d65e20d10dc21f4b8f3e0f1c6c98d7c1eba9c000325f858b6a41a411b5",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.HandleSceneAfterChangeEvent",
+      "address": "0xc99e60",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a",
+      "instruction_count": 9
+    },
+    {
+      "method": "CIS_TInputKeyExtensionNeo.TInputKeyExtensionNeo.HandleSceneRampMacroFunctionTemplateAfterChangeEvent",
+      "address": "0xc99eb8",
+      "sha256": "888dd556bd93fb7a5c8f0ebc4679845638f6b66d8e4258483f4b9eef35225534",
+      "instruction_count": 60
+    },
+    {
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetNumberOfScenesInUse",
+      "address": "0xc9b19c",
+      "sha256": "9ba439d6563a57f895ee9f8f5d51a0e77d64c7c3ce3bbe687c3de9eb622364fc",
+      "instruction_count": 69
+    },
+    {
+      "method": "CIS_TInputKeyExtensionNeo.TNeoSceneManager.GetLargestSceneSize",
+      "address": "0xc9b35c",
+      "sha256": "028bb52e189e8dc587313925e31fcd5bfda7f9f09e32de6dee1f96be56c8b714",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks",
+      "address": "0xcc76f8",
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be",
+      "instruction_count": 109
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xcc85dc",
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc",
+      "instruction_count": 159
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.SetKeyBlocks",
+      "address": "0xcc8aa8",
+      "sha256": "c5f0fcab4ac93acf8909297b5d789e087ca59353bfcd6ec9abf27d7b62f1d00b",
+      "instruction_count": 118
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0xcc9030",
+      "sha256": "b3b5ebe63cc58dcf9c3f914dd33099f521afac1d5bfa2d5485c700661d48adbf",
+      "instruction_count": 99
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.GetControlAppGroup",
+      "address": "0xcca350",
+      "sha256": "65f874185368a21450b8b30c98c28c603d4f451e70bd98ab834803489cfbf0e4",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.GetKeyValues",
+      "address": "0xcca51c",
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1",
+      "instruction_count": 596
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.GetSceneCommands",
+      "address": "0xccaf50",
+      "sha256": "e8e8ea839fdb46aef202eaf5ab1aaebc5e27953c2f4ee383568846cfad47e145",
+      "instruction_count": 156
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xccb180",
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838",
+      "instruction_count": 221
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.SetKeyValues",
+      "address": "0xccb854",
+      "sha256": "c7ece7753ed9e30e2767905b2e2787c93c032cfbdbbe84a508693971ad99a55b",
+      "instruction_count": 348
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.GetNeoUnitSceneTableAsString",
+      "address": "0xccbcf8",
+      "sha256": "043bfffdea97dd605159ea91b29212cae2f276c5bb7ee7b95417ef71a05e7e77",
+      "instruction_count": 180
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.GetNeoSceneTablePointersAsString",
+      "address": "0xccbfdc",
+      "sha256": "4a32cf9860d93af5a18216fb23dfacde345e0c2116659075e22bb816f8b87840",
+      "instruction_count": 152
+    },
+    {
+      "method": "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0xccc358",
+      "sha256": "eff8a563f079b594dc956b6a0692cb9facd2a52ef8d67ed184208fd05ab782d1",
+      "instruction_count": 308
+    },
+    {
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xcebe04",
+      "sha256": "1534462408bb96b90eab0541faf42b7879ea647e9d67928386bafdcf7605a23a",
+      "instruction_count": 83
+    },
+    {
+      "method": "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0xcebf00",
+      "sha256": "b2c5a333f6dd843e6036ec360efd736d71ebd4c76b95439f5771560c7a6a0afe",
+      "instruction_count": 85
+    },
+    {
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xced154",
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861",
+      "instruction_count": 281
+    },
+    {
+      "method": "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0xced788",
+      "sha256": "79c18bb0c68bed4b0281f6d9eae01516d5f61ddf7cbb276bea83f25a2519217a",
+      "instruction_count": 338
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0xcf4890",
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1",
+      "instruction_count": 310
+    },
+    {
+      "method": "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0xcf5558",
+      "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a",
+      "instruction_count": 379
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetScenesEnabled",
+      "address": "0xd07e10",
+      "sha256": "0bbc6872ebd1f38ea8ca1f18d8fab20a5dd8289371f91e1839051f09fb87cae6",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.SetScenesEnabled",
+      "address": "0xd081c8",
+      "sha256": "c375826546ff0474d47dae72a38790a068166e8e61013840549970ada15e5003",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.IsSceneLearnCompatible",
+      "address": "0xd08a90",
+      "sha256": "ed4fed0bf76b19ceda0bf13075211b1d8b41223c788db6fc4a3cf988060d5844",
+      "instruction_count": 24
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlockCollection.SwapBlockData",
+      "address": "0xd10540",
+      "sha256": "5ec9939714722bf317baaad0a0f4d1a59fefbb3c5ac4123d6a06ea4a1a2f633a",
+      "instruction_count": 155
+    },
+    {
+      "method": "CIS_TInputKey.TInputIndicator.SetBlockNumber",
+      "address": "0xd10a50",
+      "sha256": "22623b5e362a4b98d002a2758e3667d0def00628720d8cd99b3ec8e87ab266c0",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshTemplateFromMacroFunction",
+      "address": "0xd11a5c",
+      "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7",
+      "instruction_count": 140
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromTemplate",
+      "address": "0xd11c14",
+      "sha256": "d73920eaf21e1b0c24ab401116ce15a5ccbc9ad6057371b49df918f393b3531c",
+      "instruction_count": 26
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshSceneRampMacroFunctionFromTemplate",
+      "address": "0xd11c54",
+      "sha256": "835247f0e38877ecbdc80dc0e75cabc1e92c589475f7776094b3277266a0b9db",
+      "instruction_count": 52
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromSceneRampTemplate",
+      "address": "0xd11d1c",
+      "sha256": "9d2dd465abafa20e2f24ea53bf629f95f9235707fea52cd8a70b145bc061f6a8",
+      "instruction_count": 46
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshPrimaryGroupFromBlockGroups",
+      "address": "0xd11da4",
+      "sha256": "9333ce099b96a9fad7a1e862e116f6f97357128822a85d2427e27dbd3b46b5bd",
+      "instruction_count": 80
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplateScene",
+      "address": "0xd12788",
+      "sha256": "55fc404a82307263ee2e27e498b7137e37ba4b3066120663ddda7bb459f11327",
+      "instruction_count": 234
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent",
+      "address": "0xd12adc",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf",
+      "instruction_count": 97
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.HandleApplicationStateAfterChange",
+      "address": "0xd12d10",
+      "sha256": "0f798d21f2d44176d98064f9ad4b0678b9e00c37c6d7f10ee79de38be252a7fa",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshKeyApplicationFromKeySecondary",
+      "address": "0xd12d50",
+      "sha256": "e8515589afc4425b5e38862ec948edac9f3d5e38a2119d3622c132f8a9bc7f97",
+      "instruction_count": 75
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshBlockSecondaryFromKeySecondary",
+      "address": "0xd12e64",
+      "sha256": "d1a0916a382101c85d428da7788ede1d8d9f18b41a270d13e4e295c93c95995e",
+      "instruction_count": 96
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshMacrofunctionFromKeySecondary",
+      "address": "0xd130d4",
+      "sha256": "058b5c54497a1b2ea9d4cc14a485a74cb77f9eddb132ffc3fe52da4568be7d86",
+      "instruction_count": 24
+    },
+    {
+      "method": "CIS_TInputKey.TInputKeyCollection.SwapBlockMappings",
+      "address": "0xd14588",
+      "sha256": "a836625e0f6d98a6e2c5f0ba4ef0bbdb866f8fa818a949a0e29f0acf39a903ca",
+      "instruction_count": 137
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.AfterLoadProgrammingInformation",
+      "address": "0x1217764",
+      "sha256": "4717c73630e1e4c8ee209857fdf3f2c92c2e6d42d5165ce8de6dd5f2f8eca797",
+      "instruction_count": 280
+    },
+    {
+      "method": "CIS_TCBusSurfaceMountSensorCGateAgent.TCBusSurfaceMountMultisensorCGateAgent.BeforeSaveProgrammingInformation",
+      "address": "0x1217d60",
+      "sha256": "fcc2025b40021f638c60bfa68e567f3bf5790de78dcb55cc6dc4fe5ab61ebcfa",
+      "instruction_count": 385
+    }
+  ]
+}
