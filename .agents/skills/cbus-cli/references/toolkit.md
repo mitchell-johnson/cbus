@@ -59,6 +59,18 @@ native shared-key reassignment is not modelled. Native PP database save/reload
 evidence does not establish physical timing or power-failure behavior. Read
 `toolkit-cli/docs/sensors.md` for identities, source evidence and exclusions.
 
+For the eight admitted DIN relay/dimmer firmware-2.7.00 profiles, add
+`--toolkit-save` to `din-settings plan` or `cgate unit ... din-settings` to
+include one recovered agent-save projection after the requested edits. Inspect
+the v2 plan's `pre_save_changes`, `save_normalization` and final `changes`.
+RELDN8 marshalling differs from the ordinary agent: untouched level-store
+recovery bytes can survive, short arrays retain their final stored element,
+and MaxDimmingLevel can change again on a later explicit save. Never repeat
+normalization to seek a fixed point. V1 targeted plans retain their previous
+semantics. Database PP and project saves remain separate; this does not prove
+complete original form or physical output behavior. Read
+`toolkit-cli/docs/din-output-settings.md` before applying.
+
 
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
 `--output NEW.xml` writes a new file exclusively. Captured XML 1.0/1.1,
@@ -966,3 +978,25 @@ and preserves unrelated canonical graph data. No label transfer, image upload,
 Language mutation, target lifecycle or factory preparation is implied. Read
 `toolkit-cli/docs/edlt-global-image-metadata.md`; uncertain successful saves stop
 without replay. Original GUI/native/hardware acceptance remains separate.
+
+## Dual-key callbacks and complete Neo report factory profiles
+
+For Timer, Shutter and Room Courtesy parent operations, `dual_key_controls`
+adds explicit property and binding histories. Use a controls-only retained
+page/position operation to preserve raw macro, level, ramp and hidden bytes;
+ordinary scalar edits and explicit conversions retain their existing
+configuration/default profile before callbacks. Inspect the issued control
+view and exact choices; getters may clamp source fields, while receipt/view
+serialization never invents mutation getters. The parent owns one PP save,
+static Names and uncertain-save recovery. Read
+`toolkit-cli/docs/edlt-dual-key-controls.md`; original input parsing, framework
+notifications, modal icon selection, rendering and hardware remain open.
+
+Saved Neo/NeoPro reports cover 43 exact types across 59 source factory partitions.
+Require the complete admitted PP/dependency graph rather than infer absent
+values. KEYEx masks/defaults/IR positions and six couplers' Bistable cells have
+source-specific rules; the couplers inherit Neo Other-usage behavior even while
+using Pro blocks/scenes. Read
+`toolkit-cli/docs/project-documentation-neo-profiles.md`. A document generated
+from saved XML or one fresh database snapshot is not original GUI/print or
+physical acceptance.

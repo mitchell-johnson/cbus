@@ -14,6 +14,7 @@ pub(crate) mod family_help;
 mod move_journal;
 mod net_lifecycle;
 mod pp_patch;
+mod repository_io;
 mod transform;
 mod unravel_plan;
 
@@ -91,7 +92,7 @@ use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::{BTreeMap, HashMap, HashSet, VecDeque},
-    io::{self, Write},
+    io,
     path::Path,
     sync::{
         atomic::{AtomicU64, Ordering},
@@ -108,7 +109,6 @@ use tokio::{
 const MAX_LINE: usize = 1024 * 1024;
 const SERVICE_EVENT_CAPACITY: usize = 512;
 const MAX_DOCUMENT: usize = 16 * 1024 * 1024;
-const MAX_STATE: usize = 32 * 1024 * 1024;
 const MAX_LABEL_OBSERVATIONS: usize = 4096;
 const CONFIG_KEY_PREFIX: &str = "@cmqttd/config/";
 
@@ -484,8 +484,15 @@ struct Database {
     access_snapshot_admission: HashMap<String, bool>,
 }
 
+#[cfg(test)]
+thread_local! {
+    static REPOSITORY_SNAPSHOTS: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+}
+
 impl Database {
     fn from_server(s: &Server) -> Self {
+        #[cfg(test)]
+        REPOSITORY_SNAPSHOTS.with(|count| count.set(count.get() + 1));
         // Network retries are live command state. Normalize the cloned
         // projects before durable comparison and serialization so SET does
         // not cause an atomic database rewrite or survive daemon restart.
@@ -703,41 +710,7 @@ impl Database {
     }
 
     fn save(&self, path: &Path) -> io::Result<()> {
-        let data = serde_json::to_vec(self)?;
-        if data.len() > MAX_STATE {
-            return Err(io::Error::other("C-Gate database exceeds 32 MiB"));
-        }
-        let parent = path
-            .parent()
-            .filter(|p| !p.as_os_str().is_empty())
-            .unwrap_or(Path::new("."));
-        std::fs::create_dir_all(parent)?;
-        static SEQUENCE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
-        let temp = parent.join(format!(
-            ".cmqttd-{}-{}.tmp",
-            std::process::id(),
-            SEQUENCE.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
-        ));
-        let result = (|| {
-            let mut options = std::fs::OpenOptions::new();
-            options.write(true).create_new(true);
-            #[cfg(unix)]
-            {
-                use std::os::unix::fs::OpenOptionsExt;
-                options.mode(0o600);
-            }
-            let mut file = options.open(&temp)?;
-            file.write_all(&data)?;
-            file.sync_all()?;
-            std::fs::rename(&temp, path)?;
-            #[cfg(unix)]
-            std::fs::File::open(parent)?.sync_all()?;
-            Ok(())
-        })();
-        if result.is_err() {
-            let _ = std::fs::remove_file(temp);
-        }
-        result
+        repository_io::save(path, self)
     }
 }
 
@@ -1918,12 +1891,8 @@ impl Service {
             model = model.with_unitspec_dir(dir);
         }
         model = model.with_native_project_archives();
-        match std::fs::read(&state_path) {
-            Ok(data) => {
-                if data.len() > MAX_STATE {
-                    return Err(io::Error::other("C-Gate database exceeds 32 MiB"));
-                }
-                let database = serde_json::from_slice::<Database>(&data)?;
+        match repository_io::load::<Database>(&state_path) {
+            Ok(database) => {
                 let needs_import = !database.imported_project_metadata;
                 let migrated = database.restore(&mut model)?;
                 if needs_import {
@@ -3157,6 +3126,12 @@ impl Service {
                 // Opt-in command-layer LOGIN gate (see Service::set_auth_token_hash):
                 // false with the dormant default, true once armed.
                 "cgate_auth":self.auth_token_hash.get().is_some()});
+            capabilities["repository_max_bytes"] =
+                serde_json::Value::from(repository_io::MAX_BYTES);
+            capabilities["repository_storage"] =
+                serde_json::Value::String("bounded-streamed-atomic-json-v1".to_string());
+            capabilities["repository_snapshot_free_reads"] =
+                serde_json::json!(["DBGET", "DBGETXML"]);
             capabilities["saved_project_group_dlt_labels"] = serde_json::Value::Bool(
                 self.model
                     .lock()
@@ -4664,6 +4639,21 @@ impl Service {
                     }
                 }
             }
+        }
+        // The audited DBGET/DBGETXML dispatch only reads the database graph.
+        // Do not clone every active and saved project, compare two durable
+        // projections or touch the repository file for an ordinary read.
+        // Keep this after the same authorization/physical/ownership gates;
+        // all mutation and PP paths retain the transactional rollback lane.
+        if matches!(verb, "DBGET" | "DBGETXML") {
+            model.set_command_session(client.command_session);
+            let response = model.handle(line);
+            model.set_command_session(None);
+            client.current = model.current.clone();
+            for event in model.drain_events() {
+                let _ = self.events.send(self.event_with_startup_precision(event));
+            }
+            return response;
         }
         let before = model.clone();
         let before_db = Database::from_server(&model);

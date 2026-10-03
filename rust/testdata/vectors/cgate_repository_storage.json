@@ -1,0 +1,8 @@
+{
+  "repository_max_bytes": 268435456,
+  "repository_storage": "bounded-streamed-atomic-json-v1",
+  "repository_snapshot_free_reads": [
+    "DBGET",
+    "DBGETXML"
+  ]
+}

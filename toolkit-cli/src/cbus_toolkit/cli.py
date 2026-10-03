@@ -233,6 +233,8 @@ def _din_options(parser):
     group.add_argument("--logic-recovery-percent", type=_number)
     group.add_argument("--logic-recovery-level", type=_byte)
     parser.add_argument("--logic-level-store", choices=onoff)
+    parser.add_argument("--toolkit-save", action="store_true", default=None,
+                        help="Include the admitted Toolkit agent-save normalization for every channel")
 
 
 def _din_settings(args):
@@ -250,7 +252,7 @@ def _din_settings(args):
                 "recovery_delay", "restrike_delay", "interlock", "logic_group", "logic_group_address",
                 "logic_recovery_percent", "logic_recovery_level")},
             "level_store": flag(args.level_store), "restrike": flag(args.restrike),
-            "logic_level_store": flag(args.logic_level_store)}
+            "logic_level_store": flag(args.logic_level_store), "toolkit_save": args.toolkit_save}
 
 
 def _din_editor(args, unit_type):
@@ -1924,7 +1926,7 @@ def build_parser():
     p = unops.add_parser("din-settings", help="Show or edit DIN relay/dimmer Logic, Turn On, Recovery and Restrike settings (firmware 2.7.00)")
     p.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     p.add_argument("--show", action="store_true", help="Report the Toolkit tab view without editing")
-    p.add_argument("--plan", dest="din_plan", type=Path, help="Apply a saved cbus-din-output-settings-plan-v1 after a stale check")
+    p.add_argument("--plan", dest="din_plan", type=Path, help="Apply a saved DIN settings plan after validation and a stale check")
     _din_options(p)
     from .iope_cli import native_options as iope_native_options
     iope_native_options(unops)

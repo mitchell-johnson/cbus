@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 720,
-    "modules_without_skip_sites": 406,
-    "modules_with_skip_sites": 314,
+    "test_modules": 728,
+    "modules_without_skip_sites": 411,
+    "modules_with_skip_sites": 317,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,12 +62,12 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 107,
+      "original_toolkit": 109,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 38,
+      "unclassified": 39,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 154
+      "none": 157
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -3217,6 +3217,41 @@
         }
       ]
     },
+    "tests/test_din_output_save.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "requires pinned Toolkit bytes for static hash check",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution"
+          ]
+        }
+      ]
+    },
     "tests/test_din_output_settings.py": {
       "categories": [
         "cgate_test_host",
@@ -4277,6 +4312,41 @@
           ],
           "tests": [
             "DltpIndexTests::test_pinned_vendor_index_fact"
+          ]
+        }
+      ]
+    },
+    "tests/test_edlt_dual_key_control_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_dual_key_control_static.py::test_source_annex_full_regeneration_from_configured_bytes",
+          "kind": "body.call",
+          "condition": "not vendor",
+          "reason": "Requires explicit pinned original static-byte input directory; no vendor execution",
+          "environment": [
+            "CBUS_DUAL_KEY_STATIC_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "test_source_annex_full_regeneration_from_configured_bytes"
           ]
         }
       ]
@@ -8883,6 +8953,41 @@
           ],
           "tests": [
             "test_neo_static_receipt_reproduces_from_vendor_inputs"
+          ]
+        }
+      ]
+    },
+    "tests/test_project_documentation_neo_profiles.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_project_documentation_neo_profiles.py::test_current_static_annex_reproduces_from_pinned_inputs",
+          "kind": "decorator.skipif",
+          "condition": "not os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "Requires pinned Toolkit EXE/MAP for read-only static proof",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "test_current_static_annex_reproduces_from_pinned_inputs"
           ]
         }
       ]

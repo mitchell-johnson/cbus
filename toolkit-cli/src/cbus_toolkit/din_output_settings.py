@@ -33,6 +33,7 @@ FIRMWARE = '2.7.00'
 # Logic-engine code editing (PICED) is external software, not the DIN Logic tab.
 LOGIC_ENGINE_BOUNDARY = 'external'
 PLAN_FORMAT = 'cbus-din-output-settings-plan-v1'
+TOOLKIT_SAVE_PLAN_FORMAT = 'cbus-din-output-settings-plan-v2'
 
 
 @dataclass(frozen=True)
@@ -173,26 +174,50 @@ class DinPlan:
     changes: dict
     derived: tuple = ()
     identity: tuple | None = None
+    toolkit_save: bool = False
+    pre_save_changes: dict | None = None
+    save_normalization: dict | None = None
 
     def __post_init__(self):
+        if type(self.toolkit_save) is not bool:
+            raise DinSettingsError('toolkit_save must be boolean')
         for name in ('expected', 'changes'):
             object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in getattr(self, name).items()}))
+        for name in ('pre_save_changes', 'save_normalization'):
+            value = getattr(self, name)
+            if self.toolkit_save and value is None:
+                raise DinSettingsError('Toolkit save plans require ' + name)
+            if not self.toolkit_save and value is not None:
+                raise DinSettingsError('Targeted plans cannot contain Toolkit save metadata')
+            if value is not None:
+                object.__setattr__(self, name, MappingProxyType({k: tuple(v) for k, v in value.items()}))
 
     def as_dict(self):
         profile = PROFILES[self.unit_type]
         firmware, catalog_number = self.identity[1:] if self.identity else (None, None)
-        return {'format': PLAN_FORMAT, 'unit_type': self.unit_type, 'firmware': firmware,
+        result = {'format': TOOLKIT_SAVE_PLAN_FORMAT if self.toolkit_save else PLAN_FORMAT,
+                'unit_type': self.unit_type, 'firmware': firmware,
                 'catalog_number': catalog_number, 'firmware_admitted': FIRMWARE,
                 'spec_filename': profile.spec_filename, 'channels': profile.channels,
                 'channel': self.channel, 'logic_group': self.logic_group, 'derived': list(self.derived),
                 'expected': {k: list(v) for k, v in self.expected.items()},
                 'changes': {k: list(v) for k, v in self.changes.items()},
                 'saved': False, 'device_verified': False}
+        if self.toolkit_save:
+            result.update(toolkit_save=True, normalization_passes=1,
+                          pre_save_changes={k: list(v) for k, v in self.pre_save_changes.items()},
+                          save_normalization={k: list(v) for k, v in self.save_normalization.items()})
+        return result
 
     @classmethod
     def from_dict(cls, data):
-        if not isinstance(data, dict) or data.get('format') != PLAN_FORMAT:
-            raise DinSettingsError('Expected a ' + PLAN_FORMAT + ' document')
+        if not isinstance(data, dict) or data.get('format') not in (PLAN_FORMAT, TOOLKIT_SAVE_PLAN_FORMAT):
+            raise DinSettingsError('Expected a DIN output settings v1 or v2 plan document')
+        toolkit_save = data.get('toolkit_save', False)
+        if type(toolkit_save) is not bool:
+            raise DinSettingsError('toolkit_save must be boolean')
+        if toolkit_save != (data['format'] == TOOLKIT_SAVE_PLAN_FORMAT):
+            raise DinSettingsError('Toolkit save requires a v2 plan with toolkit_save=true')
         unit_type = data.get('unit_type')
         if unit_type not in PROFILES:
             raise DinSettingsError('Plan unit type is not admitted')
@@ -203,8 +228,36 @@ class DinPlan:
             raise DinSettingsError('Plan requires expected and changes mappings') from error
         firmware = data.get('firmware')
         identity = None if firmware is None else check_profile(unit_type, firmware, data.get('catalog_number'))
+        pre_save_changes, save_normalization = None, None
+        if toolkit_save:
+            if type(data.get('normalization_passes')) is not int or data['normalization_passes'] != 1:
+                raise DinSettingsError('Toolkit save plans require exactly one normalization pass')
+            pre_save_changes = _strict_plan_values(data.get('pre_save_changes'), unit_type, 'pre_save_changes')
+            save_normalization = _strict_plan_values(data.get('save_normalization'), unit_type, 'save_normalization')
+            expected = _strict_plan_values(expected, unit_type, 'expected', complete=True)
+            changes = _strict_plan_values(changes, unit_type, 'changes')
+        elif any(name in data for name in ('pre_save_changes', 'save_normalization', 'normalization_passes')):
+            raise DinSettingsError('Targeted plans cannot contain Toolkit save metadata')
         return cls(unit_type, data.get('channel'), data.get('logic_group'), expected, changes,
-                   tuple(data.get('derived') or ()), identity)
+                   tuple(data.get('derived') or ()), identity, toolkit_save,
+                   pre_save_changes, save_normalization)
+
+
+def _strict_plan_values(values, unit_type, label, *, complete=False):
+    """Canonical v2 documents contain exact integer arrays, never coercible values."""
+    if not isinstance(values, (dict, MappingProxyType)):
+        raise DinSettingsError('Toolkit save plan requires a ' + label + ' mapping')
+    layout = LAYOUTS[PROFILES[unit_type].spec_filename]
+    if (complete and set(values) != set(FIELDS)) or any(name not in FIELDS for name in values):
+        raise DinSettingsError('Toolkit save plan has invalid ' + label + ' fields')
+    result = {}
+    for name, row in values.items():
+        count, bits = layout[name][1:3]
+        if (not isinstance(row, (tuple, list)) or len(row) != count
+                or any(type(value) is not int or not 0 <= value < 1 << bits for value in row)):
+            raise DinSettingsError('Toolkit save plan has invalid ' + label + ' array: ' + name)
+        result[name] = tuple(row)
+    return result
 
 
 class DinOutputEditor:
@@ -262,8 +315,9 @@ class DinOutputEditor:
                            recovery_delay=delay, recovery_delay_seconds=recovery_delay_seconds(delay))
             else:
                 row['restrike'] = bool(values['RestrikeChannel'][i])
-            # Toolkit's agent save writes 255 for every level-store channel.
-            row['toolkit_save_rewrites_recovery_level'] = store and level != 255
+            # RELDN8's later marshalling save replaces the base forced 255
+            # with the retained channel-model level.
+            row['toolkit_save_rewrites_recovery_level'] = p.unit_type != 'RELDN8' and store and level != 255
             channels.append(row)
         logic = []
         for g in range(4):
@@ -294,12 +348,16 @@ class DinOutputEditor:
              recovery_level=None, recovery_percent=None, level_store=None, recovery_delay=None,
              restrike=None, interlock=None, restrike_delay=None, logic_group=None,
              logic_group_address=None, logic_recovery_level=None, logic_recovery_percent=None,
-             logic_level_store=None, identity=None):
+             logic_level_store=None, identity=None, toolkit_save=False):
         """Plan one channel's tab edits plus optional unit and logic-group settings.
 
         Percent inputs use the original PercentToLevel conversion and the
         Min/Max slider coupling; ``*_level`` inputs write raw bytes.
+        ``toolkit_save`` additionally projects one source-pinned agent save
+        over the owned fields. It does not execute the whole original dialog.
         """
+        if type(toolkit_save) is not bool:
+            raise DinSettingsError('toolkit_save must be boolean')
         p = self.profile
         if identity is not None:
             if not isinstance(identity, tuple) or len(identity) != 3:
@@ -377,14 +435,88 @@ class DinOutputEditor:
         if logic_group is not None:
             self._logic_group(updates, logic_group - 1, logic_group_address, logic_recovery_level,
                               logic_recovery_percent, logic_level_store)
+        pre_save_changes, save_normalization = None, None
+        if toolkit_save:
+            pre_save_changes = self._difference(original, updates)
+            normalized = self._toolkit_save(updates)
+            save_normalization = self._difference(updates, normalized)
+            updates = normalized
         # TddCBusDimmer.ValidateProgramming/UnusedGroupInLogic refuses to save a
         # channel associated with a logic group that has no group address.
         for g, name in enumerate(LOGIC_ASSOCIATIONS):
             if updates['GroupAddress'][LOGIC_GROUP_INDEX + g] == 255 and any(updates[name][j] for j in p.indices):
                 raise DinSettingsError(f'Logic group {g + 1} is associated with a channel but has no group address')
-        changes = {name: tuple(values) for name, values in updates.items() if tuple(values) != original[name]}
+        changes = self._difference(original, updates)
         self.codec.encode_many(changes)
-        return DinPlan(p.unit_type, channel, logic_group, original, changes, tuple(dict.fromkeys(derived)), identity)
+        return DinPlan(p.unit_type, channel, logic_group, original, changes, tuple(dict.fromkeys(derived)),
+                       identity, toolkit_save, pre_save_changes, save_normalization)
+
+    @staticmethod
+    def _difference(before, after):
+        return {name: tuple(values) for name, values in after.items()
+                if tuple(values) != tuple(before[name])}
+
+    def _toolkit_save(self, current):
+        """One owned-field load/save projection; see din-output-save-source-review.json.
+
+        The normal DIN agent pads only GroupAddress/LightLevel to twelve
+        channel positions. Short native PP arrays retain the old tail. The
+        RELDN8 marshalling override rebuilds the mapped fields after its base
+        call, including raw levels even when level store is set. Max levels
+        keep the base agent's dialog order and are truncated by the four-slot
+        schema. This projection is intentionally not an iterative fixed point.
+        """
+        values = _strict_plan_values(current, self.unit_type, 'pre-save', complete=True)
+        result = {name: list(row) for name, row in values.items()}
+        p = self.profile
+        if p.unit_type == 'RELDN8':
+            # AddEmptyGroup writes three holes, then eight channel objects.
+            # The final string has eleven tokens. Other per-channel fields
+            # retain their original twelfth value under native PP SET.
+            holes = (0, 5, 6)
+            marshalled = (*LOGIC_ASSOCIATIONS, 'LogicFunction', 'RestrikeChannel',
+                          'LevelStoreEnable', 'PowerUpDelay', 'MinDimmingLevel', 'LightLevel')
+            for name in marshalled:
+                for index in holes:
+                    result[name][index] = 0
+            for index in (*holes, 11):
+                result['GroupAddress'][index] = 255
+            result['LightLevel'][11] = 0
+            # AfterLoad maps 1,2,3,4,... and uses zero for absent max entries;
+            # BeforeSave emits that model order, truncated to four PP tokens.
+            result['MaxDimmingLevel'] = [values['MaxDimmingLevel'][index]
+                                        if index < len(values['MaxDimmingLevel']) else 0
+                                        for index in p.indices[:4]]
+        else:
+            for index in p.indices:
+                if values['LevelStoreEnable'][index]:
+                    result['LightLevel'][index] = 255
+            for index in range(p.channels, LOGIC_GROUP_INDEX):
+                result['GroupAddress'][index] = 255
+                result['LightLevel'][index] = 0
+        if p.relay:
+            result['InterLockingChannel'][0] &= 7
+        return result
+
+    def _verify_toolkit_save_plan(self, plan):
+        """Replay a v2 projection before session access, including its receipts."""
+        expected = _strict_plan_values(plan.expected, self.unit_type, 'expected', complete=True)
+        changes = _strict_plan_values(plan.changes, self.unit_type, 'changes')
+        requested = _strict_plan_values(plan.pre_save_changes, self.unit_type, 'pre_save_changes')
+        normalization = _strict_plan_values(plan.save_normalization, self.unit_type, 'save_normalization')
+        before_save = dict(expected, **requested)
+        if requested != self._difference(expected, before_save):
+            raise DinSettingsError('Toolkit save plan pre_save_changes are not canonical')
+        final = self._toolkit_save(before_save)
+        if (changes != self._difference(expected, final)
+                or normalization != self._difference(before_save, final)):
+            raise DinSettingsError('Toolkit save plan differs from its one-pass normalization')
+        # The whole save still has the original unused-logic-group guard;
+        # a caller cannot bypass it with a serialized plan.
+        for group, name in enumerate(LOGIC_ASSOCIATIONS):
+            if final['GroupAddress'][LOGIC_GROUP_INDEX + group] == 255 and any(
+                    final[name][index] for index in self.profile.indices):
+                raise DinSettingsError(f'Logic group {group + 1} is associated with a channel but has no group address')
 
     def _sharing(self, updates, group, *, channel=None, logic_group=None):
         """Channels and logic groups that Toolkit couples through a used group."""
@@ -489,7 +621,7 @@ class DinOutputEditor:
             raise DinSettingsError('Native session unit type differs from the selected profile')
         return identity
 
-    def _verify_session(self, session):
+    def _verify_session(self, session, *, strict_width=False):
         document = xml_text(session.info('*'))
         if '<!DOCTYPE' in document.upper() or '<!ENTITY' in document.upper():
             raise DinSettingsError('Unsupported native schema declarations')
@@ -511,16 +643,21 @@ class DinOutputEditor:
             for field, default in (('Address', None), ('ArraySize', '1'), ('BitAddress', '0'), ('ArraySkip', '0')):
                 if _numbers(native.get(field, default)) != _numbers(local.get(field, default)):
                     raise DinSettingsError(f'Native parameter layout mismatch: {name}/{field}')
+            if strict_width and local.get('Type', '').lower() != 'bit':
+                if _numbers(native.get('BitSize', '8')) != _numbers(local.get('BitSize', '8')):
+                    raise DinSettingsError(f'Native parameter layout mismatch: {name}/BitSize')
 
     def apply(self, session, plan):
         if (not isinstance(plan, DinPlan) or plan.unit_type != self.profile.unit_type
                 or set(plan.expected) != set(FIELDS) or any(name not in FIELDS for name in plan.changes)):
             raise DinSettingsError('Plan contains fields or a unit type outside this DIN workflow')
+        if plan.toolkit_save:
+            self._verify_toolkit_save_plan(plan)
         self.codec.encode_many(plan.changes)
         identity = self._verify_profile(session)
         if plan.identity is not None and plan.identity[:2] != identity[:2]:
             raise DinSettingsError('Plan was created for another unit type or firmware')
-        self._verify_session(session)
+        self._verify_session(session, strict_width=plan.toolkit_save)
         if self.snapshot(session.values()) != dict(plan.expected):
             raise DinSettingsError('PP parameters changed since the DIN settings plan was created')
         attempted = []
