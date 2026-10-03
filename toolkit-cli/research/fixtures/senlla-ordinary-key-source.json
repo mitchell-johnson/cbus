@@ -1,0 +1,3254 @@
+{
+  "format": "cbus-senlla-ordinary-eight-key-static-audit-v1",
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "spec_filename": "SENLLA.xml",
+    "spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee"
+  },
+  "scope": {
+    "unit_type": "SENLLA",
+    "catalog_number": "5754PE",
+    "catalog_firmware": [
+      "2.4.00",
+      "2.4.99"
+    ],
+    "runtime_key_count": 8,
+    "ordinary_selector": 0,
+    "raw_nibble_range": [
+      0,
+      15
+    ],
+    "source_only": true,
+    "original_instruction_execution": false,
+    "original_gui_acceptance": false,
+    "native_runtime_acceptance": false,
+    "physical_acceptance": false,
+    "repository_modified_by_audit": false,
+    "complete_unit_save_implemented": false
+  },
+  "normal_save_chain": [
+    "surfaceLightLevel.beforeSave -> ST7Multisensor.beforeSave",
+    "ST7Multisensor -> CoreNeoPro -> CoreNeo -> CoreKey",
+    "CoreKey marshals block allocations/values before CoreNeo Scene and key serializers",
+    "CoreNeo marshals eight keys even when Patch disabled",
+    "surface-specific power-fail and group overlays run last"
+  ],
+  "conversion_helper_excluded": "PrepareForcedParametersSENLL is conversion-only and supplies no normal-save forced fields",
+  "decoded_layout_facts": {
+    "BlockAllocation": {
+      "address": 54,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "GroupAddress": {
+      "address": 80,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "IndicatorBlockAssignment": {
+      "address": 96,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "JPCommand": {
+      "address": 104,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 4,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "LPCommand": {
+      "address": 105,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 4,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "LRCommand": {
+      "address": 105,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "LightLevelStore1": {
+      "address": 120,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelStore2": {
+      "address": 128,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PatchEnable": {
+      "address": 160,
+      "array_size": 2,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SRCommand": {
+      "address": 104,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "SceneKeySelector": {
+      "address": 96,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 7,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "SceneTable": {
+      "address": 162,
+      "array_size": 80,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SceneTablePointer": {
+      "address": 152,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "TimerHighByte": {
+      "address": 136,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "TimerLowByte": {
+      "address": 144,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "TimerExpiryCommand": {
+      "address": 72,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    }
+  },
+  "ordinary_algorithm": [
+    {
+      "phase": "fresh_creation",
+      "rule": "CoreKey creates eight keys, ST7 sets macro SENPILL override true. Fresh instance bytes start zero; SENPIR/AUX flags and copy-while-pinned byte are false."
+    },
+    {
+      "phase": "raw_block_load",
+      "rule": "Apps and eight secondary bits load before raw block groups/values, then GetKeyBlocks reads each mask as eight ascending bits and appends ascending block references. Ordinary AddBlock itself does not evict other keys."
+    },
+    {
+      "phase": "primary_projection",
+      "rule": "GetPrimaryBlock returns reference item0 when nonempty, otherwise nil. Initial masks therefore select least-set-bit. PrimaryGroup is that block object only when reference count equals1; multi/zero masks project nil."
+    },
+    {
+      "phase": "unused_identity",
+      "rule": "Singleton raw group255 resolves through the application-owned manager create=True and remains the per-application unused object(app,255). Same-app255 shares pointer; different apps differ; nil differs from any unused object."
+    },
+    {
+      "phase": "ordinary_command_load",
+      "rule": "Set key template16 before locking MacroFunctionPin; load four unsigned nibble commands through wire factory under that pin; unlock; fill empty subset name from unit; MacroFunctionRefresh(false). Every raw0..15 wire enum is identity."
+    },
+    {
+      "phase": "first_match",
+      "rule": "Factory scans appended templates and each template groups in registration order and stops at first exact JP/SR/LP/LR match. Four-stage overload compares source type only if inputSource argument is nonzero; ordinary loader passes false=0, so no input-source filtering and no VC/VT comparison. Six-stage registration aliases MC/MT/OC/OT to JP/SR/LP/LR through sensor2/3/0/1. Fifty valid nibble tuples match;65486 use fallback26/group56. No family4 is admitted by raw0..15."
+    },
+    {
+      "phase": "reconciliation",
+      "rule": "SENPIR flagfalse, SENPILLtrue, AUXfalse: template27->26/group56;31->29/group61;32->30/group62. Ordinary first match7 precedes27 for[13,15,0,15]. Match matrix contains no ordinary27."
+    },
+    {
+      "phase": "level_variant",
+      "rule": "With a primary block, macro14 becomes17/18/20 iff Store1 is249/252/255. Macro15 becomes19/22 iff Store2 is2/5. Other values keep14/15; no primary means no variant."
+    },
+    {
+      "phase": "template_admission",
+      "rule": "RefreshTemplateFromMacroFunction holds MacroFunctionPin. SENLLA primary/secondary Lighting subset is[16,0..13,34,17..24,26]. Any absent derived template becomes keytemplate26; raw microfunctions remain unchanged under the pin."
+    },
+    {
+      "phase": "template_timer_callbacks",
+      "rule": "A changed keytemplate6 or29..35 calls primary-block Timer/Expiry defaults before testing MacroFunctionPin. Among final ordinary admitted templates only6/34 qualify. Timer0->300seconds and expiryNone0->micro15 independently; nonzero values remain."
+    },
+    {
+      "phase": "indicator_load",
+      "rule": "After MacroFunctionRefresh, GetKeyValues assigns indicator BlockNumber=raw IndicatorBlockAssignment+1 and default Scene1. Class indicator allocation enabled/non-slaved."
+    },
+    {
+      "phase": "fresh_director_hooks",
+      "rule": "Expression hooks activate in key order. Conflict categoriesA={17},B={18,19},C={20,21,22}, equality of PrimaryGroup object including nil==nil; incompatible later siblings become template16 through unlocked setter and their four stages become0. Fresh combo selection itself is display-only; raw indicator assignment remains."
+    },
+    {
+      "phase": "normal_serialization",
+      "rule": "SetKeyBlocks rebuilds eight masks from actual references. SetKeyValues writes SceneKeySelector0, each indicator BlockNumber-1, and each microfunction internalenum&127 as numeric commands. Raw ordinary nibbles preserve unless fresh conflict reset or an authorized later control changes them. TimerHigh/Low are high/low bytes of logical16-bitseconds. Expiry uses override if present, otherwise CBus value."
+    }
+  ],
+  "first_match_matrix_evidence": "ordinary-key-match-matrix-derived.json",
+  "ordered_full_registry_evidence": "complete-macro-registry-derived.json",
+  "fresh_form_evidence_owner": "review_events independent static audit",
+  "focused_source_literals": [
+    {
+      "name": "eight_idle_keys",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "timer_patterns_multi_and_zero_masks",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          3,
+          128,
+          0,
+          16,
+          32,
+          64
+        ],
+        "JPCommand": [
+          11,
+          13,
+          13,
+          13,
+          1,
+          7,
+          13,
+          0
+        ],
+        "SRCommand": [
+          7,
+          7,
+          8,
+          15,
+          1,
+          0,
+          7,
+          0
+        ],
+        "LPCommand": [
+          0,
+          15,
+          13,
+          7,
+          1,
+          0,
+          7,
+          0
+        ],
+        "LRCommand": [
+          7,
+          0,
+          8,
+          15,
+          1,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          3,
+          128,
+          0,
+          16,
+          32,
+          64
+        ],
+        "JPCommand": [
+          11,
+          13,
+          13,
+          13,
+          1,
+          7,
+          13,
+          0
+        ],
+        "SRCommand": [
+          7,
+          7,
+          8,
+          15,
+          1,
+          0,
+          7,
+          0
+        ],
+        "LPCommand": [
+          0,
+          15,
+          13,
+          7,
+          1,
+          0,
+          7,
+          0
+        ],
+        "LRCommand": [
+          7,
+          0,
+          8,
+          15,
+          1,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "TimerLowByte": [
+          44,
+          44,
+          0,
+          0,
+          0,
+          0,
+          0,
+          44
+        ],
+        "TimerExpiryCommand": [
+          15,
+          15,
+          0,
+          0,
+          0,
+          0,
+          0,
+          15
+        ]
+      },
+      "expected_key_template_types": [
+        6,
+        6,
+        6,
+        34,
+        26,
+        26,
+        26,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "timer_and_expiry_defaults_independent",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          11,
+          13,
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          7,
+          15,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          7,
+          15,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          244,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          11,
+          13,
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          7,
+          15,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          7,
+          15,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          244,
+          44,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          15,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        6,
+        34,
+        6,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "recall_level_variants_distinct_primary_groups",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "JPCommand": [
+          12,
+          12,
+          12,
+          6,
+          6,
+          9,
+          12,
+          6
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          255,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          2,
+          5,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "JPCommand": [
+          12,
+          12,
+          12,
+          6,
+          6,
+          9,
+          12,
+          6
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          255,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          2,
+          5,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        17,
+        18,
+        20,
+        19,
+        22,
+        21,
+        26,
+        26
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "singleton_same_application_unused_recall_conflict",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        17,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "singleton_cross_application_unused_recall_no_conflict",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          2
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          2
+        ],
+        "BlockAllocation": [
+          1,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          249,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        17,
+        18,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "multi_allocation_nil_primary_groups_recall_conflict",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          3,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          249,
+          100,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          3,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "LightLevelStore1": [
+          249,
+          100,
+          252,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        17,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "unrecognized_valid_nibbles_preserved",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "SRCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "LPCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "LRCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "SRCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "LPCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "LRCommand": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "whole_unit_before_save_verified": false
+    },
+    {
+      "name": "higher_templates_fallback_26_preserves_raw",
+      "phase": "ordinary_key_load_then_fresh_hooks_then_normal_key_block_serializers",
+      "before": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          13,
+          15,
+          11,
+          11,
+          3,
+          10,
+          13,
+          12
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          15,
+          13,
+          11,
+          11,
+          3,
+          9,
+          13,
+          12
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_component_after": {
+        "Application": [
+          56,
+          57
+        ],
+        "SecondApplicationBlocks": [
+          0
+        ],
+        "BlockAllocation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "JPCommand": [
+          13,
+          15,
+          11,
+          11,
+          3,
+          10,
+          13,
+          12
+        ],
+        "SRCommand": [
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LPCommand": [
+          15,
+          13,
+          11,
+          11,
+          3,
+          9,
+          13,
+          12
+        ],
+        "LRCommand": [
+          0,
+          0,
+          0,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        "SceneKeySelector": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "IndicatorBlockAssignment": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "GroupAddress": [
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "LightLevelStore1": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "LightLevelStore2": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "TimerHighByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerLowByte": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "TimerExpiryCommand": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "expected_key_template_types": [
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "whole_unit_before_save_verified": false
+    }
+  ],
+  "whole_unit_remaining_integration": [
+    "root-owned raw bank loader and active-clamp order",
+    "root-owned complete normal inherited field/load/save binding",
+    "Scene selector allocation/swap callbacks are a separate ongoing recovery",
+    "missing group/application creation or user-decline outcomes require explicit known-object admission rather than invented metadata",
+    "Fresh target editor clamps logical target201..255 to200 after original margin-percent load; root integrates source order and remaining fresh scalar clamps."
+  ],
+  "source_methods": {
+    "CIS_TCoreKeyInputCGateAgent.SetKeyBlocks": {
+      "address": "0xcc8aa8",
+      "instructions": 118,
+      "sha256": "c5f0fcab4ac93acf8909297b5d789e087ca59353bfcd6ec9abf27d7b62f1d00b"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks": {
+      "address": "0xcc76f8",
+      "instructions": 109,
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be"
+    },
+    "CIS_TCoreNeoInputCGateAgent.GetKeyValues": {
+      "address": "0xcca51c",
+      "instructions": 596,
+      "sha256": "53a4875c678c2bc4448c2e5502b458ed41fc338ac56ef1b3aad79e37475f9bd1"
+    },
+    "CIS_TCoreNeoInputCGateAgent.SetKeyValues": {
+      "address": "0xccb854",
+      "instructions": 348,
+      "sha256": "c7ece7753ed9e30e2767905b2e2787c93c032cfbdbbe84a508693971ad99a55b"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate": {
+      "address": "0xcff43c",
+      "instructions": 126,
+      "sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.InternalCreate": {
+      "address": "0xd06f30",
+      "instructions": 241,
+      "sha256": "bdf36a6fb6616e0cf175ea60b5159025db969b231813dbb8b8f9704ad59e4ef4"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7LightLevelSensorCGateAgent.InternalCreate": {
+      "address": "0xcf9388",
+      "instructions": 10,
+      "sha256": "1fcc23790d7afaf005054616c63b1ade6a43eacd3e80f06b72d41471176af4d4"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.InternalCreate": {
+      "address": "0xcf6eb8",
+      "instructions": 362,
+      "sha256": "8b464bd7a94c3adcbc14a663dad23f20ad15a737a71da748e373a67b53b89b12"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7PIRSensorCGateAgent.InternalCreate": {
+      "address": "0xcf8620",
+      "instructions": 10,
+      "sha256": "3cd2a56287fd263d724e2f21ae56491cb8a57e275a2a4089ebb23df82da43449"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7LightLevelSensorUnit.InternalCreate": {
+      "address": "0xcfd894",
+      "instructions": 16,
+      "sha256": "88ce08382f0871bfd3b4aa77d5b0b55225fc06f9afe9e155d719939fc21da04a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate": {
+      "address": "0xcfb754",
+      "instructions": 411,
+      "sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7PIRSensorUnit.InternalCreate": {
+      "address": "0xcfdeb0",
+      "instructions": 10,
+      "sha256": "e8c9ce0e5f949dc40fc21ce9caf20e63dbfe68679e7aa4f5c3b845139e2da97e"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7SENPIROAUnit.InternalCreate": {
+      "address": "0xcfe17c",
+      "instructions": 265,
+      "sha256": "9ac855fe44631b75e3ad0ad7497af2ae6b57d98607ffa5c9cf928b9e2e475307"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.InternalCreate": {
+      "address": "0xcc6d18",
+      "instructions": 173,
+      "sha256": "1189bc3f30d59f3dd29ee4d4da7639ddef1e541ba75b8ffed84963e51957155e"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate": {
+      "address": "0xc9dcc0",
+      "instructions": 109,
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.InternalCreate": {
+      "address": "0xcc9d04",
+      "instructions": 147,
+      "sha256": "da1f4fe96b09ef3b6663634f736c3b142f0e1e061bbe86fe5e4a6d2de8607f1b"
+    },
+    "CIS_TInputKey.TInputKey.InternalCreate": {
+      "address": "0xd10cb8",
+      "instructions": 145,
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad"
+    },
+    "CIS_TInputKey.TInputKey.SetMicroFunction": {
+      "address": "0xd117b4",
+      "instructions": 73,
+      "sha256": "57d7d31ca370bece954e05f89a9b729e6ae15082ddaf3dd8da4a9a4acd797226"
+    },
+    "CIS_TInputKey.TInputKey.GetMicroFunctionAsHexString": {
+      "address": "0xd114d0",
+      "instructions": 47,
+      "sha256": "c8ac1fb306f7230c0f55e611bf5b90e789d401ae4a1eb6176efb44375a3e9079"
+    },
+    "CIS_TInputKey.TInputKey.IdenticalMacroFunctionRefresh": {
+      "address": "0xd10b20",
+      "instructions": 111,
+      "sha256": "32a9b311c0e6a6597721855cb4b7dd25c125b54c0b56fe263f5eba6c83c5a997"
+    },
+    "CIS_TInputKey.TInputKey.RefreshTemplateFromMacroFunction": {
+      "address": "0xd11a5c",
+      "instructions": 140,
+      "sha256": "d3242358988d92e801a0c22cbc4c04010bb48750119a005398204b8e17d65ad7"
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "address": "0xd12adc",
+      "instructions": 97,
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf"
+    },
+    "CIS_TInputKey.TInputKey.SetMicroFunctionBySensorCommand": {
+      "address": "0xd118a0",
+      "instructions": 10,
+      "sha256": "83489660aa765d387cafc164c0c908dd827d8fb5fc2127514dde12a6f5838488"
+    },
+    "CIS_TInputKey.TInputKey.SetMicroFunctionGroup": {
+      "address": "0xd1178c",
+      "instructions": 17,
+      "sha256": "5309c5b65d22f47911d6adbb4f9670e8ecf43624facd5efe0e73adb5bb001821"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunction.InternalCreate": {
+      "address": "0xc96a5c",
+      "instructions": 63,
+      "sha256": "421a1128a248d2dc218dfd2db9e1aecb4496d39bbd72481b1c6b36cff1784e42"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.GetTemplateAndGroup@0xc986a0": {
+      "address": "0xc986a0",
+      "instructions": 46,
+      "sha256": "41ddbb4aa10d7733a0f6f7cef8ac63db1faed01cd732840903ffffedd90eb27b"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.GetTemplateAndGroup@0xc98710": {
+      "address": "0xc98710",
+      "instructions": 54,
+      "sha256": "9ce1056339b3880444fad56fdb1c3ce68998aa597a66bde866617e2e22c75ba3"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.ItemAndGroupByMicroFunctions@0xc97ff8": {
+      "address": "0xc97ff8",
+      "instructions": 107,
+      "sha256": "e0f9938d3fea6ad29a9847d5308c1feb5f71030c73e08ab09e40e3d44b77d44d"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.ItemAndGroupByMicroFunctions@0xc98180": {
+      "address": "0xc98180",
+      "instructions": 145,
+      "sha256": "dec4ad80f53fd79602ddf7250daceeaac80d8a9e4b09a5ed865ee5fc61d7fea9"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.RegisterKeyMicroFunctionGroup@0xc92e0c": {
+      "address": "0xc92e0c",
+      "instructions": 73,
+      "sha256": "ecbb33e21e3bacb6ee34fe3e5bcb5f2e20b253dd5829b6b36f23a1e2546d5217"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupFactory.RegisterKeyMicroFunctionGroup@0xc92efc": {
+      "address": "0xc92efc",
+      "instructions": 88,
+      "sha256": "f8d27982c845c45e37c67f9b74684cb165fc9be3026de471f62dea8865c13515"
+    },
+    "CIS_TInputKey.TInputKey.RefreshPrimaryGroupFromBlockGroups": {
+      "address": "0xd11da4",
+      "instructions": 80,
+      "sha256": "9333ce099b96a9fad7a1e862e116f6f97357128822a85d2427e27dbd3b46b5bd"
+    },
+    "CIS_TInputKey.TInputKey.GetPrimaryBlock": {
+      "address": "0xd11434",
+      "instructions": 23,
+      "sha256": "4e423d03fee0f16a764e0f95b933d46eb2dfca9bdcb2bfebe00ead54e5735746"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.SaveTimerExpiryCommand": {
+      "address": "0xcc888c",
+      "instructions": 39,
+      "sha256": "1b52c254f2c04ae5907f33c284d0ff280d284e7876f7ea25aa817c7f108b0932"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.SaveTimerHighAndLowBytes": {
+      "address": "0xcc87e4",
+      "instructions": 50,
+      "sha256": "bbcfaada45d5d66b4d4159c184930f8e2e3ca10332280e8d9f8e0ff99f296abf"
+    },
+    "CIS_TInputKey.TInputBlockCollection.GetAllTimerExpiryCommandAsString": {
+      "address": "0xd101d0",
+      "instructions": 85,
+      "sha256": "397469a3a1259a8f01d0d7c21d6e32af95f4c26ee97a4a1a9d6e5f93a17f9fb4"
+    },
+    "CIS_TInputKey.TInputBlockCollection.GetAllTimerHighByteAsString": {
+      "address": "0xd102d4",
+      "instructions": 70,
+      "sha256": "135e4f0f115938662409aa4e93676a234db9ca9d89c6065cebf7a32774ae9529"
+    },
+    "CIS_TInputKey.TInputBlockCollection.GetAllTimerLowByteAsString": {
+      "address": "0xd1039c",
+      "instructions": 70,
+      "sha256": "87555ff401b6468d10d355eb87fbf4980edf445c8ca7f8967efae267e2928a3c"
+    },
+    "CIS_TKeyMacroFunction.InitialiseKeyMacroFunctionFactory": {
+      "address": "0xc95b84",
+      "instructions": 667,
+      "sha256": "9a20b298d7aedb678c24327cd64dc933d7733d872a3d1025a8b3b8bbcd843432"
+    },
+    "CIS_TKeyMicroFunctionGroup.InitialiseKeyMicroFunctionGroupFactory": {
+      "address": "0xc912c0",
+      "instructions": 1369,
+      "sha256": "da7e1a9ec728553d8f9eb8feb1644d8eb3f01c12aed2e4dd57d31471f3d0d128"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.RegisterTemplate": {
+      "address": "0xc984f8",
+      "instructions": 137,
+      "sha256": "356a2e46f8acf7efcce6ae5f9fcdd02b715595f8619292b9ab3c0a89a583ff34"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup": {
+      "address": "0xcc75e4",
+      "instructions": 84,
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "address": "0xf28b68",
+      "instructions": 115,
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.InternalCreate": {
+      "address": "0xf25704",
+      "instructions": 62,
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a"
+    },
+    "CIS_TCommonCBus.TCBusGroup.GetApplication": {
+      "address": "0xf27efc",
+      "instructions": 13,
+      "sha256": "db44181f40e15e94648eda50ab9454a557111f5f7c902e0bdfef667eefef8fe0"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetApplication": {
+      "address": "0xf28978",
+      "instructions": 13,
+      "sha256": "4562e20f0f5b270e08a5dfe8086d6e8738385d9f76900c39fa688c2685a516ff"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude": {
+      "address": "0xf28d10",
+      "instructions": 39,
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2"
+    },
+    "System.TObject.InitInstance": {
+      "address": "0x60620c",
+      "instructions": 46,
+      "sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.GetJP": {
+      "address": "0xc925a0",
+      "instructions": 14,
+      "sha256": "2df114d1376fb830d14c1fd6971935971ea1a8ece193910df05e07b807805baf"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.GetSR": {
+      "address": "0xc92600",
+      "instructions": 14,
+      "sha256": "31d3f1c31732dbde72cced154118b61dc54e21fd6adbe903c9690e7d07c3d270"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.GetLP": {
+      "address": "0xc925c0",
+      "instructions": 14,
+      "sha256": "0e1e138351db1e9505d43afc424530254f45b16a210806c2120968c7c99f8943"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.GetLR": {
+      "address": "0xc925e0",
+      "instructions": 14,
+      "sha256": "a766c6baca832a1b3cc7bf4b0ef7c3f2a6e99ae38795cf91b7cb1457b8e35456"
+    },
+    "CIS_Maths.HighByte": {
+      "address": "0x7f0e64",
+      "instructions": 10,
+      "sha256": "51776e5263f33b479b1261a6ca55fc23b2968052fbf243290cc1cc73b1ce3809"
+    },
+    "CIS_Maths.LowByte": {
+      "address": "0x7f0e50",
+      "instructions": 10,
+      "sha256": "fc21cee119e8c17ab0718bb77855273b9971d2eeece24570226439ec33765c47"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.GetMicroFunctionByStage": {
+      "address": "0xc9272c",
+      "instructions": 45,
+      "sha256": "abc7725bd8dcc596dc949b7c4065e501cfd3155c3f9a38bad06406664d93b0ca"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetMC": {
+      "address": "0xc92918",
+      "instructions": 14,
+      "sha256": "5f4a69a92b17f00b823f0e96ef653ab8040b08ac2f67a0a58546c806b76fb590"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetMT": {
+      "address": "0xc92938",
+      "instructions": 14,
+      "sha256": "98a3b0d14294e81b5554ded9460816e28f7f84ef2f94c484349433e7e1d93b84"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetOC": {
+      "address": "0xc92958",
+      "instructions": 14,
+      "sha256": "52fe87dd28d018a1e652db18d510f62c9a72580063f1fd32fdce8991119a408e"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetOT": {
+      "address": "0xc92978",
+      "instructions": 14,
+      "sha256": "f08f441ca774f9026dbbcad1273392d1eed3e8b744bb0b32df53895732e62dde"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.Add": {
+      "address": "0xc97ef4",
+      "instructions": 23,
+      "sha256": "f26a0b34e66e965895c9aa42805c127c5fdb7c59785b5d167cbdd13c8744c7f3"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.GetItem": {
+      "address": "0xc97f54",
+      "instructions": 14,
+      "sha256": "3f0121f15b5df01dc2a1f05ffdc782f0bbd5251bcd0e5b9272efd7df8cf98415"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.SetMicroFunctionBySensorCommand": {
+      "address": "0xc929d8",
+      "instructions": 65,
+      "sha256": "2ba27b797e7dcd44638bf70ebcf92d1ebca4e79618c7bcac17b1874254221911"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupReferenceCollection.Add": {
+      "address": "0xc92c2c",
+      "instructions": 23,
+      "sha256": "b829c5f01023e089dc6462422021a7978996f7ec9a846c4d8f4953354863d805"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupReferenceCollection.GetItem": {
+      "address": "0xc92c08",
+      "instructions": 14,
+      "sha256": "dd48bfad9fb57edde235921b49a88bed1b7289db6cf4b608a11e78a7be1d3396"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": {
+      "address": "0x7e84ac",
+      "instructions": 143,
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem": {
+      "address": "0x7e8f74",
+      "instructions": 18,
+      "sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.Append": {
+      "address": "0xc97f30",
+      "instructions": 14,
+      "sha256": "71ecfbf1ba645a6e8cca9d1eae8f67895a48fc7ce96cb4cbe61246201f32e423"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroupReferenceCollection.Append": {
+      "address": "0xc92c68",
+      "instructions": 14,
+      "sha256": "221fb4c5e5025aeda2ec80f271e5cd8fc863a07a2e46f5baa5d048f1a7c47fda"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Create": {
+      "address": "0x7e8334",
+      "instructions": 55,
+      "sha256": "6eed2265e367b15bffaf015a64c4b9d074de8bcbfe79290f79110fc6b67733e5"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.InternalCreate": {
+      "address": "0x7e9050",
+      "instructions": 17,
+      "sha256": "4d57aee5f91dbcb637232a265b3d0857f9210cd9b85b9a73ca9e7489ddfcdd4e"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionFactory.Create": {
+      "address": "0xc98434",
+      "instructions": 27,
+      "sha256": "c830373b9cce1738ea58114be07fabab4ca57e0cb01e78ad295dc6f8c33e4b23"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplate.InternalCreate": {
+      "address": "0xc97b48",
+      "instructions": 56,
+      "sha256": "efd96eb86ce238df8c386779f9992a3fd6d7bc21a8b06e80ab69443e7db23717"
+    },
+    "CIS_TKeyMacroFunction.TKeyMacroFunctionTemplateReferenceCollection.Create": {
+      "address": "0xc97e24",
+      "instructions": 51,
+      "sha256": "af7686e81f374d1fa107fb9a6407ce6c6d6086a3e9f7bfe93861dd85081ead58"
+    },
+    "CIS_TKeyMicroFunctionGroup.TKeyMicroFunctionGroup.InternalCreate": {
+      "address": "0xc920e0",
+      "instructions": 114,
+      "sha256": "ba365153c6c8a300c83eadee0f33d0a7becdc8b3be34f796a6a79940b82e7e00"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObjectCollection.Create": {
+      "address": "0x7e8224",
+      "instructions": 27,
+      "sha256": "e2e7e0f07ca318d3c7f3b56b456f9b9797cb93a43da519ed598dd70077a99144"
+    }
+  },
+  "fresh_form_evidence": {
+    "filename": "senlla-fresh-director-source-handoff.json",
+    "sha256": "16d314ec2a8f3a9edfc0bf69ef8ac978fc0db3b3ad473ab1fd7123f879d19a49",
+    "source_method_count": 219,
+    "independent_static_review": true
+  }
+}
