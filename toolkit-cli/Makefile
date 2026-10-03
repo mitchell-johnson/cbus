@@ -305,6 +305,17 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_controls_lost_successful_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_global_images_interop.py::test_public_automatic_global_all_16_masks_preserve_two_divergent_targets[mock]' \
 		'tests/test_cgate_edlt_global_images_interop.py::test_public_global_lost_first_target_save_stops_without_replay[mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[zone-control-readonly-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[source-select-readonly-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[source-control-readonly-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[zone-explicit-callbacks-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[select-hidden-status-allocation-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[control-opaque-fields-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[full-cached-name-cross-family-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[new-select-deferred-globals-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[pending-text-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[invalid-selector-preconnection-mock]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_lost_successful_save_is_not_replayed[mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-mock]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-mock]' \
@@ -573,6 +584,17 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_widget_controls_interop.py::test_public_widget_controls_lost_successful_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_global_images_interop.py::test_public_automatic_global_all_16_masks_preserve_two_divergent_targets[daemon]' \
 		'tests/test_cgate_edlt_global_images_interop.py::test_public_global_lost_first_target_save_stops_without_replay[daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[zone-control-readonly-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[source-select-readonly-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[source-control-readonly-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[zone-explicit-callbacks-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[select-hidden-status-allocation-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[control-opaque-fields-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[full-cached-name-cross-family-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_callbacks_one_save_and_preservation[new-select-deferred-globals-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[pending-text-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_pending_and_preconnection_refusals[invalid-selector-preconnection-daemon]' \
+		'tests/test_cgate_edlt_mra_controls_interop.py::test_public_mra_lost_successful_save_is_not_replayed[daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-new-retains-old-items-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-old-selected-trigger-new-raw-trigger-daemon]' \
 		'tests/test_cgate_edlt_scene_controls_language_interop.py::test_public_controls_language_preview_apply_fresh[action-cancel-daemon]' \

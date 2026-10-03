@@ -1510,7 +1510,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
         for child in row['operations']) for row in operations)
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
-            or any(row.get('label_controls') or row.get('scene_controls') for row in operations)
+            or any(row.get('label_controls') or row.get('scene_controls') or row.get('mra_controls') for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1643,7 +1643,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     source_operations=None, dialogs=(), extra_creations=(),
                     cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
                     dependency_values=None, lighting_label_bindings=(),
-                    app_group_label_bindings=(), scene_widget_bindings=()):
+                    app_group_label_bindings=(), scene_widget_bindings=(), mra_control_bindings=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1746,7 +1746,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                          _dialog_missing_by_operation=dialog_contexts,
                          _lighting_label_bindings=lighting_label_bindings,
                          _app_group_label_bindings=app_group_label_bindings,
-                         _scene_widget_bindings=scene_widget_bindings)
+                         _scene_widget_bindings=scene_widget_bindings,
+                         _mra_control_bindings=mra_control_bindings)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1772,8 +1773,10 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     native_scene_inventory = any(row['op'] == 'scene-manager' and any(
         child['op'] in ('get-selector-view', 'scene-selector-control', 'scene-button-control')
         for child in row['operations']) for row in operations)
+    mra_control_profile = any('mra_controls' in row for row in operations)
+    mra_context = None
     widget_control_history = any(
-        'label_controls' in row or 'scene_controls' in row
+        'label_controls' in row or 'scene_controls' in row or 'mra_controls' in row
         for row in operations)
     scene_initialization = None
     scene_initialization_values = supplied
@@ -1833,6 +1836,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     lighting_label_bindings = []
     app_group_label_bindings = []
     scene_widget_bindings = []
+    mra_control_bindings = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
     seed_levels = {key: dict(rows) for key, rows in levels.items()}
     if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
@@ -1909,6 +1913,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         return cache if display_preferences is None else present_application_cache(cache, display_preferences)
 
     def advance(index, row, state, groups, level_names):
+        nonlocal mra_context
         nonlocal reset_transition, reset_dependency_values, language_text, scene_initialization
         nonlocal scene_initialization_values, scene_initialization_xml
         row = dict(row)
@@ -1969,6 +1974,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
             _raw, _dirty, _prepared, reset_transition = editor._editor('reset').prepare_unit_reset(
                 snapshot.raw_map(), metadata=inventory_cache(groups, level_names), **options)
             state = dict(reset_transition.after_controls)
+            if mra_control_profile:
+                from .edlt_mra_parent_controls import initial_global_context
+                mra_context = initial_global_context(state)
             from .edlt_static_grid import initialize as initialize_static_grid
             initialize_static_grid(state)
             reset_dependency_values = dict(state)
@@ -1999,7 +2007,13 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                                  or editor._editor(kind))
                 label_controls = options.pop('label_controls', None)
                 scene_controls = options.pop('scene_controls', None)
-                widget_plan = (widget_editor.plan(state, kind=kind,
+                mra_controls = options.pop('mra_controls', None)
+                if kind in MRA_WIDGET_TYPES and mra_control_profile:
+                    from .edlt_mra_parent_controls import plan_control_base
+                    widget_plan, _base_receipt = plan_control_base(widget_editor, state,
+                        kind=kind, options=options, controls=mra_controls or (), global_context=mra_context)
+                else:
+                    widget_plan = (widget_editor.plan(state, kind=kind,
                     _parent_composition=True, **options) if kind in MRA_WIDGET_TYPES
                     else widget_editor.plan(state, **options))
                 projected = {**widget_plan.expected, **widget_plan.changes}
@@ -2078,6 +2092,22 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                     widget_plan = replace(widget_plan,
                         changes={name: value for name, value in projected.items()
                                  if value != widget_plan.expected[name]})
+                if mra_controls is not None:
+                    from .edlt_mra_controls import issue_mra_control_binding
+                    from .edlt_mra_parent_controls import (retained_names,
+                        external_references, project_owned_controls)
+                    provider = {'project_images': None if snapshot.project_images is None
+                                else snapshot.project_images.evidence(),
+                                'dltp': None if snapshot.dltp_index is None
+                                else snapshot.dltp_index.evidence()}
+                    issued = issue_mra_control_binding(owner=editor, operation=row,
+                        values=projected, family=kind, widget=widget_plan.widget,
+                        operation_number=index + 1, retained_names=retained_names(projected),
+                        external_used_indices=external_references(editor.common, projected, widget_plan.widget),
+                        project_sha256=_digest(language_text), provider_sha256=_digest(_json(provider)))
+                    mra_control_bindings.append(issued)
+                    widget_plan, _receipt = project_owned_controls(editor, issued, row, projected, widget_plan)
+                    projected = {**widget_plan.expected, **widget_plan.changes}
                 slots = {widget_plan.widget: widget_plan.record}
                 adjacent = getattr(widget_plan, 'adjacent_widget', None)
                 if adjacent is not None and getattr(widget_plan, 'adjacent_after', None) is not None:
@@ -2093,7 +2123,10 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                     for name in ('DateFormat', 'TimeFormat', 'TimeDateLeadingZero'):
                         state[name] = projected[name]
                 if kind in MRA_WIDGET_TYPES:
-                    state.update(widget_plan.propagation.changes)
+                    if mra_control_profile:
+                        mra_context = (widget_plan.propagation.multiplexer, widget_plan.propagation.zone, mra_context[2])
+                    else:
+                        state.update(widget_plan.propagation.changes)
         elif kind == 'blank':
             slot = _candidate_widget(row, state)
             if slot is None:
@@ -2179,6 +2212,10 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                         reasons=creation.reasons))
             row = {**row, 'operations': outcome.operations}
             scene_results.append(outcome)
+        elif kind == 'mra-globals' and mra_control_profile:
+            from .edlt_mra_parent_controls import plan_control_globals
+            projected = plan_control_globals(editor._editor(kind), state, options, mra_context)
+            mra_context = (projected.propagation.multiplexer, projected.propagation.zone, mra_context[2])
         elif kind == 'activation':
             from .edlt_percentage import percentage_to_byte
             percent = options.pop('level_percent', None)
@@ -2204,6 +2241,9 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     initial_loaded = editor.lifecycle.load(supplied,
         metadata=inventory_cache(seed_groups, seed_levels).lifecycle)
     initial_controls = initial_loaded.after_load
+    if mra_control_profile:
+        from .edlt_mra_parent_controls import initial_global_context
+        mra_context = initial_global_context(initial_controls)
     from .edlt_static_grid import initialize as initialize_static_grid
     initialize_static_grid(initial_controls)
     for application in seed_groups:
@@ -2310,7 +2350,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         dependency_values=reset_dependency_values,
         lighting_label_bindings=tuple(lighting_label_bindings),
         app_group_label_bindings=tuple(app_group_label_bindings),
-        scene_widget_bindings=tuple(scene_widget_bindings))
+        scene_widget_bindings=tuple(scene_widget_bindings),
+        mra_control_bindings=tuple(mra_control_bindings))
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 

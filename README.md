@@ -80,6 +80,12 @@ image facts from the current database before applying selected categories to
 other units. Read [widget controls](toolkit-cli/docs/edlt-widget-control-adapters.md)
 and [automatic bulk metadata](toolkit-cli/docs/edlt-global-image-metadata.md)
 for usable schemas, commands and acceptance limits.
+MRA Zone Control, Source Select and Source Control also accept explicit
+`mra_controls` inside the parent transaction. These source-owned callbacks
+retain hidden fields and static names; Zone macro repair occurs only on an
+explicit getter. Read [MRA callbacks](toolkit-cli/docs/edlt-mra-controls.md).
+The existing Reset initial-profile guards remain unchanged, and original
+form dispatch, rendering and audio hardware acceptance remain open.
 `coverage --reconciliation-bundle FILE --reconciliation-artifact-root DIR`
 also diagnoses declared source/obligation mappings and evidence gaps. Its
 bounded result leaves the global parity gate unchanged; see

@@ -2,6 +2,37 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [MRA callback adapter](edlt-mra-controls.md) adds explicit `mra_controls`
+for Zone Control, Source Select and Source Control inside the owning parent.
+Offered status writes preserve upper MRA bits without resetting the old text
+index; read-only views do not repair macro pairs, while explicit Zone getter
+callbacks can. Source Select retains hidden status references and ordered
+source-default allocation. The private component/static selection passed
+380 parent tests and 447 separate subtests; a separate focused parent run
+passed 17 tests. The 325 complete-record histories and 595 steps are a
+source-pinned software oracle, not original form or hardware execution.
+A separate private loopback candidate selection passed 22 parent cases across
+cmqttd and cgate-mock: 16 positive cases, four refusals and two dropped
+successful-save replies with no replay. The frozen 18-module source run and a
+fresh installed wheel each passed 668 parent tests and 1,066 separate subcases,
+with five disclosed provision skips and no failures. Both executed all 22 public
+MRA cases. All 373 package files matched source/ZIP/installed bytes at terminal;
+3,958 phase inputs and both binaries remained quiet. These overlapping scopes
+are not added to an overall total. See the [current batch report](feature-batch-2026-10-03-mra-controls.md)
+and [release receipt](../research/fixtures/mra-controls-owned-release-20261003.json).
+The status/report annotations follow the frozen executions; runtime and test
+bytes remain unchanged. New GitHub CI acceptance is not claimed.
+
+Existing Reset admission still requires initial navigation 0 or 1 and stored
+widget types 0, 2, 6, 7, 8, 10 or 255. New MRA callbacks do not expand that
+initialization profile. Binding declarations originate in InitializeComponent;
+the frozen form vectors' SetUpDataSource nesting denotes activation context,
+not declaration or callback order. See [Reset](edlt-reset.md) and the
+[provenance qualification](../research/fixtures/edlt-mra-control-provenance.json).
+Original host dispatch, modal pickers, culture order, rendering, other
+models/firmware and audio/physical acceptance remain open. The 18/42 ledger
+states and incomplete functional denominator are unchanged.
+
 The [widget adapter and Global Programming batch](widget-adapters-global-progress-20261003.md)
 adds source-owned label/status controls for six AppGroup families, Scene widget
 callbacks and automatic source metadata for bulk category copying. These
@@ -572,7 +603,7 @@ These functions have implementation and focused evidence for **KEYGL5 / 5055EDL 
 | Automatic parent metadata | One admitted native project snapshot derives required application/group records, complete consumed scene-level addresses, safe dynamic-variant facts and all 64 unit PP static-label slots. Existing Applications/Corridor lists retain XML child order and exact TagName; operation-1 Reset retains all exact Unit PP strings and resolves both initial/fresh requirements. Missing list objects are refused. With SceneManager the resolver projects the validated ordered-list/Reset/contiguous-Blank state, then creates missing Trigger application, groups and exact action levels after ordinary containers in deterministic order. Exact stale/ambiguity, closed-project, ownership, graph-order and capacity guards precede mutation. A backup and verified reverse pre-PP-save rollback are implemented; PP SAVE and PROJECT SAVE remain separate non-atomic boundaries and are never retried after an uncertain reply. [Parent metadata](edlt-parent-metadata.md). Registry display/sort preferences remain bounded separately. Image-dependent facts without a provider fail closed; SHA-bound project BMP exports and decoded DLTP inputs admit the profiles in [label controls and images](edlt-label-controls-images.md). The optional Schneider C-Gate combined gate, original add dialog/refresh timing and physical behavior remain open. |
 | Automatic retained SceneManager metadata | One admitted native project snapshot supplies complete existing application/group lists, complete levels for consumed Trigger Control groups and safe default-language `DynamicAll` rows: TEXT-only by default, with source lookup extended by explicit SHA-bound project BMP/decoded-DLTP providers. Retained getter accesses project and can create missing application 202 as `Trigger Control`, exact trigger groups as `Group N`, and exact action levels as `Action Selector N` with `Value=N` and four blank variants. Offline state/plan and guarded native apply include exact pre-backup and semantic post-backup stale checks, a retained project copy, reverse pre-save rollback, separate PP/PROJECT SAVE evidence, reload verification and preservation of existing metadata. [Scene metadata](edlt-scene-metadata.md). Typed accepted/cancelled Add and first-free allocation now compose with causal selector/getter histories; read [inventory timelines](edlt-scene-inventory-timeline.md). Original interactive GUI Add/binding acceptance, broader image formats beyond the explicit byte-backed metadata profile, complete original SceneManager control behavior, optional Schneider C-Gate execution and physical behavior remain open. |
 | Time/Date and HVAC display | Standby/functional placement, formats/leading zeroes; application 172 group/zone/precision/units. [Time/Date](edlt-time-date.md), [HVAC](edlt-hvac.md). |
-| Multi Room Audio | Zone Control, Source Select, Source Control and shared multiplexer/zone propagation. [MRA](edlt-mra.md). |
+| Multi Room Audio | Zone Control, Source Select, Source Control and shared multiplexer/zone propagation. Explicit parent `mra_controls` adds finite binding writes, retained static text, source-specific status and icon behavior, and explicit Zone macro getter repair. [MRA configuration](edlt-mra.md), [callback profile and limits](edlt-mra-controls.md). |
 | Global display and general settings | Large text, icons, timer flashing, wrap, key timings, reporting, tools access and restore mode. [Display](edlt-display.md), [general](edlt-general.md). |
 | Standby, colours and brightness | Enable/duration/page/nightlight, original palettes and control-group dependencies. [Standby](edlt-standby.md), [colours](edlt-colours.md). |
 | Navigation | Page modes, nine variants, temperature references and shared page-name storage. [Navigation](edlt-navigation.md). |

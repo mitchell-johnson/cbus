@@ -920,6 +920,29 @@ Static suggestion ordinals require an observed culture/order profile and refuse
 on the current automatic path. Read `toolkit-cli/docs/edlt-label-controls-images.md`.
 
 
+## Explicit MRA callbacks
+
+The owning parent admits `mra_controls` for `zone-control`, `source-select`
+and `source-control`; use the schemas in `toolkit-cli/docs/edlt-mra-controls.md`.
+The binding seals the exact issued instance, causal complete PP, operation,
+selected32-byte record, all64 retained Names and reference inventory. Receipts
+and JSON do not issue or resume controls. Static writes keep their old raw
+reference during allocation; Select's hidden status is still used. Status
+writes do not use AppGroup's index-reset rule. Read-only views never invoke the
+Zone macro getter; `get-zone-macro` explicitly repairs an invalid pair.
+
+Initialized multiplexer/zone values come from the first surviving loaded MRA
+model before conversion; Reset starts fresh initialization. Shared distribution
+occurs at terminal BeforeSave, with independent explicit owners. Existing Reset
+still admits only initial navigation0/1 and widget types0,2,6,7,8,10,255; these
+callbacks do not broaden its initial model profile. Binding declarations are
+created in InitializeComponent. The frozen form vector's SetUpDataSource phase
+means activation context only; see the sanitized
+`toolkit-cli/research/fixtures/edlt-mra-control-provenance.json` qualification.
+Original host dispatch, culture order, modal choices, rendering, audio hardware
+and full Toolkit acceptance remain open. Component evidence does not change
+ledger states or complete the provisional functionality census.
+
 ## AppGroup, Scene widget and automatic Global Programming controls
 
 The owning automatic parent now issues explicit `label_controls` for Enable,
