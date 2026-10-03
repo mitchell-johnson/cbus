@@ -1,0 +1,1431 @@
+{
+  "binaries": {
+    "cgate-mock": {
+      "bytes": 3715024,
+      "identity": "cgate-mock",
+      "sha256": "bdfce24bb60985aa9fd48e7d86dd3f6ed17fbef2fb41520a99285f8189eb261d"
+    },
+    "cmqttd": {
+      "bytes": 13602768,
+      "identity": "cmqttd",
+      "sha256": "1e9bbb40af3ba3c914be83344e0b774eb30760a8aefcbdbb4dd695ec0229bda0"
+    }
+  },
+  "binary_preparation": {
+    "bytes": 163479,
+    "identity": "binary-preparation.json",
+    "sha256": "0df438d070e19620434a813d73970f797f0e7dcc03ea87d441fadd0f280de9e9"
+  },
+  "candidate": {
+    "feature_prs": [
+      92,
+      94,
+      97
+    ],
+    "incoming_stack_head": "66773292fe2aa9fd940f6c30f8879e9a6b69eb96",
+    "integration_corrections": [
+      96
+    ],
+    "publication_binding": "The containing commit records the reviewed publication. These maps bind actual uncommitted execution bytes, not a circular commit hash.",
+    "tested_base": "1cc79977ddcc7b4912e9329706d9cd94e8f99b5f"
+  },
+  "date": "2026-10-04",
+  "format": "cbus-thermostat-integration-owned-release-v1",
+  "frozen_inputs": {
+    "input_count": 4104,
+    "outcome_annotation_paths": [
+      "toolkit-cli/docs/implementation-status.md",
+      "toolkit-cli/docs/feature-batch-2026-10-04-thermostat-integration.md",
+      "toolkit-cli/research/fixtures/thermostat-integration-owned-release-20261004.json"
+    ],
+    "rule": "No runtime, test, CI, packaged metadata or preserved input change is described as executed after the frozen acceptance. Only named report/status/receipt annotations may follow.",
+    "source_wheel_equal": true
+  },
+  "history": [
+    {
+      "acceptance_credit": false,
+      "outcome": "Automatic approval review rejected external runtime/artifact destination before execution. No phase directory or product process was created.",
+      "phase": "wheel-final3",
+      "summary_artifact_exists": false
+    },
+    {
+      "acceptance_credit": false,
+      "build_log": {
+        "bytes": 55738,
+        "identity": "wheel-final4/wheel-build.log",
+        "sha256": "e17167142cf75f9844d4332e3540e3ac706c7be0186e7f35d2470530ef01d8fb"
+      },
+      "outcome": "Build exit2: ignored egg-info timestamp update was denied in the sandbox before pytest.",
+      "phase": "wheel-final4",
+      "summary": {
+        "bytes": 2018,
+        "identity": "wheel-final4/summary.json",
+        "sha256": "29150fbf2b505355fc05f9071ab12a871f513af4f9ef9a22ca39df8a2a465029"
+      }
+    },
+    {
+      "outcome": "Build exit2 with ENOSPC before tests.",
+      "phase": "wheel-final1",
+      "summary": {
+        "bytes": 2076,
+        "identity": "wheel-final1/summary.json",
+        "sha256": "bbfa16fcae8effbb4c51bbd97b5d7ac42f2723010c597d2517550be33ef3117e"
+      }
+    },
+    {
+      "outcome": "Build/install/console help passed; internal staging mkdir failed ENOSPC; zero pytest execution or terminal package/closure acceptance.",
+      "phase": "wheel-final2",
+      "summary": {
+        "bytes": 5907,
+        "identity": "wheel-final2/summary.json",
+        "sha256": "d0d5489953692ab23de0b1454458b502d62ed75feba339bd33eb07cbb410114e"
+      }
+    }
+  ],
+  "independent_reviews": {
+    "normalized_skips_by_phase": {
+      "source-final1": [
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+          "module": "tests/test_cgate.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for C-Gate acceptance tests",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+          "module": "tests/test_cgate.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for C-Gate acceptance tests",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+          "module": "tests/test_cli_din_output_settings.py",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+          "module": "tests/test_cli_sensors.py",
+          "reason": "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+          "module": "tests/test_cli_sensors.py",
+          "reason": "Select native C-Gate and unit specifications for sensor CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+          "module": "tests/test_din_output_controls.py",
+          "reason": "requires pinned original bytes for static hash check only",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "module": "tests/test_din_output_save.py",
+          "reason": "requires pinned Toolkit bytes for static hash check",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "module": "tests/test_din_output_settings.py",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+          "module": "tests/test_din_output_settings.py",
+          "reason": "requires exact original Toolkit executable",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+          "module": "tests/test_edlt_parent_metadata.py",
+          "reason": "Set the explicit disposable closed-project native metadata acceptance environment",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+          "module": "tests/test_edlt_parent_transaction.py",
+          "reason": "Set native C-Gate and specs for parent transaction save/reload acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+          "module": "tests/test_edlt_scene_metadata.py",
+          "reason": "Set the explicit disposable closed-project scene-metadata acceptance environment",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+          "module": "tests/test_edlt_time_date.py",
+          "reason": "Set native C-Gate, specs and Toolkit EXE for Time/Date PP acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+          "module": "tests/test_edlt_time_date.py",
+          "reason": "Set original Toolkit EXE for original time/date acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "module": "tests/test_edlt_time_date_control_static.py",
+          "reason": "Requires explicitly configured pinned original static bytes; no instruction execution",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_events.py::NativeEventTests::test_native_configuration_stream_observes_owned_project_creation",
+          "module": "tests/test_events.py",
+          "reason": "set CBUS_CGATE_TEST_HOST for native event acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty",
+          "module": "tests/test_firmware_diagnostics.py",
+          "reason": "Set original FirmwareUpdater.exe for unchanged assembly acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR for vendor schemas",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest::test_scene_levels_native_matrix",
+          "module": "tests/test_iope_scene_levels_native.py",
+          "reason": "Requires explicitly owned local native C-Gate, Java11 and decoded UnitSpecs",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_iope_scene_levels_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload",
+          "module": "tests/test_iope_scene_levels_native.py",
+          "reason": "Requires explicitly owned local native C-Gate, Java11 and decoded UnitSpecs",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+          "module": "tests/test_light_level_sensors.py",
+          "reason": "Set the Toolkit EXE to regenerate the SENLL receipt",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+          "module": "tests/test_light_level_sensors.py",
+          "reason": "Select native C-Gate and unit specs for SENLL acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+          "module": "tests/test_neo_indicator_editor.py",
+          "reason": "Original Toolkit EXE/MAP explicitly required for static hash verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_programming.py::NativeProgrammingTest::test_offline_defaults_edit_copy_export_import_and_cleanup",
+          "module": "tests/test_programming.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for disposable native C-Gate acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_programming.py::NativeProgrammingTest::test_spaced_checksum_actual_byte_change_reset_and_import",
+          "module": "tests/test_programming.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for disposable native C-Gate acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+          "module": "tests/test_thermostat_output_add.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+          "module": "tests/test_thermostat_output_groups.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+          "module": "tests/test_thermostat_remote_levels.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+          "module": "tests/test_thermostat_remote_references.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        }
+      ],
+      "wheel-final5": [
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+          "module": "tests/test_cgate.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for C-Gate acceptance tests",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+          "module": "tests/test_cgate.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for C-Gate acceptance tests",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+          "module": "tests/test_cli_din_output_settings.py",
+          "reason": "Select native C-Gate and unit specifications for DIN CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+          "module": "tests/test_cli_sensors.py",
+          "reason": "Select native C-Gate and unit specifications for PIR/SENLL CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+          "module": "tests/test_cli_sensors.py",
+          "reason": "Select native C-Gate and unit specifications for sensor CLI acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+          "module": "tests/test_din_output_controls.py",
+          "reason": "requires pinned original bytes for static hash check only",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "module": "tests/test_din_output_save.py",
+          "reason": "requires pinned Toolkit bytes for static hash check",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "module": "tests/test_din_output_settings.py",
+          "reason": "Select native C-Gate and unit specs for DIN output settings acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+          "module": "tests/test_din_output_settings.py",
+          "reason": "requires exact original Toolkit executable",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+          "module": "tests/test_edlt_parent_metadata.py",
+          "reason": "Set the explicit disposable closed-project native metadata acceptance environment",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+          "module": "tests/test_edlt_parent_transaction.py",
+          "reason": "Set native C-Gate and specs for parent transaction save/reload acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+          "module": "tests/test_edlt_scene_metadata.py",
+          "reason": "Set the explicit disposable closed-project scene-metadata acceptance environment",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+          "module": "tests/test_edlt_time_date.py",
+          "reason": "Set native C-Gate, specs and Toolkit EXE for Time/Date PP acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+          "module": "tests/test_edlt_time_date.py",
+          "reason": "Set original Toolkit EXE for original time/date acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "module": "tests/test_edlt_time_date_control_static.py",
+          "reason": "Requires explicitly configured pinned original static bytes; no instruction execution",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_events.py::NativeEventTests::test_native_configuration_stream_observes_owned_project_creation",
+          "module": "tests/test_events.py",
+          "reason": "set CBUS_CGATE_TEST_HOST for native event acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty",
+          "module": "tests/test_firmware_diagnostics.py",
+          "reason": "Set original FirmwareUpdater.exe for unchanged assembly acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR plus CBUS_CGATE_TEST_HOST, or CBUS_NATIVE_SERVICE_BACKEND=local with CBUS_CGATE_JAVA, for native preset acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+          "module": "tests/test_input_options.py",
+          "reason": "Set CBUS_UNITSPEC_DIR for vendor schemas",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest::test_scene_levels_native_matrix",
+          "module": "tests/test_iope_scene_levels_native.py",
+          "reason": "Requires explicitly owned local native C-Gate, Java11 and decoded UnitSpecs",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_iope_scene_levels_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload",
+          "module": "tests/test_iope_scene_levels_native.py",
+          "reason": "Requires explicitly owned local native C-Gate, Java11 and decoded UnitSpecs",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+          "module": "tests/test_light_level_sensors.py",
+          "reason": "Set the Toolkit EXE to regenerate the SENLL receipt",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+          "module": "tests/test_light_level_sensors.py",
+          "reason": "Select native C-Gate and unit specs for SENLL acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+          "module": "tests/test_neo_indicator_editor.py",
+          "reason": "Original Toolkit EXE/MAP explicitly required for static hash verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_programming.py::NativeProgrammingTest::test_offline_defaults_edit_copy_export_import_and_cleanup",
+          "module": "tests/test_programming.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for disposable native C-Gate acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_programming.py::NativeProgrammingTest::test_spaced_checksum_actual_byte_change_reset_and_import",
+          "module": "tests/test_programming.py",
+          "reason": "Set CBUS_CGATE_TEST_HOST for disposable native C-Gate acceptance",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+          "module": "tests/test_thermostat_output_add.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+          "module": "tests/test_thermostat_output_groups.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+          "module": "tests/test_thermostat_remote_levels.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+          "module": "tests/test_thermostat_remote_references.py",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        },
+        {
+          "id": "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types",
+          "module": "tests/test_thermostat_settings_native.py",
+          "reason": "Select Java11/vendor/unit specifications for native thermostat settings",
+          "type": "pytest.skip"
+        }
+      ]
+    },
+    "public_raw_by_phase": {
+      "source-final1": {
+        "counts": {
+          "CLI_calls": 130,
+          "CLI_exit_0": 104,
+          "CLI_exit_1": 26,
+          "actually_dropped_upstream_200": 10,
+          "actually_dropped_upstream_301": 2,
+          "cgate-mock_records": 39,
+          "cleaned_owned_PIDs": 78,
+          "cmqttd_records": 39,
+          "connections": 130,
+          "controlled_stale_source_changes": 4,
+          "delivered_response_bytes": 17285422,
+          "direct_binary": 78,
+          "process_exit_-15": 39,
+          "process_exit_0": 39,
+          "records": 78,
+          "request_bytes": 551724,
+          "root_distinct_records": 6,
+          "startup_PCI_frames": 312,
+          "supplier_records": 72,
+          "tagged_commands": 11726
+        },
+        "preservation": "Full owning PP, exact optional existing Level Value, leaf-preserving project graph and successful fresh readback verified by the pinned independent raw review.",
+        "scope": "Raw artifact signatures are independently matched across phases. The raw writer lacks node IDs; no one-to-one node-ID/raw-signature association is invented.",
+        "signatures": 78,
+        "startup": "Four owned fake PCI startup frames per case; later trap contact absent. This is software harness activity, not hardware acceptance.",
+        "uncertain_outcomes": "Actual dropped upstream301/200 terminals remain failures, stop without automatic replay, and do not gain saved or fresh-reload acceptance."
+      },
+      "wheel-final5": {
+        "counts": {
+          "CLI_calls": 130,
+          "CLI_exit_0": 104,
+          "CLI_exit_1": 26,
+          "actually_dropped_upstream_200": 10,
+          "actually_dropped_upstream_301": 2,
+          "cgate-mock_records": 39,
+          "cleaned_owned_PIDs": 78,
+          "cmqttd_records": 39,
+          "connections": 130,
+          "controlled_stale_source_changes": 4,
+          "delivered_response_bytes": 17285422,
+          "direct_binary": 78,
+          "process_exit_-15": 39,
+          "process_exit_0": 39,
+          "records": 78,
+          "request_bytes": 551724,
+          "root_distinct_records": 6,
+          "startup_PCI_frames": 312,
+          "supplier_records": 72,
+          "tagged_commands": 11726
+        },
+        "preservation": "Full owning PP, exact optional existing Level Value, leaf-preserving project graph and successful fresh readback verified by the pinned independent raw review.",
+        "scope": "Raw artifact signatures are independently matched across phases. The raw writer lacks node IDs; no one-to-one node-ID/raw-signature association is invented.",
+        "signatures": 78,
+        "startup": "Four owned fake PCI startup frames per case; later trap contact absent. This is software harness activity, not hardware acceptance.",
+        "uncertain_outcomes": "Actual dropped upstream301/200 terminals remain failures, stop without automatic replay, and do not gain saved or fresh-reload acceptance."
+      }
+    },
+    "review_artifacts": {
+      "normalized_skips": {
+        "bytes": 28050,
+        "identity": "normalized-source-wheel-skips-final1.json",
+        "sha256": "3790585a0d8cf0dabc1411556d082dc1457585e262198ca28c960e8a44897f01"
+      },
+      "public_raw": {
+        "bytes": 174662,
+        "identity": "wheel-raw78-result-v3.json",
+        "sha256": "18fdf1ce65fe17e8bb1e91ef649098c1732f77a6809f0cd21e37c2a6cea78cc1"
+      },
+      "source_rust": {
+        "bytes": 91764,
+        "identity": "independent-source-rust-final1.json",
+        "sha256": "c339d96fc7b454a66a82fd53da3a00a33129608ab0a499f27495a23e71165459"
+      },
+      "source_wheel": {
+        "bytes": 221282,
+        "identity": "independent-acceptance-final1.json",
+        "sha256": "9c75aca843bcbdac27d6cc1f27b8376d2d2ebd5f267d05bfa94b6e5a1f2d5080"
+      }
+    },
+    "scope": "Independent artifact/readback reviews. Reviewer C authored shared registrations; no independent semantic execution credit is inferred for those inputs.",
+    "source_rust_predecessor_scope": "Source/Rust-only review retains its original wheel-pending status; the separate current generic source/wheel review establishes terminal wheel acceptance.",
+    "wheel_proof": {
+      "actual_pytest_startup_and_terminal": true,
+      "before_after_equal": true,
+      "child_process_terminal_completeness_claimed": false,
+      "complete_clone_closure": 4106,
+      "distinct_inodes": true,
+      "guard_extras": 2,
+      "package_files": 389,
+      "reference_files": 4104,
+      "runtime_processes": 3342,
+      "runtime_records": 6532,
+      "runtime_violations": 0,
+      "source_ZIP_installed_terminal_equal": true
+    }
+  },
+  "installed_coverage": {
+    "console": {
+      "bytes": 360,
+      "identity": "installed-console-script",
+      "sha256": "9de7747153823e7429ed8eac805e9082f7f2a685df6e0919ab3166c88cb59137"
+    },
+    "invocations": [
+      {
+        "artifacts_verified": false,
+        "census_complete": false,
+        "complete": false,
+        "denominator_ready": false,
+        "diagnostic_only": false,
+        "exit": 1,
+        "fingerprint_refusal": "No trusted evidence root was supplied.",
+        "fingerprints_verified": false,
+        "functional_percentage_established": false,
+        "label": "default",
+        "obligations_accepted": 0,
+        "obligations_total": 487,
+        "raw_artifacts": {
+          "stderr": {
+            "bytes": 0,
+            "identity": "wheel-final5/coverage-isolated/default.stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 263697,
+            "identity": "wheel-final5/coverage-isolated/default.stdout",
+            "sha256": "710b79a133e8a63080567ae563617f1c2722ad96584003c954f85f09219955f6"
+          }
+        },
+        "scope": "Installed console diagnostics only; no tests/services/original/hardware execution or completeness acceptance."
+      },
+      {
+        "artifacts_verified": true,
+        "census_complete": false,
+        "complete": false,
+        "denominator_ready": false,
+        "diagnostic_only": true,
+        "exit": 1,
+        "fingerprint_refusal": "The running installed package is not loaded from the supplied internal source checkout.",
+        "fingerprints_verified": false,
+        "functional_percentage_established": false,
+        "label": "internal-reference-diagnostic",
+        "obligations_accepted": 0,
+        "obligations_total": 487,
+        "raw_artifacts": {
+          "stderr": {
+            "bytes": 0,
+            "identity": "wheel-final5/coverage-isolated/internal-reference-diagnostic.stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 263644,
+            "identity": "wheel-final5/coverage-isolated/internal-reference-diagnostic.stdout",
+            "sha256": "cf2ec240d91ddf84099a3223af8659d2ea20d28be66d70f8cd1fc3d4792c4153"
+          }
+        },
+        "scope": "Installed console diagnostics only; no tests/services/original/hardware execution or completeness acceptance."
+      }
+    ],
+    "ledger_note": "18 of42 describes category status only. Neither invocation establishes a functional percentage or full Toolkit parity.",
+    "summary": {
+      "bytes": 78987,
+      "identity": "wheel-final5/coverage-isolated/summary.json",
+      "sha256": "33b08034474c11780a1d6b9656d0963f1c3cb29355a1bf815de37a5bb6a44daf"
+    }
+  },
+  "limits": [
+    "Focused Python selection only. Rust workspace suite required by repository instructions.",
+    "All original/native/vendor/hardware skips remain skips; no body-passing acceptance is granted by source inspection or forwarding.",
+    "No fresh original instructions, Schneider native server, Windows GUI or real network ran.",
+    "No full Toolkit or C-Gate feature parity claim. Historical category ledger remains18/42; functional denominator is incomplete.",
+    "Output Edit, application migration and broader initialized thermostat form/control lifecycle are separate outstanding work.",
+    "Final publication privacy and staged/committed byte review binds this serialized receipt separately; this payload does not certify itself."
+  ],
+  "metadata": {
+    "capture_nonoutput_quiet": true,
+    "capture_summary": {
+      "bytes": 42791,
+      "identity": "metadata-owned-refresh-thermostat-1/summary.json",
+      "sha256": "b46ab3faeda54e5507bcfbc6c9f54effd97fa800a79e150cfb901860672c7144"
+    },
+    "combined_cases": 4,
+    "distinct_source_paths": 220,
+    "generation_current_snapshot_equal_source": true,
+    "generation_expected_output_changes": [
+      "toolkit-cli/research/release-gates/skip-census.json",
+      "toolkit-cli/src/cbus_toolkit/parity-evidence.json",
+      "toolkit-cli/src/cbus_toolkit/parity-obligations.json"
+    ],
+    "generation_source_quiet": false,
+    "generation_summary": {
+      "bytes": 5017,
+      "identity": "metadata-final1/summary.json",
+      "sha256": "8a6751cf1e3792e122dadba9b47bc5d8ff6ed5d32b920447ac666493556b2c7a"
+    },
+    "independent_reviews": {
+      "actual-six-current-independent-review1.json": {
+        "bytes": 32655,
+        "identity": "actual-six-current-independent-review1.json",
+        "sha256": "faa047a2d35176af72d0fa59b390e3846547f08650c46a805486c251fc1fc06b"
+      },
+      "downstream-metadata-independent-review1.json": {
+        "bytes": 6658,
+        "identity": "downstream-metadata-independent-review1.json",
+        "sha256": "7042b453698eccea64ef88ffab99c0066c011d2eb75a615a43ee9f73c342c7ec"
+      }
+    },
+    "ledger": {
+      "census_complete": false,
+      "complete_categories": 18,
+      "full_toolkit_parity": false,
+      "functional_percentage_established": false,
+      "in_progress": 22,
+      "pending": 2,
+      "total_categories": 42
+    },
+    "primary_cases": 64,
+    "receipts": {
+      "cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 63082,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/unit-e61f1b511fdd91ceefb3c3b886083b26dcb46b9a1b338b18812fb1428102f40d.json",
+          "sha256": "e61f1b511fdd91ceefb3c3b886083b26dcb46b9a1b338b18812fb1428102f40d"
+        },
+        "combined_cases": 2,
+        "primary_cases": 12,
+        "published": {
+          "bytes": 63582,
+          "identity": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+          "sha256": "8a3632c61906d04c5d621380a909cfa0bba31c1a8ac0c96a28a2f049d03cd784"
+        },
+        "raw": {
+          "bytes": 63082,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-dbsetxml-unit-differential-cmqttd.json",
+          "sha256": "e61f1b511fdd91ceefb3c3b886083b26dcb46b9a1b338b18812fb1428102f40d"
+        }
+      },
+      "cgate-dbsetxml-unit-differential-mock.json": {
+        "archive": {
+          "bytes": 61177,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/unit-4a2d864c603e4ceeaf20b4bc10bd10944eaae0c35bd8613188a2f7de795f281b.json",
+          "sha256": "4a2d864c603e4ceeaf20b4bc10bd10944eaae0c35bd8613188a2f7de795f281b"
+        },
+        "combined_cases": 2,
+        "primary_cases": 12,
+        "published": {
+          "bytes": 61677,
+          "identity": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+          "sha256": "480d65a1c27dcf4ee811b34fef471a14cae24d935e8dac266b5b823ae820b67f"
+        },
+        "raw": {
+          "bytes": 61177,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-dbsetxml-unit-differential-mock.json",
+          "sha256": "4a2d864c603e4ceeaf20b4bc10bd10944eaae0c35bd8613188a2f7de795f281b"
+        }
+      },
+      "cgate-session-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 35232,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/session-501f517d339d11ad5faa61c5b4d18cd28cbb60315e0e730e17e5cd5b3eeb47d8.json",
+          "sha256": "501f517d339d11ad5faa61c5b4d18cd28cbb60315e0e730e17e5cd5b3eeb47d8"
+        },
+        "combined_cases": 0,
+        "primary_cases": 9,
+        "published": {
+          "bytes": 35797,
+          "identity": "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json",
+          "sha256": "869e710bfc42b1fd197a684d7ef29924a451663710394f09a1dc30af011798b0"
+        },
+        "raw": {
+          "bytes": 35232,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-session-differential-cmqttd.json",
+          "sha256": "501f517d339d11ad5faa61c5b4d18cd28cbb60315e0e730e17e5cd5b3eeb47d8"
+        }
+      },
+      "cgate-session-differential-fixed.json": {
+        "archive": {
+          "bytes": 32833,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/session-74959a93e9d3ebcb5f9227e9f3b82547442907dcea93c77ba02d669e2623c77f.json",
+          "sha256": "74959a93e9d3ebcb5f9227e9f3b82547442907dcea93c77ba02d669e2623c77f"
+        },
+        "combined_cases": 0,
+        "primary_cases": 9,
+        "published": {
+          "bytes": 33402,
+          "identity": "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json",
+          "sha256": "90af58c70d4dfd5462196f71ee723111f5542331006f402fc0b9dff5e4251dcd"
+        },
+        "raw": {
+          "bytes": 32833,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-session-differential-fixed.json",
+          "sha256": "74959a93e9d3ebcb5f9227e9f3b82547442907dcea93c77ba02d669e2623c77f"
+        }
+      },
+      "cgate-tagged-session-differential-cgate-mock.json": {
+        "archive": {
+          "bytes": 32344,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/tagged-bb0722e4b2854f3be615012b962f08fa173f9ed9d25b92fe5c6ddf1340887802.json",
+          "sha256": "bb0722e4b2854f3be615012b962f08fa173f9ed9d25b92fe5c6ddf1340887802"
+        },
+        "combined_cases": 0,
+        "primary_cases": 11,
+        "published": {
+          "bytes": 32858,
+          "identity": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+          "sha256": "c3a63d24c83c17acef8f1cd0b18a1734ec7afa727fa15cf59477c6fe94b61fd5"
+        },
+        "raw": {
+          "bytes": 32344,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-tagged-session-differential-mock.json",
+          "sha256": "bb0722e4b2854f3be615012b962f08fa173f9ed9d25b92fe5c6ddf1340887802"
+        }
+      },
+      "cgate-tagged-session-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 34469,
+          "identity": "metadata-owned-refresh-thermostat-1/archive/tagged-1a351cf8663006f0ac83462eca19a0a1ac1fea51d6aee74d09250cea78c9a17e.json",
+          "sha256": "1a351cf8663006f0ac83462eca19a0a1ac1fea51d6aee74d09250cea78c9a17e"
+        },
+        "combined_cases": 0,
+        "primary_cases": 11,
+        "published": {
+          "bytes": 34983,
+          "identity": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+          "sha256": "27f7136df753a109e95402b20fe9fd7eff3012d86daebb25af0865d5aca2bcac"
+        },
+        "raw": {
+          "bytes": 34469,
+          "identity": "metadata-owned-refresh-thermostat-1/raw/cgate-tagged-session-differential-cmqttd.json",
+          "sha256": "1a351cf8663006f0ac83462eca19a0a1ac1fea51d6aee74d09250cea78c9a17e"
+        }
+      }
+    },
+    "scope": "Owned modeled-server comparisons to unchanged saved native receipts; no new original/native/hardware execution.",
+    "source_map_occurrences": 1183
+  },
+  "registration": {
+    "Makefile": {
+      "bytes": 120613,
+      "identity": "toolkit-cli/Makefile",
+      "sha256": "cb1b6d57813d5148e2f31035b78f2d6ddaca3ebfd3ee51f9ec8c2c4de2da7b3e"
+    },
+    "by_module": {
+      "tests/test_thermostat_output_add_backends.py": 18,
+      "tests/test_thermostat_output_groups_backends.py": 16,
+      "tests/test_thermostat_remote_levels_backends.py": 20,
+      "tests/test_thermostat_remote_references_backends.py": 24
+    },
+    "literal_guard": {
+      "bytes": 65630,
+      "identity": "toolkit-cli/tests/test_ci_test_results.py",
+      "sha256": "422860fd1b943e7132c4def3da01f777a177bbfd4af16afd8f9d7d324b2ece03"
+    },
+    "per_backend": {
+      "daemon": 39,
+      "mock": 39
+    },
+    "registered_unique_ids": 799,
+    "scope": "Registration and actual body presence; this is not a new independent semantic execution.",
+    "thermostat_case_ids": [
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[ordered-history-preserves-opaque-level-value-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[ordered-history-preserves-opaque-level-value-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-mock]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[daemon]",
+      "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-mock]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-daemon]",
+      "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-preserve-opaque-used-value-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-preserve-opaque-used-value-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-preserve-opaque-existing-value-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-preserve-opaque-existing-value-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]",
+      "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-mock]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-daemon]",
+      "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-mock]"
+    ],
+    "thermostat_unique_ids": 78,
+    "workflow": {
+      "bytes": 26291,
+      "identity": ".github/workflows/ci.yml",
+      "sha256": "5a0c0cb661839a6549960f0a71da9c0948d7a6e162e4da07717a5a8e3210dbe6"
+    }
+  },
+  "rust": {
+    "before_after_equal": true,
+    "commands": [
+      {
+        "exit": 0,
+        "identity": "format.log",
+        "log": {
+          "bytes": 0,
+          "identity": "rust-final1/format.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "seconds": 2.038
+      },
+      {
+        "exit": 0,
+        "identity": "clippy.log",
+        "log": {
+          "bytes": 521,
+          "identity": "rust-final1/clippy.log",
+          "sha256": "d3cc6369ad8cebf0725618fb3e33f61ae8a813ccd1e50889993137f62a30db9a"
+        },
+        "seconds": 96.476
+      },
+      {
+        "exit": 0,
+        "identity": "workspace.log",
+        "log": {
+          "bytes": 453401,
+          "identity": "rust-final1/workspace.log",
+          "sha256": "18285fe587e6beabfa016bc39885f2a4b9c314c99bda256fe674bce748eee9e8"
+        },
+        "seconds": 549.28
+      },
+      {
+        "exit": 0,
+        "identity": "release.log",
+        "log": {
+          "bytes": 511,
+          "identity": "rust-final1/release.log",
+          "sha256": "2298cbdebe493aeb205db8516b3d2380db79a0e68b29098525f01e2eff007168"
+        },
+        "seconds": 89.81
+      }
+    ],
+    "counts": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 8730,
+      "summary_rows": 102
+    },
+    "current_readback_equal": true,
+    "harness": {
+      "bytes": 17194,
+      "identity": "rust-final1/harness.py",
+      "sha256": "53023cf9f7c2e7d02855d98281c290006965be810d02db157fa0ab5f8e7dec33"
+    },
+    "input_count": 473,
+    "inputs_after": {
+      "bytes": 76352,
+      "identity": "rust-final1/inputs-after.json",
+      "sha256": "251c3938ab500040b66af29e766e06a88d6b97a9e3357564bad2003f6e460e90"
+    },
+    "inputs_before": {
+      "bytes": 76352,
+      "identity": "rust-final1/inputs-before.json",
+      "sha256": "251c3938ab500040b66af29e766e06a88d6b97a9e3357564bad2003f6e460e90"
+    },
+    "summary": {
+      "bytes": 6352,
+      "identity": "rust-final1/summary.json",
+      "sha256": "1356a9f1a1865c08f6c3e9c02b647033aefd28bf021e4dc464410abab5ecca5d"
+    },
+    "workspace_counts": {
+      "bytes": 4719,
+      "identity": "rust-final1/workspace-counts.json",
+      "sha256": "8929b7235975e88faaccdd145154be8eafe8918ebf8473f37f0ed529039d1901"
+    }
+  },
+  "scope": {
+    "existing_level_values": "Exact optional raw XML Value spelling/absence; reuse by Address. New creations still require the planned canonical byte Value.",
+    "level_oid": "Pending/existing Group and NetVar Level TagName persists through OID addressing.",
+    "optional_remote_levels": "Accepted prompt creates missing canonical addresses1..31; omitted or declined prompts preserve existing metadata.",
+    "ordinary_output_roles": 23,
+    "output_histories": "Typed accepted/cancelled Add interleaved with selections, source order and one owner save.",
+    "profiles": [
+      "PC_TSA",
+      "PC_TSA5",
+      "PC_TSB",
+      "PC_TSB5"
+    ],
+    "quoted_dbset": "Decode the quoted raw DBSET value once; preserve doubled spaces, NBSP, quote, backslash and hash. Other command families retain their contracts."
+  },
+  "source": {
+    "audit": {
+      "bytes": 1385404,
+      "identity": "source-final1/audit-results.json",
+      "sha256": "75a93300e801a7e64f34cb60d1131b155e878b9209a4c170283ee4b3d5f7b9f9"
+    },
+    "before_after_equal": true,
+    "collected_modules": 72,
+    "commands": [
+      {
+        "exit": 0,
+        "identity": "pytest.log",
+        "log": {
+          "bytes": 6413,
+          "identity": "source-final1/pytest.log",
+          "sha256": "3a45b6fcd09c18205ffa2b52d034989f9346e80e85c7c4ac9c1f7b5d8c4d7eaa"
+        },
+        "seconds": 1024.165
+      },
+      {
+        "exit": 0,
+        "identity": "audit.log",
+        "log": {
+          "bytes": 182,
+          "identity": "source-final1/audit.log",
+          "sha256": "9b99986f0641b40e1d1d8c3fe254408b23ed15b8ee8b693cb67754044142c97f"
+        },
+        "seconds": 0.309
+      }
+    ],
+    "current_readback_equal": true,
+    "harness": {
+      "bytes": 17194,
+      "identity": "source-final1/harness.py",
+      "sha256": "53023cf9f7c2e7d02855d98281c290006965be810d02db157fa0ab5f8e7dec33"
+    },
+    "input_count": 4104,
+    "inputs_after": {
+      "bytes": 730967,
+      "identity": "source-final1/inputs-after.json",
+      "sha256": "62033f7618c146eb0b372324905ac841301bb241cef300f338094dfa09166e49"
+    },
+    "inputs_before": {
+      "bytes": 730967,
+      "identity": "source-final1/inputs-before.json",
+      "sha256": "62033f7618c146eb0b372324905ac841301bb241cef300f338094dfa09166e49"
+    },
+    "junit": {
+      "bytes": 409982,
+      "identity": "source-final1/junit.xml",
+      "sha256": "47f88ca1a9aa56083b3a057c9f189b50a67d9bdeff5e5a1c5f66fe1eed7edf3a"
+    },
+    "module_selection": {
+      "bytes": 6623,
+      "identity": "source-final1/module-selection.json",
+      "sha256": "502a16ebbd179372e77a5e78106b751b02d30dcf47e5769777f4e8db5a95cdff"
+    },
+    "parent_passes": 1101,
+    "required_modules": 71,
+    "separate_subtest_reporting": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 3519,
+      "reported": 3519,
+      "skipped": 0
+    },
+    "separate_subtests": 3519,
+    "skipped": 40,
+    "skipped_ids": [
+      "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+      "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+      "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+      "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+      "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+      "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+      "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+      "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+      "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+      "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+      "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+      "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+      "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+      "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+      "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+      "tests/test_events.py::NativeEventTests::test_native_configuration_stream_observes_owned_project_creation",
+      "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty",
+      "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+      "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+      "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+      "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+      "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+      "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest::test_scene_levels_native_matrix",
+      "tests/test_iope_scene_levels_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload",
+      "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+      "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+      "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+      "tests/test_programming.py::NativeProgrammingTest::test_offline_defaults_edit_copy_export_import_and_cleanup",
+      "tests/test_programming.py::NativeProgrammingTest::test_spaced_checksum_actual_byte_change_reset_and_import",
+      "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+      "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+      "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+      "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types"
+    ],
+    "summary": {
+      "bytes": 12625,
+      "identity": "source-final1/summary.json",
+      "sha256": "49aad3987dbb814bf9b96d7dbae60c7c85e14061d5f7cf5bbc63da21d01dea38"
+    },
+    "trace": {
+      "bytes": 1090900,
+      "identity": "source-final1/trace.json",
+      "sha256": "1ab9333fa319ec926bbbc64a984727a9e600b9d5e1175ac0f93a2f1e30a110be"
+    }
+  },
+  "wheel": {
+    "audit": {
+      "bytes": 1385403,
+      "identity": "wheel-final5/audit-results.json",
+      "sha256": "c63106e0684d15b9142031a18a5115c1118c1ac355c528553ac737313addf439"
+    },
+    "before_after_equal": true,
+    "collected_modules": 72,
+    "commands": [
+      {
+        "exit": 0,
+        "identity": "wheel-build.log",
+        "log": {
+          "bytes": 172155,
+          "identity": "wheel-final5/wheel-build.log",
+          "sha256": "3d149f80d7df51b6db0ef809712486e4c184f821436b2a5f006432558d1fda31"
+        },
+        "seconds": 0.976
+      },
+      {
+        "exit": 0,
+        "identity": "wheel-venv.log",
+        "log": {
+          "bytes": 370,
+          "identity": "wheel-final5/wheel-venv.log",
+          "sha256": "342138a3cc4a9ff6c5fcf938ca2f35fda0786b9ec4ddd452332a5a06fe5a81db"
+        },
+        "seconds": 0.011
+      },
+      {
+        "exit": 0,
+        "identity": "wheel-install.log",
+        "log": {
+          "bytes": 624,
+          "identity": "wheel-final5/wheel-install.log",
+          "sha256": "5b68c925c975adf1423fefe79aaf85223daaba3f1e33c7323f3df1c96f6936c9"
+        },
+        "seconds": 0.119
+      },
+      {
+        "exit": 0,
+        "identity": "installed-console-help.log",
+        "log": {
+          "bytes": 8643,
+          "identity": "wheel-final5/installed-console-help.log",
+          "sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e"
+        },
+        "seconds": 0.779
+      },
+      {
+        "exit": 0,
+        "identity": "pytest.log",
+        "log": {
+          "bytes": 6413,
+          "identity": "wheel-final5/pytest.log",
+          "sha256": "f914f8f19e7e05bde4d3df1d3bf7c75778734d5c4ceaf6d4cc6bd8ee01bc9644"
+        },
+        "seconds": 1022.348
+      },
+      {
+        "exit": 0,
+        "identity": "audit.log",
+        "log": {
+          "bytes": 181,
+          "identity": "wheel-final5/audit.log",
+          "sha256": "215194be599bf4388417261454290f7a781a4f076ac15083b526e0def6c130dd"
+        },
+        "seconds": 0.19
+      }
+    ],
+    "copied-reference-after": {
+      "bytes": 764489,
+      "identity": "wheel-final5/copied-reference-after.json",
+      "sha256": "d4a5f44b16805a3f1cc6711944378fedbcb349e34381f5606ddea09ef346b1cb"
+    },
+    "copied-reference-before": {
+      "bytes": 764489,
+      "identity": "wheel-final5/copied-reference-before.json",
+      "sha256": "d4a5f44b16805a3f1cc6711944378fedbcb349e34381f5606ddea09ef346b1cb"
+    },
+    "current_readback_equal": true,
+    "harness": {
+      "bytes": 22953,
+      "identity": "wheel-final5/harness.py",
+      "sha256": "385a11281ef29f8ef9da658e5bcdfcd1786eca218d7766316525b5ec8a7cabc4"
+    },
+    "input_count": 4104,
+    "inputs_after": {
+      "bytes": 730967,
+      "identity": "wheel-final5/inputs-after.json",
+      "sha256": "62033f7618c146eb0b372324905ac841301bb241cef300f338094dfa09166e49"
+    },
+    "inputs_before": {
+      "bytes": 730967,
+      "identity": "wheel-final5/inputs-before.json",
+      "sha256": "62033f7618c146eb0b372324905ac841301bb241cef300f338094dfa09166e49"
+    },
+    "installed-console-proof": {
+      "bytes": 656,
+      "identity": "wheel-final5/installed-console-proof.json",
+      "sha256": "b9cb9fc5eef73b8594d47b9d546b202ecf553824c0f05e9cfcb81c0090e3bd9f"
+    },
+    "junit": {
+      "bytes": 410422,
+      "identity": "wheel-final5/junit.xml",
+      "sha256": "692c3c4602dfec2fd8c2798aac3bfd4bce2e90bc1aa5f5ef9f2f6c18f38be498"
+    },
+    "module_selection": {
+      "bytes": 6623,
+      "identity": "wheel-final5/module-selection.json",
+      "sha256": "502a16ebbd179372e77a5e78106b751b02d30dcf47e5769777f4e8db5a95cdff"
+    },
+    "package_files": 389,
+    "parent_passes": 1101,
+    "required_modules": 71,
+    "runtime-import-proof": {
+      "bytes": 241,
+      "identity": "wheel-final5/runtime-import-proof.json",
+      "sha256": "b4466b300e755e5bedc7685b984bfb2075238e684ef7daa1808d9cc5fa9768e6"
+    },
+    "runtime-imports.jsonl": {
+      "bytes": 97942140,
+      "identity": "wheel-final5/runtime-imports.jsonl",
+      "sha256": "03666ad4942c069a0297c764ab5f958328cdca1e220ba8a07e10dd4bfe21d809"
+    },
+    "runtime_origin_scope": "Actual pytest startup and terminal are mandatory; child records do not imply every child has a terminal record.",
+    "separate_subtest_reporting": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 3519,
+      "reported": 3519,
+      "skipped": 0
+    },
+    "separate_subtests": 3519,
+    "skipped": 40,
+    "skipped_ids": [
+      "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+      "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+      "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+      "tests/test_cli_sensors.py::SensorCLITests::test_native_pir_and_light_level_preview_matches_offline_plan_and_persists",
+      "tests/test_cli_sensors.py::SensorCLITests::test_native_preview_matches_offline_plan_and_persists_with_unrelated_values",
+      "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+      "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+      "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+      "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+      "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+      "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+      "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+      "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+      "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+      "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+      "tests/test_events.py::NativeEventTests::test_native_configuration_stream_observes_owned_project_creation",
+      "tests/test_firmware_diagnostics.py::FirmwareOriginalAssemblyTest::test_original_metadata_and_serial_handlers_through_linux_pty",
+      "tests/test_input_options.py::NativeInputOptionTests::test_cli_dry_run_then_persist_each_editor",
+      "tests/test_input_options.py::NativeInputOptionTests::test_custom_micro_functions_on_classic_and_neo_types",
+      "tests/test_input_options.py::NativeInputOptionTests::test_neo_indicator_options_and_styles_by_family",
+      "tests/test_input_options.py::NativeInputOptionTests::test_power_up_broadcast_on_couplers_and_broadcast_flag_units",
+      "tests/test_input_options.py::OfflineCliTests::test_offline_plans_for_every_new_editor",
+      "tests/test_iope_scene_levels_native.py::IopeSceneLevelsNativeTest::test_scene_levels_native_matrix",
+      "tests/test_iope_scene_levels_native.py::IopeWorkflowNativeTest::test_profile_matrix_preservation_boundaries_and_save_reload",
+      "tests/test_light_level_sensors.py::LightLevelReviewTest::test_receipt_regenerates_from_private_inputs",
+      "tests/test_light_level_sensors.py::LightLevelSensorNativeTest::test_admitted_senll_profiles_forced_save_dialog_preservation_reload_and_refusals",
+      "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+      "tests/test_programming.py::NativeProgrammingTest::test_offline_defaults_edit_copy_export_import_and_cleanup",
+      "tests/test_programming.py::NativeProgrammingTest::test_spaced_checksum_actual_byte_change_reset_and_import",
+      "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+      "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+      "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+      "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+      "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types"
+    ],
+    "summary": {
+      "bytes": 16088,
+      "identity": "wheel-final5/summary.json",
+      "sha256": "6e0c56daaa7e08e2dd847325d21d4f9f74f60d2ccf862ea806f6d6a35f5cc45b"
+    },
+    "trace": {
+      "bytes": 1090900,
+      "identity": "wheel-final5/trace.json",
+      "sha256": "1ab9333fa319ec926bbbc64a984727a9e600b9d5e1175ac0f93a2f1e30a110be"
+    },
+    "wheel-package-proof": {
+      "bytes": 43966,
+      "identity": "wheel-final5/wheel-package-proof.json",
+      "sha256": "4388295d0a0f4bcd0c69d6f8b5d6edbc87510be59ae7f56e276168918e4695cb"
+    },
+    "wheel-package-terminal-proof": {
+      "bytes": 43953,
+      "identity": "wheel-final5/wheel-package-terminal-proof.json",
+      "sha256": "61dbba5fa61e2f9c32a36238d46c14b4f104616a119cad9cf8d1f813e2ceb731"
+    }
+  }
+}
