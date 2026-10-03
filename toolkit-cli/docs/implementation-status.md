@@ -2,6 +2,17 @@
 
 Updated **3 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [ordered DIN controls batch](feature-batch-2026-10-03-din-control-history.md)
+adds eight explicit Synchronise, slider and Stagger operation kinds to the
+eight admitted relay/dimmer profiles. Source callback order, unchanged slider
+positions and delay conversion survive serialized plan replay. Both focused
+source and fresh installed-wheel runs pass 130 parent tests and 640 separate
+subtests, with five provisioning skips and all 20 new backend cases each.
+All 378 package files match and 2,728 scoped inputs plus both binaries remain
+unchanged. See the [release receipt](../research/fixtures/din-controls-owned-release-20261003.json).
+Recovery-level/shared-group callbacks, implicit initial form behavior, other
+profiles and original/native/physical acceptance remain open; no full suite ran.
+
 The [DIN agent-save batch](feature-batch-2026-10-03-din-agent-save.md)
 adds opt-in save normalization for the eight current relay/dimmer 2.7.00
 profiles, including RELDN8's ordered marshalling behavior. V2 plans preserve

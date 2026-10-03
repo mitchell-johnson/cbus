@@ -71,6 +71,16 @@ semantics. Database PP and project saves remain separate; this does not prove
 complete original form or physical output behavior. Read
 `toolkit-cli/docs/din-output-settings.md` before applying.
 
+For ordered DIN Min/Max, Turn On and recovery-delay controls, use
+`--controls FILE` with the documented JSON operation array. Both Synchronise
+checkboxes start off, assignments to unchanged displayed positions preserve
+their raw bytes, and coupled slider notifications retain source order.
+Stagger steps use dialog channel order and the original delay conversion.
+Direct edit flags cannot be mixed into a history; optional `--toolkit-save`
+performs one final save projection. Inspect `control_history` and the nested
+`settings_plan`; imported histories replay before staging. Recovery-level
+sharing, group creation and implicit initial form notifications remain open.
+
 
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
 `--output NEW.xml` writes a new file exclusively. Captured XML 1.0/1.1,
