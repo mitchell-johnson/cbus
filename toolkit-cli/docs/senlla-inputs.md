@@ -32,3 +32,16 @@ exercise missing fields, changed layouts/types, unsigned/count boundaries,
 omitted bit metadata, sixbit text and detached exports. Complete ordinary
 save, installed-wheel/original/native/physical acceptance and Windows Toolkit
 parity remain open in issue41.
+
+The [combined frozen source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
+covers nine SENLLA modules at authored commit `8ae5c6fe`: 133 parent
+tests, 2,860 separate subtests, zero failures or skips. All 4,062 tracked
+inputs remain unchanged. This is source-component evidence; public
+whole-unit save and installed-wheel/original/native/physical acceptance
+remain open.
+
+The [provider-schema probe](../research/fixtures/senlla-inputs-provider-probe-20261004.json)
+admits all 93 authored values against the actual decoded provider: 91
+numeric and two sixbit round trips, including all 21 omitted-bit-size
+fields. It retains only counts and hashes, without vendor definitions
+or defaults, and performs no vendor execution or hardware access.

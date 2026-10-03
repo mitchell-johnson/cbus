@@ -32,3 +32,10 @@ literals. Focused source checks with the retained surface module pass 30 parent
 tests and 288 separate subtests, without skips. No original instructions,
 forms, vendor services or hardware execute. Complete 93-parameter save,
 installed-wheel acceptance and Windows Toolkit parity remain open in issue41.
+
+The [combined frozen source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
+covers nine SENLLA modules at authored commit `8ae5c6fe`: 133 parent
+tests, 2,860 separate subtests, zero failures or skips. All 4,062 tracked
+inputs remain unchanged. This is source-component evidence; public
+whole-unit save and installed-wheel/original/native/physical acceptance
+remain open.

@@ -32,3 +32,10 @@ component vectors. Independent review verified every method pin and the code.
 Focused checks pass 19 parent tests and 56 separate subtests without skips.
 The whole 93-parameter loader/save, public CLI admission, original/native form
 execution and hardware acceptance remain open in issue41.
+
+The [combined frozen source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
+covers nine SENLLA modules at authored commit `8ae5c6fe`: 133 parent
+tests, 2,860 separate subtests, zero failures or skips. All 4,062 tracked
+inputs remain unchanged. This is source-component evidence; public
+whole-unit save and installed-wheel/original/native/physical acceptance
+remain open.

@@ -2,6 +2,21 @@
 
 Updated **4 October 2026**. Target: **C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001**.
 
+The [SENLLA form/input source check](../research/fixtures/senlla-form-input-source-check-20261004.json)
+adds the complete 93-field raw input guard and separate fresh light-level
+and surface-bank components. Margin percentage stays tied to the original
+target through the fresh target cap. Bank initialization preserves the
+native ordered threshold effects; later save overlays remain separate.
+Nine focused source modules pass 133 parents and 2,860 separate subtests
+with zero skips; all 4,062 tracked inputs remain unchanged. Independent
+review clears 58 light-level pins, 60 bank pins, 45 qualified Scene
+composition pins and all 93 input layouts. The actual provider accepts
+authored values for all 93 fields with pure memory-codec round trips.
+The census is current at 743 modules and 259 native requirements.
+Whole-unit/public save, installed-wheel/original/native/hardware
+acceptance and complete parity remain open; full suites are deferred
+for speed. Earlier component receipts retain their historical counts.
+
 The [SENLLA foundation source check](../research/fixtures/senlla-foundation-source-check-20261004.json)
 adds ordered key references, explicit occupancy transitions and captured
 inherited power-save state. PIR occupancy exports use three packed byte
