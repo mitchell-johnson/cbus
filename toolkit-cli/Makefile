@@ -48,6 +48,8 @@ VENV = .venv
 PY = $(VENV)/bin/python
 RUST_DIR = ../rust
 WHEEL_PY ?= python3.13
+WHEEL_INTEROP_BACKEND ?=
+WHEEL_INTEROP_TIMEOUT ?= 7200
 PYTEST_EXTRA ?= -ra
 CGATE_INTEROP_PYTEST_EXTRA ?= $(PYTEST_EXTRA)
 CMQTT_INTEROP_PYTEST_EXTRA ?= $(PYTEST_EXTRA)
@@ -1207,7 +1209,8 @@ check-wheel-interop:
 	test -n "$(WHEEL_INTEROP_OUTPUT)"
 	PYTHONPATH= "$(WHEEL_PY)" research/installed_rust_interop.py \
 		--mock-bin "$(CGATE_MOCK_BIN)" --cmqttd-bin "$(CMQTTD_BIN)" \
-		--output "$(WHEEL_INTEROP_OUTPUT)"
+		--output "$(WHEEL_INTEROP_OUTPUT)" --timeout "$(WHEEL_INTEROP_TIMEOUT)" \
+		$(if $(strip $(WHEEL_INTEROP_BACKEND)),--backend "$(WHEEL_INTEROP_BACKEND)")
 
 check-wheel:
 	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
