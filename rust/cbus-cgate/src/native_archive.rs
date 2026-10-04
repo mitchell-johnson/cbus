@@ -223,6 +223,18 @@ pub(crate) fn restore(server: &mut Server, tag: &str, project: &str, token: &str
             if let Err(error) = staged.sync_tag_database_children(project, address) {
                 return failed(tag, format!("Network {address}: {error}"));
             }
+            // Neither native XML nor the admitted SQLite payload contains
+            // our durable creation chronology. Submitted/numeric order is
+            // not evidence of historical native manager order. Internal
+            // cmqttd repository snapshots preserve the Network field instead.
+            staged
+                .projects
+                .get_mut(project)
+                .expect("restored project")
+                .networks
+                .get_mut(&number)
+                .expect("restored network")
+                .application_creation_order = crate::ApplicationCreationOrder::default();
         } else {
             staged.register_tag_network(project, parsed);
         }
@@ -1312,6 +1324,58 @@ impl<'a> SchneiderRows<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn application_creation_order_foreign_archive_restore_is_explicitly_unknown() {
+        let mut server = Server::new(crate::AccessLevel::Program).with_programming(true);
+        assert_eq!(server.handle("[new] PROJECT NEW ORDER").status, 200);
+        assert_eq!(
+            server
+                .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:1")
+                .status,
+            200
+        );
+        for address in [72, 0, 71, 66] {
+            assert_eq!(
+                server
+                    .handle(&format!(
+                        "[app] DBADDSAFE //ORDER/254 Application {address} App{address}"
+                    ))
+                    .status,
+                301
+            );
+        }
+        assert_eq!(
+            archive(&mut server, "archive", "ORDER", "order.zip").status,
+            200
+        );
+        assert_eq!(
+            restore(&mut server, "restore", "COPY", "order.zip").status,
+            200
+        );
+        let original = &server.projects["ORDER"].networks[&254];
+        assert_eq!(
+            original.application_creation_order.addresses,
+            [72, 0, 71, 66]
+        );
+        assert!(
+            !original
+                .application_creation_order
+                .historical_prefix_unknown
+        );
+        let restored = &server.projects["COPY"].networks[&254];
+        assert!(
+            restored
+                .application_creation_order
+                .historical_prefix_unknown
+        );
+        assert!(restored.application_creation_order.addresses.is_empty());
+        assert_eq!(
+            restored.application_addresses_in_creation_order([72, 0, 71, 66]),
+            [0, 66, 71, 72]
+        );
+        assert_eq!(server.current.as_deref(), Some("ORDER"));
+    }
 
     #[test]
     fn archive_names_stay_inside_the_archive_directory() {

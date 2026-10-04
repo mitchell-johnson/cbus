@@ -501,7 +501,8 @@ class NewInteropSelectionTests(unittest.TestCase):
         complete_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
         # New owner-temperature registrations do not alter inherited identities.
         complete_ids = [row for row in complete_ids
-                        if not row.startswith('tests/test_thermostat_temperature_owner_backends.py::')]
+                        if not row.startswith(('tests/test_thermostat_temperature_owner_backends.py::',
+                                               'tests/test_cgl_application_order_backends.py::'))]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
         inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
@@ -549,6 +550,38 @@ class NewInteropSelectionTests(unittest.TestCase):
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
             self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', audit_body)
 
+    def test_cgl_order_literal_backend_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgl_application_order_backends.py'
+        names = (
+            'test_public_cgl_retained_native_prefix_order_filters_and_routes',
+            'test_public_cgl_saved_load_runtime_reannouncement_preserves_order',
+            'test_public_cgl_typed_replace_readdress_copy_delete_recreate',
+            'test_public_cgl_complete_network_replacement_retains_and_appends',
+            'test_public_cgl_project_copy_native_archive_and_graph_isolation',
+            'test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back',
+            'test_public_cgl_invalid_python_document_has_no_prefix_mutation',
+        )
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::' + name + '[' + backend + ']' for name in names}
+            if backend == 'daemon':
+                expected |= {module + '::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[' + mode + ']'
+                             for mode in ('recorded-restart', 'legacy-missing-field')}
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), 7 if backend == 'mock' else 9)
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), len(set(total)))
+        self.assertEqual(len(total), 16)
+
     def test_temperature_owner_exact_backend_roster_and_body_requirements(self):
         # Literal declared acceptance profiles; never generated from Make or production.
         root = Path(__file__).resolve().parents[2]
@@ -577,7 +610,8 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-{backend}]',
             'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-{backend}]',
         )
-        complete = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        complete = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", make)
+                    if not row.startswith('tests/test_cgl_application_order_backends.py::')]
         self.assertEqual(len(complete), 985)
         self.assertEqual(len(set(complete)), 985)
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),

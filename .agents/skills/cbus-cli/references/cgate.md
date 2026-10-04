@@ -1661,6 +1661,11 @@ read-only repository descriptor,
 1.1 label graph over database bridge-Unit routes while
 `cgl_controller_side_effects: false` and `cgl_pci_traffic: false` record that
 an import neither programs a controller nor sends PCI traffic,
+`cgl_application_export_order: "tracked-creation-with-unknown-legacy-prefix"`
+and `cgl_group_level_export_order: "address-order-native-order-unverified"`
+distinguish recorded Application chronology from the remaining Group/Level
+disposition. Legacy snapshots and foreign XML/SQLite archives have unknown
+prior chronology; internal cmqttd snapshots retain the durable order field,
 `applications_catalog: "configured-unitspec-directory-applications.xml"`
 denotes the operator-supplied XML source,
 `network_calculator: "configured-cbusunits-database-records"` and
@@ -1781,10 +1786,16 @@ traffic.
 
 `CGL IMPORT` and `CGL EXPORT` implement a bounded CGL 1.1 JSON label graph for
 known database routes. Import preserves existing application/group/level
-names, creates missing labels atomically, persists them in `cmqttd-json`, and
+names, creates missing labels in captured input order, persists them in `cmqttd-json`, and
 uses the retained incomplete 380 result for skipped networks. Export supports
 network/application filters and keeps a selected network shell even when no
-application matches. Do not infer automation-controller programming or
+application matches. Applications retain tracked creation order, even when
+a selected filter is numeric. Successful prefixes before a native-shaped 408
+remain applied; callers must not replay an uncertain import. New typed CLI
+imports validate the entire document before transmission. Missing legacy order
+uses an explicit unknown numeric prefix followed by later recorded creations.
+Group/Level chronology remains unverified. See
+`toolkit-cli/docs/cgl-application-order.md`. Do not infer automation-controller programming or
 round-trip preservation of unknown vendor metadata.
 
 All five `TRANSFORM` leaves are local operations inside the controlled FILE

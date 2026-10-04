@@ -2022,6 +2022,78 @@ struct DeploymentEntry {
     phase: DeploymentPhase,
 }
 
+/// Durable Application chronology, separate from XML/OID selection order.
+///
+/// Older repositories did not record this information. Their unrecorded live
+/// Applications remain an explicitly unknown historical prefix; new creations
+/// can still be appended without pretending to recover that prefix's order.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct ApplicationCreationOrder {
+    /// Live creations recorded by this owner, in causal order.
+    #[serde(default)]
+    pub addresses: Vec<u8>,
+    /// Whether unrecorded existing labels have unknown historical chronology.
+    #[serde(default = "unknown_application_history")]
+    pub historical_prefix_unknown: bool,
+}
+
+fn unknown_application_history() -> bool {
+    true
+}
+
+impl Default for ApplicationCreationOrder {
+    fn default() -> Self {
+        Self {
+            addresses: Vec::new(),
+            historical_prefix_unknown: true,
+        }
+    }
+}
+
+impl ApplicationCreationOrder {
+    /// A newly created owner has no unknown historical Applications.
+    pub fn known() -> Self {
+        Self {
+            addresses: Vec::new(),
+            historical_prefix_unknown: false,
+        }
+    }
+
+    fn record(&mut self, address: u8) {
+        if !self.addresses.contains(&address) {
+            self.addresses.push(address);
+        }
+    }
+
+    fn forget(&mut self, address: u8) {
+        self.addresses.retain(|candidate| *candidate != address);
+    }
+
+    fn readdress(&mut self, source: u8, destination: u8) {
+        for address in &mut self.addresses {
+            if *address == source {
+                *address = destination;
+            }
+        }
+    }
+
+    fn ordered(&self, live: impl IntoIterator<Item = u8>) -> Vec<u8> {
+        let mut remaining = live.into_iter().collect::<std::collections::BTreeSet<_>>();
+        let recorded = self
+            .addresses
+            .iter()
+            .copied()
+            .filter(|address| remaining.remove(address))
+            .collect::<Vec<_>>();
+        let unrecorded = remaining.into_iter();
+        if self.historical_prefix_unknown {
+            unrecorded.chain(recorded).collect()
+        } else {
+            recorded.into_iter().chain(unrecorded).collect()
+        }
+    }
+}
+
 /// One project network.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Network {
@@ -2060,6 +2132,10 @@ pub struct Network {
     /// Older modeled repositories fall back to address order.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unit_xml_order: Vec<u8>,
+    /// Durable Application creation order. Missing legacy metadata remains
+    /// unknown; deterministic export fallback is not native history recovery.
+    #[serde(default)]
+    pub application_creation_order: ApplicationCreationOrder,
     /// One-based position in the project's native Network list (creation
     /// order); zero when unknown, as in older repositories. Native OID lookup
     /// walks Networks in this order, so a later Network's object wins.
@@ -2089,6 +2165,18 @@ pub struct Network {
 
 fn default_network_retries() -> u8 {
     2
+}
+
+impl Network {
+    /// Return live Applications in recorded order, with a deterministic
+    /// fallback for an explicitly unknown legacy prefix. This does not alter
+    /// Application XML positions or the native duplicate-OID selection index.
+    pub(crate) fn application_addresses_in_creation_order(
+        &self,
+        live: impl IntoIterator<Item = u8>,
+    ) -> Vec<u8> {
+        self.application_creation_order.ordered(live)
+    }
 }
 
 fn is_zero(value: &u64) -> bool {
@@ -4278,6 +4366,7 @@ impl Server {
                 retries: default_network_retries(),
                 units: HashMap::new(),
                 unit_xml_order: Vec::new(),
+                application_creation_order: ApplicationCreationOrder::known(),
                 created_seq,
                 physical: HashMap::new(),
                 levels: HashMap::new(),
@@ -8636,9 +8725,195 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
+    /// Record one newly materialized durable Application, never a runtime
+    /// announcement of a label already present after LOAD.
+    pub(crate) fn record_application_created(
+        &mut self,
+        project: &str,
+        network: u8,
+        application: u8,
+    ) {
+        if let Some(owner) = self
+            .projects
+            .get_mut(project)
+            .and_then(|project| project.networks.get_mut(&network))
+        {
+            owner.application_creation_order.record(application);
+        }
+    }
+
+    fn application_path_parts(path: &str) -> Option<(&str, u8, u8)> {
+        let parts = path.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+        let [project, network, application] = parts.as_slice() else {
+            return None;
+        };
+        Some((project, network.parse().ok()?, application.parse().ok()?))
+    }
+
+    fn record_application_path(&mut self, path: &str) {
+        if let Some((project, network, application)) = Self::application_path_parts(path) {
+            self.record_application_created(project, network, application);
+        }
+    }
+
+    fn forget_application_path(&mut self, path: &str) {
+        if let Some((project, network, application)) = Self::application_path_parts(path) {
+            if let Some(owner) = self
+                .projects
+                .get_mut(project)
+                .and_then(|project| project.networks.get_mut(&network))
+            {
+                owner.application_creation_order.forget(application);
+            }
+        }
+    }
+
+    fn record_new_application_label(&mut self, field: &str) {
+        if !self.db_fields.contains_key(field) {
+            if let Some(path) = field.strip_suffix("/TagName") {
+                self.record_application_path(path);
+            }
+        }
+    }
+
+    /// Retain known owner positions through a complete replacement. Unique
+    /// OIDs can identify readdresses, but never supply creation chronology.
+    /// Unknown existing labels remain unknown; only genuinely new children
+    /// acquire the submitted creation order.
+    fn replacement_application_order(
+        &self,
+        target: &DbXmlTarget,
+        object: &ParsedDbXmlObject,
+    ) -> Option<(u8, ApplicationCreationOrder)> {
+        if target.kind == DbXmlKind::Application {
+            let (project, network, source) = Self::application_path_parts(&target.path)?;
+            let mut order = self
+                .projects
+                .get(project)?
+                .networks
+                .get(&network)?
+                .application_creation_order
+                .clone();
+            order.readdress(source, object.address);
+            return Some((network, order));
+        }
+        if target.kind != DbXmlKind::Network {
+            return None;
+        }
+        let source = target.path.rsplit_once('/')?.1.parse::<u8>().ok()?;
+        let previous = self.projects.get(&target.project)?.networks.get(&source)?;
+        let prefix = format!("//{}/{source}/", target.project);
+        let old = self
+            .db_fields
+            .keys()
+            .filter_map(|field| {
+                field
+                    .strip_prefix(&prefix)?
+                    .strip_suffix("/TagName")?
+                    .parse::<u8>()
+                    .ok()
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        let submitted = object
+            .children
+            .iter()
+            .filter(|child| child.kind == DbXmlKind::Application)
+            .collect::<Vec<_>>();
+        let destinations = submitted
+            .iter()
+            .map(|child| child.address)
+            .collect::<HashSet<_>>();
+        let old_identities = self
+            .db_pending
+            .values()
+            .filter(|pending| {
+                pending.project == target.project
+                    && pending.element == "Application"
+                    && pending
+                        .path
+                        .as_deref()
+                        .and_then(Self::application_path_parts)
+                        .is_some_and(|(project, network, _)| {
+                            project == target.project && network == source
+                        })
+            })
+            .collect::<Vec<_>>();
+        let mut mapping = HashMap::new();
+        let mut retained = HashSet::new();
+        // Only one-to-one identity matches may carry a readdressed position.
+        // Repeated-OID XML selection remains the separate existing xml_order.
+        for pending in &old_identities {
+            if old_identities
+                .iter()
+                .filter(|other| other.oid == pending.oid)
+                .count()
+                != 1
+            {
+                continue;
+            }
+            let matches = submitted
+                .iter()
+                .filter(|child| child.oid == pending.oid)
+                .collect::<Vec<_>>();
+            if let [child] = matches.as_slice() {
+                if let Some(address) = pending
+                    .path
+                    .as_deref()
+                    .and_then(Self::application_path_parts)
+                    .map(|(_, _, address)| address)
+                    .filter(|address| old.contains(address))
+                {
+                    mapping.insert(address, child.address);
+                    retained.insert(child.address);
+                }
+            }
+        }
+        // CGL labels can have no typed/OID mirror; their stable address still
+        // identifies the same retained owner during a complete replacement.
+        for address in old {
+            if !mapping.contains_key(&address)
+                && destinations.contains(&address)
+                && retained.insert(address)
+            {
+                mapping.insert(address, address);
+            }
+        }
+        let mut order = previous.application_creation_order.clone();
+        order.addresses = order
+            .addresses
+            .iter()
+            .filter_map(|address| mapping.get(address).copied())
+            .collect();
+        for child in submitted {
+            if !retained.contains(&child.address) {
+                order.record(child.address);
+            }
+        }
+        Some((object.address, order))
+    }
+
     /// Remap `db_fields`/`objects` keys from one unit path to another,
     /// using an exact-or-`/` boundary (shared by renames and moves).
     fn remap_prefix(&mut self, from: &str, to: &str) {
+        if let (
+            Some((project, network, source)),
+            Some((destination_project, destination_network, destination)),
+        ) = (
+            Self::application_path_parts(from),
+            Self::application_path_parts(to),
+        ) {
+            if project == destination_project && network == destination_network {
+                if let Some(owner) = self
+                    .projects
+                    .get_mut(project)
+                    .and_then(|project| project.networks.get_mut(&network))
+                {
+                    owner
+                        .application_creation_order
+                        .readdress(source, destination);
+                }
+            }
+        }
         let slash = format!("{from}/");
         self.db_fields = std::mem::take(&mut self.db_fields)
             .into_iter()
@@ -9358,11 +9633,21 @@ impl Server {
                     .and_then(|candidate| candidate.xml_order)
             })
             .flatten();
+        let application_order = self.replacement_application_order(target, object);
         self.remove_db_xml_subtree(target, &old_oids);
         if object.kind == DbXmlKind::Network {
             self.insert_db_xml_network(&target.project, object, old_network.as_ref())?;
         } else {
             self.insert_db_xml_object(&target.project, &target.parent, object, xml_order)?;
+        }
+        if let Some((address, order)) = application_order {
+            if let Some(network) = self
+                .projects
+                .get_mut(&target.project)
+                .and_then(|project| project.networks.get_mut(&address))
+            {
+                network.application_creation_order = order;
+            }
         }
         self.retire_inactive_db_oids(&old_oids.into_iter().collect::<Vec<_>>());
         Ok(())
@@ -9560,6 +9845,9 @@ impl Server {
     }
 
     fn remove_db_xml_subtree(&mut self, target: &DbXmlTarget, old_oids: &HashSet<String>) {
+        if target.kind == DbXmlKind::Application {
+            self.forget_application_path(&target.path);
+        }
         let slash = format!("{}/", target.path);
         let dash = format!("{}-", target.path);
         let removed_units = if target.kind == DbXmlKind::Network {
@@ -9690,6 +9978,7 @@ impl Server {
                 }
             }
             DbXmlKind::Application => {
+                self.record_application_path(&path);
                 self.objects
                     .insert(format!("{parent}-APPLICATION-{}", object.address));
                 for child in &object.children {
@@ -9777,6 +10066,10 @@ impl Server {
             retries,
             units,
             unit_xml_order: object.units.iter().map(|unit| unit.address).collect(),
+            application_creation_order: previous
+                .map_or_else(ApplicationCreationOrder::known, |network| {
+                    network.application_creation_order.clone()
+                }),
             // Native replaces the Network at its existing list position.
             created_seq,
             physical,
@@ -10602,6 +10895,9 @@ impl Server {
                         }
                     }
                     if let Some(path) = root.path {
+                        if root.element == "Application" {
+                            self.forget_application_path(&path);
+                        }
                         let path_prefix = format!("{path}/");
                         let level_oids = self
                             .db_levels
@@ -10839,6 +11135,7 @@ impl Server {
                 }
             }
             if existed {
+                self.forget_application_path(&target);
                 return ok(tag, vec![], "200 OK");
             }
         }
@@ -11058,6 +11355,7 @@ impl Server {
             }
         }
         self.mirror_unit_field(words[1], &value);
+        self.record_new_application_label(words[1]);
         self.db_fields.insert(words[1].to_string(), value);
         ok(tag, vec![], "200 OK")
     }
@@ -11583,6 +11881,7 @@ impl Server {
         } else if let Some(oid) = &materialized_pending_oid {
             self.sync_pending_database_field(&current, oid, field, &value);
         }
+        self.record_new_application_label(&path);
         self.db_fields.insert(path, value);
         ok(tag, vec![], "200 OK.")
     }
@@ -12927,10 +13226,384 @@ mod tests {
                 .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
                 .collect(),
             unit_xml_order: bridge_units.to_vec(),
+            application_creation_order: ApplicationCreationOrder::known(),
             created_seq: 0,
             physical: HashMap::new(),
             levels: HashMap::new(),
         }
+    }
+
+    fn application_order_server() -> Server {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(server.handle("[new] PROJECT NEW ORDER").status, 200);
+        assert_eq!(
+            server
+                .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+                .status,
+            200
+        );
+        server
+    }
+
+    fn order_application(server: &mut Server, address: u8) {
+        let response = server.handle(&format!(
+            "[app] DBADDSAFE //ORDER/254 Application {address} App{address}"
+        ));
+        assert_eq!(response.status, 301, "{}", response.final_text);
+    }
+
+    fn order_object(server: &Server, address: u8) -> ParsedDbXmlObject {
+        let target = server
+            .resolve_db_xml_target(&format!("//ORDER/254/{address}"))
+            .unwrap();
+        ParsedDbXmlObject {
+            kind: DbXmlKind::Application,
+            oid: target.oid,
+            tag: format!("App{address}"),
+            address,
+            value: None,
+            interface: None,
+            units: Vec::new(),
+            children: Vec::new(),
+            extras: DbXmlExtras::default(),
+        }
+    }
+
+    #[test]
+    fn application_creation_order_filters_stale_duplicate_and_unexported_addresses() {
+        let mut order = ApplicationCreationOrder::known();
+        for address in [72, 0, 71, 255, 66, 72] {
+            order.record(address);
+        }
+        assert_eq!(order.addresses, [72, 0, 71, 255, 66]);
+        assert_eq!(order.ordered([0, 66, 71, 72]), [72, 0, 71, 66]);
+        order.addresses.extend([0, 99]); // Defensive loading of stale metadata.
+        assert_eq!(order.ordered([0, 66, 71, 72]), [72, 0, 71, 66]);
+        assert_eq!(order.ordered([0, 65, 66, 71, 72]), [72, 0, 71, 66, 65]);
+    }
+
+    #[test]
+    fn application_creation_order_legacy_json_prefix_stays_unknown_after_append_and_copy() {
+        let mut value = serde_json::to_value(topology_network(254, "Cni", "local", &[])).unwrap();
+        value
+            .as_object_mut()
+            .unwrap()
+            .remove("application_creation_order");
+        let mut restored: Network = serde_json::from_value(value).unwrap();
+        assert!(
+            restored
+                .application_creation_order
+                .historical_prefix_unknown
+        );
+        assert_eq!(
+            restored.application_addresses_in_creation_order([72, 0]),
+            [0, 72]
+        );
+        restored.application_creation_order.record(66);
+        assert_eq!(
+            restored.application_addresses_in_creation_order([72, 0, 66]),
+            [0, 72, 66]
+        );
+        let encoded = serde_json::to_string(&restored).unwrap();
+        let reopened: Network = serde_json::from_str(&encoded).unwrap();
+        assert_eq!(
+            reopened.application_creation_order,
+            restored.application_creation_order
+        );
+        assert!(
+            reopened
+                .application_creation_order
+                .historical_prefix_unknown
+        );
+
+        let mut server = application_order_server();
+        for address in [72, 0] {
+            order_application(&mut server, address);
+        }
+        server
+            .projects
+            .get_mut("ORDER")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .application_creation_order = ApplicationCreationOrder::default();
+        order_application(&mut server, 66);
+        assert_eq!(server.handle("[copy] PROJECT COPY ORDER COPY").status, 200);
+        assert_eq!(
+            server.projects["COPY"].networks[&254].application_creation_order,
+            server.projects["ORDER"].networks[&254].application_creation_order
+        );
+        assert_eq!(
+            server.projects["COPY"].networks[&254]
+                .application_addresses_in_creation_order([72, 0, 66]),
+            [0, 72, 66]
+        );
+    }
+
+    #[test]
+    fn application_creation_order_shared_create_rename_readdress_delete_recreate() {
+        let mut server = application_order_server();
+        for address in [72, 0, 71, 66] {
+            order_application(&mut server, address);
+        }
+        assert_eq!(
+            server
+                .handle("[name] DBSETSAFE //ORDER/254/72/TagName Renamed")
+                .status,
+            200
+        );
+        // Numeric SAFE non-unit fields are an opaque scalar store. The
+        // admitted identity move is the OID-targeted unsafe DBSET contract.
+        let moving_oid = server.resolve_db_xml_target("//ORDER/254/71").unwrap().oid;
+        assert_eq!(
+            server
+                .handle(&format!("[move] DBSET !{moving_oid}/Address 70"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 0, 70, 66]
+        );
+        assert!(!server.db_fields.contains_key("//ORDER/254/71/TagName"));
+        assert_eq!(server.handle("[delete] DBDELETE //ORDER/254/0").status, 200);
+        order_application(&mut server, 0);
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 70, 66, 0]
+        );
+        let oid = server.resolve_db_xml_target("//ORDER/254/70").unwrap().oid;
+        assert_eq!(
+            server
+                .handle(&format!("[oid-delete] DBDELETE !{oid}"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 66, 0]
+        );
+        assert_eq!(server.handle("[copy] PROJECT COPY ORDER COPY").status, 200);
+        assert_eq!(
+            server.projects["COPY"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 66, 0]
+        );
+    }
+
+    #[test]
+    fn application_creation_order_records_pending_completion_not_oid_allocation() {
+        let mut server = application_order_server();
+        let pending = server.handle("[pending] DBADD //ORDER/254 Application");
+        assert_eq!(pending.status, 301);
+        let oid = pending.final_text.strip_prefix("301 OID=").unwrap();
+        assert_eq!(
+            server
+                .handle(&format!("[address] DBSET !{oid}/Address 74"))
+                .status,
+            200
+        );
+        assert!(server.projects["ORDER"].networks[&254]
+            .application_creation_order
+            .addresses
+            .is_empty());
+        order_application(&mut server, 72);
+        assert_eq!(
+            server
+                .handle(&format!("[complete] DBSET !{oid}/TagName Pending"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 74]
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[rename] DBSET !{oid}/TagName Again"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 74]
+        );
+    }
+
+    #[test]
+    fn application_creation_order_application_replacement_preserves_position_and_conflict() {
+        let mut server = application_order_server();
+        for address in [72, 0, 71] {
+            order_application(&mut server, address);
+        }
+        let target = server.resolve_db_xml_target("//ORDER/254/0").unwrap();
+        let mut replacement = order_object(&server, 0);
+        replacement.tag = "Replaced".into();
+        replacement.address = 66;
+        server
+            .apply_db_xml_replacement(&target, &replacement)
+            .unwrap();
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 66, 71]
+        );
+        let target = server.resolve_db_xml_target("//ORDER/254/66").unwrap();
+        replacement.address = 72;
+        let fields = server.db_fields.clone();
+        let order = server.projects["ORDER"].networks[&254]
+            .application_creation_order
+            .clone();
+        assert_eq!(
+            server
+                .apply_db_xml_replacement(&target, &replacement)
+                .unwrap_err()
+                .0,
+            409
+        );
+        assert_eq!(server.db_fields, fields);
+        assert_eq!(
+            server.projects["ORDER"].networks[&254].application_creation_order,
+            order
+        );
+    }
+
+    #[test]
+    fn application_creation_order_whole_network_replace_keeps_identity_and_live_state() {
+        let mut server = application_order_server();
+        for address in [72, 0, 71] {
+            order_application(&mut server, address);
+        }
+        let target = server.resolve_db_xml_target("//ORDER/254").unwrap();
+        let previous = server.projects["ORDER"].networks[&254].clone();
+        // Incomplete-object completion retains its OID-based parent even
+        // after acquiring a canonical path. Replacement uses the live path.
+        for pending in server.db_pending.values_mut() {
+            if pending.path.as_deref() == Some("//ORDER/254/72") {
+                pending.parent = format!("!{}", previous.oid);
+            }
+        }
+        let mut moved = order_object(&server, 72);
+        moved.address = 73;
+        let child0 = order_object(&server, 0);
+        let child71 = order_object(&server, 71);
+        let mut fresh = child0.clone();
+        fresh.address = 66;
+        fresh.oid = server.issue_oid();
+        fresh.tag = "Fresh".into();
+        let replacement = ParsedDbXmlObject {
+            kind: DbXmlKind::Network,
+            oid: target.oid.clone(),
+            tag: "Replacement".into(),
+            address: 254,
+            value: None,
+            interface: Some(ParsedDbXmlInterface {
+                oid: previous.interface_oid.clone(),
+                interface_type: previous.iface_type.clone(),
+                interface_address: previous.iface_addr.clone(),
+                extras: DbXmlExtras::default(),
+            }),
+            units: Vec::new(),
+            children: vec![fresh, child71, child0, moved],
+            extras: DbXmlExtras::default(),
+        };
+        let owner = server
+            .projects
+            .get_mut("ORDER")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap();
+        owner.levels.insert((56, 1), 127);
+        owner.physical.insert(20, Unit::blank(20, "Physical"));
+        owner.retries = 7;
+        server
+            .apply_db_xml_replacement(&target, &replacement)
+            .unwrap();
+        let owner = &server.projects["ORDER"].networks[&254];
+        assert_eq!(owner.application_creation_order.addresses, [73, 0, 71, 66]);
+        assert!(!owner.application_creation_order.historical_prefix_unknown);
+        assert_eq!(owner.levels[&(56, 1)], 127);
+        assert_eq!(owner.physical[&20].fields["UnitName"], "Physical");
+        assert_eq!(owner.retries, 7);
+        // Unique OIDs have no XML collision-selection positions. Recording
+        // chronology must not invent or alter that independent metadata.
+        for address in [66, 71, 0, 73] {
+            assert_eq!(
+                server
+                    .db_pending
+                    .values()
+                    .find(|object| object.path.as_deref()
+                        == Some(format!("//ORDER/254/{address}").as_str()))
+                    .unwrap()
+                    .xml_order,
+                None
+            );
+        }
+    }
+
+    #[test]
+    fn application_creation_order_unknown_network_replacement_does_not_recredit_old_labels() {
+        let mut server = application_order_server();
+        for address in [72, 0] {
+            order_application(&mut server, address);
+        }
+        server
+            .projects
+            .get_mut("ORDER")
+            .unwrap()
+            .networks
+            .get_mut(&254)
+            .unwrap()
+            .application_creation_order = ApplicationCreationOrder::default();
+        let target = server.resolve_db_xml_target("//ORDER/254").unwrap();
+        let previous = &server.projects["ORDER"].networks[&254];
+        let mut new_child = order_object(&server, 0);
+        new_child.address = 66;
+        new_child.oid = fresh_oid();
+        let replacement = ParsedDbXmlObject {
+            kind: DbXmlKind::Network,
+            oid: target.oid.clone(),
+            tag: "Replacement".into(),
+            address: 254,
+            value: None,
+            interface: Some(ParsedDbXmlInterface {
+                oid: previous.interface_oid.clone(),
+                interface_type: previous.iface_type.clone(),
+                interface_address: previous.iface_addr.clone(),
+                extras: DbXmlExtras::default(),
+            }),
+            units: Vec::new(),
+            children: vec![
+                order_object(&server, 72),
+                new_child,
+                order_object(&server, 0),
+            ],
+            extras: DbXmlExtras::default(),
+        };
+        server
+            .apply_db_xml_replacement(&target, &replacement)
+            .unwrap();
+        let owner = &server.projects["ORDER"].networks[&254];
+        assert_eq!(owner.application_creation_order.addresses, [66]);
+        assert!(owner.application_creation_order.historical_prefix_unknown);
+        assert_eq!(
+            owner.application_addresses_in_creation_order([72, 0, 66]),
+            [0, 72, 66]
+        );
     }
 
     #[test]
