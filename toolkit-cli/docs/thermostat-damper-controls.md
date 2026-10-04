@@ -71,3 +71,16 @@ ExternalRelays grid rendering, quick-zone Include/Exclude controls, application
 migration, a complete initialized original form or physical thermostats. Source
 inspection, software backend acceptance, original software acceptance and hardware
 acceptance are separate evidence boundaries.
+
+## JSON operation admission
+
+The `op` member must be a string. Array, object, null, Boolean and numeric
+operation names return the structured `ThermostatTemplateError` before the CLI
+constructs a C-Gate client, for both preview and apply. Unknown string names
+retain the same refusal. All seven damper schemas and ordinary Select/Add/Edit
+continue through their existing validation.
+
+The focused schema follow-up passes 46 parent tests in source and 46 in a freshly
+installed wheel, with no skips. It changes only the operation-name guard and its
+tests; the earlier damper workflow receipts retain their original revision and
+execution scope. This follow-up invokes no provider, backend or hardware.

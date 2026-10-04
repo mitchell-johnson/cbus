@@ -59,3 +59,87 @@ def test_duplicate_JSON_and_constants_refuse_before_client_construction(tmp_path
         result = json.loads(stderr.getvalue() or stdout.getvalue())
         assert status == 1 and "JSON" in result["error"], result
         connect.assert_not_called()
+
+
+# JSON operation names must fail through the CLI error contract before any
+# connection. Hashable scalars and unhashable containers share that contract.
+NONSTRING_OPS = [[], {}, None, True, False, 0, 2.5]
+NONSTRING_IDS = ["list", "object", "null", "true", "false", "integer", "fraction"]
+
+
+@pytest.mark.parametrize("mode", ["preview", "apply"])
+@pytest.mark.parametrize("op", NONSTRING_OPS, ids=NONSTRING_IDS)
+def test_nonstring_output_operation_refuses_before_client_construction(op, mode, tmp_path):
+    stdout, stderr = io.StringIO(), io.StringIO()
+    argv = ["thermostat", "settings", mode, "//SYNTH/11/p/20", "--host", "127.0.0.1",
+        "--port", "1", "--spec-dir", str(tmp_path), "--exclusive-project",
+        "--output-operation", json.dumps({"op": op})]
+    if mode == "apply":
+        argv.extend(["--backup-project", "SYNTHBACKUP"])
+    with redirect_stdout(stdout), redirect_stderr(stderr), patch(
+            "cbus_toolkit.cgate.CGateClient", side_effect=AssertionError("Unexpected client construction")) as connect:
+        status = cli.main(argv)
+    result = json.loads(stderr.getvalue() or stdout.getvalue())
+    assert status == 1 and result["type"] == "ThermostatTemplateError", result
+    assert result["error"] == "Output operation name must be a string", result
+    assert "Traceback" not in stdout.getvalue() + stderr.getvalue()
+    connect.assert_not_called()
+
+
+@pytest.mark.parametrize("op", NONSTRING_OPS, ids=NONSTRING_IDS)
+def test_direct_damper_normalizer_refuses_nonstring_operation(op):
+    from cbus_toolkit.thermostat_damper_controls import normalize_damper_operation
+    from cbus_toolkit.thermostat_templates import ThermostatTemplateError
+
+    with pytest.raises(ThermostatTemplateError, match="^Output operation name must be a string$"):
+        normalize_damper_operation({"op": op})
+
+
+VALID_DAMPER_RECORDS = [
+    {"op": "damper-form-show"},
+    {"op": "damper-after-show"},
+    {"op": "damper-group-change", "zone": 1},
+    {"op": "damper-modulation-binding", "checked": True},
+    {"op": "damper-modulation-click", "checked": False},
+    {"op": "damper-zone-update"},
+    {"op": "damper-installed-zones", "value": 0},
+]
+
+
+@pytest.mark.parametrize("record", VALID_DAMPER_RECORDS, ids=lambda row: row["op"])
+def test_seven_damper_operations_keep_their_normalized_fields(record):
+    from cbus_toolkit.thermostat_damper_controls import normalize_damper_operation
+    from cbus_toolkit.thermostat_output_groups import normalize_output_operations
+
+    assert normalize_damper_operation(record) == record
+    assert tuple(map(json.loads, normalize_output_operations([record]))) == (record,)
+
+
+@pytest.mark.parametrize("record", [
+    {"op": "select-output-group", "parameter": "HeatStage1Output", "address": 7},
+    {"op": "add-output-group", "parameter": "HeatStage1Output", "outcome": "accept", "address": 8, "name": "Added Ω"},
+    {"op": "edit-output-group", "parameter": "HeatStage1Output", "outcome": "accept", "name": "Edited Ω"},
+], ids=["select", "add", "edit"])
+def test_ordinary_output_operations_still_route_past_damper_normalizer(record):
+    from cbus_toolkit.thermostat_damper_controls import normalize_damper_operation
+    from cbus_toolkit.thermostat_output_groups import normalize_output_operations
+
+    assert normalize_damper_operation(record) is None
+    assert tuple(map(json.loads, normalize_output_operations([record]))) == (record,)
+
+
+@pytest.mark.parametrize("mode", ["preview", "apply"])
+def test_unknown_string_operation_preserves_structured_preconnection_refusal(mode, tmp_path):
+    stdout, stderr = io.StringIO(), io.StringIO()
+    argv = ["thermostat", "settings", mode, "//SYNTH/11/p/20", "--host", "127.0.0.1",
+        "--port", "1", "--spec-dir", str(tmp_path), "--exclusive-project",
+        "--output-operation", '{"op":"unknown-output-operation"}']
+    if mode == "apply":
+        argv.extend(["--backup-project", "SYNTHBACKUP"])
+    with redirect_stdout(stdout), redirect_stderr(stderr), patch(
+            "cbus_toolkit.cgate.CGateClient", side_effect=AssertionError("Unexpected client construction")) as connect:
+        status = cli.main(argv)
+    result = json.loads(stderr.getvalue() or stdout.getvalue())
+    assert status == 1 and result["type"] == "ThermostatTemplateError", result
+    assert result["error"] == "Unknown thermostat output operation: unknown-output-operation", result
+    connect.assert_not_called()

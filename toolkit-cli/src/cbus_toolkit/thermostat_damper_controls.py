@@ -22,6 +22,8 @@ OPS = frozenset(('damper-form-show', 'damper-after-show', 'damper-group-change',
 def normalize_damper_operation(row):
     """Validate request syntax only; no owner/model decisions occur here."""
     op = row.get('op') if isinstance(row, Mapping) else None
+    if type(op) is not str:
+        raise ThermostatTemplateError('Output operation name must be a string')
     if op not in OPS:
         return None
     expected = {'op'}
