@@ -784,17 +784,32 @@ async fn broker_restart_republishes_observed_light_state() {
         "homeassistant/binary_sensor/cbus_10/state",
     ];
     let lazy_config = "homeassistant/light/cbus_200/config";
-    require(
-        COMMAND_DRAIN,
-        "observed and confirmed state retained",
-        || {
-            state_topics
-                .iter()
-                .chain([&lazy_config])
-                .all(|topic| sys.broker.retained(topic).is_some())
-        },
-    )
+    let initial_state_ready = cbus_test_support::wait::wait_until(COMMAND_DRAIN, || {
+        state_topics
+            .iter()
+            .chain([&lazy_config])
+            .all(|topic| sys.broker.retained(topic).is_some())
+    })
     .await;
+    if !initial_state_ready {
+        let retained: Vec<_> = state_topics
+            .iter()
+            .chain([&lazy_config])
+            .map(|topic| (*topic, sys.broker.retained(topic)))
+            .collect();
+        panic!(
+            "timed out after {COMMAND_DRAIN:?} waiting for: observed and confirmed state retained; \
+             before broker restart\nretained={retained:?}\npci_frames={:?}\n\
+             command_results={:?}\nbroker_connections={}\nsubscriptions={:?}\n\
+             broker_errors={:?}\ndaemon_stderr:\n{}",
+            sys.pci.frames(),
+            sys.broker.find_publishes("cmqttd/cbus/command_result"),
+            sys.broker.connections(),
+            sys.broker.subscriptions(),
+            sys.broker.errors(),
+            sys.daemon.stderr(),
+        );
+    }
     let before: Vec<Vec<u8>> = state_topics
         .iter()
         .chain([&lazy_config])
