@@ -1098,9 +1098,13 @@ Application scalar acceptance does not prove numeric Level Value mutation.
 The separate now-adopted consistency fix is described in
 `toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
 exact source 12 and fresh installed mock 6/daemon 6 cases with the current
-runner; issue 131 stays open pending merge. The prior isolated public/library/
-Rust proofs remain distinct; neither focused proof executes the full 1,062-ID
-declaration plus seven whole modules. In a build with
+runner. The separate resilience report at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` records
+source five and fresh installed mock two/daemon three cases for public NetVar
+edits, lost successful Value/save receipts and disk-backed restart. Owned policy
+is source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Prior proofs remain distinct. These focused proofs do not execute
+the full configured 1,067 explicit identities plus seven whole modules. In a build with
 the fix, use canonical numeric coordinates, `--project` on the same connection
 and a complete coherent typed byte owner. Require fresh numeric/OID/whole-XML
 readback. A coherent presently loaded foreign owner can explain an exact global
