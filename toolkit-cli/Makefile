@@ -92,6 +92,26 @@ check-thermostat-temperature-owner:
 		tests/test_ci_test_results.py \
 		-q -p no:cacheprovider $(PYTEST_EXTRA)
 
+check-conversion-xml-preservation:
+	: $${CBUS_CGATE_MOCK_BIN:?Select an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Select an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_conversion_xml_preservation.py \
+		tests/test_conversion_xml_preservation_backends.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
+
+check-thermostat-zone-controls:
+	: $${CBUS_CGATE_MOCK_BIN:?Select an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Select an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_thermostat_zone_controls.py \
+		tests/test_thermostat_zone_controls_backends.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
+
 check-parity-register:
 	$(PY) research/build_cgate_contract_inventory.py --check
 	$(PY) research/build_parity_register.py --check
@@ -649,6 +669,31 @@ check-cgate-interop: compile
 		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[mock]' \
 		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-value]' \
 		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-save]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1198,6 +1243,35 @@ check-cmqtt-interop: compile
 		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]' \
 		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]' \
 		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-schedule]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

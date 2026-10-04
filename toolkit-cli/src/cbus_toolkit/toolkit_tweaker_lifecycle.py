@@ -22,9 +22,15 @@ from .native import NativeDatabase, NativeProjects, _project, _tail
 from .pci_selected_serial import _Journal, _unique_pairs
 from .programming import Programmer
 from .project import ProjectDocument, _elements, _field
-from .barcode_database import _shape, _snapshot, _unit_shape
+from .barcode_database import _snapshot, _shape as _legacy_shape
+from .conversion_xml_preservation import comparison_policy, contextual_unit, shape as _shape, unit_shape as _unit_shape, xml_space
 
 FORMAT = "cbus-toolkit-tweaker-lifecycle-v1"
+XML_PRESERVATION_PROFILE = "conversion-semantic-xml-v1"
+LEGACY_XML_COMPARISON = {
+    "whitespace_only_text_around_element_children_compared": False,
+    "xml_space_preserve_override_enforced": False,
+}
 SOURCE_RULES = {
     "convert": "TCBusUnitConversion.Convert@0xcaeaf0..0xcaf4ec",
     "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
@@ -43,8 +49,7 @@ def _initial():
             "backup_verified": False, "read_only_recovery_only": True,
             "automatic_retries": 0, "rollback_performed": False, "hardware_programmed": False,
             "original_exception_cleanup_reproduced": False, "full_replacement_parity": False,
-            "xml_comparison": {"whitespace_only_text_compared": False,
-                               "xml_space_preserve_override_enforced": False},
+            "xml_comparison": comparison_policy(),
             "creation": creation._initial()}
 
 
@@ -177,6 +182,50 @@ def _backup_matches(raw, before, backup):
         raise RuntimeError("Backup project does not preserve the complete original tree")
 
 
+def _journal_xml_preserved(value):
+    """Prove new completed journals without upgrading historical comparisons.
+
+    The detached staged Unit inherits the parent scope from the hash-bound
+    before project. Its recorded actual scope must match that derived scope;
+    final and backup documents independently preserve the remaining tree.
+    """
+    if value.get("xml_preservation_profile") != XML_PRESERVATION_PROFILE or value["phase"] != "complete":
+        return False
+    if value.get("xml_comparison") != comparison_policy():
+        raise ValueError("Journal XML comparison policy differs")
+    for name in ("staged_unit_xml", "staged_unit_parent_xml_space", "expected_final_project_xml", "backup_xml"):
+        if not isinstance(value.get(name), str):
+            raise ValueError("Journal lacks semantic XML closure: " + name)
+    plan = value["plan"]
+    source, target = creation._UNIT.fullmatch(plan["source"]), creation._UNIT.fullmatch(plan["target"])
+    before = ProjectDocument.from_bytes(plan["lifecycle"]["before_project_xml"].encode())
+    parent = before.resolve("/network/" + source[2])
+    scope = xml_space(parent)
+    if value["staged_unit_parent_xml_space"] != scope:
+        raise ValueError("Journal staged Unit ancestor scope differs")
+    original_source = before.resolve("/network/" + source[2] + "/unit/" + source[3])
+    staged = _unit_shape(value["staged_unit_xml"].encode(), context_node=original_source, inherited_xml_space=scope)
+    expected = ProjectDocument.from_bytes(value["expected_final_project_xml"].encode())
+    final = expected.resolve("/network/" + source[2] + "/unit/" + source[3])
+    if _field(final, "OID") != value["destination_oid"]:
+        raise ValueError("Journal replacement XML identity differs")
+    comparison = final.cloneNode(deep=True)
+    _set_field(comparison, "Address", target[3])
+    if _shape(comparison, inherited_xml_space=xml_space(final.parentNode)) != staged:
+        raise ValueError("Journal staged/final Unit XML differs")
+    final.parentNode.removeChild(final)
+    original = before.resolve("/network/" + source[2] + "/unit/" + source[3])
+    original.parentNode.removeChild(original)
+    if _shape(expected.document.documentElement) != _shape(before.document.documentElement):
+        raise ValueError("Journal final unrelated XML differs")
+    try:
+        _backup_matches(value["backup_xml"].encode(), plan["lifecycle"]["before_project_xml"].encode(),
+                        plan["lifecycle"]["backup_project"])
+    except RuntimeError as error:
+        raise ValueError("Journal backup semantic XML differs") from error
+    return True
+
+
 def _validate_journal(value):
     if (not isinstance(value, dict) or value.get("format") != FORMAT
             or value.get("phase") not in PHASES or value.get("read_only_recovery_only") is not True):
@@ -221,10 +270,17 @@ def _validate_journal(value):
     if hashlib.sha256(before).hexdigest() != plan["project_sha256"]:
         raise ValueError("Journal source snapshot digest differs")
     document = ProjectDocument.from_bytes(before)
+    legacy = value.get("xml_comparison") == LEGACY_XML_COMPARISON
+    if not legacy:
+        _shape(document.document.documentElement)
     node = document.resolve("/network/" + source[2] + "/unit/" + source[3])
     if _field(node, "OID") != context["source_oid"]:
         raise ValueError("Journal source identity differs")
-    if _unit_shape(context["source_xml"].encode()) != _shape(node):
+    # Historical journals remain inspectable under their declared policy. This
+    # admission is read-only and cannot supply new semantic persistence credit.
+    source_matches = (_legacy_shape(contextual_unit(context["source_xml"].encode(), node)) == _legacy_shape(node)) if legacy else (
+        _unit_shape(context["source_xml"].encode(), context_node=node) == _shape(node))
+    if not source_matches:
         raise ValueError("Journal source metadata differs")
     for name in ("created", "source_deleted", "readdressed", "reopened", "accepted", "backup_verified", "outcome_uncertain"):
         if type(value.get(name)) is not bool:
@@ -268,6 +324,7 @@ def _validate_journal(value):
         adds = [row for row in rows if row["command"].startswith("DBADDSAFE ")]
         if len(adds) != 1 or adds[0]["status"] != 301:
             raise ValueError("Completed journal lacks one exact 301 Unit ADD receipt")
+        _journal_xml_preserved(value)
     return value
 
 
@@ -393,7 +450,7 @@ def _verified_project(client, prepared, state, before, staged_shape):
         raise RuntimeError("Replacement identity differs at the original source address")
     comparison = final.cloneNode(deep=True)
     _set_field(comparison, "Address", str(prepared.address))
-    if _shape(comparison) != staged_shape:
+    if _shape(comparison, inherited_xml_space=xml_space(final.parentNode)) != staged_shape:
         raise RuntimeError("Readdress altered replacement metadata, PP or opaque Unit content")
     final.parentNode.removeChild(final)
     baseline = ProjectDocument.from_bytes(before)
@@ -471,6 +528,8 @@ def execute(prepared, raw_client, state):
         target_node = current.resolve("/network/" + p.network.rsplit("/", 1)[1] + "/unit/" + str(p.address))
         staged_shape = _shape(target_node)
         state["staged_unit_xml"] = target_node.toxml()
+        state["staged_unit_parent_xml_space"] = xml_space(target_node.parentNode)
+        state["xml_preservation_profile"] = XML_PRESERVATION_PROFILE
         with Programmer(client).load(p.network, "/db" + p.source) as session:
             if session.values() != result["plan"]["source_pp"]:
                 raise RuntimeError("Source PP changed before deletion")
@@ -541,6 +600,7 @@ def recover(args, raw_client):
               "replay_authorized": False, "project_saved": None, "persistence_verified": False,
               "outcome_uncertain": state["outcome_uncertain"], "disposition": "read_unavailable",
               "backup_verified_fresh": False, "fresh_pp_verified": False, "commands": evidence["commands"],
+              "journal_xml_preservation_verified": _journal_xml_preserved(state),
               "hardware_programmed": False, "automatic_retries": 0, "rollback_performed": False}
     project = plan["source"].split("/")[2]
     try:
@@ -575,6 +635,7 @@ def recover(args, raw_client):
     except (ValueError, RuntimeError, OSError) as error:
         result["backup_error"] = {"type": type(error).__name__, "message": str(error)}
     if (state["phase"] == "complete" and result["disposition"] == "observed_replaced"
-            and result["backup_verified_fresh"] and result["fresh_pp_verified"]):
+            and result["backup_verified_fresh"] and result["fresh_pp_verified"]
+            and result["journal_xml_preservation_verified"]):
         result.update(project_saved=True, persistence_verified=True, outcome_uncertain=False)
     return result

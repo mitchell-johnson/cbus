@@ -13,7 +13,8 @@ import unicodedata
 import uuid
 from xml.dom import Node
 
-from .barcode_database import _snapshot, _shape, _unit_identity
+from .barcode_database import _snapshot, _unit_identity
+from .conversion_xml_preservation import comparison_policy, shape as _shape
 from .cgate import CGateError
 from .native import NativeDatabase, _tail, _token
 from .programming import Programmer, ProgrammingCommandError, xml_text, _rows
@@ -146,8 +147,7 @@ def _initial():
             "hardware_programmed": False, "automatic_retries": 0, "rollback_performed": False,
             "outcome_uncertain": False, "staging_uncertain": False, "commands": [], "writes": [],
             "staging_writes": [], "assignments": [], "failed_writes": {},
-            "xml_comparison": {"whitespace_only_text_around_element_children_compared": False,
-                               "xml_space_preserve_override_enforced": False}}
+            "xml_comparison": comparison_policy()}
 
 
 def _attach(error, state):
@@ -234,6 +234,7 @@ def _document(client, project):
     if len(raw) > 4 * 1024 * 1024:
         raise ValueError("Project XML exceeds the database document limit")
     document = ProjectDocument.from_bytes(raw)
+    _shape(document.document.documentElement)
     if _field(document.project, "Address") != project:
         raise ValueError("Project readback differs from the selected project")
     return raw, document

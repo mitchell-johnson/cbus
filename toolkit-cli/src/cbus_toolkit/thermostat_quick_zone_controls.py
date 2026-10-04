@@ -21,6 +21,7 @@ from .thermostat_post_load import OUTPUTS, DAMPERS, RELAYS, pp_name, virtual_pla
 from .thermostat_templates import ThermostatTemplateError
 from . import thermostat_temperature_model as temperature_model
 from .thermostat_zone_defaults import ZoneDefaultsModel
+from .thermostat_zone_controls import PreparedZoneControls, normalize_zone_operation
 
 _TYPE_FIELDS = {"heating": "HeatingPlantType", "cooling": "CoolingPlantType",
                 "heatcool": "HeatCoolPlantType", "venting": "VentingPlantType"}
@@ -54,6 +55,9 @@ def normalize_quick_zone_operation(row):
     op = row.get("op")
     if type(op) is not str:
         _fail("Thermostat operation op must be text")
+    zone_binding = normalize_zone_operation(row)
+    if zone_binding is not None:
+        return zone_binding
     if op in ("quick-zone-view", "quick-zone-refresh"):
         if set(row) != {"op"}:
             _fail(op + " takes no fields")
@@ -239,6 +243,8 @@ class ThermostatControlModel:
         elif type(self.damper) is not DamperControlModel or self.damper._owner is not owner:
             _fail("Damper state belongs to another settings owner")
         self.queue = PlantChangeQueue(self, self._plant_after_change)
+        self.zone_controls = PreparedZoneControls(self)
+        self._issued_zone_controls = self.zone_controls
         self._initialize_settled_controls()
 
     def _record(self, method, **fields):
@@ -267,6 +273,11 @@ class ThermostatControlModel:
                 or any(item is not old or item.owner is not self or item.code != code or item.name != name
                        for item, (old, code, name) in zip(self._installations, self._installation_records))):
             _fail("Installation manager no longer contains its original source objects")
+
+        if (type(self.zone_controls) is not PreparedZoneControls
+                or self.zone_controls is not self._issued_zone_controls):
+            _fail("Prepared zone controls must be the originally issued source owner registry")
+        self.zone_controls.verify()
 
     def _current_installation(self):
         item = self._installation
@@ -728,7 +739,9 @@ class ThermostatControlModel:
                 self._record("ordinary-output-control", operation=dict(row), exact_shared_owner=True)
         else:
             op = operation["op"]
-            if op == "quick-zone-refresh":
+            if op == "zone-checkbox-binding":
+                self.zone_controls.apply(operation, position)
+            elif op == "quick-zone-refresh":
                 self._refresh_quick_options()
             elif op == "quick-zone-click":
                 self._quick_click(operation)
@@ -793,7 +806,8 @@ class ThermostatControlModel:
                    "remote_references": {role: None if group is None else group.identity
                                          for role, group in self.remote_references.items()},
                    "installation": None if self._installation is None else (self._installation.code, self._installation.name),
-                   "position": self._position, "master": self._loaded_master}
+                   "position": self._position, "master": self._loaded_master,
+                   "prepared_zone_bindings": self.zone_controls.as_dict()}
         return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=True,
                            separators=(",", ":")).encode()).hexdigest()
 
@@ -863,6 +877,7 @@ class ThermostatControlModel:
                 "source_calls": deepcopy(self._trace), "alerts": deepcopy(self._alerts),
                 "posted_changes": self.queue.as_dict(), "model_overrides": self.model_overrides,
                 "save_facts": self.save_facts, "damper_controls": self.damper.as_dict(),
+                "prepared_zone_bindings": self.zone_controls.as_dict(),
                 "full_toolkit_parity": False, "native_control_scheduling_reproduced": False,
                 "original_form_executed": False, "physical_device_programmed": False,
                 "detached_continuation_admitted": False}

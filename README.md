@@ -401,6 +401,11 @@ Its [release report](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-
 separate source pure/model and backend epochs, and 199 passing installed-wheel
 tests plus five passing subtest events. Broader initialization, automatic
 Windows dispatch, full GUI and physical thermostat acceptance remain open.
+The [detailed zone controls](toolkit-cli/docs/thermostat-zone-controls.md) add all
+34 prepared Boolean bindings to the same ordered settings transaction: UI,
+internal plant, measured and heating/cooling/venting zones, plus four plant
+modes. Use `zone-checkbox-binding` with an exact binding name and JSON Boolean;
+its source callbacks and family save rules run through the same fresh owner.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
 admits 288 of 292 registered source/target pairs. The earlier 123 have historical
@@ -416,6 +421,10 @@ deletion/readdressing and save/reopen, use the separately guarded
 `cgate conversion tweak-replace` workflow with a distinct backup and new
 journal; `tweak-recover` observes an interrupted attempt without replay. Read
 [its metadata, persistence and recovery boundaries](toolkit-cli/docs/toolkit-tweaker-lifecycle.md).
+[Conversion XML checks](toolkit-cli/docs/conversion-xml-preservation.md) preserve
+inherited `xml:space`, mixed-content separators, CDATA and whitespace-only leaf
+values through creation, replacement, backup and recovery. Legacy journals
+remain read-only observations under their recorded policy.
 Physical programming remains separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open

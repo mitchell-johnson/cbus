@@ -51,6 +51,7 @@ unknown fields refuse before client construction.
 
 | Record | Source-owned behavior |
 | --- | --- |
+| `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}` | Select one of the [34 source-prepared Boolean properties](thermostat-zone-controls.md) and run its setter in this same owner. Native GUI click admission is separate. |
 | `{"op":"quick-zone-view"}` | Record the current owner's state without invoking a control setter. |
 | `{"op":"quick-zone-refresh"}` | Recompute partial/full checkbox state, then perform the eligible ordered UsedZones/InstalledZones refresh. This can change model values. |
 | `{"op":"quick-zone-click","zone":1,"checked":true}` | Enter the explicit checkbox callback for zone 0–4, including its guarded Include/Exclude and nested source callbacks. Zone 0 is the unswitched zone. |
@@ -105,7 +106,9 @@ callback and source visibility/initializing gates.
 Include/Exclude and type/mode callbacks consume live values in source order.
 InstalledZones assignment visits the five Boolean fields in order 0–4; changed
 assignments can run the owner's fixed subscribers before the next field. An
-unchanged Boolean assignment publishes no changed event. The resulting mask
+unchanged Boolean assignment publishes no changed event. The explicit prepared-property
+record shares this equality guard, live callback order and final family save
+tail; it does not assign a whole mask or dispatch a native Click. The resulting mask
 can therefore differ from a requested mask after nested quick-zone refresh.
 The earlier explicit damper-only profile continues to expose its separate
 assignment/update events; adding a quick-zone record selects this initialized

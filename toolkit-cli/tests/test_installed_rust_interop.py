@@ -193,7 +193,8 @@ def test_complete_baseline_preserves_991_explicit_ids_and_seven_modules(runner):
                 "tests/test_application_copy_safe_backends.py::",
                 "tests/test_application_safe_set_backends.py::",
                 "tests/test_ordinary_level_value_backends.py::",
-                "tests/test_ordinary_level_value_followon_backends.py::"))]
+                "tests/test_ordinary_level_value_followon_backends.py::",
+                "tests/test_conversion_xml_preservation_backends.py::", "tests/test_thermostat_zone_controls_backends.py::"))]
     ids = sorted(n for p in plans.values() for n in p["required_ids"])
     quoted = sorted(n for p in plans.values() for n in p["quoted_ids"])
     assert len(ids) == 991 and len(quoted) == 985
@@ -839,3 +840,67 @@ def test_source_cache_exception_does_not_admit_wheel_bytecode(runner,tmp_path):
         archive.writestr("cbus_toolkit/__pycache__/probe.cpython-313.pyc",b"cache fixture\n")
     with pytest.raises(runner.GateError):
         runner.package_identity(source,f["wheel"],f["package"])
+
+XML_PRESERVATION_MODULE = 'tests/test_conversion_xml_preservation_backends.py'
+XML_PRESERVATION_NAMES = ('test_public_conversion_creation_preserve_and_default_reset', 'test_public_conversion_replace_backup_reopen_and_recovery_preserve', 'test_public_conversion_creation_mixed_separator_loss_refuses', 'test_public_conversion_backup_preserved_separator_loss_stops_before_add', 'test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source', 'test_public_conversion_reopen_cdata_loss_refuses_completed_receipt', 'test_public_conversion_recovery_current_or_backup_space_loss_read_only', 'test_public_conversion_save_refusal_retains_preserved_graph', 'test_public_conversion_lost_save_200_retains_graph_without_replay')
+
+
+def test_conversion_xml_packet_preserves_all_1067_inherited_ids_and_seven_modules(runner):
+    make = Path(os.environ.get("CBUS_INSTALLED_INTEROP_BASE_MAKE", str(Path(__file__).resolve().parents[1] / "Makefile")))
+    plans = runner.declared_selections(make.read_text())
+    expected = [XML_PRESERVATION_MODULE + '::' + name + '[' + backend + ']'
+                for backend in ('mock', 'daemon') for name in XML_PRESERVATION_NAMES]
+    actual = [n for plan in plans.values() for n in plan['required_ids'] if n.startswith(XML_PRESERVATION_MODULE + '::')]
+    assert sorted(actual) == sorted(expected) and len(actual) == len(set(actual)) == 18
+    assert hashlib.sha256(('\n'.join(sorted(actual)) + '\n').encode()).hexdigest() == 'e209733d197dbdbb1c799bd2997ab4cd8504c4744ad5bde5f3c9b25bbf3a191c'
+    inherited = {backend: [n for n in plan['required_ids'] if not n.startswith((XML_PRESERVATION_MODULE + '::', 'tests/test_thermostat_zone_controls_backends.py::'))]
+                 for backend, plan in plans.items()}
+    assert {b: len(v) for b, v in inherited.items()} == {'mock': 527, 'daemon': 540}
+    for backend, old_digest in (('mock', 'e4c60b4a4973aac669d1a694ea061700116272b9a92377e42c022709f355d0f4'),
+                                ('daemon', 'cc4efb04c597afdf21f120e674e99818197ed3fb6ed47af2fad7dc3b8f0135a4')):
+        assert hashlib.sha256(('\n'.join(sorted(inherited[backend])) + '\n').encode()).hexdigest() == old_digest
+    assert sum(len(plan['whole_modules']) for plan in plans.values()) == 7
+
+
+@pytest.mark.parametrize('damage', ['none', 'missing-body', 'skipped-body', 'missing-call'])
+def test_conversion_xml_each_registered_body_must_actually_pass(runner, damage):
+    required = [XML_PRESERVATION_MODULE + '::' + name + '[' + backend + ']'
+                for backend in ('mock', 'daemon') for name in XML_PRESERVATION_NAMES]
+    receipt = good_receipt()
+    receipt.update(collected=list(required), started=list(required),
+                   cases=[{'id': n, 'outcome': 'passed'} for n in required],
+                   call_events=[{'id': n, 'outcome': 'passed', 'ordinal': 1} for n in required])
+    if damage == 'missing-body':
+        for key in ('collected', 'started', 'cases', 'call_events'):
+            receipt[key].pop()
+    elif damage == 'skipped-body':
+        receipt['cases'][-1]['outcome'] = receipt['call_events'][-1]['outcome'] = 'skipped'
+    elif damage == 'missing-call':
+        receipt['call_events'].pop()
+    if damage == 'none':
+        assert runner.audit_selection(receipt, required, [XML_PRESERVATION_MODULE])['required_passed'] == 18
+    else:
+        with pytest.raises(runner.GateError):
+            runner.audit_selection(receipt, required, [XML_PRESERVATION_MODULE])
+
+PREPARED_ZONE_IDS = {'daemon': ['tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-schedule]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]'], 'mock': ['tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-mock]']}
+
+
+def test_prepared_zone_literal_packet_and_required_schema_body_cannot_skip(runner):
+    make = Path(os.environ.get("CBUS_INSTALLED_INTEROP_BASE_MAKE", str(Path(__file__).resolve().parents[1] / "Makefile")))
+    plans = runner.declared_selections(make.read_text())
+    module = 'tests/test_thermostat_zone_controls_backends.py'
+    for backend in ('mock', 'daemon'):
+        assert [n for n in plans[backend]['required_ids'] if n.startswith(module + '::')] == PREPARED_ZONE_IDS[backend]
+    expected = PREPARED_ZONE_IDS['mock'] + PREPARED_ZONE_IDS['daemon']
+    assert len(expected) == len(set(expected)) == 36
+    assert hashlib.sha256(('\n'.join(sorted(expected)) + '\n').encode()).hexdigest() == 'd6e87f155befaa872c9059a14a0a59a399afb0f748f9e0b86bd79317ef98f175'
+    receipt = good_receipt()
+    receipt.update(collected=list(expected), started=list(expected),
+                   cases=[{'id': n, 'outcome': 'passed'} for n in expected],
+                   call_events=[{'id': n, 'outcome': 'passed', 'ordinal': 1} for n in expected])
+    assert runner.audit_selection(receipt, expected, [module])['required_passed'] == 36
+    # A schema-only parent is still explicitly required, never an optional skip.
+    receipt['cases'][-1]['outcome'] = receipt['call_events'][-1]['outcome'] = 'skipped'
+    with pytest.raises(runner.GateError):
+        runner.audit_selection(receipt, expected, [module])
