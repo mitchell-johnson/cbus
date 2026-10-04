@@ -504,7 +504,8 @@ class NewInteropSelectionTests(unittest.TestCase):
                         if not row.startswith(('tests/test_thermostat_temperature_owner_backends.py::',
                                                'tests/test_cgl_application_order_backends.py::',
                                                'tests/test_application_copy_safe_backends.py::',
-                                               'tests/test_application_safe_set_backends.py::'))]
+                                               'tests/test_application_safe_set_backends.py::',
+                                               'tests/test_ordinary_level_value_backends.py::'))]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
         inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
@@ -628,6 +629,37 @@ class NewInteropSelectionTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(),
                          '51dba3a00aedf0bbfb01dcc41d27d1fcc65d7e1178b4b3b421e25773f057a734')
 
+    def test_ordinary_level_value_literal_roster_digest_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_ordinary_level_value_backends.py'
+        names = (
+            'test_public_numeric_level_byte_edit_readbacks_save_reload',
+            'test_public_invalid_numeric_level_bytes_refuse_atomically',
+            'test_public_plain_and_copied_null_levels_become_bytes',
+            'test_public_numeric_then_issued_oid_keeps_coherent_aliases',
+            'test_public_selected_project_copy_retained_oid_bytes_are_isolated',
+            'test_public_associated_raw_level_owner_keeps_its_lexemes',
+        )
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::' + name + '[' + backend + ']' for name in names}
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), 6)
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 12)
+        self.assertEqual(len(set(total)), 12)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(),
+                         'd2fd44cc1299cbe3422fac58d406551640e8ff0271e4ca87036f575eb99d6cdb')
+
     def test_temperature_owner_exact_backend_roster_and_body_requirements(self):
         # Literal declared acceptance profiles; never generated from Make or production.
         root = Path(__file__).resolve().parents[2]
@@ -659,7 +691,8 @@ class NewInteropSelectionTests(unittest.TestCase):
         complete = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", make)
                     if not row.startswith(('tests/test_cgl_application_order_backends.py::',
                                            'tests/test_application_copy_safe_backends.py::',
-                                           'tests/test_application_safe_set_backends.py::'))]
+                                           'tests/test_application_safe_set_backends.py::',
+                                           'tests/test_ordinary_level_value_backends.py::'))]
         self.assertEqual(len(complete), 985)
         self.assertEqual(len(set(complete)), 985)
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),

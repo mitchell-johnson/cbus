@@ -1,0 +1,1071 @@
+{
+  "Level_NetVar_scope": "The adapter excludes a NetVar object as a Level byte owner; a Level child beneath Group or NetVar is admitted. Nested NetVar child mutation is library-proven. Public12 cases write Group Levels and retain an unrelated NetVar subtree; no new public NetVar mutation claim.",
+  "artifact_descriptors": {
+    "library/green/log": {
+      "bytes": 5355,
+      "sha256": "67cd04f1b71f085accb79d972504ac44fa4729fadb56417a9edbff2b69ba93ef"
+    },
+    "library/green/summary": {
+      "bytes": 3690,
+      "sha256": "f964ddb205ac0b2bad4d8a48eb5ed437e5eb23efd4d65eef1fc8a3f277c8fe42"
+    },
+    "library/green3/log": {
+      "bytes": 1905,
+      "sha256": "0814583bcb87480de4f8a24db011b4762705c28ec341281e0f617710bf307872"
+    },
+    "library/green4/direct_terminal": {
+      "bytes": 512,
+      "sha256": "87cb9769bbc4dc57cd565e9c49f5e5252357d2f1d9355fd0148fa0351ec58f13"
+    },
+    "library/green4/log": {
+      "bytes": 1761,
+      "sha256": "1e1dbc34c57d6a9b938b19ad07c630f0438a6a073ef97168d9df348a88b1e8ab"
+    },
+    "library/green4/summary": {
+      "bytes": 3683,
+      "sha256": "9b2378e2985f79f7ca8a48e23660556f2354c93f0bb811e0adee026391ca6d5d"
+    },
+    "library/red/log": {
+      "bytes": 20435,
+      "sha256": "ca3ac28039588132e97a96af6c123d5b0d95126e7cad3b70f202f91376cd0c7f"
+    },
+    "library/red/summary": {
+      "bytes": 3733,
+      "sha256": "0cdb9d1f4d6998e6ebf6d60a65c37c1b6f32ed49ca7c60e6767386985fed2ce3"
+    },
+    "library/red3/direct_terminal": {
+      "bytes": 514,
+      "sha256": "d41c3b1dfb14c556b079edb1cb43c9089f0f8180e8fba412aafb0929c4c34755"
+    },
+    "library/red3/log": {
+      "bytes": 17149,
+      "sha256": "858acdf5c7796f921d24432871eb11cf224ad941442a506d0f56e6726b4820c6"
+    },
+    "library/red3/summary": {
+      "bytes": 3269,
+      "sha256": "7f1b2182a667dbf961d174e9e727b0bdd46949539b9ccc5c8f52e4cdd195d274"
+    },
+    "library/terminal-review.json": {
+      "bytes": 11492,
+      "sha256": "92c6ee6bf1ab8d11cfa9fa65c0ebf3f0bac44a73a270d52b0ee51f31d8f79e0f"
+    },
+    "private-data-readback/source2-readback-v1.json": {
+      "bytes": 21143,
+      "sha256": "6afca9ebc9791ed8f5ca12420b997cb000e88181b48d175b8ce73ee8ec83cd41"
+    },
+    "private-data-readback/wheel1-daemon-readback-v1.json": {
+      "bytes": 15984,
+      "sha256": "8ac05e0ab8e6cd64aefb953c2881edc91fb31922c6f5ad6e163fe37f15a4333a"
+    },
+    "private-data-readback/wheel1-driver-summary.json": {
+      "bytes": 4889,
+      "sha256": "eeb091e5e8bf47e06fa692fb1d4d7afcdfe93f231a89ceb4edb7c12d4baa510b"
+    },
+    "private-data-readback/wheel1-mock-readback-v1.json": {
+      "bytes": 15941,
+      "sha256": "3a289ba0df7289daa346e0dab54e6daf9a4e6eac4f1e56296f4224b3e28038d7"
+    },
+    "private-data-review/b-independent-review1/independent-source-review-v1.json": {
+      "bytes": 6896,
+      "sha256": "e3eb04e88987c91855f7eaf797b28e2a52f29a3dce14837776d365ab74492adb"
+    },
+    "private-data-review/public-cli-independent-review1/independent-terminal-handoff-final-v1.json": {
+      "bytes": 4943,
+      "sha256": "fdaed5e67ff8c5852dd0f2b8288549ac9c513e0c52b84235e7033621cb040d96"
+    },
+    "private-data-review/public-cli-independent-review1/source2-independent-raw-review-v5.json": {
+      "bytes": 29849,
+      "sha256": "620eb0edd338c0965ed744955d2d4c51570b6529f5f7338a115e9f00031ee861"
+    },
+    "private-data-review/public-cli-independent-review1/wheel1-daemon-independent-raw-review-v6.json": {
+      "bytes": 16571,
+      "sha256": "5832bab10a4e92be0266491baed7b126b252e1d844b7bfa2649a7771879b5b60"
+    },
+    "private-data-review/public-cli-independent-review1/wheel1-independent-closure-review-v2.json": {
+      "bytes": 55630,
+      "sha256": "77f67c24088099eb5e265dc3eedd354b5251a719b29a4a5f6e51b8559a52e449"
+    },
+    "private-data-review/public-cli-independent-review1/wheel1-mock-independent-raw-review-v6.json": {
+      "bytes": 16580,
+      "sha256": "abebe81aa8288003798703f7ee9d1aebb95ba1a098c7dd02d573f0ea266cbb28"
+    },
+    "private-data-review/registration-independent-review1/registration-independent-static-review-v1.json": {
+      "bytes": 3717,
+      "sha256": "2eef52ff8a5f588105bb55f74af45d93c4670f5a5d551cf60cdbc9ef8a7c876e"
+    },
+    "proof-binaries/build-readback.json": {
+      "bytes": 3803,
+      "sha256": "e832e583d46c995d4b34c4e4caab3e166aab07612029e48a0a3a7756f3a23f3f"
+    },
+    "proof-binaries/build-summary.json": {
+      "bytes": 4183,
+      "sha256": "4d3b819759ae089b496b728bd0f93985567a2d435398fcc4badb69b2a2bce44d"
+    },
+    "rust-gates/1-terminal.json": {
+      "bytes": 394,
+      "sha256": "55d2df56b71e64c898c4614d7ee5969de5d8dfcbd68844749a6f843db6a0c634"
+    },
+    "rust-gates/1.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust-gates/2-terminal.json": {
+      "bytes": 478,
+      "sha256": "7dbeea10a5937cdd14c6532a074fc3105976aa39c47cb732e8bbdf8eff4969e6"
+    },
+    "rust-gates/2.log": {
+      "bytes": 5285,
+      "sha256": "395e1ec643c17703b2f9db21ad22d6f736b5d9074473a7945890f301a44846f1"
+    },
+    "rust-gates/3-terminal.json": {
+      "bytes": 422,
+      "sha256": "a32d58617172a3e87efe37c5b60e581fbaf4ae8400330e074ed49bbb933a79f8"
+    },
+    "rust-gates/3.log": {
+      "bytes": 468054,
+      "sha256": "d5d624d87a69dbaddfdadd0887731989699e6dd393cd59631d56c24aaa10d7d9"
+    },
+    "rust-gates/4-terminal.json": {
+      "bytes": 443,
+      "sha256": "c624c99b6249f4bb611d8b786037713c0ea93ea4205029a4b03af4ded9cad0d5"
+    },
+    "rust-gates/4.log": {
+      "bytes": 5243,
+      "sha256": "5f3c441e4abbef2e6c756ec57a3fe5d851e353c64c46cb42a3c837eb67ffa19c"
+    },
+    "rust-gates/rust-before-and-after.json": {
+      "bytes": 78129,
+      "sha256": "6053887c5fdf026f47d22d1cda28c4b8e4bb4bab1e46b7db0258eb439a769fa5"
+    },
+    "rust-gates/source-before-and-after.json": {
+      "bytes": 745898,
+      "sha256": "62f39e04588e7d6235b6303a31c1f71bfd6e5b1f36905e3befe78dd2c0a0acb0"
+    },
+    "rust-gates/summary.json": {
+      "bytes": 17580,
+      "sha256": "50e814c623dbf84dab5a9c3b9827508d68f8b3b7e333d1da32bc8c93a2d54d25"
+    },
+    "rust-gates/terminal-readback.json": {
+      "bytes": 3701,
+      "sha256": "1d647d46de589c0ad8d077c42ff0c34c91a98d670ef4f2538c4bbc1111049f53"
+    },
+    "source2/audit.json": {
+      "bytes": 7754,
+      "sha256": "3b8056b8442c2fcd88aacfdc6c90057fecd2e4a407ef04bd51d04d1c0ec8aadd"
+    },
+    "source2/collection-trace.json": {
+      "bytes": 1560,
+      "sha256": "79ec9fb3d568463267ca618509045221b06c46f2c76ca949ad9997aba281d60f"
+    },
+    "source2/junit.xml": {
+      "bytes": 4303,
+      "sha256": "0105c7ad6704f56ed9be64ddf79be44c31f1fe55c69ea9f7883361bb794e7983"
+    },
+    "source2/pytest-command.json": {
+      "bytes": 2488,
+      "sha256": "05f26cd52d810c2eda1481a14043bba92bcaa999d012c0ebc86677b16761d488"
+    },
+    "source2/source-after.json": {
+      "bytes": 745898,
+      "sha256": "62f39e04588e7d6235b6303a31c1f71bfd6e5b1f36905e3befe78dd2c0a0acb0"
+    },
+    "source2/source-before.json": {
+      "bytes": 745898,
+      "sha256": "62f39e04588e7d6235b6303a31c1f71bfd6e5b1f36905e3befe78dd2c0a0acb0"
+    },
+    "source2/summary.json": {
+      "bytes": 9876,
+      "sha256": "caeae342bb8f6a4a548f91afa9548da1aa18492960583c96cc745704fd9362c7"
+    },
+    "source2/trace.json": {
+      "bytes": 4952,
+      "sha256": "7d770daae37eca9c7d8f04129b9fd9f02d283507b66d4bd15c6c7a3dddafd7f7"
+    },
+    "wheel1/commands.json": {
+      "bytes": 15807,
+      "sha256": "ca1fae61ee170fe85d6f1f4ee26c80cf9bfb9b5a185a66b599c4d72a22bdf1fd"
+    },
+    "wheel1/daemon/audit-receipt.json": {
+      "bytes": 4268,
+      "sha256": "b7dfd64740bed6b7ceaf15cf34b9fe153860dd4f9ece7ceb9931c122c81d5de6"
+    },
+    "wheel1/daemon/collection-trace.json": {
+      "bytes": 860,
+      "sha256": "a11aed0af0084a98687c8f5cfc5b24f431d2d0c2aeba0ca657a77c9d1812bee1"
+    },
+    "wheel1/daemon/junit.xml": {
+      "bytes": 2285,
+      "sha256": "e9db58a4041801d1a8d475370181fda36942a6e8e14177004b7f8db2b4793397"
+    },
+    "wheel1/daemon/trace.json": {
+      "bytes": 2570,
+      "sha256": "18c8c31fdf2a18406e3b360a75545280f56fd79ba64363b51c2118086f74f419"
+    },
+    "wheel1/mock/audit-receipt.json": {
+      "bytes": 4220,
+      "sha256": "08be74f2b3923e0f301cf7fe86ffeb9e77e896c689db82929de4f5ece2207bce"
+    },
+    "wheel1/mock/collection-trace.json": {
+      "bytes": 848,
+      "sha256": "f6efeaab6432ce2cbae9fa5611529fa7733da52ab84a348c883cdb406d587fcd"
+    },
+    "wheel1/mock/junit.xml": {
+      "bytes": 2261,
+      "sha256": "57d751b2b34067db0f551b219942b2afe861601a592627cb24bfd860e5168d41"
+    },
+    "wheel1/mock/trace.json": {
+      "bytes": 2534,
+      "sha256": "40298ceb4e474bd2cb98a0081cd908ee919c379e073e351ebc10bf17857d421c"
+    },
+    "wheel1/selections.json": {
+      "bytes": 463493,
+      "sha256": "709f7cae9ca240e71843e71bce0a892ca9eb0036bc61cac75748af7da3feda49"
+    },
+    "wheel1/source-after.json": {
+      "bytes": 745898,
+      "sha256": "62f39e04588e7d6235b6303a31c1f71bfd6e5b1f36905e3befe78dd2c0a0acb0"
+    },
+    "wheel1/source-before.json": {
+      "bytes": 745898,
+      "sha256": "62f39e04588e7d6235b6303a31c1f71bfd6e5b1f36905e3befe78dd2c0a0acb0"
+    },
+    "wheel1/summary.json": {
+      "bytes": 682279,
+      "sha256": "09ef42b2c6487f5da104a7eedcf7a1eef8d995e395976151b699939ae4cd8318"
+    }
+  },
+  "candidate_module": {
+    "bytes": 21778,
+    "logical_name": "toolkit-cli/tests/test_ordinary_level_value_backends.py",
+    "sha256": "594df9fab4311e6de1af794d6435d9b17a4c333fc7fab34759bf2e770c20771b"
+  },
+  "candidate_production_files": {
+    "rust/cbus-cgate/src/lib.rs": {
+      "bytes": 649375,
+      "sha256": "b6b0ccdf9bd13158bf4a183e93e7246cdf4e6b00df703560ac0e572310bc02b8"
+    },
+    "rust/cbus-cgate/src/ordinary_level_value.rs": {
+      "bytes": 13055,
+      "sha256": "2fe1e9ab0a6b674b2c5b4fddbf4f7d625cb2318f24c254568937e0873ac6b4a2"
+    },
+    "rust/cbus-cgate/src/ordinary_level_value_tests.rs": {
+      "bytes": 24173,
+      "sha256": "97cfc8f4d8a154b2c5b2f8cbb278cc0ad094bcdb52022be564ccebdf5c32f832"
+    },
+    "rust/testdata/vectors/ordinary_level_value_safe_owned.json": {
+      "bytes": 2386,
+      "sha256": "649c34882af9979f14749a933994d127a2cd3a1231df9fce4fe9b9255d4f0fd4"
+    }
+  },
+  "candidate_production_manifest": {
+    "bytes": 4282,
+    "sha256": "74189655cc4f96a0fcc5739ad7b4865f9b387fa3f92da1fbec1c336ae733e4de"
+  },
+  "current_adopted_public_proof": {
+    "all_nine_maintained_wheel_commands_exit0": true,
+    "limits": [
+      "B authored public expected graph oracles. This data-only artifact reconstruction is not independent semantic-oracle approval; A semantic review is separate.",
+      "Exact current adopted source12 or separate installedmock6/daemon6 only; no merged traces or full1062/Make/Rust/native/physical acceptance.",
+      "No product/test/service/process or original instruction execution by this reader.",
+      "No new lost-receipt/no-replay experiment; exact single-write public calls and invalid refusal bodies only.",
+      "Process/listener/PCI cleanup is retained terminal journal/strict guard evidence, not a fresh live probe.",
+      "Index/HEAD/old-pair quiet are retained outer-driver guards; raw before/after source and package maps are independently compared."
+    ],
+    "old_isolated_epochs": "Retained unchanged; not promoted to these current branch scopes",
+    "private_coordinates_in_projection": false,
+    "reader": {
+      "bytes": 28152,
+      "sha256": "69f4e1b1613acf2d3ef2db31b16b4dd7a4b410a36fb54bd973d852addb87b34e"
+    },
+    "result": "PASS_WITH_LIMITS_CURRENT_SOURCE12_AND_SEPARATE_FRESH_WHEEL_MOCK6_DAEMON6",
+    "schema": "safe-issue131-current-adopted-public-acceptance-projection-v1",
+    "scopes": {
+      "daemon": {
+        "Rust_inputs": 484,
+        "actual_parents": {
+          "errors": 0,
+          "failures": 0,
+          "parent_outcomes": {
+            "passed": 6
+          },
+          "parents": 6,
+          "skipped": 0,
+          "tests": 6,
+          "unitemized_events": 0
+        },
+        "artifact_descriptors": {
+          "daemon/audit-receipt.json": {
+            "bytes": 4268,
+            "sha256": "f801a4551a24f0d6df4d65b33537f4f352e5a9d70fa2e2f13562989302176291"
+          },
+          "daemon/collection-trace.json": {
+            "bytes": 860,
+            "sha256": "a11aed0af0084a98687c8f5cfc5b24f431d2d0c2aeba0ca657a77c9d1812bee1"
+          },
+          "daemon/junit.xml": {
+            "bytes": 2285,
+            "sha256": "0406ccfa43505f7503af4201d4d33148bec20cae6b24adbe4ef4399eb4114b61"
+          },
+          "daemon/trace.json": {
+            "bytes": 2570,
+            "sha256": "18c8c31fdf2a18406e3b360a75545280f56fd79ba64363b51c2118086f74f419"
+          },
+          "source-after.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "source-before.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "summary.json": {
+            "bytes": 682828,
+            "sha256": "ab6d5fdd9e4d505d8d200f35fb3e80f043600d47f21f2ae3d2c1dd332e871ee6"
+          }
+        },
+        "canonical_journals": 6,
+        "full_source_inputs": 4200,
+        "installed_closure": {
+          "all_source_reference_inputs_pinned": 4200,
+          "full_source_reference_build_ZIP_install_RECORD_equal": true,
+          "guard_data_file_count": 170,
+          "package": {
+            "file_count": 395,
+            "record": {
+              "entries": 406,
+              "record": {
+                "bytes": 38563,
+                "sha256": "3b0ca78f32be737766ea7f26993fedc38fb1b9a20fa5e329e304ae3e616a22bc"
+              }
+            },
+            "wheel": {
+              "bytes": 3014275,
+              "sha256": "07a6b4a40acce96af02f4c0442199105fb1550db62642419c15287fc12ed68ce"
+            }
+          },
+          "strict_origins": {
+            "collection": {
+              "origin_records": 22,
+              "owned_rust_children": 0,
+              "owned_rust_reaped": 0,
+              "product_import_events": 20,
+              "python_processes": 1,
+              "scope": "guarded Python launches and observed product module loads",
+              "violations": 0
+            },
+            "pytest": {
+              "origin_records": 30416,
+              "owned_rust_children": 6,
+              "owned_rust_reaped": 6,
+              "product_import_events": 30080,
+              "python_processes": 168,
+              "scope": "guarded Python launches and observed product module loads",
+              "violations": 0
+            }
+          }
+        },
+        "private_readback_receipt": {
+          "bytes": 32537,
+          "sha256": "4332727f0be08390b3a74360e269211c60f6b733fc99ab9f9125654d3ab986ba"
+        },
+        "shadows_pinned_not_counted": 6,
+        "totals": {
+          "actual_unrelated_PP_checkpoints": 7,
+          "cli_calls": 167,
+          "cli_commands": 313,
+          "cli_exit_counts": {
+            "0": 161,
+            "1": 6
+          },
+          "connections": 173,
+          "direct_commands": 59,
+          "documents": 12,
+          "explicit_traps_zero": 6,
+          "later_PCI": 0,
+          "owned_processes": 6,
+          "startup_PCI": 48,
+          "status_counts": {
+            "200": 207,
+            "301": 27,
+            "315": 21,
+            "342": 50,
+            "344": 61,
+            "400": 6
+          },
+          "tagged_commands": 372,
+          "upstream_PP315_responses": 21,
+          "whole_graph_checkpoints": 46
+        }
+      },
+      "mock": {
+        "Rust_inputs": 484,
+        "actual_parents": {
+          "errors": 0,
+          "failures": 0,
+          "parent_outcomes": {
+            "passed": 6
+          },
+          "parents": 6,
+          "skipped": 0,
+          "tests": 6,
+          "unitemized_events": 0
+        },
+        "artifact_descriptors": {
+          "mock/audit-receipt.json": {
+            "bytes": 4220,
+            "sha256": "6e609b59ea68c762011d0c6cba5c5cf57eaa64713368f2d0e29a0f9882413da4"
+          },
+          "mock/collection-trace.json": {
+            "bytes": 848,
+            "sha256": "f6efeaab6432ce2cbae9fa5611529fa7733da52ab84a348c883cdb406d587fcd"
+          },
+          "mock/junit.xml": {
+            "bytes": 2261,
+            "sha256": "7f6c2ec9168ae865d986532e6003a960f22fb2735b9fd4943949a8a9df847981"
+          },
+          "mock/trace.json": {
+            "bytes": 2534,
+            "sha256": "40298ceb4e474bd2cb98a0081cd908ee919c379e073e351ebc10bf17857d421c"
+          },
+          "source-after.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "source-before.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "summary.json": {
+            "bytes": 682828,
+            "sha256": "ab6d5fdd9e4d505d8d200f35fb3e80f043600d47f21f2ae3d2c1dd332e871ee6"
+          }
+        },
+        "canonical_journals": 6,
+        "full_source_inputs": 4200,
+        "installed_closure": {
+          "all_source_reference_inputs_pinned": 4200,
+          "full_source_reference_build_ZIP_install_RECORD_equal": true,
+          "guard_data_file_count": 170,
+          "package": {
+            "file_count": 395,
+            "record": {
+              "entries": 406,
+              "record": {
+                "bytes": 38563,
+                "sha256": "3b0ca78f32be737766ea7f26993fedc38fb1b9a20fa5e329e304ae3e616a22bc"
+              }
+            },
+            "wheel": {
+              "bytes": 3014275,
+              "sha256": "07a6b4a40acce96af02f4c0442199105fb1550db62642419c15287fc12ed68ce"
+            }
+          },
+          "strict_origins": {
+            "collection": {
+              "origin_records": 22,
+              "owned_rust_children": 0,
+              "owned_rust_reaped": 0,
+              "product_import_events": 20,
+              "python_processes": 1,
+              "scope": "guarded Python launches and observed product module loads",
+              "violations": 0
+            },
+            "pytest": {
+              "origin_records": 30416,
+              "owned_rust_children": 6,
+              "owned_rust_reaped": 6,
+              "product_import_events": 30080,
+              "python_processes": 168,
+              "scope": "guarded Python launches and observed product module loads",
+              "violations": 0
+            }
+          }
+        },
+        "private_readback_receipt": {
+          "bytes": 32550,
+          "sha256": "fb12172170fcc1610a39fe156eb09fbd7e79c8e604daccf0aaa7ae4caba62e6c"
+        },
+        "shadows_pinned_not_counted": 6,
+        "totals": {
+          "actual_unrelated_PP_checkpoints": 7,
+          "cli_calls": 167,
+          "cli_commands": 313,
+          "cli_exit_counts": {
+            "0": 161,
+            "1": 6
+          },
+          "connections": 173,
+          "direct_commands": 59,
+          "documents": 12,
+          "explicit_traps_zero": 6,
+          "later_PCI": 0,
+          "owned_processes": 6,
+          "startup_PCI": 0,
+          "status_counts": {
+            "200": 207,
+            "301": 27,
+            "315": 21,
+            "342": 50,
+            "344": 61,
+            "400": 6
+          },
+          "tagged_commands": 372,
+          "upstream_PP315_responses": 21,
+          "whole_graph_checkpoints": 46
+        }
+      },
+      "source": {
+        "Rust_inputs": 484,
+        "actual_parents": {
+          "errors": 0,
+          "failures": 0,
+          "parent_outcomes": {
+            "passed": 12
+          },
+          "parents": 12,
+          "skipped": 0,
+          "tests": 12,
+          "unitemized_events": 0
+        },
+        "artifact_descriptors": {
+          "audit.json": {
+            "bytes": 7754,
+            "sha256": "783c7eb2f1681eaa76f71d4e79b12ffafe4fb797fc601d1f2445b7780378c043"
+          },
+          "collection-trace.json": {
+            "bytes": 1560,
+            "sha256": "79ec9fb3d568463267ca618509045221b06c46f2c76ca949ad9997aba281d60f"
+          },
+          "junit.xml": {
+            "bytes": 4291,
+            "sha256": "ed258d078faca4ac649daf318753f2a175fdf21202cf4bacf6a60c80ba18c229"
+          },
+          "source-after.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "source-before.json": {
+            "bytes": 747906,
+            "sha256": "5dabf15fba5a8d5bedc4986e05d776d8204837f75a4491b1e0f3ab830911328f"
+          },
+          "summary.json": {
+            "bytes": 10323,
+            "sha256": "f4e3de4c4f23e80ca45b868a95b0b622e5754b1445a709c1d422b9ed3fa41775"
+          },
+          "trace.json": {
+            "bytes": 4952,
+            "sha256": "7d770daae37eca9c7d8f04129b9fd9f02d283507b66d4bd15c6c7a3dddafd7f7"
+          }
+        },
+        "canonical_journals": 12,
+        "full_source_inputs": 4200,
+        "installed_closure": null,
+        "private_readback_receipt": {
+          "bytes": 53545,
+          "sha256": "2b540881000d1be5e6bdc6af7c76e67f7d9348b775afbc8674cd734c52e325ac"
+        },
+        "shadows_pinned_not_counted": 12,
+        "totals": {
+          "actual_unrelated_PP_checkpoints": 14,
+          "cli_calls": 334,
+          "cli_commands": 626,
+          "cli_exit_counts": {
+            "0": 322,
+            "1": 12
+          },
+          "connections": 346,
+          "direct_commands": 118,
+          "documents": 24,
+          "explicit_traps_zero": 12,
+          "later_PCI": 0,
+          "owned_processes": 12,
+          "startup_PCI": 48,
+          "status_counts": {
+            "200": 414,
+            "301": 54,
+            "315": 42,
+            "342": 100,
+            "344": 122,
+            "400": 12
+          },
+          "tagged_commands": 744,
+          "upstream_PP315_responses": 42,
+          "whole_graph_checkpoints": 92
+        }
+      }
+    },
+    "source_actual_process_commands": [
+      {
+        "exit": 0,
+        "name": "collection",
+        "seconds": 0.4701048749993788
+      },
+      {
+        "exit": 0,
+        "name": "pytest",
+        "seconds": 71.40012691699667
+      }
+    ],
+    "source_auditor_scope": "Maintained auditor library invocation; no separate third process command",
+    "source_driver_seconds": 72.34133370800555,
+    "summary_descriptors": {
+      "source1": {
+        "bytes": 10323,
+        "sha256": "f4e3de4c4f23e80ca45b868a95b0b622e5754b1445a709c1d422b9ed3fa41775"
+      },
+      "wheel1": {
+        "bytes": 682828,
+        "sha256": "ab6d5fdd9e4d505d8d200f35fb3e80f043600d47f21f2ae3d2c1dd332e871ee6"
+      },
+      "wheel_driver1": {
+        "bytes": 8723,
+        "sha256": "00ad5336642854503f2f798d633b92e16a920957a0c90063a4668ee418f7319a"
+      }
+    },
+    "wheel_driver_seconds": 390.35370866700396
+  },
+  "current_adoption_metadata": {
+    "Root_reported_Rust484_identity_descriptor": {
+      "bytes": 78129,
+      "sha256": "6053887c5fdf026f47d22d1cda28c4b8e4bb4bab1e46b7db0258eb439a769fa5"
+    },
+    "Root_reported_base_revision": "64a4d477",
+    "Root_reported_branch": "codex/ordinary-level-value-20261005",
+    "actual_tested_head_metadata": "64a4d47788345ede5a6aae5a2cf7315ec7008783",
+    "current_branch_source12_and_freshwheel6_plus6": "PASS_WITH_LIMITS_SEPARATE_CURRENT_EPOCHS",
+    "issue131": "OPEN_PENDING_MERGE",
+    "uncommitted_overlay": "Explicit frozen4200 input map; later publication commit not directly executed"
+  },
+  "current_capture_regeneration": {
+    "after_input_count": 4200,
+    "allowed_changed_outputs": 11,
+    "handoff": {
+      "bytes": 871,
+      "sha256": "d748091447ec71b662c2badf17eaa6d079f5131db0b4408b52d5e11e390e1186"
+    },
+    "maintained_commands": 18,
+    "protected_inputs": 8,
+    "scope": "Capture/sanitizer/generator result only; source/wheel feature acceptance remains separate",
+    "summary": {
+      "bytes": 19414,
+      "sha256": "43eb2b47d9e753462a3613aa7d1640859b7e517ef1a3f6f99b8388e7cd8f2a9e"
+    }
+  },
+  "current_independent_artifact_review": {
+    "cross_phase_counts": {
+      "all_six_source_maps_and_current_full_map_exact": true,
+      "both_proof_and_original_pairs_quiet": true,
+      "full_files": 4200,
+      "index_and_head_exact_through_both_phases": true,
+      "installed_record_entries_checked": 406,
+      "regular_reference_inputs_distinct_inodes": true,
+      "rust_files": 484,
+      "source_build_reference_zip_installed_package_files": 395
+    },
+    "descriptors": {
+      "cross-phase-current-closure-v1.json": {
+        "bytes": 2852,
+        "sha256": "159e0e0789a6b5da69b67133b131a4b287b30284a03547c1e0f21d929036d970"
+      },
+      "source1-independent-raw-review-v1.json": {
+        "bytes": 30648,
+        "sha256": "d9f61e8aac3da20dfac31d119e530d2160400de2b83bf2f5a22dc60ec0b53e28"
+      },
+      "wheel1-daemon-independent-raw-review-v1.json": {
+        "bytes": 16560,
+        "sha256": "4539c56c323b397fb25195bd56c5fc50174a812dc7a9cf5d56d5eb3001917770"
+      },
+      "wheel1-independent-closure-review-v3.json": {
+        "bytes": 55213,
+        "sha256": "a6b735b603abc058332ddf3c292a21224d376c0c5322975348c5bba1df0a9458"
+      },
+      "wheel1-mock-independent-raw-review-v1.json": {
+        "bytes": 16572,
+        "sha256": "eaf0a076457fbf53eb488db0368f13554fbbe05c5a6614da604bd479daa9c34c"
+      }
+    },
+    "handoff": {
+      "bytes": 5126,
+      "sha256": "2bf6a20e015723e9ab7768f005dbc2e848fb777896a430481cf7f226f61d9aba"
+    },
+    "scope": "C authored production/library component; current raw/package/origin recount is artifact provenance, not independent semantic-oracle credit. B authored public graph oracles."
+  },
+  "current_registered_metadata_check": {
+    "actual_command_count": 2,
+    "aggregate_passing_events": 741,
+    "failed": 0,
+    "inputs_quiet_epoch_count": 4200,
+    "parents": 191,
+    "passing_subevents": 550,
+    "scope": "Separate metadata bodies, not full1062 interop",
+    "skipped": 0,
+    "summary": {
+      "bytes": 4392,
+      "sha256": "e6fa2af9b0bb7648b93ac3a69d19bc72d8e74de91ef22bf1560532cf597bee01"
+    }
+  },
+  "current_registration_guards": {
+    "commands": 2,
+    "failed": 0,
+    "parents": 5,
+    "quiet_input_count": 4196,
+    "scope": "Earlier post-adoption registration epoch, before final4200 docs/capture map; not full1062 execution.",
+    "skipped": 0,
+    "subevents": 0,
+    "summary": {
+      "bytes": 3002,
+      "sha256": "050c30e57a44a449e2b9f23364371cd6321fc6fb48d4b2a43b46b364b2e11cf5"
+    }
+  },
+  "descriptor_privacy": "Logical artifact names and hashes only; no private UUIDs, broker credentials, raw journals, XML or endpoint coordinates",
+  "focused_library_epochs": {
+    "candidate2_green": {
+      "cargo_exit": 101,
+      "failed": 1,
+      "ignored": 0,
+      "passed": 12
+    },
+    "candidate2_red": {
+      "cargo_exit": 101,
+      "failed": 13,
+      "ignored": 0,
+      "passed": 0
+    },
+    "candidate3_green3": {
+      "direct_cargo_exit_retained": false,
+      "raw_failed": 0,
+      "raw_passed": 13,
+      "terminal_acceptance": false,
+      "wrapper_exit": 1
+    },
+    "candidate3_green4": {
+      "cargo_exit": 0,
+      "filtered_out": 636,
+      "ignored": 0,
+      "lane": "green4",
+      "parent_fail": 0,
+      "parent_pass": 13
+    },
+    "corrected_baseline_red3": {
+      "cargo_exit": 101,
+      "filtered_out": 636,
+      "ignored": 0,
+      "lane": "red3",
+      "parent_fail": 12,
+      "parent_pass": 1
+    }
+  },
+  "git_baseline_head_metadata_only": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+  "independent_review_qualification": [
+    "C authored component and library regressions: owning execution/provenance evidence is not independent semantic-oracle credit.",
+    "Public raw journals and physical origin/RECORD data independently read without replaying products or commands.",
+    "No exact target/native original Level Value mutation/lexical error grammar, hardware, universal parity or house acceptance claimed.",
+    "No dropped-save/no-replay experiment in these12publiccases; errorcases are six invalid byte refusals/backend.",
+    "Canonical journal actualNodeIDs are joined to exact JUnit/trace; inherited CGL shadow journals are pinned/excluded.",
+    "Cleanup is retained records and Cargo parent reaping, not a new live PID/endpoint or exhaustive descendant sweep.",
+    "All historical red/test/parser/setup epochs remain separate and unchanged; no combined historical-green claim.",
+    "Original phase2 sources/pair unchanged; no tracked adoption, publication, full extra source copy or deferred native execution."
+  ],
+  "independent_static_review": {
+    "bytes": 7794,
+    "sha256": "e3fd171112c41e9fcd4b42809a72d36ef1cd62cc71347143ac618cea6e8d3ab8"
+  },
+  "limits": [
+    "Recorded isolated candidate epochs predate adoption. Current adopted source12 and fresh wheel6+6 have their own separate proof. Issue131 remains open pending merge; no historical proof rewritten.",
+    "Actual source12 and separate installed mock6/daemon6 are distinct from focused library13 and four isolated Rust gates.",
+    "No full1062/fullMake acceptance transferred from prior Application evidence; no native/hardware/global Toolkit claim.",
+    "B authored complete public expected graphs. C authored component/library tests; its public recount is artifact provenance, not independent semantic-oracle credit.",
+    "No new dropped-receipt/no-replay experiment in the12cases; atomic invalid-byte refusals and single writes only.",
+    "Associated raw owner remains separate; exact original raw/NULL/lexical/error behavior remains unproved.",
+    "Canonical actualNodeID journals join JUnit/trace; inherited CGL shadow journals are retained and excluded.",
+    "Cleanup reflects retained process records/Cargo parent reaping; no exhaustive historical descendant or new live endpoint census."
+  ],
+  "original_phase2_source_index_and_both_pairs_quiet_during_isolated_epochs": true,
+  "post_terminal_doc_annotation_actual_changed_count": 8,
+  "post_terminal_doc_annotation_allowed_count": 9,
+  "post_terminal_doc_annotation_allowlist": [
+    ".agents/skills/cbus-cli/references/cgate.md",
+    ".agents/skills/cbus-cli/references/toolkit.md",
+    "toolkit-cli/README.md",
+    "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-value/receipt.json",
+    "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-value/report.md",
+    "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-value/selected-nodeids.json",
+    "toolkit-cli/docs/application-database-safe.md",
+    "toolkit-cli/docs/implementation-status.md",
+    "toolkit-cli/docs/ordinary-level-value.md"
+  ],
+  "post_terminal_doc_annotation_scope": "Nine allowed public doc/AI/operator paths, eight actual content changes; selected12 packet unchanged. Those updates follow the tested4200 map and are outside all six refreshed closure maps and package395.",
+  "post_terminal_selected_packet_unchanged": {
+    "bytes": 1391,
+    "sha256": "118b49ee84deb144c6a5ce0a6248ca583f807577431bad4f5a7c3110de0d7a15"
+  },
+  "prior_failed_epoch": {
+    "cause": "Authored XML helper incorrectly expected one347 payload rather than declaration+document. Only helper framing changed; all twelve bodies and complete graph oracles retained.",
+    "data_readback": {
+      "bytes": 13314,
+      "sha256": "8befa503f9b626af82231854af2c63f2b204d327c1055ccbcd7cb7331bb9e395"
+    },
+    "failed_call_parents": 12,
+    "label": "source1",
+    "ordinary_level_mutation_reached": false,
+    "pytest_exit": 1,
+    "raw_summary": {
+      "bytes": 8231,
+      "sha256": "334751e0ddda60e8c8d1d92e62155f2a8f4d57f02c4d5613bfdf7ec6ae0d5e35"
+    }
+  },
+  "proof_binary_descriptors": {
+    "cgate-mock": {
+      "bytes": 18892104,
+      "sha256": "323c88858096ae2f1ffdcd02b1b16ea3ba7360bb8355d5f6d551ae49c7d78ed8"
+    },
+    "cmqttd": {
+      "bytes": 55361368,
+      "sha256": "9837c9a7eacda88d4562a54836c22f4a948faafe1fd6d1c4685d1e122cf7b756"
+    }
+  },
+  "publication_state": "EXACT_CODE_ADOPTED_FOCUSED_SOURCE_WHEEL_PROVED_ISSUE131_OPEN_PENDING_MERGE",
+  "quiet_claim_scope": "Historical isolated4189 and adopted4200 before/after maps describe their own frozen proof epochs. The nine allowed post-terminal doc paths include eight actual content changes and an unchanged selected packet; no current Root worktree/index/pair equality is asserted after those annotations.",
+  "recorded_isolated_epoch_state": "UNADOPTED_AT_SOURCE12_WHEEL6_PLUS6_PROOF_TIME",
+  "required_gate_map_assertions": {
+    "original": true,
+    "rust": true,
+    "source": true
+  },
+  "required_isolated_rust_gates": {
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "cargo_parent_reaped": true,
+        "elapsed_seconds": 2.354786333,
+        "exit_code": 0,
+        "timeout": false
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "cargo_parent_reaped": true,
+        "elapsed_seconds": 48.617161291,
+        "exit_code": 0,
+        "timeout": false
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "--workspace"
+        ],
+        "cargo_parent_reaped": true,
+        "elapsed_seconds": 523.085905917,
+        "exit_code": 0,
+        "timeout": false
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "--release",
+          "--workspace"
+        ],
+        "cargo_parent_reaped": true,
+        "elapsed_seconds": 157.71410270900003,
+        "exit_code": 0,
+        "timeout": false
+      }
+    ],
+    "full_rust_input_count": 484,
+    "full_source_input_count": 4189,
+    "ignored_id": "service::tests::private_existing_database_project_dlt_upgrade",
+    "ignored_reason": "requires private Project XML and C-Gate state provision",
+    "scope": "Actual isolated candidate3 gates; focused library counts are not extra unique workspace acceptance",
+    "source_rust_and_pairs_quiet_during_gates": true,
+    "workspace_logged_failed": 0,
+    "workspace_logged_ignored": 1,
+    "workspace_logged_passed": 8802
+  },
+  "result": "ISOLATED_AND_CURRENT_ADOPTED_FOCUSED_PROOFS_PASS_WITH_LIMITS",
+  "schema": "cbus-issue131-isolated-candidate-acceptance-v2",
+  "selected_ids": [
+    "tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[daemon]",
+    "tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[daemon]",
+    "tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[daemon]",
+    "tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[daemon]",
+    "tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[daemon]",
+    "tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[mock]",
+    "tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[daemon]"
+  ],
+  "selected_ids_file": {
+    "bytes": 1391,
+    "sha256": "118b49ee84deb144c6a5ce0a6248ca583f807577431bad4f5a7c3110de0d7a15"
+  },
+  "separate_registration_proposal": {
+    "declared_ids": {
+      "daemon": 537,
+      "mock": 525,
+      "total": 1062
+    },
+    "full_declared_selection_executed_for_candidate": false,
+    "manifest": {
+      "bytes": 5138,
+      "sha256": "a7a7f5a2035829777a2d4749e97c86aaa4d5dd917c736e2a1eaf6e20b76209a2"
+    },
+    "roster_digests": {
+      "daemon": "dc48b1d5efbcd9ffe9cda1df82c15920d45cf403eeaa908320973969a3e716e6",
+      "mock": "1cfd1d6fee228a811111be8c3779c79b3030484bc7d590eb2b518ab714d71043"
+    },
+    "state": "Exact registration adopted; current full1062+7 remains unexecuted, prior full-Make belongs to original Application checkpoint",
+    "whole_modules": 7
+  },
+  "source_epoch": {
+    "actual_journal_counts": {
+      "cli_calls": 334,
+      "cli_exit_counts": {
+        "0": 322,
+        "1": 12
+      },
+      "connections": 346,
+      "documents": 24,
+      "explicit_traps_zero": 12,
+      "later_PCI": 0,
+      "owned_processes": 12,
+      "startup_PCI": 48,
+      "status_counts": {
+        "200": 414,
+        "301": 54,
+        "315": 42,
+        "342": 100,
+        "344": 122,
+        "400": 12
+      },
+      "tagged_commands": 744,
+      "whole_graph_checkpoints": 92
+    },
+    "driver_seconds": 174.22052908300248,
+    "errors": 0,
+    "failures": 0,
+    "label": "source2",
+    "parents_passed": 12,
+    "pytest_seconds": 171.49775750000117,
+    "skips": 0,
+    "strict_installed_origin_claim": false,
+    "subtests": 0
+  },
+  "uncommitted_isolated_candidate_overlay": true,
+  "wheel_epochs": {
+    "daemon": {
+      "actual_journal_counts": {
+        "cli_calls": 167,
+        "cli_exit_counts": {
+          "0": 161,
+          "1": 6
+        },
+        "connections": 173,
+        "documents": 12,
+        "explicit_traps_zero": 6,
+        "later_PCI": 0,
+        "owned_processes": 6,
+        "startup_PCI": 48,
+        "status_counts": {
+          "200": 207,
+          "301": 27,
+          "315": 21,
+          "342": 50,
+          "344": 61,
+          "400": 6
+        },
+        "tagged_commands": 372,
+        "whole_graph_checkpoints": 46
+      },
+      "actual_origin_counts": {
+        "origin_records": 30416,
+        "owned_rust_children": 6,
+        "owned_rust_reaped": 6,
+        "product_import_events": 30080,
+        "python_processes": 168,
+        "scope": "guarded Python launches and observed product module loads",
+        "violations": 0
+      },
+      "errors": 0,
+      "failures": 0,
+      "parents_passed": 6,
+      "pytest_seconds": 197.7020139169981,
+      "skips": 0,
+      "subtests": 0
+    },
+    "mock": {
+      "actual_journal_counts": {
+        "cli_calls": 167,
+        "cli_exit_counts": {
+          "0": 161,
+          "1": 6
+        },
+        "connections": 173,
+        "documents": 12,
+        "explicit_traps_zero": 6,
+        "later_PCI": 0,
+        "owned_processes": 6,
+        "startup_PCI": 0,
+        "status_counts": {
+          "200": 207,
+          "301": 27,
+          "315": 21,
+          "342": 50,
+          "344": 61,
+          "400": 6
+        },
+        "tagged_commands": 372,
+        "whole_graph_checkpoints": 46
+      },
+      "actual_origin_counts": {
+        "origin_records": 30416,
+        "owned_rust_children": 6,
+        "owned_rust_reaped": 6,
+        "product_import_events": 30080,
+        "python_processes": 168,
+        "scope": "guarded Python launches and observed product module loads",
+        "violations": 0
+      },
+      "errors": 0,
+      "failures": 0,
+      "parents_passed": 6,
+      "pytest_seconds": 183.8249025000041,
+      "skips": 0,
+      "subtests": 0
+    }
+  },
+  "whole_source_reference_build_ZIP_install_RECORD": {
+    "all_maps_before_after_equal": true,
+    "package_files": 395,
+    "record": {
+      "entries": 406,
+      "record": {
+        "bytes": 38563,
+        "sha256": "4389e2770f65e454e6f3d6c18a51b3e058d3788dc7f9187fa00eb0d7582f3bbb"
+      }
+    },
+    "source_input_count": 4189,
+    "wheel": {
+      "bytes": 3013846,
+      "sha256": "39cc1a6ec305f189dc4e3458216877f7479b771537ab38f394f5708b39d83b08"
+    }
+  }
+}

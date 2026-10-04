@@ -1095,9 +1095,18 @@ source metadata refuse before commit. Never retry an uncertain mutation or save.
 Existing Unit/shared-OID and raw owners remain unchanged.
 
 Application scalar acceptance does not prove numeric Level Value mutation.
-Issue 131 still covers the ordinary unassociated numeric false-success route;
-use only an admitted unique issued Level OID with fresh scalar and whole-XML
-readback. Raw values require their existing associated owner. Target 3.4 HELP*
+The separate now-adopted consistency fix is described in
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner; issue 131 stays open pending merge. The prior isolated public/library/
+Rust proofs remain distinct; neither focused proof executes the full 1,062-ID
+declaration plus seven whole modules. In a build with
+the fix, use canonical numeric coordinates, `--project` on the same connection
+and a complete coherent typed byte owner. Require fresh numeric/OID/whole-XML
+readback. A coherent presently loaded foreign owner can explain an exact global
+OID-cache byte; it does not prove which historical writer created that cache.
+A cache alone is not owner authority. Unsafe, Unit/shared-OID and existing
+associated raw owners remain separate. Target 3.4 HELP*
 documents the copy/set business rules but not the missing exact mutation,
 error/no-op/case/whitespace receipts of issues 124/125. Those native boundaries,
 native/hardware acceptance and the general parity ledger remain open.

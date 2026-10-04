@@ -641,6 +641,12 @@ check-cgate-interop: compile
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-overflow]' \
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-plus]' \
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-text]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1181,6 +1187,12 @@ check-cmqtt-interop: compile
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-overflow]' \
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-plus]' \
 		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-text]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop
