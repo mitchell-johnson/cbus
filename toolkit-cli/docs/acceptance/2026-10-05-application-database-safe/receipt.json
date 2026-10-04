@@ -1,0 +1,1098 @@
+{
+  "actual_selection_file": {
+    "bytes": 14633,
+    "sha256": "647c4ad15feff9151721ddf5d6b576dfdd2e36616e7666236d3b871103101060"
+  },
+  "configured_roster": {
+    "additional_whole_core_modules": 7,
+    "daemon": 531,
+    "explicit_ids": 1050,
+    "mock": 519,
+    "not_this_focused_selection": true
+  },
+  "full_configured_interop_acceptance": {
+    "explicit_required": 1050,
+    "installed_full_or_later_matrix": false,
+    "source_pre_matrix_epoch": true,
+    "whole_core_modules": 7
+  },
+  "global_toolkit_parity": false,
+  "historical_failed_epochs": [
+    {
+      "epoch": "source1",
+      "failed": 31,
+      "note": "27 setter seed failures used nonexistent top-level oid; four copy cases exposed the ordinary numeric Value or associated-owner boundary. Issue131 remains open.",
+      "passed": 28,
+      "scope": "59 selected source parents",
+      "skipped": 0,
+      "summary": {
+        "bytes": 9595,
+        "sha256": "bb96b59dcdde4ec871e999c2954855f774101b674b696583bdfba84ca1af51c0"
+      }
+    },
+    {
+      "epoch": "wheel1",
+      "failed": 15,
+      "note": "First installed mock phase failed; no later daemon phase receives credit.",
+      "passed": 13,
+      "scope": "mock28 only; daemon not run",
+      "skipped": 0,
+      "summary": {
+        "bytes": 581320,
+        "sha256": "e4fac47738691bc43ff5340bffeed35c507f43df151fad74a4bdf77f2c37e2a7"
+      }
+    },
+    {
+      "epoch": "source2",
+      "failed": 8,
+      "note": "Four invented Unit scalar getter assertions, two PROJECT SAVE punctuation assertions and two omitted DBVersion2.3 envelope assertions failed.",
+      "passed": 51,
+      "scope": "59 selected source parents",
+      "skipped": 0,
+      "summary": {
+        "bytes": 9596,
+        "sha256": "0fcfa0cd5d822c09854ef3381e7aaecca0c1a670022ab76c7eb31d1d6456349c"
+      }
+    },
+    {
+      "epoch": "wheel2",
+      "failed": 4,
+      "note": "Two move, one lost-save and one copy-envelope assertion failed; daemon did not run.",
+      "passed": 24,
+      "scope": "mock28 only; daemon not run",
+      "skipped": 0,
+      "summary": {
+        "bytes": 581317,
+        "sha256": "19d806e4c199d65d50e71486366a129dccb73ffbbf3b8ff53c4712119fb78bdb"
+      }
+    }
+  ],
+  "limits": [
+    "Data-only retained-artifact read. No service, test, original instruction, hardware, credential or live endpoint actions.",
+    "Each scope uses its own actual JUnit properties, trace and journals. Wheel mock28 and daemon31 remain distinct pytest epochs.",
+    "All counts come from verified retained rows; missing/failed records cannot receive acceptance credit.",
+    "CLI versus relay correspondence is exact framed-request/reply multiplicity within the actual case journal. A universal chronological per-call/connection/snapshot join is not manufactured.",
+    "Canonical copy journals can contain a later daemon restart than their inherited shadow snapshots. Shadows are pinned and not counted twice.",
+    "B authored the CGL16 oracles. A authored setter27; C authored copy16. This is author-side/provenance readback, not independent native semantic approval.",
+    "Copy semantic literals are pinned authored fixtures; fresh identities and actual readbacks are checked without claiming native Address/error/no-op/whitespace or external-reference parity.",
+    "Process reap/listener/PCI/broker closure is terminal helper data, additionally tied to helper records/logs; no live process probes are performed.",
+    "Observed installed product code and process authority are checked by retained strict guard records; full original/native/hardware coverage and hosted all-roster acceptance remain separate.",
+    "Recorded binary pins are not themselves fresh-build or source-to-Rust-binary proof.",
+    "All 59 canonical journals explicitly record closed_graph_trap_contacts=0; 16 shadow snapshots remain retained and are not counted twice.",
+    "105 actual PP QUICKGET315 rows verify three unrelated modeled Unit PP scalars; no full109 thermostat or physical PP acceptance.",
+    "Existing native CGL prefix rows are compared as captured data; original/native software was not executed.",
+    "Ten actual lost upstream successes are exactly eight200 and two301; selected cases require no replay and no inverse cleanup beyond the declared uncertainty boundary.",
+    "Issues124 and125 remain open for exact native Application copy/Address/error/no-op/case/whitespace acceptance.",
+    "Issue131 ordinary unassociated numeric Level Value false-success remains open; issued-OID byte and explicit associated raw-owner fixtures do not close it.",
+    "Frozen model data include genuine unrelated Unit XML and three modeled PP scalars. No physical programming or full thermostat PP coverage is claimed.",
+    "Earlier failed product, fixture and reader epochs are retained; no pass counts are added across epochs.",
+    "Required source offline repeat is a separate epoch: 12,255 actual parents, 10,541 passed and 1,714 provisioning skips, plus 44,906 unitemized passing subtests. It does not provide installed or native/hardware acceptance.",
+    "Initial offline failure remains retained: 10,540 passed parents, one failed parent and 1,714 skips, plus 44,906 unitemized passing subtests. Private executor-prefix correction changed no source or tests.",
+    "The isolated 13-case issue131 candidate is unadopted and does not change this tested source, its binaries, its six retained differential receipts or the issue's open status.",
+    "Counts belong to separate framing/mock/daemon source commands; no summed unique parent roster is claimed.",
+    "The two census-admitted optional UnitSpec skips never satisfy required explicit bodies.",
+    "Subevents are unitemized and do not add enumerated parent identities.",
+    "No current post-matrix repository equality, installed full-roster, issue131 adoption or native/hardware acceptance is inferred."
+  ],
+  "native_hardware_or_original_execution": false,
+  "post_matrix_composition": {
+    "Rust_inputs": 481,
+    "Rust_source_byte_exact_to_application_commit79": true,
+    "base_commit": "e1e707364a380edf743b028a7483be1cbc6d544a",
+    "fresh_owned_derivatives": {
+      "all_exit_zero": true,
+      "allowed_output_count": 11,
+      "binary_pair_quiet": true,
+      "changed_output_count": 10,
+      "commands": 18,
+      "eight_original_and_pre_fix_protectors_exact": true,
+      "input_count": 4192,
+      "six_closure_maps_quiet": true,
+      "summary": {
+        "bytes": 19504,
+        "logical_name": "summary.json",
+        "sha256": "59d06948a7706f67bb3bb3c48628946398d9dc5835c431601a4b78e3cb3cca46"
+      }
+    },
+    "metadata_validation": {
+      "audit": {
+        "bytes": 222942,
+        "logical_name": "audit-receipt.json",
+        "sha256": "a02640e6cb88469b289761121e0e5cc1d0bb02e05dd24257b113253d1bfd2c22"
+      },
+      "audit_exit": 0,
+      "errors": 0,
+      "failures": 0,
+      "inputs_quiet": true,
+      "junit": {
+        "bytes": 68554,
+        "logical_name": "junit.xml",
+        "sha256": "a08ef0f81ae4c8bb33e2365531d93d9130cf38a9f122a078ac92d0aabd38d268"
+      },
+      "parent_passed": 191,
+      "pytest_exit": 0,
+      "skips": 0,
+      "summary": {
+        "bytes": 4349,
+        "logical_name": "summary.json",
+        "sha256": "d6edec49a7bbc05c98ffc963d3babc49e235a02f6f35a3f7d8b398fbce902204"
+      },
+      "trace": {
+        "bytes": 173040,
+        "logical_name": "trace.json",
+        "sha256": "2bcd9f08fb832f75e4a5571231974498c1b84226c221f5fa0bcd008acdb18e44"
+      },
+      "unitemized_subtests_passed": 550
+    },
+    "narrow_helper_matrix_and_serial": {
+      "audit": {
+        "bytes": 82876,
+        "logical_name": "audit.json",
+        "sha256": "d2c23cf6858d5186c7a465c0fd922e0268d4c0dc96915060f519ae22394a59c5"
+      },
+      "audit_exit": 0,
+      "errors": 0,
+      "failures": 0,
+      "inputs_quiet": true,
+      "parent_passed": 142,
+      "pytest_exit": 0,
+      "skips": 0,
+      "summary": {
+        "bytes": 2317,
+        "logical_name": "summary.json",
+        "sha256": "57e2cb2e815479435df785e4c0a29f7e79df91c863e0ef713afcdb2cca59aad5"
+      },
+      "unitemized_subtests_passed": 7
+    },
+    "provenance_limits": [
+      "Each count belongs to its own source/test epoch. The original 4185 map is not the current 4192 map.",
+      "The final publication report and receipt supplement were added after these checks; both paths are outside the six source closures.",
+      "The 1050-body pre-matrix full source Make and focused installed28/31 results remain unchanged historical acceptance.",
+      "Hosted full installed matrix and native/hardware acceptance remain separate and are not credited here."
+    ],
+    "scope": "Separate postcomposition helper/fixture/capture/metadata checks; does not repeat original full Make, installed full roster, feature bodies or native/hardware acceptance"
+  },
+  "provenance": {
+    "actual_tested_HEAD_short": "6807786f",
+    "actual_tested_disposition": "HEAD plus uncommitted 4185-file Application feature overlay",
+    "current_postcomposition_4185_map_equality_claim": false,
+    "later_matrix_base_commit": "e1e707364a380edf743b028a7483be1cbc6d544a",
+    "later_matrix_serial_and_generated_composition": "Separate post-checkpoint integration; original full source Make and focused installed proofs do not establish acceptance of that overlay",
+    "original_maps_quiet_during_own_epochs_only": true,
+    "subsequently_committed_byte_exact_overlay": "79a4c2e6b35efebd9c8014b851dde8de25f34947"
+  },
+  "required_make_check_and_check_interop": {
+    "full_interop": {
+      "artifacts": {
+        "declared-full-plans.json": {
+          "bytes": 447505,
+          "sha256": "b75fc5a0c8d879f84cb399af58269806a141dd75aa3fa944dee38c8f72904407"
+        },
+        "inputs-after.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "inputs-before.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "invocation.json": {
+          "bytes": 2626,
+          "sha256": "70da2a99edba6ec853184df19f4417394fcd83d332e844cf7ab792de57d0c918"
+        },
+        "make.log": {
+          "bytes": 150804,
+          "sha256": "2b53daa86b74ca9c2188fbf7ba9189480a8f2c71e4fed0d4ea2308ba576c6705"
+        },
+        "summary.json": {
+          "bytes": 318289,
+          "sha256": "74db4bdf22c7403c4dd311df169e89e7242433be0371557d4c33438360b5c0dc"
+        }
+      },
+      "binaries": {
+        "daemon": {
+          "bytes": 55227768,
+          "sha256": "aa654c38ec8a486b8293e2c294b35c51a992de62593951ffbd170c064f2062f0"
+        },
+        "mock": {
+          "bytes": 18731912,
+          "sha256": "a5675d354a6bd2a0a76e20e402047b22cf1b0250904918e6dc82ca72f0326c35"
+        }
+      },
+      "binary_before_after_equal": true,
+      "command_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "complete_aggregate_pass": true,
+      "daemon_explicit": 531,
+      "explicit_required_passed": 1050,
+      "fresh_installed_or_matrix_acceptance": false,
+      "independent_review": {
+        "bytecache-prefix-distinction-review-v1.json": {
+          "bytes": 2591,
+          "sha256": "56ca49013f87277effd8bf8106b815b213121c95f8b31d289fd468c257b1c11e"
+        },
+        "interop-v1-independent-review-v1.json": {
+          "bytes": 171417,
+          "sha256": "29dfeb92be83d2b77c1a3ab4abf88d3ea55ffb33528a18a08a8b72b9d076c2b6"
+        },
+        "offline-v2-independent-review-v2.json": {
+          "bytes": 63780,
+          "sha256": "afba84fe73f253a2b913d603725307135883870a1458b470a2e7a4c85ab63567"
+        },
+        "terminal-handoff-final-v1.json": {
+          "bytes": 2168,
+          "sha256": "1ca944649d9ccf614ab51609320efed8f6991f0d9046e7f8bf5db0f18ddc2d6f"
+        }
+      },
+      "lanes": {
+        "daemon": {
+          "all_required_ids_actual_call_and_JUnit_pass": true,
+          "artifacts": {
+            "audit-receipt.json": {
+              "bytes": 468514,
+              "sha256": "188145157e62777bb5577083c3b811e509e20338344137b7d3c373326e048624"
+            },
+            "junit.xml": {
+              "bytes": 256296,
+              "sha256": "f33430254335a123016f2c07dbd7be8176c0667b989aa6c429039b8501245b0b"
+            },
+            "trace.json": {
+              "bytes": 324693,
+              "sha256": "7eddcd00a1cd8b6cd220a25c5efe72fa47bc320b712d6c12f026e2b86ab7cdd1"
+            }
+          },
+          "errors": 0,
+          "explicit_required": 531,
+          "failed": 0,
+          "optional_skips": [
+            {
+              "id": "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation",
+              "reason": "Set CBUS_UNITSPEC_DIR to re-derive the matrix from decoded specs",
+              "satisfies_required_id": false
+            }
+          ],
+          "parents": 683,
+          "passed": 682,
+          "required_id_sorted_newline_sha256": "6affc92190b04cf3eb01805cdefca9d671b2477bb2fa7bf3bf0afaf255770e5c",
+          "skipped": 1,
+          "unitemized_passing_subevents": 69,
+          "whole_core_modules": [
+            "tests/test_cmqtt_interop.py",
+            "tests/test_cmqtt_programming_methods_interop.py",
+            "tests/test_cmqtt_dali_commissioning_interop.py",
+            "tests/test_cmqtt_network_new_cli.py",
+            "tests/test_cmqtt_network_save_db_cli.py",
+            "tests/test_cgate_file_upload.py"
+          ]
+        },
+        "framing": {
+          "all_required_ids_actual_call_and_JUnit_pass": true,
+          "artifacts": {
+            "audit-receipt.json": {
+              "bytes": 2103,
+              "sha256": "fd4a85ce2f921b1b15da35482b4f4fb6b7619f13e7878a50ce95d3843d70a87f"
+            },
+            "junit.xml": {
+              "bytes": 993,
+              "sha256": "5aff151683a299ac7eac864f22a45eaa960709f15b17e2ad1e5d09669dd49485"
+            },
+            "trace.json": {
+              "bytes": 1068,
+              "sha256": "839c26bc31f5910a6115fd0732390b7cd8e8ecc323f4598c338d1a6733f5cf3a"
+            }
+          },
+          "errors": 0,
+          "explicit_required": 0,
+          "failed": 0,
+          "optional_skips": [],
+          "parents": 2,
+          "passed": 2,
+          "required_id_sorted_newline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "skipped": 0,
+          "unitemized_passing_subevents": 0,
+          "whole_core_modules": []
+        },
+        "mock": {
+          "all_required_ids_actual_call_and_JUnit_pass": true,
+          "artifacts": {
+            "audit-receipt.json": {
+              "bytes": 385291,
+              "sha256": "cca1a92a4d48fe95a8bb1b1cea53a7922ac88129b28399d6735c4a11c1609412"
+            },
+            "junit.xml": {
+              "bytes": 202039,
+              "sha256": "d3bafa46152007590a74b12a4ec1b05022b3cfa0d509e211ed3b162ead15a1b9"
+            },
+            "trace.json": {
+              "bytes": 269071,
+              "sha256": "92ccefe2c0839b778b2839dd5d2436b35d2fdea5d4b593bc8619268ae618c88f"
+            }
+          },
+          "errors": 0,
+          "explicit_required": 519,
+          "failed": 0,
+          "optional_skips": [
+            {
+              "id": "tests/test_rust_cgate_interop.py::RustInteropTests::test_edlt_lighting_programming_round_trip",
+              "reason": "vendor unitspec directory is absent",
+              "satisfies_required_id": false
+            }
+          ],
+          "parents": 539,
+          "passed": 538,
+          "required_id_sorted_newline_sha256": "5640f2665dd0adf8c7d4ada8e8b035125cc94888943809cdc37ffc3173891a31",
+          "skipped": 1,
+          "unitemized_passing_subevents": 158,
+          "whole_core_modules": [
+            "tests/test_rust_cgate_interop.py"
+          ]
+        }
+      },
+      "limits": [
+        "Counts belong to separate framing/mock/daemon source commands; no summed unique parent roster is claimed.",
+        "The two census-admitted optional UnitSpec skips never satisfy required explicit bodies.",
+        "Subevents are unitemized and do not add enumerated parent identities.",
+        "No current post-matrix repository equality, installed full-roster, issue131 adoption or native/hardware acceptance is inferred."
+      ],
+      "make_seconds": 6105.292675416,
+      "mock_explicit": 519,
+      "native_or_hardware_acceptance": false,
+      "original_epoch_before_after_equal": true,
+      "original_epoch_input_count": 4185,
+      "source_checkpoint": "Pre-matrix original 4185-file Application feature overlay on tested HEAD 6807786f; subsequently committed byte-exact as 79a4c2e6b35efebd9c8014b851dde8de25f34947",
+      "source_only": true,
+      "status": "PASS_REQUIRED_SOURCE_MAKE_WITH_LIMITS",
+      "whole_core_modules": 7
+    },
+    "offline_initial_failed_v1": {
+      "actual_parent_count": 12255,
+      "aggregate_junit_counts": {
+        "errors": 0,
+        "failures": 1,
+        "passed": 55446,
+        "skipped": 1714,
+        "tests": 57161
+      },
+      "artifacts": {
+        "audit-receipt.json": {
+          "bytes": 16311557,
+          "sha256": "fc28abf0e9e4b14d7d8e9670a6bf0bd53e4bdd626db76728f178767adbf96c3e"
+        },
+        "inputs-after.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "inputs-before.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "junit.xml": {
+          "bytes": 4923197,
+          "sha256": "98dabea49a78db5f3308befc93ecc653a2458a3e3023d2a844384f41dc72cdf6"
+        },
+        "make.log": {
+          "bytes": 84955,
+          "sha256": "15218f6a12eccaa643f29c60129b49d51414931af4913645be1200afba792bad"
+        },
+        "summary.json": {
+          "bytes": 3484,
+          "sha256": "024664227d2dc44b5d222a4f631b60d1d3716a9430e905a1883ab206cb36c6ac"
+        },
+        "trace.json": {
+          "bytes": 12940065,
+          "sha256": "7604a2c3963d1718b993fd951778c75c903a74b00b449e0968c0d43deb1c1dcb"
+        }
+      },
+      "auditor_passed": false,
+      "command_exit_codes": [
+        0,
+        0,
+        2,
+        1
+      ],
+      "current_rust_pair_provisioned": false,
+      "inputs_quiet": true,
+      "make_seconds": 1877.1245451670038,
+      "mapped_inputs": 4185,
+      "native_or_hardware_provision": false,
+      "parent_counts": {
+        "error": 0,
+        "failed": 1,
+        "passed": 10540,
+        "skipped": 1714
+      },
+      "source_only_offline": true,
+      "status": "FAILED_RETAINED",
+      "unitemized_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 44906,
+        "reported": 44906,
+        "skipped": 0
+      }
+    },
+    "offline_unchanged_source_repeat_v2": {
+      "actual_parent_count": 12255,
+      "aggregate_junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 55447,
+        "skipped": 1714,
+        "tests": 57161
+      },
+      "artifacts": {
+        "audit-receipt.json": {
+          "bytes": 16311555,
+          "sha256": "f733186ed5f371d072b11f21e0b8a985ef8a9374d441fc6e9d4a008aa81b6ba2"
+        },
+        "inputs-after.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "inputs-before.json": {
+          "bytes": 745238,
+          "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+        },
+        "junit.xml": {
+          "bytes": 4921193,
+          "sha256": "a2bbda65ceb923873c97a84c8f53e87a21776160cb7e1dfad94d4b7d9e357e40"
+        },
+        "make.log": {
+          "bytes": 82834,
+          "sha256": "0f68e97e23d8e0649b788cb35773a9e37fda182b7df5f93e387e213802599c71"
+        },
+        "summary.json": {
+          "bytes": 3969,
+          "sha256": "d1af1bcb46513686f47bc4afe08d50d77895ef7747a57e96de501f4dc5187476"
+        },
+        "trace.json": {
+          "bytes": 12940065,
+          "sha256": "b530e6f74277a37290b703a9089ff311fd59187fc438bf4c3a7e4956aa580663"
+        }
+      },
+      "auditor_passed": true,
+      "command_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "current_rust_pair_provisioned": false,
+      "inputs_quiet": true,
+      "make_seconds": 1714.3415377499987,
+      "mapped_inputs": 4185,
+      "native_or_hardware_provision": false,
+      "parent_counts": {
+        "error": 0,
+        "failed": 0,
+        "passed": 10541,
+        "skipped": 1714
+      },
+      "source_only_offline": true,
+      "status": "PASS_REQUIRED_MAKE_WITH_LIMITS",
+      "unitemized_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 44906,
+        "reported": 44906,
+        "skipped": 0
+      }
+    },
+    "private_bytecode_prefix_probes": {
+      "artifacts": {
+        "inputs-after.json": {
+          "bytes": 686646,
+          "sha256": "514486e25b0dffd705979f405ba7e1e3f67698381a892d957c687d05ffca8f67"
+        },
+        "inputs-before.json": {
+          "bytes": 686646,
+          "sha256": "514486e25b0dffd705979f405ba7e1e3f67698381a892d957c687d05ffca8f67"
+        },
+        "summary.json": {
+          "bytes": 1206,
+          "sha256": "0429225c92edfb48f9077fcae1278786fe65956fc006e34b22074300f6df8d8e"
+        }
+      },
+      "cases": [
+        {
+          "exit": 1,
+          "failed": 1,
+          "junit": {
+            "bytes": 2571,
+            "sha256": "6fb77c0e058670c2e93b7f419cb941ce56c7e0ef7b2a4d073604e7bb99fa6a95"
+          },
+          "log": {
+            "bytes": 2278,
+            "sha256": "692cb8d0908b0756729d8a0a24cc3e2c548579b7c4fc160e2f9e90c6d7c74362"
+          },
+          "mode": "with-prefix",
+          "parents": 1,
+          "seconds": 0.7170937500000001,
+          "trace": {
+            "bytes": 514,
+            "sha256": "d447081c66cf58d916389b09d927e2a1cc6af366dc8178f536359693becdc638"
+          }
+        },
+        {
+          "exit": 0,
+          "failed": 0,
+          "junit": {
+            "bytes": 553,
+            "sha256": "68c2dbcb2282184ebf3e3c6c0f625beb4d2bf8a0f4b4482d1a71fed88ba85273"
+          },
+          "log": {
+            "bytes": 98,
+            "sha256": "e596cce97643441f2f2c7ef01ee068b6705ce1e028a07a32ba3bd3b3d35d7353"
+          },
+          "mode": "without-prefix",
+          "parents": 1,
+          "seconds": 0.2910392500000001,
+          "trace": {
+            "bytes": 514,
+            "sha256": "9f4ecb916657f0b84ec1c28ad7940b57fc0236d7e14d5932be31b3b40ab2d726"
+          }
+        }
+      ],
+      "inputs_quiet": true,
+      "limit": "The probes establish sensitivity to the private PYTHONPYCACHEPREFIX; only the separate unchanged-source full repeat supplies full offline acceptance.",
+      "mapped_inputs": 4185,
+      "scope": "Two one-parent executor-environment probes, not a suite",
+      "source_or_product_changes": false,
+      "test_id": "tests/test_installed_rust_interop.py::test_timestamp_valid_bytecode_is_rejected_before_acceptance"
+    }
+  },
+  "retained_native_CGL_fixture_data": {
+    "bytes": 67552,
+    "sha256": "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490"
+  },
+  "rust_final3": {
+    "artifacts": {
+      "commands.json": {
+        "bytes": 1053,
+        "sha256": "93b2698f06ab95d88dbef8d14e77499a5d0b5777051195f6b9a703de99df3fbd"
+      },
+      "debug-servers.log": {
+        "bytes": 294,
+        "sha256": "bd9fb5ced239b122295a331d53dc2c2505a403be6483660533b3d23b29256707"
+      },
+      "inputs-after.json": {
+        "bytes": 77638,
+        "sha256": "6050ee6d43767d07173cefc9744dc68fc5a95f28233df793972a788eddb1a91f"
+      },
+      "inputs-before.json": {
+        "bytes": 77638,
+        "sha256": "6050ee6d43767d07173cefc9744dc68fc5a95f28233df793972a788eddb1a91f"
+      },
+      "summary.json": {
+        "bytes": 1480,
+        "sha256": "b55290ddc2ed91d76da2a267f805cd46262d9d135e43f88749356f429ba7caa4"
+      },
+      "test-workspace.log": {
+        "bytes": 461872,
+        "sha256": "265f4a9d178e4c77a94b3cd2061e09953a48db05814cf46c91fcc5bbabac1234"
+      }
+    },
+    "commands": [
+      {
+        "exit": 0,
+        "name": "fmt",
+        "seconds": 2.049481709000247
+      },
+      {
+        "exit": 0,
+        "name": "clippy",
+        "seconds": 7.5788755000030505
+      },
+      {
+        "exit": 0,
+        "name": "test-workspace",
+        "seconds": 430.33713266600535
+      },
+      {
+        "exit": 0,
+        "name": "release-workspace",
+        "seconds": 120.15815641600057
+      },
+      {
+        "exit": 0,
+        "name": "debug-servers",
+        "seconds": 4.2878282079982455
+      }
+    ],
+    "inputs_quiet": true,
+    "mapped_inputs": 481,
+    "workspace_log_result_blocks": 104,
+    "workspace_logged_failed": 0,
+    "workspace_logged_ignored": 1,
+    "workspace_logged_passed": 8789
+  },
+  "schema": "application-database-safe-owned-acceptance-v1",
+  "source3": {
+    "artifacts": {
+      "audit-receipt.json": {
+        "bytes": 36312,
+        "sha256": "af5f758998a68e3a59fbed9d87c403478d041d19c4ff66658942774e44f49f3f"
+      },
+      "inputs-after.json": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      },
+      "inputs-before.json": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      },
+      "junit.xml": {
+        "bytes": 20641,
+        "sha256": "2449203f1fc89522e7247c71a6803ec56e2df55beca26d923323fc170d660021"
+      },
+      "summary.json": {
+        "bytes": 17110,
+        "sha256": "ad1b28dbdaf6c581037aa9c705f84a2a7f15f0240380a0ddd9d909eef69893f4"
+      },
+      "trace.json": {
+        "bytes": 24483,
+        "sha256": "6d84b0217e78172def4af95c5883d70b60ba41dbd412d9db71c7b5a55c79c3d1"
+      }
+    },
+    "compact_handoff": {
+      "bytes": 6729,
+      "sha256": "29df0e6156314f3a3c804cfb76b1c0dc66c0f25954770c46595d255413f715e2"
+    },
+    "execution": {
+      "backend_body_counts": {
+        "cgate-mock": 28,
+        "cmqttd": 31
+      },
+      "driver_seconds": 417.85715679099667,
+      "errors": 0,
+      "exact_collected_started_JUnit_call_ids": true,
+      "failures": 0,
+      "module_body_counts": {
+        "tests/test_application_copy_safe_backends.py": 16,
+        "tests/test_application_safe_set_backends.py": 27,
+        "tests/test_cgl_application_order_backends.py": 16
+      },
+      "parents": 59,
+      "passed": 59,
+      "skips": 0,
+      "subtests": 0
+    },
+    "raw_counts": {
+      "actual_upstream_loss_counts": {
+        "200": 8,
+        "301": 2
+      },
+      "all_commands": 2661,
+      "all_documents": 83,
+      "cli_calls": 821,
+      "cli_commands": 1520,
+      "cli_document_rows": 59,
+      "cli_exit_counts": {
+        "0": 777,
+        "1": 44
+      },
+      "cli_status_counts": {
+        "200": 860,
+        "301": 415,
+        "342": 66,
+        "344": 137,
+        "400": 2,
+        "401": 8,
+        "408": 18,
+        "409": 4,
+        "missing": 10
+      },
+      "closed_graph_trap_contacts": 0,
+      "connections": 888,
+      "direct_raw_calls": 1141,
+      "direct_raw_status_counts": {
+        "200": 619,
+        "301": 64,
+        "315": 105,
+        "342": 45,
+        "344": 302,
+        "408": 6
+      },
+      "exports": 115,
+      "later_PCI_rows": 0,
+      "owned_backend_counts": {
+        "cgate-mock": 28,
+        "cmqttd": 35
+      },
+      "owned_process_records": 63,
+      "owned_reap_exit_counts": {
+        "-15": 28,
+        "0": 35
+      },
+      "raw_native_408_rows": 6,
+      "raw_native_prefix_rows": 8,
+      "startup_PCI_rows": 280,
+      "unique_owned_pids": 63,
+      "verified_journals": 59
+    },
+    "raw_reader": {
+      "bytes": 174980,
+      "sha256": "df55a5b4435c69454f1a624be20aace88abb3eb16bd2470ee918c84174d60c8c"
+    }
+  },
+  "status": "PASS_OWNED_FOCUSED_SOURCE_INSTALLED_AND_PRE_MATRIX_FULL_SOURCE_MAKE_WITH_LIMITS",
+  "tested_original_source_pins": {
+    "rust/cbus-cgate/src/application_copy.rs": {
+      "bytes": 73118,
+      "sha256": "a3979077edce72e8438853540f99099fa7e401265b7280329df8e9b6b5cdaafd"
+    },
+    "rust/cbus-cgate/src/application_set.rs": {
+      "bytes": 16129,
+      "sha256": "60be4f55cb59cb0b78e6cf2978ea94a1807e2a28a961fcae6b963ed4ff24c674"
+    },
+    "rust/cbus-cgate/src/application_set_tests.rs": {
+      "bytes": 33232,
+      "sha256": "49669df707d0d33aa122b419755ce076474abab956f53ba124984d02ef4f7b23"
+    },
+    "rust/cbus-cgate/src/lib.rs": {
+      "bytes": 648514,
+      "sha256": "34aa54fba3cfa99fe07575d8f557fdb439539df8327af98c175f5d0eb0010586"
+    },
+    "rust/cbus-cgate/src/tag_network.rs": {
+      "bytes": 146998,
+      "sha256": "3186de12ec1b3f8806443f5b351fdff245c943f11126d3bb99458af0bc64b25c"
+    },
+    "toolkit-cli/research/installed_interop_guard.py": {
+      "bytes": 8878,
+      "sha256": "e959fa88677881570d324862f783841ceef470b97d0e42dfe371655b6950755f"
+    },
+    "toolkit-cli/research/installed_rust_interop.py": {
+      "bytes": 38365,
+      "sha256": "ab963a8fb4797bbd99cc5a8f8579d58dac8ed8f1ee44de04ccf654609cefe002"
+    },
+    "toolkit-cli/tests/test_application_copy_safe_backends.py": {
+      "bytes": 22482,
+      "sha256": "87439ffebc9f77b52b76850caa1efc08c588fd5ea62d22696c10010d1bf3b240"
+    },
+    "toolkit-cli/tests/test_application_safe_set_backends.py": {
+      "bytes": 16070,
+      "sha256": "44a4879799b7935dae871163044e04366a345a7ce0548a46e0b054b33dfff26a"
+    },
+    "toolkit-cli/tests/test_cgl_application_order_backends.py": {
+      "bytes": 32756,
+      "sha256": "a2ab7446be69cdcc7930eb765a9860d59356084c189b831774a61bd5ce5a2e2a"
+    }
+  },
+  "unadopted_issue131_component_proof": {
+    "candidate_adopted_into_this_phase2_source": false,
+    "closes_issue": false,
+    "component_handoff": {
+      "bytes": 958,
+      "sha256": "1bd37baedc33fd82d13f7668490f9f9c24c6e137dae584b5226315f50ff4d92c"
+    },
+    "filtered": 636,
+    "full_rust_or_public_cli_or_installed_acceptance_in_this_feature_epoch": false,
+    "historical_baseline_failed": 12,
+    "historical_baseline_passed": 1,
+    "ignored": 0,
+    "isolated_library_passed": 13,
+    "issue": 131,
+    "other_isolated_candidate_epochs": "Separate private issue131 work is outside this receipt and not adopted into this feature"
+  },
+  "wheel3": {
+    "artifacts": {
+      "commands.json": {
+        "bytes": 41389,
+        "sha256": "0b16da2c82a37d2e9b7319bd55c1b60a5a471c0e4b1c4992653427f8b5dc9dc8"
+      },
+      "package-before.json": {
+        "bytes": 57593,
+        "sha256": "0fa3052bbfc9eea411b587eb2dcde80808613fb074dc1a211ad7f6565071bb3a"
+      },
+      "source-after.json": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      },
+      "source-before.json": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      },
+      "summary.json": {
+        "bytes": 834223,
+        "sha256": "5b1e932678d65a36bb659816f16c4b45a99bc482d470839ffb4dfc4615089939"
+      }
+    },
+    "compact_handoff": {
+      "bytes": 11661,
+      "sha256": "b86096d7966209d32c0944846355f32141feddfa5e1c9777bda30a40636f0bba"
+    },
+    "phases": {
+      "daemon": {
+        "actual_epoch_artifacts": {
+          "audit-receipt.json": {
+            "bytes": 19668,
+            "sha256": "8bf1b39d7e67622a9f2f075d126ace04dcecb2df06ed18a519142358539c8ca2"
+          },
+          "collection-trace.json": {
+            "bytes": 3971,
+            "sha256": "ff8e6fe86a831cfc3d3a384178215bb2aacea384336fe3991a0ffeedbe04048a"
+          },
+          "junit.xml": {
+            "bytes": 11078,
+            "sha256": "a1d16c8918f42c582b9035c795cb94bb8863df6d9108dbc81fc54a91d75fe07f"
+          },
+          "trace.json": {
+            "bytes": 13078,
+            "sha256": "44edadda5d42de26a57cc4fc238c3b632b7cab341fa36d747e36ec065d6c2a85"
+          }
+        },
+        "aggregate_verified_journals_only": {
+          "actual_upstream_loss_counts": {
+            "200": 4,
+            "301": 1
+          },
+          "all_commands": 1379,
+          "all_documents": 44,
+          "cli_calls": 428,
+          "cli_commands": 787,
+          "cli_document_rows": 32,
+          "cli_exit_counts": {
+            "0": 406,
+            "1": 22
+          },
+          "cli_status_counts": {
+            "200": 447,
+            "301": 213,
+            "342": 34,
+            "344": 72,
+            "400": 1,
+            "401": 4,
+            "408": 9,
+            "409": 2,
+            "missing": 5
+          },
+          "closed_graph_trap_contacts": 0,
+          "connections": 465,
+          "direct_raw_calls": 592,
+          "direct_raw_status_counts": {
+            "200": 323,
+            "301": 32,
+            "315": 54,
+            "342": 23,
+            "344": 157,
+            "408": 3
+          },
+          "exports": 61,
+          "later_PCI_rows": 0,
+          "owned_backend_counts": {
+            "cmqttd": 35
+          },
+          "owned_process_records": 35,
+          "owned_reap_exit_counts": {
+            "0": 35
+          },
+          "raw_native_408_rows": 3,
+          "raw_native_prefix_rows": 4,
+          "startup_PCI_rows": 280,
+          "unique_owned_pids": 35,
+          "verified_journals": 31
+        },
+        "errors": 0,
+        "failures": 0,
+        "guard_data_file_count": 431,
+        "package": {
+          "file_count": 395,
+          "record": {
+            "entries": 406,
+            "record": {
+              "bytes": 38563,
+              "sha256": "e623c001ee1244fdc3bc4540a8347302c833b9c2d0249089bebb542e764fdac7"
+            }
+          },
+          "wheel": {
+            "bytes": 3013846,
+            "sha256": "63fa40967b8ca5c0a11bc9e87bff6a0ba510886ea4a6e87513a4fe9a454fe174"
+          }
+        },
+        "parents": 31,
+        "passed": 31,
+        "pytest_command_seconds": 516.2731324999986,
+        "raw_reader_receipt": {
+          "bytes": 112779,
+          "sha256": "aa9460c34e46d6c3278a9ef265f27e37ae19d0b18a507a42e38829c8071af9ef"
+        },
+        "shadows_pinned_not_counted": 8,
+        "skips": 0,
+        "strict_origin_counts": {
+          "collection": {
+            "origin_records": 22,
+            "owned_rust_children": 0,
+            "owned_rust_reaped": 0,
+            "product_import_events": 20,
+            "python_processes": 1,
+            "scope": "guarded Python launches and observed product module loads",
+            "violations": 0
+          },
+          "pytest": {
+            "origin_records": 77995,
+            "owned_rust_children": 35,
+            "owned_rust_reaped": 35,
+            "product_import_events": 77137,
+            "python_processes": 429,
+            "scope": "guarded Python launches and observed product module loads",
+            "violations": 0
+          }
+        },
+        "subtests": 0
+      },
+      "mock": {
+        "actual_epoch_artifacts": {
+          "audit-receipt.json": {
+            "bytes": 17486,
+            "sha256": "06b87988c9795db53cfa517549f42f0559432ab74724d849da09ac251b1c3c7b"
+          },
+          "collection-trace.json": {
+            "bytes": 3511,
+            "sha256": "22677ef31010d126916d909368f43e0a2358afe83231445d49cc4610433a553c"
+          },
+          "junit.xml": {
+            "bytes": 9850,
+            "sha256": "5c597ed4605797c7f4526b0094a3b8cf3ed32db3d416221cc7d78dda73936a2d"
+          },
+          "trace.json": {
+            "bytes": 11557,
+            "sha256": "ed3ef68c7a197ed1a7692aea63e1b433a59eaba4554a8c5d5286401bf4d94fc9"
+          }
+        },
+        "aggregate_verified_journals_only": {
+          "actual_upstream_loss_counts": {
+            "200": 4,
+            "301": 1
+          },
+          "all_commands": 1282,
+          "all_documents": 39,
+          "cli_calls": 393,
+          "cli_commands": 733,
+          "cli_document_rows": 27,
+          "cli_exit_counts": {
+            "0": 371,
+            "1": 22
+          },
+          "cli_status_counts": {
+            "200": 413,
+            "301": 202,
+            "342": 32,
+            "344": 65,
+            "400": 1,
+            "401": 4,
+            "408": 9,
+            "409": 2,
+            "missing": 5
+          },
+          "closed_graph_trap_contacts": 0,
+          "connections": 423,
+          "direct_raw_calls": 549,
+          "direct_raw_status_counts": {
+            "200": 296,
+            "301": 32,
+            "315": 51,
+            "342": 22,
+            "344": 145,
+            "408": 3
+          },
+          "exports": 54,
+          "later_PCI_rows": 0,
+          "owned_backend_counts": {
+            "cgate-mock": 28
+          },
+          "owned_process_records": 28,
+          "owned_reap_exit_counts": {
+            "-15": 28
+          },
+          "raw_native_408_rows": 3,
+          "raw_native_prefix_rows": 4,
+          "startup_PCI_rows": 0,
+          "unique_owned_pids": 28,
+          "verified_journals": 28
+        },
+        "errors": 0,
+        "failures": 0,
+        "guard_data_file_count": 396,
+        "package": {
+          "file_count": 395,
+          "record": {
+            "entries": 406,
+            "record": {
+              "bytes": 38563,
+              "sha256": "e623c001ee1244fdc3bc4540a8347302c833b9c2d0249089bebb542e764fdac7"
+            }
+          },
+          "wheel": {
+            "bytes": 3013846,
+            "sha256": "63fa40967b8ca5c0a11bc9e87bff6a0ba510886ea4a6e87513a4fe9a454fe174"
+          }
+        },
+        "parents": 28,
+        "passed": 28,
+        "pytest_command_seconds": 448.41406508299406,
+        "raw_reader_receipt": {
+          "bytes": 103447,
+          "sha256": "6ad62fb14cb0314447eda4c24925016041137c41e4cd979640b1cb74e2aec90a"
+        },
+        "shadows_pinned_not_counted": 8,
+        "skips": 0,
+        "strict_origin_counts": {
+          "collection": {
+            "origin_records": 22,
+            "owned_rust_children": 0,
+            "owned_rust_reaped": 0,
+            "product_import_events": 20,
+            "python_processes": 1,
+            "scope": "guarded Python launches and observed product module loads",
+            "violations": 0
+          },
+          "pytest": {
+            "origin_records": 71614,
+            "owned_rust_children": 28,
+            "owned_rust_reaped": 28,
+            "product_import_events": 70826,
+            "python_processes": 394,
+            "scope": "guarded Python launches and observed product module loads",
+            "violations": 0
+          }
+        },
+        "subtests": 0
+      }
+    },
+    "quiet": {
+      "complete_before_after_equal": true,
+      "complete_input_count": 4185,
+      "current_binary_bytes_equal_before_after": true,
+      "current_binary_pins": {
+        "daemon": {
+          "bytes": 55227768,
+          "sha256": "aa654c38ec8a486b8293e2c294b35c51a992de62593951ffbd170c064f2062f0"
+        },
+        "mock": {
+          "bytes": 18731912,
+          "sha256": "a5675d354a6bd2a0a76e20e402047b22cf1b0250904918e6dc82ca72f0326c35"
+        }
+      },
+      "full_source_reference_build_ZIP_install_RECORD_equal": true,
+      "original_artifact_readback_recomputed_root_matched_at_its_checkpoint": true,
+      "package_before_after_equal": true,
+      "product_files": 395,
+      "same_source3_before_map": true,
+      "source_after": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      },
+      "source_before": {
+        "bytes": 745238,
+        "sha256": "3b7ef2f85b5ffc450ba39bb13ec04f7586add67b62709e2e9be7875bb9650678"
+      }
+    }
+  }
+}

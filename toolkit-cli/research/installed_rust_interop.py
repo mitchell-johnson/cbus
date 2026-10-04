@@ -92,7 +92,12 @@ def declared_selections(make_text):
     return result
 
 
-def choose_selections(plans, selects=None):
+def choose_selections(plans, selects=None, *, backend=None):
+    if backend is not None:
+        require(selects is None, "Backend and focused selectors are mutually exclusive")
+        require(isinstance(backend, str) and backend in TARGETS and backend in plans,
+                "Backend must be mock or daemon")
+        return {backend: plans[backend]}, "full-maintained-backend-declaration"
     if selects is None:
         return plans, "full-maintained-declaration"
     require(isinstance(selects, list) and selects and
@@ -111,6 +116,139 @@ def choose_selections(plans, selects=None):
                 "quoted_ids": [s for s in rows if s in p["quoted_ids"]],
             }
     return chosen, "focused-explicit-subset"
+
+
+def audit_backend_matrix(evidence, plans, *, expected_revision=None, expected_inputs=None,
+                         expected_package=None):
+    """Combine two independently verified backend epochs without merging their traces."""
+    require(isinstance(evidence, list) and len(evidence) == len(TARGETS),
+            "Matrix requires exactly two backend epochs")
+    require(set(plans) == set(TARGETS), "Matrix configuration lacks a backend")
+    common_inputs = common_package = common_revision = common_runner = None
+    phases = {}
+    for value in evidence:
+        summary = value["summary"]
+        backend = summary.get("backend")
+        require(isinstance(backend, str) and backend in TARGETS and backend not in phases,
+                "Missing, foreign or duplicate matrix backend")
+        require(summary.get("format") == FORMAT and summary.get("passed") is True and
+                all(summary.get(key) is True for key in
+                    ("source_quiet", "copied_reference_quiet", "binaries_quiet")),
+                "Backend terminal gate did not pass")
+        require(summary.get("scope") == "full-maintained-backend-declaration" and
+                summary.get("configured_rosters") == plans and
+                summary.get("selected_rosters") == {backend: plans[backend]} and
+                set(summary.get("phases", {})) == {backend},
+                "Backend epoch does not preserve its complete maintained declaration")
+        revision = summary.get("source_revision")
+        inputs, after = value["source_before"], value["source_after"]
+        package = summary.get("package_before", {})
+        files = package.get("files")
+        require(isinstance(revision, str) and revision and isinstance(inputs, dict) and inputs and
+                inputs == after and summary.get("input_count") == len(inputs),
+                "Backend source revision/map is absent or changed")
+        require(isinstance(files, dict) and files and package.get("file_count") == len(files) and
+                summary.get("package_after") == package,
+                "Backend package map is absent or changed")
+        require(summary.get("binaries_before") and
+                summary.get("binaries_before") == summary.get("binaries_after"),
+                "Backend executable identities changed")
+        require(summary.get("optional_skip_admission", {}).get("allowed") == OPTIONAL_SKIPS,
+                "Backend optional skips differ from the bounded census")
+        if common_inputs is None:
+            common_inputs, common_package, common_revision = inputs, files, revision
+            common_runner = summary.get("runner_inputs")
+        require(inputs == common_inputs and files == common_package and revision == common_revision and
+                summary.get("runner_inputs") == common_runner and common_runner,
+                "Matrix source, product payload or runner inputs differ")
+        if expected_revision is not None:
+            require(revision == expected_revision, "Matrix source revision differs from checkout")
+        if expected_inputs is not None:
+            assert_quiet(expected_inputs, inputs)
+        if expected_package is not None:
+            assert_quiet(expected_package, files)
+        phase = summary["phases"][backend]
+        selection = value["selection"]  # Re-audited raw JUnit/trace at the artifact boundary.
+        require(phase.get("selection") == selection and
+                phase.get("actual_parent_counts") == selection.get("parent_counts") and
+                phase.get("unitemized_subtests") == selection.get("unitemized_subtests"),
+                "Backend terminal selection differs from retained raw evidence")
+        required = selection.get("required_ids", [])
+        require(isinstance(required, list) and len(required) == len(set(required)) and
+                set(plans[backend]["required_ids"]) <= set(required) and
+                all(nodeid in plans[backend]["required_ids"] or
+                    nodeid.split("::", 1)[0] in plans[backend]["whole_modules"] for nodeid in required) and
+                selection.get("required_passed") == len(required),
+                "Backend omitted or substituted a required explicit/core body")
+        for key in ("collection", "pytest"):
+            require(phase.get(key, {}).get("exit") == 0 and
+                    phase.get(key, {}).get("timed_out") is False,
+                    "Backend command failed or timed out")
+        for key in ("collection_origins", "origins"):
+            origins = phase.get(key, {})
+            require(origins.get("violations") == 0 and
+                    type(origins.get("python_processes")) is int and origins["python_processes"] > 0 and
+                    origins.get("owned_rust_children") == origins.get("owned_rust_reaped") and
+                    type(origins.get("owned_rust_reaped")) is int,
+                    "Backend import or child cleanup audit is incomplete")
+        phases[backend] = {"explicit_required_passed": len(plans[backend]["required_ids"]),
+                           "whole_modules": plans[backend]["whole_modules"], "selection": selection,
+                           "binaries": summary["binaries_after"]}
+    require(set(phases) == set(TARGETS), "Matrix backend union is incomplete")
+    explicit = [nodeid for plan in plans.values() for nodeid in plan["required_ids"]]
+    require(len(explicit) == len(set(explicit)), "Matrix declarations overlap")
+    return {"format": "cbus-installed-rust-interop-matrix-v1", "passed": True,
+            "scope": "two-complete-maintained-backend-epochs", "source_revision": common_revision,
+            "source_input_count": len(common_inputs), "package_file_count": len(common_package),
+            "explicit_required_passed": len(explicit), "explicit_required_ids": sorted(explicit),
+            "whole_modules": {backend: plan["whole_modules"] for backend, plan in plans.items()},
+            "phases": phases,
+            "limits": ["Two separate process epochs; traces/JUnit are not concatenated",
+                       "Executable identities are pinned separately, not asserted equal across jobs",
+                       "Artifact verification does not rerun services or establish native/physical acceptance"]}
+
+
+def read_backend_evidence(summary_path, plans, auditor):
+    """Bind a terminal summary to retained collection/JUnit/trace and guard bytes."""
+    summary_path = Path(summary_path)
+    require(summary_path.is_file() and not summary_path.is_symlink(), "Summary artifact is not regular")
+    summary = json.loads(summary_path.read_text())
+    backend = summary.get("backend")
+    require(isinstance(backend, str) and backend in plans, "Artifact backend is absent or foreign")
+    directory, plan = summary_path.parent, plans[backend]
+    phase = summary.get("phases", {}).get(backend, {})
+    phase_directory = directory / backend
+    for name, key in (("collection-trace.json", "collection_trace"), ("trace.json", "trace"),
+                      ("junit.xml", "junit"), ("audit-receipt.json", "maintained_audit")):
+        require((phase_directory / name).is_file() and not (phase_directory / name).is_symlink(),
+                "Retained phase artifact is not regular")
+        require(pin(phase_directory / name) == phase.get(key), "Retained phase artifact changed")
+    guard_files = {}
+    for path in phase_directory.rglob("*.jsonl"):
+        require(path.is_file() and not path.is_symlink(), "Retained guard artifact is not regular")
+        guard_files[path.relative_to(phase_directory).as_posix()] = pin(path)
+    require(guard_files and guard_files == phase.get("guard_data_files"),
+            "Retained guard file roster/bytes changed")
+    collection = json.loads((phase_directory / "collection-trace.json").read_text())
+    expected = collection.get("collected", [])
+    require(expected and len(expected) == len(set(expected)) and not collection.get("deselected") and
+            set(plan["required_ids"]) <= set(expected) and
+            all(nodeid in plan["required_ids"] or nodeid.split("::", 1)[0] in plan["whole_modules"]
+                for nodeid in expected), "Retained collection is outside the full backend declaration")
+    junit, trace = phase_directory / "junit.xml", phase_directory / "trace.json"
+    maintained = add_skip_reasons(auditor.audit(junit, trace, plan["required_modules"]), junit)
+    required = sorted(set(expected) - (set(OPTIONAL_SKIPS) - set(plan["required_ids"])))
+    selection = audit_selection(maintained, required, plan["required_modules"], OPTIONAL_SKIPS,
+                                expected_collected=expected)
+    require(json.loads((directory / "package-before.json").read_text()) == summary.get("package_before"),
+            "Retained package descriptor differs from summary")
+    return {"summary": summary, "selection": selection,
+            "source_before": json.loads((directory / "source-before.json").read_text()),
+            "source_after": json.loads((directory / "source-after.json").read_text()),
+            "artifacts": {"summary": pin(summary_path),
+                          "source_before": pin(directory / "source-before.json"),
+                          "source_after": pin(directory / "source-after.json"),
+                          "guard_files": guard_files}}
 
 
 def audit_selection(receipt, required_ids, required_modules, optional_skips=(), *, expected_collected=None):
@@ -484,16 +622,71 @@ def load_auditor(path):
     return module
 
 
-def main(argv=None):
+def positive_timeout(value):
+    try:
+        seconds = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("Timeout must be a positive integer") from error
+    if seconds <= 0:
+        raise argparse.ArgumentTypeError("Timeout must be a positive integer")
+    return seconds
+
+
+def argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--toolkit-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--mock-bin", type=Path, required=True)
     parser.add_argument("--cmqttd-bin", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--builder-python", type=Path, default=Path(sys.executable))
-    parser.add_argument("--select", action="append", default=None)
-    parser.add_argument("--timeout", type=int, default=7200)
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--select", action="append", default=None)
+    selection.add_argument("--backend", choices=tuple(TARGETS))
+    parser.add_argument("--timeout", type=positive_timeout, default=7200)
+    return parser
+
+
+def matrix_main(argv):
+    parser = argparse.ArgumentParser(description="Verify two retained full backend wheel epochs; no services")
+    parser.add_argument("--summary", action="append", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--toolkit-root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument("--job-result", choices=("success", "failure", "cancelled", "skipped"))
     args = parser.parse_args(argv)
+    toolkit = args.toolkit_root.resolve()
+    output = args.output.absolute()
+    require(not output.resolve().is_relative_to(toolkit.parent) and not output.exists(),
+            "Aggregate output must be new and outside the repository")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    result = {"format": "cbus-installed-rust-interop-matrix-v1", "passed": False}
+    try:
+        require(args.job_result in (None, "success"), "Hosted backend matrix jobs did not all succeed")
+        require(len(args.summary) == 2 and len({p.resolve() for p in args.summary}) == 2,
+                "Two distinct backend summary artifacts are required")
+        plans = declared_selections((toolkit / "Makefile").read_text())
+        auditor = load_auditor(toolkit / "research/ci_test_results.py")
+        evidence = [read_backend_evidence(path, plans, auditor) for path in args.summary]
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=toolkit.parent,
+                                           text=True).strip()
+        inputs = source_inputs(toolkit.parent)
+        package = package_files(toolkit / "src/cbus_toolkit", allow_source_caches=True)
+        result = audit_backend_matrix(evidence, plans, expected_revision=revision,
+                                      expected_inputs=inputs, expected_package=package)
+        result["artifacts"] = {value["summary"]["backend"]: value["artifacts"] for value in evidence}
+        result["hosted_backend_job_result"] = args.job_result
+    except Exception as error:
+        result["error"] = {"type": type(error).__name__, "message": str(error)}
+    write_json(output, result)
+    print(json.dumps({"passed": result["passed"], "scope": result.get("scope"),
+                      "error": result.get("error")}, sort_keys=True))
+    return 0 if result["passed"] else 1
+
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "audit-backend-matrix":
+        return matrix_main(argv[1:])
+    args = argument_parser().parse_args(argv)
     toolkit = args.toolkit_root.resolve()
     repository = toolkit.parent
     output = args.output.absolute()
@@ -523,11 +716,13 @@ def main(argv=None):
         binary_before = {"mock": binary_identity(args.mock_bin), "daemon": binary_identity(args.cmqttd_bin)}
         summary["binaries_before"] = binary_before
         plans = declared_selections((toolkit / "Makefile").read_text())
-        chosen, scope = choose_selections(plans, args.select)
-        summary.update(scope=scope, configured_rosters=plans, selected_rosters=chosen,
+        chosen, scope = choose_selections(plans, args.select, backend=args.backend)
+        summary.update(scope=scope, backend=args.backend, command_timeout_seconds=args.timeout,
+                       configured_rosters=plans, selected_rosters=chosen,
                        input_count=len(before), source_revision=subprocess.check_output(
                            ["git", "rev-parse", "HEAD"], cwd=repository, text=True).strip())
-        write_json(output / "selections.json", {"configured": plans, "selected": chosen, "scope": scope})
+        write_json(output / "selections.json", {"configured": plans, "selected": chosen,
+                                               "scope": scope, "backend": args.backend})
         skip_admission = census_optional_skips(toolkit / "research/release-gates/skip-census.json")
         summary["optional_skip_admission"] = skip_admission
         stage = output / "reference"

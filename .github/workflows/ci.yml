@@ -420,9 +420,13 @@ jobs:
             ${{ runner.temp }}/toolkit-wheel-results.json
 
   toolkit-wheel-rust-interop:
-    name: Toolkit installed wheel and Rust interoperability
+    name: Toolkit installed wheel and Rust interoperability (${{ matrix.backend }})
     runs-on: ubuntu-latest
     timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [mock, daemon]
     steps:
       - uses: actions/checkout@v4
 
@@ -444,16 +448,62 @@ jobs:
         working-directory: toolkit-cli
         run: >-
           make check-wheel-interop WHEEL_PY=python
-          WHEEL_INTEROP_OUTPUT="${RUNNER_TEMP}/toolkit-wheel-rust-interop"
+          WHEEL_INTEROP_BACKEND=${{ matrix.backend }} WHEEL_INTEROP_TIMEOUT=14400
+          WHEEL_INTEROP_OUTPUT="${RUNNER_TEMP}/toolkit-wheel-rust-interop-${{ matrix.backend }}"
 
       - name: Retain installed-wheel Rust execution and import evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: toolkit-wheel-rust-interop-${{ github.run_id }}-${{ github.run_attempt }}
+          name: toolkit-wheel-rust-interop-${{ matrix.backend }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
           include-hidden-files: true
-          path: ${{ runner.temp }}/toolkit-wheel-rust-interop
+          path: ${{ runner.temp }}/toolkit-wheel-rust-interop-${{ matrix.backend }}
+
+  toolkit-wheel-rust-interop-matrix:
+    name: Toolkit installed wheel and Rust interoperability
+    needs: [toolkit-wheel-rust-interop]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Retrieve full mock backend evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-mock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wheel-matrix/mock
+
+      - name: Retrieve full daemon backend evidence
+        if: ${{ always() }}
+        uses: actions/download-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-daemon-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wheel-matrix/daemon
+
+      - name: Require both complete backend epochs and matching input payloads
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          python research/installed_rust_interop.py audit-backend-matrix
+          --summary "${RUNNER_TEMP}/wheel-matrix/mock/summary.json"
+          --summary "${RUNNER_TEMP}/wheel-matrix/daemon/summary.json"
+          --output "${RUNNER_TEMP}/wheel-matrix/aggregate/summary.json"
+          --job-result "${{ needs.toolkit-wheel-rust-interop.result }}"
+
+      - name: Retain combined backend audit
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: ${{ runner.temp }}/wheel-matrix/aggregate
 
   toolkit-native-release:
     name: Provisioned native release gate

@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+      "source_revision": "79a4c2e6b35efebd9c8014b851dde8de25f34947",
       "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/run_cgate_session_cmqttd_differential.py --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}/cgate-session-differential-cmqttd.json\"",
       "exit_code": 0,
       "invalidates_on": {
@@ -266,11 +266,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "8b88ec2e46703417f9ffa47d9f61edb17f9510771f34abc5ad25b9f8b41f4e5a"
+          "sha256": "f7de72a44c4ffc6a2af809b0199a889abf0333679bf7baa73fa72f4b479cc9a1"
         }
       ],
       "skips": [],
-      "record_sha256": "039763c2abb133cc5b06b2e2f8a49f7d1d03fb968095136e567068de7e407418"
+      "record_sha256": "70849675ea038eb911b41ec31264ef15476982356bce563424da4e89cdc7af03"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -305,7 +305,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+      "source_revision": "79a4c2e6b35efebd9c8014b851dde8de25f34947",
       "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_tagged_session_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
       "exit_code": 0,
       "invalidates_on": {
@@ -525,7 +525,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "18af82b508bbc8744b932ef88ffb27d7ce6f20bf75679f8a31bbbb2486b7f75f"
+        "fingerprint_sha256": "94a0bae823f7fa0d79d5ef6d7af9539a71b16f4cf1202a57af352aa4be553998"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -540,11 +540,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "be714c88975a2fd34b68be5531ae23a271266fba598ffd276a5179284a643abd"
+          "sha256": "4d3982f4117c814452a255ab9f817c063e6b8abdde20d3506ba6e26321f69895"
         }
       ],
       "skips": [],
-      "record_sha256": "c052587caf22f9b78c6dc162a1e260a429901aa06662fe877c668a8bee2bfd55"
+      "record_sha256": "eb7b460f76228a85a6d354dddc26ec93e3c773c509602624b7d938c3ed12c7a8"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -585,7 +585,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+      "source_revision": "79a4c2e6b35efebd9c8014b851dde8de25f34947",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -621,11 +621,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "d711583e0cd8328b3bef889b29e79968e104a45b18fb9ef5ef76561b1d35335f"
+          "sha256": "38d456e84abe875efa2ab2d5d9cc5adbf0b47cc6bce711f3291710dd81612d4e"
         }
       ],
       "skips": [],
-      "record_sha256": "3acd72331b50f8f7040e84f2690988cbe776c6858e9975f7908be9e513fcd54b"
+      "record_sha256": "a2fc8712e72a890e931a56e0e1f3f25c723a84d369dff294f2b4b20d171b1d95"
     }
   ]
 }
